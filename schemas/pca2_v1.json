@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "prover": {
+    "z3": {},
+    "cvc5": {}
+  },
+  "artifacts": {
+    "drat": "",
+    "lfsc": ""
+  },
+  "unsat_core": [],
+  "hash": "",
+  "timestamp": ""
+}

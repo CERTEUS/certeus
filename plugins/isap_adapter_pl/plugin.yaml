@@ -1,0 +1,4 @@
+name: isap_adapter_pl
+version: 0.1.0
+module: plugins.isap_adapter_pl.src.main
+register: register

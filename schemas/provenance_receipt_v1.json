@@ -1,0 +1,22 @@
+{
+  "case_id": "pl-286kk-0001",
+  "inputs": {
+    "lexlog_rule": "",
+    "assumptions": []
+  },
+  "solvers": {
+    "z3": {
+      "status": "",
+      "unsat_core": [],
+      "proof": ""
+    },
+    "cvc5": {
+      "status": "",
+      "unsat_core": [],
+      "proof": ""
+    }
+  },
+  "mismatch": false,
+  "hash": "",
+  "timestamp": ""
+}

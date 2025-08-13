@@ -1,0 +1,1 @@
+OPTLOG – szkic.

@@ -1,0 +1,3 @@
+# Refutation ticket
+
+Opis kontrprzypadku...

@@ -1,0 +1,1 @@
+Mini-gramatyka LEXLOG (stub).
