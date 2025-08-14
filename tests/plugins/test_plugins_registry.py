@@ -1,6 +1,7 @@
 from core.plugin_loader import load_all_plugins
 from core.api import PluginAPI
 
+
 def test_plugins_loaded():
     api = PluginAPI()
     load_all_plugins(api)

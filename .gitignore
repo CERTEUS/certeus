@@ -1,9 +1,35 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
 .venv/
-.pytest_cache/
+pip-wheel-metadata/
+.eggs/
+*.egg-info/
+*.egg
+
+# Build artifacts
 dist/
 build/
-*.egg-info/
+*.so
+*.dll
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Custom
 proof-artifacts/
 out/

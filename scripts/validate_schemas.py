@@ -1,1 +1,1 @@
-print('validate schemas – stub ok')
+print("validate schemas – stub ok")

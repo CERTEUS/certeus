@@ -1,1 +1,2 @@
-def prove(data): return b'zkp'
+def prove(data):
+    return b"zkp"

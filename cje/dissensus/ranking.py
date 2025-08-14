@@ -1,1 +1,2 @@
-def rank(options): return sorted(options)
+def rank(options):
+    return sorted(options)
