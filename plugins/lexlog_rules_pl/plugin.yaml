@@ -1,4 +1,12 @@
+# +-------------------------------------------------------------+
+# |              CERTEUS - Plugin Manifest (plugin.yaml)        |
+# +-------------------------------------------------------------+
 name: lexlog_rules_pl
-version: 0.1.0
+version: "0.1.0"
+enabled: true
+
+# Moduł, który zawiera funkcję `register(api)` lub klasę `Plugin` z `register(api)`
 module: plugins.lexlog_rules_pl.src.main
+
+# (opcjonalnie) jeśli jest funkcja modułowa:
 register: register

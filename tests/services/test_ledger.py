@@ -1,0 +1,41 @@
+# +-------------------------------------------------------------+
+# |                    CERTEUS - Ledger Tests                   |
+# +-------------------------------------------------------------+
+# | PLIK / FILE: tests/services/test_ledger.py                  |
+# | ROLA / ROLE: Testy jednostkowe dla LedgerService.           |
+# +-------------------------------------------------------------+
+
+from __future__ import annotations
+
+from services.ledger_service.ledger import LedgerService
+
+
+def test_record_input_and_retrieve() -> None:
+    """
+    PL: Zapis → odczyt: integralność rekordu.
+    EN: Write → read: record integrity.
+    """
+    service = LedgerService()
+    case_id = "test-case-001"
+    doc_hash = "sha256:deadbeef"
+
+    recorded_entry = service.record_input(case_id=case_id, document_hash=doc_hash)
+    retrieved_entries = service.get_records_for_case(case_id=case_id)
+
+    assert len(retrieved_entries) == 1
+    assert retrieved_entries[0] == recorded_entry
+    assert retrieved_entries[0]["case_id"] == case_id
+    assert retrieved_entries[0]["document_hash"] == doc_hash
+    assert "timestamp" in retrieved_entries[0]
+    assert "chain_self" in retrieved_entries[0]  # dowód łańcucha
+    # pierwszy rekord ma brak poprzedniego hash'a
+    assert retrieved_entries[0]["chain_prev"] is None
+
+
+def test_get_records_for_nonexistent_case() -> None:
+    """
+    PL: Pusta lista dla nieistniejącej sprawy.
+    EN: Empty list for a non-existent case.
+    """
+    service = LedgerService()
+    assert service.get_records_for_case(case_id="non-existent-case") == []

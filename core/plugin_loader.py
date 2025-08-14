@@ -1,254 +1,186 @@
-# +------------------------------------------------+
-# |                  CERTEUS                       |
-# |            Core Plugin Autoloader (Py)         |
-# +------------------------------------------------+
-#
-# PL: Autoload pluginów z pakietu `plugins`, wsparcie:
-#     • styl modułowy:    def register(api): ...
-#     • styl obiektowy:   class Plugin: ...  (opcjonalnie .register(api))
-#     Z Pylance/Mypy współpracujemy przez Protocol + TypeGuard.
-#
-# EN: Autoload plugins from the `plugins` package, supporting:
-#     • module style:     def register(api): ...
-#     • object style:     class Plugin: ...  (optional .register(api))
-#     Pylance/Mypy happy via Protocol + TypeGuard.
-#
-# Konwencje (README):
-# - Dwujęzyczne komentarze, czytelne nagłówki, type hints.
-# - Brak shadowingu nazw klas (nie mylimy PluginAPI z protokołem pluginu).
-#
+# +-------------------------------------------------------------+
+# |                    CERTEUS - Plugin Loader                  |
+# +-------------------------------------------------------------+
+# | PLIK / FILE: core/plugin_loader.py                          |
+# | ROLA / ROLE: Wyszukuje i ładuje pluginy z katalogu          |
+# |              'plugins/<name>/{plugin.yaml, src/main.py}'.   |
+# |              Scans & loads plugins from the canonical tree. |
+# +-------------------------------------------------------------+
 
 from __future__ import annotations
 
-# === IMPORTS ===
 import importlib
-import importlib.util
-import inspect
+import logging
 import os
-import pkgutil
-from types import ModuleType
-from typing import Any, Dict, Protocol, runtime_checkable, TypeGuard
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+try:
+    import yaml  # PyYAML (preferowane)
+except Exception:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
+
+log = logging.getLogger("certeus.plugins")
+if not log.handlers:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
 
-__all__ = [
-    "BasePluginProtocol",
-    "RegisterablePluginProtocol",
-    "has_register",
-    "iter_plugin_module_names",
-    "load_plugin",
-    "load_all_plugins",
-]
+# === KONFIG / CONFIG ===
+REPO_ROOT = Path(__file__).resolve().parents[1]
+PLUGINS_DIR = REPO_ROOT / "plugins"
+
+# Dopuszczamy entrypointy:
+# - moduł:  module: "plugins.lexlog_rules_pl.src.main"
+# - opcjonalnie: register: "register"  (funkcja)
+#   w braku: class Plugin z metodą register(api)
+@dataclass(frozen=True, slots=True)
+class PluginSpec:
+    name: str
+    module: str
+    register: str | None = None
+    enabled: bool = True
+    version: str | None = None
 
 
-# === PLUGIN PROTOCOLS (PL/EN) ===
-@runtime_checkable
-class BasePluginProtocol(Protocol):
-    """
-    PL: Minimalny rdzeń zachowania pluginu (bez rejestracji do API).
-    EN: Minimal core behavior of a plugin (without API registration).
-    """
-    def setup(self) -> None: ...
-    def run(self, **kwargs: Any) -> Any: ...
-
-
-@runtime_checkable
-class RegisterablePluginProtocol(BasePluginProtocol, Protocol):
-    """
-    PL: Plugin, który potrafi zarejestrować się w API (ma .register(api)).
-    EN: Plugin that can self-register into API (has .register(api)).
-    """
-    def register(self, api: Any) -> None: ...
-
-
-def has_register(obj: object) -> TypeGuard[RegisterablePluginProtocol]:
-    """
-    PL: Strażnik typu — po `if has_register(x):` Pylance/Mypy wie, że `x.register(api)` istnieje.
-    EN: Type guard — after `if has_register(x):`, Pylance/Mypy knows `x.register(api)` exists.
-    """
-    return callable(getattr(obj, "register", None))
-
-
-# === HELPERS ===
-def _require_str(value: str | None, name: str) -> str:
-    """PL: Wymuś niepusty string. EN: Enforce non-empty string."""
-    if value is None or value.strip() == "":
-        raise ValueError(f"{name} is required (got empty/None).")
-    return value
-
-
-def _find_spec(name: str):
-    """PL/EN: Safe spec lookup (None on failure)."""
+def _parse_plugin_yaml(path: Path) -> PluginSpec | None:
+    """PL: Parsuje plugin.yaml → PluginSpec. EN: Parse plugin.yaml → PluginSpec."""
     try:
-        return importlib.util.find_spec(name)
-    except Exception:
+        raw = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
         return None
 
+    data: dict[str, Any]
+    if yaml:
+        data = yaml.safe_load(raw) or {}
+    else:  # fallback na prosty parser klucz: wartość
+        data = {}
+        for line in raw.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or ":" not in line:
+                continue
+            k, v = line.split(":", 1)
+            data[k.strip()] = v.strip().strip("'\"")
 
-def _is_api_like(obj: Any) -> bool:
+    name = str(data.get("name") or path.parent.name)
+    module = str(data.get("module") or "")
+    register = str(data["register"]) if "register" in data else None
+    enabled = bool(data.get("enabled", True))
+    version = data.get("version")
+    if not module:
+        log.warning("Plugin '%s' has empty 'module' in %s", name, path)
+        return None
+    return PluginSpec(name=name, module=module, register=register, enabled=enabled, version=version)
+
+
+def _discover_plugins(base_dir: Path = PLUGINS_DIR) -> list[PluginSpec]:
+    """PL: Znajdź wszystkie plugin.yaml. EN: Find all plugin.yaml files."""
+    specs: list[PluginSpec] = []
+    if not base_dir.exists():
+        log.info("Plugins dir not found: %s", base_dir)
+        return specs
+    for plugin_root in sorted(base_dir.iterdir()):
+        if not plugin_root.is_dir():
+            continue
+        yml = plugin_root / "plugin.yaml"
+        spec = _parse_plugin_yaml(yml)
+        if spec and spec.enabled:
+            specs.append(spec)
+    return specs
+
+
+def _import_module(module_path: str) -> Any:
+    """PL/EN: Import by module path (importlib)."""
+    return importlib.import_module(module_path)
+
+
+def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
     """
-    PL: Heurystyka: czy to „API” (ma register/add/attach lub list_plugins)?
-    EN: Heuristic: is this an API-like object (has register/add/attach or list_plugins)?
+    PL: Próbuje wywołać rejestrację; wspiera:
+        - funkcję module-level: register(api[, name])
+        - klasę Plugin z metodą register(api)
+        - API.register(plugin) lub API.register(name, plugin)
+    EN: Perform registration via module function or Plugin class.
     """
-    return any(callable(getattr(obj, k, None)) for k in ("register", "add", "attach")) or hasattr(obj, "list_plugins")
+    # 1) Preferuj module-level register(...)
+    if spec.register and hasattr(mod, spec.register):
+        fn = getattr(mod, spec.register)
+        try:
+            fn(api, spec.name)  # register(api, name)
+        except TypeError:
+            fn(api)  # register(api)
+        return spec.name
 
+    # 2) Szukaj klasy Plugin z metodą register(api)
+    plugin_obj = None
+    if hasattr(mod, "Plugin"):
+        try:
+            plugin_obj = mod.Plugin()  # type: ignore[call-arg]
+        except Exception as e:  # pragma: no cover
+            log.warning("Cannot instantiate Plugin() for %s: %s", spec.name, e)
 
-def _derive_plugin_name(mod_name: str, base: str) -> str:
-    """
-    PL: Z 'plugins.pkg.src.main' → 'pkg'; zdejmuje prefix i sufiksy.
-    EN: From 'plugins.pkg.src.main' → 'pkg'; strips prefix and suffixes.
-    """
-    name = mod_name
-    if name.startswith(base + "."):
-        name = name[len(base) + 1 :]
-    for suffix in (".src.main", ".main"):
-        if name.endswith(suffix):
-            name = name[: -len(suffix)]
-    return name
+    if plugin_obj and hasattr(plugin_obj, "register"):
+        hook = getattr(api, "register", None) or getattr(api, "add", None) or getattr(api, "attach", None)
+        if not callable(hook):
+            raise RuntimeError("Plugin API is missing a register/add/attach method")
+        try:
+            hook(plugin_obj)               # API.register(plugin)
+        except TypeError:
+            hook(spec.name, plugin_obj)    # API.register(name, plugin)
+        return spec.name
 
-
-# === DISCOVERY ===
-def iter_plugin_module_names(base_package: str) -> list[str]:
-    """
-    PL: Odkryj moduły **i paczki** w `base_package`.
-        Dla paczek próbujemy entrypointów: `<pkg>.src.main` → `<pkg>.main` → `<pkg>`.
-
-    EN: Discover both **modules and packages** inside `base_package`.
-        For packages, try entrypoints: `<pkg>.src.main` → `<pkg>.main` → `<pkg>`.
-    """
-    pkg = importlib.import_module(base_package)
-    if not hasattr(pkg, "__path__"):
-        return []
-
-    prefix = f"{base_package}."
-    names: list[str] = []
-    for m in pkgutil.iter_modules(pkg.__path__, prefix):
-        if m.ispkg:
-            for ep in (f"{m.name}.src.main", f"{m.name}.main", m.name):
-                if _find_spec(ep):
-                    names.append(ep)
-                    break
-        else:
-            names.append(m.name)
-    return names
-
-
-# === LOADING ===
-def load_plugin(module_name: str | None, attr_name: str | None = None) -> BasePluginProtocol | None:
-    """
-    PL: Załaduj obiekt pluginu (styl obiektowy). Brak obiektu → None (spróbujemy styl modułowy).
-
-    EN: Load plugin object (object style). If missing → None (module style will be tried).
-    """
-    mod_name: str = _require_str(module_name, "module_name")
-    mod: ModuleType = importlib.import_module(mod_name)
-    attr: str = attr_name or "Plugin"
-    if hasattr(mod, attr):
-        obj: Any = getattr(mod, attr)
-        if callable(obj):
-            obj = obj()  # klasa/fabryka → instancja / class/factory → instance
-        if not isinstance(obj, BasePluginProtocol):
-            # Nie blokuj ostro — pozwól działać, ale daj komunikat wyżej.
-            raise TypeError(f"Object '{attr}' from '{mod_name}' does not satisfy BasePluginProtocol.")
-        return obj
+    # 3) Brak znanego sposobu rejestracji
+    log.warning("Plugin '%s' has neither register() nor Plugin.register()", spec.name)
     return None
 
 
-def _call_api_register(api: Any, name: str, plugin_obj: Any) -> bool:
+def load_all_plugins(api: Any) -> list[str]:
     """
-    PL: Wywołaj API.register z różnymi sygnaturami (register(plugin) || register(name, plugin)),
-        z fallbackami add/attach.
+    PL: Ładuje wszystkie pluginy i rejestruje je w przekazanym API.
+    EN: Loads all plugins and registers them into the provided API.
+    """
+    # Umożliwiamy wskazanie innego pakietu/katalogu (np. do testów) przez ENV
+    custom_dir = os.getenv("CERTEUS_PLUGINS_DIR")
+    base_dir = Path(custom_dir) if custom_dir else PLUGINS_DIR
 
-    EN: Invoke API.register with various signatures (register(plugin) || register(name, plugin)),
-        with add/attach fallbacks.
-    """
-    for hook in ("register", "add", "attach"):
-        fn = getattr(api, hook, None)
-        if not callable(fn):
-            continue
+    loaded: list[str] = []
+    for spec in _discover_plugins(base_dir):
         try:
-            sig = inspect.signature(fn)
-            params = list(sig.parameters.values())
-            if len(params) == 1:
-                fn(plugin_obj)
-                return True
-            elif len(params) >= 2:
-                fn(name, plugin_obj)
-                return True
-            else:
-                fn(plugin_obj)
-                return True
-        except Exception:
-            continue
-    return False
-
-
-# === MAIN ENTRY ===
-def load_all_plugins(
-    api_or_base: Any | None = None,
-    *,
-    attr_name: str | None = None,
-    base_package: str | None = None,
-    strict: bool = False,
-) -> Dict[str, Any]:
-    """
-    PL:
-      Przyjazny loader:
-        • load_all_plugins(api_instance)         ← typowo w testach
-        • load_all_plugins("plugins")
-        • load_all_plugins(base_package="plugins")
-      Zwraca {plugin_name: plugin_ref}. strict=True → wyjątek przy 1. błędzie.
-
-    EN:
-      Friendly loader:
-        • load_all_plugins(api_instance)         ← common in tests
-        • load_all_plugins("plugins")
-        • load_all_plugins(base_package="plugins")
-      Returns {plugin_name: plugin_ref}. strict=True → raise on first failure.
-    """
-    api = api_or_base if _is_api_like(api_or_base) else None
-    if isinstance(api_or_base, str):
-        base = api_or_base
-    else:
-        base = base_package or os.getenv("CERTEUS_PLUGIN_PKG", "plugins")
-
-    loaded: Dict[str, Any] = {}
-    errors: Dict[str, Exception] = {}
-
-    for mod_name in iter_plugin_module_names(base):
-        plugin_name = _derive_plugin_name(mod_name, base)
-        try:
-            mod = importlib.import_module(mod_name)
-
-            # 1) Module style: def register(api): ...
-            if api is not None and callable(getattr(mod, "register", None)):
-                try:
-                    mod.register(api)  # preferowane
-                except TypeError:
-                    # niektórzy chcą register(api, name) — obsłuż
-                    try:
-                        mod.register(api, plugin_name)
-                    except Exception:
-                        if strict:
-                            raise
-                loaded[plugin_name] = mod
-                continue
-
-            # 2) Object style: class Plugin: ...
-            plugin_obj = load_plugin(mod_name, attr_name=attr_name)
-            if plugin_obj is not None:
-                if api is not None and has_register(plugin_obj):
-                    plugin_obj.register(api)  # ← Pylance OK dzięki TypeGuard
-                if api is not None:
-                    _call_api_register(api, plugin_name, plugin_obj)
-                loaded[plugin_name] = plugin_obj
-                continue
-
-            # 3) Fallback: zwróć moduł do inspekcji
-            loaded[plugin_name] = mod
-
-        except Exception as exc:  # noqa: BLE001
-            if strict:
-                raise
-            errors[plugin_name] = exc  # do ewentualnego logowania
+            mod = _import_module(spec.module)
+            name = _register_into_api(api, spec, mod)
+            if name:
+                loaded.append(name)
+                log.info("Plugin loaded: %s (%s)", name, spec.module)
+        except ModuleNotFoundError as e:
+            log.warning("Module not found for plugin '%s': %s", spec.name, e)
+        except Exception as e:  # pragma: no cover
+            log.warning("Failed to load plugin '%s': %s", spec.name, e)
 
     return loaded
+
+# --- Helpery do introspekcji punktu rejestracji pluginu / Plugin registration helpers ---
+def has_register(candidate: Any) -> bool:
+    """
+    PL: Sprawdza, czy obiekt/moduł udostępnia punkt rejestracji pluginu.
+        Wspierane style:
+          1) Funkcja modułowa:    register(api)
+          2) Klasa Plugin:        class Plugin: def register(self, api) -> None
+    EN: Checks whether the given object/module exposes a plugin registration entrypoint.
+        Supported styles:
+          1) Module-level function: register(api)
+          2) Plugin class:          class Plugin: def register(self, api) -> None
+    """
+    try:
+        reg = getattr(candidate, "register", None)
+        if callable(reg):
+            return True
+        plugin_cls = getattr(candidate, "Plugin", None)
+        if plugin_cls is not None and callable(getattr(plugin_cls, "register", None)):
+            return True
+        return False
+    except Exception:
+        return False
+
+
+# Zadeklaruj publiczny interfejs modułu / Public module API
+__all__ = ["PluginSpec", "load_all_plugins", "has_register"]
