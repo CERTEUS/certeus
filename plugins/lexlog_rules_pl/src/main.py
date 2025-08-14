@@ -9,8 +9,60 @@
 from __future__ import annotations
 
 from typing import Any, Final
+from collections.abc import MutableMapping
 
 PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
+
+
+def _safe_register(api: Any, plugin: Any, name: str) -> None:
+    """
+    PL: Rejestracja odporna na różne interfejsy API.
+        Obsługujemy kolejno:
+          • register_plugin(name, plugin)
+          • add_plugin(name, plugin)
+          • register(plugin) / register(name, plugin)
+          • add(plugin)      / add(name, plugin)
+          • attach(plugin)   / attach(name, plugin)
+        Fallback: mapy typu api.plugins / api.registry / api.plugin_registry.
+
+    EN: Registration resilient to various API shapes.
+        We support, in order:
+          • register_plugin(name, plugin)
+          • add_plugin(name, plugin)
+          • register(plugin) / register(name, plugin)
+          • add(plugin)      / add(name, plugin)
+          • attach(plugin)   / attach(name, plugin)
+        Fallback: dict-like registries api.plugins / api.registry / api.plugin_registry.
+    """
+    candidates: list[tuple[str, tuple[Any, ...]]] = [
+        ("register_plugin", (name, plugin)),
+        ("add_plugin", (name, plugin)),
+        ("register", (plugin,)),
+        ("register", (name, plugin)),
+        ("add", (plugin,)),
+        ("add", (name, plugin)),
+        ("attach", (plugin,)),
+        ("attach", (name, plugin)),
+    ]
+
+    for method, args in candidates:
+        fn = getattr(api, method, None)
+        if callable(fn):
+            try:
+                fn(*args)
+                return
+            except TypeError:
+                # Spróbuj kolejny wariant sygnatury
+                continue
+
+    # Fallback: bezpośrednie wpisanie do mapy rejestru
+    for attr in ("plugins", "registry", "plugin_registry"):
+        reg = getattr(api, attr, None)
+        if isinstance(reg, dict) or isinstance(reg, MutableMapping):
+            reg[name] = plugin
+            return
+
+    raise RuntimeError("No compatible registration hook or registry mapping found on Plugin API")
 
 
 class Plugin:
@@ -34,35 +86,17 @@ class Plugin:
 
     def register(self, api: Any) -> None:
         """
-        PL: Rejestracja w rdzeniowym API: obsłuż API.register(plugin) i API.register(name, plugin).
-        EN: Register into core API: support API.register(plugin) and API.register(name, plugin).
+        PL: Rejestracja w rdzeniu – odporna na różne kształty API.
+        EN: Core registration – resilient to various API shapes.
         """
-        hook = getattr(api, "register", None) or getattr(api, "add", None) or getattr(api, "attach", None)
-        if not callable(hook):
-            raise RuntimeError("Plugin API lacks register/add/attach method")
-        try:
-            hook(self)  # register(plugin)
-        except TypeError:
-            hook(PLUGIN_NAME, self)  # register(name, plugin)
+        _safe_register(api, self, PLUGIN_NAME)
 
 
 def register(api: Any, name: str | None = None) -> None:
     """
     PL: Styl modułowy (używany przez loader, jeśli w plugin.yaml podasz 'register: register').
-    EN: Module-level style (used by loader when 'register: register' in plugin.yaml).
+    EN: Module-level style (used by loader when 'register: register' is present in plugin.yaml).
     """
     plugin = Plugin()
     plugin.setup()
-    hook = getattr(api, "register", None) or getattr(api, "add", None) or getattr(api, "attach", None)
-    if not callable(hook):
-        raise RuntimeError("Plugin API lacks register/add/attach method")
-    if name is not None:
-        try:
-            hook(name, plugin)
-            return
-        except TypeError:
-            pass
-    try:
-        hook(plugin)
-    except TypeError:
-        hook(PLUGIN_NAME, plugin)
+    _safe_register(api, plugin, name or PLUGIN_NAME)
