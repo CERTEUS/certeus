@@ -1,15 +1,39 @@
 # CERTEUS: line-endings policy
 * text=auto
 
-# Force LF for source files
-*.py   text eol=lf
-*.md   text eol=lf
-*.json text eol=lf
-*.yml  text eol=lf
-*.yaml text eol=lf
-*.toml text eol=lf
-*.smt2 text eol=lf
+# Source files -> LF
+*.py     text eol=lf
+*.md     text eol=lf
+*.json   text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.toml   text eol=lf
+*.lock   text eol=lf
+*.csv    text eol=lf
+*.txt    text eol=lf
+*.lex    text eol=lf
+*.sh     text eol=lf
+Makefile text eol=lf
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+.editorconfig  text eol=lf
+CODEOWNERS     text eol=lf
+LICENSE        text eol=lf
 
-# Force CRLF for Windows scripts
+# Proof artefacts -> LF
+*.smt2 text eol=lf
+*.lfsc text eol=lf
+*.drat text eol=lf
+
+# Windows scripts -> CRLF
 *.ps1  text eol=crlf
 *.bat  text eol=crlf
+
+# Binary -> never touch
+*.pdf  binary
+*.docx binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.zip  binary
