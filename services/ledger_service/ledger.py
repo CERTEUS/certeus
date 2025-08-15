@@ -1,128 +1,1 @@
-# +-------------------------------------------------------------+
-# |                   CERTEUS - Ledger Service                  |
-# +-------------------------------------------------------------+
-# | PLIK / FILE: services/ledger_service/ledger.py              |
-# | ROLA / ROLE: Niezmienna księga pochodzenia (hash chaining). |
-# +-------------------------------------------------------------+
-
-from __future__ import annotations
-
-import json
-import logging
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
-from hashlib import sha256
-from threading import Lock
-from typing import Any, Final, Literal
-
-log = logging.getLogger("certeus.ledger")
-if not log.handlers:  # idempotent
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-
-EventType = Literal["INPUT_INGESTION"]
-
-
-@dataclass(frozen=True, slots=True)
-class _LedgerRecord:
-    """
-    PL: Kanoniczna reprezentacja zapisu księgi.
-    EN: Canonical representation of a ledger record.
-    """
-    event_id: int
-    type: EventType
-    case_id: str
-    document_hash: str
-    timestamp: str  # RFC3339
-    chain_prev: str | None
-    chain_self: str
-
-
-def _now_iso() -> str:
-    """PL: Czas UTC ISO-8601. EN: UTC ISO-8601 time."""
-    return (
-        datetime.now(timezone.utc)
-        .replace(microsecond=0)
-        .isoformat()
-        .replace("+00:00", "Z")
-    )
-
-
-def _canonical(obj: dict[str, Any]) -> str:
-    """PL/EN: Deterministyczna serializacja JSON (sort keys)."""
-    return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-
-
-class LedgerService:
-    """
-    PL: Serwis księgi z łańcuchowaniem hashy i blokadą wątkową (append-only).
-    EN: Append-only ledger with hash chaining and thread-safety.
-    """
-
-    _GENESIS: Final[str] = "GENESIS"
-
-    def __init__(self) -> None:
-        self._lock: Final[Lock] = Lock()
-        self._records: list[_LedgerRecord] = []
-        self._last_hash: str | None = None
-        log.info("LedgerService initialized (in-memory, append-only).")
-
-    # --- API ZDARZEŃ / EVENT API ---
-    def record_input(self, case_id: str, document_hash: str) -> dict[str, Any]:
-        """
-        PL: Rejestruje przyjęcie dokumentu do systemu.
-        EN: Records ingestion of a document into the system.
-        """
-        # Pylance miał rację: isinstance(str, str) zbędne — mamy adnotacje typów.
-        case_id = case_id.strip()
-        document_hash = document_hash.strip()
-
-        if not case_id:
-            raise ValueError("case_id must be a non-empty string.")
-        if not document_hash:
-            raise ValueError("document_hash must be a non-empty string.")
-
-        payload = {
-            "type": "INPUT_INGESTION",
-            "case_id": case_id,
-            "document_hash": document_hash,
-        }
-        return self._append(payload)
-
-    # --- ODCZYT / READ ---
-    def get_records_for_case(self, case_id: str) -> list[dict[str, Any]]:
-        """PL: Zwraca kopie zapisów dla danej sprawy. EN: Returns copies for given case."""
-        with self._lock:
-            out: list[dict[str, Any]] = []
-            for rec in self._records:
-                if rec.case_id == case_id:
-                    out.append(dict(asdict(rec)))
-            return out
-
-    # --- CORE APPEND ---
-    def _append(self, core: dict[str, Any]) -> dict[str, Any]:
-        """PL: Dodaje zdarzenie; nadaje ID/czas; łańcuchuje hash. EN: Append event; chain hash."""
-        with self._lock:
-            event_id = len(self._records) + 1
-            timestamp = _now_iso()
-            prev = self._last_hash or self._GENESIS
-
-            canon = _canonical({"event_id": event_id, "timestamp": timestamp, **core})
-            digest = sha256((prev + "|" + canon).encode("utf-8")).hexdigest()
-
-            record = _LedgerRecord(
-                event_id=event_id,
-                type=core["type"],
-                case_id=core["case_id"],
-                document_hash=core["document_hash"],
-                timestamp=timestamp,
-                chain_prev=None if self._last_hash is None else self._last_hash,
-                chain_self=digest,
-            )
-            self._records.append(record)
-            self._last_hash = digest
-            log.info("LEDGER append: #%s %s %s", event_id, record.type, record.case_id)
-            return dict(asdict(record))
-
-
-# === INSTANCJA SINGLETON / SINGLETON INSTANCE ===
-ledger_service = LedgerService()
+# +-------------------------------------------------------------+# |                          CERTEUS                            |# +-------------------------------------------------------------+# | FILE: services/ledger_service/ledger.py                   |# | ROLE: Project module.                                       |# | PLIK: services/ledger_service/ledger.py                   |# | ROLA: Moduł projektu.                                       |# +-------------------------------------------------------------+"""PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.EN: CERTEUS module – please complete the functional description."""# +-------------------------------------------------------------+# |                   CERTEUS - Ledger Service                   |# +-------------------------------------------------------------+# | PLIK / FILE: services/ledger_service/ledger.py               |# | ROLA / ROLE: Niezmienny rejestr zdarzeń + łańcuchowanie     |# |              hashy i tworzenie Provenance Receipt.           |# |              Immutable event log with hash-chaining and      |# |              Provenance Receipt generation.                  |# +-------------------------------------------------------------+from __future__ import annotationsfrom dataclasses import dataclass, asdictfrom datetime import datetime, timezonefrom hashlib import sha256from typing import Any, Dict, List, Optionaldef _utc_now_iso() -> str:    return datetime.now(timezone.utc).isoformat()def _hash_str(s: str) -> str:    return sha256(s.encode("utf-8")).hexdigest()@dataclass(slots=True)class LedgerEntry:    """    PL: Pojedynczy wpis w księdze z łańcuchowaniem hashy.    EN: Single ledger entry with hash-chaining.    """    event_id: int    type: str    case_id: str    document_hash: Optional[str]    timestamp: str    chain_prev: Optional[str]    chain_self: strclass LedgerService:    """    PL: Serwis do zarządzania niezmiennym rejestrem zdarzeń.    EN: Service for managing an immutable event ledger.    """    def __init__(self) -> None:        # In-memory, append-only        self._records: List[LedgerEntry] = []        import logging        logging.getLogger("certeus.ledger").info(            "LedgerService initialized (in-memory, append-only)."        )    # --- Internals ---------------------------------------------------------    def _next_event_id(self) -> int:        return len(self._records) + 1    def _current_tip(self) -> Optional[str]:        return self._records[-1].chain_self if self._records else None    def _compute_chain_self(        self,        *,        chain_prev: Optional[str],        case_id: str,        event_type: str,        document_hash: Optional[str],        timestamp: str,    ) -> str:        # PL: Minimalistyczny, stabilny materiał do haszowania.        # EN: Minimal, stable material to hash.        payload = "|".join(            [                chain_prev or "",                case_id,                event_type,                document_hash or "",                timestamp,            ]        )        return _hash_str(payload)    # --- Public API --------------------------------------------------------    def record_input(self, case_id: str, document_hash: str) -> Dict[str, Any]:        """        PL: Rejestruje przyjęcie nowego dokumentu (INPUT_INGESTION).        EN: Records ingestion of a new document (INPUT_INGESTION).        """        ts = _utc_now_iso()        prev = self._current_tip()        chain_self = self._compute_chain_self(            chain_prev=prev,            case_id=case_id,            event_type="INPUT_INGESTION",            document_hash=document_hash,            timestamp=ts,        )        entry = LedgerEntry(            event_id=self._next_event_id(),            type="INPUT_INGESTION",            case_id=case_id,            document_hash=document_hash,            timestamp=ts,            chain_prev=prev,            chain_self=chain_self,        )        self._records.append(entry)        return asdict(entry)    def get_records_for_case(self, case_id: str) -> List[Dict[str, Any]]:        """        PL: Zwraca wszystkie wpisy dla danego case_id.        EN: Returns all entries for a given case_id.        """        return [asdict(rec) for rec in self._records if rec.case_id == case_id]    def build_provenance_receipt(self, case_id: str) -> Dict[str, Any]:        """        PL: Buduje obiekt Provenance Receipt zgodny ze schematem            schemas/provenance_receipt_v1.json (wypełnia pola minimalnie).        EN: Builds a Provenance Receipt object compatible with            schemas/provenance_receipt_v1.json (minimal fields).        """        entries = [rec for rec in self._records if rec.case_id == case_id]        if not entries:            raise ValueError(f"No ledger entries for case_id={case_id!r}")        # assumptions_hash: skrót z (event_id, chain_self) dla stabilności        concatenated = "|".join(f"{e.event_id}:{e.chain_self}" for e in entries)        assumptions_hash = _hash_str(concatenated)        final_hash = entries[-1].chain_self        ts = entries[-1].timestamp        receipt: Dict[str, Any] = {            "case_id": case_id,            "inputs": {                "lexlog_rule_version": "pl.lexlog/1.0.0",                "assumptions_hash": assumptions_hash,            },            "solvers": {                "z3": {},                "cvc5": {},            },            "mismatch": False,            "final_hash": final_hash,            "timestamp": ts,        }        return receipt# Singleton instanceledger_service = LedgerService()

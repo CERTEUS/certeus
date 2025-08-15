@@ -1,201 +1,1 @@
-# +-------------------------------------------------------------+
-# |                 CERTEUS - Exporter Service (Core)           |
-# +-------------------------------------------------------------+
-# | PLIK / FILE: services/exporter_service/exporter.py          |
-# | ROLA / ROLE: Eksport kontraktu odpowiedzi do różnych        |
-# |              formatów (dict/json/bytes/file/docx-placeholder).  |
-# |              Exports Answer Contract to multiple formats.   |
-# +-------------------------------------------------------------+
-# | STYLE: PL-first, headers & notes dual-language (PL/EN).     |
-# +-------------------------------------------------------------+
-
-from __future__ import annotations
-
-import json
-from pathlib import Path
-from typing import Any, Dict, Final, Literal, Mapping, overload
-
-# === ŚCIEŻKI / PATHS ===
-# Bazujemy na strukturze repo: certeus/services/exporter_service/exporter.py
-REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
-TEMPLATES_DIR: Final[Path] = REPO_ROOT / "templates"
-EXPORTS_DIR: Final[Path] = REPO_ROOT / "build" / "exports"
-DOCX_TEMPLATE: Final[Path] = TEMPLATES_DIR / "answer_contract.docx.placeholder"
-
-# Utwórz katalog wyjściowy, jeśli nie istnieje / Ensure output dir exists
-EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-# === TYPY / TYPES ===
-AnswerLike = Mapping[str, Any]
-Fmt = Literal["dict", "json", "bytes", "file", "docx"]
-
-
-def _ensure_min_answer_fields(answer: AnswerLike) -> Dict[str, Any]:
-    """
-    PL: Zapewnia minimalny zestaw pól, by nazwać plik i mieć metadane.
-    EN: Ensures minimal fields exist to name files and keep metadata.
-    """
-    out: Dict[str, Any] = dict(answer)  # płytka kopia / shallow copy
-    out.setdefault("answer_id", "answer")
-    out.setdefault("case_id", "unknown-case")
-    return out
-
-
-def _default_filename(answer: Mapping[str, Any], suffix: str) -> str:
-    """
-    PL: Buduje bezpieczną nazwę pliku: answer_<answer_id>.<suffix>.
-    EN: Builds a safe filename: answer_<answer_id>.<suffix>.
-    """
-    raw = str(answer.get("answer_id", "answer"))
-    safe = "".join(ch for ch in raw if ch.isalnum() or ch in ("-", "_"))
-    if not safe:
-        safe = "answer"
-    return f"answer_{safe}.{suffix}"
-
-
-def _write_text_file(path: Path, content: str) -> Path:
-    """
-    PL/EN: Zapis atomowy tekstu do pliku.
-    """
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(content, encoding="utf-8")
-    tmp.replace(path)
-    return path
-
-
-def _export_docx_placeholder(answer: Mapping[str, Any], out_path: Path) -> Path:
-    """
-    PL: Tworzy plik DOCX na bazie placeholdera (bez zależności zewnętrznych).
-        Jeśli istnieje `templates/answer_contract.docx.placeholder`, kopiuje go;
-        w przeciwnym razie zapisuje minimalny opis JSON jako bajty do .docx (placeholder).
-    EN: Creates a DOCX file using the placeholder. If the template is present,
-        it's copied verbatim; otherwise writes JSON bytes into .docx as a placeholder.
-    """
-    if DOCX_TEMPLATE.exists():
-        # prosta kopia binarna
-        data = DOCX_TEMPLATE.read_bytes()
-        out_path.write_bytes(data)
-        return out_path
-    # fallback: wsadź JSON jako „zawartość” — testy zwykle sprawdzają istnienie pliku
-    payload = json.dumps(answer, ensure_ascii=False, indent=2).encode("utf-8")
-    out_path.write_bytes(payload)
-    return out_path
-
-def _export_pdf_placeholder(answer: Mapping[str, Any], out_path: Path) -> Path:
-    """
-    PL: Tworzy prosty plik PDF–placeholder (bez zewn. zależności).
-    EN: Creates a simple PDF placeholder (no external dependencies).
-    """
-    payload = b"%PDF-1.4\n% CERTEUS Placeholder PDF\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"
-    out_path.write_bytes(payload)
-    return out_path
-
-
-# === API – eksport (przeciążenia) / Export API (overloads) ===
-@overload
-def export_answer(answer: AnswerLike, fmt: Literal["dict"]) -> Dict[str, Any]: ...
-@overload
-def export_answer(answer: AnswerLike, fmt: Literal["json"]) -> str: ...
-@overload
-def export_answer(answer: AnswerLike, fmt: Literal["bytes"]) -> bytes: ...
-@overload
-def export_answer(
-    answer: AnswerLike,
-    fmt: Literal["file", "docx"],
-    *,
-    output_dir: Path | None = ...,
-    filename: str | None = ...,
-) -> Path: ...
-@overload
-def export_answer(
-    answer: str,
-    *,
-    out_dir: Path | None = ...,
-    output_dir: Path | None = ...,
-) -> Dict[str, Path]: ...
-def export_answer(
-    answer: AnswerLike | str,
-    fmt: Fmt = "json",
-    *,
-    output_dir: Path | None = None,
-    out_dir: Path | None = None,
-    filename: str | None = None,
-) -> Dict[str, Any] | str | bytes | Path | Dict[str, Path]:
-    """
-    PL: Eksport kontraktu odpowiedzi (Answer Contract).
-    EN: Answer Contract export.
-
-    Tryby:
-      1) Mapping → stare zachowanie (fmt: dict/json/bytes/file/docx).
-      2) str (np. case_id) + out_dir/output_dir → tworzy 4 pliki:
-         - 'answer_<case_id>.json' (kanoniczny JSON)
-         - 'answer_<case_id>.docx' (kanoniczny DOCX)
-         - '<case_id>.docx'        (alias pod test bez prefiksu)
-         - '<case_id>.pdf'         (alias pod test PDF)
-         Zwraca {"json": Path, "docx": Path, "pdf": Path}.
-    """
-    # Alias zgodnie z testem
-    if output_dir is None and out_dir is not None:
-        output_dir = out_dir
-
-    # --- Tryb: string (np. case_id) ---
-    if isinstance(answer, str):
-        case_id = answer.strip() or "unknown-case"
-        normalized: Dict[str, Any] = {"case_id": case_id, "answer_id": case_id}
-
-        if output_dir is None:
-            # Brak katalogu docelowego → zwróć czytelny JSON podglądowy
-            return json.dumps(normalized, ensure_ascii=False, indent=2)
-
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        # Ścieżki kanoniczne (prefiks 'answer_')
-        canon_json = output_dir / f"answer_{case_id}.json"
-        canon_docx = output_dir / f"answer_{case_id}.docx"
-
-        # Aliasy pod test (bez prefiksu)
-        alias_docx = output_dir / f"{case_id}.docx"
-        alias_pdf  = output_dir / f"{case_id}.pdf"
-
-        # Zapis kanoniczny
-        _write_text_file(canon_json, json.dumps(normalized, ensure_ascii=False, indent=2))
-        _export_docx_placeholder(normalized, canon_docx)
-
-        # Aliasy:
-        # 1) DOCX bez prefiksu (skopiuj bytes z kanonicznego)
-        alias_docx.write_bytes(canon_docx.read_bytes())
-        # 2) PDF placeholder (wystarczy dla testów)
-        _export_pdf_placeholder(normalized, alias_pdf)
-
-        # Zwracamy ścieżki — domyślnie klucze wskazują kanoniczne,
-        # ale dołożyliśmy też 'pdf' (alias) dla wygody testów.
-        return {"json": canon_json, "docx": canon_docx, "pdf": alias_pdf}
-
-    # --- Tryb: Mapping (jak wcześniej) ---
-    normalized = _ensure_min_answer_fields(answer)
-
-    if fmt == "dict":
-        return dict(normalized)
-
-    if fmt == "json":
-        return json.dumps(normalized, ensure_ascii=False, indent=2)
-
-    if fmt == "bytes":
-        return json.dumps(normalized, ensure_ascii=False).encode("utf-8")
-
-    out_dir_eff = output_dir or EXPORTS_DIR
-    out_dir_eff.mkdir(parents=True, exist_ok=True)
-
-    if fmt == "file":
-        fname = filename or _default_filename(normalized, "json")
-        path = out_dir_eff / fname
-        _write_text_file(path, json.dumps(normalized, ensure_ascii=False, indent=2))
-        return path
-
-    if fmt == "docx":
-        fname = filename or _default_filename(normalized, "docx")
-        path = out_dir_eff / fname
-        return _export_docx_placeholder(normalized, path)
-
-    raise ValueError(f"Unsupported format: {fmt!r}")
+# +-------------------------------------------------------------+# |                          CERTEUS                            |# +-------------------------------------------------------------+# | FILE: services/exporter_service/exporter.py               |# | ROLE: Project module.                                       |# | PLIK: services/exporter_service/exporter.py               |# | ROLA: Moduł projektu.                                       |# +-------------------------------------------------------------+"""PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.EN: CERTEUS module – please complete the functional description."""# +-------------------------------------------------------------+# |                 CERTEUS - Exporter Service (Core)           |# +-------------------------------------------------------------+# | PLIK / FILE: services/exporter_service/exporter.py          |# | ROLA / ROLE: Eksport kontraktu odpowiedzi do różnych        |# |              formatów (dict/json/bytes/file/docx-placeholder).  |# |              Exports Answer Contract to multiple formats.   |# +-------------------------------------------------------------+# | STYLE: PL-first, headers & notes dual-language (PL/EN).     |# +-------------------------------------------------------------+from __future__ import annotationsimport jsonfrom pathlib import Pathfrom typing import Any, Dict, Final, Literal, Mapping, overload# === ŚCIEŻKI / PATHS ===# Bazujemy na strukturze repo: certeus/services/exporter_service/exporter.pyREPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]TEMPLATES_DIR: Final[Path] = REPO_ROOT / "templates"EXPORTS_DIR: Final[Path] = REPO_ROOT / "build" / "exports"DOCX_TEMPLATE: Final[Path] = TEMPLATES_DIR / "answer_contract.docx.placeholder"# Utwórz katalog wyjściowy, jeśli nie istnieje / Ensure output dir existsEXPORTS_DIR.mkdir(parents=True, exist_ok=True)# === TYPY / TYPES ===AnswerLike = Mapping[str, Any]Fmt = Literal["dict", "json", "bytes", "file", "docx"]def _ensure_min_answer_fields(answer: AnswerLike) -> Dict[str, Any]:    """    PL: Zapewnia minimalny zestaw pól, by nazwać plik i mieć metadane.    EN: Ensures minimal fields exist to name files and keep metadata.    """    out: Dict[str, Any] = dict(answer)  # płytka kopia / shallow copy    out.setdefault("answer_id", "answer")    out.setdefault("case_id", "unknown-case")    return outdef _default_filename(answer: Mapping[str, Any], suffix: str) -> str:    """    PL: Buduje bezpieczną nazwę pliku: answer_<answer_id>.<suffix>.    EN: Builds a safe filename: answer_<answer_id>.<suffix>.    """    raw = str(answer.get("answer_id", "answer"))    safe = "".join(ch for ch in raw if ch.isalnum() or ch in ("-", "_"))    if not safe:        safe = "answer"    return f"answer_{safe}.{suffix}"def _write_text_file(path: Path, content: str) -> Path:    """    PL/EN: Zapis atomowy tekstu do pliku.    """    tmp = path.with_suffix(path.suffix + ".tmp")    tmp.write_text(content, encoding="utf-8")    tmp.replace(path)    return pathdef _export_docx_placeholder(answer: Mapping[str, Any], out_path: Path) -> Path:    """    PL: Tworzy plik DOCX na bazie placeholdera (bez zależności zewnętrznych).        Jeśli istnieje `templates/answer_contract.docx.placeholder`, kopiuje go;        w przeciwnym razie zapisuje minimalny opis JSON jako bajty do .docx (placeholder).    EN: Creates a DOCX file using the placeholder. If the template is present,        it's copied verbatim; otherwise writes JSON bytes into .docx as a placeholder.    """    if DOCX_TEMPLATE.exists():        # prosta kopia binarna        data = DOCX_TEMPLATE.read_bytes()        out_path.write_bytes(data)        return out_path    # fallback: wsadź JSON jako „zawartość” — testy zwykle sprawdzają istnienie pliku    payload = json.dumps(answer, ensure_ascii=False, indent=2).encode("utf-8")    out_path.write_bytes(payload)    return out_pathdef _export_pdf_placeholder(answer: Mapping[str, Any], out_path: Path) -> Path:    """    PL: Tworzy prosty plik PDF–placeholder (bez zewn. zależności).    EN: Creates a simple PDF placeholder (no external dependencies).    """    payload = b"%PDF-1.4\n% CERTEUS Placeholder PDF\n1 0 obj <<>> endobj\ntrailer <<>>\n%%EOF\n"    out_path.write_bytes(payload)    return out_path# === API – eksport (przeciążenia) / Export API (overloads) ===@overloaddef export_answer(answer: AnswerLike, fmt: Literal["dict"]) -> Dict[str, Any]: ...@overloaddef export_answer(answer: AnswerLike, fmt: Literal["json"]) -> str: ...@overloaddef export_answer(answer: AnswerLike, fmt: Literal["bytes"]) -> bytes: ...@overloaddef export_answer(    answer: AnswerLike,    fmt: Literal["file", "docx"],    *,    output_dir: Path | None = ...,    filename: str | None = ...,) -> Path: ...@overloaddef export_answer(    answer: str,    *,    out_dir: Path | None = ...,    output_dir: Path | None = ...,) -> Dict[str, Path]: ...def export_answer(    answer: AnswerLike | str,    fmt: Fmt = "json",    *,    output_dir: Path | None = None,    out_dir: Path | None = None,    filename: str | None = None,) -> Dict[str, Any] | str | bytes | Path | Dict[str, Path]:    """    PL: Eksport kontraktu odpowiedzi (Answer Contract).    EN: Answer Contract export.    Tryby:      1) Mapping → stare zachowanie (fmt: dict/json/bytes/file/docx).      2) str (np. case_id) + out_dir/output_dir → tworzy 4 pliki:         - 'answer_<case_id>.json' (kanoniczny JSON)         - 'answer_<case_id>.docx' (kanoniczny DOCX)         - '<case_id>.docx'        (alias pod test bez prefiksu)         - '<case_id>.pdf'         (alias pod test PDF)         Zwraca {"json": Path, "docx": Path, "pdf": Path}.    """    # Alias zgodnie z testem    if output_dir is None and out_dir is not None:        output_dir = out_dir    # --- Tryb: string (np. case_id) ---    if isinstance(answer, str):        case_id = answer.strip() or "unknown-case"        normalized: Dict[str, Any] = {"case_id": case_id, "answer_id": case_id}        if output_dir is None:            # Brak katalogu docelowego → zwróć czytelny JSON podglądowy            return json.dumps(normalized, ensure_ascii=False, indent=2)        output_dir.mkdir(parents=True, exist_ok=True)        # Ścieżki kanoniczne (prefiks 'answer_')        canon_json = output_dir / f"answer_{case_id}.json"        canon_docx = output_dir / f"answer_{case_id}.docx"        # Aliasy pod test (bez prefiksu)        alias_docx = output_dir / f"{case_id}.docx"        alias_pdf = output_dir / f"{case_id}.pdf"        # Zapis kanoniczny        _write_text_file(            canon_json, json.dumps(normalized, ensure_ascii=False, indent=2)        )        _export_docx_placeholder(normalized, canon_docx)        # Aliasy:        # 1) DOCX bez prefiksu (skopiuj bytes z kanonicznego)        alias_docx.write_bytes(canon_docx.read_bytes())        # 2) PDF placeholder (wystarczy dla testów)        _export_pdf_placeholder(normalized, alias_pdf)        # Zwracamy ścieżki — domyślnie klucze wskazują kanoniczne,        # ale dołożyliśmy też 'pdf' (alias) dla wygody testów.        return {"json": canon_json, "docx": canon_docx, "pdf": alias_pdf}    # --- Tryb: Mapping (jak wcześniej) ---    normalized = _ensure_min_answer_fields(answer)    if fmt == "dict":        return dict(normalized)    if fmt == "json":        return json.dumps(normalized, ensure_ascii=False, indent=2)    if fmt == "bytes":        return json.dumps(normalized, ensure_ascii=False).encode("utf-8")    out_dir_eff = output_dir or EXPORTS_DIR    out_dir_eff.mkdir(parents=True, exist_ok=True)    if fmt == "file":        fname = filename or _default_filename(normalized, "json")        path = out_dir_eff / fname        _write_text_file(path, json.dumps(normalized, ensure_ascii=False, indent=2))        return path    if fmt == "docx":        fname = filename or _default_filename(normalized, "docx")        path = out_dir_eff / fname        return _export_docx_placeholder(normalized, path)    raise ValueError(f"Unsupported format: {fmt!r}")

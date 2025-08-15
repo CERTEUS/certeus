@@ -1,78 +1,1 @@
-# +-------------------------------------------------------------+
-# |                     CERTEUS - Ledger API                    |
-# +-------------------------------------------------------------+
-# | PLIK / FILE: services/api_gateway/routers/ledger.py         |
-# | ROLA / ROLE: Router FastAPI dla operacji na księdze.        |
-# |              FastAPI router for ledger operations.          |
-# +-------------------------------------------------------------+
-
-from __future__ import annotations
-
-from typing import Any, Annotated
-
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field, StringConstraints
-
-from services.ledger_service.ledger import ledger_service
-
-router = APIRouter()
-
-
-# === MODELE WEJ./WYJ. / IO MODELS ===
-class RecordInputRequest(BaseModel):
-    """
-    PL: Wejście do rejestracji nowego dokumentu w księdze.
-    EN: Input payload to record a new document in the ledger.
-    """
-    # Pydantic v2: ograniczenia przez StringConstraints w Annotated
-    case_id: Annotated[
-        str,
-        StringConstraints(min_length=1, strip_whitespace=True),
-        Field(description="PL: Id sprawy. / EN: Case identifier.")
-    ]
-    document_hash: Annotated[
-        str,
-        # np. 'sha256:<64-hex>' — możesz zaostrzyć/rozluźnić pattern wedle potrzeb
-        StringConstraints(pattern=r"^sha256:[A-Fa-f0-9]{64}$", strip_whitespace=True),
-        Field(description="PL: Np. 'sha256:<hex64>'. / EN: e.g. 'sha256:<hex64>'.")
-    ]
-
-
-class LedgerRecord(BaseModel):
-    """
-    PL: Pojedynczy zapis księgi.
-    EN: Single ledger record.
-    """
-    event_id: int
-    type: str
-    case_id: str
-    document_hash: str
-    timestamp: str
-    chain_prev: str | None = None
-    chain_self: str
-
-
-@router.post("/record-input", response_model=LedgerRecord)
-def api_record_input(payload: RecordInputRequest) -> dict[str, Any]:
-    """
-    PL: Zarejestruj przyjęcie dokumentu w księdze.
-    EN: Record document ingestion in the ledger.
-    """
-    # Pylance-clean: typy to już zwykłe 'str' — bez cast(...)
-    try:
-        entry = ledger_service.record_input(
-            case_id=payload.case_id,
-            document_hash=payload.document_hash,
-        )
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)) from e
-    return entry
-
-
-@router.get("/{case_id}/records", response_model=list[LedgerRecord])
-def api_get_case_records(case_id: str) -> list[dict[str, Any]]:
-    """
-    PL: Pobierz wszystkie zapisy dla podanej sprawy.
-    EN: Fetch all records for the given case.
-    """
-    return ledger_service.get_records_for_case(case_id=case_id)
+# +-------------------------------------------------------------+# |                          CERTEUS                            |# +-------------------------------------------------------------+# | FILE: services/api_gateway/routers/ledger.py              |# | ROLE: Project module.                                       |# | PLIK: services/api_gateway/routers/ledger.py              |# | ROLA: Moduł projektu.                                       |# +-------------------------------------------------------------+"""PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.EN: CERTEUS module – please complete the functional description."""# +-------------------------------------------------------------+# |                    CERTEUS - Ledger API Router              |# +-------------------------------------------------------------+# | PLIK / FILE: services/api_gateway/routers/ledger.py         |# | ROLA / ROLE: Publiczne API dla księgi (record/list/prove).  |# |              Public API for the ledger (record/list/prove). |# +-------------------------------------------------------------+from __future__ import annotationsimport jsonfrom pathlib import Pathfrom typing import Anyfrom fastapi import APIRouter, HTTPExceptionfrom pydantic import BaseModel, Fieldfrom services.ledger_service.ledger import ledger_service# Walidacja schematu (miękka zależność)try:    from jsonschema import Draft7Validator  # type: ignoreexcept Exception:  # pragma: no cover    Draft7Validator = None  # type: ignore[assignment]router = APIRouter()# Ścieżki repoREPO_ROOT = Path(__file__).resolve().parents[3]SCHEMAS_DIR = REPO_ROOT / "schemas"# Inicjalizacja walidatora – nie jako STAŁE_provenance_schema: dict[str, Any] | None = None_provenance_validator: Any | None = Noneif Draft7Validator is not None:    schema_path = SCHEMAS_DIR / "provenance_receipt_v1.json"    if schema_path.exists():        try:            _provenance_schema = json.loads(schema_path.read_text(encoding="utf-8"))            _provenance_validator = Draft7Validator(_provenance_schema)  # type: ignore[call-arg]        except Exception:            _provenance_schema = None            _provenance_validator = None# === MODELE / MODELS ===class RecordInputRequest(BaseModel):    """    PL: Wejście do zarejestrowania dokumentu.    EN: Input to record a document ingestion.    """    case_id: str = Field(        ..., min_length=1, description="PL: Id sprawy. / EN: Case identifier."    )    document_hash: str = Field(        ...,        min_length=7,        description="PL: Np. 'sha256:<hex>'. / EN: e.g., 'sha256:<hex>'.",    )class RecordInputResponse(BaseModel):    """    PL: Odpowiedź na zarejestrowanie dokumentu.    EN: Response for recorded document ingestion.    """    event_id: int    type: str    case_id: str    document_hash: str | None    timestamp: str    chain_prev: str | None    chain_self: str# === ENDPOINTS ===@router.post("/record-input", response_model=RecordInputResponse, tags=["Ledger"])def record_input(payload: RecordInputRequest) -> RecordInputResponse:    """    PL: Rejestruje nowy dokument w księdze (INPUT_INGESTION).    EN: Records a new document in the ledger (INPUT_INGESTION).    """    result = ledger_service.record_input(        case_id=payload.case_id, document_hash=payload.document_hash    )    return RecordInputResponse(**result)@router.get("/{case_id}/records", tags=["Ledger"])def get_records(case_id: str) -> list[RecordInputResponse]:    """    PL: Zwraca listę wpisów dla danego case_id.    EN: Returns all entries for the given case_id.    """    items = ledger_service.get_records_for_case(case_id=case_id)    return [RecordInputResponse(**it) for it in items]@router.get("/{case_id}/prove", tags=["Ledger"])def prove_case(case_id: str) -> dict[str, Any]:    """    PL: Generuje i (jeśli możliwe) waliduje Provenance Receipt dla sprawy.    EN: Generates and (if available) validates the Provenance Receipt for a case.    """    try:        receipt = ledger_service.build_provenance_receipt(case_id=case_id)    except ValueError as e:        raise HTTPException(status_code=404, detail=str(e)) from e    if _provenance_validator is not None:        try:            _provenance_validator.validate(receipt)  # type: ignore[union-attr]        except Exception as e:            # Zwracamy 500, bo to błąd po stronie serwisu (receipt nie spełnia kontraktu).            raise HTTPException(                status_code=500,                detail=f"Provenance receipt schema validation failed: {e}",            ) from e    return receipt
