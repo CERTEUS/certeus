@@ -1,0 +1,15 @@
+# CERTEUS: line-endings policy
+* text=auto
+
+# Force LF for source files
+*.py   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.smt2 text eol=lf
+
+# Force CRLF for Windows scripts
+*.ps1  text eol=crlf
+*.bat  text eol=crlf

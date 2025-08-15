@@ -1,1 +1,0 @@
-OPA – szkic.

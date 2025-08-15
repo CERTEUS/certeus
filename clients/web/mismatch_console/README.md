@@ -1,1 +1,0 @@
-Mismatch Console – szkic.

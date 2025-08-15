@@ -1,1 +1,0 @@
-Poziomy Pewności – szkic.

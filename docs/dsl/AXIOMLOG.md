@@ -1,1 +1,0 @@
-AXIOMLOG – szkic.

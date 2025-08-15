@@ -1,1 +1,0 @@
-Metryki – szkic.
