@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: certeus-header-docstring-gate
+        name: CERTEUS header/docstring gate
+        entry: python scripts/check_headers.py
+        language: system
+        files: \.py$

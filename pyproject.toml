@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certeus"
+version = "0.0.1"
+description = "CERTEUS – Proof-Driven Autonomy (skeleton)"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "pyyaml",
+  "jsonschema>=4.25.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools]
+packages = [
+    "architectus",
+    "cje",
+    "clients",
+    "core",
+    "docs",
+    "kernel",
+    "ops",
+    "packs",
+    "plugins",
+    "schemas",
+    "scripts",
+    "security",
+    "services",
+    "templates",
+    "tests"
+]
