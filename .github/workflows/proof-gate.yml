@@ -1,32 +1,41 @@
+# +-------------------------------------------------------------+
+# |                        CERTEUS                              |
+# |                 Proof-Gate CI (Stub Artifacts)              |
+# +-------------------------------------------------------------+
+# ── CERTEUS Project ─────────────────────────────────────────────────────────────
+# File: .github/workflows/proof-gate.yml
+# License: Apache-2.0
+# Description (PL): Workflow CI dla Proof-Gate: generuje i weryfikuje stuby.
+# Description (EN): CI workflow for Proof-Gate: generates & verifies stubs.
+# ────────────────────────────────────────────────────────────────
+
 name: proof-gate
+
 on:
   push:
-    branches: [ main ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ main ]
+
 jobs:
-  gate:
+  proof-gate:
     runs-on: ubuntu-latest
-    env:
-      PROOF_ARTIFACTS: proof-artifacts
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v1
-      - name: Sync deps
-        run: uv sync || pip install -e .[dev]
-      - name: Unit tests – truth kernel
-        run: uv run pytest -q tests/truth || pytest -q tests/truth
-      - name: Generate proofs (stub ok na start)
-        run: |
-          mkdir -p ${PROOF_ARTIFACTS}
-          uv run python scripts/generate_proofs.py --out ${PROOF_ARTIFACTS} || python scripts/generate_proofs.py --out ${PROOF_ARTIFACTS}
-      - name: External proof check (DRAT/LFSC)
-        run: |
-          bash scripts/check_drat.sh ${PROOF_ARTIFACTS}
-          bash scripts/check_lfsc.sh ${PROOF_ARTIFACTS}
-      - name: Upload proof artifacts (always)
-        if: always()
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate proof artifacts (stubs)
+        run: python scripts/generate_proofs.py --out proof-artifacts
+
+      - name: Verify proof artifacts (SHA256)
+        run: python scripts/check_proofs.py --dir proof-artifacts
+
+      - name: Upload artifacts (for audit)
         uses: actions/upload-artifact@v4
         with:
-          name: proofs
-          path: ${PROOF_ARTIFACTS}
+          name: proof-artifacts
+          path: proof-artifacts

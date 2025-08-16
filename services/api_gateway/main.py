@@ -13,8 +13,15 @@ EN: Main API app. Attaches routers (including /v1/verify) and /health.
 
 # === IMPORTY / IMPORTS ======================================== #
 from __future__ import annotations
-
 from fastapi import FastAPI
+
+from fastapi import UploadFile, File, HTTPException
+from typing import List
+import asyncio
+
+from services.ingest_service.ocr_pipeline import OcrPipeline
+from services.ingest_service.factlog_mapper import FactlogMapper
+from services.ingest_service.models import Fact
 
 # [ROUTER IMPORTS – BEZPOŚREDNIO Z MODUŁÓW]
 # Wymagany przez Dzień 5: /v1/verify
@@ -63,3 +70,40 @@ def health() -> dict[str, bool]:
     EN: Simple endpoint to check API liveness.
     """
     return {"ok": True}
+
+
+# [BLOCK: INGEST INIT]
+ocr_pipeline = OcrPipeline()
+factlog_mapper = FactlogMapper()
+
+ALLOWED_MIME = {"application/pdf", "text/plain", "image/png", "image/jpeg"}
+MAX_BYTES = 10 * 1024 * 1024  # 10 MB
+
+
+# [BLOCK: /v1/ingest ENDPOINT]
+@app.post("/v1/ingest", response_model=List[Fact], tags=["Ingestion Service"])
+async def ingest_document(file: UploadFile = File(...)):
+    """
+    PL: Przyjmuje dokument, uruchamia stub OCR i mapowanie do FACTLOG, zwraca listę faktów.
+        Bezpieczeństwo: weryfikacja MIME, limit rozmiaru, timeout.
+
+    EN: Accepts a document, runs OCR stub and FACTLOG mapping, returns a list of facts.
+        Safety: MIME validation, size limit, timeout.
+    """
+    if file.content_type not in ALLOWED_MIME:
+        raise HTTPException(status_code=415, detail="Unsupported media type")
+
+    data = await file.read()
+    if len(data) > MAX_BYTES:
+        raise HTTPException(status_code=413, detail="File too large")
+
+    try:
+        # uruchom stub OCR w wątku + timeout, żeby nie blokować event loop
+        ocr_output = await asyncio.wait_for(
+            asyncio.to_thread(ocr_pipeline.process_document, data), timeout=15
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="OCR timeout")
+
+    facts = factlog_mapper.map_to_facts(ocr_output, data)
+    return facts
