@@ -2,160 +2,179 @@
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
 # | FILE: scripts/generate_proofs.py                            |
-# | ROLE: Project module.                                       |
+# | ROLE: CLI to generate stub/simulated proofs to an output dir|
 # | PLIK: scripts/generate_proofs.py                            |
-# | ROLA: ModuĹ‚ projektu.                                       |
+# | ROLA: CLI generujące atrapy/symulacje dowodów do katalogu.  |
 # +-------------------------------------------------------------+
-
-# +-------------------------------------------------------------+
-# |                    CERTEUS - Proof Generator                |
-# |       Core Engine for Reliable & Unified Systems            |
-# +-------------------------------------------------------------+
-# | FILE / PLIK: generate_proofs.py                             |
-# | ROLE / ROLA:                                                |
-# |   EN: Generates proof artifacts (DRAT/LFSC) with support    |
-# |       for format selection, stub/simulated modes,           |
-# |       colored logs, and CI/CD-friendly exit codes.          |
-# |   PL: Generuje artefakty dowodowe (DRAT/LFSC) z obsĹ‚ugÄ…     |
-# |       wyboru formatu, trybu stub/symulacji, kolorowych logĂłw|
-# |       oraz kodĂłw wyjĹ›cia zgodnych z CI/CD.                  |
-# +-------------------------------------------------------------+
-
 """
-PL:
-    Ten moduĹ‚ odpowiada za generowanie artefaktĂłw dowodowych w formatach DRAT (Z3) i LFSC (CVC5).
-    ObsĹ‚uguje dwa tryby dziaĹ‚ania:
-        - 'stub'      â†’ tworzy puste pliki (placeholdery)
-        - 'simulate'  â†’ generuje przykĹ‚adowÄ… zawartoĹ›Ä‡ (symulacja solvera)
-    ModuĹ‚ jest kompatybilny z pipeline'ami CI/CD i uĹĽywa kolorowych logĂłw.
-
-EN:
-    This module is responsible for generating proof artifacts in DRAT (Z3) and LFSC (CVC5) formats.
-    It supports two modes of operation:
-        - 'stub'      â†’ creates empty files (placeholders)
-        - 'simulate'  â†’ generates sample content (solver simulation)
-    The module is CI/CD-friendly and uses colored logs.
+PL: Skrypt CLI generujący pliki dowodów (tryb 'stub' / 'simulate') do wskazanego katalogu.
+EN: CLI script that produces proof files (stub/simulate modes) into a chosen output directory.
 """
 
-# [BLOCK: IMPORTS]
 from __future__ import annotations
+
 import argparse
-import hashlib
-import sys
-import time
+import random
+import string
 from pathlib import Path
-from typing import List
-from utils.console import info as log_info, success as log_success, error as log_error
+from typing import Final, Iterable, List, Optional
 
 
-# === Simulated proof generation / Symulowane generowanie dowodu ===
-def simulate_solver_content(format_name: str) -> str:
-    """
-    EN: Generates simulated proof content for demonstration purposes.
-    PL: Generuje symulowanÄ… treĹ›Ä‡ dowodu na potrzeby demonstracji.
-    """
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    header = (
-        f"# Proof generated in simulated mode\n"
-        f"# Format: {format_name.upper()}\n"
-        f"# Timestamp: {timestamp}\n"
-    )
-    body = "c This is a simulated proof artifact.\np cnf 3 2\n1 -3 0\n2 3 -1 0\n"
-    return header + body
+# === MAPOWANIA / MAPPINGS ===================================== #
+
+# format -> nazwa pliku
+FORMAT_TO_FILE: Final[dict[str, str]] = {
+    "drat": "z3.drat",
+    "lfsc": "cvc5.lfsc",
+}
+
+# format -> nazwa „solvera” (do treści pliku)
+FORMAT_TO_SOLVER: Final[dict[str, str]] = {
+    "drat": "z3",
+    "lfsc": "cvc5",
+}
 
 
-# === SHA256 sidecar writer / Zapis plikĂłw *.sha256 ===
-def write_sha256(file_path: Path) -> None:
-    """
-    EN: Writes a sidecar '<name>.sha256' file with '<digest>  <filename>'.
-    PL: Zapisuje plik towarzyszÄ…cy '<nazwa>.sha256' z '<suma>  <plik>'.
-    """
-    digest = hashlib.sha256(file_path.read_bytes()).hexdigest()
-    (file_path.with_suffix(file_path.suffix + ".sha256")).write_text(
-        f"{digest}  {file_path.name}\n",
-        encoding="utf-8",
-    )
-    log_info(f"SHA256 written: {file_path.name} â†’ {digest}")
+# === POMOCNICZE / HELPERS ===================================== #
 
 
-# === Core proof generation logic / GĹ‚Ăłwna logika generowania dowodĂłw ===
-def generate_proofs(out_dir: Path, formats: List[str], mode: str) -> None:
+def _lazy_console():
     """
-    EN: Generates proof files in the specified formats and mode.
-    PL: Generuje pliki dowodowe w okreĹ›lonych formatach i trybie.
+    Leniwy import utils.console (działa także z uruchomienia w osobnym procesie).
     """
-    start_time = time.time()
     try:
-        # Ensure output directory exists / Upewnij siÄ™, ĹĽe katalog wyjĹ›ciowy istnieje
-        out_dir.mkdir(parents=True, exist_ok=True)
-        if not out_dir.is_dir():
-            raise ValueError(f"Path {out_dir} is not a directory.")
+        from utils.console import info, success, error  # type: ignore
 
-        for fmt in formats:
-            # Select file name based on format / WybĂłr nazwy pliku na podstawie formatu
-            file_path = out_dir / (f"z3.{fmt}" if fmt == "drat" else f"cvc5.{fmt}")
+        return info, success, error
+    except ModuleNotFoundError:
+        import sys
 
-            if mode == "stub":
-                # Pusty placeholder jest OK (hash = e3b0...); alternatywnie moĹĽesz wstawiÄ‡ krĂłtki podpis.
-                file_path.touch(exist_ok=True)
-                log_success(f"Created empty stub proof: {file_path}")
-            elif mode == "simulate":
-                file_path.write_text(simulate_solver_content(fmt), encoding="utf-8")
-                log_success(f"Created simulated proof with content: {file_path}")
-            else:
-                raise ValueError(f"Unknown mode: {mode}")
+        root = Path(__file__).resolve().parents[1]
+        if str(root) not in sys.path:
+            sys.path.insert(0, str(root))
+        from utils.console import info, success, error  # type: ignore
 
-            # NEW: zapis pliku *.sha256 dla kaĹĽdego artefaktu
-            write_sha256(file_path)
-
-        elapsed = round(time.time() - start_time, 2)
-        log_info(f"Proof generation completed in {elapsed} seconds.")
-    except Exception as e:
-        log_error(str(e))
-        sys.exit(1)  # CI/CD failure code
+        return info, success, error
 
 
-# === CLI Interface / Interfejs wiersza poleceĹ„ ===
-def main() -> None:
+def _rand_token(n: int = 24) -> str:
+    alphabet = string.ascii_letters + string.digits
+    return "".join(random.choices(alphabet, k=n))
+
+
+def _write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # ASCII-safe/UTF-8, LF line endings
+    path.write_text(content, encoding="utf-8", newline="\n")
+
+
+def _normalize_formats(formats: Optional[List[str]]) -> list[str]:
+    if not formats:
+        return list(FORMAT_TO_FILE.keys())
+    out: list[str] = []
+    for f in formats:
+        lf = f.lower()
+        if lf in FORMAT_TO_FILE:
+            out.append(lf)
+    return out
+
+
+# === API / PUBLIC ============================================= #
+
+
+def generate_proofs(
+    out: Path, formats: Optional[List[str]] = None, mode: str = "simulate"
+) -> list[Path]:
     """
-    EN: Command-line entry point for proof generation.
-    PL: Punkt wejĹ›cia z wiersza poleceĹ„ dla generowania dowodĂłw.
+    PL: Generuje pliki proof w `out` dla zadanych `formats` i trybu `mode`.
+        - formats: podzbiór z {"drat", "lfsc"}; None => oba.
+        - mode: "simulate" (zawartość z losowym nonce) lub "stub" (prosty stub).
+    EN: Generate proof files in `out` for given `formats` and `mode`.
+        - formats: subset of {"drat", "lfsc"}; None => both.
+        - mode: "simulate" (content with random nonce) or "stub" (simple stub).
+    Returns: list of created file paths.
     """
-    parser = argparse.ArgumentParser(
-        description=(
-            "EN: Generate proof artifacts in DRAT/LFSC formats.\n"
-            "PL: Generuj artefakty dowodowe w formatach DRAT/LFSC."
-        )
+    log_info, log_success, log_error = _lazy_console()
+
+    fs = _normalize_formats(formats)
+    if not fs:
+        log_error("No valid formats provided.")
+        return []
+
+    created: list[Path] = []
+
+    for fmt in fs:
+        solver = FORMAT_TO_SOLVER[fmt]
+        fname = FORMAT_TO_FILE[fmt]
+        dst = out / fname
+
+        if mode == "simulate":
+            payload = f"PROOF::format={fmt}::solver={solver}::nonce={_rand_token(24)}"
+            _write_text(dst, payload)
+            # ważne: test oczekuje tej frazy:
+            log_success(f"Created simulated proof with content: {dst}")
+        elif mode == "stub":
+            payload = f"PROOF-STUB::format={fmt}::solver={solver}"
+            _write_text(dst, payload)
+            log_success(f"Created stub proof: {dst}")
+        else:
+            log_error(f"Unknown mode: {mode}")
+            return []
+
+        created.append(dst)
+
+    log_info(f"Total proofs: {len(created)}")
+    return created
+
+
+# === CLI ======================================================= #
+
+
+def _build_arg_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="generate_proofs",
+        description="Generate (simulated) proofs into an output directory.",
     )
-    parser.add_argument(
+    p.add_argument(
         "--out",
-        type=str,
+        type=Path,
         required=True,
-        help="EN: Output directory for proofs. | PL: Katalog wyjĹ›ciowy dla dowodĂłw.",
+        help="Output directory for generated proof files.",
     )
-    parser.add_argument(
-        "--formats",
-        nargs="+",
-        choices=["drat", "lfsc"],
-        default=["drat", "lfsc"],
-        help=(
-            "EN: Formats to generate (default: both). "
-            "| PL: Format(y) do wygenerowania (domyĹ›lnie: oba)."
-        ),
-    )
-    parser.add_argument(
+    p.add_argument(
         "--mode",
-        choices=["stub", "simulate"],
-        default="stub",
-        help=(
-            "EN: Generation mode: 'stub' for empty files, 'simulate' for example content. "
-            "| PL: Tryb generowania: 'stub' dla pustych plikĂłw, 'simulate' dla przykĹ‚adowej treĹ›ci."
-        ),
+        choices=["simulate", "stub"],
+        default="simulate",
+        help="Generation mode (default: simulate).",
     )
-    args = parser.parse_args()
-    generate_proofs(Path(args.out), args.formats, args.mode)
+    p.add_argument(
+        "--formats",
+        nargs="*",
+        choices=sorted(FORMAT_TO_FILE.keys()),
+        default=None,
+        help="Formats to generate (space separated), e.g. --formats drat lfsc. Default: both.",
+    )
+    return p
 
 
-# === Script execution guard / Blok uruchomienia skryptu ===
+def main(argv: Iterable[str] | None = None) -> int:
+    log_info, _log_success, log_error = _lazy_console()
+
+    parser = _build_arg_parser()
+    args = parser.parse_args(list(argv) if argv is not None else None)
+
+    try:
+        files = generate_proofs(args.out, formats=args.formats, mode=args.mode)
+    except Exception as exc:  # pragma: no cover
+        log_error(f"Generation failed: {exc}")
+        return 1
+
+    # pokaż co zapisaliśmy (INFO w stdout)
+    for p in files:
+        log_info(f"Wrote: {p}")
+
+    return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
