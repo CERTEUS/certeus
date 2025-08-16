@@ -38,3 +38,6 @@ proofs/
 /sample.txt
 /big.pdf
 /x.exe
+
+# Flags from external repos
+packs/jurisdictions/PL/flags/

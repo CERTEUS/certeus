@@ -1,0 +1,44 @@
+<!--
++-------------------------------------------------------------+
+|            CERTEUS - Proof Visualizer (Skeleton)            |
++-------------------------------------------------------------+
+| FILE: clients/web/proof_visualizer/index.html               |
+| ROLE: Placeholder UI for future interactive proof graph.    |
++-------------------------------------------------------------+
+-->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CERTEUS - Wizualizator Dowodu</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f0f2f5; color: #111; margin: 0; }
+    .container { max-width: 960px; margin: 40px auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+    h1 { margin-top: 0; color: #0d2c4e; }
+    .graph-placeholder { border: 2px dashed #cbd5e1; background: #f8fafc; padding: 48px; text-align: center; border-radius: 12px; }
+    pre { background: #0d1117; color: #c9d1d9; padding: 12px; border-radius: 8px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Wizualizator Dowodu (Proof Visualizer)</h1>
+    <p><strong>Sprawa ID:</strong> pl-286kk-0001</p>
+
+    <h2>Graf Rozumowania (v0.1 - Stub)</h2>
+    <div class="graph-placeholder">
+      [ Przyszły interaktywny graf dowodu ]
+    </div>
+
+    <h2>Surowe Dane Wynikowe (Raw Output)</h2>
+    <pre id="json-output">Ładowanie danych...</pre>
+  </div>
+  <script>
+    const mockData = {
+      "case_id": "pl-286kk-0001",
+      "analysis_result": { "status": "sat", "model": "[x = 5]" }
+    };
+    document.getElementById('json-output').textContent = JSON.stringify(mockData, null, 2);
+  </script>
+</body>
+</html>

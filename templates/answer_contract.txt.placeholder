@@ -1,0 +1,32 @@
+# +-------------------------------------------------------------+
+# |              CERTEUS - RAPORT ANALIZY SPRAWY                |
+# +-------------------------------------------------------------+
+
+===============================================================
+PODSUMOWANIE ANALIZY
+===============================================================
+
+ID SPRAWY: ${CASE_ID}
+DATA ANALIZY: ${ANALYSIS_DATE}
+
+GŁÓWNA TEZA:
+${THESIS}
+
+===============================================================
+WYNIK WERYFIKACJI FORMALNEJ
+===============================================================
+
+STATUS: ${VERIFICATION_STATUS}
+
+MODEL ROZWIĄZANIA (jeśli dotyczy):
+${SOLUTION_MODEL}
+
+===============================================================
+DOWÓD POCHODZENIA (PROVENANCE HASH)
+===============================================================
+
+${PROVENANCE_HASH}
+
+---
+Raport wygenerowany automatycznie przez system CERTEUS v0.1.
+Dowód. Nie opinia.

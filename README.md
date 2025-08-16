@@ -45,3 +45,18 @@ Consistent naming style across all files.
 Opis każdej funkcji:
 Nad każdą funkcją piszemy docstring z opisem działania, parametrami i wartością zwracaną – w obu językach.
 Above each function, write a docstring explaining what it does, parameters, and return values — in both languages.
+
+Profesjonalna struktura kodu
+
+Szczegółowe nagłówki bloków z Unicode box drawing
+Pełna dokumentacja każdej klasy i funkcji
+Bilingualne komentarze (PL/EN)
+Logging dla debugowania
+Sekcje wyraźnie oddzielone wizualnie
+
+Rozszerzona normalizacja ID
+
+Obsługa dodatkowych wariantów długich nazw
+Mapowanie wszystkich znanych aliasów
+
+Konsystentne formatowanie: Zachowano premium styl z box drawing characters
