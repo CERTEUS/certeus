@@ -4,7 +4,7 @@
 # | FILE: scripts/generate_proofs.py                            |
 # | ROLE: Project module.                                       |
 # | PLIK: scripts/generate_proofs.py                            |
-# | ROLA: Moduł projektu.                                       |
+# | ROLA: ModuĹ‚ projektu.                                       |
 # +-------------------------------------------------------------+
 
 # +-------------------------------------------------------------+
@@ -16,24 +16,24 @@
 # |   EN: Generates proof artifacts (DRAT/LFSC) with support    |
 # |       for format selection, stub/simulated modes,           |
 # |       colored logs, and CI/CD-friendly exit codes.          |
-# |   PL: Generuje artefakty dowodowe (DRAT/LFSC) z obsługą     |
-# |       wyboru formatu, trybu stub/symulacji, kolorowych logów|
-# |       oraz kodów wyjścia zgodnych z CI/CD.                  |
+# |   PL: Generuje artefakty dowodowe (DRAT/LFSC) z obsĹ‚ugÄ…     |
+# |       wyboru formatu, trybu stub/symulacji, kolorowych logĂłw|
+# |       oraz kodĂłw wyjĹ›cia zgodnych z CI/CD.                  |
 # +-------------------------------------------------------------+
 
 """
 PL:
-    Ten moduł odpowiada za generowanie artefaktów dowodowych w formatach DRAT (Z3) i LFSC (CVC5).
-    Obsługuje dwa tryby działania:
-        - 'stub'      → tworzy puste pliki (placeholdery)
-        - 'simulate'  → generuje przykładową zawartość (symulacja solvera)
-    Moduł jest kompatybilny z pipeline'ami CI/CD i używa kolorowych logów.
+    Ten moduĹ‚ odpowiada za generowanie artefaktĂłw dowodowych w formatach DRAT (Z3) i LFSC (CVC5).
+    ObsĹ‚uguje dwa tryby dziaĹ‚ania:
+        - 'stub'      â†’ tworzy puste pliki (placeholdery)
+        - 'simulate'  â†’ generuje przykĹ‚adowÄ… zawartoĹ›Ä‡ (symulacja solvera)
+    ModuĹ‚ jest kompatybilny z pipeline'ami CI/CD i uĹĽywa kolorowych logĂłw.
 
 EN:
     This module is responsible for generating proof artifacts in DRAT (Z3) and LFSC (CVC5) formats.
     It supports two modes of operation:
-        - 'stub'      → creates empty files (placeholders)
-        - 'simulate'  → generates sample content (solver simulation)
+        - 'stub'      â†’ creates empty files (placeholders)
+        - 'simulate'  â†’ generates sample content (solver simulation)
     The module is CI/CD-friendly and uses colored logs.
 """
 
@@ -49,17 +49,17 @@ from typing import List
 
 # === Helper logging functions / Funkcje pomocnicze do logowania ===
 def log_info(msg: str) -> None:
-    """EN: Print informational message. | PL: Wyświetla komunikat informacyjny."""
+    """EN: Print informational message. | PL: WyĹ›wietla komunikat informacyjny."""
     print(f"\033[94m[INFO]\033[0m {msg}")
 
 
 def log_success(msg: str) -> None:
-    """EN: Print success message. | PL: Wyświetla komunikat o powodzeniu."""
+    """EN: Print success message. | PL: WyĹ›wietla komunikat o powodzeniu."""
     print(f"\033[92m[SUCCESS]\033[0m {msg}")
 
 
 def log_error(msg: str) -> None:
-    """EN: Print error message. | PL: Wyświetla komunikat o błędzie."""
+    """EN: Print error message. | PL: WyĹ›wietla komunikat o bĹ‚Ä™dzie."""
     print(f"\033[91m[ERROR]\033[0m {msg}")
 
 
@@ -67,7 +67,7 @@ def log_error(msg: str) -> None:
 def simulate_solver_content(format_name: str) -> str:
     """
     EN: Generates simulated proof content for demonstration purposes.
-    PL: Generuje symulowaną treść dowodu na potrzeby demonstracji.
+    PL: Generuje symulowanÄ… treĹ›Ä‡ dowodu na potrzeby demonstracji.
     """
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     header = (
@@ -79,39 +79,39 @@ def simulate_solver_content(format_name: str) -> str:
     return header + body
 
 
-# === SHA256 sidecar writer / Zapis plików *.sha256 ===
+# === SHA256 sidecar writer / Zapis plikĂłw *.sha256 ===
 def write_sha256(file_path: Path) -> None:
     """
     EN: Writes a sidecar '<name>.sha256' file with '<digest>  <filename>'.
-    PL: Zapisuje plik towarzyszący '<nazwa>.sha256' z '<suma>  <plik>'.
+    PL: Zapisuje plik towarzyszÄ…cy '<nazwa>.sha256' z '<suma>  <plik>'.
     """
     digest = hashlib.sha256(file_path.read_bytes()).hexdigest()
     (file_path.with_suffix(file_path.suffix + ".sha256")).write_text(
         f"{digest}  {file_path.name}\n",
         encoding="utf-8",
     )
-    log_info(f"SHA256 written: {file_path.name} → {digest}")
+    log_info(f"SHA256 written: {file_path.name} â†’ {digest}")
 
 
-# === Core proof generation logic / Główna logika generowania dowodów ===
+# === Core proof generation logic / GĹ‚Ăłwna logika generowania dowodĂłw ===
 def generate_proofs(out_dir: Path, formats: List[str], mode: str) -> None:
     """
     EN: Generates proof files in the specified formats and mode.
-    PL: Generuje pliki dowodowe w określonych formatach i trybie.
+    PL: Generuje pliki dowodowe w okreĹ›lonych formatach i trybie.
     """
     start_time = time.time()
     try:
-        # Ensure output directory exists / Upewnij się, że katalog wyjściowy istnieje
+        # Ensure output directory exists / Upewnij siÄ™, ĹĽe katalog wyjĹ›ciowy istnieje
         out_dir.mkdir(parents=True, exist_ok=True)
         if not out_dir.is_dir():
             raise ValueError(f"Path {out_dir} is not a directory.")
 
         for fmt in formats:
-            # Select file name based on format / Wybór nazwy pliku na podstawie formatu
+            # Select file name based on format / WybĂłr nazwy pliku na podstawie formatu
             file_path = out_dir / (f"z3.{fmt}" if fmt == "drat" else f"cvc5.{fmt}")
 
             if mode == "stub":
-                # Pusty placeholder jest OK (hash = e3b0...); alternatywnie możesz wstawić krótki podpis.
+                # Pusty placeholder jest OK (hash = e3b0...); alternatywnie moĹĽesz wstawiÄ‡ krĂłtki podpis.
                 file_path.touch(exist_ok=True)
                 log_success(f"Created empty stub proof: {file_path}")
             elif mode == "simulate":
@@ -120,7 +120,7 @@ def generate_proofs(out_dir: Path, formats: List[str], mode: str) -> None:
             else:
                 raise ValueError(f"Unknown mode: {mode}")
 
-            # NEW: zapis pliku *.sha256 dla każdego artefaktu
+            # NEW: zapis pliku *.sha256 dla kaĹĽdego artefaktu
             write_sha256(file_path)
 
         elapsed = round(time.time() - start_time, 2)
@@ -130,11 +130,11 @@ def generate_proofs(out_dir: Path, formats: List[str], mode: str) -> None:
         sys.exit(1)  # CI/CD failure code
 
 
-# === CLI Interface / Interfejs wiersza poleceń ===
+# === CLI Interface / Interfejs wiersza poleceĹ„ ===
 def main() -> None:
     """
     EN: Command-line entry point for proof generation.
-    PL: Punkt wejścia z wiersza poleceń dla generowania dowodów.
+    PL: Punkt wejĹ›cia z wiersza poleceĹ„ dla generowania dowodĂłw.
     """
     parser = argparse.ArgumentParser(
         description=(
@@ -146,7 +146,7 @@ def main() -> None:
         "--out",
         type=str,
         required=True,
-        help="EN: Output directory for proofs. | PL: Katalog wyjściowy dla dowodów.",
+        help="EN: Output directory for proofs. | PL: Katalog wyjĹ›ciowy dla dowodĂłw.",
     )
     parser.add_argument(
         "--formats",
@@ -155,7 +155,7 @@ def main() -> None:
         default=["drat", "lfsc"],
         help=(
             "EN: Formats to generate (default: both). "
-            "| PL: Format(y) do wygenerowania (domyślnie: oba)."
+            "| PL: Format(y) do wygenerowania (domyĹ›lnie: oba)."
         ),
     )
     parser.add_argument(
@@ -164,7 +164,7 @@ def main() -> None:
         default="stub",
         help=(
             "EN: Generation mode: 'stub' for empty files, 'simulate' for example content. "
-            "| PL: Tryb generowania: 'stub' dla pustych plików, 'simulate' dla przykładowej treści."
+            "| PL: Tryb generowania: 'stub' dla pustych plikĂłw, 'simulate' dla przykĹ‚adowej treĹ›ci."
         ),
     )
     args = parser.parse_args()

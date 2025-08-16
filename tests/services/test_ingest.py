@@ -1,5 +1,6 @@
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
+# | Core Engine for Reliable & Unified Systems                  |
 # +-------------------------------------------------------------+
 # | FILE: tests/services/test_ingest.py                         |
 # | ROLE: Integration tests for /v1/ingest endpoint.            |
