@@ -24,6 +24,7 @@ LICENSE        text eol=lf
 *.smt2 text eol=lf
 *.lfsc text eol=lf
 *.drat text eol=lf
+* text=auto eol=lf
 
 # Windows scripts -> CRLF
 *.ps1  text eol=crlf

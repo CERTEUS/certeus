@@ -33,6 +33,13 @@ from services.ingest_service.models import Fact
 from services.ingest_service.ocr_pipeline import OcrPipeline
 from services.ledger_service.ledger import Ledger
 
+# === SIPP Indexer imports ===
+from services.sipp_indexer_service.isap_adapter import IsapAdapter
+from services.sipp_indexer_service.models import LegalActSnapshot
+
+# === SIPP Indexer init ===
+isap_adapter = IsapAdapter()
+
 # [BLOCK: APP]
 app = FastAPI(title="CERTEUS API", version="1.0")
 
@@ -142,3 +149,26 @@ if export_router is not None:
     app.include_router(export_router)
 if ledger_router is not None:
     app.include_router(ledger_router)
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "services.api_gateway.main:app", host="127.0.0.1", port=8000, reload=True
+    )
+
+
+# === SIPP Indexer Service Endpoints ===
+@app.get(
+    "/v1/sipp/snapshot/{act_id}",
+    response_model=LegalActSnapshot,
+    tags=["SIPP Indexer Service"],
+)
+def get_legal_act_snapshot(act_id: str) -> LegalActSnapshot:
+    """
+    PL: Zwraca migawkę aktu prawnego dla act_id.
+    EN: Returns legal act snapshot for act_id.
+    """
+    try:
+        return isap_adapter.fetch_act_snapshot(act_id)
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(status_code=500, detail=f"Snapshot error: {exc}")
