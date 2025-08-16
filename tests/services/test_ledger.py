@@ -1,1 +1,57 @@
-# +-------------------------------------------------------------+# |                          CERTEUS                            |# +-------------------------------------------------------------+# | FILE: tests/services/test_ledger.py                       |# | ROLE: Project module.                                       |# | PLIK: tests/services/test_ledger.py                       |# | ROLA: Moduł projektu.                                       |# +-------------------------------------------------------------+"""PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.EN: CERTEUS module – please complete the functional description."""# +-------------------------------------------------------------+# |                    CERTEUS - Ledger Tests                   |# +-------------------------------------------------------------+# | PLIK / FILE: tests/services/test_ledger.py                  |# | ROLA / ROLE: Testy jednostkowe dla LedgerService.           |# +-------------------------------------------------------------+from __future__ import annotationsfrom services.ledger_service.ledger import LedgerServicedef test_record_input_and_retrieve() -> None:    """    PL: Zapis → odczyt: integralność rekordu.    EN: Write → read: record integrity.    """    service = LedgerService()    case_id = "test-case-001"    doc_hash = "sha256:deadbeef"    recorded_entry = service.record_input(case_id=case_id, document_hash=doc_hash)    retrieved_entries = service.get_records_for_case(case_id=case_id)    assert len(retrieved_entries) == 1    assert retrieved_entries[0] == recorded_entry    assert retrieved_entries[0]["case_id"] == case_id    assert retrieved_entries[0]["document_hash"] == doc_hash    assert "timestamp" in retrieved_entries[0]    assert "chain_self" in retrieved_entries[0]  # dowód łańcucha    # pierwszy rekord ma brak poprzedniego hash'a    assert retrieved_entries[0]["chain_prev"] is Nonedef test_get_records_for_nonexistent_case() -> None:    """    PL: Pusta lista dla nieistniejącej sprawy.    EN: Empty list for a non-existent case.    """    service = LedgerService()    assert service.get_records_for_case(case_id="non-existent-case") == []
+# +-------------------------------------------------------------+
+# |                        CERTEUS                              |
+# |        Core Engine for Reliable & Unified Systems           |
+# +-------------------------------------------------------------+
+# ── CERTEUS Project ─────────────────────────────────────────────────────────────
+# File: tests/services/test_ledger.py
+# License: Apache-2.0
+# Description (PL): Testy rejestru pochodzenia (Ledger).
+# Description (EN): Tests for the provenance ledger.
+# Style Guide: Typed tests, PL/EN docs, labeled blocks.
+# ────────────────────────────────────────────────────────────────
+
+"""
+PL: Weryfikuje łańcuch parent→child, prefiks 'sha256:' i eksport JSON.
+EN: Verifies parent→child chain, 'sha256:' prefix, and JSON export.
+"""
+
+# [BLOCK: IMPORTS]
+from typing import List
+from services.ledger_service import Ledger, LedgerRecord
+
+
+# [BLOCK: TESTS]
+def test_ledger_chain_of_custody():
+    # Deterministyczny czas: co wywołanie +1 s
+    t = {"now": 1.0}
+
+    def fake_now() -> float:
+        t["now"] += 1.0
+        return t["now"]
+
+    L = Ledger(now=fake_now)
+    a: LedgerRecord = L.record_input(b"doc")
+    b: LedgerRecord = L.record_transform(a, b"ocr-out", stage="ocr")
+    c: LedgerRecord = L.record_export(b, b"export-docx")
+
+    chain: List[str] = L.ancestry(c.id)
+    j: str = L.to_json()
+
+    # [BLOCK: INPUT]
+    a: LedgerRecord = L.record_input(b"doc")
+    assert a.parent_id is None
+    assert a.id.startswith("sha256:")
+
+    # [BLOCK: TRANSFORM]
+    b: LedgerRecord = L.record_transform(a, b"ocr-out", stage="ocr")
+    c: LedgerRecord = L.record_export(b, b"export-docx")
+
+    # [BLOCK: CHAIN CHECKS]
+    assert b.parent_id == a.id and c.parent_id == b.id
+    chain: List[str] = L.ancestry(c.id)
+    assert chain == [a.id, b.id, c.id]
+
+    # [BLOCK: INTEGRITY]
+    assert L.validate_chain() is True
+    j: str = L.to_json()
+    assert a.id in j and b.id in j and c.id in j
