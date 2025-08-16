@@ -30,10 +30,17 @@ LICENSE        text eol=lf
 *.bat  text eol=crlf
 
 # Binary -> never touch
-*.pdf  binary
-*.docx binary
-*.png  binary
-*.jpg  binary
-*.jpeg binary
-*.gif  binary
-*.zip  binary
+*.pdf   -text
+*.docx  -text
+*.xlsx  -text
+*.pptx  -text
+*.png   -text
+*.jpg   -text
+*.jpeg  -text
+*.gif   -text
+*.zip   -text
+*.7z    -text
+*.exe   -text
+*.dll   -text
+*.pkl   -text
+*.onnx  -text
