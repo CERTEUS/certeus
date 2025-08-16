@@ -34,3 +34,7 @@ htmlcov/
 proof-artifacts/
 out/
 proofs/
+# Smoke files
+/sample.txt
+/big.pdf
+/x.exe
