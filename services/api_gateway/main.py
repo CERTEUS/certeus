@@ -24,9 +24,10 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import List
+from datetime import date
+from typing import List, Optional, Annotated
 
-from fastapi import FastAPI, File, HTTPException, Response, UploadFile
+from fastapi import FastAPI, File, HTTPException, Response, UploadFile, Query
 
 from services.ingest_service.factlog_mapper import FactlogMapper
 from services.ingest_service.models import Fact
@@ -163,12 +164,13 @@ if __name__ == "__main__":
     response_model=LegalActSnapshot,
     tags=["SIPP Indexer Service"],
 )
-def get_legal_act_snapshot(act_id: str) -> LegalActSnapshot:
-    """
-    PL: Zwraca migawkę aktu prawnego dla act_id.
-    EN: Returns legal act snapshot for act_id.
-    """
+def get_legal_act_snapshot(
+    act_id: str,
+    at: Annotated[
+        Optional[date], Query(description="Date for which snapshot is requested")
+    ] = None,
+) -> LegalActSnapshot:
     try:
-        return isap_adapter.fetch_act_snapshot(act_id)
+        return isap_adapter.fetch_act_snapshot(act_id, at=at)
     except Exception as exc:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Snapshot error: {exc}")

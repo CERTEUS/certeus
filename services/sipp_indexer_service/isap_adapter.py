@@ -17,18 +17,13 @@ from __future__ import annotations
 
 import hashlib
 from datetime import date, datetime, timezone
+from typing import Optional
 
 from .models import LegalActSnapshot
 
 
 def _ascii_info(msg: str) -> None:
-    """
-    PL: Bezpieczny log ASCII (Windows-friendly). Próbuje użyć utils.console,
-        a gdy brak – fallback do print().
-    EN: ASCII-safe log (Windows-friendly). Tries utils.console, falls back to print().
-    """
     try:
-        # Lazy import to avoid hard dependency during tests/packaging.
         from utils.console import info as _info  # type: ignore
 
         s = msg.encode("ascii", "ignore").decode("ascii")
@@ -44,14 +39,17 @@ class IsapAdapter:
     EN: Simulates fetching a legal act and creating its snapshot.
     """
 
-    def fetch_act_snapshot(self, act_id: str) -> LegalActSnapshot:
+    def fetch_act_snapshot(
+        self, act_id: str, at: Optional[date] = None
+    ) -> LegalActSnapshot:
         """
-        PL: Zwraca LegalActSnapshot dla zadanego act_id (stub).
-        EN: Returns LegalActSnapshot for given act_id (stub).
+        PL: Zwraca LegalActSnapshot dla zadanego act_id. Parametr 'at' to
+            data, na ktora prosimy o stan prawa (stub ignoruje).
+        EN: Returns LegalActSnapshot for given act_id. 'at' asks for state
+            at given date (ignored by stub).
         """
-        _ascii_info(f"ISAP Stub fetching act_id={act_id}")
+        _ascii_info(f"ISAP Stub fetching act_id={act_id} at={at}")
 
-        # Mock content (art. 286 k.k. – uproszczony tekst)
         mock_text = (
             "Art. 286. § 1. Kto, w celu osiagniecia korzysci majatkowej, doprowadza "
             "inna osobe do niekorzystnego rozporzadzenia mieniem za pomoca wprowadzenia "
@@ -60,7 +58,6 @@ class IsapAdapter:
         )
         text_hash = f"sha256:{hashlib.sha256(mock_text.encode('utf-8')).hexdigest()}"
 
-        # Static version and validity for MVP; real adapter will resolve timeline.
         snapshot = LegalActSnapshot(
             act_id=act_id,
             version_id="2023-10-01",
