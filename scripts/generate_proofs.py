@@ -45,22 +45,7 @@ import sys
 import time
 from pathlib import Path
 from typing import List
-
-
-# === Helper logging functions / Funkcje pomocnicze do logowania ===
-def log_info(msg: str) -> None:
-    """EN: Print informational message. | PL: WyĹ›wietla komunikat informacyjny."""
-    print(f"\033[94m[INFO]\033[0m {msg}")
-
-
-def log_success(msg: str) -> None:
-    """EN: Print success message. | PL: WyĹ›wietla komunikat o powodzeniu."""
-    print(f"\033[92m[SUCCESS]\033[0m {msg}")
-
-
-def log_error(msg: str) -> None:
-    """EN: Print error message. | PL: WyĹ›wietla komunikat o bĹ‚Ä™dzie."""
-    print(f"\033[91m[ERROR]\033[0m {msg}")
+from utils.console import info as log_info, success as log_success, error as log_error
 
 
 # === Simulated proof generation / Symulowane generowanie dowodu ===
