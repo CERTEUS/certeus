@@ -1,3 +1,58 @@
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE:   .github/workflows/security-scan.yml                         |
+# | ROLE:   Security scans (CodeQL + deps SBOM)                         |
+# | DATE:   2025-08-17                                                  |
+# +=====================================================================+
+
 name: security-scan
-on: [push, pull_request]
-jobs: {}
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL (Python)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Init CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+
+  deps-sbom:
+    name: Dependencies SBOM
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+      - name: Sync deps
+        run: uv sync
+      - name: CycloneDX SBOM (JSON)
+        run: |
+          uv run python -m pip install cyclonedx-bom
+          cyclonedx-py --format json --output sbom.json
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx-json
+          path: sbom.json

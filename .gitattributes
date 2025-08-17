@@ -19,6 +19,7 @@ Makefile text eol=lf
 .editorconfig  text eol=lf
 CODEOWNERS     text eol=lf
 LICENSE        text eol=lf
+*.html text eol=lf
 
 # Proof artefacts -> LF
 *.smt2 text eol=lf
