@@ -1,12 +1,17 @@
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE:   .editorconfig                                               |
+# | ROLE:   Editor defaults (EOL, charset, newline)                     |
+# | DATE:   2025-08-17                                                  |
+# +=====================================================================+
+
 root = true
 
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
-indent_style = space
-indent_size = 4
 trim_trailing_whitespace = true
-
-[*.{ps1,bat}]
-end_of_line = crlf
+indent_style = space
+indent_size = 2
