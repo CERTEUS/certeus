@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # +=====================================================================+
-# |                           CERTEUS                                   |
-# |                     Mismatch Protocol (HITL)                        |
+# |                          CERTEUS                                    |
 # +=====================================================================+
-# | MODULE:  kernel/mismatch_protocol.py                                |
-# | VERSION: 0.2.0                                                      |
-# | DATE:    2025-08-16                                                 |
+# | MODULE:  F:/projekty/certeus/kernel/mismatch_protocol.py             |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
+
 
 """Protokół uruchamiany przy rozbieżności solverów — tworzy bilet."""
 

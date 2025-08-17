@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
-# |                        System/Utility API                           |
 # +=====================================================================+
-# | MODULE:  services/api_gateway/routers/system.py                     |
-# | VERSION: 1.3.7                                                      |
-# | DATE:    2025-08-17                                                 |
+# | MODULE:  F:/projekty/certeus/services/api_gateway/routers/system.py  |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
-# | ROLE: Misc endpoints: /v1/ingest, /v1/analyze, /v1/sipp/snapshot.   |
-# +=====================================================================+
+
 
 """
 PL: Router narzędziowy (systemowy). Udostępnia:

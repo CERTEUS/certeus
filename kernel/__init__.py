@@ -1,9 +1,11 @@
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
-# | MODULE:  F:/projekty/certeus/kernel/__init__.py              |
-# | DATE:    2025-08-17                                          |
+# | MODULE:  F:/projekty/certeus/kernel/__init__.py                      |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
+
+
 """
 PL: Pakiet inicjalizacyjny modułu.
 EN: Package initializer.

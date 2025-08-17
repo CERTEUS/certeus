@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tools/fix_certeus_headers.py            |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
 # -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
@@ -15,10 +8,8 @@
 # +=====================================================================+
 
 """
-PL: Narzędzie do hurtowego wstrzykiwania banerów i docstringów w plikach
-    wymaganych przez "CERTEUS header/docstring gate". Działa idempotentnie.
-EN: Bulk injector of module banners and docstrings for the "CERTEUS
-    header/docstring gate". Idempotent behavior.
+PL: Hurtowy wstrzykiwacz banerów CERTEUS i docstringów modułów (idempotentny).
+EN: Bulk injector for CERTEUS banners and module docstrings (idempotent).
 """
 
 from __future__ import annotations
@@ -26,7 +17,7 @@ from pathlib import Path
 import datetime
 import re
 
-# Uzupełniłem o brakujące dwa pliki:
+# Lista naprawianych plików (z poprzednich runów gate’a)
 FILES = [
     "services/api_gateway/app_e2e.py",
     "tests/services/test_mismatch_service.py",
@@ -43,7 +34,7 @@ FILES = [
     "tests/services/test_exporter_provenance.py",
     "kernel/truth_engine.py",
     "services/exporter_service/__init__.py",
-    # Nowe:
+    # dopełnienia:
     "tests/services/test_ledger.py",
     "tools/fix_certeus_headers.py",
 ]
@@ -56,11 +47,14 @@ BANNER = """# +=================================================================
 # +=====================================================================+
 """
 
-DOCSTRING = '''"""
+DOCSTRING_TMPL = '''"""
 PL: {pl_desc}
 EN: {en_desc}
 """
 '''
+
+# Bezpieczny wzorzec na docstring: potrójne " lub ' (symetryczne)
+DOCSTRING_NEAR_TOP_RE = re.compile(r'(?ms)^\s*(["\'])\1\1(?P<body>.*?)(\1\1\1)\s*')
 
 
 def needs_banner(text: str) -> bool:
@@ -71,7 +65,7 @@ def needs_banner(text: str) -> bool:
 
 def needs_docstring(text: str) -> bool:
     head = "\n".join(text.splitlines()[:25])
-    return not re.search(r'^\s*("""|\'\'\')[\s\S]*?\1', head, re.M)
+    return DOCSTRING_NEAR_TOP_RE.match(head) is None
 
 
 def make_descriptions(p: Path) -> tuple[str, str]:
@@ -110,40 +104,70 @@ def make_descriptions(p: Path) -> tuple[str, str]:
 def inject_header_and_docstring(path: Path) -> bool:
     text = path.read_text(encoding="utf-8")
     updated = False
+
+    # przygotuj baner
     today = datetime.date.today().isoformat()
     banner = BANNER.format(module_path=str(path).replace("\\", "/")[:60], today=today)
 
     new_text = text
 
-    if needs_banner(text):
-        shebang_block = ""
-        rest = new_text
-        if rest.startswith("#!"):
-            nl = rest.find("\n")
-            shebang_block, rest = rest[: nl + 1], rest[nl + 1 :]
-        elif rest.startswith("# -*- coding:"):
-            nl = rest.find("\n")
-            shebang_block, rest = rest[: nl + 1], rest[nl + 1 :]
-        new_text = f"{shebang_block}{banner}\n{rest}"
-        updated = True
+    # shebang/encoding na górze – zachowaj
+    lines = new_text.splitlines(keepends=True)
+    i = 0
+    if i < len(lines) and lines[i].startswith("#!"):
+        i += 1
+    if i < len(lines) and lines[i].startswith("# -*- coding:"):
+        i += 1
+    prefix = "".join(lines[:i])
+    rest = "".join(lines[i:])
 
-    if needs_docstring(new_text):
+    # usuń WSZYSTKIE istniejące banery CERTEUS gdziekolwiek
+    rest = re.sub(
+        r"(?ms)^# \+={69}\+\n(?:# \|.*\n)+# \+={69}\+\n\n?",
+        "",
+        rest,
+    )
+
+    # dodaj nasz jeden kanoniczny pod shebangiem/encodingiem
+    rest = banner + rest
+    updated = True
+
+    # docstring: zachowaj pierwszy jeśli jest na górze; jeśli nie ma – dodaj
+    head = "\n".join(rest.splitlines()[:25])
+    if DOCSTRING_NEAR_TOP_RE.match(head) is None:
         pl, en = make_descriptions(path)
-        doc = DOCSTRING.format(pl_desc=pl, en_desc=en).strip()
-        parts = new_text.splitlines()
-        insert_idx = 0
-        if parts and parts[0].startswith("#!"):
-            insert_idx = 1
-        while insert_idx < len(parts) and parts[insert_idx].startswith("# "):
-            insert_idx += 1
-        parts.insert(insert_idx, doc)
-        new_text = "\n".join(parts)
-        if not new_text.endswith("\n"):
-            new_text += "\n"
+        doc = DOCSTRING_TMPL.format(pl_desc=pl, en_desc=en).strip() + "\n\n"
+        rest = doc + rest
         updated = True
+    else:
+        # jeśli po banerze jest WIĘCEJ niż jeden docstring PL/EN pod rząd – zredukuj do jednego
+        parts = rest.splitlines(keepends=True)
+        pos = 0
+        # omiń baner (to 5–6 linii; wyłap marker linii granicznej)
+        while pos < len(parts) and parts[pos].startswith("# "):
+            pos += 1
+        # od 'pos' – zredukuj ewentualne duplikaty docstringów PL/EN
+        tail = "".join(parts[pos:])
+        m = DOCSTRING_NEAR_TOP_RE.match(tail)
+        if m:
+            end = m.end()
+            tail2 = tail[end:]
+            # usuwaj kolejne docstringi PL/EN od razu po sobie
+            while True:
+                skip = re.match(r"(?ms)^(?:[ \t]*#.*\n|[ \t]*\n)*", tail2)
+                s = skip.end() if skip else 0
+                m2 = DOCSTRING_NEAR_TOP_RE.match(tail2[s:])
+                if m2:
+                    body = m2.group("body")
+                    if "PL:" in body and "EN:" in body:
+                        tail2 = tail2[:s] + tail2[s + m2.end() :]
+                        updated = True
+                        continue
+                break
+            rest = "".join(parts[:pos]) + tail[:end] + tail2
 
     if updated:
-        path.write_text(new_text, encoding="utf-8")
+        path.write_text(prefix + rest, encoding="utf-8")
     return updated
 
 

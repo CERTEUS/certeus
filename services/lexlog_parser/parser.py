@@ -1,23 +1,10 @@
 # +=====================================================================+
-# |                    CERTEUS - LEXLOG Parser Module                   |
+# |                          CERTEUS                                    |
 # +=====================================================================+
-# | PROJECT: CERTEUS Legal Reasoning System                             |
-# | MODULE:  services/lexlog_parser/parser.py                           |
-# | VERSION: 1.0.1                                                      |
-# | AUTHOR:  CERTEUS Development Team                                   |
-# | DATE:    2025-01-16                                                 |
+# | MODULE:  F:/projekty/certeus/services/lexlog_parser/parser.py        |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
-# | DESCRIPTION:                                                        |
-# |   Production-ready LEXLOG parser with full AST support for legal    |
-# |   logic processing. Handles definitions, premises, rules, and       |
-# |   conclusions with SMT assertions.                                  |
-# |                                                                      |
-# | FEATURES:                                                            |
-# |   - Complete AST parsing with assert_expr support                   |
-# |   - Canonical premise ID normalization                              |
-# |   - Backward compatibility with Day 9 stub                          |
-# |   - Robust regex-based parsing with full type safety                |
-# +=====================================================================+
+
 
 """
 CERTEUS LEXLOG Parser - Production Implementation

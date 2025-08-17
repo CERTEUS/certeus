@@ -6,33 +6,10 @@
 # | DATE:    2025-08-17                                                  |
 # +=====================================================================+
 
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/truth/test_smt_translator_|
-# | DATE:    2025-08-17                                          |
-# +=====================================================================+
 """
 PL: Testy jednostkowe / integracyjne modułu.
 EN: Module test suite (unit/integration).
 """
-
-# -*- coding: utf-8 -*-
-# +=====================================================================+
-# |                              CERTEUS                                |
-# |                Tests — SMT Translator (extended)                    |
-# +=====================================================================+
-# | FILE:    tests/truth/test_smt_translator_ext.py                     |
-# | VERSION: 0.3.2                                                      |
-# | DATE:    2025-08-16                                                 |
-# +=====================================================================+
-# | ROLE: Sanity tests for kernel.smt_translator public API:            |
-# |       - validate_ast accepts/ rejects proper ASTs                   |
-# |       - compile_bool_ast accepts dict-based AST and populates       |
-# |         symbol table with referenced variables.                     |
-# | NOTE: These tests avoid runtime Z3 requirements; they do not        |
-# |       inspect Z3 expressions deeply—only API/typing-level behavior. |
-# +=====================================================================+
 
 from __future__ import annotations
 

@@ -6,28 +6,10 @@
 # | DATE:    2025-08-17                                                  |
 # +=====================================================================+
 
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/services/ledger_service/ledger.p|
-# | DATE:    2025-08-17                                          |
-# +=====================================================================+
 """
-PL: Księga pochodzenia (ledger) – core logika.
-EN: Provenance ledger – core logic.
+PL: Księga pochodzenia (ledger) – logika.
+EN: Provenance ledger – logic.
 """
-
-# -*- coding: utf-8 -*-
-# +=====================================================================+
-# |                              CERTEUS                                |
-# |                           Ledger Service                            |
-# +=====================================================================+
-# | MODULE:  services/ledger_service/ledger.py                          |
-# | VERSION: 1.1.1                                                      |
-# | DATE:    2025-08-16                                                 |
-# +=====================================================================+
-# | ROLE: In-memory ledger + provenance hash helpers.                    |
-# +=====================================================================+
 
 from __future__ import annotations
 

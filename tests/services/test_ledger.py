@@ -6,18 +6,7 @@
 # | DATE:    2025-08-17                                                  |
 # +=====================================================================+
 
-# -*- coding: utf-8 -*-
-# +=====================================================================+
-# |                              CERTEUS                                |
-# |                           Ledger Service                            |
-# +=====================================================================+
-# | MODULE:  services/ledger_service/ledger.py                          |
-# | VERSION: 1.2.0                                                      |
-# | DATE:    2025-08-16                                                 |
-# +=====================================================================+
-# | ROLE: In-memory ledger + provenance hash helpers.                   |
-# |       API zgodne z testami: append(), read_all(), alias 'hash'.     |
-# +=====================================================================+
+
 """
 PL: Testy Ledger – sprawdzanie łańcucha skrótów i nagłówków.
 EN: Ledger tests – verification of hash chain and headers.

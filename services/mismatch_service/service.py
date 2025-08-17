@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # +=====================================================================+
-# |                           CERTEUS                                   |
-# |                    Mismatch Service - Core                          |
+# |                          CERTEUS                                    |
 # +=====================================================================+
-# | MODULE:  services/mismatch_service/service.py                       |
-# | VERSION: 1.1.0                                                      |
-# | DATE:    2025-08-16                                                 |
-# | ROLE: Lifecycle of mismatch tickets (HITL)                          |
+# | MODULE:  F:/projekty/certeus/services/mismatch_service/service.py    |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
+
 
 """Serwis do zarządzania biletami niezgodności między solverami SMT."""
 

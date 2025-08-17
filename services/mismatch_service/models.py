@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # +=====================================================================+
-# |                           CERTEUS                                   |
-# |                    Mismatch Service - Models                        |
+# |                          CERTEUS                                    |
 # +=====================================================================+
-# | MODULE:  services/mismatch_service/models.py                        |
-# | VERSION: 1.1.0                                                      |
-# | DATE:    2025-08-16                                                 |
-# | ROLE: Pydantic models for solver mismatch tickets                   |
+# | MODULE:  F:/projekty/certeus/services/mismatch_service/models.py     |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
+
 
 """Modele Pydantic v2 dla biletów niezgodności SMT."""
 

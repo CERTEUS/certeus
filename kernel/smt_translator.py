@@ -2,25 +2,14 @@
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
-# | MODULE:  F:/projekty/certeus/kernel/smt_translator.py        |
-# | DATE:    2025-08-17                                          |
+# | MODULE:  F:/projekty/certeus/kernel/smt_translator.py                |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
+
 """
 PL: Translator SMT i powiązana logika.
 EN: SMT translator and related logic.
 """
-
-# -*- coding: utf-8 -*-
-# +=====================================================================+
-# |                              CERTEUS                                |
-# |                        SMT Translator (AST)                         |
-# +=====================================================================+
-# | MODULE:  kernel/smt_translator.py                                   |
-# | VERSION: 0.3.1                                                      |
-# | DATE:    2025-08-16                                                 |
-# +=====================================================================+
-# | ROLE: Validate & compile a light-weight boolean AST to Z3.          |
-# +=====================================================================+
 
 from __future__ import annotations
 

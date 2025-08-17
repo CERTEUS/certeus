@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
-# |                 SIPP Indexer – ISAP Snapshotter                     |
 # +=====================================================================+
-# | MODULE:  services/sipp_indexer_service/index_isap.py                |
-# | VERSION: 1.0.4                                                      |
-# | DATE:    2025-08-17                                                 |
+# | MODULE:  F:/projekty/certeus/services/sipp_indexer_service/index_isap.py|
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
-# | ROLE: Produce a deterministic snapshot JSON for a legal act.        |
-# +=====================================================================+
+
 
 """
 PL: Generator migawek ISAP. Buduje pojedynczy plik JSON `<act_id>.json`

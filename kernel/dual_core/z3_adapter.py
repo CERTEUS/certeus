@@ -6,30 +6,10 @@
 # | DATE:    2025-08-17                                                  |
 # +=====================================================================+
 
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/kernel/dual_core/z3_adapter.py  |
-# | DATE:    2025-08-17                                          |
-# +=====================================================================+
 """
 PL: Adapter dla Z3 i zależności SMT.
-EN: Adapter for Z3 and SMT dependencies.
+EN: Adapter for Z3 and SMT.
 """
-
-# -*- coding: utf-8 -*-
-# +=====================================================================+
-# |                           CERTEUS                                   |
-# |                      Z3 Adapter (Safe AST)                          |
-# +=====================================================================+
-# | MODULE:  kernel/dual_core/z3_adapter.py                             |
-# | VERSION: 0.2.2                                                      |
-# | DATE:    2025-08-16                                                 |
-# | AUTHOR:  CERTEUS Development Team                                   |
-# +=====================================================================+
-# | ROLE: Compile CERTEUS Boolean AST to Z3 expressions (no eval).      |
-# |       Provides Z3Adapter.solve(...) for Truth Engine Core-1.        |
-# +=====================================================================+
 
 from __future__ import annotations
 

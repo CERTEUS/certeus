@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
-# |                  Export API Router (/v1/export)                     |
 # +=====================================================================+
-# | MODULE:  services/api_gateway/routers/export.py                     |
-# | VERSION: 1.0.10                                                     |
-# | DATE:    2025-08-17                                                 |
+# | MODULE:  F:/projekty/certeus/services/api_gateway/routers/export.py  |
+# | DATE:    2025-08-17                                                  |
 # +=====================================================================+
-# | ROLE: Validate payload and export a human-readable report.          |
-# +=====================================================================+
+
 
 """
 PL: Router /v1/export – waliduje ładunek i zapisuje raport w formacie TXT
