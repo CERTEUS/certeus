@@ -29,38 +29,32 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from collections.abc import Iterable as AbcIterable
+from collections.abc import Mapping, MutableMapping, Sequence
 from inspect import Signature, signature
 from pathlib import Path
 from typing import (
     Any,
-    Dict,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
     cast,
 )
-from collections.abc import Iterable as AbcIterable
 
-from services.lexlog_parser.parser import parse_lexlog
-from services.lexlog_parser.mapping import load_mapping
 from services.lexlog_parser.evaluator import evaluate_rule
+from services.lexlog_parser.mapping import load_mapping
+from services.lexlog_parser.parser import parse_lexlog
 
 
-def _to_set(xs: object | None) -> Set[str]:
+def _to_set(xs: object | None) -> set[str]:
     """
     PL: Zamiana dowolnego wejścia na set[str] z jawnie typowanym elementem.
     EN: Convert arbitrary input to set[str] with explicit element typing.
     """
-    out: Set[str] = set()
+    out: set[str] = set()
     if xs is None:
         return out
     if isinstance(xs, str):
         out.add(xs)
         return out
-    if isinstance(xs, AbcIterable) and not isinstance(xs, (bytes, bytearray)):
+    if isinstance(xs, AbcIterable) and not isinstance(xs, bytes | bytearray):
         for elem in cast(AbcIterable[object], xs):
             s: str = str(elem)
             out.add(s)
@@ -69,7 +63,7 @@ def _to_set(xs: object | None) -> Set[str]:
     return out
 
 
-def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> Optional[str]:
+def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> str | None:
     """
     PL: Wyszukaj identyfikatory po 'RULE' i preferuj ten zawierający token (np. '286').
     EN: Extract identifiers after 'RULE' and prefer one containing a token (e.g. '286').
@@ -83,9 +77,7 @@ def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> Optional[
     return ids[0]
 
 
-def _call_evaluate(
-    ast: Any, rule_id: Optional[str], flags: Mapping[str, bool], ctx: Any
-) -> Any:
+def _call_evaluate(ast: Any, rule_id: str | None, flags: Mapping[str, bool], ctx: Any) -> Any:
     """
     PL: Wywołaj evaluate_rule zgodnie z aktualną sygnaturą (różne wersje).
     EN: Call evaluate_rule according to the current signature (versions may differ).
@@ -93,7 +85,7 @@ def _call_evaluate(
     sig: Signature = signature(evaluate_rule)
     params: Sequence[str] = list(sig.parameters.keys())
 
-    kwargs: Dict[str, Any] = {}
+    kwargs: dict[str, Any] = {}
     if "ast" in params:
         kwargs["ast"] = ast
     if "rule_id" in params:
@@ -117,8 +109,8 @@ def _call_evaluate(
 
 
 def _step(
-    ast: Any, rule_id: Optional[str], flags: MutableMapping[str, bool], ctx: Any
-) -> Tuple[bool, Set[str], Set[str], Any]:
+    ast: Any, rule_id: str | None, flags: MutableMapping[str, bool], ctx: Any
+) -> tuple[bool, set[str], set[str], Any]:
     """
     PL: Jeden krok ewaluacji -> (ok, missing_premises, failing_excludes, raw_result).
     EN: One evaluation step -> (ok, missing_premises, failing_excludes, raw_result).
@@ -158,9 +150,7 @@ def main() -> None:
         default="286",
         help="Token preferred when auto-selecting RULE id",
     )
-    parser.add_argument(
-        "--max-iter", type=int, default=10, help="Max refinement iterations"
-    )
+    parser.add_argument("--max-iter", type=int, default=10, help="Max refinement iterations")
     args = parser.parse_args()
 
     rules_path = Path(args.rules)
@@ -171,17 +161,13 @@ def main() -> None:
     ast = parse_lexlog(rules_text)
     ctx = load_mapping(map_path)
 
-    rule_id = args.rule_id or _detect_rule_id_from_text(
-        rules_text, prefer_token=args.prefer_token
-    )
+    rule_id = args.rule_id or _detect_rule_id_from_text(rules_text, prefer_token=args.prefer_token)
     if rule_id:
         print(f"[INFO] Using rule_id: {rule_id}")
     else:
-        print(
-            "[WARN] Could not detect rule_id from .lex; trying evaluator without rule_id"
-        )
+        print("[WARN] Could not detect rule_id from .lex; trying evaluator without rule_id")
 
-    flags: Dict[str, bool] = {}
+    flags: dict[str, bool] = {}
 
     for _ in range(args.max_iter):
         ok, miss, fail, _ = _step(ast, rule_id, flags, ctx)
@@ -190,9 +176,7 @@ def main() -> None:
 
         if miss:
             for p in miss:
-                engine_flag = ctx.premise_to_flag.get(
-                    p
-                )  # P_* -> ZNAMIE_* jeśli dostępne
+                engine_flag = ctx.premise_to_flag.get(p)  # P_* -> ZNAMIE_* jeśli dostępne
                 key = str(engine_flag or p)
                 flags[key] = True
         if fail:
@@ -200,9 +184,7 @@ def main() -> None:
                 flags[str(k)] = False
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(
-        json.dumps({"flags": flags}, ensure_ascii=True, indent=2), encoding="utf-8"
-    )
+    out_path.write_text(json.dumps({"flags": flags}, ensure_ascii=True, indent=2), encoding="utf-8")
     print("[OK] wrote", out_path)
     print("[OK] True:", sorted([k for k, v in flags.items() if v]))
     print("[OK] False:", sorted([k for k, v in flags.items() if not v]))

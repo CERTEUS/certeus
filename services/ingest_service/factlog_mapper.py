@@ -30,10 +30,12 @@ EN: This module transforms raw OCR output into a list of `Fact` objects.
 
 # [BLOCK: IMPORTS / IMPORTY]
 from __future__ import annotations
+
 import hashlib
 import uuid
-from typing import List, Dict, Any
 from datetime import date
+from typing import Any
+
 from .models import Fact, FactRole
 
 
@@ -43,7 +45,7 @@ def _sha256_hex(data: bytes) -> str:
     return "sha256:" + hashlib.sha256(data).hexdigest()
 
 
-def _pages_by_num(ocr_output: Dict[str, Any]) -> Dict[int, str]:
+def _pages_by_num(ocr_output: dict[str, Any]) -> dict[int, str]:
     """PL/EN: Maps page_num -> text."""
     return {p.get("page_num"): p.get("text", "") for p in ocr_output.get("pages", [])}
 
@@ -55,9 +57,7 @@ class FactlogMapper:
     EN: Transforms OCR data into structured facts.
     """
 
-    def map_to_facts(
-        self, ocr_output: Dict[str, Any], document_bytes: bytes
-    ) -> List[Fact]:
+    def map_to_facts(self, ocr_output: dict[str, Any], document_bytes: bytes) -> list[Fact]:
         """
         PL:
         - Buduje hash dokumentu (chain-of-custody).
@@ -69,7 +69,7 @@ class FactlogMapper:
         """
         document_hash = _sha256_hex(document_bytes)
         pages = _pages_by_num(ocr_output)
-        facts: List[Fact] = []
+        facts: list[Fact] = []
 
         # [RULE: CONTRACT DATE CLAIM] / [REGUŁA: DATA UMOWY]
         if "umowa została zawarta" in pages.get(1, ""):

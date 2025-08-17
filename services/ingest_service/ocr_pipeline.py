@@ -30,8 +30,9 @@ EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
 
 # [BLOCK: IMPORTS / IMPORTY]
 from __future__ import annotations
-from typing import Dict, Any
+
 import logging
+from typing import Any
 
 # [BLOCK: LOGGER / LOGOWANIE]
 logger = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ class OcrPipeline:
 
     def process_document(
         self, file_bytes: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         PL:
         - Waliduje rozmiar wejścia (domyślnie 10 MB).
@@ -81,7 +82,9 @@ class OcrPipeline:
             "pages": [
                 {
                     "page_num": 1,
-                    "text": "Strona 1: Jan Kowalski twierdzi, że umowa została zawarta dnia 2024-01-15.",
+                    "text": (
+                        "Strona 1: Jan Kowalski twierdzi, że umowa została zawarta dnia 2024-01-15."
+                    ),
                 },
                 {
                     "page_num": 2,

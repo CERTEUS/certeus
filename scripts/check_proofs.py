@@ -28,6 +28,7 @@ EN: Checks presence of {z3.drat,cvc5.lfsc} and their *.sha256 files,
 
 # [BLOCK: IMPORTS / IMPORTY]
 from __future__ import annotations
+
 import argparse
 import hashlib
 import sys
@@ -56,9 +57,7 @@ def verify(path: Path, sha_path: Path) -> bool:
     recorded = sha_path.read_text(encoding="utf-8").strip().split()[0]
     computed = hashlib.sha256(path.read_bytes()).hexdigest()
     ok = computed == recorded
-    print(
-        f"{path.name}: {'OK' if ok else 'MISMATCH'} (computed={computed}, recorded={recorded})"
-    )
+    print(f"{path.name}: {'OK' if ok else 'MISMATCH'} (computed={computed}, recorded={recorded})")
     return ok
 
 

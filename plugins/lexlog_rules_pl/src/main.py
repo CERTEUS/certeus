@@ -60,12 +60,8 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
-
-from typing import Any, Final
-
-
 from collections.abc import MutableMapping
-
+from typing import Any, Final
 
 PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
 
@@ -180,9 +176,7 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
             return
 
-    raise RuntimeError(
-        "No compatible registration hook or registry mapping found on Plugin API"
-    )
+    raise RuntimeError("No compatible registration hook or registry mapping found on Plugin API")
 
 
 class Plugin:

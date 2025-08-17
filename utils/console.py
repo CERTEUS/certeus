@@ -15,20 +15,22 @@
 # | ROLA: Pomocniki konsolowe: druk ASCII-safe i kolorowe logi. |
 # +-------------------------------------------------------------+
 """
-PL: Funkcje do bezpiecznego wypisywania ASCII oraz kolorowe znaczniki logów na strumieniach tekstowych.
-EN: Helpers for ASCII-safe printing and simple colored log markers on text streams.
+PL: Funkcje do bezpiecznego wypisywania ASCII oraz proste znaczniki logów
+na strumieniach tekstowych (kolorystyczne).
+EN: Helpers for ASCII-safe printing and simple colored
+log markers on text streams.
 """
 
 from __future__ import annotations
 
 import sys
-from typing import Optional, Protocol, runtime_checkable, cast
+from typing import Protocol, cast, runtime_checkable
 
 
 @runtime_checkable
 class StreamLike(Protocol):
     @property
-    def encoding(self) -> Optional[str]: ...
+    def encoding(self) -> str | None: ...
     def write(self, s: str) -> int: ...
     def flush(self) -> None: ...
     def isatty(self) -> bool: ...

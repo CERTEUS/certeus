@@ -49,6 +49,4 @@ def test_lexlog_parser_kk_lex() -> None:
 
     # Conclusion has assertion
     concl = next(c for c in ast.conclusions if c.id == "K_OSZUSTWO_STWIERDZONE")
-    assert (
-        concl.assert_expr is not None and "cel_korzysci_majatkowej" in concl.assert_expr
-    )
+    assert concl.assert_expr is not None and "cel_korzysci_majatkowej" in concl.assert_expr

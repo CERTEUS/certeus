@@ -14,13 +14,13 @@ EN: CERTEUS system module.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from services.exporter_service.exporter import ExporterService
 from kernel.truth_engine import DualCoreVerifier
+from services.exporter_service.exporter import ExporterService
 
 __all__ = ["app"]
 
@@ -52,11 +52,11 @@ class SimpleFact(BaseModel):
 
 class SolveResponse(BaseModel):
     status: str
-    time_ms: Optional[float] = None
-    model: Optional[Dict[str, Any]] = None
-    error: Optional[str] = None
-    report_path: Optional[str] = None
-    version: Optional[str] = None
+    time_ms: float | None = None
+    model: dict[str, Any] | None = None
+    error: str | None = None
+    report_path: str | None = None
+    version: str | None = None
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ class SolveResponse(BaseModel):
 
 
 @app.get("/health")
-def health() -> Dict[str, Any]:
+def health() -> dict[str, Any]:
     return {"status": "ok", "services": ["verifier", "exporter"]}
 
 
@@ -79,7 +79,7 @@ def e2e_solve(payload: SimpleFact) -> SolveResponse:
         force_mismatch=payload.force_mismatch,
     )
     # 2) optional export
-    report_path: Optional[str] = None
+    report_path: str | None = None
     if payload.export:
         out_path = _exporter.export_report(payload.case_id, result)
         report_path = str(Path(out_path))

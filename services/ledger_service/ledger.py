@@ -14,10 +14,11 @@ EN: Provenance ledger – logic.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from hashlib import sha256
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any
 
 
 def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
@@ -28,21 +29,14 @@ def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> 
     return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-def compute_provenance_hash(
-    data: Mapping[str, Any], *, include_timestamp: bool = False
-) -> str:
-    return sha256(
-        _normalize_for_hash(data, include_timestamp=include_timestamp)
-    ).hexdigest()
+def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
+    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
 
 
 def verify_provenance_hash(
     data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False
 ) -> bool:
-    return (
-        compute_provenance_hash(data, include_timestamp=include_timestamp)
-        == expected_hash
-    )
+    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
 
 
 @dataclass(frozen=True)
@@ -50,15 +44,15 @@ class LedgerRecord:
     event_id: int
     type: str
     case_id: str
-    document_hash: Optional[str]
+    document_hash: str | None
     timestamp: str
-    chain_prev: Optional[str]
+    chain_prev: str | None
     chain_self: str
 
 
 class Ledger:
     def __init__(self) -> None:
-        self._events: List[LedgerRecord] = []
+        self._events: list[LedgerRecord] = []
 
     def _next_event_id(self) -> int:
         return len(self._events) + 1
@@ -66,7 +60,7 @@ class Ledger:
     def _now_iso(self) -> str:
         return datetime.now(timezone.utc).isoformat()
 
-    def _chain(self, payload: Dict[str, Any], prev: Optional[str]) -> str:
+    def _chain(self, payload: dict[str, Any], prev: str | None) -> str:
         body = dict(payload)
         if prev:
             body["prev"] = prev
@@ -74,7 +68,7 @@ class Ledger:
             json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest()
 
-    def record_input(self, *, case_id: str, document_hash: str) -> Dict[str, Any]:
+    def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
         event_id = self._next_event_id()
         ts = self._now_iso()
         prev = self._events[-1].chain_self if self._events else None
@@ -100,7 +94,7 @@ class Ledger:
             "chain_self": rec.chain_self,
         }
 
-    def get_records_for_case(self, *, case_id: str) -> List[Dict[str, Any]]:
+    def get_records_for_case(self, *, case_id: str) -> list[dict[str, Any]]:
         return [
             {
                 "event_id": r.event_id,
@@ -115,7 +109,7 @@ class Ledger:
             if r.case_id == case_id
         ]
 
-    def build_provenance_receipt(self, *, case_id: str) -> Dict[str, Any]:
+    def build_provenance_receipt(self, *, case_id: str) -> dict[str, Any]:
         items = self.get_records_for_case(case_id=case_id)
         if not items:
             raise ValueError(f"No records for case_id={case_id}")

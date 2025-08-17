@@ -25,6 +25,7 @@ import json
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+
 from services.api_gateway.main import app
 
 client = TestClient(app)

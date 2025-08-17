@@ -15,6 +15,7 @@ EN: Module test suite (unit/integration).
 # | CERTEUS - Tests: Exporter & Ledger                          |
 # +-------------------------------------------------------------+
 from pathlib import Path
+
 from services.exporter_service import export_answer_to_txt
 from services.ledger_service.ledger import (
     compute_provenance_hash,

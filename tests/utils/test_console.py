@@ -21,7 +21,7 @@ EN: Tests for utils.console functions: ascii_safe, print_safe, info/success/erro
 
 from __future__ import annotations
 
-from utils.console import ascii_safe, print_safe, info, success, error
+from utils.console import ascii_safe, error, info, print_safe, success
 
 
 class _AsciiOnlyStream:

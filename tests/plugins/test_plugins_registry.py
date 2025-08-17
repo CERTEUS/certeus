@@ -105,7 +105,6 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
-
 from typing import Any
 
 
@@ -195,9 +194,7 @@ class PluginAPI:
 
             # Nazwa z atrybutów lub modułu / Name from attrs or module
 
-            name = getattr(plugin, "name", None) or getattr(
-                plugin, "__plugin_name__", None
-            )
+            name = getattr(plugin, "name", None) or getattr(plugin, "__plugin_name__", None)
 
             if not name:
                 mod = getattr(plugin, "__module__", "")

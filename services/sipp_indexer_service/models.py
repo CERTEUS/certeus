@@ -22,6 +22,7 @@ EN: Pydantic v2 data models for the SIPP Indexer.
 from __future__ import annotations
 
 from datetime import date, datetime
+
 from pydantic import BaseModel, Field
 
 

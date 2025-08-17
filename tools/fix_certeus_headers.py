@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
@@ -13,9 +12,10 @@ EN: Bulk injector for CERTEUS banners and module docstrings (idempotent).
 """
 
 from __future__ import annotations
-from pathlib import Path
+
 import datetime
 import re
+from pathlib import Path
 
 # Lista naprawianych plików (z poprzednich runów gate’a)
 FILES = [

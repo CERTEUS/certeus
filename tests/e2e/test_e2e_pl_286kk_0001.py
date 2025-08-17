@@ -21,9 +21,11 @@ PL: Test end-to-end kanonicznego przypadku oszustwa dla /v1/analyze.
 EN: End-to-end test of canonical fraud case via /v1/analyze.
 """
 
-from fastapi.testclient import TestClient
-from services.api_gateway.main import app
 import io
+
+from fastapi.testclient import TestClient
+
+from services.api_gateway.main import app
 
 client = TestClient(app)
 

@@ -13,7 +13,9 @@ EN: SMT translator and related logic.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple, TypedDict, Mapping, Literal, cast
+from collections.abc import Mapping
+from typing import Any, Literal, TypedDict, cast
+
 import z3  # type: ignore[reportMissingTypeStubs]
 
 _Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
@@ -43,7 +45,7 @@ class BinaryNode(TypedDict):
 class NaryNode(TypedDict):
     kind: Literal["nary"]
     op: Literal["AND", "OR", "XOR"]
-    args: List[Any]
+    args: list[Any]
 
 
 ASTNode = VarNode | UnaryNode | BinaryNode | NaryNode
@@ -85,14 +87,14 @@ def validate_ast(node: ASTNode | Mapping[str, Any]) -> None:
         raise ValueError("Unknown AST kind")
 
 
-def _ensure_sym(symbols: Dict[str, "z3.ExprRef"], name: str) -> "z3.ExprRef":
+def _ensure_sym(symbols: dict[str, z3.ExprRef], name: str) -> z3.ExprRef:
     if name not in symbols:
         # In some local stubs BoolRef may not subclass ExprRef → cast to keep Pylance happy
         symbols[name] = cast("z3.ExprRef", _Z3.Bool(name))
     return symbols[name]
 
 
-def _compile(node: ASTNode, symbols: Dict[str, "z3.ExprRef"]) -> "z3.ExprRef":
+def _compile(node: ASTNode, symbols: dict[str, z3.ExprRef]) -> z3.ExprRef:
     k = node["kind"]
     if k == "var":
         name = cast(VarNode, node)["name"]
@@ -137,11 +139,11 @@ def compile_bool_ast(
     *,
     declare_on_use: bool = True,  # kept for API symmetry
     validate: bool = True,
-) -> Tuple["z3.ExprRef", Dict[str, "z3.ExprRef"]]:
+) -> tuple[z3.ExprRef, dict[str, z3.ExprRef]]:
     if validate:
         validate_ast(node)
     ast = _normalize(node)
-    symbols: Dict[str, "z3.ExprRef"] = {}
+    symbols: dict[str, z3.ExprRef] = {}
     expr = _compile(ast, symbols)
     return expr, symbols
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
@@ -14,7 +13,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -45,10 +44,10 @@ class ResolutionType(str, Enum):
 class SolverResult(BaseModel):
     solver_name: str = Field(..., description="e.g. 'z3', 'cvc5'")
     status: str = Field(..., description="sat/unsat/unknown/timeout/error")
-    execution_time_ms: Optional[float] = Field(None)
-    model: Optional[Dict[str, Any]] = Field(None)
-    error_message: Optional[str] = Field(None)
-    version: Optional[str] = Field(None)
+    execution_time_ms: float | None = Field(None)
+    model: dict[str, Any] | None = Field(None)
+    error_message: str | None = Field(None)
+    version: str | None = Field(None)
 
     @field_validator("status")
     @classmethod
@@ -65,26 +64,26 @@ class MismatchTicket(BaseModel):
     case_id: str
 
     formula_str: str
-    formula_ast: Optional[Dict[str, Any]] = None
-    formula_hash: Optional[str] = None
+    formula_ast: dict[str, Any] | None = None
+    formula_hash: str | None = None
 
-    results: List[SolverResult]
-    expected_result: Optional[str] = None
+    results: list[SolverResult]
+    expected_result: str | None = None
 
     status: TicketStatus = TicketStatus.OPEN
     priority: TicketPriority = TicketPriority.MEDIUM
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: Optional[datetime] = None
-    resolved_at: Optional[datetime] = None
+    updated_at: datetime | None = None
+    resolved_at: datetime | None = None
 
-    resolution_type: Optional[ResolutionType] = None
-    resolution_notes: Optional[str] = None
-    resolved_by: Optional[str] = None
-    chosen_result: Optional[str] = None
+    resolution_type: ResolutionType | None = None
+    resolution_notes: str | None = None
+    resolved_by: str | None = None
+    chosen_result: str | None = None
 
-    tags: List[str] = Field(default_factory=list)
-    attachments: List[str] = Field(default_factory=list)
+    tags: list[str] = Field(default_factory=list)
+    attachments: list[str] = Field(default_factory=list)
 
     model_config = {
         "use_enum_values": True,
@@ -99,9 +98,7 @@ class MismatchTicket(BaseModel):
         values = info.data
         results = values.get("results", [])
         statuses = [
-            getattr(r, "status", None)
-            if isinstance(r, SolverResult)
-            else (r or {}).get("status")
+            getattr(r, "status", None) if isinstance(r, SolverResult) else (r or {}).get("status")
             for r in results
         ]
         statuses = [s for s in statuses if s]
@@ -114,7 +111,7 @@ class MismatchTicket(BaseModel):
     def get_mismatch_summary(self) -> str:
         if not self.results:
             return "No results"
-        buckets: Dict[str, List[str]] = {}
+        buckets: dict[str, list[str]] = {}
         for r in self.results:
             buckets.setdefault(r.status, []).append(r.solver_name)
         parts = [f"{k}({', '.join(v)})" for k, v in buckets.items()]
@@ -128,8 +125,8 @@ class TicketResolution(BaseModel):
     notes: str
     resolved_by: str
     confidence: float = Field(..., ge=0.0, le=1.0)
-    solver_update_info: Optional[Dict[str, Any]] = None
-    formula_correction: Optional[str] = None
+    solver_update_info: dict[str, Any] | None = None
+    formula_correction: str | None = None
 
 
 class TicketStatistics(BaseModel):
@@ -139,9 +136,9 @@ class TicketStatistics(BaseModel):
     resolved_tickets: int = 0
     escalated_tickets: int = 0
 
-    avg_resolution_time_hours: Optional[float] = None
-    most_common_mismatch: Optional[str] = None
+    avg_resolution_time_hours: float | None = None
+    most_common_mismatch: str | None = None
 
-    by_priority: Dict[str, int] = Field(default_factory=dict)
-    by_resolution_type: Dict[str, int] = Field(default_factory=dict)
-    by_solver: Dict[str, int] = Field(default_factory=dict)
+    by_priority: dict[str, int] = Field(default_factory=dict)
+    by_resolution_type: dict[str, int] = Field(default_factory=dict)
+    by_solver: dict[str, int] = Field(default_factory=dict)

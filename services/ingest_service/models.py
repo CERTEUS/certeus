@@ -1,41 +1,45 @@
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/services/ingest_service/models.py       |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
 # +-------------------------------------------------------------+
 # |                        CERTEUS                              |
 # |        Core Engine for Reliable & Unified Systems           |
 # +-------------------------------------------------------------+
-# ── CERTEUS Project ─────────────────────────────────────────────────────────────
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/ingest_service/models.py      |
+# | DATE:    2025-08-17                                                 |
+# +=====================================================================+
+# ── CERTEUS Project ────────────────────────────────────────────────────
 # File: services/ingest_service/models.py
 # License: Apache-2.0
 # Description (PL): Modele Pydantic dla serwisu ingestii – kluczowy model Fact.
 # Description (EN): Pydantic models for the ingestion service – the key Fact model.
-# Style Guide: ASCII header, PL/EN docs, and labeled code blocks.  (See README)
-# ────────────────────────────────────────────────────────────────────────────────
+# Style Guide: ASCII header, PL/EN docs, and labeled code blocks. (See README)
+# ───────────────────────────────────────────────────────────────────────
 
 """
 PL: Ten moduł definiuje atomową jednostkę informacji w CERTEUS: **Fact**.
     To „waluta” przekazywana do Jądra Prawdy. Model jest rygorystyczny,
-    wersjonowany (schema_version) i odporny na śmieci w polach (extra="forbid").
+    wersjonowany (schema_version) i odporny na śmieci w polach
+    (extra="forbid").
 
 EN: This module defines the atomic unit of information in CERTEUS: **Fact**.
     It is the “currency” passed into the Truth Engine. The model is strict,
-    versioned (schema_version), and resilient to junk fields (extra="forbid").
+    versioned (schema_version), and resilient to junk fields
+    (extra="forbid").
 
-Zgodność stylistyczna / Style compliance: nagłówek ASCII, PL/EN, podpisane bloki. :contentReference[oaicite:1]{index=1}
+Zgodność stylistyczna:
+- nagłówek ASCII, opisy PL/EN, podpisane bloki.
+
+Style compliance:
+- ASCII header, PL/EN docs, labeled blocks.
 """
 
 # [BLOCK: IMPORTS / IMPORTY]
 from __future__ import annotations
-from enum import Enum
-from typing import Optional, Literal
+
 from datetime import date
-from pydantic import BaseModel, Field, ConfigDict
+from enum import Enum
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # [BLOCK: ENUMS / ENUMERACJE]
@@ -45,8 +49,11 @@ class FactRole(str, Enum):
     EN: Fact roles – clearly naming the function of a fact in analysis.
     """
 
-    claim_contract_date = "claim_contract_date"  # PL: twierdzenie dot. daty umowy / EN: contract date claim
-    evidence_payment = "evidence_payment"  # PL: dowód wpłaty / EN: proof of payment
+    # PL: twierdzenie dot. daty umowy / EN: contract date claim
+    claim_contract_date = "claim_contract_date"
+
+    # PL: dowód wpłaty / EN: proof of payment
+    evidence_payment = "evidence_payment"
 
 
 # [BLOCK: MODELS / MODELE]
@@ -71,7 +78,8 @@ class Fact(BaseModel):
         • confidence_score – extraction confidence [0.0, 1.0].
     """
 
-    # Rygorystyczna konfiguracja: odrzucaj pola nieznane / Strict config: forbid unknown fields
+    # Rygorystyczna konfiguracja: odrzucaj pola nieznane
+    # Strict config: forbid unknown fields
     model_config = ConfigDict(extra="forbid")
 
     # Wersja schematu / Schema version
@@ -80,29 +88,34 @@ class Fact(BaseModel):
     # Identyfikacja i semantyka / Identification and semantics
     fact_id: str = Field(
         ...,
-        description="PL: Unikalny identyfikator faktu. | EN: Unique identifier for the fact.",
+        description=("PL: Unikalny identyfikator faktu. | EN: Unique identifier for the fact."),
     )
     role: FactRole = Field(
-        ..., description="PL: Rola faktu w sprawie. | EN: Role of the fact in the case."
+        ...,
+        description="PL: Rola faktu w sprawie. | EN: Role of the fact in the case.",
     )
-    event_date: Optional[date] = Field(
+    event_date: date | None = Field(
         None,
-        description="PL: Data zdarzenia (opcjonalna). | EN: Date of the event (optional).",
+        description=("PL: Data zdarzenia (opcjonalna). | EN: Date of the event (optional)."),
     )
 
     # Treść i źródło / Content and source
     thesis: str = Field(
-        ..., min_length=3, description="PL: Treść faktu. | EN: The content of the fact."
+        ...,
+        min_length=3,
+        description="PL: Treść faktu. | EN: The content of the fact.",
     )
     source_document_hash: str = Field(
         ...,
         pattern=r"^sha256:[0-9a-f]{64}$",
-        description="PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...).",
+        description=(
+            "PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."
+        ),
     )
-    source_page: Optional[int] = Field(
+    source_page: int | None = Field(
         None,
         ge=1,
-        description="PL: Numer strony w źródle (≥1). | EN: Source page number (≥1).",
+        description=("PL: Numer strony w źródle (≥1). | EN: Source page number (≥1)."),
     )
 
     # Jakość ekstrakcji / Extraction quality
@@ -110,5 +123,5 @@ class Fact(BaseModel):
         ...,
         ge=0.0,
         le=1.0,
-        description="PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0].",
+        description=("PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0]."),
     )

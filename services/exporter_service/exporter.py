@@ -14,8 +14,9 @@ EN: Report/artefact exporter.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Dict, Mapping, Optional
+from typing import Any
 
 # (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
 
@@ -32,7 +33,7 @@ class ExporterService:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    def export_report(self, case_id: str, analysis: Dict[str, Any]) -> Path:
+    def export_report(self, case_id: str, analysis: dict[str, Any]) -> Path:
         status = str(analysis.get("status", "")).upper()
         model = analysis.get("model", "")
         content = TEMPL_REPORT.format(case_id=case_id, status=status, model=model)
@@ -50,9 +51,7 @@ def export_answer_to_txt(
     return str(p)
 
 
-def export_answer(
-    answer: Mapping[str, Any], *, fmt: str, output_dir: Optional[Path] = None
-):
+def export_answer(answer: Mapping[str, Any], *, fmt: str, output_dir: Path | None = None):
     """
     - fmt="json": return pretty json string
     - fmt="file": write <case_id>.json to output_dir, return Path

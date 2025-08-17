@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
@@ -23,11 +22,12 @@ EN: System/utility router exposing:
 from __future__ import annotations
 
 import json
-from hashlib import sha256
-from fastapi import APIRouter, File, UploadFile, HTTPException, Response
-from pydantic import BaseModel, Field
-from typing import Any, Dict, List
 from datetime import datetime, timezone
+from hashlib import sha256
+from typing import Annotated, Any
+
+from fastapi import APIRouter, File, HTTPException, Response, UploadFile
+from pydantic import BaseModel, Field
 
 router = APIRouter(tags=["system"])
 
@@ -46,8 +46,9 @@ class IngestResult(BaseModel):
 
 @router.post("/v1/ingest")
 async def ingest_document(
-    response: Response, file: UploadFile = File(...)
-) -> List[Dict[str, Any]]:
+    response: Response,
+    file: Annotated[UploadFile, File(...)],
+) -> list[dict[str, Any]]:
     """Zwraca dwa deterministyczne fakty (z `fact_id`, `thesis`, `confidence_score`),
     waliduje MIME/rozmiar i ustawia nagłówek łańcucha `X-CERTEUS-Ledger-Chain`."""
     MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
@@ -62,8 +63,8 @@ async def ingest_document(
 
     src = file.filename or "document.pdf"
 
-    def make_fact(role: str, value: str) -> Dict[str, Any]:
-        base = f"{src}|{role}|{value}".encode("utf-8")
+    def make_fact(role: str, value: str) -> dict[str, Any]:
+        base = f"{src}|{role}|{value}".encode()
         fid = "fact-" + sha256(base).hexdigest()[:12]
         return {
             "kind": "fact",
@@ -88,7 +89,7 @@ async def ingest_document(
             f["confidence_score"] = 0.99
 
     # nagłówek łańcucha: "sha256:<...>;sha256:<...>"
-    chain_parts: List[str] = []
+    chain_parts: list[str] = []
     for f in facts:
         payload = json.dumps(f, ensure_ascii=False, sort_keys=True).encode("utf-8")
         chain_parts.append("sha256:" + sha256(payload).hexdigest())
@@ -103,7 +104,7 @@ async def ingest_document(
 
 
 @router.post("/v1/analyze")
-async def analyze(case_id: str, file: UploadFile = File(...)) -> Dict[str, Any]:
+async def analyze(case_id: str, file: Annotated[UploadFile, File(...)]) -> dict[str, Any]:
     """
     Minimalny stub E2E: przyjmuje PDF i zwraca wynik SAT z prostym modelem.
     Zgodne z tests/e2e/test_e2e_pl_286kk_0001.py.
@@ -121,7 +122,7 @@ async def analyze(case_id: str, file: UploadFile = File(...)) -> Dict[str, Any]:
 
 
 @router.get("/v1/sipp/snapshot/{act_id}")
-async def get_snapshot(act_id: str) -> Dict[str, Any]:
+async def get_snapshot(act_id: str) -> dict[str, Any]:
     """Zwraca minimalny snapshot (dict), aby dozwolić klucz `_certeus`."""
     text = (
         "Art. 286 k.k.: Kto, w celu osiągnięcia korzyści majątkowej, "

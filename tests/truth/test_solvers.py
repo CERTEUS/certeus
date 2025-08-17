@@ -32,7 +32,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import List, Literal
+from typing import Literal
 
 import pytest
 
@@ -50,9 +50,9 @@ from scripts.generate_proofs import generate_proofs
     ],
 )
 def test_generate_proofs_function_creates_expected_artifacts(
-    formats: List[str],
+    formats: list[str],
     mode: Literal["stub", "simulate"],
-    expected_files: List[str],
+    expected_files: list[str],
 ) -> None:
     """
     PL: Sprawdza, czy generate_proofs(...) tworzy oczekiwane pliki w danym trybie i formatach.
@@ -85,7 +85,7 @@ def test_generate_proofs_cli_smoke_test() -> None:
     """
     with tempfile.TemporaryDirectory() as tmpdir:
         out: Path = Path(tmpdir)
-        cmd: List[str] = [
+        cmd: list[str] = [
             "uv",
             "run",
             sys.executable,  # aktywny Python z venv

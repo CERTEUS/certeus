@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from services.lexlog_parser.evaluator import evaluate_rule, choose_article_for_kk
+from services.lexlog_parser.evaluator import choose_article_for_kk, evaluate_rule
 from services.lexlog_parser.mapping import load_mapping
 from services.lexlog_parser.parser import parse_lexlog
 

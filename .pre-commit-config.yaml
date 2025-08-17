@@ -22,7 +22,9 @@ repos:
     rev: v4.6.0
     hooks:
       - id: end-of-file-fixer
+        exclude: ^exports/
       - id: trailing-whitespace
+        exclude: ^exports/
       - id: check-merge-conflict
       - id: check-yaml
       - id: check-json

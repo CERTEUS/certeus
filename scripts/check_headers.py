@@ -32,9 +32,8 @@ from __future__ import annotations
 import argparse
 import ast
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List
-
 
 # ==============================================================
 # == BLOCK: detection helpers                                  =
@@ -44,7 +43,7 @@ from typing import Iterable, List
 def _read_head(path: Path, head_lines: int = 30) -> str:
     """Read only the first N lines of the file for header detection."""
     try:
-        lines: List[str] = []
+        lines: list[str] = []
         with path.open("r", encoding="utf-8", errors="ignore") as f:
             for i, line in enumerate(f):
                 if i >= head_lines:

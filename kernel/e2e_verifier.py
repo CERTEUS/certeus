@@ -14,9 +14,10 @@ EN: E2E verifier for CERTEUS flows.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
+
 from .smt_translator import compile_bool_ast, validate_ast
 
 logger = logging.getLogger(__name__)
@@ -32,19 +33,17 @@ except Exception:  # pragma: no cover - emergency fallback
     class _AdapterClass:  # type: ignore[no-redef]
         """Fallback adapter: solve a list of Z3 assertions with z3.Solver()."""
 
-        def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]:
+        def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
             s = z3.Solver()
             for a in assertions:
                 s.add(a)
             status = s.check()
-            result: Dict[str, Any] = {
+            result: dict[str, Any] = {
                 "status": str(status).lower(),
                 "time_ms": None,
                 "model": None,
                 "error": None,
-                "version": z3.get_version_string()
-                if hasattr(z3, "get_version_string")
-                else None,
+                "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
             }
             if status == z3.sat:
                 try:
@@ -72,20 +71,16 @@ class E2EVerifier:
     # ──────────────────────────────────────────────────────────────────
     # AST → Z3
     # ──────────────────────────────────────────────────────────────────
-    def compile_ast_to_z3(
-        self, ast_root: Any, *, do_validate: bool = True
-    ) -> z3.ExprRef:
+    def compile_ast_to_z3(self, ast_root: Any, *, do_validate: bool = True) -> z3.ExprRef:
         """
         Compile CERTEUS boolean AST to a single Z3 expression.
         """
         if do_validate:
             validate_ast(cast(Any, ast_root))
-        expr, _symbols = compile_bool_ast(
-            cast(Any, ast_root), declare_on_use=True, validate=False
-        )
+        expr, _symbols = compile_bool_ast(cast(Any, ast_root), declare_on_use=True, validate=False)
         return expr  # ExprRef (BoolRef derives from ExprRef in stubs)
 
-    def verify_ast(self, ast_root: Any, *, do_validate: bool = True) -> Dict[str, Any]:
+    def verify_ast(self, ast_root: Any, *, do_validate: bool = True) -> dict[str, Any]:
         """
         PL: Kompiluje AST do jednej formuły i rozwiązuje ją Z3.
         EN: Compile AST to a single assertion and solve it with Z3.
@@ -96,11 +91,11 @@ class E2EVerifier:
     # ──────────────────────────────────────────────────────────────────
     # SMT-LIB2 → Z3
     # ──────────────────────────────────────────────────────────────────
-    def _parse_smt2_assertions(self, smt2: str) -> List[z3.ExprRef]:
+    def _parse_smt2_assertions(self, smt2: str) -> list[z3.ExprRef]:
         vec = z3.parse_smt2_string(smt2)
         return [vec[i] for i in range(len(vec))]
 
-    def verify_smt2(self, smt2: str) -> Dict[str, Any]:
+    def verify_smt2(self, smt2: str) -> dict[str, Any]:
         """
         PL: Parsuje SMT-LIB2, wysyła wszystkie asercje do solvera i zwraca wynik.
         EN: Parse SMT-LIB2, send all assertions to the solver and return the result.

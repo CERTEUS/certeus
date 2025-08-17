@@ -17,8 +17,10 @@ EN: Tests for ExporterService – verifies template population correctness.
 """
 
 from __future__ import annotations
+
 import tempfile
 from pathlib import Path
+
 from services.exporter_service import ExporterService
 
 

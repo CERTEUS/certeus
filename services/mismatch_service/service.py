@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
@@ -16,9 +15,10 @@ import json
 import logging
 import uuid
 from collections import defaultdict
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable
+from typing import Any
 
 from .models import (
     MismatchTicket,
@@ -38,10 +38,8 @@ STORAGE_PATH = Path("data/mismatch_tickets")
 class MismatchService:
     def __init__(self, storage_mode: str = STORAGE_MODE) -> None:
         self.storage_mode = storage_mode
-        self._tickets: Dict[str, MismatchTicket] = {}
-        self._resolution_callbacks: List[
-            Callable[[MismatchTicket, TicketResolution], None]
-        ] = []
+        self._tickets: dict[str, MismatchTicket] = {}
+        self._resolution_callbacks: list[Callable[[MismatchTicket, TicketResolution], None]] = []
         if storage_mode == "file":
             STORAGE_PATH.mkdir(parents=True, exist_ok=True)
             self._load_from_disk()
@@ -56,12 +54,12 @@ class MismatchService:
         self,
         case_id: str,
         formula_str: str,
-        results: Dict[str, Any],
-        formula_ast: Optional[Dict[str, Any]] = None,
-        priority: Optional[TicketPriority] = None,
+        results: dict[str, Any],
+        formula_ast: dict[str, Any] | None = None,
+        priority: TicketPriority | None = None,
     ) -> MismatchTicket:
         ticket_id = f"MM-{uuid.uuid4().hex[:8].upper()}"
-        solver_results: List[SolverResult] = []
+        solver_results: list[SolverResult] = []
         for solver_name, data in results.items():
             if isinstance(data, dict):
                 solver_results.append(
@@ -76,9 +74,7 @@ class MismatchService:
                 )
 
         # Upewnij się, że priority ma typ TicketPriority (nie None)
-        prio: TicketPriority = (
-            priority if priority is not None else TicketPriority.MEDIUM
-        )
+        prio: TicketPriority = priority if priority is not None else TicketPriority.MEDIUM
 
         ticket = MismatchTicket(
             ticket_id=ticket_id,
@@ -112,25 +108,23 @@ class MismatchService:
             logger.critical(line)
 
     # -- Retrieval -------------------------------------------------------
-    def get_ticket(self, ticket_id: str) -> Optional[MismatchTicket]:
+    def get_ticket(self, ticket_id: str) -> MismatchTicket | None:
         return self._tickets.get(ticket_id)
 
-    def get_all_tickets(self) -> List[MismatchTicket]:
+    def get_all_tickets(self) -> list[MismatchTicket]:
         return list(self._tickets.values())
 
-    def get_open_tickets(self) -> List[MismatchTicket]:
+    def get_open_tickets(self) -> list[MismatchTicket]:
         return [t for t in self._tickets.values() if t.status == TicketStatus.OPEN]
 
-    def get_tickets_by_status(self, status: TicketStatus) -> List[MismatchTicket]:
+    def get_tickets_by_status(self, status: TicketStatus) -> list[MismatchTicket]:
         return [t for t in self._tickets.values() if t.status == status]
 
-    def get_tickets_by_case(self, case_id: str) -> List[MismatchTicket]:
+    def get_tickets_by_case(self, case_id: str) -> list[MismatchTicket]:
         return [t for t in self._tickets.values() if t.case_id == case_id]
 
     # -- Resolution / Escalation ----------------------------------------
-    def resolve_ticket(
-        self, ticket_id: str, resolution: TicketResolution
-    ) -> MismatchTicket:
+    def resolve_ticket(self, ticket_id: str, resolution: TicketResolution) -> MismatchTicket:
         ticket = self._tickets.get(ticket_id)
         if not ticket:
             raise KeyError(f"Ticket not found: {ticket_id}")
@@ -161,9 +155,7 @@ class MismatchService:
         )
         return ticket
 
-    def escalate_ticket(
-        self, ticket_id: str, reason: str, escalated_by: str
-    ) -> MismatchTicket:
+    def escalate_ticket(self, ticket_id: str, reason: str, escalated_by: str) -> MismatchTicket:
         ticket = self._tickets.get(ticket_id)
         if not ticket:
             raise KeyError(f"Ticket not found: {ticket_id}")
@@ -188,7 +180,7 @@ class MismatchService:
         priority_counts = defaultdict(int)
         resolution_counts = defaultdict(int)
         solver_counts = defaultdict(int)
-        resolution_times: List[float] = []
+        resolution_times: list[float] = []
 
         for t in self._tickets.values():
             status_counts[t.status] += 1
@@ -198,9 +190,7 @@ class MismatchService:
             for r in t.results:
                 solver_counts[r.solver_name] += 1
             if t.resolved_at and t.created_at:
-                resolution_times.append(
-                    (t.resolved_at - t.created_at).total_seconds() / 3600.0
-                )
+                resolution_times.append((t.resolved_at - t.created_at).total_seconds() / 3600.0)
 
         stats.total_tickets = len(self._tickets)
         stats.open_tickets = status_counts.get(TicketStatus.OPEN, 0)
@@ -211,9 +201,7 @@ class MismatchService:
         stats.by_resolution_type = dict(resolution_counts)
         stats.by_solver = dict(solver_counts)
         if resolution_times:
-            stats.avg_resolution_time_hours = sum(resolution_times) / len(
-                resolution_times
-            )
+            stats.avg_resolution_time_hours = sum(resolution_times) / len(resolution_times)
         return stats
 
     # -- Persistence -----------------------------------------------------
@@ -232,7 +220,7 @@ class MismatchService:
             return
         for p in STORAGE_PATH.glob("MM-*.json"):
             try:
-                with open(p, "r", encoding="utf-8") as f:
+                with open(p, encoding="utf-8") as f:
                     data = json.load(f)
                 t = MismatchTicket(**data)
                 self._tickets[t.ticket_id] = t

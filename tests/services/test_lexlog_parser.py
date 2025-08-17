@@ -24,6 +24,7 @@ EN: Tests for parsing of DEFINE/PREMISE/RULE/CONCLUSION, canonical ID
 """
 
 from pathlib import Path
+
 from services.lexlog_parser.parser import LexlogParser
 
 RULES = Path("packs/jurisdictions/PL/rules/kk.lex")

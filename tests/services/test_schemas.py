@@ -66,32 +66,22 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
-
 # === IMPORTY / IMPORTS ===
-
-
 import json
-
-
 from pathlib import Path
-
-
-from typing import Any, Dict, Final, Protocol
-
+from typing import Any, Final, Protocol
 
 import pytest
-
-
 from jsonschema import Draft7Validator, FormatChecker
-
+from jsonschema.exceptions import ValidationError
 
 # === ALIASY TYPÓW / TYPE ALIASES ===
 
 
-Schema = Dict[str, Any]
+Schema = dict[str, Any]
 
 
-JSONObj = Dict[str, Any]
+JSONObj = dict[str, Any]
 
 
 SCHEMA_DIR: Final[Path] = Path("schemas")
@@ -158,9 +148,7 @@ def assert_valid(instance: JSONObj, schema: Schema) -> None:
 
     """
 
-    validator: _ValidatorProtocol = Draft7Validator(
-        schema, format_checker=FormatChecker()
-    )  # type: ignore[assignment]
+    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
 
     validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
 
@@ -180,11 +168,9 @@ def assert_invalid(instance: JSONObj, schema: Schema) -> None:
 
     """
 
-    validator: _ValidatorProtocol = Draft7Validator(
-        schema, format_checker=FormatChecker()
-    )  # type: ignore[assignment]
+    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
 
 
@@ -290,9 +276,7 @@ def test_pca2_valid(S_PCA2: Schema) -> None:
     ok: JSONObj = {
         "case_id": "RS-DOM-vs-Stasikowski",
         "policy": ["lexenith.secure.v1", "legal.pl.civil.kc"],
-        "constraints": [
-            {"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}
-        ],
+        "constraints": [{"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}],
         "assumptions": [{"name": "ryczalt", "value": "tak"}],
         "attestations": [
             {

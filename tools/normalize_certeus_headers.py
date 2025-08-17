@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
@@ -29,13 +28,11 @@ from __future__ import annotations
 import argparse
 import datetime
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Optional, Tuple
 
 BORDER = "# +=====================================================================+"
-CERTEUS_LINE = (
-    "# |                          CERTEUS                                    |"
-)
+CERTEUS_LINE = "# |                          CERTEUS                                    |"
 MODULE_LABEL = "MODULE:"
 DATE_LABEL = "DATE:"
 
@@ -61,9 +58,7 @@ EXCLUDE_DIRS = {
 
 PY_GLOB = "**/*.py"
 
-BANNER_RE = re.compile(
-    rf"(?ms)^({re.escape(BORDER)}\n(?:# \|.*\n)+{re.escape(BORDER)}\n)"
-)
+BANNER_RE = re.compile(rf"(?ms)^({re.escape(BORDER)}\n(?:# \|.*\n)+{re.escape(BORDER)}\n)")
 
 DATE_LINE_RE = re.compile(r"# \|\s*DATE:\s*(?P<date>.*?)\s*\|")
 
@@ -78,16 +73,16 @@ def iter_py_files(root: Path) -> Iterable[Path]:
             yield p
 
 
-def extract_banner_date(block: str) -> Optional[str]:
+def extract_banner_date(block: str) -> str | None:
     m = DATE_LINE_RE.search(block)
     if m:
         return m.group("date").strip()
     return None
 
 
-def remove_all_banners(text: str) -> Tuple[str, Optional[str]]:
+def remove_all_banners(text: str) -> tuple[str, str | None]:
     """Remove all CERTEUS banner blocks. Return (text_wo_banners, first_date_if_any)."""
-    first_date: Optional[str] = None
+    first_date: str | None = None
 
     def repl(m: re.Match) -> str:
         nonlocal first_date
@@ -100,7 +95,7 @@ def remove_all_banners(text: str) -> Tuple[str, Optional[str]]:
     return new_text, first_date
 
 
-def split_shebang_encoding(text: str) -> Tuple[str, str]:
+def split_shebang_encoding(text: str) -> tuple[str, str]:
     """Return (prefix, rest) where prefix includes shebang/encoding lines."""
     lines = text.splitlines(keepends=True)
     idx = 0
@@ -114,13 +109,10 @@ def split_shebang_encoding(text: str) -> Tuple[str, str]:
 def build_banner(module_path: str, date_str: str) -> str:
     line_module = f"# | MODULE:  {module_path:<{CANONICAL_WIDTH}}|"
     line_date = f"# | DATE:    {date_str:<{CANONICAL_WIDTH}}|"
-    return (
-        "\n".join([BORDER, CERTEUS_LINE, BORDER, line_module, line_date, BORDER])
-        + "\n\n"
-    )
+    return "\n".join([BORDER, CERTEUS_LINE, BORDER, line_module, line_date, BORDER]) + "\n\n"
 
 
-def has_module_docstring_near_top(text_after_banner: str) -> Tuple[bool, int, int]:
+def has_module_docstring_near_top(text_after_banner: str) -> tuple[bool, int, int]:
     """
     Detect a module-level docstring near file start (after comments).
     Returns (found, start_idx, end_idx) in char offsets in text_after_banner.
@@ -175,7 +167,7 @@ def ensure_single_docstring(text_after_banner: str, module_path: str) -> str:
     return doc + text_after_banner
 
 
-def make_descriptions(module_path: str) -> Tuple[str, str]:
+def make_descriptions(module_path: str) -> tuple[str, str]:
     name = module_path
     if "tests/" in name:
         return (

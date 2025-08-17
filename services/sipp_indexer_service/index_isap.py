@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
@@ -17,12 +16,12 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
 
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Dict, Optional
-import json
+from typing import Any
 
 
 @dataclass
@@ -31,11 +30,11 @@ class ActSnapshot:
     version_id: str
     text_sha256: str
     source_url: str
-    title: Optional[str]
+    title: str | None
     text: str
     snapshot_timestamp: str
-    at: Optional[str] = None
-    _certeus: Dict[str, Any] = field(default_factory=dict)
+    at: str | None = None
+    _certeus: dict[str, Any] = field(default_factory=dict)
 
 
 def _snapshot_for(act_id: str) -> ActSnapshot:
@@ -66,7 +65,5 @@ def index_act(act_id: str, out_dir: Path | None = None) -> Path:
     out_dir = Path(out_dir or Path("snapshots"))
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{act_id}.json"
-    path.write_text(
-        json.dumps(asdict(snap), ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    path.write_text(json.dumps(asdict(snap), ensure_ascii=False, indent=2), encoding="utf-8")
     return path

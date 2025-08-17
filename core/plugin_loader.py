@@ -63,24 +63,12 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
-
 import importlib
-
-
 import logging
-
-
 import os
-
-
 from dataclasses import dataclass
-
-
 from pathlib import Path
-
-
 from typing import Any
-
 
 try:
     import yaml  # PyYAML (preferowane)
@@ -94,9 +82,7 @@ log = logging.getLogger("certeus.plugins")
 
 
 if not log.handlers:
-    logging.basicConfig(
-        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
 
 # === KONFIG / CONFIG ===
@@ -175,9 +161,7 @@ def _parse_plugin_yaml(path: Path) -> PluginSpec | None:
 
         return None
 
-    return PluginSpec(
-        name=name, module=module, register=register, enabled=enabled, version=version
-    )
+    return PluginSpec(name=name, module=module, register=register, enabled=enabled, version=version)
 
 
 def _discover_plugins(base_dir: Path = PLUGINS_DIR) -> list[PluginSpec]:

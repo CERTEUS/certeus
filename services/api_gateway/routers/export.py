@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # +=====================================================================+
 # |                              CERTEUS                                |
 # +=====================================================================+
@@ -26,15 +25,15 @@ EN: Export endpoint. Accepts `case_id` and `analysis_result`, writes a text
 
 from __future__ import annotations
 
+import hashlib
+import json
+from collections.abc import Mapping
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-
-import hashlib
-import json
-from datetime import datetime, timezone
 
 router = APIRouter(prefix="", tags=["export"])
 
@@ -49,7 +48,7 @@ class ExportPayload(BaseModel):
 class ExportResponse(BaseModel):
     path: str
     message: str
-    provenance: Optional[dict[str, Any]] = None  # optional to keep tests happy
+    provenance: dict[str, Any] | None = None  # optional to keep tests happy
 
 
 # === HELPERS ===
@@ -65,9 +64,7 @@ def _now_iso_utc() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _write_report(
-    case_id: str, analysis_result: Mapping[str, Any], out_dir: Path
-) -> Path:
+def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Path) -> Path:
     """
     PL: Zapis raportu jako .txt z podstawowym podsumowaniem i pretty JSON.
     EN: Write .txt report with a tiny header + pretty JSON of the analysis.
@@ -80,9 +77,7 @@ def _write_report(
     lines.append("# CERTEUS – Raport analityczny / Analytical Report")
     lines.append(f"Case: {case_id}")
     try:
-        pretty = json.dumps(
-            analysis_result, ensure_ascii=False, indent=2, sort_keys=True
-        )
+        pretty = json.dumps(analysis_result, ensure_ascii=False, indent=2, sort_keys=True)
     except Exception:
         pretty = str(analysis_result)
     lines.append("")

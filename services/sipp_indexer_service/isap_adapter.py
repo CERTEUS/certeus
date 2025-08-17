@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import hashlib
 from datetime import date, datetime, timezone
-from typing import Optional
 
 from .models import LegalActSnapshot
 
@@ -47,9 +46,7 @@ class IsapAdapter:
     EN: Simulates fetching a legal act and creating its snapshot.
     """
 
-    def fetch_act_snapshot(
-        self, act_id: str, at: Optional[date] = None
-    ) -> LegalActSnapshot:
+    def fetch_act_snapshot(self, act_id: str, at: date | None = None) -> LegalActSnapshot:
         """
         PL: Zwraca LegalActSnapshot dla zadanego act_id. Parametr 'at' to
             data, na ktora prosimy o stan prawa (stub ignoruje).

@@ -34,12 +34,12 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Mapping
 
-from services.lexlog_parser.parser import parse_lexlog
-from services.lexlog_parser.mapping import load_mapping
 from services.lexlog_parser.evaluator import evaluate_rule
+from services.lexlog_parser.mapping import load_mapping
+from services.lexlog_parser.parser import parse_lexlog
 
 RULE_ID = "R_286_OSZUSTWO"
 RULES_PATH = Path("packs/jurisdictions/PL/rules/kk.lex")
@@ -54,9 +54,7 @@ DEFAULT_FLAGS: Mapping[str, bool] = {
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--flags", type=str, default="", help="Ścieżka do pliku JSON z kluczem 'flags'"
-    )
+    ap.add_argument("--flags", type=str, default="", help="Ścieżka do pliku JSON z kluczem 'flags'")
     args = ap.parse_args()
 
     if not RULES_PATH.exists():

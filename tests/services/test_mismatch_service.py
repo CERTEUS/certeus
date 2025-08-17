@@ -14,8 +14,8 @@ EN: Module test suite (unit/integration).
 # +-------------------------------------------------------------+
 # | CERTEUS - Tests: Mismatch Service                           |
 # +-------------------------------------------------------------+
+from services.mismatch_service.models import ResolutionType, TicketResolution
 from services.mismatch_service.service import MismatchService
-from services.mismatch_service.models import TicketResolution, ResolutionType
 
 
 def test_create_and_resolve_ticket():

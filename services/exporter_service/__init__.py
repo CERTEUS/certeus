@@ -13,6 +13,6 @@ EN: Package initializer.
 
 from __future__ import annotations
 
-from .exporter import ExporterService, export_answer_to_txt, export_answer
+from .exporter import ExporterService, export_answer, export_answer_to_txt
 
 __all__ = ["ExporterService", "export_answer_to_txt", "export_answer"]

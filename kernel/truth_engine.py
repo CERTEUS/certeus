@@ -13,17 +13,18 @@ EN: CERTEUS system module.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Protocol, cast
 import time
+from typing import Any, Protocol, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
+
 from .mismatch_protocol import handle_mismatch  # ✅ import at top to avoid E402
 
 _Z3 = cast(Any, z3)
 
 
 class _Z3AdapterProto(Protocol):
-    def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]: ...
+    def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]: ...
 
 
 # Import adapter class if dostępny; w przeciwnym razie fallback.
@@ -34,21 +35,19 @@ except Exception:
     class _AdapterClass:  # type: ignore[no-redef]
         """Fallback adapter: solves a list of Z3 assertions with Z3.Solver()."""
 
-        def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]:
+        def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
             start = time.perf_counter()
             s = z3.Solver()
             for a in assertions:
                 s.add(a)
             status = s.check()
             elapsed = (time.perf_counter() - start) * 1000.0
-            result: Dict[str, Any] = {
+            result: dict[str, Any] = {
                 "status": str(status).lower(),  # "sat" / "unsat" / "unknown"
                 "time_ms": round(elapsed, 3),
                 "model": None,
                 "error": None,
-                "version": z3.get_version_string()
-                if hasattr(z3, "get_version_string")
-                else None,
+                "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
             }
             if status == z3.sat:
                 m = s.model()
@@ -67,13 +66,13 @@ class DualCoreVerifier:
         # ✅ unikamy konfliktu typów klas; instancja spełnia Protocol
         self.z3_adapter: _Z3AdapterProto = cast(_Z3AdapterProto, _AdapterClass())
 
-    def _parse_smt2(self, smt2: str) -> List[Any]:
+    def _parse_smt2(self, smt2: str) -> list[Any]:
         assertions: Any = _Z3.parse_smt2_string(smt2)
         return [assertions[i] for i in range(len(assertions))]
 
     def _solve_core2_stub(
-        self, core1_result: Dict[str, Any], *, force_mismatch: bool
-    ) -> Dict[str, Any]:
+        self, core1_result: dict[str, Any], *, force_mismatch: bool
+    ) -> dict[str, Any]:
         r = dict(core1_result)
         if force_mismatch:
             if r.get("status") == "sat":
@@ -89,9 +88,9 @@ class DualCoreVerifier:
         formula: str,
         *,
         lang: str = "smt2",
-        case_id: Optional[str] = None,
+        case_id: str | None = None,
         force_mismatch: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         if lang != "smt2":
             raise ValueError("Only 'smt2' formulas are accepted in this MVP.")
 
@@ -107,9 +106,7 @@ class DualCoreVerifier:
         result_core2 = self._solve_core2_stub(result_z3, force_mismatch=force_mismatch)
 
         # Divergence?
-        if (result_z3.get("status") or "").lower() != (
-            result_core2.get("status") or ""
-        ).lower():
+        if (result_z3.get("status") or "").lower() != (result_core2.get("status") or "").lower():
             handle_mismatch(
                 case_id=case_id or "temp-case-id",
                 formula_str=formula,

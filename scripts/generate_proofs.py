@@ -46,11 +46,11 @@ import os
 import random
 import string
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Final, Iterable, Optional
-
+from typing import Final
 
 # === CONSTANTS / KONSTANTY ===================================== #
 
@@ -78,7 +78,7 @@ def _lazy_console():
     EN: Try to import project's utils.console; fall back to print-based logger if missing.
     """
     try:
-        from utils.console import info, success, error  # type: ignore
+        from utils.console import error, info, success  # type: ignore
 
         return info, success, error
     except Exception:
@@ -126,7 +126,7 @@ def _rand_token(n: int = 24) -> str:
     return "".join(random.choices(alphabet, k=n))
 
 
-def _normalize_formats(formats: Optional[list[str]]) -> list[str]:
+def _normalize_formats(formats: list[str] | None) -> list[str]:
     if not formats:
         return list(FORMAT_TO_FILE.keys())
     out: list[str] = []
@@ -156,7 +156,7 @@ class Generated:
 # === CORE / LOGIKA ============================================= #
 
 
-def _emit_proof_file(fmt: str, out_dir: Path, mode: str, seed: Optional[int]) -> Path:
+def _emit_proof_file(fmt: str, out_dir: Path, mode: str, seed: int | None) -> Path:
     """
     PL: Tworzy plik dowodu w zadanym formacie i trybie.
     EN: Creates a proof file for the given format and mode.
@@ -238,10 +238,10 @@ def _emit_receipt(out_dir: Path, items: list[Generated]) -> Path:
 
 def generate_proofs(
     out: Path,
-    formats: Optional[list[str]] = None,
+    formats: list[str] | None = None,
     mode: str = "simulate",
     with_inputs: bool = False,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     write_receipt: bool = False,
 ) -> list[Path]:
     """
@@ -287,9 +287,7 @@ def generate_proofs(
     # Inputs
     if with_inputs:
         for ip in _emit_inputs(out, smt2=True, cnf=True):
-            created.append(
-                Generated(kind="input", format=None, path=ip, sha256=_sha256_hex(ip))
-            )
+            created.append(Generated(kind="input", format=None, path=ip, sha256=_sha256_hex(ip)))
             log_info(f"Created input file: {ip}")
 
     # Receipt
@@ -361,7 +359,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     return p
 
 
-def main(argv: Optional[Iterable[str]] = None) -> int:
+def main(argv: Iterable[str] | None = None) -> int:
     log_info, _log_success, log_error = _lazy_console()
 
     try:

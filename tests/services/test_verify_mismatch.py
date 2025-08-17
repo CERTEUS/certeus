@@ -21,6 +21,7 @@ EN: Test simulates core mismatch and checks 409 response.
 
 # === IMPORTY / IMPORTS ===
 from fastapi.testclient import TestClient
+
 from services.api_gateway.main import app
 
 
@@ -41,9 +42,7 @@ def test_verify_returns_409_on_mismatch(monkeypatch):
 
     monkeypatch.setattr(truth_engine.DualCoreVerifier, "verify", fake_verify)
     client = TestClient(app)
-    r = client.post(
-        "/v1/verify", json={"formula": "(set-logic QF_LIA)", "lang": "smt2"}
-    )
+    r = client.post("/v1/verify", json={"formula": "(set-logic QF_LIA)", "lang": "smt2"})
     assert r.status_code == 409
     body = r.json()
     assert body["detail"]["requires_human"] is True

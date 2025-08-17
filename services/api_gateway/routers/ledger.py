@@ -85,9 +85,7 @@ class RecordInputRequest(BaseModel):
     EN: Input to record a document ingestion.
     """
 
-    case_id: str = Field(
-        ..., min_length=1, description="PL: Id sprawy. / EN: Case identifier."
-    )
+    case_id: str = Field(..., min_length=1, description="PL: Id sprawy. / EN: Case identifier.")
     document_hash: str = Field(
         ...,
         min_length=7,

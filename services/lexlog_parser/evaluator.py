@@ -23,7 +23,9 @@ EN: LEXLOG evaluator (MVP). Checks if AST rules hold based on engine
 
 from __future__ import annotations
 
-from typing import Dict, List, Mapping, cast
+from collections.abc import Mapping
+from typing import cast
+
 from pydantic import BaseModel, Field
 
 from services.lexlog_parser.parser import LexAst
@@ -32,16 +34,16 @@ from services.lexlog_parser.parser import LexAst
 class EvalContext(BaseModel):
     """Mapping context LEXLOG -> engine flags."""
 
-    premise_to_flag: Dict[str, str] = Field(default_factory=dict)
-    conclusion_excludes: Dict[str, List[str]] = Field(default_factory=dict)
+    premise_to_flag: dict[str, str] = Field(default_factory=dict)
+    conclusion_excludes: dict[str, list[str]] = Field(default_factory=dict)
 
 
 class RuleEvalResult(BaseModel):
     rule_id: str
     conclusion_id: str
     satisfied: bool
-    missing_premises: List[str] = Field(default_factory=list)
-    failing_excludes: List[str] = Field(default_factory=list)
+    missing_premises: list[str] = Field(default_factory=list)
+    failing_excludes: list[str] = Field(default_factory=list)
 
 
 def _flag(flags: Mapping[str, bool], name: str) -> bool:
@@ -57,9 +59,9 @@ def evaluate_rule(
         raise ValueError(f"Unknown rule_id={rule_id}")
 
     conclusion_id = cast(str, rule.conclusion)  # ✅ dla .get i serializacji
-    excludes: List[str] = ctx.conclusion_excludes.get(conclusion_id, [])
+    excludes: list[str] = ctx.conclusion_excludes.get(conclusion_id, [])
 
-    missing: List[str] = []
+    missing: list[str] = []
     for p in rule.premises:
         flag_name = ctx.premise_to_flag.get(p)
         if not flag_name:
@@ -67,7 +69,7 @@ def evaluate_rule(
         if not _flag(flags, flag_name):
             missing.append(p)
 
-    failing_exc: List[str] = [ex for ex in excludes if _flag(flags, ex)]
+    failing_exc: list[str] = [ex for ex in excludes if _flag(flags, ex)]
     ok = not missing and not failing_exc
 
     return RuleEvalResult(
@@ -79,8 +81,6 @@ def evaluate_rule(
     )
 
 
-def choose_article_for_kk(
-    ast: LexAst, flags: Mapping[str, bool], ctx: EvalContext
-) -> str | None:
+def choose_article_for_kk(ast: LexAst, flags: Mapping[str, bool], ctx: EvalContext) -> str | None:
     res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
     return "art286" if res.satisfied else None

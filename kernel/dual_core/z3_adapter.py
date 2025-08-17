@@ -14,9 +14,10 @@ EN: Adapter for Z3 and SMT.
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
+
 from kernel.smt_translator import (
     compile_bool_ast,
     validate_ast,
@@ -34,9 +35,7 @@ def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     """
     if validate:
         validate_ast(cast(Any, ast_root))
-    expr, symbols = compile_bool_ast(
-        cast(Any, ast_root), declare_on_use=True, validate=False
-    )
+    expr, symbols = compile_bool_ast(cast(Any, ast_root), declare_on_use=True, validate=False)
     logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
     return expr
 
@@ -47,19 +46,17 @@ class Z3Adapter:
     - solve(assertions): odpala solver Z3 i zwraca ujednolicony dict wyniku.
     """
 
-    def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]:
+    def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
         s = z3.Solver()
         for a in assertions:
             s.add(a)
         status = s.check()
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "status": str(status).lower(),  # "sat" / "unsat" / "unknown"
             "time_ms": None,
             "model": None,
             "error": None,
-            "version": z3.get_version_string()
-            if hasattr(z3, "get_version_string")
-            else None,
+            "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
         }
         try:
             if status == z3.sat:

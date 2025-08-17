@@ -22,10 +22,11 @@ EN: E2E test for /v1/export endpoint – expects path to generated report.
 # [BLOCK: IMPORTS]
 from __future__ import annotations
 
-from typing import Any, Dict, TypedDict
 from pathlib import Path
+from typing import Any, TypedDict
 
 from fastapi.testclient import TestClient
+
 from services.api_gateway.main import app
 
 
@@ -35,7 +36,7 @@ class ExportPayload(TypedDict):
     EN: Request shape for /v1/export."""
 
     case_id: str
-    analysis_result: Dict[str, Any]
+    analysis_result: dict[str, Any]
 
 
 # [BLOCK: CLIENT]
@@ -57,7 +58,7 @@ def test_export_endpoint_returns_path() -> None:
 
     # [BLOCK: ASSERT]
     assert response.status_code == 200
-    body: Dict[str, Any] = response.json()
+    body: dict[str, Any] = response.json()
 
     # podstawowe oczekiwania
     assert "path" in body and isinstance(body["path"], str)

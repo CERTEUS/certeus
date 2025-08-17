@@ -15,9 +15,10 @@ EN: Ledger tests – verification of hash chain and headers.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from hashlib import sha256
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any
 
 
 def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
@@ -28,21 +29,14 @@ def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> 
     return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-def compute_provenance_hash(
-    data: Mapping[str, Any], *, include_timestamp: bool = False
-) -> str:
-    return sha256(
-        _normalize_for_hash(data, include_timestamp=include_timestamp)
-    ).hexdigest()
+def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
+    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
 
 
 def verify_provenance_hash(
     data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False
 ) -> bool:
-    return (
-        compute_provenance_hash(data, include_timestamp=include_timestamp)
-        == expected_hash
-    )
+    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
 
 
 class LedgerRecord:
@@ -59,11 +53,11 @@ class LedgerRecord:
         event_id: int = 0,
         type: str = "INPUT_INGESTION",
         case_id: str = "",
-        document_hash: Optional[str] = None,
+        document_hash: str | None = None,
         timestamp: str = "",
-        chain_prev: Optional[str] = None,
+        chain_prev: str | None = None,
         chain_self: str = "",
-        meta: Optional[Mapping[str, Any]] = None,
+        meta: Mapping[str, Any] | None = None,
         **extras: Any,
     ) -> None:
         # aliasy z testów: 'hash' -> document_hash
@@ -82,20 +76,20 @@ class LedgerRecord:
 
     # alias tylko do odczytu (jeśli ktoś próbuje sięgnąć po .hash)
     @property
-    def hash(self) -> Optional[str]:  # noqa: D401
+    def hash(self) -> str | None:  # noqa: D401
         return self.document_hash
 
 
 class Ledger:
     def __init__(self) -> None:
-        self._events: List[LedgerRecord] = []
+        self._events: list[LedgerRecord] = []
 
     # --- API wprost używane w testach ---------------------------------
     def append(self, rec: LedgerRecord) -> None:
         """Dodaj istniejący rekord (testy tego używają)."""
         self._events.append(rec)
 
-    def read_all(self, case_id: Optional[str] = None) -> List[LedgerRecord]:
+    def read_all(self, case_id: str | None = None) -> list[LedgerRecord]:
         """Zwróć wszystkie rekordy (opcjonalnie tylko dla case_id)."""
         if case_id is None:
             return list(self._events)
@@ -108,7 +102,7 @@ class Ledger:
     def _now_iso(self) -> str:
         return datetime.now(timezone.utc).isoformat()
 
-    def _chain(self, payload: Dict[str, Any], prev: Optional[str]) -> str:
+    def _chain(self, payload: dict[str, Any], prev: str | None) -> str:
         body = dict(payload)
         if prev:
             body["prev"] = prev
@@ -116,7 +110,7 @@ class Ledger:
             json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest()
 
-    def record_input(self, *, case_id: str, document_hash: str) -> Dict[str, Any]:
+    def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
         event_id = self._next_event_id()
         ts = self._now_iso()
         prev = self._events[-1].chain_self if self._events else None
@@ -151,7 +145,7 @@ class Ledger:
             "chain_self": rec.chain_self,
         }
 
-    def get_records_for_case(self, *, case_id: str) -> List[Dict[str, Any]]:
+    def get_records_for_case(self, *, case_id: str) -> list[dict[str, Any]]:
         """Wersja słownikowa (używana przez router /ledger)."""
         return [
             {

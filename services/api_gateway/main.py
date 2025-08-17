@@ -27,16 +27,18 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 # Routers available in repo
-from services.api_gateway.routers import preview
-from services.api_gateway.routers import verify
-from services.api_gateway.routers import mismatch
-from services.api_gateway.routers import export
-from services.api_gateway.routers import ledger
-from services.api_gateway.routers import system  # /v1/ingest, /v1/analyze, /v1/sipp
+from services.api_gateway.routers import (
+    export,
+    ledger,
+    mismatch,
+    preview,
+    system,  # /v1/ingest, /v1/analyze, /v1/sipp
+    verify,
+)
 
 # === PATHS / ŚCIEŻKI ===
 ROOT = Path(__file__).resolve().parents[2]

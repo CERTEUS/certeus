@@ -22,13 +22,15 @@ Polish/English bilingual documentation maintained throughout.
 
 from __future__ import annotations
 
+import logging
+import re
+
 # ┌─────────────────────────────────────────────────────────────────────┐
 # │                           IMPORTS BLOCK                             │
 # └─────────────────────────────────────────────────────────────────────┘
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Match
-import re
-import logging
+from re import Match
+from typing import Any
 
 # Configure module logger
 logger = logging.getLogger(__name__)
@@ -53,7 +55,7 @@ class Define:
     """
 
     name: str
-    type: Optional[str] = None
+    type: str | None = None
 
 
 @dataclass(frozen=True)
@@ -70,7 +72,7 @@ class Premise:
     """
 
     id: str
-    title: Optional[str] = None
+    title: str | None = None
 
 
 @dataclass(frozen=True)
@@ -88,8 +90,8 @@ class RuleDecl:
     """
 
     id: str
-    premises: List[str]
-    conclusion: Optional[str] = None
+    premises: list[str]
+    conclusion: str | None = None
 
 
 @dataclass(frozen=True)
@@ -107,8 +109,8 @@ class Conclusion:
     """
 
     id: str
-    title: Optional[str] = None
-    assert_expr: Optional[str] = None  # CRITICAL: Required by tests!
+    title: str | None = None
+    assert_expr: str | None = None  # CRITICAL: Required by tests!
 
 
 @dataclass(frozen=True)
@@ -120,10 +122,10 @@ class LexAst:
     EN: Complete LEXLOG Abstract Syntax Tree.
     """
 
-    defines: List[Define] = field(default_factory=list)  # type: ignore[arg-type]
-    premises: List[Premise] = field(default_factory=list)  # type: ignore[arg-type]
-    rules: List[RuleDecl] = field(default_factory=list)  # type: ignore[arg-type]
-    conclusions: List[Conclusion] = field(default_factory=list)  # type: ignore[arg-type]
+    defines: list[Define] = field(default_factory=list)  # type: ignore[arg-type]
+    premises: list[Premise] = field(default_factory=list)  # type: ignore[arg-type]
+    rules: list[RuleDecl] = field(default_factory=list)  # type: ignore[arg-type]
+    conclusions: list[Conclusion] = field(default_factory=list)  # type: ignore[arg-type]
 
 
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -131,7 +133,7 @@ class LexAst:
 # └─────────────────────────────────────────────────────────────────────┘
 
 # Mapping from verbose IDs to canonical short forms
-_CANONICAL_ID_MAP: Dict[str, str] = {
+_CANONICAL_ID_MAP: dict[str, str] = {
     # Long form → Short form (as expected by tests)
     "P_CEL_OSIAGNIECIA_KORZYSCI": "P_CEL",
     "P_WPROWADZENIE_W_BLAD": "P_WPROWADZENIE",
@@ -217,7 +219,7 @@ def parse_lexlog(text: str) -> LexAst:
     # ─────────────────────────────────────────
     # Parse DEFINE statements
     # ─────────────────────────────────────────
-    defines: List[Define] = []
+    defines: list[Define] = []
     match: Match[str]
     for match in _PATTERN_DEFINE.finditer(text):
         name = match.group(1).strip()
@@ -232,7 +234,7 @@ def parse_lexlog(text: str) -> LexAst:
     # ─────────────────────────────────────────
     # Parse PREMISE declarations
     # ─────────────────────────────────────────
-    premises: List[Premise] = []
+    premises: list[Premise] = []
     for match in _PATTERN_PREMISE.finditer(text):
         premise_id = _canonicalize_id(match.group(1))
         title = (match.group(2) or "").strip() or None
@@ -243,18 +245,16 @@ def parse_lexlog(text: str) -> LexAst:
     # ─────────────────────────────────────────
     # Parse RULE declarations
     # ─────────────────────────────────────────
-    rules: List[RuleDecl] = []
+    rules: list[RuleDecl] = []
     for match in _PATTERN_RULE.finditer(text):
         rule_id = match.group(1).strip()
         premises_str = (match.group(2) or "").strip()
         conclusion = match.group(3).strip()
 
         # Parse and canonicalize premise list
-        premise_list: List[str]
+        premise_list: list[str]
         if premises_str:
-            premise_list = [
-                _canonicalize_id(p.strip()) for p in premises_str.split(",")
-            ]
+            premise_list = [_canonicalize_id(p.strip()) for p in premises_str.split(",")]
         else:
             premise_list = []
 
@@ -265,14 +265,14 @@ def parse_lexlog(text: str) -> LexAst:
     # ─────────────────────────────────────────
     # Parse CONCLUSION declarations with ASSERT
     # ─────────────────────────────────────────
-    conclusions: List[Conclusion] = []
-    conclusion_assertions: Dict[str, str] = {}
+    conclusions: list[Conclusion] = []
+    conclusion_assertions: dict[str, str] = {}
 
     # First pass: Find conclusions with inline ASSERT
     for match in _PATTERN_CONCLUSION.finditer(text):
         conclusion_id = match.group(1).strip()
         title = (match.group(2) or "").strip() or None
-        assert_expr: Optional[str] = None
+        assert_expr: str | None = None
 
         # Check if group 3 exists (ASSERT expression)
         if match.lastindex and match.lastindex >= 3:
@@ -281,9 +281,7 @@ def parse_lexlog(text: str) -> LexAst:
                 assert_expr = assert_expr.strip()
                 conclusion_assertions[conclusion_id] = assert_expr
 
-        conclusions.append(
-            Conclusion(id=conclusion_id, title=title, assert_expr=assert_expr)
-        )
+        conclusions.append(Conclusion(id=conclusion_id, title=title, assert_expr=assert_expr))
 
     # Second pass: Handle ASSERT on separate lines
     lines = text.split("\n")
@@ -294,9 +292,7 @@ def parse_lexlog(text: str) -> LexAst:
             assert_match = _PATTERN_ASSERT.match(next_line)
             if assert_match:
                 # Find the conclusion ID from current line
-                concl_match = re.match(
-                    r"^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)", line
-                )
+                concl_match = re.match(r"^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)", line)
                 if concl_match:
                     conclusion_id = concl_match.group(1).strip()
                     assert_expr = assert_match.group(1).strip()
@@ -314,9 +310,7 @@ def parse_lexlog(text: str) -> LexAst:
     # ─────────────────────────────────────────
     # Build and return complete AST
     # ─────────────────────────────────────────
-    return LexAst(
-        defines=defines, premises=premises, rules=rules, conclusions=conclusions
-    )
+    return LexAst(defines=defines, premises=premises, rules=rules, conclusions=conclusions)
 
 
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -335,7 +329,7 @@ class LexlogParser:
     EN: Parser stub for Day 9 E2E compatibility.
     """
 
-    def parse(self, lexlog_content: str) -> Dict[str, Any]:
+    def parse(self, lexlog_content: str) -> dict[str, Any]:
         """
         Parse LEXLOG content into legacy dictionary format.
 
@@ -349,17 +343,17 @@ class LexlogParser:
         EN: Parses LEXLOG into legacy dictionary format.
         """
         # Quick check for known rule patterns
-        if (
-            "R_286_OSZUSTWO" in lexlog_content
-            or "RULE R_286_OSZUSTWO" in lexlog_content
-        ):
+        if "R_286_OSZUSTWO" in lexlog_content or "RULE R_286_OSZUSTWO" in lexlog_content:
             return {
                 "rule_id": "R_286_OSZUSTWO",
                 "conclusion": "K_OSZUSTWO_STWIERDZONE",
                 "premises": ["P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"],
-                "smt_assertion": "z3.And(cel_korzysci_majatkowej, wprowadzenie_w_blad, niekorzystne_rozporzadzenie_mieniem)",
+                "smt_assertion": (
+                    "z3.And(cel_korzysci_majatkowej, "
+                    "wprowadzenie_w_blad, "
+                    "niekorzystne_rozporzadzenie_mieniem)"
+                ),
             }
-
         # For other content, attempt full parse
         try:
             ast = parse_lexlog(lexlog_content)
