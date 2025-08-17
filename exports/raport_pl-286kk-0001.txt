@@ -1,8 +1,7 @@
-# CERTEUS – Raport analityczny
+# CERTEUS – Raport analityczny / Analytical Report
 Case: pl-286kk-0001
-Digest: sha256:0d19ad06c87539df9dcdd859820242c20adc0c566192256793a6aa45931b948c
 
-=== ANALIZA ===
+=== ANALIZA / ANALYSIS ===
 {
   "model": "[x=True]",
   "status": "sat"

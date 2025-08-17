@@ -140,4 +140,3 @@ ci:
 	@"$(MAKE)" verify
 	@"$(MAKE)" test-unit
 	@printf "$(COLOR_GREEN)%s$(COLOR_RESET)\n" "$(call MSG,✅ CI preflight OK.,✅ CI preflight OK.)"
-

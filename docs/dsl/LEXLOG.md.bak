@@ -85,6 +85,3 @@ CONCLUSION K_OSZUSTWO_STWIERDZONE: "Czyn wypeĹ‚nia znamiona z art. 286 k.k."
 - ID przesĹ‚anek: `P_*`, konkluzje: `K_*`.
 - Aliasowanie do silnikĂłw (MAPS_TO) jest opcjonalne w DSL â€” twarde mapowanie trzymamy w JSON `kk.mapping.json`.
 - DwujÄ™zyczne komentarze i nagĹ‚Ăłwki ASCII zgodnie z â€žStandard Kodowania â€“ Premium Code Styleâ€ť (README).
-
-
-

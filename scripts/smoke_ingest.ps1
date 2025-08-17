@@ -10,7 +10,7 @@ $ErrorActionPreference = "Stop"
 Set-Content -NoNewline -Encoding ASCII .\sample.txt 'hello CERTEUS'
 Set-Content -NoNewline -Encoding ASCII .\sample.pdf '%PDF-1.4 dummy'
 
-Write-Host "[INFO] Health" 
+Write-Host "[INFO] Health"
 curl.exe -sS http://127.0.0.1:8000/health
 
 Write-Host "[INFO] Ingest TXT"

@@ -10,8 +10,17 @@ root = true
 
 [*]
 charset = utf-8
-end_of_line = lf
+end_of_line = lf          # wymuś LF (stabilne z ruff-format i CI)
 insert_final_newline = true
-trim_trailing_whitespace = true
 indent_style = space
-indent_size = 2
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false  # pozwól na trailing w Markdown
+
+[*.ps1]
+end_of_line = crlf                # PowerShell preferuje CRLF lokalnie
+
+[*.{bat,cmd}]
+end_of_line = crlf                # skrypty cmd też CRLF

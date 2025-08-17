@@ -1,41 +1,51 @@
-<#
-+=====================================================================+
-|                              CERTEUS                                |
-+=====================================================================+
-| FILE:   scripts/check_drat.ps1                                      |
-| ROLE:   DRAT checker (Windows, local use)                           |
-| DATE:   2025-08-17                                                  |
-+=====================================================================+
-PL: Stub weryfikujący istnienie pliku DRAT i wyliczający jego SHA256.
-EN: Stub that checks DRAT file existence and prints its SHA256.
-#>
+#!/usr/bin/env bash
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE / PLIK: scripts/check_drat.sh                                  |
+# | ROLA / ROLE: DRAT checker (Linux/CI).                               |
+# | OPIS / DESC: Presence & signature; optional drat-trim if CNF exists.|
+# +=====================================================================+
+set -Eeuo pipefail
 
-param(
-  [Parameter(Mandatory=$true)][string]$Dir,
-  [string]$File = "z3.drat",
-  [switch]$Quiet
-)
+ART_DIR="${ART_DIR:-proof_artifacts}"
+DRAT_NAME="${DRAT_NAME:-z3.drat}"
+SHA_FILE="${SHA_FILE:-}"
+CNF_PATH="${CNF_PATH:-}"
 
-$ErrorActionPreference = "Stop"
+while getopts ":d:f:s:" opt; do
+  case "$opt" in
+    d) ART_DIR="$OPTARG" ;;
+    f) DRAT_NAME="$OPTARG" ;;
+    s) SHA_FILE="$OPTARG" ;;
+    *) echo "Usage: $0 [-d artifacts_dir] [-f drat_file] [-s sha256sum_file]" >&2; exit 2 ;;
+  esac
+done
 
-function Write-Info($msg){ if(-not $Quiet){ Write-Host "[INFO] $msg" -ForegroundColor Cyan } }
-function Write-Ok($msg){ if(-not $Quiet){ Write-Host "[OK]   $msg" -ForegroundColor Green } }
-function Write-Err($msg){ Write-Host "[ERR]  $msg" -ForegroundColor Red }
+DRAT_PATH="${ART_DIR}/${DRAT_NAME}"
+[[ -f "$DRAT_PATH" ]] || { echo "::error::DRAT not found: ${DRAT_PATH}"; exit 1; }
+[[ -s "$DRAT_PATH" ]] || { echo "::error::DRAT is empty: ${DRAT_PATH}"; exit 1; }
 
-if(-not (Test-Path -Path $Dir -PathType Container)){
-  Write-Err "Directory does not exist: $Dir"
-  exit 2
-}
+# Optional SHA check
+if [[ -n "${SHA_FILE}" ]]; then
+  [[ -f "${SHA_FILE}" ]] || { echo "::error::SHA file not found: ${SHA_FILE}"; exit 1; }
+  sha256sum -c "${SHA_FILE}" || { echo "::error::SHA256 mismatch for ${DRAT_PATH}"; exit 1; }
+fi
 
-$target = Join-Path $Dir $File
-Write-Info "Checking DRAT at: $target"
+# Signature sanity
+grep -q 'PROOF' "$DRAT_PATH"       || { echo "::error file=${DRAT_PATH}::Missing PROOF signature"; exit 3; }
+grep -q 'format=drat' "$DRAT_PATH" || { echo "::error file=${DRAT_PATH}::Missing format=drat"; exit 3; }
 
-if(Test-Path -Path $target -PathType Leaf){
-  $hash = (Get-FileHash -Algorithm SHA256 -Path $target).Hash.ToLower()
-  Write-Ok "DRAT exists: $target"
-  if(-not $Quiet){ Write-Host "sha256:$hash" }
-  exit 0
-}else{
-  Write-Err "DRAT file not found: $target"
-  exit 2
-}
+# External checker (optional)
+if command -v drat-trim >/dev/null 2>&1; then
+  if [[ -n "${CNF_PATH}" && -f "${CNF_PATH}" ]]; then
+    echo "ℹ️ drat-trim: CNF found → running verification…"
+    drat-trim "${CNF_PATH}" "${DRAT_PATH}" -q || { echo "::error::drat-trim verification failed"; exit 4; }
+  else
+    echo "ℹ️ drat-trim available, but CNF missing → skipping external verification."
+  fi
+else
+  echo "ℹ️ drat-trim not found; basic checks only."
+fi
+
+echo "✅ DRAT check passed for ${DRAT_PATH}"
