@@ -1,58 +1,92 @@
-# pyright: reportMissingTypeStubs=false
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: kernel/dual_core/z3_adapter.py                        |
-# | ROLE: Z3 SMT adapter with proofs & unsat-core enabled.      |
-# | PLIK: kernel/dual_core/z3_adapter.py                        |
-# | ROLA: Adapter Z3 z włączonymi proof/unsat-core.             |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/kernel/dual_core/z3_adapter.py          |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/kernel/dual_core/z3_adapter.py  |
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-PL: Adapter Z3 zwracający status i artefakty (model/proof/unsat_core).
-EN: Z3 adapter returning status and artifacts (model/proof/unsat_core).
+PL: Adapter dla Z3 i zależności SMT.
+EN: Adapter for Z3 and SMT dependencies.
 """
 
-# === IMPORTY / IMPORTS ======================================== #
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                           CERTEUS                                   |
+# |                      Z3 Adapter (Safe AST)                          |
+# +=====================================================================+
+# | MODULE:  kernel/dual_core/z3_adapter.py                             |
+# | VERSION: 0.2.2                                                      |
+# | DATE:    2025-08-16                                                 |
+# | AUTHOR:  CERTEUS Development Team                                   |
+# +=====================================================================+
+# | ROLE: Compile CERTEUS Boolean AST to Z3 expressions (no eval).      |
+# |       Provides Z3Adapter.solve(...) for Truth Engine Core-1.        |
+# +=====================================================================+
+
+from __future__ import annotations
+
+import logging
 from typing import Any, Dict, List, cast
-import z3  # wymaga: pip install z3-solver
 
-# Uspokojenie Pylance (z3 nie ma stubów typów)
-_z3 = cast(Any, z3)
+import z3  # type: ignore[reportMissingTypeStubs]
+from kernel.smt_translator import (
+    compile_bool_ast,
+    validate_ast,
+)  # <- wszystkie importy nad kodem
+
+_Z3 = cast(Any, z3)
+logger = logging.getLogger(__name__)
 
 
-# === ADAPTER / ADAPTER ======================================== #
+def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
+    """
+    PL: Kompiluje AST do formuły Z3 bez eval().
+    EN: Compile AST to Z3 formula without eval().
+    Zwraca ExprRef (BoolRef dziedziczy po ExprRef w naszych stubach).
+    """
+    if validate:
+        validate_ast(cast(Any, ast_root))
+    expr, symbols = compile_bool_ast(
+        cast(Any, ast_root), declare_on_use=True, validate=False
+    )
+    logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
+    return expr
+
+
 class Z3Adapter:
     """
-    PL: Adapter uruchamiający solver Z3 dla listy asercji.
-    EN: Adapter that runs Z3 solver for a list of assertions.
+    Minimalny adapter wykonawczy dla Core-1:
+    - solve(assertions): odpala solver Z3 i zwraca ujednolicony dict wyniku.
     """
 
-    # --- INIT / KONSTRUKTOR ----------------------------------- #
-    def __init__(self) -> None:
-        # Włącz proofy globalnie (przydatne dla 'unsat')
-        _z3.set_param(proof=True)
-
-    # --- SOLVE ------------------------------------------------ #
-    def solve(self, assertions: List[Any]) -> Dict[str, Any]:
-        """
-        PL: Uruchamia solver na asercjach i zwraca ustandaryzowany wynik.
-        EN: Runs the solver on assertions and returns a standardized result.
-        """
-        s: Any = _z3.Solver()
-        labels: List[Any] = [
-            _z3.Bool(f"a{i}") for i, _ in enumerate(assertions, start=1)
-        ]
-        for a, lbl in zip(assertions, labels):
-            s.assert_and_track(a, lbl)
-
-        res: Any = s.check()
-        if res == _z3.sat:
-            return {"status": "sat", "model": str(s.model())}
-        if res == _z3.unsat:
-            core = [str(c) for c in s.unsat_core()]
-            try:
-                proof_str = str(s.proof())
-            except Exception:
-                proof_str = ""
-            return {"status": "unsat", "unsat_core": core, "proof": proof_str}
-        return {"status": "unknown", "reason": s.reason_unknown()}
+    def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]:
+        s = z3.Solver()
+        for a in assertions:
+            s.add(a)
+        status = s.check()
+        result: Dict[str, Any] = {
+            "status": str(status).lower(),  # "sat" / "unsat" / "unknown"
+            "time_ms": None,
+            "model": None,
+            "error": None,
+            "version": z3.get_version_string()
+            if hasattr(z3, "get_version_string")
+            else None,
+        }
+        try:
+            if status == z3.sat:
+                m = s.model()
+                model_bindings = {d.name(): str(m[d]) for d in m.decls()}
+                result["model"] = model_bindings
+        except Exception as e:  # best-effort
+            logger.exception("Model extraction failed: %s", e)
+            result["error"] = f"model_error: {e}"
+        return result

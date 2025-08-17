@@ -1,53 +1,96 @@
-# +-------------------------------------------------------------+
-# |                 CERTEUS - Exporter Service (MVP)            |
-# +-------------------------------------------------------------+
-# | FILE/PLIK: services/exporter_service/exporter.py            |
-# | ROLE/ROLA: Generuje raporty na bazie szablonów.             |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/exporter_service/exporter.py   |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/exporter_service/export|
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-PL: Serwis eksportu raportów. Wypełnia szablon danymi analizy i zapisuje .txt.
-EN: Report export service. Fills a template with analysis data and writes .txt.
+PL: Eksport raportów i artefaktów procesu.
+EN: Report/artefact exporter.
 """
 
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                              CERTEUS                                |
+# |                       Exporter Service (core)                       |
+# +=====================================================================+
+# | MODULE:  services/exporter_service/exporter.py                      |
+# | VERSION: 1.2.1                                                      |
+# | DATE:    2025-08-16                                                 |
+# +=====================================================================+
+# | ROLE: Simple report export + Answer export (json/file/docx).        |
+# +=====================================================================+
+
 from __future__ import annotations
+
+import json
 from pathlib import Path
-from typing import Any, Dict
-from datetime import datetime, timezone
+from typing import Any, Dict, Mapping, Optional
+
+# (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
+
+TEMPL_REPORT = """# CERTEUS Report
+Case: {case_id}
+Status: {status}
+Model: {model}
+"""
 
 
 class ExporterService:
-    """PL: Serwis eksportu raportów. EN: Report exporting service."""
-
-    def __init__(
-        self, template_dir: str = "templates", output_dir: str = "out"
-    ) -> None:
+    def __init__(self, template_dir: str, output_dir: str) -> None:
         self.template_dir = Path(template_dir)
         self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(exist_ok=True, parents=True)
-        print("INFO: ExporterService initialized.")
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    def export_report(self, case_id: str, analysis_data: Dict[str, Any]) -> Path:
-        """PL: Generuje raport tekstowy z szablonu. EN: Generate text report."""
-        print(f"INFO: Generating report for case: {case_id}")
-        template_path = self.template_dir / "answer_contract.txt.placeholder"
-        template_content = template_path.read_text(encoding="utf-8")
+    def export_report(self, case_id: str, analysis: Dict[str, Any]) -> Path:
+        status = str(analysis.get("status", "")).upper()
+        model = analysis.get("model", "")
+        content = TEMPL_REPORT.format(case_id=case_id, status=status, model=model)
+        out = self.output_dir / f"{case_id}.txt"
+        out.write_text(content, encoding="utf-8")
+        return out
 
-        report_data: Dict[str, Any] = {
-            "CASE_ID": case_id,
-            "ANALYSIS_DATE": datetime.now(timezone.utc).strftime(
-                "%Y-%m-%d %H:%M:%S UTC"
-            ),
-            "THESIS": f"Analiza zgodności z art. 286 k.k. dla sprawy {case_id}",
-            "VERIFICATION_STATUS": str(analysis_data.get("status", "N/A")).upper(),
-            "SOLUTION_MODEL": analysis_data.get("model", "Brak modelu."),
-            "PROVENANCE_HASH": "sha256:coming_soon...",
-        }
 
-        report_content = template_content
-        for key, value in report_data.items():
-            report_content = report_content.replace(f"${{{key}}}", str(value))
+def export_answer_to_txt(
+    answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False
+) -> str:
+    p = Path(out_path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(answer, indent=2, sort_keys=True), encoding="utf-8")
+    return str(p)
 
-        output_path = self.output_dir / f"raport_{case_id}.txt"
-        output_path.write_text(report_content, encoding="utf-8")
-        print(f"✅ Report generated successfully: {output_path}")
-        return output_path
+
+def export_answer(
+    answer: Mapping[str, Any], *, fmt: str, output_dir: Optional[Path] = None
+):
+    """
+    - fmt="json": return pretty json string
+    - fmt="file": write <case_id>.json to output_dir, return Path
+    - fmt="docx": write placeholder .docx (text), return Path
+    """
+    if fmt == "json":
+        return json.dumps(answer, indent=2, sort_keys=True)
+
+    outdir = output_dir or Path("build/exports")
+    outdir.mkdir(parents=True, exist_ok=True)
+    case_id = str(answer.get("case_id", "case"))
+
+    if fmt == "file":
+        p = outdir / f"{case_id}.json"
+        p.write_text(json.dumps(answer, indent=2, sort_keys=True), encoding="utf-8")
+        return p
+
+    if fmt == "docx":
+        p = outdir / f"{case_id}.docx"
+        p.write_text(json.dumps(answer, indent=2, sort_keys=True), encoding="utf-8")
+        return p
+
+    raise ValueError(f"Unsupported fmt: {fmt}")

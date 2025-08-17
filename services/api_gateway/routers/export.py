@@ -1,1 +1,86 @@
-# +-------------------------------------------------------------+# |                          CERTEUS                            |# +-------------------------------------------------------------+# | FILE: services/api_gateway/routers/export.py              |# | ROLE: Project module.                                       |# | PLIK: services/api_gateway/routers/export.py              |# | ROLA: Moduł projektu.                                       |# +-------------------------------------------------------------+"""PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.EN: CERTEUS module – please complete the functional description."""# +-------------------------------------------------------------+# |                   CERTEUS - Export API Router               |# +-------------------------------------------------------------+# | PLIK / FILE: services/api_gateway/routers/export.py         |# | ROLA / ROLE: Walidacja AnswerContract i eksport do JSON/    |# |              DOCX (placeholder) poprzez exporter_service.   |# |              Validate AnswerContract and export to JSON/    |# |              DOCX (placeholder) via exporter_service.       |# +-------------------------------------------------------------+from __future__ import annotationsimport jsonfrom hashlib import sha256from pathlib import Pathfrom typing import Any, Literalfrom fastapi import APIRouter, HTTPExceptionfrom pydantic import BaseModel, Fieldfrom services.exporter_service.exporter import export_answer  # nasz core exporter# JSON Schema (AnswerContract) – ładujemy miękko; jeśli brak, endpoint dalej działatry:    from jsonschema import Draft7Validator  # type: ignoreexcept Exception:  # pragma: no cover    Draft7Validator = None  # type: ignore[misc,assignment]router = APIRouter()# Ścieżki repo (router → api_gateway → services → certeus)REPO_ROOT = Path(__file__).resolve().parents[3]SCHEMAS_DIR = REPO_ROOT / "schemas"EXPORTS_DIR = REPO_ROOT / "build" / "exports"EXPORTS_DIR.mkdir(parents=True, exist_ok=True)# Miękka inicjalizacja walidatora – nazwy *małymi literami* (nie „stałe”)_answer_schema: dict[str, Any] | None = None_validator: Any | None = Noneif Draft7Validator is not None:    schema_path = SCHEMAS_DIR / "answer_contract_v1.json"    if schema_path.exists():        try:            _answer_schema = json.loads(schema_path.read_text(encoding="utf-8"))            _validator = Draft7Validator(_answer_schema)  # type: ignore[call-arg]        except Exception:            _answer_schema = None            _validator = None# === MODELE / MODELS ===class ExportRequest(BaseModel):    """    PL: Dane do eksportu. 'answer' – kontrakt odpowiedzi (walidowany schematem).    EN: Export payload. 'answer' – the Answer Contract (validated by schema).    """    answer: dict[str, Any] = Field(        ...,        description="PL: Kontrakt odpowiedzi. / EN: Answer Contract object.",    )    fmt: Literal["json", "docx", "file"] = Field(        default="json",        description="PL: Format wyjścia. EN: Output format.",    )class ExportResponse(BaseModel):    """    PL: Odpowiedź eksportera.    EN: Exporter response.    """    status: Literal["ok"]    fmt: str    path: str | None = None    preview: str | None = None    size_bytes: int | None = None    sha256: str | None = None# === ENDPOINTY / ENDPOINTS ===@router.post("/answer", response_model=ExportResponse)def export_answer_api(payload: ExportRequest) -> ExportResponse:    """    PL: Waliduje kontrakt odpowiedzi i wykonuje eksport (json/docx/file).    EN: Validates the Answer Contract and performs export (json/docx/file).    """    # 1) Walidacja JSON Schema (jeśli dostępna)    if _validator is not None:        try:            _validator.validate(payload.answer)  # type: ignore[union-attr]        except Exception as e:            raise HTTPException(                status_code=400, detail=f"Answer schema validation failed: {e}"            ) from e    # 2) Eksport właściwy    fmt = payload.fmt    if fmt == "json":        pretty = export_answer(payload.answer, fmt="json")        data = pretty.encode("utf-8")        return ExportResponse(            status="ok",            fmt="json",            preview=pretty,            size_bytes=len(data),            sha256=sha256(data).hexdigest(),        )    if fmt == "docx":        out_path = export_answer(payload.answer, fmt="docx", output_dir=EXPORTS_DIR)        size = out_path.stat().st_size if out_path.exists() else 0        return ExportResponse(            status="ok",            fmt="docx",            path=str(out_path),            size_bytes=size,            sha256=sha256(out_path.read_bytes()).hexdigest()            if out_path.exists()            else None,        )    if fmt == "file":        out_path = export_answer(payload.answer, fmt="file", output_dir=EXPORTS_DIR)        size = out_path.stat().st_size if out_path.exists() else 0        return ExportResponse(            status="ok",            fmt="file",            path=str(out_path),            size_bytes=size,            sha256=sha256(out_path.read_bytes()).hexdigest()            if out_path.exists()            else None,        )    raise HTTPException(status_code=400, detail=f"Unsupported format: {fmt!r}")
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# |                  Export API Router (/v1/export)                     |
+# +=====================================================================+
+# | MODULE:  services/api_gateway/routers/export.py                     |
+# | VERSION: 1.0.10                                                     |
+# | DATE:    2025-08-17                                                 |
+# +=====================================================================+
+# | ROLE: Validate payload and export a human-readable report.          |
+# +=====================================================================+
+
+"""
+PL: Router /v1/export – waliduje ładunek i zapisuje raport w formacie TXT
+    o konwencji nazwy `raport_{case_id}.txt`. Zwraca ścieżkę i komunikat.
+EN: /v1/export router – validates payload and writes a TXT report named
+    `raport_{case_id}.txt`. Returns file path and a message.
+"""
+
+from __future__ import annotations
+
+from hashlib import sha256
+from pathlib import Path
+from typing import Any, Mapping
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
+
+router = APIRouter(prefix="", tags=["export"])
+
+
+class ExportPayload(BaseModel):
+    case_id: str = Field(..., description="Public case id, e.g. 'pl-286kk-0001'")
+    analysis_result: Mapping[str, Any] = Field(default_factory=dict)
+    fmt: str = Field(
+        "report", description="Output format. Only 'report' is used by tests."
+    )
+
+
+class ExportResponse(BaseModel):
+    path: str
+    message: str
+
+
+def _write_report(
+    case_id: str, analysis_result: Mapping[str, Any], out_dir: Path
+) -> Path:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"raport_{case_id}.txt"
+    path = out_dir / filename
+
+    lines = []
+    lines.append("# CERTEUS – Raport analityczny")
+    lines.append(f"Case: {case_id}")
+    lines.append(
+        f"Digest: sha256:{sha256(repr(dict(analysis_result)).encode('utf-8')).hexdigest()}"
+    )
+    lines.append("")
+    lines.append("=== ANALIZA ===")
+    try:
+        import json
+
+        pretty = json.dumps(
+            analysis_result, ensure_ascii=False, indent=2, sort_keys=True
+        )
+        lines.append(pretty)
+    except Exception:
+        lines.append(str(analysis_result))
+
+    path.write_text("\n".join(lines), encoding="utf-8")
+    return path
+
+
+@router.post("/v1/export", response_model=ExportResponse)
+def export_endpoint(payload: ExportPayload) -> ExportResponse:
+    if not payload.case_id.strip():
+        raise HTTPException(status_code=400, detail="case_id required")
+
+    out_dir = Path("exports")
+    path = _write_report(payload.case_id, payload.analysis_result, out_dir)
+
+    return ExportResponse(
+        path=str(path),
+        message=f"Report generated at {path}",
+    )

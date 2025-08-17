@@ -1,31 +1,34 @@
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: kernel/mismatch_protocol.py                           |
-# | ROLE: Handles solver-result discrepancies (Dual-Core).      |
-# | PLIK: kernel/mismatch_protocol.py                           |
-# | ROLA: Obsługa rozbieżności wyników solverów (Dual-Core).    |
-# +-------------------------------------------------------------+
-"""
-PL: Protokół zgłaszania rozbieżności między rdzeniami SMT.
-EN: Protocol for reporting discrepancies between SMT cores.
-"""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                           CERTEUS                                   |
+# |                     Mismatch Protocol (HITL)                        |
+# +=====================================================================+
+# | MODULE:  kernel/mismatch_protocol.py                                |
+# | VERSION: 0.2.0                                                      |
+# | DATE:    2025-08-16                                                 |
+# +=====================================================================+
 
-from typing import Dict, Any
+"""Protokół uruchamiany przy rozbieżności solverów — tworzy bilet."""
+
+from __future__ import annotations
+
+from typing import Any, Dict
+
+from services.mismatch_service.service import mismatch_service
 
 
-class MismatchError(Exception):
-    """PL: Rozbieżność wyników solverów. EN: Solver result mismatch."""
+class MismatchError(RuntimeError):
+    """Rzucane gdy wykryto niezgodność wyników solverów."""
 
 
-def handle_mismatch(formula_str: str, results: Dict[str, Dict[str, Any]]) -> None:
-    """
-    PL: Sygnalizuje rozjazd rdzeni (HITL w przyszłości).
-    EN: Signals core disagreement (HITL hooks planned).
-    """
-    details: Dict[str, Any] = {
-        "requires_human": True,
-        "formula_preview": formula_str[:500],
-        "results": {k: {"status": v.get("status", "n/a")} for k, v in results.items()},
-    }
-    raise MismatchError(f"Solver mismatch; details={details}")
+def handle_mismatch(case_id: str, formula_str: str, results: Dict[str, Any]) -> None:
+    ticket = mismatch_service.create_ticket(
+        case_id=case_id,
+        formula_str=formula_str,
+        results=results,
+        formula_ast=None,
+    )
+    raise MismatchError(
+        f"Solver results are inconsistent. See ticket {ticket.ticket_id}."
+    )

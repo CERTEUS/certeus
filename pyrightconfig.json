@@ -1,0 +1,6 @@
+{
+  "typeCheckingMode": "standard",
+  "reportMissingTypeStubs": false,
+  "stubPath": "typings",
+  "executionEnvironments": [{ "root": "." }]
+}

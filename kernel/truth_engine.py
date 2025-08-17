@@ -1,65 +1,137 @@
-# pyright: reportMissingTypeStubs=false
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: kernel/truth_engine.py                                |
-# | ROLE: Truth Engine orchestrating Dual-Core verification.    |
-# | PLIK: kernel/truth_engine.py                                |
-# | ROLA: Silnik Prawdy orkiestrujący weryfikację Dual-Core.    |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/kernel/truth_engine.py                  |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/kernel/truth_engine.py          |
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-PL: Weryfikator SMT (MVP: SMT-LIB2) uruchamiający Z3. Drugi rdzeń = stub.
-EN: SMT verifier (MVP: SMT-LIB2) running Z3. Second core = stub.
+PL: Moduł systemu CERTEUS.
+EN: CERTEUS system module.
 """
 
-# === IMPORTY / IMPORTS ======================================== #
-from typing import Any, Dict, List, cast
-import z3
-from .dual_core.z3_adapter import Z3Adapter
-from .mismatch_protocol import handle_mismatch
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                              CERTEUS                                |
+# |                        Truth Engine (Dual-Core)                     |
+# +=====================================================================+
+# | MODULE:  kernel/truth_engine.py                                     |
+# | VERSION: 0.3.2                                                      |
+# | DATE:    2025-08-16                                                 |
+# +=====================================================================+
+# | ROLE: Run Z3 as Core-1 and stub Core-2, trigger HITL on mismatch.   |
+# +=====================================================================+
 
-# Uspokojenie Pylance (z3 bez stubów typów)
-_z3 = cast(Any, z3)
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Protocol, cast
+import time
+
+import z3  # type: ignore[reportMissingTypeStubs]
+from .mismatch_protocol import handle_mismatch  # ✅ import at top to avoid E402
+
+_Z3 = cast(Any, z3)
 
 
-# === WERYFIKATOR / VERIFIER =================================== #
+class _Z3AdapterProto(Protocol):
+    def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]: ...
+
+
+# Import adapter class if dostępny; w przeciwnym razie fallback.
+try:
+    from .dual_core.z3_adapter import Z3Adapter as _AdapterClass  # type: ignore[assignment]
+except Exception:
+
+    class _AdapterClass:  # type: ignore[no-redef]
+        """Fallback adapter: solves a list of Z3 assertions with Z3.Solver()."""
+
+        def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]:
+            start = time.perf_counter()
+            s = z3.Solver()
+            for a in assertions:
+                s.add(a)
+            status = s.check()
+            elapsed = (time.perf_counter() - start) * 1000.0
+            result: Dict[str, Any] = {
+                "status": str(status).lower(),  # "sat" / "unsat" / "unknown"
+                "time_ms": round(elapsed, 3),
+                "model": None,
+                "error": None,
+                "version": z3.get_version_string()
+                if hasattr(z3, "get_version_string")
+                else None,
+            }
+            if status == z3.sat:
+                m = s.model()
+                try:
+                    model_bindings = {d.name(): str(m[d]) for d in m.decls()}
+                except Exception:
+                    model_bindings = {}
+                result["model"] = model_bindings
+            return result
+
+
 class DualCoreVerifier:
-    """
-    PL: Weryfikator w architekturze Dual-Core (drugi rdzeń dołączymy później).
-    EN: Verifier in Dual-Core architecture (second core to be added later).
-    """
+    """Dual-Core verifier: Core-1(Z3) + Core-2(stub)."""
 
-    # --- INIT / KONSTRUKTOR ----------------------------------- #
     def __init__(self) -> None:
-        self.z3_adapter = Z3Adapter()
+        # ✅ unikamy konfliktu typów klas; instancja spełnia Protocol
+        self.z3_adapter: _Z3AdapterProto = cast(_Z3AdapterProto, _AdapterClass())
 
-    # --- PARSER SMT-LIB2 -------------------------------------- #
     def _parse_smt2(self, smt2: str) -> List[Any]:
-        """
-        PL: Parsuje SMT-LIB2 do listy asercji Z3.
-        EN: Parses SMT-LIB2 into a list of Z3 assertions.
-        """
-        assertions: Any = _z3.parse_smt2_string(smt2)
+        assertions: Any = _Z3.parse_smt2_string(smt2)
         return [assertions[i] for i in range(len(assertions))]
 
-    # --- WERYFIKACJA ------------------------------------------ #
-    def verify(self, formula: str, lang: str = "smt2") -> Dict[str, Any]:
-        """
-        PL: Weryfikuje formułę; MVP obsługuje tylko 'smt2'.
-        EN: Verifies a formula; MVP supports 'smt2' only.
-        """
+    def _solve_core2_stub(
+        self, core1_result: Dict[str, Any], *, force_mismatch: bool
+    ) -> Dict[str, Any]:
+        r = dict(core1_result)
+        if force_mismatch:
+            if r.get("status") == "sat":
+                r["status"] = "unsat"
+            elif r.get("status") == "unsat":
+                r["status"] = "sat"
+            else:
+                r["status"] = "unknown"
+        return r
+
+    def verify(
+        self,
+        formula: str,
+        *,
+        lang: str = "smt2",
+        case_id: Optional[str] = None,
+        force_mismatch: bool = False,
+    ) -> Dict[str, Any]:
         if lang != "smt2":
             raise ValueError("Only 'smt2' formulas are accepted in this MVP.")
 
         assertions = self._parse_smt2(formula)
+
+        # Core-1
         result_z3 = self.z3_adapter.solve(assertions)
+        status_norm = (result_z3.get("status") or "").lower()
+        if status_norm in {"sat", "unsat", "unknown"}:
+            result_z3["status"] = status_norm
 
-        # Stub drugiego rdzenia – na razie kopiujemy wynik Z3
-        result_cvc5_stub = result_z3
+        # Core-2
+        result_core2 = self._solve_core2_stub(result_z3, force_mismatch=force_mismatch)
 
-        if result_z3.get("status") != result_cvc5_stub.get("status"):
+        # Divergence?
+        if (result_z3.get("status") or "").lower() != (
+            result_core2.get("status") or ""
+        ).lower():
             handle_mismatch(
+                case_id=case_id or "temp-case-id",
                 formula_str=formula,
-                results={"z3": result_z3, "cvc5_stub": result_cvc5_stub},
+                results={"z3": result_z3, "cvc5_stub": result_core2},
             )
+
         return result_z3

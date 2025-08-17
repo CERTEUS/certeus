@@ -11,6 +11,8 @@ PL: Publiczny endpoint do weryfikacji formuł SMT-LIB2 przez Silnik Prawdy.
 EN: Public endpoint to verify SMT-LIB2 formulas via the Truth Engine.
 """
 
+from __future__ import annotations
+
 # === IMPORTY / IMPORTS ======================================== #
 from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
@@ -42,7 +44,8 @@ def verify_formula(req: VerificationRequest) -> Dict[str, Any]:
     EN: Verifies the formula. Returns sat/unsat/unknown and artifacts (model/proof).
     """
     try:
-        return _verifier.verify(req.formula, req.lang)
+        # lang w DualCoreVerifier.verify jest parametrem *keyword-only*.
+        return _verifier.verify(req.formula, lang=req.lang)
     except MismatchError as e:
         # Rozjazd sędziów: konflikt 409 z flagą requires_human
         raise HTTPException(

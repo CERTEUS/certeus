@@ -1,18 +1,36 @@
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: services/exporter_service/__init__.py                 |
-# | ROLE: Exporter service package export                       |
-# | PLIK: services/exporter_service/__init__.py                 |
-# | ROLA: Pakiet eksportera — publiczne API pakietu             |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/exporter_service/__init__.py   |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
 
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/exporter_service/__init|
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-CERTEUS — Exporter Service Package
-PL: Publiczne API pakietu eksportera raportów (eksport ExporterService).
-EN: Public API of the exporter package (exports ExporterService).
+PL: Pakiet inicjalizacyjny modułu.
+EN: Package initializer.
 """
 
-from .exporter import ExporterService
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                              CERTEUS                                |
+# |                     Exporter Service Package                        |
+# +=====================================================================+
+# | MODULE:  services/exporter_service/__init__.py                      |
+# | VERSION: 1.0.2                                                      |
+# | DATE:    2025-08-16                                                 |
+# +=====================================================================+
+# | ROLE: Public API re-exports                                         |
+# +=====================================================================+
 
-__all__ = ["ExporterService"]
+from __future__ import annotations
+
+from .exporter import ExporterService, export_answer_to_txt, export_answer
+
+__all__ = ["ExporterService", "export_answer_to_txt", "export_answer"]

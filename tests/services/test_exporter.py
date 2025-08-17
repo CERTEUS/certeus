@@ -11,7 +11,7 @@ EN: Tests for ExporterService – verifies template population correctness.
 from __future__ import annotations
 import tempfile
 from pathlib import Path
-from services.exporter_service.exporter import ExporterService
+from services.exporter_service import ExporterService
 
 
 def test_export_report_creates_file_with_replaced_content():

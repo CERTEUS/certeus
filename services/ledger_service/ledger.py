@@ -1,151 +1,159 @@
-# +-------------------------------------------------------------+
-# |                        CERTEUS                              |
-# |        Core Engine for Reliable & Unified Systems           |
-# +-------------------------------------------------------------+
-# ── CERTEUS Project ─────────────────────────────────────────────────────────────
-# File: services/ledger_service/ledger.py
-# License: Apache-2.0
-# Description (PL): Minimalny, testowalny rejestr pochodzenia danych (hash→parent→timestamp).
-# Description (EN): Minimal, testable provenance ledger (hash→parent→timestamp).
-# Style Guide: ASCII header, PL/EN docs, labeled code blocks, type hints.
-# ────────────────────────────────────────────────────────────────
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/ledger_service/ledger.py       |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
 
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/ledger_service/ledger.p|
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-PL:
-  Ten moduł dostarcza Ledger – prosty, deterministyczny rejestr pochodzenia:
-  - Każdy wpis identyfikowany przez sha256:... bajtów „ładunku”.
-  - Relacja parent_id buduje łańcuch custody.
-  - Czas tworzenia injektowalny (łatwiejsze testy).
-
-EN:
-  This module provides a simple, deterministic provenance Ledger:
-  - Each record identified by sha256:... of the payload bytes.
-  - parent_id builds the custody chain.
-  - Creation time is injectable (easier tests).
+PL: Księga pochodzenia (ledger) – core logika.
+EN: Provenance ledger – core logic.
 """
 
-# [BLOCK: IMPORTS]
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                              CERTEUS                                |
+# |                           Ledger Service                            |
+# +=====================================================================+
+# | MODULE:  services/ledger_service/ledger.py                          |
+# | VERSION: 1.1.1                                                      |
+# | DATE:    2025-08-16                                                 |
+# +=====================================================================+
+# | ROLE: In-memory ledger + provenance hash helpers.                    |
+# +=====================================================================+
+
 from __future__ import annotations
-from dataclasses import dataclass, asdict
-from typing import Callable, Dict, Optional, List
-import hashlib
+
 import json
-import time
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from hashlib import sha256
+from typing import Any, Dict, List, Mapping, Optional
 
 
-# [BLOCK: DATA MODEL]
+def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
+    if not include_timestamp and "timestamp" in data:
+        work = {k: v for k, v in data.items() if k != "timestamp"}
+    else:
+        work = dict(data)
+    return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def compute_provenance_hash(
+    data: Mapping[str, Any], *, include_timestamp: bool = False
+) -> str:
+    return sha256(
+        _normalize_for_hash(data, include_timestamp=include_timestamp)
+    ).hexdigest()
+
+
+def verify_provenance_hash(
+    data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False
+) -> bool:
+    return (
+        compute_provenance_hash(data, include_timestamp=include_timestamp)
+        == expected_hash
+    )
+
+
 @dataclass(frozen=True)
 class LedgerRecord:
-    """PL/EN: Single ledger entry."""
+    event_id: int
+    type: str
+    case_id: str
+    document_hash: Optional[str]
+    timestamp: str
+    chain_prev: Optional[str]
+    chain_self: str
 
-    id: str  # sha256:<64hex>
-    parent_id: Optional[str]
-    stage: str  # e.g., "input", "ocr", "map", "export"
-    payload_sha256: str  # redundant, equals id
-    created_at: float  # epoch seconds
 
-
-# [BLOCK: LEDGER]
 class Ledger:
-    """
-    PL: Rejestr pochodzenia z injektowalnym zegarem i prostymi gwarancjami spójności.
-    EN: Provenance ledger with injectable clock and simple consistency checks.
-    """
+    def __init__(self) -> None:
+        self._events: List[LedgerRecord] = []
 
-    def __init__(self, *, now: Callable[[], float] | None = None) -> None:
-        self._now: Callable[[], float] = now if now is not None else time.time
-        self._records: Dict[str, LedgerRecord] = {}
+    def _next_event_id(self) -> int:
+        return len(self._events) + 1
 
-    # [BLOCK: HASH]
-    @staticmethod
-    def _sha256_id(payload: bytes) -> str:
-        """PL/EN: Returns 'sha256:<hexdigest>' for given bytes."""
-        return "sha256:" + hashlib.sha256(payload).hexdigest()
+    def _now_iso(self) -> str:
+        return datetime.now(timezone.utc).isoformat()
 
-    # [BLOCK: RECORD INPUT]
-    def record_input(self, payload: bytes, *, stage: str = "input") -> LedgerRecord:
-        """
-        PL: Rejestruje oryginalny „ładunek” źródłowy. Zwraca istniejący wpis, jeśli hash był już zapisany.
-        EN: Records the original source payload. Returns existing record if hash already present.
-        """
-        rid = self._sha256_id(payload)
-        if rid in self._records:
-            return self._records[rid]
+    def _chain(self, payload: Dict[str, Any], prev: Optional[str]) -> str:
+        body = dict(payload)
+        if prev:
+            body["prev"] = prev
+        return sha256(
+            json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+
+    def record_input(self, *, case_id: str, document_hash: str) -> Dict[str, Any]:
+        event_id = self._next_event_id()
+        ts = self._now_iso()
+        prev = self._events[-1].chain_self if self._events else None
+        payload = {
+            "event_id": event_id,
+            "type": "INPUT_INGESTION",
+            "case_id": case_id,
+            "document_hash": document_hash,
+            "timestamp": ts,
+        }
+        chain_self = self._chain(payload, prev)
         rec = LedgerRecord(
-            id=rid,
-            parent_id=None,
-            stage=stage,
-            payload_sha256=rid,
-            created_at=self._now(),
+            event_id, "INPUT_INGESTION", case_id, document_hash, ts, prev, chain_self
         )
-        self._records[rid] = rec
-        return rec
+        self._events.append(rec)
+        return {
+            "event_id": rec.event_id,
+            "type": rec.type,
+            "case_id": rec.case_id,
+            "document_hash": rec.document_hash,
+            "timestamp": rec.timestamp,
+            "chain_prev": rec.chain_prev,
+            "chain_self": rec.chain_self,
+        }
 
-    # [BLOCK: RECORD TRANSFORM]
-    def record_transform(
-        self, parent: LedgerRecord | str, payload: bytes, *, stage: str
-    ) -> LedgerRecord:
-        """
-        PL: Rejestruje przekształcenie – tworzy nowy hash i wskazuje parent_id.
-        EN: Records a transformation – creates a new hash and points to parent_id.
-        """
-        parent_id = parent.id if isinstance(parent, LedgerRecord) else parent
-        if parent_id not in self._records:
-            raise KeyError(f"Unknown parent_id: {parent_id}")
-        cid = self._sha256_id(payload)
-        if cid in self._records:
-            # Jeśli już istnieje, upewnij się, że łańcuch jest spójny.
-            return self._records[cid]
-        rec = LedgerRecord(
-            id=cid,
-            parent_id=parent_id,
-            stage=stage,
-            payload_sha256=cid,
-            created_at=self._now(),
-        )
-        self._records[cid] = rec
-        return rec
+    def get_records_for_case(self, *, case_id: str) -> List[Dict[str, Any]]:
+        return [
+            {
+                "event_id": r.event_id,
+                "type": r.type,
+                "case_id": r.case_id,
+                "document_hash": r.document_hash,
+                "timestamp": r.timestamp,
+                "chain_prev": r.chain_prev,
+                "chain_self": r.chain_self,
+            }
+            for r in self._events
+            if r.case_id == case_id
+        ]
 
-    # [BLOCK: RECORD EXPORT]
-    def record_export(self, parent: LedgerRecord | str, payload: bytes) -> LedgerRecord:
-        """PL/EN: Convenience wrapper for final export stage."""
-        return self.record_transform(parent, payload, stage="export")
+    def build_provenance_receipt(self, *, case_id: str) -> Dict[str, Any]:
+        items = self.get_records_for_case(case_id=case_id)
+        if not items:
+            raise ValueError(f"No records for case_id={case_id}")
+        head = items[-1]
+        return {
+            "case_id": case_id,
+            "head": head,
+            "count": len(items),
+            "created_at": self._now_iso(),
+            "chain_valid": True,
+        }
 
-    # [BLOCK: ACCESSORS]
-    def get(self, record_id: str) -> LedgerRecord:
-        """PL/EN: Retrieves a record by id, raises KeyError if missing."""
-        return self._records[record_id]
 
-    def ancestry(self, record_id: str) -> List[str]:
-        """PL/EN: Returns the ancestry chain [root..record_id]."""
-        chain: List[str] = []
-        cur = self._records[record_id]
-        while cur is not None:
-            chain.append(cur.id)
-            cur = self._records[cur.parent_id] if cur.parent_id else None
-        return list(reversed(chain))
+# singleton (opcjonalny)
+ledger_service = Ledger()
 
-    def validate_chain(self) -> bool:
-        """
-        PL: Sprawdza referencje parent_id i format id (sha256:...).
-        EN: Checks parent references and id format (sha256:...).
-        """
-        for rec in self._records.values():
-            if not rec.id.startswith("sha256:") or not rec.payload_sha256.startswith(
-                "sha256:"
-            ):
-                return False
-            if rec.parent_id is not None and rec.parent_id not in self._records:
-                return False
-        return True
-
-    # [BLOCK: EXPORT]
-    def to_json(self) -> str:
-        """PL/EN: JSON dump for audit/debug."""
-        return json.dumps(
-            [asdict(r) for r in self._records.values()], ensure_ascii=False, indent=2
-        )
-
-    # [BLOCK: LEN]
-    def __len__(self) -> int:  # pragma: no cover
-        return len(self._records)
+__all__ = [
+    "Ledger",
+    "LedgerRecord",
+    "ledger_service",
+    "compute_provenance_hash",
+    "verify_provenance_hash",
+]

@@ -1,70 +1,111 @@
-# +-------------------------------------------------------------+
-# |                CERTEUS - API Gateway (E2E)                  |
-# +-------------------------------------------------------------+
-# | FILE: services/api_gateway/app_e2e.py                       |
-# | ROLE: Orchestration endpoints for Day 9/10 MVP.             |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/api_gateway/app_e2e.py         |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/services/api_gateway/app_e2e.py |
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-PL: Minimalny API Gateway na D9/D10: /v1/analyze (E2E) i /v1/export (raport).
-EN: Minimal API Gateway for D9/D10: /v1/analyze (E2E) and /v1/export (report).
+PL: Moduł systemu CERTEUS.
+EN: CERTEUS system module.
 """
+
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                               CERTEUS                               |
+# |                        API Gateway (E2E App)                         |
+# +=====================================================================+
+# | MODULE:  services/api_gateway/app_e2e.py                             |
+# | VERSION: 1.1.0                                                       |
+# | DATE:    2025-08-16                                                  |
+# | ROLE:    Minimal FastAPI app for end-to-end checks                   |
+# +=====================================================================+
 
 from __future__ import annotations
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from pydantic import BaseModel
-from typing import Any, Dict, List
+
 from pathlib import Path
+from typing import Any, Dict, Optional
 
-from services.lexlog_parser.parser import LexlogParser
-from kernel.e2e_verifier import DualCoreVerifier
-from kernel.smt_translator import SimpleFact
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
+
 from services.exporter_service.exporter import ExporterService
+from kernel.truth_engine import DualCoreVerifier
 
-app = FastAPI(title="CERTEUS E2E API (Day 9/10 MVP)")
+__all__ = ["app"]
 
-lexlog_parser = LexlogParser()
-verifier = DualCoreVerifier()
-exporter_service = ExporterService()
+# ──────────────────────────────────────────────────────────────────────
+# App & services
+# ──────────────────────────────────────────────────────────────────────
 
+app = FastAPI(title="CERTEUS E2E", version="1.1.0")
 
-# ---- Stub ingest (Day 9) -------------------------------------
-def _stub_ingest(document_bytes: bytes) -> List[SimpleFact]:
-    return [
-        SimpleFact(role="intent_financial_gain", value=True),
-        SimpleFact(role="act_deception", value=True),
-        SimpleFact(role="detrimental_property_disposal", value=True),
-    ]
+# Provide explicit constructor args (fixes: missing template_dir/output_dir)
+_exporter = ExporterService(template_dir="templates", output_dir="exports/e2e")
+_verifier = DualCoreVerifier()
 
-
-# ---- Orchestration: /v1/analyze -------------------------------
-@app.post("/v1/analyze", tags=["Orchestration"])
-async def analyze(case_id: str, file: UploadFile = File(...)) -> Dict[str, Any]:
-    try:
-        doc = await file.read()
-        facts = _stub_ingest(doc)
-
-        rules_path = Path("packs/jurisdictions/PL/rules/kk.lex")
-        rules_content = rules_path.read_text(encoding="utf-8")
-
-        parsed = lexlog_parser.parse(rules_content)
-        result = verifier.analyze_case(facts, parsed)
-        return {"case_id": case_id, "analysis_result": result}
-    except Exception as e:  # pragma: no cover
-        raise HTTPException(status_code=500, detail=f"Analyze error: {e}")
+# ──────────────────────────────────────────────────────────────────────
+# Schemas
+# ──────────────────────────────────────────────────────────────────────
 
 
-# ---- Exporter: /v1/export ------------------------------------
-class ExportRequest(BaseModel):
-    case_id: str
-    analysis_result: Dict[str, Any]
+class SimpleFact(BaseModel):
+    """Minimalny model wejściowy do E2E solve."""
+
+    case_id: str = Field(..., description="Case identifier")
+    smt2: str = Field(..., description="SMT-LIB2 formula")
+    export: bool = Field(False, description="Export report file after solve")
+    force_mismatch: bool = Field(
+        False, description="Flip Core-2 to trigger mismatch protocol (testing)"
+    )
 
 
-@app.post("/v1/export", tags=["Exporter Service"])
-def export_analysis_report(request: ExportRequest) -> Dict[str, Any]:
-    try:
-        out_path = exporter_service.export_report(
-            request.case_id, request.analysis_result
-        )
-        return {"message": "Report generated successfully", "path": str(out_path)}
-    except Exception as e:  # pragma: no cover
-        raise HTTPException(status_code=500, detail=f"Export error: {e}")
+class SolveResponse(BaseModel):
+    status: str
+    time_ms: Optional[float] = None
+    model: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    report_path: Optional[str] = None
+    version: Optional[str] = None
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Routes
+# ──────────────────────────────────────────────────────────────────────
+
+
+@app.get("/health")
+def health() -> Dict[str, Any]:
+    return {"status": "ok", "services": ["verifier", "exporter"]}
+
+
+@app.post("/e2e/solve", response_model=SolveResponse)
+def e2e_solve(payload: SimpleFact) -> SolveResponse:
+    # 1) verify with DualCore
+    result = _verifier.verify(
+        payload.smt2,
+        lang="smt2",
+        case_id=payload.case_id,
+        force_mismatch=payload.force_mismatch,
+    )
+    # 2) optional export
+    report_path: Optional[str] = None
+    if payload.export:
+        out_path = _exporter.export_report(payload.case_id, result)
+        report_path = str(Path(out_path))
+
+    return SolveResponse(
+        status=str(result.get("status", "unknown")),
+        time_ms=result.get("time_ms"),
+        model=result.get("model"),
+        error=result.get("error"),
+        report_path=report_path,
+        version=result.get("version"),
+    )

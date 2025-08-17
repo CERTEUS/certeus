@@ -1,65 +1,126 @@
-# +-------------------------------------------------------------+
-# |               CERTEUS - DualCore Verifier (MVP)             |
-# +-------------------------------------------------------------+
-# | FILE: kernel/e2e_verifier.py                                |
-# | ROLE: Minimal verifier using Z3 and SMTTranslator.          |
-# | PLIK: kernel/e2e_verifier.py                                |
-# | ROLA: Minimalny weryfikator Z3 z użyciem SMTTranslator.     |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/kernel/e2e_verifier.py                  |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
 
-# pyright: reportMissingTypeStubs=false, reportUnknownMemberType=false
-
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/kernel/e2e_verifier.py          |
+# | DATE:    2025-08-17                                          |
+# +=====================================================================+
 """
-PL: Minimalny weryfikator E2E oparty o Z3. Przyjmuje fakty i regułę LEXLOG
-    (parsowaną wcześniej), buduje formułę przez SMTTranslator i rozwiązuje.
-EN: Minimal end-to-end verifier based on Z3. Takes facts and a parsed LEXLOG
-    rule, builds a formula via SMTTranslator, and solves it.
+PL: Weryfikator E2E przepływów CERTEUS.
+EN: E2E verifier for CERTEUS flows.
 """
 
-# [BLOCK: IMPORTS]
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                               CERTEUS                               |
+# |                         E2E Verifier (Kernel)                       |
+# +=====================================================================+
+# | FILE:    kernel/e2e_verifier.py                                     |
+# | VERSION: 1.0.2                                                      |
+# | DATE:    2025-08-16                                                 |
+# | ROLE:    End-to-end checks for boolean AST and SMT-LIB(2) formulas. |
+# +=====================================================================+
+
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, Mapping
+import logging
+from typing import Any, Dict, List, cast
 
-import z3  # z3-solver nie ma stubów typów -> patrz dyrektywa pyright wyżej
+import z3  # type: ignore[reportMissingTypeStubs]
+from .smt_translator import compile_bool_ast, validate_ast
 
-from .smt_translator import SMTTranslator
+logger = logging.getLogger(__name__)
+
+# -----------------------------------------------------------------------------
+# Adapter selection (no type redefinition conflicts for Pylance)
+# -----------------------------------------------------------------------------
+try:
+    # Prefer project adapter; name kept distinct to avoid redefinition issues.
+    from .dual_core.z3_adapter import Z3Adapter as _AdapterClass  # type: ignore[assignment]
+except Exception:  # pragma: no cover - emergency fallback
+
+    class _AdapterClass:  # type: ignore[no-redef]
+        """Fallback adapter: solve a list of Z3 assertions with z3.Solver()."""
+
+        def solve(self, assertions: List["z3.ExprRef"]) -> Dict[str, Any]:
+            s = z3.Solver()
+            for a in assertions:
+                s.add(a)
+            status = s.check()
+            result: Dict[str, Any] = {
+                "status": str(status).lower(),
+                "time_ms": None,
+                "model": None,
+                "error": None,
+                "version": z3.get_version_string()
+                if hasattr(z3, "get_version_string")
+                else None,
+            }
+            if status == z3.sat:
+                try:
+                    m = s.model()
+                    result["model"] = {d.name(): str(m[d]) for d in m.decls()}
+                except Exception as e:  # best-effort
+                    result["error"] = f"model_error: {e}"
+            return result
 
 
-# [BLOCK: CLASS • DualCoreVerifier]
-class DualCoreVerifier:
+class E2EVerifier:
     """
-    PL: Minimalny adapter do solvera Z3; reprezentuje „rdzeń” weryfikatora.
-    EN: Minimal adapter to the Z3 solver; represents the verifier 'core'.
+    PL: Prosty weryfikator E2E:
+        - verify_ast: kompiluje AST do Z3 i rozwiązuje.
+        - verify_smt2: parsuje SMT-LIB2 i rozwiązuje.
+    EN: Simple E2E verifier:
+        - verify_ast: compile boolean AST to Z3 and solve.
+        - verify_smt2: parse SMT-LIB2 and solve.
     """
 
     def __init__(self) -> None:
-        self.translator = SMTTranslator()
+        # use runtime-selected adapter without static class-name conflicts
+        self.z3: Any = _AdapterClass()
 
-    def analyze_case(
-        self, facts: Iterable[Any], parsed_rule: Mapping[str, Any]
-    ) -> Dict[str, Any]:
+    # ──────────────────────────────────────────────────────────────────
+    # AST → Z3
+    # ──────────────────────────────────────────────────────────────────
+    def compile_ast_to_z3(
+        self, ast_root: Any, *, do_validate: bool = True
+    ) -> z3.ExprRef:
         """
-        PL: Tłumaczy fakty + regułę na formułę i rozwiązuje w Z3.
-        EN: Translates facts + rule to a formula and solves it in Z3.
+        Compile CERTEUS boolean AST to a single Z3 expression.
         """
-        # [BLOCK: TRANSLATE]
-        formula: Any = self.translator.translate_to_formula(facts, parsed_rule)
+        if do_validate:
+            validate_ast(cast(Any, ast_root))
+        expr, _symbols = compile_bool_ast(
+            cast(Any, ast_root), declare_on_use=True, validate=False
+        )
+        return expr  # ExprRef (BoolRef derives from ExprRef in stubs)
 
-        # [BLOCK: SOLVE]
-        solver: Any = z3.Solver()
-        solver.add(formula)
-        status: Any = solver.check()
+    def verify_ast(self, ast_root: Any, *, do_validate: bool = True) -> Dict[str, Any]:
+        """
+        PL: Kompiluje AST do jednej formuły i rozwiązuje ją Z3.
+        EN: Compile AST to a single assertion and solve it with Z3.
+        """
+        expr = self.compile_ast_to_z3(ast_root, do_validate=do_validate)
+        return self.z3.solve([expr])
 
-        # [BLOCK: RESULT PACK]
-        res: Dict[str, Any] = {"status": str(status)}
-        if status == z3.sat:
-            model: Any = solver.model()
-            model_map: Dict[str, str] = {}
-            # model.decls() -> iterable deklaracji; brak stubów → Any
-            for d in model.decls():  # type: ignore[reportUnknownVariableType]
-                # d.name() to API Z3: nazwa symbolu; brak stubów → Any
-                model_map[str(d.name())] = str(model[d])  # type: ignore[index]
-            res["model"] = model_map
+    # ──────────────────────────────────────────────────────────────────
+    # SMT-LIB2 → Z3
+    # ──────────────────────────────────────────────────────────────────
+    def _parse_smt2_assertions(self, smt2: str) -> List[z3.ExprRef]:
+        vec = z3.parse_smt2_string(smt2)
+        return [vec[i] for i in range(len(vec))]
 
-        return res
+    def verify_smt2(self, smt2: str) -> Dict[str, Any]:
+        """
+        PL: Parsuje SMT-LIB2, wysyła wszystkie asercje do solvera i zwraca wynik.
+        EN: Parse SMT-LIB2, send all assertions to the solver and return the result.
+        """
+        assertions = self._parse_smt2_assertions(smt2)
+        return self.z3.solve(assertions)

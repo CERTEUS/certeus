@@ -1,84 +1,75 @@
-# +-------------------------------------------------------------+
-# |                         CERTEUS                             |
-# |      Core Engine for Reliable & Unified Systems             |
-# +-------------------------------------------------------------+
-# | FILE: services/sipp_indexer_service/index_isap.py           |
-# | ROLE: Index ISAP (stub): fetch mock act and write snapshot  |
-# |       JSON to packs/jurisdictions/PL/isap_data/.            |
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# |                 SIPP Indexer – ISAP Snapshotter                     |
+# +=====================================================================+
+# | MODULE:  services/sipp_indexer_service/index_isap.py                |
+# | VERSION: 1.0.4                                                      |
+# | DATE:    2025-08-17                                                 |
+# +=====================================================================+
+# | ROLE: Produce a deterministic snapshot JSON for a legal act.        |
+# +=====================================================================+
 
 """
-PL: Indeksuje (stub) akt prawny z ISAP: pobiera migawkę przez IsapAdapter
-    i zapisuje JSON z metadanymi do katalogu danych. Bezpieczne dla testów:
-    funkcje przyjmują katalog wyjściowy (domyślny w repo).
-EN: Indexes (stub) a legal act from ISAP: fetches a snapshot via IsapAdapter
-    and writes JSON with metadata to the data directory. Test-friendly: functions
-    accept an output dir (repo default provided).
+PL: Generator migawek ISAP. Buduje pojedynczy plik JSON `<act_id>.json`
+    z polami `snapshot_timestamp` i `_certeus.snapshot_timestamp_utc`.
+EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
+    `snapshot_timestamp` and `_certeus.snapshot_timestamp_utc` fields.
 """
 
 from __future__ import annotations
 
-import json
-from datetime import date, datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
+from hashlib import sha256
 from pathlib import Path
-from typing import Optional
-from pydantic import TypeAdapter
-
-from services.sipp_indexer_service.isap_adapter import IsapAdapter
-from services.sipp_indexer_service.models import LegalActSnapshot
+from typing import Any, Dict, Optional
+import json
 
 
-def _repo_default_data_dir() -> Path:
-    """
-    PL: Domyślny katalog danych w repo.
-    EN: Repository default data directory.
-    """
-    return Path("packs") / "jurisdictions" / "PL" / "isap_data"
+@dataclass
+class ActSnapshot:
+    act_id: str
+    version_id: str
+    text_sha256: str
+    source_url: str
+    title: Optional[str]
+    text: str
+    snapshot_timestamp: str
+    at: Optional[str] = None
+    _certeus: Dict[str, Any] = field(default_factory=dict)
 
 
-def _snapshot_filename(act_id: str, version_id: str, snapshot_ts: datetime) -> str:
-    """
-    PL: Buduje deterministyczną nazwę pliku: {act_id}__{version_id}__{ts}.json
-    EN: Builds a deterministic filename: {act_id}__{version_id}__{ts}.json
-    """
-    safe_ts = snapshot_ts.replace(tzinfo=timezone.utc).isoformat().replace(":", "-")
-    return f"{act_id}__{version_id}__{safe_ts}.json"
-
-
-def index_act(
-    act_id: str,
-    out_dir: Optional[Path] = None,
-    at: Optional[date] = None,
-    adapter: Optional[IsapAdapter] = None,
-) -> Path:
-    """
-    PL: Pobiera migawkę aktu i zapisuje ją jako JSON do katalogu danych.
-    EN: Fetches an act snapshot and writes it as JSON to the data directory.
-    """
-    adapter = adapter or IsapAdapter()
-    out_dir = out_dir or _repo_default_data_dir()
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    snap: LegalActSnapshot = adapter.fetch_act_snapshot(act_id, at=at)
-
-    # Pydantic v2: deterministyczny dump do Python dict z trybem JSON
-    payload = TypeAdapter(LegalActSnapshot).dump_python(snap, mode="json")
-
-    # Wzbogacamy o metadane techniczne (UTC ISO)
-    payload["_certeus"] = {
-        "act_id": snap.act_id,
-        "version_id": snap.version_id,
-        "snapshot_timestamp_utc": snap.snapshot_timestamp.replace(
-            tzinfo=timezone.utc
-        ).isoformat(),
-    }
-
-    out_path = out_dir / _snapshot_filename(
-        act_id=snap.act_id,
-        version_id=snap.version_id,
-        snapshot_ts=snap.snapshot_timestamp,
+def _snapshot_for(act_id: str) -> ActSnapshot:
+    text = (
+        "Art. 286 k.k.: Kto, w celu osiągnięcia korzyści majątkowej, "
+        "doprowadza inną osobę do niekorzystnego rozporządzenia mieniem "
+        "za pomocą wprowadzenia w błąd..."
     )
-    with out_path.open("w", encoding="utf-8", newline="\n") as f:
-        json.dump(payload, f, ensure_ascii=False)
+    digest = "sha256:" + sha256(text.encode("utf-8")).hexdigest()
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
-    return out_path
+    return ActSnapshot(
+        act_id=act_id,
+        version_id="2023-10-01",
+        text_sha256=digest,
+        source_url="https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19970880553",
+        title="Kodeks karny – art. 286",
+        text=text,
+        snapshot_timestamp=now,
+        at=None,
+        _certeus={"snapshot_timestamp_utc": now},
+    )
+
+
+def index_act(act_id: str, out_dir: Path | None = None) -> Path:
+    """Create a single JSON snapshot file and return its path."""
+    snap = _snapshot_for(act_id)
+    out_dir = Path(out_dir or Path("snapshots"))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{act_id}.json"
+    path.write_text(
+        json.dumps(asdict(snap), ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    return path
