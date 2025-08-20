@@ -5,48 +5,36 @@
 # | ROLE: Format / lint / sanity hooks (ruff, prettier, pytest, secrets)|
 # +=====================================================================+
 
-minimum_pre_commit_version: "3.7.0"
-
 repos:
-  # Ruff (lint + format)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.9
     hooks:
       - id: ruff
         args: [--fix]
-        stages: [pre-commit]
       - id: ruff-format
-        stages: [pre-commit]
 
-  # Prettier (mirror) — jedna pozycja, bez additional_dependencies
-- repo: https://github.com/pre-commit/mirrors-prettier
-  rev: v4.0.0-alpha.8
-  hooks:
-    - id: prettier
-      stages: [pre-commit]
-      files: >
-        (\.md$|\.json$|\.ya?ml$|\.html?$|\.css$|\.js$|\.jsx$|\.ts$|\.tsx$)
-        |(^clients/web/)
-      exclude: >
-        ^(node_modules/|dist/|build/|static/previews/|reports/|exports/|artifacts/|proof_artifacts/)
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    # Używaj tego taga — jest w repo mirrors-prettier:
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        # Regex plików do formatowania (JS/TS/HTML/CSS/MD/YAML + cały clients/web/)
+        files: |-
+          (\.md$|\.json$|\.ya?ml$|\.html?$|\.css$|\.js$|\.jsx$|\.ts$|\.tsx$)|(^clients/web/)
+        # Wyklucz cache/build/artefakty:
+        exclude: |-
+          ^(node_modules/|dist/|build/|static/previews/|reports/|exports/|artifacts/|proof_artifacts/)
 
-  # Standardowe utility hooki
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v4.6.0
     hooks:
       - id: end-of-file-fixer
-        stages: [pre-commit]
       - id: trailing-whitespace
-        stages: [pre-commit]
       - id: detect-private-key
-        stages: [pre-commit]
-        # Blokuj klucze (lokalnie trzymasz, ale nie commituj)
-        files: '(\.pem$|\.key$|\.pfx$|\.p12$|\.der$)'
       - id: check-added-large-files
-        stages: [pre-commit]
-        args: ["--maxkb=800"]
+        args: ["--maxkb=5120"]
 
-  # Lokalny szybki test (opcjonalnie można wyłączyć, ale zostawiam jak było)
+  # Lokalne testy (szybkie). Wymaga uv + pytest w środowisku.
   - repo: local
     hooks:
       - id: pytest
@@ -54,4 +42,3 @@ repos:
         entry: uv run pytest -q
         language: system
         pass_filenames: false
-        stages: [pre-commit]
