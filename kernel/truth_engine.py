@@ -70,9 +70,7 @@ class DualCoreVerifier:
         assertions: Any = _Z3.parse_smt2_string(smt2)
         return [assertions[i] for i in range(len(assertions))]
 
-    def _solve_core2_stub(
-        self, core1_result: dict[str, Any], *, force_mismatch: bool
-    ) -> dict[str, Any]:
+    def _solve_core2_stub(self, core1_result: dict[str, Any], *, force_mismatch: bool) -> dict[str, Any]:
         r = dict(core1_result)
         if force_mismatch:
             if r.get("status") == "sat":

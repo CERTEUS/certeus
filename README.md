@@ -1,10 +1,10 @@
 +======================================================================+
-|                        CERTEUS — Prime Repository                    |
+| CERTEUS — Prime Repository |
 +======================================================================+
-| PLIK / FILE: README.md                                               |
-| ROLA / ROLE:                                                          |
-|  PL: Dokument główny repo: struktura, standardy, uruchomienie, CI.   |
-|  EN: Primary repo doc: structure, standards, bootstrap, CI.          |
+| PLIK / FILE: README.md |
+| ROLA / ROLE: |
+| PL: Dokument główny repo: struktura, standardy, uruchomienie, CI. |
+| EN: Primary repo doc: structure, standards, bootstrap, CI. |
 +======================================================================+
 
 # CERTEUS — Verifiable Cognitive Intelligence (VCI)

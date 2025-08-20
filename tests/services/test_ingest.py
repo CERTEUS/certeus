@@ -61,9 +61,7 @@ def test_ingest_document_endpoint_success() -> None:
     PL: Wysyła mały „PDF” i oczekuje listy 2 faktów oraz poprawnego nagłówka Ledger.
     EN: Sends a small “PDF” and expects 2 facts and a valid Ledger header.
     """
-    files: dict[str, FileTuple] = {
-        "file": make_file("test.pdf", b"%PDF-1.4 dummy", "application/pdf")
-    }
+    files: dict[str, FileTuple] = {"file": make_file("test.pdf", b"%PDF-1.4 dummy", "application/pdf")}
 
     resp = client.post("/v1/ingest", files=files)
     assert resp.status_code == 200
@@ -96,9 +94,7 @@ def test_ingest_rejects_unsupported_mime() -> None:
     PL: MIME spoza białej listy → 415.
     EN: MIME outside the allowlist → 415.
     """
-    files_bad: dict[str, FileTuple] = {
-        "file": make_file("x.exe", b"MZ...", "application/x-msdownload")
-    }
+    files_bad: dict[str, FileTuple] = {"file": make_file("x.exe", b"MZ...", "application/x-msdownload")}
     resp = client.post("/v1/ingest", files=files_bad)
     assert resp.status_code == 415
 

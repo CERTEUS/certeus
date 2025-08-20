@@ -292,9 +292,7 @@ def generate_proofs(
 
     # Receipt
     if write_receipt:
-        receipt_path = _emit_receipt(
-            out, created
-        )  # <-- KLUCZOWE: nowa nazwa zmiennej, nie nadpisuj write_receipt
+        receipt_path = _emit_receipt(out, created)  # <-- KLUCZOWE: nowa nazwa zmiennej, nie nadpisuj write_receipt
         created.append(
             Generated(
                 kind="receipt",

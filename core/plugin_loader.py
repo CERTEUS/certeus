@@ -246,11 +246,7 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
             log.warning("Cannot instantiate Plugin() for %s: %s", spec.name, e)
 
     if plugin_obj and hasattr(plugin_obj, "register"):
-        hook = (
-            getattr(api, "register", None)
-            or getattr(api, "add", None)
-            or getattr(api, "attach", None)
-        )
+        hook = getattr(api, "register", None) or getattr(api, "add", None) or getattr(api, "attach", None)
 
         if not callable(hook):
             raise RuntimeError("Plugin API is missing a register/add/attach method")

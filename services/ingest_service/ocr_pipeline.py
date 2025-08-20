@@ -53,9 +53,7 @@ class OcrPipeline:
         optional size limit, returning a structured result.
     """
 
-    def process_document(
-        self, file_bytes: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES
-    ) -> dict[str, Any]:
+    def process_document(self, file_bytes: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES) -> dict[str, Any]:
         """
         PL:
         - Waliduje rozmiar wejścia (domyślnie 10 MB).
@@ -82,9 +80,7 @@ class OcrPipeline:
             "pages": [
                 {
                     "page_num": 1,
-                    "text": (
-                        "Strona 1: Jan Kowalski twierdzi, że umowa została zawarta dnia 2024-01-15."
-                    ),
+                    "text": ("Strona 1: Jan Kowalski twierdzi, że umowa została zawarta dnia 2024-01-15."),
                 },
                 {
                     "page_num": 2,

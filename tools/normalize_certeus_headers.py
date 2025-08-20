@@ -215,9 +215,7 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
     # 3) Insert canonical banner
     module_path = str(p).replace("\\", "/")
     date_str = (
-        datetime.date.today().isoformat()
-        if set_date_today
-        else (first_date or datetime.date.today().isoformat())
+        datetime.date.today().isoformat() if set_date_today else (first_date or datetime.date.today().isoformat())
     )
     banner = build_banner(module_path, date_str)
 
@@ -240,9 +238,7 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(
-        description="Normalize CERTEUS banners and module docstrings across repository."
-    )
+    ap = argparse.ArgumentParser(description="Normalize CERTEUS banners and module docstrings across repository.")
     ap.add_argument("--root", default=".", help="Repository root (default: .)")
     ap.add_argument(
         "--set-date",

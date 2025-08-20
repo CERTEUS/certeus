@@ -108,9 +108,7 @@ class Fact(BaseModel):
     source_document_hash: str = Field(
         ...,
         pattern=r"^sha256:[0-9a-f]{64}$",
-        description=(
-            "PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."
-        ),
+        description=("PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."),
     )
     source_page: int | None = Field(
         None,

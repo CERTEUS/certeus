@@ -1,177 +1,59 @@
-# +======================================================================+
-# |                               CERTEUS                                |
-# +======================================================================+
-# | FILE / PLIK: .github/workflows/proof-gate.yml                        |
-# | ROLA / ROLE:                                                          |
-# |  PL: Bramka dowodowa (DRAT/LFSC) – generacja + weryfikacja + artefakty|
-# |  EN: Proof Gate (DRAT/LFSC) – generate + verify + upload artifacts   |
-# +======================================================================+
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: .github/workflows/proof-gate.yml                              |
+# | ROLE: CI Proof Gate: lint/tests + policy validation + bundle verify |
+# +=====================================================================+
 
 name: Proof Gate
 
 on:
-  push:
-    branches: [ main, master ]
-    paths:
-      - '**/*.py'
-      - 'schemas/**'
-      - 'kernel/**'
-      - 'services/**'
-      - 'plugins/**'
-      - 'scripts/**'
-      - '.github/workflows/proof-gate.yml'
-      - 'pyproject.toml'
-      - 'uv.lock'
   pull_request:
-    branches: [ main, master ]
-    paths:
-      - '**/*.py'
-      - 'schemas/**'
-      - 'kernel/**'
-      - 'services/**'
-      - 'plugins/**'
-      - 'scripts/**'
-      - '.github/workflows/proof-gate.yml'
-      - 'pyproject.toml'
-      - 'uv.lock'
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: proof-gate-${{ github.ref }}
-  cancel-in-progress: true
-
-env:
-  PYTHON_VERSION: "3.11"
-  UV_LINK_MODE: copy            # stabilniej na CI
-  ARTIFACTS_DIR: proof_artifacts
-  DRAT_FILE: z3.drat
-  LFSC_FILE: cvc5.lfsc
-  SMT2_FILE: input.smt2
-  CNF_FILE: input.cnf
-  ALLOW_PLACEHOLDER_ARTIFACTS: "false"   # mamy scripts/generate_proofs.py, więc false
+    branches: [main, develop]
+  push:
+    branches: [develop]
 
 jobs:
   proof-gate:
-    name: Run Proof Gate
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 25
 
     steps:
-      - name: 🧾 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
+      - name: Setup Python + uv
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: "3.11"
 
-      - name: 📦 Install uv
+      - name: Install deps
         run: |
-          python -m pip install -U pip uv
-          uv --version
+          uv sync --all-extras --dev
 
-      - name: 🔧 Sync project (with dev deps)
+      - name: Lint (Ruff)
         run: |
-          uv sync
+          uv run ruff check --select I --fix .
+          uv run ruff check .
 
-      - name: (Optional) Install proof checkers (best-effort)
+      - name: Tests (Pytest)
+        env:
+          PYTHONWARNINGS: "error,default::DeprecationWarning"
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cvc5 || true
-          sudo apt-get install -y drat-trim || true
-          which cvc5 || true
-          which drat-trim || true
+          uv run pytest -q
 
-      - name: 🧪 Generate proofs (DRAT + LFSC + CNF/SMT2)
-        shell: bash
+      - name: Validate Policy Pack (--strict)
         run: |
-          set -euo pipefail
-          ART="${ARTIFACTS_DIR}"
-          mkdir -p "$ART"
+          uv run python scripts/validate_policy_pack.py \
+            --schema policies/pco/policy_pack.schema.v0.1.json \
+            --pack   policies/pco/policy_pack.v0.1.yaml \
+            --format text --strict --list-use-cases
 
-          if [[ -f scripts/generate_proofs.py ]]; then
-            echo ">> Running scripts/generate_proofs.py..."
-            # UWAGA: --cnf i --smt2 proszą generator o stworzenie plików wejściowych
-            uv run python scripts/generate_proofs.py \
-              --out "$ART" \
-              --mode simulate \
-              --formats drat lfsc \
-              --cnf \
-              --smt2
-          else
-            echo "!! scripts/generate_proofs.py not found."
-            if [[ "${ALLOW_PLACEHOLDER_ARTIFACTS}" == "true" ]]; then
-              echo ">> Creating placeholder artifacts (presence-check only)."
-              echo "p cnf 1 0" > "$ART/${CNF_FILE}"
-              echo "(set-logic ALL)" > "$ART/${SMT2_FILE}"
-              echo "PROOF::format=drat::solver=z3::nonce=PLACEHOLDER" > "$ART/${DRAT_FILE}"
-              echo "PROOF::format=lfsc::solver=cvc5::nonce=PLACEHOLDER" > "$ART/${LFSC_FILE}"
-            else
-              echo "Add scripts/generate_proofs.py or set ALLOW_PLACEHOLDER_ARTIFACTS=true for temporary presence-check."
-              exit 1
-            fi
-          fi
-
-          echo ">> Listing artifacts:"
-          ls -lah "$ART"
-
-      - name: 🔐 Hash artifacts (sha256)
-        if: always()
-        shell: bash
+      - name: Verify public bundle (Merkle + Ed25519)
+        env:
+          PCO_JWKS_B64URL: ${{ secrets.PCO_JWKS_B64URL }}
         run: |
-          set -euo pipefail
-          ART="${ARTIFACTS_DIR}"
-          if [[ -f "$ART/${DRAT_FILE}" ]]; then
-            sha256sum "$ART/${DRAT_FILE}" > "$ART/${DRAT_FILE}.sha256"
-          fi
-          if [[ -f "$ART/${LFSC_FILE}" ]]; then
-            sha256sum "$ART/${LFSC_FILE}" > "$ART/${LFSC_FILE}.sha256"
-          fi
-          ls -lah "$ART"
-
-      - name: 🔍 DRAT stub-check
-        shell: bash
-        run: |
-          set -euo pipefail
-          ART="${ARTIFACTS_DIR}"
-          if [[ -f "scripts/check_drat.sh" ]]; then
-            chmod +x scripts/check_drat.sh
-            CNF_PATH="$ART/${CNF_FILE}" \
-            bash scripts/check_drat.sh -d "$ART" -f "${DRAT_FILE}" -s "$ART/${DRAT_FILE}.sha256"
-          else
-            echo "scripts/check_drat.sh not found"; exit 1
-          fi
-
-      - name: 🔍 LFSC stub-check
-        shell: bash
-        run: |
-          set -euo pipefail
-          ART="${ARTIFACTS_DIR}"
-          if [[ -f "scripts/check_lfsc.sh" ]]; then
-            chmod +x scripts/check_lfsc.sh
-            SMT2_PATH="$ART/${SMT2_FILE}" \
-            bash scripts/check_lfsc.sh -d "$ART" -f "${LFSC_FILE}" -s "$ART/${LFSC_FILE}.sha256"
-          else
-            echo "scripts/check_lfsc.sh not found"; exit 1
-          fi
-
-      - name: 📤 Upload proof artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: proofs-${{ github.sha }}
-          path: ${{ env.ARTIFACTS_DIR }}
-          if-no-files-found: error
-
-      - name: Summary
-        if: always()
-        run: |
-          echo "## Proof Gate summary" >> $GITHUB_STEP_SUMMARY
-          echo "- Artifacts dir: \`${{ env.ARTIFACTS_DIR }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- DRAT file: \`${{ env.DRAT_FILE }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- LFSC file: \`${{ env.LFSC_FILE }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- SMT2 file: \`${{ env.SMT2_FILE }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- CNF file: \`${{ env.CNF_FILE }}\`" >> $GITHUB_STEP_SUMMARY
+          uv run python scripts/verify_bundle.py \
+            --rid demo-001 \
+            --bundle-dir ./data/public_pco \
+            --pub-b64url "$PCO_JWKS_B64URL"

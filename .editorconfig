@@ -1,30 +1,27 @@
 # +=====================================================================+
-# |                              CERTEUS                                |
+# |                          CERTEUS — HEART                            |
 # +=====================================================================+
-# | FILE:   .editorconfig                                               |
-# | ROLE:   Editor defaults (EOL, charset, newline)                     |
-# | DATE:   2025-08-17                                                  |
+# | FILE: .editorconfig                                                 |
+# | ROLE:                                                               |
+# |  PL: Spójny format w edytorach (LF, UTF-8, spacje).                 |
+# |  EN: Consistent editor settings (LF, UTF-8, spaces).                |
 # +=====================================================================+
 
 root = true
 
 [*]
 charset = utf-8
-end_of_line = lf          # wymuś LF (stabilne z ruff-format i CI)
+end_of_line = lf
 insert_final_newline = true
 indent_style = space
-indent_size = 2
+indent_size = 4
 trim_trailing_whitespace = true
 
-[*.md]
-trim_trailing_whitespace = false  # pozwól na trailing w Markdown
-
-[*.ps1]
-end_of_line = crlf                # PowerShell preferuje CRLF lokalnie
+[*.yml]
 indent_size = 2
 
-[*.{bat,cmd}]
-end_of_line = crlf
+[*.yaml]
+indent_size = 2
 
-[*.py]
-indent_size = 4
+[*.md]
+trim_trailing_whitespace = false

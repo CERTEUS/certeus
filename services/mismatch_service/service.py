@@ -163,9 +163,7 @@ class MismatchService:
         ticket.priority = TicketPriority.CRITICAL
         ticket.updated_at = datetime.now(timezone.utc)
         note = f"[{datetime.now(timezone.utc).isoformat()}] Escalated by {escalated_by}: {reason}"
-        ticket.resolution_notes = (
-            (ticket.resolution_notes + "\n") if ticket.resolution_notes else ""
-        ) + note
+        ticket.resolution_notes = ((ticket.resolution_notes + "\n") if ticket.resolution_notes else "") + note
         self._persist_if_needed()
         logger.warning("Ticket %s escalated by %s: %s", ticket_id, escalated_by, reason)
         return ticket
@@ -228,9 +226,7 @@ class MismatchService:
                 logger.error("Failed to load ticket %s: %s", p, e)
 
     # -- Callbacks -------------------------------------------------------
-    def register_resolution_callback(
-        self, callback: Callable[[MismatchTicket, TicketResolution], None]
-    ) -> None:
+    def register_resolution_callback(self, callback: Callable[[MismatchTicket, TicketResolution], None]) -> None:
         self._resolution_callbacks.append(callback)
         logger.debug(
             "Registered resolution callback: %s",

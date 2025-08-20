@@ -115,9 +115,7 @@ def record_input(payload: RecordInputRequest) -> RecordInputResponse:
     PL: Rejestruje nowy dokument w księdze (INPUT_INGESTION).
     EN: Records a new document in the ledger (INPUT_INGESTION).
     """
-    result = ledger_service.record_input(
-        case_id=payload.case_id, document_hash=payload.document_hash
-    )
+    result = ledger_service.record_input(case_id=payload.case_id, document_hash=payload.document_hash)
     return RecordInputResponse(**result)
 
 

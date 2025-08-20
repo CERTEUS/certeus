@@ -166,9 +166,7 @@ def _canonicalize_id(identifier: str) -> str:
 # └─────────────────────────────────────────────────────────────────────┘
 
 # Pattern for DEFINE statements
-_PATTERN_DEFINE: re.Pattern[str] = re.compile(
-    r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE
-)
+_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
 
 # Pattern for PREMISE declarations
 _PATTERN_PREMISE: re.Pattern[str] = re.compile(
@@ -188,9 +186,7 @@ _PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
 )
 
 # Alternative pattern for ASSERT on separate line
-_PATTERN_ASSERT: re.Pattern[str] = re.compile(
-    r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL
-)
+_PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
 
 
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -300,9 +296,7 @@ def parse_lexlog(text: str) -> LexAst:
                     # Update existing conclusion or create new one
                     for j, concl in enumerate(conclusions):
                         if concl.id == conclusion_id and not concl.assert_expr:
-                            conclusions[j] = Conclusion(
-                                id=concl.id, title=concl.title, assert_expr=assert_expr
-                            )
+                            conclusions[j] = Conclusion(id=concl.id, title=concl.title, assert_expr=assert_expr)
                             break
 
     logger.debug(f"Parsed {len(conclusions)} CONCLUSION declarations")
@@ -349,9 +343,7 @@ class LexlogParser:
                 "conclusion": "K_OSZUSTWO_STWIERDZONE",
                 "premises": ["P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"],
                 "smt_assertion": (
-                    "z3.And(cel_korzysci_majatkowej, "
-                    "wprowadzenie_w_blad, "
-                    "niekorzystne_rozporzadzenie_mieniem)"
+                    "z3.And(cel_korzysci_majatkowej, wprowadzenie_w_blad, niekorzystne_rozporzadzenie_mieniem)"
                 ),
             }
         # For other content, attempt full parse

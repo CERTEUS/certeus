@@ -1,0 +1,26 @@
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: observability/slo_gate/alerts.yaml                            |
+# | ROLE: Alerts for floor violation and SLO degradation                 |
+# +=====================================================================+
+
+groups:
+  - name: certeus-alerts
+    rules:
+      - alert: FloorViolation
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="api"}[5m])) by (le)) < 0.01
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "Latency floor breached"
+          description: "p95 too low — suspect metric issue or bad regression bypass."
+
+      - alert: SLODegradation
+        expr: slo:global_ok == 0
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "SLO Gate not satisfied"
+          description: "At least one SLO metric is out of threshold."

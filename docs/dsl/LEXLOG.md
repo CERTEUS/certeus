@@ -1,11 +1,11 @@
 # LEXLOG — Język Prawdy v0.1
 
 +-------------------------------------------------------------+
-|              CERTEUS - Język LEXLOG v0.1                    |
+| CERTEUS - Język LEXLOG v0.1 |
 +-------------------------------------------------------------+
-| PLIK: LEXLOG.md                                             |
-| ROLA/ROLE: Specyfikacja języka dziedzinowego (DSL) do       |
-|            formalizacji reguł i faktów prawnych.            |
+| PLIK: LEXLOG.md |
+| ROLA/ROLE: Specyfikacja języka dziedzinowego (DSL) do |
+| formalizacji reguł i faktów prawnych. |
 +-------------------------------------------------------------+
 
 ## LEXLOG — A Language for Formalizing Legal Logic

@@ -1,0 +1,1350 @@
++=============================================================+
+|                       CERTEUS — HEART                        |
++=============================================================+
+CERTEUS PACK — Context for AI assistants (Claude/GPT/Gemini).
+PL: Pliki repo są oddzielone '===== FILE: … ====='.
+EN: Files are delimited by '===== FILE: … ====='.
+Guidance: read sequentially; do not assume missing files exist; respect file boundaries.
+
+
+
+===== FILE: tests/test_adapters_local_impl.py =====
+```text
+# =============================================================================
+#  Tests — Local Adapters stubs
+# =============================================================================
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | MODULE / MODUŁ: tests/test_adapters_local_impl.py                   |
+# | DATE / DATA: 2025-08-17                                             |
+# +=====================================================================+
+# | ROLE / ROLA:                                                        |
+# |  EN: Tests for stubbed adapters (Drive/Preview/OCR/LLM).            |
+# |  PL: Testy stubowych adapterów (Drive/Preview/OCR/LLM).             |
+# +=====================================================================+
+
+"""
+PL: Testy minimalnych, lokalnych implementacji adapterów.
+EN: Tests for minimal, local adapter implementations.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from services.ingest_service.adapters.contracts import (
+    Attachment,
+    Blob,
+    LLMRequest,
+    OCRRequest,
+    PreviewRequest,
+)
+from services.ingest_service.adapters.local_impl import (
+    LocalDriveAdapter,
+    StubLLMAdapter,
+    StubOCRAdapter,
+    StubPreviewAdapter,
+)
+
+
+@pytest.mark.asyncio
+async def test_drive_roundtrip(tmp_path: Path) -> None:
+    drive = LocalDriveAdapter(base_dir=tmp_path / "static", base_url_prefix="/static")
+    data = b"hello"
+    saved = await drive.save_bytes(
+        data, filename="x.txt", content_type="text/plain", case_id="caseA"
+    )
+    assert saved.file_id.endswith(".txt")
+    raw = await drive.read_bytes(saved.file_id)
+    assert raw == data
+    url = await drive.url_for(saved.file_id)
+    assert url and url.startswith("/static/")
+
+
+@pytest.mark.asyncio
+async def test_preview_stub_docx_to_pdf(tmp_path: Path) -> None:
+    drive = LocalDriveAdapter(base_dir=tmp_path / "static", base_url_prefix="/static")
+    preview = StubPreviewAdapter(drive)
+    blob = Blob(
+        filename="sample.docx",
+        content_type=("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+        data=b"DOCX_BYTES_STUB",
+    )
+    req = PreviewRequest(blob=blob, case_id="caseB", target_format="application/pdf")
+    res1 = await preview.generate(req)
+    res2 = await preview.generate(req)
+    assert res1.content_type == "application/pdf"
+    assert res1.url.startswith("/static/")
+    # Deterministic URL (same inputs):
+    assert res1.url == res2.url
+    # File exists:
+    path_rel = res1.url.removeprefix("/static/")
+    assert (tmp_path / "static" / path_rel).exists()
+
+
+@pytest.mark.asyncio
+async def test_ocr_stub_returns_page() -> None:
+    ocr = StubOCRAdapter()
+    blob = Blob(filename="scan.png", content_type="image/png", data=b"\x89PNG...")
+    pages = await ocr.extract(OCRRequest(blob=blob, lang_hint="pl+en"))
+    pages = list(pages)
+    assert len(pages) >= 1
+    assert pages[0].index == 0
+    assert "filename=scan.png" in pages[0].text
+
+
+@pytest.mark.asyncio
+async def test_llm_stub_deterministic() -> None:
+    llm = StubLLMAdapter()
+    req = LLMRequest(
+        prompt="Check attachments.",
+        attachments=[
+            Attachment(name="a.txt", kind="text", content="ABC"),
+            Attachment(name="p.pdf", kind="preview_url", content="/static/x.pdf"),
+        ],
+        case_id="caseC",
+    )
+    res = await llm.analyze(req)
+    assert res.status == "ok"
+    assert res.model.startswith("ALI-Stub")
+    assert "attachments" in res.answer["summary"]
+    assert isinstance(res.trace, tuple)
+
+```
+
+
+===== FILE: tests/test_merkle.py =====
+```text
+from __future__ import annotations
+
+from hashlib import sha256
+
+from services.ledger_service.cosmic_merkle import anchor_bundle, get_bundle_proof, verify_proof
+
+
+def _hx(s: str) -> str:
+    return sha256(s.encode("utf-8")).hexdigest()
+
+
+def test_anchor_and_verify_roundtrip() -> None:
+    rid = _hx("rid-1")
+    bundle = _hx("bundle-1")
+
+    receipt = anchor_bundle(rid, bundle)
+    again = get_bundle_proof(rid, bundle)
+    assert again is not None
+    assert receipt.root == again.root
+    assert verify_proof(receipt)
+    assert verify_proof(again)
+
+```
+
+
+===== FILE: tests/test_pco_core.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | MODULE / MODUŁ: tests/test_pco_core.py                               |
+# | DATE / DATA: 2025-08-19                                              |
+# +=====================================================================+
+# | EN: Core PCO tests: bundle hash, Merkle, Ed25519 sign/verify,        |
+# |     build-and-verify happy path.                                     |
+# | PL: Testy jądra PCO: hash bundla, Merkle, podpis/weryfikacja,        |
+# |     ścieżka pozytywna build-and-verify.                              |
+# +=====================================================================+
+
+from __future__ import annotations
+
+# ----Bloki----- IMPORTY
+import time
+from hashlib import sha256
+
+import pytest
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+from core.pco import (
+    PublicPCO,
+    apply_merkle_path,
+    canonical_bundle_hash_hex,
+    canonical_digest_hex,
+    compute_leaf_hex,
+    ed25519_verify_b64u,
+)
+
+
+def _hex(s: str) -> str:
+    return sha256(s.encode("utf-8")).hexdigest()
+
+
+def test_kernel_bundle_hash_and_leaf() -> None:
+    smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
+    lfsc = "(lfsc proof)"
+    bundle_hash = canonical_bundle_hash_hex(smt2_hash, lfsc, None)
+    leaf = compute_leaf_hex("demo-001", bundle_hash)
+    # sanity: długości
+    assert len(bundle_hash) == 64
+    assert len(leaf) == 64
+
+
+def test_kernel_canonical_digest_and_sig() -> None:
+    sk = Ed25519PrivateKey.generate()
+    pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
+    lfsc = "(lfsc proof)"
+    drat = None
+    bundle_hash = canonical_bundle_hash_hex(smt2_hash, lfsc, drat)
+    root = apply_merkle_path(compute_leaf_hex("demo-001", bundle_hash), [])  # MVP: []
+    digest = canonical_digest_hex(
+        rid="demo-001", smt2_hash_hex=smt2_hash, lfsc_text=lfsc, drat_text=drat, merkle_root_hex=root
+    )
+    sig = sk.sign(bytes.fromhex(digest))
+    ed25519_verify_b64u(pk, __import__("base64").urlsafe_b64encode(sig).rstrip(b"=").decode(), digest)
+
+
+def test_kernel_build_and_verify() -> None:
+    sk = Ed25519PrivateKey.generate()
+    pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    rid = "demo-001"
+    smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
+    lfsc = "(lfsc proof)"
+    # MVP: merkle_proof=[]
+    pco = PublicPCO.build_and_sign(
+        rid=rid,
+        smt2_hash=smt2_hash,
+        lfsc=lfsc,
+        merkle_proof_raw=[],
+        ed25519_private_bytes=sk.private_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PrivateFormat.Raw,
+            encryption_algorithm=serialization.NoEncryption(),  # type: ignore[arg-type]
+        ),  # raw bytes
+        issued_at=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    )
+    # verify
+    pco.verify(ed25519_public_bytes=pk)
+
+    # negatyw: zła sygnatura
+    bad = PublicPCO(
+        rid=rid,
+        smt2_hash=smt2_hash,
+        lfsc=lfsc,
+        merkle_proof=[],
+        signature="A" * 40,
+        issued_at=None,
+    )
+    with pytest.raises(InvalidSignature):
+        # verify should raise when signature invalid
+        ed25519_verify_b64u(
+            pk,
+            bad.signature,
+            canonical_digest_hex(
+                rid=bad.rid,
+                smt2_hash_hex=bad.smt2_hash,
+                lfsc_text=bad.lfsc,
+                drat_text=None,
+                merkle_root_hex=compute_leaf_hex(bad.rid, canonical_bundle_hash_hex(bad.smt2_hash, bad.lfsc, None)),
+            ),
+        )
+
+```
+
+
+===== FILE: tests/test_pco_public.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | MODULE / MODUŁ: tests/test_pco_public.py                            |
+# | DATE / DATA: 2025-08-19                                             |
+# +=====================================================================+
+# | ROLE / ROLA:                                                        |
+# |  EN: API test for /pco/public (happy path + validation).            |
+# |  PL: Test API publicznego PCO (ścieżka pozytywna + walidacja).      |
+# +=====================================================================+
+
+# ---Bloki----- IMPORTY
+from __future__ import annotations
+
+# stdlib
+import base64
+import json
+import time
+from hashlib import sha256
+from pathlib import Path
+
+# third-party
+import pytest
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from fastapi.testclient import TestClient
+
+# project
+from services.api_gateway.main import app
+from services.api_gateway.routers.pco_public import (  # type: ignore
+    _canonical_digest_hex,
+    compute_leaf_hex,
+)
+
+client = TestClient(app)
+
+
+# ---Bloki----- POMOCNICZE
+def _b64u(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
+
+
+def _hex(s: str) -> str:
+    return sha256(s.encode("utf-8")).hexdigest()
+
+
+def _bundle_hash_hex(smt2_hash: str, lfsc_text: str, drat_text: str | None = None) -> str:
+    """Musi odzwierciedlać serwerowe _compute_bundle_hash_hex."""
+    payload = {"lfsc_sha256": _hex(lfsc_text), "smt2_hash": smt2_hash}
+    if drat_text is not None:
+        payload["drat_sha256"] = _hex(drat_text)
+    blob = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    return sha256(blob).hexdigest()
+
+
+# ---Bloki----- TESTY
+def test_get_public_pco_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # GIVEN: środowisko i klucz testowy
+    monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
+    sk = Ed25519PrivateKey.generate()
+    pk_bytes = sk.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    monkeypatch.setenv("ED25519_PUBKEY_HEX", pk_bytes.hex())
+
+    # AND: przygotowany publiczny bundle (MVP, path=[])
+    rid = "demo-001"
+    smt2_hash = _hex("(set-logic ALL)\n(check-sat)\n")
+    lfsc = "(lfsc proof placeholder)"
+    pub = {
+        "rid": rid,
+        "smt2_hash": smt2_hash,
+        "lfsc": lfsc,
+        # brak 'drat' (optional) w tym teście
+        "merkle_proof": [],  # MVP: root==leaf
+        "issued_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+
+    # Oblicz bundle_hash -> liść Merkle -> digest kanoniczny i podpisz
+    bundle_hash = _bundle_hash_hex(smt2_hash, lfsc)
+    merkle_root = compute_leaf_hex(rid, bundle_hash)  # path == [] ⇒ root == leaf
+    digest_hex = _canonical_digest_hex(pub, merkle_root)
+    pub["signature"] = _b64u(sk.sign(bytes.fromhex(digest_hex)))
+
+    # Zapisz bundle na FS
+    (tmp_path / f"{rid}.json").write_text(json.dumps(pub, ensure_ascii=False), encoding="utf-8")
+
+    # WHEN: pobieramy publiczny PCO
+    r = client.get(f"/pco/public/{rid}")
+    assert r.status_code == 200, r.text
+    body = r.json()
+
+    # THEN: sanity
+    assert body["rid"] == rid
+    assert "lfsc" in body
+    assert "signature" in body
+
+
+def test_get_public_pco_validation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
+    rid = _hex("rid-bad")
+    # Błędny JSON (tablica zamiast obiektu)
+    (tmp_path / f"{rid}.json").write_text("[]", encoding="utf-8")
+    r = client.get(f"/pco/public/{rid}")
+    assert r.status_code in (400, 422, 500)
+
+```
+
+
+===== FILE: tests/truth/test_smt_translator_ext.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/truth/test_smt_translator_ext.py  |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+"""
+PL: Testy jednostkowe / integracyjne modułu.
+EN: Module test suite (unit/integration).
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from kernel.smt_translator import (
+    ASTNode,
+    compile_bool_ast,
+    validate_ast,
+)
+
+
+# ----------------------------------------------------------------------
+# Helpers to build small ASTs
+# ----------------------------------------------------------------------
+def v(name: str) -> ASTNode:
+    return {"kind": "var", "name": name}  # type: ignore[typeddict-item]
+
+
+def not_(arg: ASTNode) -> ASTNode:
+    return {"kind": "unary", "op": "NOT", "arg": arg}  # type: ignore[typeddict-item]
+
+
+def bin_(op: str, left: ASTNode, right: ASTNode) -> ASTNode:
+    return {  # type: ignore[typeddict-item]
+        "kind": "binary",
+        "op": op,
+        "left": left,
+        "right": right,
+    }
+
+
+def nary_(op: str, *args: ASTNode) -> ASTNode:
+    return {  # type: ignore[typeddict-item]
+        "kind": "nary",
+        "op": op,
+        "args": list(args),
+    }
+
+
+# ----------------------------------------------------------------------
+# Tests
+# ----------------------------------------------------------------------
+def test_validate_accepts_minimal_var_and_unary_and_binary():
+    ast1: ASTNode = v("a")
+    validate_ast(ast1)  # should not raise
+
+    ast2: ASTNode = not_(v("b"))
+    validate_ast(ast2)  # should not raise
+
+    ast3: ASTNode = bin_("AND", v("a"), v("b"))
+    validate_ast(ast3)  # should not raise
+
+
+def test_validate_rejects_invalid_ops():
+    bad_unary = {"kind": "unary", "op": "NEG", "arg": v("a")}  # type: ignore[typeddict-item]
+    with pytest.raises(ValueError):
+        validate_ast(bad_unary)  # invalid op
+
+    bad_binary = {"kind": "binary", "op": "NAND", "left": v("a"), "right": v("b")}  # type: ignore[typeddict-item]
+    with pytest.raises(ValueError):
+        validate_ast(bad_binary)
+
+    bad_nary = {"kind": "nary", "op": "XNOR", "args": [v("a"), v("b")]}  # type: ignore[typeddict-item]
+    with pytest.raises(ValueError):
+        validate_ast(bad_nary)
+
+
+def test_compile_populates_symbol_table_for_vars():
+    ast = bin_("OR", v("x"), not_(v("y")))
+    _, symbols = compile_bool_ast(ast, validate=True)
+
+    assert isinstance(symbols, dict)
+    assert set(symbols.keys()) == {"x", "y"}
+
+
+def test_compile_handles_nary_nodes():
+    ast = nary_("AND", v("p"), v("q"), not_(v("r")))
+    _, symbols = compile_bool_ast(ast, validate=True)
+    assert set(symbols.keys()) == {"p", "q", "r"}
+
+```
+
+
+===== FILE: tests/truth/test_solvers.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/truth/test_solvers.py             |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                    CERTEUS - Truth Tests                    |
+# +-------------------------------------------------------------+
+# | PLIK / FILE: tests/truth/test_solvers.py                    |
+# | ROLA / ROLE:                                                |
+# |  PL: Testy jądra prawdy i generatora artefaktów dowodowych. |
+# |  EN: Tests for the truth kernel and proof artifact generator.|
+# +-------------------------------------------------------------+
+
+"""
+PL: Ten moduł zawiera testy dla generatora dowodów:
+    - Test jednostkowy: bezpośrednie wywołanie generate_proofs(...)
+    - Test CLI (opcjonalny): wywołanie skryptu przez subprocess, jeśli dostępny jest `uv`.
+
+EN: This module contains tests for the proof generator:
+    - Unit test: direct call to generate_proofs(...)
+    - Optional CLI test: run the script via subprocess if `uv` is available.
+"""
+
+from __future__ import annotations
+
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from typing import Literal
+
+import pytest
+
+# Import bezpośrednio z modułu – stabilniej niż subprocess
+# Direct import from module – more stable than subprocess
+from scripts.generate_proofs import generate_proofs
+
+
+@pytest.mark.parametrize(
+    "formats,mode,expected_files",
+    [
+        (["drat", "lfsc"], "stub", ["z3.drat", "cvc5.lfsc"]),
+        (["drat"], "simulate", ["z3.drat"]),
+        (["lfsc"], "simulate", ["cvc5.lfsc"]),
+    ],
+)
+def test_generate_proofs_function_creates_expected_artifacts(
+    formats: list[str],
+    mode: Literal["stub", "simulate"],
+    expected_files: list[str],
+) -> None:
+    """
+    PL: Sprawdza, czy generate_proofs(...) tworzy oczekiwane pliki w danym trybie i formatach.
+    EN: Verifies that generate_proofs(...) creates expected files for given mode and formats.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out: Path = Path(tmpdir)
+        # Wywołanie funkcji bezpośrednio (unit)
+        generate_proofs(out, formats, mode)
+
+        # Weryfikacja istnienia plików
+        for name in expected_files:
+            name_str: str = name
+            p: Path = out / name_str
+            assert p.exists(), f"PL: Brak pliku: {p} | EN: Missing file: {p}"
+
+        # W trybie simulate sprawdź, że pliki nie są puste
+        if mode == "simulate":
+            for name in expected_files:
+                p: Path = out / name
+                size: int = p.stat().st_size
+                assert size > 0, f"PL: Pusty plik: {p} | EN: Empty file: {p}"
+
+
+@pytest.mark.skipif(shutil.which("uv") is None, reason="uv not available on PATH")
+def test_generate_proofs_cli_smoke_test() -> None:
+    """
+    PL: „Dymny” test CLI – uruchamia skrypt przez `uv run python ...` i sprawdza wyjście.
+    EN: CLI smoke test – runs the script via `uv run python ...` and checks output.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out: Path = Path(tmpdir)
+        cmd: list[str] = [
+            "uv",
+            "run",
+            sys.executable,  # aktywny Python z venv
+            "scripts/generate_proofs.py",
+            "--out",
+            str(out),
+            "--mode",
+            "simulate",
+        ]
+        res = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        stdout: str = res.stdout
+
+        assert ("Created simulated proof with content" in stdout) or (
+            "Created stub proof" in stdout
+        )
+        assert (out / "z3.drat").exists()
+        assert (out / "cvc5.lfsc").exists()
+
+```
+
+
+===== FILE: tests/utils/test_console.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/utils/test_console.py             |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/utils/test_console.py                           |
+# | ROLE: Tests for console utilities (ASCII-safe & colors).    |
+# | PLIK: tests/utils/test_console.py                           |
+# | ROLA: Testy narzędzi konsolowych (ASCII-safe i kolory).     |
+# +-------------------------------------------------------------+
+"""
+PL: Testy funkcji utils.console: ascii_safe, print_safe, info/success/error i bezpieczeństwo ASCII.
+EN: Tests for utils.console functions: ascii_safe, print_safe, info/success/error and ASCII safety.
+"""
+
+from __future__ import annotations
+
+from utils.console import ascii_safe, error, info, print_safe, success
+
+
+class _AsciiOnlyStream:
+    """Tiny write-capturing stream that only accepts ASCII."""
+
+    def __init__(self) -> None:
+        self._encoding = "ascii"
+        self._buf: list[str] = []
+
+    @property
+    def encoding(self) -> str:  # Protocol dopuszcza Optional[str]
+        return self._encoding
+
+    # NAZWA PARAMETRU MUSI BYĆ 's', żeby zgadzała się z Protocol.StreamLike
+    def write(self, s: str) -> int:
+        # enforce ASCII-only
+        s.encode("ascii")
+        self._buf.append(s)
+        return len(s)
+
+    def flush(self) -> None:  # pragma: no cover
+        return
+
+    def getvalue(self) -> str:
+        return "".join(self._buf)
+
+    def isatty(self) -> bool:  # pragma: no cover
+        return False
+
+
+def test_ascii_safe_true_for_ascii_stream() -> None:
+    s = _AsciiOnlyStream()
+    assert ascii_safe(s) is True
+
+
+def test_print_safe_replaces_non_ascii_on_ascii_stream() -> None:
+    s = _AsciiOnlyStream()
+    text = "Zażółć gęślą jaźń"
+    print_safe(text, stream=s)  # should not raise
+    captured = s.getvalue()
+    # enforce that output is pure ASCII
+    captured.encode("ascii")
+    # and likely contains replacements
+    assert any(ord(ch) > 127 for ch in text)
+    assert "?" in captured or captured != text
+
+
+def test_info_success_error_prefixes_ascii_stream() -> None:
+    s = _AsciiOnlyStream()
+    info("hello", stream=s)
+    success("world", stream=s)
+    error("boom", stream=s)
+    out = s.getvalue()
+    assert "[INFO] " in out
+    assert "[SUCCESS] " in out
+    assert "[ERROR] " in out
+
+```
+
+
+===== FILE: tmp/cvc5.lfsc =====
+```text
+
+```
+
+
+===== FILE: tmp/z3.drat =====
+```text
+
+```
+
+
+===== FILE: tools/fix_certeus_headers.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  tools/fix_certeus_headers.py                                |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+"""
+PL: Hurtowy wstrzykiwacz banerów CERTEUS i docstringów modułów (idempotentny).
+EN: Bulk injector for CERTEUS banners and module docstrings (idempotent).
+"""
+
+from __future__ import annotations
+
+import datetime
+import re
+from pathlib import Path
+
+# Lista naprawianych plików (z poprzednich runów gate’a)
+FILES = [
+    "services/api_gateway/app_e2e.py",
+    "tests/services/test_mismatch_service.py",
+    "services/api_gateway/routers/mismatch.py",
+    "services/api_gateway/main.py",
+    "services/exporter_service/exporter.py",
+    "typings/z3/__init__.py",
+    "kernel/e2e_verifier.py",
+    "kernel/dual_core/__init__.py",
+    "kernel/dual_core/z3_adapter.py",
+    "services/ledger_service/ledger.py",
+    "services/__init__.py",
+    "tests/truth/test_smt_translator_ext.py",
+    "tests/services/test_exporter_provenance.py",
+    "kernel/truth_engine.py",
+    "services/exporter_service/__init__.py",
+    # dopełnienia:
+    "tests/services/test_ledger.py",
+    "tools/fix_certeus_headers.py",
+]
+
+BANNER = """# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  {module_path:<60}|
+# | DATE:    {today:<60}|
+# +=====================================================================+
+"""
+
+DOCSTRING_TMPL = '''"""
+PL: {pl_desc}
+EN: {en_desc}
+"""
+'''
+
+# Bezpieczny wzorzec na docstring: potrójne " lub ' (symetryczne)
+DOCSTRING_NEAR_TOP_RE = re.compile(r'(?ms)^\s*(["\'])\1\1(?P<body>.*?)(\1\1\1)\s*')
+
+
+def needs_banner(text: str) -> bool:
+    return not text.lstrip().startswith(
+        "# +====================================================================="
+    )
+
+
+def needs_docstring(text: str) -> bool:
+    head = "\n".join(text.splitlines()[:25])
+    return DOCSTRING_NEAR_TOP_RE.match(head) is None
+
+
+def make_descriptions(p: Path) -> tuple[str, str]:
+    name = str(p).replace("\\", "/")
+    if "tests/" in name:
+        return (
+            "Testy jednostkowe / integracyjne modułu.",
+            "Module test suite (unit/integration).",
+        )
+    if "routers/" in name:
+        return (
+            "Router FastAPI dla usług CERTEUS.",
+            "FastAPI router for CERTEUS services.",
+        )
+    if name.endswith("__init__.py"):
+        return ("Pakiet inicjalizacyjny modułu.", "Package initializer.")
+    if "ledger" in name:
+        return ("Księga pochodzenia (ledger) – logika.", "Provenance ledger – logic.")
+    if "exporter" in name:
+        return ("Eksport raportów i artefaktów procesu.", "Report/artefact exporter.")
+    if "smt_translator" in name:
+        return (
+            "Translator SMT i powiązana logika.",
+            "SMT translator and related logic.",
+        )
+    if "e2e_verifier" in name:
+        return (
+            "Weryfikator E2E przepływów CERTEUS.",
+            "E2E verifier for CERTEUS flows.",
+        )
+    if "z3_adapter" in name:
+        return ("Adapter dla Z3 i zależności SMT.", "Adapter for Z3 and SMT.")
+    return ("Moduł systemu CERTEUS.", "CERTEUS system module.")
+
+
+def inject_header_and_docstring(path: Path) -> bool:
+    text = path.read_text(encoding="utf-8")
+    updated = False
+
+    # przygotuj baner
+    today = datetime.date.today().isoformat()
+    banner = BANNER.format(module_path=str(path).replace("\\", "/")[:60], today=today)
+
+    new_text = text
+
+    # shebang/encoding na górze – zachowaj
+    lines = new_text.splitlines(keepends=True)
+    i = 0
+    if i < len(lines) and lines[i].startswith("#!"):
+        i += 1
+    if i < len(lines) and lines[i].startswith("# -*- coding:"):
+        i += 1
+    prefix = "".join(lines[:i])
+    rest = "".join(lines[i:])
+
+    # usuń WSZYSTKIE istniejące banery CERTEUS gdziekolwiek
+    rest = re.sub(
+        r"(?ms)^# \+={69}\+\n(?:# \|.*\n)+# \+={69}\+\n\n?",
+        "",
+        rest,
+    )
+
+    # dodaj nasz jeden kanoniczny pod shebangiem/encodingiem
+    rest = banner + rest
+    updated = True
+
+    # docstring: zachowaj pierwszy jeśli jest na górze; jeśli nie ma – dodaj
+    head = "\n".join(rest.splitlines()[:25])
+    if DOCSTRING_NEAR_TOP_RE.match(head) is None:
+        pl, en = make_descriptions(path)
+        doc = DOCSTRING_TMPL.format(pl_desc=pl, en_desc=en).strip() + "\n\n"
+        rest = doc + rest
+        updated = True
+    else:
+        # jeśli po banerze jest WIĘCEJ niż jeden docstring PL/EN pod rząd – zredukuj do jednego
+        parts = rest.splitlines(keepends=True)
+        pos = 0
+        # omiń baner (to 5–6 linii; wyłap marker linii granicznej)
+        while pos < len(parts) and parts[pos].startswith("# "):
+            pos += 1
+        # od 'pos' – zredukuj ewentualne duplikaty docstringów PL/EN
+        tail = "".join(parts[pos:])
+        m = DOCSTRING_NEAR_TOP_RE.match(tail)
+        if m:
+            end = m.end()
+            tail2 = tail[end:]
+            # usuwaj kolejne docstringi PL/EN od razu po sobie
+            while True:
+                skip = re.match(r"(?ms)^(?:[ \t]*#.*\n|[ \t]*\n)*", tail2)
+                s = skip.end() if skip else 0
+                m2 = DOCSTRING_NEAR_TOP_RE.match(tail2[s:])
+                if m2:
+                    body = m2.group("body")
+                    if "PL:" in body and "EN:" in body:
+                        tail2 = tail2[:s] + tail2[s + m2.end() :]
+                        updated = True
+                        continue
+                break
+            rest = "".join(parts[:pos]) + tail[:end] + tail2
+
+    if updated:
+        path.write_text(prefix + rest, encoding="utf-8")
+    return updated
+
+
+def main() -> None:
+    repo = Path(".").resolve()
+    touched = []
+    for rel in FILES:
+        p = repo / rel
+        if not p.exists() or not p.is_file():
+            print(f"[skip] {rel} (missing)")
+            continue
+        if inject_header_and_docstring(p):
+            print(f"[fix ] {rel}")
+            touched.append(rel)
+        else:
+            print(f"[ok  ] {rel}")
+    print(f"\nDone. Updated: {len(touched)} file(s).")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+===== FILE: tools/normalize_certeus_headers.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tools/normalize_certeus_headers.py      |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+"""
+PL: Normalizator nagłówków CERTEUS i docstringów modułów.
+    - Usuwa wszystkie istniejące banery CERTEUS w pliku i wstawia jeden kanoniczny
+      pod shebangiem/encodingiem.
+    - Gwarantuje jeden docstring modułu (zachowuje pierwszy; jeśli brak – dodaje PL/EN).
+    - Działa idempotentnie; kolejne uruchomienia nie tworzą duplikatów.
+    - Domyślnie zachowuje datę z pierwszego znalezionego banera, można wymusić dzisiejszą.
+
+EN: CERTEUS header & module docstring normalizer.
+    - Removes all existing CERTEUS banners and inserts a single canonical one
+      below shebang/encoding.
+    - Ensures a single module docstring (keeps first; if none, adds PL/EN).
+    - Idempotent; subsequent runs don't duplicate.
+    - Keeps the first banner's DATE by default; can force today's date.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime
+import re
+from collections.abc import Iterable
+from pathlib import Path
+
+BORDER = "# +=====================================================================+"
+CERTEUS_LINE = "# |                          CERTEUS                                    |"
+MODULE_LABEL = "MODULE:"
+DATE_LABEL = "DATE:"
+
+CANONICAL_WIDTH = 60  # padding width inside "| ... |"
+
+EXCLUDE_DIRS = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+    "node_modules",
+    "dist",
+    "build",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".idea",
+    ".vscode",
+}
+
+PY_GLOB = "**/*.py"
+
+BANNER_RE = re.compile(rf"(?ms)^({re.escape(BORDER)}\n(?:# \|.*\n)+{re.escape(BORDER)}\n)")
+
+DATE_LINE_RE = re.compile(r"# \|\s*DATE:\s*(?P<date>.*?)\s*\|")
+
+TRIPLE_QUOTE_RE = re.compile(r'(?ms)^\s*(?P<q>"""|\'\'\')(?P<body>.*?)(?P=q)\s*')
+
+
+def iter_py_files(root: Path) -> Iterable[Path]:
+    for p in root.glob(PY_GLOB):
+        if any(part in EXCLUDE_DIRS for part in p.parts):
+            continue
+        if p.is_file():
+            yield p
+
+
+def extract_banner_date(block: str) -> str | None:
+    m = DATE_LINE_RE.search(block)
+    if m:
+        return m.group("date").strip()
+    return None
+
+
+def remove_all_banners(text: str) -> tuple[str, str | None]:
+    """Remove all CERTEUS banner blocks. Return (text_wo_banners, first_date_if_any)."""
+    first_date: str | None = None
+
+    def repl(m: re.Match) -> str:
+        nonlocal first_date
+        block = m.group(1)
+        if first_date is None:
+            first_date = extract_banner_date(block)
+        return ""  # drop this banner
+
+    new_text = BANNER_RE.sub(repl, text)
+    return new_text, first_date
+
+
+def split_shebang_encoding(text: str) -> tuple[str, str]:
+    """Return (prefix, rest) where prefix includes shebang/encoding lines."""
+    lines = text.splitlines(keepends=True)
+    idx = 0
+    if idx < len(lines) and lines[idx].startswith("#!"):
+        idx += 1
+    if idx < len(lines) and lines[idx].startswith("# -*- coding:"):
+        idx += 1
+    return "".join(lines[:idx]), "".join(lines[idx:])
+
+
+def build_banner(module_path: str, date_str: str) -> str:
+    line_module = f"# | MODULE:  {module_path:<{CANONICAL_WIDTH}}|"
+    line_date = f"# | DATE:    {date_str:<{CANONICAL_WIDTH}}|"
+    return "\n".join([BORDER, CERTEUS_LINE, BORDER, line_module, line_date, BORDER]) + "\n\n"
+
+
+def has_module_docstring_near_top(text_after_banner: str) -> tuple[bool, int, int]:
+    """
+    Detect a module-level docstring near file start (after comments).
+    Returns (found, start_idx, end_idx) in char offsets in text_after_banner.
+    """
+    # Skip initial comment lines and blanks
+    pos = 0
+    while True:
+        m = re.match(r"[ \t]*#.*\n", text_after_banner[pos:])
+        if m:
+            pos += m.end()
+            continue
+        m2 = re.match(r"[ \t]*\n", text_after_banner[pos:])
+        if m2:
+            pos += m2.end()
+            continue
+        break
+
+    mdoc = TRIPLE_QUOTE_RE.match(text_after_banner[pos:])
+    if mdoc:
+        start = pos + mdoc.start()
+        end = pos + mdoc.end()
+        return True, start, end
+    return False, -1, -1
+
+
+def ensure_single_docstring(text_after_banner: str, module_path: str) -> str:
+    """
+    Keep the first module docstring (if present). Remove any additional PL/EN
+    docstrings immediately following it. If none present, insert a generic PL/EN.
+    """
+    found, start, end = has_module_docstring_near_top(text_after_banner)
+    if found:
+        # Remove any additional docstrings appearing right after the first (duplicates).
+        tail = text_after_banner[end:]
+        # Repeatedly strip PL/EN style docstrings at the very top of 'tail'
+        while True:
+            # skip blanks/comments
+            skip = re.match(r"(?ms)^(?:[ \t]*#.*\n|[ \t]*\n)*", tail)
+            s = skip.end() if skip else 0
+            next_doc = TRIPLE_QUOTE_RE.match(tail[s:])
+            if next_doc:
+                body = next_doc.group("body")
+                if "PL:" in body and "EN:" in body:
+                    tail = tail[:s] + tail[s + next_doc.end() :]
+                    continue
+            break
+        return text_after_banner[:end] + tail
+
+    # No docstring → insert canonical PL/EN
+    pl_desc, en_desc = make_descriptions(module_path)
+    doc = f'"""\nPL: {pl_desc}\nEN: {en_desc}\n"""\n\n'
+    return doc + text_after_banner
+
+
+def make_descriptions(module_path: str) -> tuple[str, str]:
+    name = module_path
+    if "tests/" in name:
+        return (
+            "Testy jednostkowe / integracyjne modułu.",
+            "Module test suite (unit/integration).",
+        )
+    if "routers/" in name:
+        return (
+            "Router FastAPI dla usług CERTEUS.",
+            "FastAPI router for CERTEUS services.",
+        )
+    if name.endswith("__init__.py"):
+        return ("Pakiet inicjalizacyjny modułu.", "Package initializer.")
+    if "ledger" in name:
+        return ("Księga pochodzenia (ledger) – logika.", "Provenance ledger – logic.")
+    if "exporter" in name:
+        return ("Eksport raportów i artefaktów procesu.", "Report/artefact exporter.")
+    if "smt_translator" in name:
+        return (
+            "Translator SMT i powiązana logika.",
+            "SMT translator and related logic.",
+        )
+    if "e2e_verifier" in name:
+        return (
+            "Weryfikator E2E przepływów CERTEUS.",
+            "E2E verifier for CERTEUS flows.",
+        )
+    if "z3_adapter" in name:
+        return ("Adapter dla Z3 i zależności SMT.", "Adapter for Z3 and SMT.")
+    return ("Moduł systemu CERTEUS.", "CERTEUS system module.")
+
+
+def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
+    """
+    Returns True if file was modified.
+    """
+    text = p.read_text(encoding="utf-8")
+
+    # 1) Remove all existing banners (capture first DATE)
+    text_wo_banners, first_date = remove_all_banners(text)
+
+    # 2) Split out shebang/encoding
+    prefix, rest = split_shebang_encoding(text_wo_banners)
+
+    # 3) Insert canonical banner
+    module_path = str(p).replace("\\", "/")
+    date_str = (
+        datetime.date.today().isoformat()
+        if set_date_today
+        else (first_date or datetime.date.today().isoformat())
+    )
+    banner = build_banner(module_path, date_str)
+
+    # If rest already starts with the same banner, avoid duplication
+    if rest.startswith(banner):
+        new_rest = rest
+    else:
+        new_rest = banner + rest
+
+    # 4) Ensure exactly one module docstring
+    new_rest = ensure_single_docstring(new_rest, module_path)
+
+    new_text = prefix + new_rest
+
+    if new_text != text:
+        if not dry_run:
+            p.write_text(new_text, encoding="utf-8")
+        return True
+    return False
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(
+        description="Normalize CERTEUS banners and module docstrings across repository."
+    )
+    ap.add_argument("--root", default=".", help="Repository root (default: .)")
+    ap.add_argument(
+        "--set-date",
+        choices=["today", "keep"],
+        default="keep",
+        help="Use today's date for banner DATE or keep existing (default: keep).",
+    )
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Only report changes, do not write files.",
+    )
+    args = ap.parse_args()
+
+    root = Path(args.root).resolve()
+    set_date_today = args.set_date == "today"
+
+    changed = 0
+    total = 0
+    for py in iter_py_files(root):
+        total += 1
+        if normalize_file(py, set_date_today=set_date_today, dry_run=args.dry_run):
+            print(f"[fix ] {py}")
+            changed += 1
+        else:
+            # print(f"[ok  ] {py}")
+            pass
+
+    print(f"\nDone. Scanned: {total} file(s), updated: {changed} file(s).")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+===== FILE: typings/z3/__init__.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/typings/z3/__init__.py                  |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+"""
+PL: Pakiet inicjalizacyjny modułu.
+EN: Package initializer.
+"""
+
+from typing import Any
+
+
+class ExprRef: ...
+
+
+class BoolRef(ExprRef): ...
+
+
+class CheckSatResult: ...
+
+
+class AstVector:
+    def __len__(self) -> int: ...
+    def __getitem__(self, i: int) -> ExprRef: ...
+
+
+class Solver:
+    def add(self, *args: Any) -> None: ...
+    def check(self, *assumptions: Any) -> CheckSatResult: ...
+    def model(self) -> Any: ...
+
+
+def Bool(name: str, ctx: Any | None = None) -> BoolRef: ...
+def BoolVal(val: Any, ctx: Any | None = None) -> BoolRef: ...
+def And(*args: Any) -> ExprRef: ...
+def Or(*args: Any) -> ExprRef: ...
+def Not(a: Any) -> ExprRef: ...
+def Implies(a: Any, b: Any) -> ExprRef: ...
+def Xor(*args: Any) -> ExprRef: ...
+def parse_smt2_string(s: str, decls: Any | None = None) -> AstVector: ...
+def get_version_string() -> str: ...
+
+
+sat: CheckSatResult
+unsat: CheckSatResult
+unknown: CheckSatResult
+
+```
+
+
+===== FILE: utils/__init__.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/utils/__init__.py                       |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: utils/__init__.py                                     |
+# | ROLE: Utils package public surface.                         |
+# | PLIK: utils/__init__.py                                     |
+# | ROLA: Publiczny interfejs pakietu utils.                    |
+# +-------------------------------------------------------------+
+"""
+PL: Inicjalizacja pakietu narzędziowego; eksportuje najczęściej używane helpery.
+EN: Package initializer for utilities; exports commonly used helpers.
+"""
+
+from .console import ascii_safe, error, info, print_safe, success  # noqa: F401
+
+__all__ = ["ascii_safe", "print_safe", "info", "success", "error"]
+
+```
+
+
+===== FILE: utils/console.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/utils/console.py                        |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: utils/console.py                                      |
+# | ROLE: Console helpers: ASCII-safe printing & colored logs.  |
+# | PLIK: utils/console.py                                      |
+# | ROLA: Pomocniki konsolowe: druk ASCII-safe i kolorowe logi. |
+# +-------------------------------------------------------------+
+"""
+PL: Funkcje do bezpiecznego wypisywania ASCII oraz proste znaczniki logów
+na strumieniach tekstowych (kolorystyczne).
+EN: Helpers for ASCII-safe printing and simple colored
+log markers on text streams.
+"""
+
+from __future__ import annotations
+
+import sys
+from typing import Protocol, cast, runtime_checkable
+
+
+@runtime_checkable
+class StreamLike(Protocol):
+    @property
+    def encoding(self) -> str | None: ...
+    def write(self, s: str) -> int: ...
+    def flush(self) -> None: ...
+    def isatty(self) -> bool: ...
+
+
+def _normalize_stream(stream: StreamLike | None, *, fallback: object) -> StreamLike:
+    """Return a non-None stream that satisfies StreamLike (runtime-checked)."""
+    if stream is not None:
+        return stream
+    # sys.stdout/sys.stderr spełniają protokół w runtime; rzutujemy jawnie.
+    return cast(StreamLike, fallback)
+
+
+def ascii_safe(stream: StreamLike | None = None) -> bool:
+    """
+    True jeśli strumień obsługuje ASCII/UTF bez problemów kodowania.
+    Conservative: brak informacji o kodowaniu => uznaj za „bezpieczny”.
+    """
+    s = _normalize_stream(stream, fallback=sys.stdout)
+    enc = getattr(s, "encoding", None)
+    if enc is None:
+        return True
+    enc_low = enc.lower()
+    return enc_low == "ascii" or enc_low.startswith("utf")
+
+
+def print_safe(text: str, stream: StreamLike | None = None) -> None:
+    """
+    Wypisz tekst tak, by nie wywalał się na Windowsowych „charmap”.
+    Dla strumieni ASCII zamieniamy znaki nie-ASCII na '?'.
+    """
+    s = _normalize_stream(stream, fallback=sys.stdout)
+    enc = getattr(s, "encoding", None)
+    out = text
+    if enc and enc.lower() == "ascii":
+        out = out.encode("ascii", "replace").decode("ascii")
+    s.write(out)
+    try:
+        s.flush()
+    except Exception:
+        # Faux-stream może nie mieć flush; ignorujemy.
+        pass
+
+
+def _color(prefix: str, code: str, *, stream: StreamLike) -> str:
+    """Koloruj prefiks tylko, jeśli TTY; inaczej zwróć zwykły tekst."""
+    if getattr(stream, "isatty", lambda: False)():
+        return f"\x1b[{code}m{prefix}\x1b[0m "
+    return f"{prefix} "
+
+
+def info(msg: str, stream: StreamLike | None = None) -> None:
+    s = _normalize_stream(stream, fallback=sys.stdout)
+    prefix = _color("[INFO]", "94", stream=s)
+    print_safe(prefix + msg, stream=s)
+
+
+def success(msg: str, stream: StreamLike | None = None) -> None:
+    s = _normalize_stream(stream, fallback=sys.stdout)
+    prefix = _color("[SUCCESS]", "92", stream=s)
+    print_safe(prefix + msg, stream=s)
+
+
+def error(msg: str, stream: StreamLike | None = None) -> None:
+    s = _normalize_stream(stream, fallback=sys.stderr)
+    prefix = _color("[ERROR]", "91", stream=s)
+    print_safe(prefix + msg, stream=s)
+
+```

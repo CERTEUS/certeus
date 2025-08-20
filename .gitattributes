@@ -1,7 +1,16 @@
-# CERTEUS: line-endings policy
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: .gitattributes                                                |
+# | ROLE:                                                               |
+# |  PL: Polityka końcówek linii i atrybutów plików.                    |
+# |  EN: Line-ending policy & file attributes.                          |
+# +=====================================================================+
+
+# Global: teksty auto-normalizowane
 * text=auto
 
-# Source files -> LF
+# Źródła → LF
 *.py     text eol=lf
 *.md     text eol=lf
 *.json   text eol=lf
@@ -13,40 +22,36 @@
 *.txt    text eol=lf
 *.lex    text eol=lf
 *.sh     text eol=lf
+*.html   text eol=lf
 Makefile text eol=lf
 .gitattributes text eol=lf
 .gitignore     text eol=lf
 .editorconfig  text eol=lf
 CODEOWNERS     text eol=lf
 LICENSE        text eol=lf
-*.html text eol=lf
 
-# Proof artefacts -> LF
+# Artefakty dowodów → LF
 *.smt2 text eol=lf
 *.lfsc text eol=lf
 *.drat text eol=lf
-* text=auto eol=lf
-*.bat       text eol=lf
-*.ps1       text eol=lf
 
-# Windows scripts -> CRLF
+# Windows scripts → CRLF (jednoznacznie, bez duplikatów)
 *.ps1  text eol=crlf
 *.bat  text eol=crlf
 
-# Binary -> never touch
-*.pdf   -text
-*.docx  -text
-*.xlsx  -text
-*.pptx  -text
-*.png   -text
-*.jpg   -text
-*.jpeg  -text
-*.gif   -text
-*.zip   -text
-*.7z    -text
-*.exe   -text
-*.dll   -text
-*.pkl   -text
-*.onnx  -text
+# Binary → nie dotykać
+*.pdf  -text
+*.docx -text
+*.xlsx -text
+*.pptx -text
+*.png  -text
+*.jpg  -text
+*.jpeg -text
+*.gif  -text
+*.zip  -text
+*.7z   -text
+*.exe  -text
+*.dll  -text
+*.pkl  -text
+*.onnx -text
 *.webp binary
-*.pptx binary

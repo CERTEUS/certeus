@@ -42,9 +42,7 @@ class ExporterService:
         return out
 
 
-def export_answer_to_txt(
-    answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False
-) -> str:
+def export_answer_to_txt(answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False) -> str:
     p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(answer, indent=2, sort_keys=True), encoding="utf-8")

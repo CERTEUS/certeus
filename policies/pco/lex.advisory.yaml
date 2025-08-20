@@ -1,0 +1,20 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: policies/pco/lex.advisory.yaml                                |
+# | ROLE:                                                                |
+# |  PL: Pack „advisory” dla prawa PL.                                   |
+# |  EN: PL law 'advisory' pack.                                         |
+# +=====================================================================+
+
+name: "lex.advisory.pl.v1"
+jurisdictions: ["PL"]
+domains: ["law"]
+expires_at: "2026-12-31T23:59:59Z"
+min_truthops_profile: "default"
+breakglass_allowed: false
+public_payload_fields: ["rid", "smt2_hash", "lfsc", "merkle_proof", "signature"]
+obligations:
+  endpoint_pattern: "^/pco/public/[a-f0-9]{64}$"
+  jwks_published: true
+  drat_required: false

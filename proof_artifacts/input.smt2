@@ -1,0 +1,5 @@
+(set-logic ALL)
+(set-info :source |CERTEUS simulated SMT2 input|)
+(assert true)
+(check-sat)
+(exit)

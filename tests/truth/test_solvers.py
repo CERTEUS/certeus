@@ -98,8 +98,6 @@ def test_generate_proofs_cli_smoke_test() -> None:
         res = subprocess.run(cmd, check=True, capture_output=True, text=True)
         stdout: str = res.stdout
 
-        assert ("Created simulated proof with content" in stdout) or (
-            "Created stub proof" in stdout
-        )
+        assert ("Created simulated proof with content" in stdout) or ("Created stub proof" in stdout)
         assert (out / "z3.drat").exists()
         assert (out / "cvc5.lfsc").exists()

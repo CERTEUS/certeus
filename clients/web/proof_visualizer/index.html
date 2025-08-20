@@ -1,18 +1,17 @@
 <!--
 +======================================================================+
-|                 CERTEUS - Proof Visualizer (v0.5, mono)               |
+|               CERTEUS - Proof Visualizer (v0.5, mono)                |
 +======================================================================+
-| FILE: clients/web/proof_visualizer/index.html                        |
-| ROLE: Human-friendly UI to inspect CERTEUS analysis (ALI payload).   |
-| PLIK: clients/web/proof_visualizer/index.html                        |
-| ROLA: Przyjazny interfejs do wglądu w analizę (ALI payload).         |
+| FILE / PLIK: clients/web/proof_visualizer/index.html                 |
+| ROLE / ROLA:                                                         |
+|  EN: Human-friendly UI to inspect CERTEUS analysis (ALI payload).    |
+|  PL: Przyjazny interfejs do wglądu w analizę (ALI payload).          |
 +======================================================================+
-| DESIGN CONSTRAINTS:                                                   |
-|  - Monochrome palette only: white / black / dark gray / anthracite    |
-|  - Two themes: Light (jasny) / Dark (ciemny, nie czarny)               |
-|  - Simple, intuitive layout                                           |
-|  - Multi-file upload: PDF, DOCX, TXT, JPG/PNG; preview support        |
-|  - Readers can be wired via API (/v1/preview)                          |
+| DESIGN CONSTRAINTS:                                                  |
+|  - Monochrome palette only: white / black / dark gray / anthracite   |
+|  - Two themes: Light / Dark (dark ≠ pure black)                      |
+|  - Simple, intuitive layout                                          |
+|  - Multi-file upload: PDF/DOCX/TXT/JPG/PNG; preview via /v1/preview  |
 +======================================================================+
 -->
 
@@ -21,52 +20,41 @@
 <head>
   <!-- [META] -->
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>CERTEUS • Wizualizator Dowodu</title>
 
   <!-- [STYLE] Strict monochrome, responsive, no external deps -->
   <style>
     :root{
       /* DARK (anthracite) */
-      --bg: #111315;           /* anthracite base */
-      --bg2:#1a1c20;           /* elevated background */
-      --card:#181b20;          /* card surface */
-      --elev:#14171b;          /* inputs */
-      --txt:#f2f2f3;           /* primary text */
-      --muted:#9aa0a6;         /* secondary text */
-      --border:#2a2d33;        /* borders */
-      --ring:#8a8f98;          /* focus ring (neutral gray) */
-      --chip:#20242a;          /* chips */
-      --good:#c8f2d2;          /* success text tint (mono-friendly) */
-      --bad:#f2c8cc;           /* error tint */
-      --warn:#f0e3c0;          /* warning tint */
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --bg:#111315;    --bg2:#1a1c20;   --card:#181b20;   --elev:#14171b;
+      --txt:#f2f2f3;   --muted:#9aa0a6; --border:#2a2d33; --ring:#8a8f98;
+      --chip:#20242a;  --good:#c8f2d2;  --bad:#f2c8cc;    --warn:#f0e3c0;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
     }
     [data-theme="light"]{
       /* LIGHT (grays + white) */
-      --bg:#f7f7f8;            /* near-white bg */
-      --bg2:#f2f3f5;           /* subtle panel */
-      --card:#ffffff;          /* cards */
-      --elev:#f7f8fa;          /* inputs */
-      --txt:#111215;           /* text */
-      --muted:#61656d;         /* secondary */
-      --border:#e4e6ea;        /* borders */
-      --ring:#6d727c;          /* focus ring */
-      --chip:#eef0f4;          /* chips */
-      --good:#1f6f3a;          /* success accent (dark text) */
-      --bad:#8f2a36;           /* error accent */
-      --warn:#7a5f15;          /* warning accent */
+      --bg:#f7f7f8;    --bg2:#f2f3f5;   --card:#ffffff;   --elev:#f7f8fa;
+      --txt:#111215;   --muted:#61656d; --border:#e4e6ea; --ring:#6d727c;
+      --chip:#eef0f4;  --good:#1f6f3a;  --bad:#8f2a36;    --warn:#7a5f15;
+      --shadow:0 8px 22px rgba(0,0,0,.08);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
-      color:var(--txt); background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+      margin:0;
+      font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+      color:var(--txt);
+      background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
     }
+
     .container{max-width:1180px;margin:24px auto;padding:0 16px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
-      border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow:var(--shadow); backdrop-filter: blur(4px)}
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+      border:1px solid var(--border); border-radius:16px; padding:18px;
+      box-shadow:var(--shadow); backdrop-filter: blur(4px);
+    }
     .row{display:flex; flex-wrap:wrap; gap:16px}
     .col{flex:1 1 320px; min-width:320px}
     h1{font-size:26px;margin:0 0 6px; letter-spacing:.2px}
@@ -74,54 +62,97 @@
     p.muted{color:var(--muted);margin:6px 0 14px}
 
     label{font-weight:600;color:var(--txt)}
-    .input, .select, .btn{ border-radius:12px; border:1px solid var(--border); background:var(--elev); color:var(--txt); }
+    .input,.select,.btn{
+      border-radius:12px; border:1px solid var(--border);
+      background:var(--elev); color:var(--txt);
+    }
     .input{padding:10px 12px; outline:none; width:100%}
     .select{padding:8px 10px}
-    .btn{appearance:none; padding:10px 14px; font-weight:600; cursor:pointer;
-      background:linear-gradient(180deg, var(--elev), var(--card)); color:var(--txt); border:1px solid var(--border); transition:transform .08s ease, background .12s}
+    .btn{
+      appearance:none; padding:10px 14px; font-weight:600; cursor:pointer;
+      background:linear-gradient(180deg,var(--elev),var(--card));
+      color:var(--txt); border:1px solid var(--border);
+      transition:transform .08s ease, background .12s;
+    }
     .btn:hover{transform:translateY(-1px); background:var(--card)}
     .btn.secondary{background:transparent}
     .btn:disabled{opacity:.6; cursor:not-allowed}
 
     .stack{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-size:13px; background:var(--chip); border:1px solid var(--border)}
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px;
+      border-radius:999px; font-size:13px; background:var(--chip);
+      border:1px solid var(--border)}
     .pill.sat{outline:2px solid var(--good)}
     .pill.unsat{outline:2px solid var(--bad)}
     .pill.unknown{outline:2px solid var(--ring)}
 
     .chips{display:flex; flex-wrap:wrap; gap:8px}
-    .chip{background:var(--chip); border:1px solid var(--border); padding:6px 8px; border-radius:999px; font-size:12px}
-    .list{display:flex; flex-direction:column; gap:8px}
+    .chip{background:var(--chip); border:1px solid var(--border);
+      padding:6px 8px; border-radius:999px; font-size:12px}
 
-    .json{background:var(--elev); border:1px solid var(--border); border-radius:12px; padding:12px; white-space:pre-wrap; word-break:break-word; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px}
+    .json{
+      background:var(--elev); border:1px solid var(--border);
+      border-radius:12px; padding:12px;
+      white-space:pre-wrap; word-break:break-word;
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px
+    }
 
-    .placeholder{border:2px dashed var(--border); border-radius:12px; padding:24px; text-align:center; color:var(--muted)}
+    .placeholder{
+      border:2px dashed var(--border); border-radius:12px; padding:24px;
+      text-align:center; color:var(--muted)
+    }
 
     .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
 
     /* Tabs */
     .tabs{display:flex; gap:8px; margin-bottom:8px}
-    .tab{padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); cursor:pointer; font-weight:600; color:var(--txt)}
+    .tab{padding:8px 12px; border-radius:10px; border:1px solid var(--border);
+      background:var(--card); cursor:pointer; font-weight:600; color:var(--txt)}
     .tab[aria-selected="true"]{outline:2px solid var(--ring); outline-offset:1px}
     .tabpanel{display:none}
     .tabpanel.active{display:block}
 
     /* Dropzone */
-    .dropzone{border:2px dashed var(--border); background:transparent; border-radius:14px; padding:16px; text-align:center; color:var(--muted); transition:border-color .15s ease, background .15s}
+    .dropzone{
+      border:2px dashed var(--border); background:transparent; border-radius:14px;
+      padding:16px; text-align:center; color:var(--muted);
+      transition:border-color .15s ease, background .15s
+    }
     .dropzone.drag{border-color:var(--ring); background:rgba(140,140,140,.08)}
 
     /* Toast */
-    .toast{position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:8px; z-index:50}
-    .toast .item{background:var(--card); border:1px solid var(--border); color:var(--txt); padding:10px 12px; border-radius:12px; box-shadow:var(--shadow); min-width:240px}
+    .toast{position:fixed; right:16px; bottom:16px; display:flex;
+      flex-direction:column; gap:8px; z-index:50}
+    .toast .item{
+      background:var(--card); border:1px solid var(--border); color:var(--txt);
+      padding:10px 12px; border-radius:12px; box-shadow:var(--shadow);
+      min-width:240px
+    }
 
     /* Viewer */
-    .viewer{border:1px solid var(--border); border-radius:12px; background:var(--card); height:420px; display:flex; align-items:center; justify-content:center; overflow:hidden}
+    .viewer{
+      border:1px solid var(--border); border-radius:12px; background:var(--card);
+      height:420px; display:flex; align-items:center; justify-content:center;
+      overflow:hidden
+    }
     .viewer iframe{width:100%; height:100%; border:0; background:var(--card)}
     .viewer img{max-width:100%; max-height:100%; display:block}
     .viewer .text{padding:12px; width:100%; height:100%; overflow:auto}
 
-    /* Footer */
-    .footer{color:var(--muted); font-size:12px; margin-top:16px}
+    /* Case Picker (dark-friendly inputs/buttons) */
+    #case-picker input,#case-picker button,#case-picker select{
+      background:var(--elev); color:var(--txt);
+      border:1px solid var(--border); border-radius:12px; padding:8px 10px
+    }
+    #case-picker input::placeholder{ color:var(--muted) }
+    #case-picker .certeus-new-heading{ color:var(--muted) }
+
+    /* Responsive tweaks */
+    @media (max-width: 720px){
+      .col{min-width:100%}
+      .grid-2{grid-template-columns:1fr}
+      .viewer{height:360px}
+    }
   </style>
 </head>
 <body>
@@ -130,62 +161,97 @@
     <div class="card" style="margin-bottom:16px;">
       <div class="row" style="align-items:center;">
         <div class="col" style="min-width:260px;flex:2 1 520px;">
-          <h1 data-i18n="title" style="margin:0;">Wizualizator Dowodu • CERTEUS</h1>
-          <p class="muted" data-i18n="subtitle" style="margin:4px 0 0">Status, przesłanki, łańcuch pochodzenia, surowy ALI. Prosto i czytelnie.</p>
+          <h1 data-i18n="title" style="margin:0">Wizualizator Dowodu • CERTEUS</h1>
+          <p class="muted" data-i18n="subtitle" style="margin:4px 0 0">
+            Status, przesłanki, łańcuch pochodzenia, surowy ALI. Prosto i czytelnie.
+          </p>
         </div>
-        <div class="col" style="min-width:auto; flex:0 0 auto; display:flex; gap:8px; justify-content:flex-end;">
+        <div class="col" style="min-width:auto; flex:0 0 auto; display:flex; gap:8px;
+             justify-content:flex-end">
           <select id="lang" class="select" title="Language">
             <option value="pl">PL</option>
             <option value="en">EN</option>
           </select>
-          <button class="btn" id="themeToggle" title="Przełącz motyw" data-i18n="theme">Motyw</button>
-          <a class="btn secondary" id="apiDocs" href="/docs" target="_blank" rel="noreferrer" data-i18n="api_docs">API Docs</a>
+          <button class="btn" id="themeToggle" title="Przełącz motyw" data-i18n="theme">
+            Motyw
+          </button>
+          <a class="btn secondary" id="apiDocs" href="/docs" target="_blank"
+             rel="noreferrer" data-i18n="api_docs">API Docs</a>
+        </div>
+      </div>
+
+      <!-- CASE PICKER -->
+      <div class="row" style="margin-top:8px">
+        <div class="col" style="min-width:260px">
+          <div id="case-picker"></div>
         </div>
       </div>
 
       <!-- FORM -->
-      <div class="row" style="margin-top:12px;">
+      <div class="row" style="margin-top:12px">
         <div class="col">
-          <div class="card" style="padding:14px;">
-            <div class="row" style="gap:10px; align-items:flex-end;">
-              <div style="flex:1 1 260px;">
+          <div class="card" style="padding:14px">
+            <div class="row" style="gap:10px; align-items:flex-end">
+              <div style="flex:1 1 260px">
                 <label for="caseId" data-i18n="case_id">Case ID</label>
-                <input id="caseId" class="input" type="text" placeholder="np. pl-286kk-0001" value="pl-286kk-0001" />
+                <input id="caseId" class="input" type="text"
+                       placeholder="np. pl-286kk-0001" value="pl-286kk-0001"/>
               </div>
               <div class="stack">
-                <button id="analyzeBtn" class="btn"><span class="spinner" id="spinAnalyze" style="display:none"></span> <span data-i18n="analyze">Analizuj</span> (Ctrl+Enter)</button>
-                <button id="mockBtn" class="btn secondary" title="Dane demo, bez backendu" data-i18n="demo">Demo</button>
-                <button id="exportBtn" class="btn secondary" disabled data-i18n="export">Generuj raport (Ctrl+E)</button>
+                <button id="analyzeBtn" class="btn" aria-label="Analyze">
+                  <span class="spinner" id="spinAnalyze" style="display:none"></span>
+                  <span data-i18n="analyze">Analizuj</span> (Ctrl+Enter)
+                </button>
+                <button id="mockBtn" class="btn secondary" title="Dane demo, bez backendu"
+                        data-i18n="demo">Demo</button>
+                <button id="exportBtn" class="btn secondary" disabled
+                        data-i18n="export">Generuj raport (Ctrl+E)</button>
               </div>
             </div>
-            <div id="dropzone" class="dropzone" style="margin-top:10px;">
-              <div><strong data-i18n="drop_strong">Przeciągnij plik</strong> <span data-i18n="drop_text">tutaj lub</span> <label id="chooseLabel" for="file" style="text-decoration:underline; cursor:pointer;" data-i18n="drop_choose">wybierz</label>
-              <input id="file" type="file" multiple style="position:absolute; left:-9999px;" />
-              <div id="fileList" class="list" style="margin-top:10px; text-align:left"></div>
+
+            <div id="dropzone" class="dropzone" style="margin-top:10px">
+              <div>
+                <strong data-i18n="drop_strong">Przeciągnij plik</strong>
+                <span data-i18n="drop_text">tutaj lub</span>
+                <label id="chooseLabel" for="file"
+                       style="text-decoration:underline; cursor:pointer;"
+                       data-i18n="drop_choose">wybierz</label>
+              </div>
+              <input id="file" type="file" multiple
+                     style="position:absolute; left:-9999px"/>
+              <div id="fileList" class="list"
+                   style="margin-top:10px; text-align:left"></div>
             </div>
           </div>
-          <div class="footer" data-i18n="paste_tip">Wklej ALI JSON (Ctrl+V), by zobaczyć wynik bez API.</div>
+          <div class="footer" data-i18n="paste_tip">
+            Wklej ALI JSON (Ctrl+V), by zobaczyć wynik bez API.
+          </div>
         </div>
 
         <!-- SUMMARY -->
         <div class="col">
           <div class="grid-2">
             <div class="card">
-              <div style="display:flex;align-items:center;justify-content:space-between; gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;
+                          gap:8px">
                 <div data-i18n="status">Status:</div>
                 <div id="statusPill" class="pill unknown" aria-live="polite">—</div>
               </div>
-              <div style="margin-top:8px;">
-                <div style="font-size:12px;color:var(--muted);" data-i18n="model">Model:</div>
-                <div id="modelVal" class="json" style="margin-top:6px;">—</div>
-                <div class="stack" style="margin-top:6px;">
-                  <button class="btn secondary" id="copyModel" data-i18n="copy_model">Kopiuj model</button>
+              <div style="margin-top:8px">
+                <div style="font-size:12px;color:var(--muted)" data-i18n="model">Model:</div>
+                <div id="modelVal" class="json" style="margin-top:6px">—</div>
+                <div class="stack" style="margin-top:6px">
+                  <button class="btn secondary" id="copyModel" data-i18n="copy_model">
+                    Kopiuj model
+                  </button>
                 </div>
               </div>
             </div>
             <div class="card">
-              <div style="font-size:12px;color:var(--muted);" data-i18n="ledger_chain">Łańcuch pochodzenia</div>
-              <div id="ledger" class="list" style="margin-top:8px;">
+              <div style="font-size:12px;color:var(--muted)" data-i18n="ledger_chain">
+                Łańcuch pochodzenia
+              </div>
+              <div id="ledger" class="list" style="margin-top:8px">
                 <div class="placeholder" data-i18n="no_data">Brak danych</div>
               </div>
             </div>
@@ -197,179 +263,206 @@
     <!-- TABS -->
     <div class="card">
       <div class="tabs" role="tablist" aria-label="Sekcje">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="tab-overview" id="tabbtn-overview" data-i18n="tab_overview">Przegląd</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-premises" id="tabbtn-premises" data-i18n="tab_premises">Przesłanki</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-ledger" id="tabbtn-ledger" data-i18n="tab_ledger">Ledger</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-viewer" id="tabbtn-viewer" data-i18n="tab_viewer">Podgląd pliku</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-raw" id="tabbtn-raw" data-i18n="tab_raw">Surowe</button>
+        <button class="tab" role="tab" aria-selected="true" aria-controls="tab-overview"
+                id="tabbtn-overview" data-i18n="tab_overview">Przegląd</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-premises"
+                id="tabbtn-premises" data-i18n="tab_premises">Przesłanki</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-ledger"
+                id="tabbtn-ledger" data-i18n="tab_ledger">Ledger</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-viewer"
+                id="tabbtn-viewer" data-i18n="tab_viewer">Podgląd pliku</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="tab-raw"
+                id="tabbtn-raw" data-i18n="tab_raw">Surowe</button>
       </div>
 
-      <section id="tab-overview" class="tabpanel active" role="tabpanel" aria-labelledby="tabbtn-overview">
+      <section id="tab-overview" class="tabpanel active" role="tabpanel"
+               aria-labelledby="tabbtn-overview">
         <div class="row">
           <div class="col">
             <h2 data-i18n="satisfied_title">Przesłanki • satisfied</h2>
-            <div id="satisfied" class="chips"><div class="placeholder" style="width:100%" data-i18n="not_computed">Jeszcze nic nie policzono</div></div>
+            <div id="satisfied" class="chips">
+              <div class="placeholder" style="width:100%" data-i18n="not_computed">
+                Jeszcze nic nie policzono
+              </div>
+            </div>
           </div>
           <div class="col">
             <h2 data-i18n="missing_title">Przesłanki • missing</h2>
-            <div id="missing" class="chips"><div class="placeholder" style="width:100%" data-i18n="no_gaps">Brak braków (albo brak analizy)</div></div>
-          </div>
-        </div>
-      </section>
-
-      <section id="tab-premises" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-premises">
-        <div class="row">
-          <div class="col">
-            <h2 data-i18n="premises_list">Lista przesłanek</h2>
-            <div class="json" id="premisesJson">—</div>
-            <div class="stack" style="margin-top:6px;">
-              <button class="btn secondary" data-copy-target="#premisesJson" data-i18n="copy_json">Kopiuj JSON</button>
+            <div id="missing" class="chips">
+              <div class="placeholder" style="width:100%" data-i18n="no_gaps">
+                Brak braków (albo brak analizy)
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="tab-ledger" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-ledger">
+      <section id="tab-premises" class="tabpanel" role="tabpanel"
+               aria-labelledby="tabbtn-premises">
+        <div class="row">
+          <div class="col">
+            <h2 data-i18n="premises_list">Lista przesłanek</h2>
+            <div class="json" id="premisesJson">—</div>
+            <div class="stack" style="margin-top:6px">
+              <button class="btn secondary" data-copy-target="#premisesJson"
+                      data-i18n="copy_json">Kopiuj JSON</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-ledger" class="tabpanel" role="tabpanel"
+               aria-labelledby="tabbtn-ledger">
         <h2 data-i18n="ledger_full">Łańcuch pochodzenia</h2>
         <div id="ledgerFull" class="json">—</div>
-        <div class="stack" style="margin-top:6px;">
-          <button class="btn secondary" data-copy-target="#ledgerFull" data-i18n="copy_json">Kopiuj JSON</button>
+        <div class="stack" style="margin-top:6px">
+          <button class="btn secondary" data-copy-target="#ledgerFull"
+                  data-i18n="copy_json">Kopiuj JSON</button>
         </div>
       </section>
 
-      <section id="tab-viewer" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-viewer">
+      <!-- FILE VIEWER -->
+      <section id="tab-viewer" class="tabpanel" role="tabpanel"
+               aria-labelledby="tabbtn-viewer">
         <h2 data-i18n="viewer_title">Podgląd pliku</h2>
-        <div class="stack" style="margin-bottom:8px;">
-          <button class="btn" id="prevFile">◀</button>
+
+        <!-- FILE LIST (mini) -->
+        <div class="row" style="margin-top:8px">
+          <div class="col" style="min-width:260px">
+            <div id="file-list"></div>
+          </div>
+        </div>
+
+        <!-- VIEWER -->
+        <div class="stack" style="margin-bottom:8px">
+          <button class="btn" id="prevFile" aria-label="Previous file">◀</button>
           <div id="fileIndicator" class="muted">0/0</div>
-          <button class="btn" id="nextFile">▶</button>
-          <button class="btn secondary" id="openInNew" data-i18n="open_new">Otwórz w nowej karcie</button>
-          <button class="btn" id="requestPreview" data-i18n="request_preview">Zażądaj podglądu (API)</button>
+          <button class="btn" id="nextFile" aria-label="Next file">▶</button>
+          <button class="btn secondary" id="openInNew" data-i18n="open_new">
+            Otwórz w nowej karcie
+          </button>
+          <button class="btn" id="requestPreview" data-i18n="request_preview"
+                  title="DOCX → PDF przez API">
+            Zażądaj podglądu (API)
+          </button>
         </div>
         <div class="viewer" id="viewer">
-          <div class="placeholder" data-i18n="viewer_hint">Wybierz plik z listy powyżej, aby zobaczyć podgląd.</div>
+          <div class="placeholder" data-i18n="viewer_hint">
+            Wybierz plik z listy powyżej, aby zobaczyć podgląd.
+          </div>
         </div>
       </section>
 
-      <section id="tab-raw" class="tabpanel" role="tabpanel" aria-labelledby="tabbtn-raw">
+      <section id="tab-raw" class="tabpanel" role="tabpanel"
+               aria-labelledby="tabbtn-raw">
         <h2 data-i18n="raw_title">Surowy wynik (ALI payload)</h2>
         <div id="raw" class="json">—</div>
-        <div class="stack" style="margin-top:6px;">
-          <button class="btn secondary" data-copy-target="#raw" data-i18n="copy_json">Kopiuj JSON</button>
+        <div class="stack" style="margin-top:6px">
+          <button class="btn secondary" data-copy-target="#raw" data-i18n="copy_json">
+            Kopiuj JSON
+          </button>
         </div>
       </section>
     </div>
 
-    <div class="footer">© CERTEUS • UI v0.5 • <span data-i18n="mode">Tryb</span>: <span id="modeInfo">gotowy</span></div>
+    <div class="footer">
+      © CERTEUS • UI v0.5 • <span data-i18n="mode">Tryb</span>:
+      <span id="modeInfo">gotowy</span>
+    </div>
   </div>
 
   <div class="toast" id="toasts" aria-live="polite" aria-atomic="true"></div>
 
+  <!-- Case Manager -->
+  <script src="./case_manager.js"></script>
+  <script>
+    // init case picker + sync with #caseId
+    window.CerteusCaseManager.renderCasePicker("#case-picker", {
+      onChange: (id) => { document.getElementById("caseId").value = id || ""; }
+    });
+    (function(){
+      const a = window.CerteusCaseManager.getActiveCase?.() || "";
+      if (a) document.getElementById("caseId").value = a;
+    })();
+  </script>
+
+  <!-- File List + Bridge -->
+  <script src="./file_list.js"></script>
+  <script src="./file_list_bridge.js"></script>
+
+  <!-- MAIN SCRIPT -->
   <script>
     // ====================== I18N ============================== //
     const I18N = {
       pl: {
         title:"Wizualizator Dowodu • CERTEUS",
         subtitle:"Status, przesłanki, łańcuch pochodzenia, surowy ALI. Prosto i czytelnie.",
-        api_docs:"API Docs",
-        theme:"Motyw",
-        case_id:"Case ID",
-        analyze:"Analizuj",
-        demo:"Demo",
-        export:"Generuj raport",
-        drop_strong:"Przeciągnij plik",
-        drop_text:"tutaj lub",
-        drop_choose:"wybierz",
+        api_docs:"API Docs", theme:"Motyw", case_id:"Case ID",
+        analyze:"Analizuj", demo:"Demo", export:"Generuj raport",
+        drop_strong:"Przeciągnij plik", drop_text:"tutaj lub", drop_choose:"wybierz",
         paste_tip:"Wklej ALI JSON (Ctrl+V), by zobaczyć wynik bez API.",
-        status:"Status:",
-        model:"Model:",
-        copy_model:"Kopiuj model",
-        ledger_chain:"Łańcuch pochodzenia",
-        no_data:"Brak danych",
-        tab_overview:"Przegląd",
-        tab_premises:"Przesłanki",
-        tab_ledger:"Ledger",
-        tab_viewer:"Podgląd pliku",
-        tab_raw:"Surowe",
-        satisfied_title:"Przesłanki • satisfied",
-        missing_title:"Przesłanki • missing",
-        not_computed:"Jeszcze nic nie policzono",
-        no_gaps:"Brak braków (albo brak analizy)",
-        premises_list:"Lista przesłanek",
-        copy_json:"Kopiuj JSON",
-        ledger_full:"Łańcuch pochodzenia",
-        raw_title:"Surowy wynik (ALI payload)",
-        mode:"Tryb",
-        viewer_title:"Podgląd pliku",
-        viewer_hint:"Wybierz plik z listy powyżej, aby zobaczyć podgląd.",
-        open_new:"Otwórz w nowej karcie",
-        request_preview:"Zażądaj podglądu (API)",
-        toast_analyzed:"Analiza zakończona.",
-        toast_demo:"Załadowano dane demo.",
-        toast_export_ok:"Raport wygenerowany",
-        toast_error:"Błąd",
-        toast_copied:"Skopiowano.",
-        err_case:"Podaj Case ID",
-        err_file:"Wybierz plik sprawy",
-        err_http:"Błąd HTTP",
+        status:"Status:", model:"Model:", copy_model:"Kopiuj model",
+        ledger_chain:"Łańcuch pochodzenia", no_data:"Brak danych",
+        tab_overview:"Przegląd", tab_premises:"Przesłanki", tab_ledger:"Ledger",
+        tab_viewer:"Podgląd pliku", tab_raw:"Surowe",
+        satisfied_title:"Przesłanki • satisfied", missing_title:"Przesłanki • missing",
+        not_computed:"Jeszcze nic nie policzono", no_gaps:"Brak braków (albo brak analizy)",
+        premises_list:"Lista przesłanek", copy_json:"Kopiuj JSON",
+        ledger_full:"Łańcuch pochodzenia", raw_title:"Surowy wynik (ALI payload)",
+        mode:"Tryb", viewer_title:"Podgląd pliku",
+        viewer_hint:"Użyj ◀ ▶ aby przełączać pliki (nie strony PDF).",
+        open_new:"Otwórz w nowej karcie", request_preview:"Zażądaj podglądu (API)",
+        toast_analyzed:"Analiza zakończona.", toast_demo:"Załadowano dane demo.",
+        toast_export_ok:"Raport wygenerowany", toast_error:"Błąd", toast_copied:"Skopiowano.",
+        err_case:"Podaj Case ID", err_file:"Wybierz plik sprawy", err_http:"Błąd HTTP",
+        preview_btn:"Podgląd"
       },
       en: {
         title:"Proof Visualizer • CERTEUS",
         subtitle:"Status, premises, provenance chain, raw ALI. Simple and clear.",
-        api_docs:"API Docs",
-        theme:"Theme",
-        case_id:"Case ID",
-        analyze:"Analyze",
-        demo:"Demo",
-        export:"Generate report",
-        drop_strong:"Drag file",
-        drop_text:"here or",
-        drop_choose:"choose",
+        api_docs:"API Docs", theme:"Theme", case_id:"Case ID",
+        analyze:"Analyze", demo:"Demo", export:"Generate report",
+        drop_strong:"Drag file", drop_text:"here or", drop_choose:"choose",
         paste_tip:"Paste ALI JSON (Ctrl+V) to render without API.",
-        status:"Status:",
-        model:"Model:",
-        copy_model:"Copy model",
-        ledger_chain:"Ledger chain",
-        no_data:"No data",
-        tab_overview:"Overview",
-        tab_premises:"Premises",
-        tab_ledger:"Ledger",
-        tab_viewer:"File preview",
-        tab_raw:"Raw",
-        satisfied_title:"Premises • satisfied",
-        missing_title:"Premises • missing",
-        not_computed:"Nothing computed yet",
-        no_gaps:"No gaps (or no analysis)",
-        premises_list:"Premises list",
-        copy_json:"Copy JSON",
-        ledger_full:"Provenance chain",
-        raw_title:"Raw result (ALI payload)",
-        mode:"Mode",
-        viewer_title:"File preview",
-        viewer_hint:"Select a file from the list above to preview.",
-        open_new:"Open in new tab",
-        request_preview:"Request preview (API)",
-        toast_analyzed:"Analysis completed.",
-        toast_demo:"Demo data loaded.",
-        toast_export_ok:"Report generated",
-        toast_error:"Error",
-        toast_copied:"Copied.",
-        err_case:"Provide Case ID",
-        err_file:"Choose a case file",
-        err_http:"HTTP error",
+        status:"Status:", model:"Model:", copy_model:"Copy model",
+        ledger_chain:"Ledger chain", no_data:"No data",
+        tab_overview:"Overview", tab_premises:"Premises", tab_ledger:"Ledger",
+        tab_viewer:"File preview", tab_raw:"Raw",
+        satisfied_title:"Premises • satisfied", missing_title:"Premises • missing",
+        not_computed:"Nothing computed yet", no_gaps:"No gaps (or no analysis)",
+        premises_list:"Premises list", copy_json:"Copy JSON",
+        ledger_full:"Provenance chain", raw_title:"Raw result (ALI payload)",
+        mode:"Mode", viewer_title:"File preview",
+        viewer_hint:"Use ◀ ▶ to switch files (not PDF pages).",
+        open_new:"Open in new tab", request_preview:"Request preview (API)",
+        toast_analyzed:"Analysis completed.", toast_demo:"Demo data loaded.",
+        toast_export_ok:"Report generated", toast_error:"Error", toast_copied:"Copied.",
+        err_case:"Provide Case ID", err_file:"Choose a case file", err_http:"HTTP error",
+        preview_btn:"Preview"
       }
     };
 
     // ====================== PREFS ============================= //
-    const THEME_KEY = 'certeus-theme';
-    const LANG_KEY  = 'certeus-lang';
-    function applyTheme(theme){ document.documentElement.setAttribute('data-theme', theme); localStorage.setItem(THEME_KEY, theme); }
-    function t(key){ const lang = localStorage.getItem(LANG_KEY) || 'pl'; return I18N[lang][key] ?? key; }
+    const THEME_KEY='certeus-theme', LANG_KEY='certeus-lang';
+    function applyTheme(theme){
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+    }
+    function t(key){
+      const lang = localStorage.getItem(LANG_KEY) || 'pl';
+      return I18N[lang][key] ?? key;
+    }
     function applyI18N(){
       const lang = localStorage.getItem(LANG_KEY) || 'pl';
       document.documentElement.lang = lang;
-      document.querySelectorAll('[data-i18n]').forEach(el=>{ const k = el.getAttribute('data-i18n'); if(k) el.textContent = t(k); });
-      const caseId = document.getElementById('caseId'); caseId.placeholder = lang==='pl' ? 'np. pl-286kk-0001' : 'e.g. pl-286kk-0001';
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const k = el.getAttribute('data-i18n'); if(k) el.textContent = t(k);
+      });
+      const caseId = document.getElementById('caseId');
+      caseId.placeholder = lang==='pl' ? 'np. pl-286kk-0001' : 'e.g. pl-286kk-0001';
+      // zaktualizuj etykiety przycisków listy plików (jeśli istnieją)
+      document.querySelectorAll('[data-i18n-dyn=preview_btn]')
+        .forEach(btn=> btn.textContent = t('preview_btn'));
     }
 
     // ====================== CONFIG ============================ //
@@ -377,38 +470,24 @@
 
     // ====================== ELEMENTS ========================== //
     const $ = sel => document.querySelector(sel);
-    const elLang = $('#lang');
-    const elCaseId = $('#caseId');
-    const elFile = $('#file');
-    const elFileList = $('#fileList');
-    const elDrop = $('#dropzone');
-    const elAnalyze = $('#analyzeBtn');
-    const elMock = $('#mockBtn');
-    const elExport = $('#exportBtn');
-    const elSpinAnalyze = $('#spinAnalyze');
-    const elModeInfo = $('#modeInfo');
-    const elStatus = $('#statusPill');
-    const elModel = $('#modelVal');
-    const elLedger = $('#ledger');
-    const elLedgerFull = $('#ledgerFull');
-    const elSat = $('#satisfied');
-    const elMiss = $('#missing');
-    const elRaw = $('#raw');
-    const elThemeToggle = $('#themeToggle');
-    const elViewer = $('#viewer');
-    const elFileIndicator = $('#fileIndicator');
-    const elPrevFile = $('#prevFile');
-    const elNextFile = $('#nextFile');
-    const elOpenInNew = $('#openInNew');
-    const elRequestPreview = $('#requestPreview');
-    const elChooseLabel = document.getElementById('chooseLabel');
-
-    const tabs = [
-      {btn: $('#tabbtn-overview'), panel: $('#tab-overview')},
-      {btn: $('#tabbtn-premises'), panel: $('#tab-premises')},
-      {btn: $('#tabbtn-ledger'), panel: $('#tab-ledger')},
-      {btn: $('#tabbtn-viewer'), panel: $('#tab-viewer')},
-      {btn: $('#tabbtn-raw'), panel: $('#tab-raw')},
+    const elLang=$('#lang'), elCaseId=$('#caseId'), elFile=$('#file');
+    const elFileList=$('#fileList'), elDrop=$('#dropzone');
+    const elAnalyze=$('#analyzeBtn'), elMock=$('#mockBtn'), elExport=$('#exportBtn');
+    const elSpinAnalyze=$('#spinAnalyze'), elModeInfo=$('#modeInfo');
+    const elStatus=$('#statusPill'), elModel=$('#modelVal');
+    const elLedger=$('#ledger'), elLedgerFull=$('#ledgerFull');
+    const elSat=$('#satisfied'), elMiss=$('#missing'), elRaw=$('#raw');
+    const elThemeToggle=$('#themeToggle'), elViewer=$('#viewer');
+    const elFileIndicator=$('#fileIndicator'), elPrevFile=$('#prevFile');
+    const elNextFile=$('#nextFile'), elOpenInNew=$('#openInNew');
+    const elRequestPreview=$('#requestPreview');
+    const elChooseLabel=document.getElementById('chooseLabel');
+    const tabs=[
+      {btn:$('#tabbtn-overview'), panel:$('#tab-overview')},
+      {btn:$('#tabbtn-premises'), panel:$('#tab-premises')},
+      {btn:$('#tabbtn-ledger'), panel:$('#tab-ledger')},
+      {btn:$('#tabbtn-viewer'), panel:$('#tab-viewer')},
+      {btn:$('#tabbtn-raw'), panel:$('#tab-raw')},
     ];
 
     // ====================== INIT ============================== //
@@ -417,166 +496,292 @@
       const savedLang = localStorage.getItem(LANG_KEY) || 'pl';
       document.getElementById('lang').value = savedLang; applyI18N();
     })();
-
-    elThemeToggle.addEventListener('click', ()=>{ const now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; applyTheme(now); });
-    elLang.addEventListener('change', ()=>{ localStorage.setItem(LANG_KEY, elLang.value); applyI18N(); });
+    elThemeToggle.addEventListener('click', ()=>{
+      const now = document.documentElement.getAttribute('data-theme')==='dark'
+        ? 'light' : 'dark'; applyTheme(now);
+    });
+    elLang.addEventListener('change', ()=>{
+      localStorage.setItem(LANG_KEY, elLang.value); applyI18N();
+    });
 
     // ====================== UTILS ============================= //
-    function toast(msg){ const wrap = document.getElementById('toasts'); const div = document.createElement('div'); div.className = 'item'; div.textContent = msg; wrap.appendChild(div); setTimeout(()=> div.remove(), 3000); }
-    function setBusy(btn, busy){ if(btn === elAnalyze){ elSpinAnalyze.style.display = busy?'inline-block':'none'; } btn.disabled = !!busy; }
-    function setStatusPill(status){ elStatus.classList.remove('sat','unsat','unknown'); const s = (status||'unknown').toLowerCase(); elStatus.classList.add(s); elStatus.textContent = s; }
-    function renderList(target, items){ target.innerHTML = ''; if(!items || !items.length){ const div = document.createElement('div'); div.className = 'placeholder'; div.textContent = t('no_data'); target.appendChild(div); return; } items.forEach(v=>{ const chip = document.createElement('div'); chip.className = 'chip'; chip.textContent = String(v); target.appendChild(chip); }); }
-    function renderLedgerSimple(target, chain){ target.innerHTML = ''; if(!chain || !chain.length){ const d = document.createElement('div'); d.className = 'placeholder'; d.textContent = t('no_data'); target.appendChild(d); return; } chain.forEach((h, idx)=>{ const line = document.createElement('div'); line.textContent = `${idx+1}. ${h}`; target.appendChild(line); }); }
+    function toast(msg){
+      const wrap=document.getElementById('toasts');
+      const div=document.createElement('div'); div.className='item';
+      div.textContent = msg; wrap.appendChild(div);
+      setTimeout(()=> div.remove(), 3000);
+    }
+    function setBusy(btn, busy){
+      if(btn===elAnalyze){ elSpinAnalyze.style.display = busy?'inline-block':'none'; }
+      btn.disabled = !!busy;
+    }
+    function setStatusPill(status){
+      elStatus.classList.remove('sat','unsat','unknown');
+      const s=(status||'unknown').toLowerCase();
+      elStatus.classList.add(s); elStatus.textContent = s;
+    }
+    function renderList(target, items){
+      target.innerHTML = '';
+      if(!items || !items.length){
+        const div=document.createElement('div');
+        div.className='placeholder'; div.textContent=t('no_data');
+        target.appendChild(div); return;
+      }
+      items.forEach(v=>{
+        const chip=document.createElement('div'); chip.className='chip';
+        chip.textContent=String(v); target.appendChild(chip);
+      });
+    }
+    function renderLedgerSimple(target, chain){
+      target.innerHTML=''; if(!chain || !chain.length){
+        const d=document.createElement('div'); d.className='placeholder';
+        d.textContent=t('no_data'); target.appendChild(d); return;
+      }
+      chain.forEach((h,idx)=>{
+        const line=document.createElement('div');
+        line.textContent=`${idx+1}. ${h}`; target.appendChild(line);
+      });
+    }
     function prettyJSON(obj){ return JSON.stringify(obj, null, 2); }
 
+    // ================== FILE LIST HELPER ====================== //
+    function registerFileInList(name, url, type){
+      if(!url || !window.CerteusFileBridge) return;
+      const id = Date.now()+"-"+Math.random().toString(36).slice(2,7);
+      window.CerteusFileBridge.addFile({
+        id, name: name||"plik", url,
+        type: type||"application/octet-stream", meta:{}
+      });
+    }
+
     // ====================== FILES ============================= //
-    let files = []; let fileIdx = -1; // index in files
+    let files=[]; let fileIdx=-1;
 
     function listFiles(){
-      elFileList.innerHTML = '';
-      if(!files.length){ const p = document.createElement('div'); p.className='placeholder'; p.textContent = t('no_data'); elFileList.appendChild(p); return; }
-      files.forEach((f, i)=>{
-        const row = document.createElement('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.gap='8px';
-        const left = document.createElement('div'); left.textContent = `${i+1}. ${f.name} (${f.type||'unknown'})`;
-        const right = document.createElement('div');
-        const btn = document.createElement('button'); btn.className='btn secondary'; btn.textContent='Podgląd'; btn.onclick = ()=>{ fileIdx = i; updateIndicator(); openViewerFor(files[fileIdx]); }; right.appendChild(btn);
-        row.appendChild(left); row.appendChild(right); elFileList.appendChild(row);
+      elFileList.innerHTML='';
+      if(!files.length){
+        const p=document.createElement('div'); p.className='placeholder';
+        p.textContent=t('no_data'); elFileList.appendChild(p); return;
+      }
+      files.forEach((f,i)=>{
+        const row=document.createElement('div');
+        row.style.display='flex'; row.style.justifyContent='space-between';
+        row.style.alignItems='center'; row.style.gap='8px';
+        const left=document.createElement('div');
+        left.textContent=`${i+1}. ${f.name} (${f.type||'unknown'})`;
+        const right=document.createElement('div');
+        const btn=document.createElement('button'); btn.className='btn secondary';
+        btn.setAttribute('data-i18n-dyn','preview_btn');
+        btn.textContent=t('preview_btn');
+        btn.onclick=()=>{
+          fileIdx=i; updateIndicator(); openViewerFor(files[fileIdx]);
+        };
+        right.appendChild(btn); row.appendChild(left); row.appendChild(right);
+        elFileList.appendChild(row);
       });
       updateIndicator();
     }
 
-    function updateIndicator(){ elFileIndicator.textContent = files.length? `${(fileIdx+1)}/${files.length}` : '0/0'; }
-
-    function setFilesFromFileList(list){ files = Array.from(list || []); fileIdx = files.length?0:-1; listFiles(); if(fileIdx>=0){ openViewerFor(files[fileIdx]); } }
+    function updateIndicator(){
+      elFileIndicator.textContent = files.length ? `${(fileIdx+1)}/${files.length}`:'0/0';
+    }
+    function setFilesFromFileList(list){
+      files=Array.from(list||[]); fileIdx=files.length?0:-1; listFiles();
+      if(fileIdx>=0){ openViewerFor(files[fileIdx]); }
+    }
 
     // Label nie dubluje kliknięcia dropzone
-    elChooseLabel?.addEventListener('click', (e) => e.stopPropagation());
+    elChooseLabel?.addEventListener('click', (e)=> e.stopPropagation());
 
-    // Klik w dropzone: zawsze wyczyść value, żeby 'change' zapalił się dla tego samego pliku
-    elDrop.addEventListener('click', (e) => {
-      if (e.target === elFile || e.target === elChooseLabel) return;
-      elFile.value = '';          // KLUCZOWE
-      elFile.click();
+    // Klik w dropzone: czyść value, żeby 'change' działał dla tego samego pliku
+    elDrop.addEventListener('click', (e)=>{
+      if(e.target===elFile || e.target===elChooseLabel) return;
+      elFile.value=''; elFile.click();
     });
-
-    elDrop.addEventListener('dragover', (e) => { e.preventDefault(); elDrop.classList.add('drag'); });
-    elDrop.addEventListener('dragleave', () => elDrop.classList.remove('drag'));
-
-    // Po dropie też czyścimy value
-    elDrop.addEventListener('drop', (e) => {
-      e.preventDefault();
-      elDrop.classList.remove('drag');
-      if (e.dataTransfer.files && e.dataTransfer.files.length) {
-        setFilesFromFileList(e.dataTransfer.files);
-        elFile.value = '';        // KLUCZOWE
+    elDrop.addEventListener('dragover',(e)=>{ e.preventDefault(); elDrop.classList.add('drag');});
+    elDrop.addEventListener('dragleave',()=> elDrop.classList.remove('drag'));
+    elDrop.addEventListener('drop',(e)=>{
+      e.preventDefault(); elDrop.classList.remove('drag');
+      if(e.dataTransfer.files && e.dataTransfer.files.length){
+        setFilesFromFileList(e.dataTransfer.files); elFile.value='';
       }
     });
-
-    // Po wyborze z dialogu: wczytaj listę i zresetuj value, żeby drugi raz ten sam plik działał
-    elFile.addEventListener('change', () => {
-      setFilesFromFileList(elFile.files);
-      elFile.value = '';          // KLUCZOWE
+    elFile.addEventListener('change',()=>{
+      setFilesFromFileList(elFile.files); elFile.value='';
     });
 
-    elPrevFile.addEventListener('click', ()=>{ if(!files.length) return; fileIdx = (fileIdx-1+files.length)%files.length; updateIndicator(); openViewerFor(files[fileIdx]); });
-    elNextFile.addEventListener('click', ()=>{ if(!files.length) return; fileIdx = (fileIdx+1)%files.length; updateIndicator(); openViewerFor(files[fileIdx]); });
+    elPrevFile.addEventListener('click',()=>{
+      if(!files.length) return;
+      fileIdx=(fileIdx-1+files.length)%files.length;
+      updateIndicator(); openViewerFor(files[fileIdx]);
+    });
+    elNextFile.addEventListener('click',()=>{
+      if(!files.length) return;
+      fileIdx=(fileIdx+1)%files.length;
+      updateIndicator(); openViewerFor(files[fileIdx]);
+    });
 
     function openViewerFor(file){
-      const type = (file.type||'').toLowerCase();
+      const type=(file.type||'').toLowerCase();
       elViewer.innerHTML='';
-      elOpenInNew.onclick = ()=>{ const url = URL.createObjectURL(file); window.open(url,'_blank'); setTimeout(()=> URL.revokeObjectURL(url), 5000); };
+
+      // NEW TAB handler: generuj świeży URL dopiero przy kliknięciu
+      elOpenInNew.onclick=()=>{
+        try{
+          const newUrl = URL.createObjectURL(file);
+          window.open(newUrl,'_blank');
+          setTimeout(()=> URL.revokeObjectURL(newUrl), 15000);
+        }catch(e){ toast(String(e)); }
+      };
 
       if(type.startsWith('image/')){
-        const url = URL.createObjectURL(file);
-        const img = document.createElement('img');
-        img.alt = file.name;
-        img.onload = () => URL.revokeObjectURL(url);
-        img.src = url;
+        const url=URL.createObjectURL(file);
+        const img=document.createElement('img');
+        img.alt=file.name;
+        img.src=url;
         elViewer.appendChild(img);
+        // nie revoke — pozwól przeglądarce posprzątać po zamknięciu
         return;
       }
-      if(type === 'application/pdf'){
-        const url = URL.createObjectURL(file);
-        const frame = document.createElement('iframe');
-        frame.title = file.name;
-        frame.onload = () => { try { URL.revokeObjectURL(url); } catch {} };
-        frame.src = url;
-        elViewer.appendChild(frame); // pdf viewer may need longer
+      if(type==='application/pdf'){
+        const url=URL.createObjectURL(file);
+        const frame=document.createElement('iframe');
+        frame.title=file.name;
+        frame.src=url;
+        elViewer.appendChild(frame);
         return;
       }
       if(type.startsWith('text/')){
-        const reader = new FileReader(); reader.onload = ()=>{ const pre = document.createElement('pre'); pre.className='text'; pre.textContent = reader.result; elViewer.appendChild(pre); }; reader.readAsText(file);
-        return;
+        const reader=new FileReader();
+        reader.onload=()=>{
+          const pre=document.createElement('pre');
+          pre.className='text'; pre.textContent=reader.result;
+          elViewer.appendChild(pre);
+        };
+        reader.readAsText(file); return;
       }
-      // For DOCX / Google Docs links / others → require API preview
-      const msg = document.createElement('div'); msg.className='placeholder'; msg.textContent = t('request_preview'); elViewer.appendChild(msg);
+      // For DOCX / others → suggest API preview
+      const msg=document.createElement('div');
+      msg.className='placeholder'; msg.textContent=t('request_preview');
+      elViewer.appendChild(msg);
     }
 
-    // Request preview via API (e.g., convert DOCX → PDF, fetch Google Doc → PDF)
+    // Request preview via API (e.g., DOCX → PDF)
     elRequestPreview.addEventListener('click', async ()=>{
-      if(fileIdx<0 || !files[fileIdx]) return; const f = files[fileIdx];
+      if(fileIdx<0 || !files[fileIdx]) return; const f=files[fileIdx];
       try{
-        const fd = new FormData(); fd.append('file', f, f.name);
-        const res = await fetch(`${API_BASE}/v1/preview`, { method:'POST', body: fd });
-        if(!res.ok){ const txt = await res.text().catch(()=>String(res.status)); return toast(`${t('err_http')} ${res.status}: ${txt}`); }
-        const data = await res.json(); if(!data.url) return toast(t('toast_error'));
-        // Load the returned URL in viewer
-        elViewer.innerHTML=''; const frame = document.createElement('iframe'); frame.src = data.url; frame.title = f.name; elViewer.appendChild(frame);
+        const fd=new FormData(); fd.append('file', f, f.name);
+        const res=await fetch(`${API_BASE}/v1/preview`,{method:'POST', body:fd});
+        if(!res.ok){
+          const txt=await res.text().catch(()=>String(res.status));
+          return toast(`${t('err_http')} ${res.status}: ${txt}`);
+        }
+        const data=await res.json(); if(!data.url) return toast(t('toast_error'));
+        // Load returned URL in viewer
+        elViewer.innerHTML='';
+        const frame=document.createElement('iframe');
+        frame.src=data.url; frame.title=f.name; elViewer.appendChild(frame);
+        // NEW TAB handler for preview URL
+        elOpenInNew.onclick=()=>{ try{ window.open(data.url,'_blank'); }catch(e){ toast(String(e)); } };
+        // Register preview in mini list
+        registerFileInList((f && f.name) || "DOCX preview", data.url, "application/pdf");
       }catch(e){ toast(String(e)); }
     });
 
     // ====================== RENDER (ALI) ======================= //
-    let lastAnalysis = null;
+    let lastAnalysis=null;
     function renderALI(payload){
-      const ar = payload?.analysis_result || payload;
+      const ar=payload?.analysis_result || payload;
       setStatusPill(ar?.status);
-      elModel.textContent = typeof ar?.model === 'object' ? prettyJSON(ar.model) : (ar?.model ?? '—');
+      elModel.textContent = typeof ar?.model==='object'
+        ? prettyJSON(ar.model) : (ar?.model ?? '—');
       renderList(elSat, ar?.trace?.satisfied);
       renderList(elMiss, ar?.trace?.missing);
       renderLedgerSimple(elLedger, ar?.provenance?.ledger_chain);
-      elRaw.textContent = prettyJSON(payload);
-      elLedgerFull.textContent = prettyJSON(ar?.provenance || {});
-      lastAnalysis = payload; elExport.disabled = false; elModeInfo.textContent = (localStorage.getItem(LANG_KEY)||'pl')==='pl'?'analizowano':'analyzed';
+      elRaw.textContent=prettyJSON(payload);
+      elLedgerFull.textContent=prettyJSON(ar?.provenance || {});
+      lastAnalysis=payload; elExport.disabled=false;
+      elModeInfo.textContent = (localStorage.getItem(LANG_KEY)||'pl')==='pl'
+        ? 'analizowano' : 'analyzed';
     }
 
     function renderError(msg){
-      setStatusPill('unknown'); elModel.textContent = '—'; renderList(elSat,[]); renderList(elMiss,[]); renderLedgerSimple(elLedger,[]);
-      elRaw.textContent = prettyJSON({status:'unknown', reasons: msg||t('toast_error')});
-      elLedgerFull.textContent = prettyJSON({});
-      lastAnalysis = null; elExport.disabled = true; elModeInfo.textContent = (localStorage.getItem(LANG_KEY)||'pl')==='pl'?'błąd':'error';
+      setStatusPill('unknown'); elModel.textContent='—';
+      renderList(elSat,[]); renderList(elMiss,[]);
+      renderLedgerSimple(elLedger,[]);
+      elRaw.textContent=prettyJSON({status:'unknown', reasons: msg||t('toast_error')});
+      elLedgerFull.textContent=prettyJSON({});
+      lastAnalysis=null; elExport.disabled=true;
+      elModeInfo.textContent=(localStorage.getItem(LANG_KEY)||'pl')==='pl'
+        ? 'błąd' : 'error';
       toast(msg||t('toast_error'));
     }
 
     // ====================== ACTIONS =========================== //
     async function doAnalyze(){
       try{
-        setBusy(elAnalyze, true); elModeInfo.textContent = (localStorage.getItem(LANG_KEY)||'pl')==='pl'?'analizuję':'analyzing';
-        const caseId = elCaseId.value.trim(); const file = files[0] || elFile.files[0];
+        setBusy(elAnalyze,true);
+        elModeInfo.textContent=(localStorage.getItem(LANG_KEY)||'pl')==='pl'
+          ? 'analizuję' : 'analyzing';
+        const caseId=elCaseId.value.trim();
+        const file=files[0] || elFile.files[0];
         if(!caseId) return renderError(t('err_case'));
         if(!file) return renderError(t('err_file'));
-        const fd = new FormData(); fd.append('file', file, file.name);
-        const res = await fetch(`${API_BASE}/v1/analyze?case_id=${encodeURIComponent(caseId)}`, { method: 'POST', body: fd });
-        if(!res.ok){ const ttxt = await res.text().catch(()=>String(res.status)); return renderError(`${t('err_http')} ${res.status}: ${ttxt}`); }
-        const data = await res.json(); renderALI(data); toast(t('toast_analyzed'));
+        const fd=new FormData(); fd.append('file', file, file.name);
+        const res=await fetch(
+          `${API_BASE}/v1/analyze?case_id=${encodeURIComponent(caseId)}`,
+          { method:'POST', body:fd }
+        );
+        if(!res.ok){
+          const ttxt=await res.text().catch(()=>String(res.status));
+          return renderError(`${t('err_http')} ${res.status}: ${ttxt}`);
+        }
+        const data=await res.json(); renderALI(data); toast(t('toast_analyzed'));
       }catch(e){ renderError(String(e)); }
-      finally{ setBusy(elAnalyze, false); }
+      finally{ setBusy(elAnalyze,false); }
     }
 
     function loadMock(){
-      const mock = { case_id: elCaseId.value || 'pl-286kk-0001', analysis_result: { status:'sat', model:'[oszustwo_stwierdzone = True]', trace:{ satisfied:['P_CEL','P_WPROWADZENIE','P_ROZPORZADZENIE'], missing:[] }, provenance:{ rule_id:'R_286_OSZUSTWO', ledger_chain:['stub://ingest','stub://lexlog','stub://smt'] } } };
+      const mock={
+        case_id: elCaseId.value || 'pl-286kk-0001',
+        analysis_result:{
+          status:'sat', model:'[oszustwo_stwierdzone = True]',
+          trace:{ satisfied:['P_CEL','P_WPROWADZENIE','P_ROZPORZADZENIE'], missing:[] },
+          provenance:{ rule_id:'R_286_OSZUSTWO',
+            ledger_chain:['stub://ingest','stub://lexlog','stub://smt'] }
+        }
+      };
       renderALI(mock); toast(t('toast_demo'));
     }
 
     async function doExport(){
       try{
         if(!lastAnalysis) return;
-        setBusy(elExport, true); elModeInfo.textContent = (localStorage.getItem(LANG_KEY)||'pl')==='pl'?'eksportuję':'exporting';
-        const payload = { case_id: lastAnalysis.case_id || (lastAnalysis.analysis_result?.provenance?.rule_id ?? 'unknown'), analysis_result: lastAnalysis.analysis_result || lastAnalysis };
-        const res = await fetch(`${API_BASE}/v1/export`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-        if(!res.ok){ const ttxt = await res.text().catch(()=>String(res.status)); return toast(`${t('err_http')} ${res.status} ${ttxt}`); }
-        const data = await res.json(); toast(`${t('toast_export_ok')}: ${data.path || '(response)'}`);
+        setBusy(elExport,true);
+        elModeInfo.textContent=(localStorage.getItem(LANG_KEY)||'pl')==='pl'
+          ? 'eksportuję' : 'exporting';
+        const payload={
+          case_id: lastAnalysis.case_id
+            || (lastAnalysis.analysis_result?.provenance?.rule_id ?? 'unknown'),
+          analysis_result: lastAnalysis.analysis_result || lastAnalysis
+        };
+        const res=await fetch(`${API_BASE}/v1/export`,{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if(!res.ok){
+          const ttxt=await res.text().catch(()=>String(res.status));
+          return toast(`${t('err_http')} ${res.status} ${ttxt}`);
+        }
+        const data=await res.json();
+        toast(`${t('toast_export_ok')}: ${data.path || '(response)'}`);
       }catch(e){ toast(`${t('toast_error')}: ${String(e)}`); }
-      finally{ setBusy(elExport, false); elModeInfo.textContent = lastAnalysis ? ((localStorage.getItem(LANG_KEY)||'pl')==='pl'?'analizowano':'analyzed') : ((localStorage.getItem(LANG_KEY)||'pl')==='pl'?'gotowy':'ready'); }
+      finally{
+        elExport.disabled = !lastAnalysis;
+        elModeInfo.textContent = lastAnalysis
+          ? ((localStorage.getItem(LANG_KEY)||'pl')==='pl'?'analizowano':'analyzed')
+          : ((localStorage.getItem(LANG_KEY)||'pl')==='pl'?'gotowy':'ready');
+      }
     }
 
     document.getElementById('analyzeBtn').addEventListener('click', doAnalyze);
@@ -584,20 +789,41 @@
     document.getElementById('exportBtn').addEventListener('click', doExport);
 
     // Tabs
-    tabs.forEach(({btn, panel})=>{ btn.addEventListener('click', ()=>{ tabs.forEach(({btn: b, panel: p})=>{ b.setAttribute('aria-selected','false'); p.classList.remove('active'); }); btn.setAttribute('aria-selected','true'); panel.classList.add('active'); }); });
+    tabs.forEach(({btn,panel})=>{
+      btn.addEventListener('click',()=>{
+        tabs.forEach(({btn:b,panel:p})=>{
+          b.setAttribute('aria-selected','false'); p.classList.remove('active');
+        });
+        btn.setAttribute('aria-selected','true'); panel.classList.add('active');
+      });
+    });
 
     // Shortcuts
-    document.addEventListener('keydown', (e)=>{
-      if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); doAnalyze(); }
-      if((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'e')){ e.preventDefault(); doExport(); }
-      if(!e.ctrlKey && !e.metaKey && e.key.toLowerCase() === 'm'){ loadMock(); }
+    document.addEventListener('keydown',(e)=>{
+      if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); doAnalyze(); }
+      if((e.ctrlKey||e.metaKey) && (e.key.toLowerCase()==='e')){
+        e.preventDefault(); doExport();
+      }
+      if(!e.ctrlKey && !e.metaKey && e.key.toLowerCase()==='m'){ loadMock(); }
     });
 
     // Paste raw JSON to view
-    window.addEventListener('paste', (ev)=>{ try{ const text = ev.clipboardData.getData('text'); if(text && text.trim().startsWith('{')){ const obj = JSON.parse(text); renderALI(obj); toast((localStorage.getItem(LANG_KEY)||'pl')==='pl'?'Załadowano z JSON.':'Loaded from JSON.'); } }catch{} });
+    window.addEventListener('paste',(ev)=>{
+      try{
+        const text=ev.clipboardData.getData('text');
+        if(text && text.trim().startsWith('{')){
+          const obj=JSON.parse(text); renderALI(obj);
+          toast((localStorage.getItem(LANG_KEY)||'pl')==='pl'
+            ? 'Załadowano z JSON.' : 'Loaded from JSON.');
+        }
+      }catch{}
+    });
 
     // Copy model
-    document.getElementById('copyModel').addEventListener('click', ()=> navigator.clipboard.writeText(elModel.textContent||'').then(()=> toast(t('toast_copied'))) );
+    document.getElementById('copyModel').addEventListener(
+      'click',()=> navigator.clipboard.writeText(elModel.textContent||'')
+        .then(()=> toast(t('toast_copied')))
+    );
   </script>
 </body>
 </html>

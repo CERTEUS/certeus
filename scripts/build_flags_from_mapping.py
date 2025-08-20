@@ -142,9 +142,7 @@ def main() -> None:
         default="packs/jurisdictions/PL/flags/lexenith_results_latest.json",
         help="Output JSON file",
     )
-    parser.add_argument(
-        "--rule-id", default=None, help="Explicit rule_id (overrides auto-detection)"
-    )
+    parser.add_argument("--rule-id", default=None, help="Explicit rule_id (overrides auto-detection)")
     parser.add_argument(
         "--prefer-token",
         default="286",

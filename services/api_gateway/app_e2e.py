@@ -45,9 +45,7 @@ class SimpleFact(BaseModel):
     case_id: str = Field(..., description="Case identifier")
     smt2: str = Field(..., description="SMT-LIB2 formula")
     export: bool = Field(False, description="Export report file after solve")
-    force_mismatch: bool = Field(
-        False, description="Flip Core-2 to trigger mismatch protocol (testing)"
-    )
+    force_mismatch: bool = Field(False, description="Flip Core-2 to trigger mismatch protocol (testing)")
 
 
 class SolveResponse(BaseModel):

@@ -2,10 +2,9 @@
 # +=====================================================================+
 # |                          CERTEUS                                    |
 # +=====================================================================+
-# | MODULE:  F:/projekty/certeus/services/api_gateway/routers/system.py  |
-# | DATE:    2025-08-17                                                  |
+# | MODULE:  F:/projekty/certeus/services/api_gateway/routers/system.py |
+# | DATE:    2025-08-17                                                 |
 # +=====================================================================+
-
 
 """
 PL: Router narzędziowy (systemowy). Udostępnia:
@@ -29,6 +28,9 @@ from typing import Annotated, Any
 from fastapi import APIRouter, File, HTTPException, Response, UploadFile
 from pydantic import BaseModel, Field
 
+from services.ingest_service.adapters.contracts import Blob
+from services.ingest_service.adapters.ocr_injector import build_ocr_preview
+
 router = APIRouter(tags=["system"])
 
 # ---------------------------------------------------------------------
@@ -49,12 +51,19 @@ async def ingest_document(
     response: Response,
     file: Annotated[UploadFile, File(...)],
 ) -> list[dict[str, Any]]:
-    """Zwraca dwa deterministyczne fakty (z `fact_id`, `thesis`, `confidence_score`),
-    waliduje MIME/rozmiar i ustawia nagłówek łańcucha `X-CERTEUS-Ledger-Chain`."""
+    """
+    PL: Zwraca dwa deterministyczne fakty (z `fact_id`, `thesis`, `confidence_score`),
+        waliduje MIME/rozmiar i ustawia nagłówek łańcucha `X-CERTEUS-Ledger-Chain`.
+        Dodatkowo (nieinwazyjnie) umieszcza skrót OCR w nagłówku
+        `X-CERTEUS-OCR-Preview` dla PDF/obrazów.
+    EN: Returns two deterministic facts (with `fact_id`, `thesis`, `confidence_score`),
+        validates MIME/size, and sets `X-CERTEUS-Ledger-Chain` header. Also (non-
+        invasive) puts OCR snippet into `X-CERTEUS-OCR-Preview` header for PDF/images.
+    """
     MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
     allowed_mime = "application/pdf"
 
-    if file.content_type != allowed_mime:
+    if (file.content_type or "") != allowed_mime:
         raise HTTPException(status_code=415, detail="Only application/pdf is supported")
 
     content = await file.read()
@@ -79,7 +88,7 @@ async def ingest_document(
         make_fact("evidence_payment", "TAK"),
     ]
 
-    # uzupełnij wymagane pola
+    # Uzupełnij wymagane pola (thesis + confidence)
     for f in facts:
         if f["role"] == "claim_contract_date":
             f["thesis"] = "Umowa została zawarta 2023-10-01."
@@ -88,12 +97,28 @@ async def ingest_document(
             f["thesis"] = "Istnieje dowód wpłaty."
             f["confidence_score"] = 0.99
 
-    # nagłówek łańcucha: "sha256:<...>;sha256:<...>"
+    # Nagłówek łańcucha: "sha256:<...>;sha256:<...>"
     chain_parts: list[str] = []
     for f in facts:
         payload = json.dumps(f, ensure_ascii=False, sort_keys=True).encode("utf-8")
         chain_parts.append("sha256:" + sha256(payload).hexdigest())
     response.headers["X-CERTEUS-Ledger-Chain"] = ";".join(chain_parts)
+
+    # DODATEK: OCR preview jako nagłówek (bez zmiany body).
+    try:
+        blob = Blob(
+            filename=src,
+            content_type=file.content_type or "application/octet-stream",
+            data=content,
+        )
+        ocr = await build_ocr_preview(blob, case_id=None, max_chars=160)
+        preview = ocr.get("ocr_preview")
+        if preview:
+            # Krótki, jednowierszowy nagłówek (bez znaków nowych linii).
+            response.headers["X-CERTEUS-OCR-Preview"] = " ".join(preview.split())
+    except Exception:
+        # Bezpieczne pominięcie OCR w razie błędu stubu.
+        pass
 
     return facts
 
@@ -125,9 +150,8 @@ async def analyze(case_id: str, file: Annotated[UploadFile, File(...)]) -> dict[
 async def get_snapshot(act_id: str) -> dict[str, Any]:
     """Zwraca minimalny snapshot (dict), aby dozwolić klucz `_certeus`."""
     text = (
-        "Art. 286 k.k.: Kto, w celu osiągnięcia korzyści majątkowej, "
-        "doprowadza inną osobę do niekorzystnego rozporządzenia mieniem "
-        "za pomocą wprowadzenia w błąd..."
+        "Art. 286 k.k.: Kto, w celu osiągnięcia korzyści majątkowej, doprowadza inną osobę "
+        "do niekorzystnego rozporządzenia mieniem za pomocą wprowadzenia w błąd..."
     ).strip()
     digest = "sha256:" + sha256(text.encode("utf-8")).hexdigest()
     snap_ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -136,7 +160,7 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
         "act_id": act_id,
         "version_id": "2023-10-01",
         "title": "Kodeks karny – art. 286",
-        "source_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19970880553",
+        "source_url": ("https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19970880553"),
         "text": text,
         "text_sha256": digest,
         "at": None,

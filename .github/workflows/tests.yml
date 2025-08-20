@@ -11,9 +11,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 permissions:
   contents: read
@@ -24,7 +24,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: "3.11"
-  UV_LINK_MODE: copy            # stabilniej na CI
+  UV_LINK_MODE: copy # stabilniej na CI
   PYTEST_JUNIT_XML: reports/junit.xml
 
 jobs:
