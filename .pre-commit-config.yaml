@@ -19,17 +19,16 @@ repos:
         stages: [pre-commit]
 
   # Prettier (mirror) — jedna pozycja, bez additional_dependencies
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        stages: [pre-commit]
-        # formatujemy tylko front/teksty; nie ruszamy build/cache
-        files: >
-          (\.md$|\.json$|\.ya?ml$|\.html?$|\.css$|\.js$|\.jsx$|\.ts$|\.tsx$)
-          |(^clients/web/)
-        exclude: >
-          ^(node_modules/|dist/|build/|static/previews/|reports/|exports/|artifacts/|proof_artifacts/)
+- repo: https://github.com/pre-commit/mirrors-prettier
+  rev: v4.0.0-alpha.8
+  hooks:
+    - id: prettier
+      stages: [pre-commit]
+      files: >
+        (\.md$|\.json$|\.ya?ml$|\.html?$|\.css$|\.js$|\.jsx$|\.ts$|\.tsx$)
+        |(^clients/web/)
+      exclude: >
+        ^(node_modules/|dist/|build/|static/previews/|reports/|exports/|artifacts/|proof_artifacts/)
 
   # Standardowe utility hooki
   - repo: https://github.com/pre-commit/pre-commit-hooks
