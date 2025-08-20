@@ -58,10 +58,16 @@ packs/jurisdictions/PL/flags/
 /reports/
 /static/previews/
 *.sha256
+proof_artifacts/
 
 # UV / cache
 .uv/
 uv.lock
+Front build/cache
+clients/web/**/dist/
+clients/web/**/build/
+node_modules/.cache/
+node_modules/.cache/prettier/
 
 # Pyright stubs (stubPath)
 typings/
