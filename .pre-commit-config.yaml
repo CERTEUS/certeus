@@ -1,32 +1,31 @@
-# +=====================================================================+
-# |                          CERTEUS — HEART                            |
-# +=====================================================================+
-# | FILE: .pre-commit-config.yaml                                       |
-# | ROLE: Format / lint / sanity hooks (ruff, prettier, pytest, secrets)|
-# +=====================================================================+
+# .pre-commit-config.yaml
+# Stabilny, poprawny składniowo config dla Twojego repo
+
+minimum_pre_commit_version: "3.5.0"
 
 repos:
+  # --- Ruff: lint + format ---
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    # Możesz podbić tag, jeśli chcesz
+    rev: v0.5.6
     hooks:
       - id: ruff
-        args: [--fix]
+        args: ["--fix"]
       - id: ruff-format
 
+  # --- Prettier (mirror) ---
+  # Używamy konkretnego commita mirrora i wymuszamy wersję Prettiera przez additional_dependencies.
   - repo: https://github.com/pre-commit/mirrors-prettier
-    # Używaj tego taga — jest w repo mirrors-prettier:
-    rev: v4.0.0-alpha.8
+    rev: f62a70a3a7114896b062de517d72829ea1c884b6
     hooks:
       - id: prettier
-        # Regex plików do formatowania (JS/TS/HTML/CSS/MD/YAML + cały clients/web/)
-        files: |-
-          (\.md$|\.json$|\.ya?ml$|\.html?$|\.css$|\.js$|\.jsx$|\.ts$|\.tsx$)|(^clients/web/)
-        # Wyklucz cache/build/artefakty:
-        exclude: |-
-          ^(node_modules/|dist/|build/|static/previews/|reports/|exports/|artifacts/|proof_artifacts/)
+        additional_dependencies: ["prettier@4.0.0-alpha.8"]
+        files: "\\.(js|jsx|ts|tsx|css|scss|html|json|md|yml|yaml)$"
+        exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/|\\.snap$|\\.min\\.(js|css)$)"
 
+  # --- Standardowe hooki (z v6, bez „deprecated stages”) ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -34,11 +33,25 @@ repos:
       - id: check-added-large-files
         args: ["--maxkb=5120"]
 
-  # Lokalne testy (szybkie). Wymaga uv + pytest w środowisku.
+  # --- Lokalne hooki (system) ---
   - repo: local
     hooks:
+      # Blokowanie plików kluczy po rozszerzeniach
+      - id: forbid-key-extensions
+        name: "forbid: key files (*.pem|*.key|*.pfx|*.p12|*.der)"
+        entry: python scripts/hooks/block_key_extensions.py
+        language: system
+        pass_filenames: true
+        stages: [pre-commit]
+        files: "\\.(pem|key|pfx|p12|der)$"
+
+      # Szybkie testy (uruchamiaj tylko, gdy zmieniają się pliki Pythona)
       - id: pytest
-        name: pytest (fast)
+        name: "pytest (fast)"
         entry: uv run pytest -q
         language: system
+        types: [python]
         pass_filenames: false
+        stages: [pre-commit]
+        # Wykluczenia dla testów uruchamianych przez hooki
+        exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/)"
