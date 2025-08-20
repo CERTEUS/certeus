@@ -1,3 +1,12 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: .gitignore                                                    |
+# | ROLE:                                                               |
+# |  PL: Ignorowanie artefaktów build/test/IDE i lokalnych.             |
+# |  EN: Ignore build/test/IDE & local artifacts.                       |
+# +=====================================================================+
+
 # Python
 __pycache__/
 *.pyc
@@ -28,6 +37,7 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
+coverage.xml
 *.log
 
 # Custom
@@ -53,6 +63,19 @@ packs/jurisdictions/PL/flags/
 .uv/
 uv.lock
 
+# Pyright stubs (stubPath)
+typings/
+
+# ENV / secrets (lokalne)
+.env
+
 # OS cruft
 .DS_Store
 Thumbs.db
+
+# --- secrets (local only; do not commit) ---
+*.pem
+*.key
+*.pfx
+*.p12
+*.der

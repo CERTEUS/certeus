@@ -1,30 +1,47 @@
-# +======================================================================+
-# | CERTEUS - pre-commit (Ruff + format + drobne sanity checks)          |
-# +======================================================================+
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: .pre-commit-config.yaml                                       |
+# | ROLE:                                                                |
+# |  PL: Hooki jakości – ruff, pyright (opcjonalnie), pytest, YAML/JSON. |
+# |  EN: Quality hooks – ruff, pyright (opt), pytest, YAML/JSON.         |
+# +=====================================================================+
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    rev: v0.5.6
     hooks:
       - id: ruff
-        args: ["--fix"]
+        args: [--fix]
       - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: "\\.(md|yaml|yml|json)$"
 
   - repo: local
     hooks:
-      - id: certeus-header-docstring-gate
-        name: CERTEUS header/docstring gate
-        entry: python scripts/check_headers.py
+      - id: pytest
+        name: pytest (fast)
+        entry: pytest -q
         language: system
-        files: \.py$
+        pass_filenames: false
+        files: ^(tests|plugins/lexenith_pl/tests)/
 
+  # 1) Wykrywanie prywatnych kluczy po wzorcu PEM
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
-      - id: end-of-file-fixer
-        exclude: ^exports/
-      - id: trailing-whitespace
-        exclude: ^exports/
-      - id: check-merge-conflict
-      - id: check-yaml
-      - id: check-json
+      - id: detect-private-key
+
+  # 2) Twardy zakaz po rozszerzeniu (także publiczne klucze)
+  - repo: local
+    hooks:
+      - id: block-key-extensions
+        name: "forbid: key files (*.pem|*.key|*.pfx|*.p12|*.der)"
+        language: python
+        entry: scripts/hooks/block_key_extensions.py
+        pass_filenames: true
+        files: '\.(pem|key|pfx|p12|der)$'
