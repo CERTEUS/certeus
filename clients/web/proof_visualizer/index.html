@@ -41,6 +41,7 @@
         --warn: #f0e3c0;
         --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
       }
+
       [data-theme="light"] {
         /* LIGHT (grays + white) */
         --bg: #f7f7f8;
@@ -61,10 +62,12 @@
       * {
         box-sizing: border-box;
       }
+
       html,
       body {
         height: 100%;
       }
+
       body {
         margin: 0;
         font-family:
@@ -83,6 +86,7 @@
         margin: 24px auto;
         padding: 0 16px;
       }
+
       .card {
         background: linear-gradient(
           180deg,
@@ -95,25 +99,30 @@
         box-shadow: var(--shadow);
         backdrop-filter: blur(4px);
       }
+
       .row {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
       }
+
       .col {
         flex: 1 1 320px;
         min-width: 320px;
       }
+
       h1 {
         font-size: 26px;
         margin: 0 0 6px;
         letter-spacing: 0.2px;
       }
+
       h2 {
         font-size: 18px;
         margin: 8px 0 10px;
         color: var(--muted);
       }
+
       p.muted {
         color: var(--muted);
         margin: 6px 0 14px;
@@ -123,6 +132,7 @@
         font-weight: 600;
         color: var(--txt);
       }
+
       .input,
       .select,
       .btn {
@@ -131,14 +141,17 @@
         background: var(--elev);
         color: var(--txt);
       }
+
       .input {
         padding: 10px 12px;
         outline: none;
         width: 100%;
       }
+
       .select {
         padding: 8px 10px;
       }
+
       .btn {
         appearance: none;
         padding: 10px 14px;
@@ -151,13 +164,16 @@
           transform 0.08s ease,
           background 0.12s;
       }
+
       .btn:hover {
         transform: translateY(-1px);
         background: var(--card);
       }
+
       .btn.secondary {
         background: transparent;
       }
+
       .btn:disabled {
         opacity: 0.6;
         cursor: not-allowed;
@@ -169,6 +185,7 @@
         align-items: center;
         flex-wrap: wrap;
       }
+
       .pill {
         display: inline-flex;
         align-items: center;
@@ -179,12 +196,15 @@
         background: var(--chip);
         border: 1px solid var(--border);
       }
+
       .pill.sat {
         outline: 2px solid var(--good);
       }
+
       .pill.unsat {
         outline: 2px solid var(--bad);
       }
+
       .pill.unknown {
         outline: 2px solid var(--ring);
       }
@@ -194,6 +214,7 @@
         flex-wrap: wrap;
         gap: 8px;
       }
+
       .chip {
         background: var(--chip);
         border: 1px solid var(--border);
@@ -233,6 +254,7 @@
         gap: 8px;
         margin-bottom: 8px;
       }
+
       .tab {
         padding: 8px 12px;
         border-radius: 10px;
@@ -242,13 +264,16 @@
         font-weight: 600;
         color: var(--txt);
       }
+
       .tab[aria-selected="true"] {
         outline: 2px solid var(--ring);
         outline-offset: 1px;
       }
+
       .tabpanel {
         display: none;
       }
+
       .tabpanel.active {
         display: block;
       }
@@ -265,6 +290,7 @@
           border-color 0.15s ease,
           background 0.15s;
       }
+
       .dropzone.drag {
         border-color: var(--ring);
         background: rgba(140, 140, 140, 0.08);
@@ -280,6 +306,7 @@
         gap: 8px;
         z-index: 50;
       }
+
       .toast .item {
         background: var(--card);
         border: 1px solid var(--border);
@@ -301,17 +328,20 @@
         justify-content: center;
         overflow: hidden;
       }
+
       .viewer iframe {
         width: 100%;
         height: 100%;
         border: 0;
         background: var(--card);
       }
+
       .viewer img {
         max-width: 100%;
         max-height: 100%;
         display: block;
       }
+
       .viewer .text {
         padding: 12px;
         width: 100%;
@@ -329,9 +359,11 @@
         border-radius: 12px;
         padding: 8px 10px;
       }
+
       #case-picker input::placeholder {
         color: var(--muted);
       }
+
       #case-picker .certeus-new-heading {
         color: var(--muted);
       }
@@ -341,15 +373,18 @@
         .col {
           min-width: 100%;
         }
+
         .grid-2 {
           grid-template-columns: 1fr;
         }
+
         .viewer {
           height: 360px;
         }
       }
     </style>
   </head>
+
   <body>
     <div class="container">
       <!-- HEADER -->
