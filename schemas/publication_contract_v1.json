@@ -1,43 +1,43 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "PublicationContractV1",
-    "type": "object",
-    "x-meta": {
-        "banner": "+=============================================================+\\n|                       CERTEUS — HEART                        |\\n+=============================================================+\\n| FILE: schemas/publication_contract_v1.json                  |\\n| ROLE:                                                       |\\n|  PL: Schemat publicznej odpowiedzi publikacyjnej.           |\\n|  EN: Schema of public publication response.                 |\\n+=============================================================+",
-        "description_pl": "Kontrakt zwracany przez endpointy publikacyjne (status + PCO/plan + eta_hint).",
-        "description_en": "Contract returned by publication endpoints (status + PCO/plan + eta_hint)."
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PublicationContractV1",
+  "type": "object",
+  "x-meta": {
+    "banner": "+=============================================================+\\n|                       CERTEUS — HEART                        |\\n+=============================================================+\\n| FILE: schemas/publication_contract_v1.json                  |\\n| ROLE:                                                       |\\n|  PL: Schemat publicznej odpowiedzi publikacyjnej.           |\\n|  EN: Schema of public publication response.                 |\\n+=============================================================+",
+    "description_pl": "Kontrakt zwracany przez endpointy publikacyjne (status + PCO/plan + eta_hint).",
+    "description_en": "Contract returned by publication endpoints (status + PCO/plan + eta_hint)."
+  },
+  "required": ["status", "headers"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
     },
-    "required": ["status", "headers"],
-    "properties": {
-        "status": {
-            "type": "string",
-            "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
+    "eta_hint": {
+      "type": "string"
+    },
+    "proof_task_id": {
+      "type": "string"
+    },
+    "pco": {
+      "type": "object"
+    },
+    "pco.plan": {
+      "type": "object"
+    },
+    "headers": {
+      "type": "object",
+      "required": ["X-Norm-Pack-ID", "X-Jurisdiction"],
+      "properties": {
+        "X-Norm-Pack-ID": {
+          "type": "string"
         },
-        "eta_hint": {
-            "type": "string"
-        },
-        "proof_task_id": {
-            "type": "string"
-        },
-        "pco": {
-            "type": "object"
-        },
-        "pco.plan": {
-            "type": "object"
-        },
-        "headers": {
-            "type": "object",
-            "required": ["X-Norm-Pack-ID", "X-Jurisdiction"],
-            "properties": {
-                "X-Norm-Pack-ID": {
-                    "type": "string"
-                },
-                "X-Jurisdiction": {
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
+        "X-Jurisdiction": {
+          "type": "string"
         }
-    },
-    "additionalProperties": false
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
 }

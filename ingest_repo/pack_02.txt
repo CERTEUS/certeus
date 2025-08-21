@@ -8,6 +8,1303 @@ Guidance: read sequentially; do not assume missing files exist; respect file bou
 
 
 
+===== FILE: schemas/publication_contract_v1.json =====
+```text
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "PublicationContractV1",
+    "type": "object",
+    "x-meta": {
+        "banner": "+=============================================================+\\n|                       CERTEUS — HEART                        |\\n+=============================================================+\\n| FILE: schemas/publication_contract_v1.json                  |\\n| ROLE:                                                       |\\n|  PL: Schemat publicznej odpowiedzi publikacyjnej.           |\\n|  EN: Schema of public publication response.                 |\\n+=============================================================+",
+        "description_pl": "Kontrakt zwracany przez endpointy publikacyjne (status + PCO/plan + eta_hint).",
+        "description_en": "Contract returned by publication endpoints (status + PCO/plan + eta_hint)."
+    },
+    "required": ["status", "headers"],
+    "properties": {
+        "status": {
+            "type": "string",
+            "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
+        },
+        "eta_hint": {
+            "type": "string"
+        },
+        "proof_task_id": {
+            "type": "string"
+        },
+        "pco": {
+            "type": "object"
+        },
+        "pco.plan": {
+            "type": "object"
+        },
+        "headers": {
+            "type": "object",
+            "required": ["X-Norm-Pack-ID", "X-Jurisdiction"],
+            "properties": {
+                "X-Norm-Pack-ID": {
+                    "type": "string"
+                },
+                "X-Jurisdiction": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}
+
+```
+
+
+===== FILE: scripts/apply_headers.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/scripts/apply_headers.py                |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/apply_headers.py                              |
+# | ROLE: Auto-add CERTEUS header block and module docstrings   |
+# |       to Python files that are missing them.                |
+# | PLIK: scripts/apply_headers.py                              |
+# | ROLA: Automatyczne dodanie nagłówków i docstringów modułów  |
+# |       do plików Python bez tych elementów.                  |
+# +-------------------------------------------------------------+
+"""
+PL: Skrypt skanuje repozytorium, znajduje pliki .py i dodaje:
+    (1) standardowy nagłówek CERTEUS (ASCII box) oraz
+    (2) module docstring PL/EN — jeśli brakuje.
+    Działa idempotentnie (nie dubluje nagłówków).
+EN: The script scans the repo for .py files and adds:
+    (1) a standard CERTEUS header block (ASCII box), and
+    (2) a PL/EN module docstring — if missing.
+    Idempotent (won't duplicate headers).
+"""
+
+from __future__ import annotations
+
+import ast
+import os
+from collections.abc import Iterable
+from pathlib import Path
+
+# === KONFIG: które katalogi skanować ========================== #
+SCAN_DIRS = [
+    "cje",
+    "clients",
+    "core",
+    "kernel",
+    "plugins",
+    "scripts",
+    "services",
+    "tests",
+]
+
+# Pliki, które zwykle pomijamy (jeśli chcesz – usuń z listy)
+SKIP_FILES = {
+    "plugins/__init__.py",  # często pusty
+}
+
+
+# === Generator nagłówka ======================================= #
+def build_header(rel_path: str) -> str:
+    """
+    Zwraca standardowy nagłówek CERTEUS z dynamiczną ścieżką pliku.
+    """
+    box = (
+        "# +-------------------------------------------------------------+\n"
+        "# |                          CERTEUS                            |\n"
+        "# +-------------------------------------------------------------+\n"
+        f"# | FILE: {rel_path:<52}|\n"
+        "# | ROLE: Project module.                                       |\n"
+        f"# | PLIK: {rel_path:<52}|\n"
+        "# | ROLA: Moduł projektu.                                       |\n"
+        "# +-------------------------------------------------------------+\n"
+    )
+    return box
+
+
+# === Domyślny module docstring ================================ #
+DEFAULT_DOCSTRING = (
+    '"""\n'
+    "PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.\n"
+    "EN: CERTEUS module – please complete the functional description.\n"
+    '"""\n'
+)
+
+
+# === Wykrywanie istniejącego nagłówka/docstringa ============== #
+def has_header(text: str) -> bool:
+    # szukamy znaku rozpoznawczego w pierwszych ~10 liniach
+    head = "\n".join(text.splitlines()[:10])
+    return "CERTEUS" in head and "FILE:" in head
+
+
+def has_module_docstring(text: str) -> bool:
+    try:
+        tree = ast.parse(text)
+        return ast.get_docstring(tree) is not None
+    except Exception:
+        # Jeśli nie możemy sparsować (np. niekompletna składnia), uznaj brak
+        return False
+
+
+# === Wstawianie nagłówka/docstringa =========================== #
+def ensure_header_and_docstring(path: Path, project_root: Path) -> bool:
+    """
+    Modyfikuje plik, jeśli brakuje nagłówka lub docstringa.
+    Zwraca True, jeśli plik został zmodyfikowany.
+    """
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    changed = False
+
+    # zachowaj shebang/encoding (jeśli są w 1. linii)
+    lines = text.splitlines(keepends=True)
+    shebang = ""
+    if lines and lines[0].startswith("#!"):
+        shebang = lines[0]
+        body = "".join(lines[1:])
+    else:
+        body = text
+
+    # 1) Nagłówek
+    if not has_header(body):
+        rel = str(path.relative_to(project_root)).replace("\\", "/")
+        header = build_header(rel)
+        body = header + ("\n" if not body.startswith("\n") else "") + body
+        changed = True
+
+    # 2) Module docstring
+    if not has_module_docstring(body):
+        # Docstring musi być pierwszym statementem modułu → wstawiamy na samą górę body
+        body = DEFAULT_DOCSTRING + ("\n" if not body.startswith("\n") else "") + body
+        changed = True
+
+    if changed:
+        new_text = (shebang + body) if shebang else body
+        # Na Windows trzymajmy CRLF (Git i tak poradzi sobie z autocrlf)
+        new_text = new_text.replace("\r\n", "\n").replace("\n", os.linesep)
+        path.write_text(new_text, encoding="utf-8")
+    return changed
+
+
+# === Skan repo i przetwarzanie ================================ #
+def iter_python_files(root: Path, dirs: Iterable[str]) -> Iterable[Path]:
+    for d in dirs:
+        p = root / d
+        if not p.exists():
+            continue
+        for py in p.rglob("*.py"):
+            rel = str(py.relative_to(root)).replace("\\", "/")
+            if rel in SKIP_FILES:
+                continue
+            yield py
+
+
+def main() -> None:
+    root = Path(__file__).resolve().parents[1]  # repo root
+    changed_total = 0
+    for py in iter_python_files(root, SCAN_DIRS):
+        if ensure_header_and_docstring(py, root):
+            changed_total += 1
+            print(f"[UPDATED] {py.relative_to(root)}")
+    print(f"\nDone. Files updated: {changed_total}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+===== FILE: scripts/build_flags_from_mapping.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/scripts/build_flags_from_mapping.py     |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |              CERTEUS - Build Flags From Mapping             |
+# +-------------------------------------------------------------+
+# | PLIK: build_flags_from_mapping.py                           |
+# | ROLA: Buduje zestaw flag (JSON) na podstawie reguł i mapy.  |
+# +-------------------------------------------------------------+
+#
+# PL: Skrypt iteracyjnie uruchamia evaluator LEXLOG i na podstawie
+#     brakujących przesłanek/wykluczników tworzy plik z flagami.
+# EN: Iteratively runs the LEXLOG evaluator and, using missing
+#     premises/excludes, produces a flags JSON for downstream tests.
+"""
+PL: Buduje plik flags JSON na podstawie mapowania przesłanek→flagi silnika.
+    Uzupełnia brakujące przesłanki przez mapę P_* → ZNAMIE_* (MVP).
+EN: Builds flags JSON from mapping of premises→engine flags. Fills missing
+    premises via P_* → ZNAMIE_* mapping (MVP).
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+from collections.abc import Iterable as AbcIterable
+from collections.abc import Mapping, MutableMapping, Sequence
+from inspect import Signature, signature
+from pathlib import Path
+from typing import (
+    Any,
+    cast,
+)
+
+from services.lexlog_parser.evaluator import evaluate_rule
+from services.lexlog_parser.mapping import load_mapping
+from services.lexlog_parser.parser import parse_lexlog
+
+
+def _to_set(xs: object | None) -> set[str]:
+    """
+    PL: Zamiana dowolnego wejścia na set[str] z jawnie typowanym elementem.
+    EN: Convert arbitrary input to set[str] with explicit element typing.
+    """
+    out: set[str] = set()
+    if xs is None:
+        return out
+    if isinstance(xs, str):
+        out.add(xs)
+        return out
+    if isinstance(xs, AbcIterable) and not isinstance(xs, bytes | bytearray):
+        for elem in cast(AbcIterable[object], xs):
+            s: str = str(elem)
+            out.add(s)
+        return out
+    out.add(str(xs))
+    return out
+
+
+def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> str | None:
+    """
+    PL: Wyszukaj identyfikatory po 'RULE' i preferuj ten zawierający token (np. '286').
+    EN: Extract identifiers after 'RULE' and prefer one containing a token (e.g. '286').
+    """
+    ids = re.findall(r"^\s*RULE\s+([A-Za-z0-9_.\-]+)", text, flags=re.MULTILINE)
+    if not ids:
+        return None
+    for rid in ids:
+        if prefer_token and prefer_token.lower() in rid.lower():
+            return rid
+    return ids[0]
+
+
+def _call_evaluate(ast: Any, rule_id: str | None, flags: Mapping[str, bool], ctx: Any) -> Any:
+    """
+    PL: Wywołaj evaluate_rule zgodnie z aktualną sygnaturą (różne wersje).
+    EN: Call evaluate_rule according to the current signature (versions may differ).
+    """
+    sig: Signature = signature(evaluate_rule)
+    params: Sequence[str] = list(sig.parameters.keys())
+
+    kwargs: dict[str, Any] = {}
+    if "ast" in params:
+        kwargs["ast"] = ast
+    if "rule_id" in params:
+        if not rule_id:
+            raise ValueError("evaluate_rule requires 'rule_id' but none was detected")
+        kwargs["rule_id"] = rule_id
+    if "flags" in params:
+        kwargs["flags"] = flags
+    if "ctx" in params:
+        kwargs["ctx"] = ctx
+
+    try:
+        return evaluate_rule(**kwargs)  # type: ignore[misc]
+    except TypeError:
+        # Fallbacks for very old signatures
+        try:
+            if "rule_id" not in params:
+                return evaluate_rule(ast, flags, ctx)  # type: ignore[misc]
+        except TypeError:
+            return evaluate_rule(ast, flags)  # type: ignore[misc]
+
+
+def _step(
+    ast: Any, rule_id: str | None, flags: MutableMapping[str, bool], ctx: Any
+) -> tuple[bool, set[str], set[str], Any]:
+    """
+    PL: Jeden krok ewaluacji -> (ok, missing_premises, failing_excludes, raw_result).
+    EN: One evaluation step -> (ok, missing_premises, failing_excludes, raw_result).
+    """
+    res = _call_evaluate(ast, rule_id, flags, ctx)
+    ok = bool(getattr(res, "satisfied", False))
+    missing = _to_set(getattr(res, "missing_premises", []) or [])
+    failing = _to_set(getattr(res, "failing_excludes", []) or [])
+    return ok, missing, failing, res
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        prog="build_flags_from_mapping",
+        description="Build flags JSON by iteratively satisfying a rule.",
+    )
+    parser.add_argument(
+        "--rules",
+        default="packs/jurisdictions/PL/rules/kk.lex",
+        help="Path to .lex file",
+    )
+    parser.add_argument(
+        "--map",
+        default="packs/jurisdictions/PL/rules/kk.mapping.json",
+        help="Path to mapping.json",
+    )
+    parser.add_argument(
+        "--out",
+        default="packs/jurisdictions/PL/flags/lexenith_results_latest.json",
+        help="Output JSON file",
+    )
+    parser.add_argument("--rule-id", default=None, help="Explicit rule_id (overrides auto-detection)")
+    parser.add_argument(
+        "--prefer-token",
+        default="286",
+        help="Token preferred when auto-selecting RULE id",
+    )
+    parser.add_argument("--max-iter", type=int, default=10, help="Max refinement iterations")
+    args = parser.parse_args()
+
+    rules_path = Path(args.rules)
+    map_path = Path(args.map)
+    out_path = Path(args.out)
+
+    rules_text = rules_path.read_text(encoding="utf-8")
+    ast = parse_lexlog(rules_text)
+    ctx = load_mapping(map_path)
+
+    rule_id = args.rule_id or _detect_rule_id_from_text(rules_text, prefer_token=args.prefer_token)
+    if rule_id:
+        print(f"[INFO] Using rule_id: {rule_id}")
+    else:
+        print("[WARN] Could not detect rule_id from .lex; trying evaluator without rule_id")
+
+    flags: dict[str, bool] = {}
+
+    for _ in range(args.max_iter):
+        ok, miss, fail, _ = _step(ast, rule_id, flags, ctx)
+        if ok:
+            break
+
+        if miss:
+            for p in miss:
+                engine_flag = ctx.premise_to_flag.get(p)  # P_* -> ZNAMIE_* jeśli dostępne
+                key = str(engine_flag or p)
+                flags[key] = True
+        if fail:
+            for k in fail:
+                flags[str(k)] = False
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps({"flags": flags}, ensure_ascii=True, indent=2), encoding="utf-8")
+    print("[OK] wrote", out_path)
+    print("[OK] True:", sorted([k for k, v in flags.items() if v]))
+    print("[OK] False:", sorted([k for k, v in flags.items() if not v]))
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+===== FILE: scripts/check_drat.sh =====
+```text
+#!/usr/bin/env bash
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE / PLIK: scripts/check_drat.sh                                  |
+# | ROLA / ROLE: DRAT checker (Linux/CI).                               |
+# | OPIS / DESC: Presence & signature; optional drat-trim if CNF exists.|
+# +=====================================================================+
+set -Eeuo pipefail
+
+ART_DIR="${ART_DIR:-proof_artifacts}"
+DRAT_NAME="${DRAT_NAME:-z3.drat}"
+SHA_FILE="${SHA_FILE:-}"
+CNF_PATH="${CNF_PATH:-}"
+
+while getopts ":d:f:s:" opt; do
+  case "$opt" in
+    d) ART_DIR="$OPTARG" ;;
+    f) DRAT_NAME="$OPTARG" ;;
+    s) SHA_FILE="$OPTARG" ;;
+    *) echo "Usage: $0 [-d artifacts_dir] [-f drat_file] [-s sha256sum_file]" >&2; exit 2 ;;
+  esac
+done
+
+DRAT_PATH="${ART_DIR}/${DRAT_NAME}"
+[[ -f "$DRAT_PATH" ]] || { echo "::error::DRAT not found: ${DRAT_PATH}"; exit 1; }
+[[ -s "$DRAT_PATH" ]] || { echo "::error::DRAT is empty: ${DRAT_PATH}"; exit 1; }
+
+# Optional SHA check
+if [[ -n "${SHA_FILE}" ]]; then
+  [[ -f "${SHA_FILE}" ]] || { echo "::error::SHA file not found: ${SHA_FILE}"; exit 1; }
+  sha256sum -c "${SHA_FILE}" || { echo "::error::SHA256 mismatch for ${DRAT_PATH}"; exit 1; }
+fi
+
+# Signature sanity
+grep -q 'PROOF' "$DRAT_PATH"       || { echo "::error file=${DRAT_PATH}::Missing PROOF signature"; exit 3; }
+grep -q 'format=drat' "$DRAT_PATH" || { echo "::error file=${DRAT_PATH}::Missing format=drat"; exit 3; }
+
+# External checker (optional)
+if command -v drat-trim >/dev/null 2>&1; then
+  if [[ -n "${CNF_PATH}" && -f "${CNF_PATH}" ]]; then
+    echo "ℹ️ drat-trim: CNF found → running verification…"
+    drat-trim "${CNF_PATH}" "${DRAT_PATH}" -q || { echo "::error::drat-trim verification failed"; exit 4; }
+  else
+    echo "ℹ️ drat-trim available, but CNF missing → skipping external verification."
+  fi
+else
+  echo "ℹ️ drat-trim not found; basic checks only."
+fi
+
+echo "✅ DRAT check passed for ${DRAT_PATH}"
+
+```
+
+
+===== FILE: scripts/check_hashes.ps1 =====
+```text
+# +======================================================================+
+# |                               CERTEUS                                |
+# +======================================================================+
+# | FILE / PLIK: scripts/check_hashes.ps1                                |
+# | ROLA / ROLE:                                                          |
+# |  PL: Oblicza SHA256 plików DRAT/LFSC w proof_artifacts.               |
+# |  EN: Compute SHA256 for DRAT/LFSC files in proof_artifacts.           |
+# +======================================================================+
+Param(
+    [string]$Dir = "proof_artifacts"
+)
+$drat = Join-Path $Dir "z3.drat"
+$lfsc = Join-Path $Dir "cvc5.lfsc"
+if (Test-Path $drat) { Get-FileHash $drat -Algorithm SHA256 }
+if (Test-Path $lfsc) { Get-FileHash $lfsc -Algorithm SHA256 }
+
+```
+
+
+===== FILE: scripts/check_headers.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/scripts/check_headers.py                |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/check_headers.py                              |
+# | ROLE: Pre-commit checker for CERTEUS header & module docstr |
+# | PLIK: scripts/check_headers.py                              |
+# | ROLA: Walidator nagłówka CERTEUS i docstringa modułu        |
+# +-------------------------------------------------------------+
+"""
+PL: Skrypt uruchamiany przez pre-commit. Dla podanych plików .py
+    sprawdza obecność nagłówka CERTEUS oraz module docstringa.
+    Akceptuje kilka form nagłówka (baner z 'CERTEUS', lub linie
+    zawierające 'FILE:'/'PLIK:'), żeby nie blokować developmentu.
+
+EN: Pre-commit script. For given .py files, validates that a
+    CERTEUS header and a module docstring are present. It accepts
+    multiple header styles (banner with 'CERTEUS' or lines that
+    contain 'FILE:'/'PLIK:') to avoid blocking development.
+"""
+
+from __future__ import annotations
+
+# === stdlib imports (one-per-line for Ruff) ===================
+import argparse
+import ast
+import sys
+from collections.abc import Iterable
+from pathlib import Path
+
+# ==============================================================
+# == BLOCK: detection helpers                                  =
+# ==============================================================
+
+
+def _read_head(path: Path, head_lines: int = 30) -> str:
+    """Read only the first N lines of the file for header detection."""
+    try:
+        lines: list[str] = []
+        with path.open("r", encoding="utf-8", errors="ignore") as f:
+            for i, line in enumerate(f):
+                if i >= head_lines:
+                    break
+                lines.append(line)
+        head: str = "".join(lines)
+        return head
+    except Exception:
+        return ""
+
+
+def _has_module_docstring(full_text: str) -> bool:
+    """Parse AST and check for module docstring presence."""
+    try:
+        tree = ast.parse(full_text)
+        return ast.get_docstring(tree) is not None
+    except Exception:
+        return False
+
+
+def _has_certeus_header(head_text: str) -> bool:
+    """
+    Flexible header detection:
+    - any line in head that contains 'CERTEUS' (banner or single line), OR
+    - presence of 'FILE:' and/or 'PLIK:' markers, OR
+    - SPDX license line if you decide to add one later.
+
+    This matches the banner inserted by scripts/apply_headers.py.
+    """
+    head_lower: str = head_text.lower()
+    if "certeus" in head_lower:
+        return True
+    if "file:" in head_lower or "plik:" in head_lower:
+        return True
+    if "spdx-license-identifier" in head_lower:
+        return True
+    return False
+
+
+# ==============================================================
+# == BLOCK: main check routine                                  =
+# ==============================================================
+
+
+def check_files(paths: Iterable[Path]) -> int:
+    """
+    Return exit code (0 ok, 1 failure). Prints issues as:
+    [HEADER MISSING] <path>
+    [DOCSTRING MISSING] <path>
+    """
+    missing: int = 0
+    for p in paths:
+        if p.suffix != ".py":
+            continue
+        if not p.exists():
+            continue
+
+        head: str = _read_head(p)
+        try:
+            full: str = p.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            full = head  # fallback
+
+        # --- header
+        if not _has_certeus_header(head):
+            print(f"[HEADER MISSING] {p}")
+            missing += 1
+
+        # --- module docstring
+        if not _has_module_docstring(full):
+            print(f"[DOCSTRING MISSING] {p}")
+            missing += 1
+
+    return 0 if missing == 0 else 1
+
+
+# ==============================================================
+# == BLOCK: CLI entrypoint                                      =
+# ==============================================================
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="CERTEUS header/docstring gate",
+    )
+    parser.add_argument("files", nargs="*", help="Files passed by pre-commit")
+    args = parser.parse_args()
+
+    paths = [Path(f) for f in args.files]
+    return check_files(paths)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+```
+
+
+===== FILE: scripts/check_lfsc.sh =====
+```text
+#!/usr/bin/env bash
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE / PLIK: scripts/check_lfsc.sh                                  |
+# | ROLA / ROLE: LFSC checker (Linux/CI).                               |
+# | OPIS / DESC: Presence & signature; optional cvc5/lfsc-checker       |
+# |             if SMT2 exists.                                         |
+# +=====================================================================+
+set -Eeuo pipefail
+
+ART_DIR="${ART_DIR:-proof_artifacts}"
+LFSC_NAME="${LFSC_NAME:-cvc5.lfsc}"
+SHA_FILE="${SHA_FILE:-}"
+SMT2_PATH="${SMT2_PATH:-}"
+
+while getopts ":d:f:s:" opt; do
+  case "$opt" in
+    d) ART_DIR="$OPTARG" ;;
+    f) LFSC_NAME="$OPTARG" ;;
+    s) SHA_FILE="$OPTARG" ;;
+    *) echo "Usage: $0 [-d artifacts_dir] [-f lfsc_file] [-s sha256sum_file]" >&2; exit 2 ;;
+  esac
+done
+
+LFSC_PATH="${ART_DIR}/${LFSC_NAME}"
+[[ -f "$LFSC_PATH" ]] || { echo "::error::LFSC not found: ${LFSC_PATH}"; exit 1; }
+[[ -s "$LFSC_PATH" ]] || { echo "::error::LFSC is empty: ${LFSC_PATH}"; exit 1; }
+
+# Optional SHA check
+if [[ -n "${SHA_FILE}" ]]; then
+  [[ -f "${SHA_FILE}" ]] || { echo "::error::SHA file not found: ${SHA_FILE}"; exit 1; }
+  sha256sum -c "${SHA_FILE}" || { echo "::error::SHA256 mismatch for ${LFSC_PATH}"; exit 1; }
+fi
+
+# Signature sanity
+grep -q 'PROOF' "$LFSC_PATH"       || { echo "::error file=${LFSC_PATH}::Missing PROOF signature"; exit 3; }
+grep -q 'format=lfsc' "$LFSC_PATH" || { echo "::error file=${LFSC_PATH}::Missing format=lfsc"; exit 3; }
+
+# External checker (optional)
+if command -v cvc5 >/dev/null 2>&1; then
+  if [[ -n "${SMT2_PATH}" && -f "${SMT2_PATH}" ]]; then
+    echo "ℹ️ cvc5: SMT2 found → attempting proof check."
+    cvc5 --proof-mode=lfsc --check-proofs "${SMT2_PATH}" >/dev/null || { echo "::error::cvc5 proof check failed"; exit 4; }
+  else
+    echo "ℹ️ cvc5 available, but SMT2 missing → skipping external verification."
+  fi
+elif command -v lfsc-checker >/dev/null 2>&1; then
+  echo "ℹ️ lfsc-checker found; running…"
+  lfsc-checker "${LFSC_PATH}" || { echo "::error::lfsc-checker failed"; exit 4; }
+else
+  echo "ℹ️ no LFSC checker found; basic checks only."
+fi
+
+echo "✅ LFSC check passed for ${LFSC_PATH}"
+
+```
+
+
+===== FILE: scripts/check_proofs.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/scripts/check_proofs.py                 |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                        CERTEUS                              |
+# |            Proof-Gate: Artifact Integrity Checker           |
+# +-------------------------------------------------------------+
+# ── CERTEUS Project ─────────────────────────────────────────────────────────────
+# File: scripts/check_proofs.py
+# License: Apache-2.0
+# Description (PL): Weryfikacja SHA256 artefaktów DRAT/LFSC.
+# Description (EN): Verifies SHA256 of DRAT/LFSC artifacts.
+# Style Guide: PL/EN docs, labeled blocks. (See README)
+# ────────────────────────────────────────────────────────────────────────────────
+
+"""
+PL: Sprawdza istnienie plików {z3.drat,cvc5.lfsc} i ich plików *.sha256,
+    porównuje wyliczone sumy SHA256 z zapisanymi. Zwraca kod 0/1.
+
+EN: Checks presence of {z3.drat,cvc5.lfsc} and their *.sha256 files,
+    compares computed SHA256 with recorded ones. Returns code 0/1.
+"""
+
+# [BLOCK: IMPORTS / IMPORTY]
+from __future__ import annotations
+
+import argparse
+import hashlib
+import sys
+from pathlib import Path
+
+# [BLOCK: CLI]
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--dir",
+    default="proof-artifacts",
+    help="PL: Katalog artefaktów | EN: Artifacts directory",
+)
+args = parser.parse_args()
+d = Path(args.dir)
+
+# [BLOCK: CHECK FILES / SPRAWDŹ PLIKI]
+required = ["z3.drat", "z3.drat.sha256", "cvc5.lfsc", "cvc5.lfsc.sha256"]
+missing = [name for name in required if not (d / name).exists()]
+if missing:
+    print(f"ERROR: Missing files: {', '.join(missing)}")
+    sys.exit(1)
+
+
+# [BLOCK: VERIFY / WERYFIKUJ]
+def verify(path: Path, sha_path: Path) -> bool:
+    recorded = sha_path.read_text(encoding="utf-8").strip().split()[0]
+    computed = hashlib.sha256(path.read_bytes()).hexdigest()
+    ok = computed == recorded
+    print(f"{path.name}: {'OK' if ok else 'MISMATCH'} (computed={computed}, recorded={recorded})")
+    return ok
+
+
+ok1 = verify(d / "z3.drat", d / "z3.drat.sha256")
+ok2 = verify(d / "cvc5.lfsc", d / "cvc5.lfsc.sha256")
+
+sys.exit(0 if (ok1 and ok2) else 1)
+
+```
+
+
+===== FILE: scripts/ed25519_keytool.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: scripts/ed25519_keytool.py                                    |
+# | ROLE: Generate Ed25519 keypair and export public key (Base64URL).   |
+# +=====================================================================+
+from __future__ import annotations
+
+import base64
+from argparse import ArgumentParser
+from pathlib import Path
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+
+def main() -> None:
+    ap = ArgumentParser()
+    ap.add_argument("--gen", action="store_true")
+    ap.add_argument("--out-pem", default="ed25519-private.pem")
+    ap.add_argument("--shell", choices=["bash", "powershell"], default="powershell")
+    args = ap.parse_args()
+
+    if args.gen:
+        sk = Ed25519PrivateKey.generate()
+        pem = sk.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        Path(args.out_pem).write_bytes(pem)
+        pk = sk.public_key().public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        b64u = base64.urlsafe_b64encode(pk).rstrip(b"=").decode()
+        if args.shell == "bash":
+            print(f'export ED25519_PRIVKEY_PEM="{Path(args.out_pem).resolve()}"')
+            print(f'export ED25519_PUBKEY_B64URL="{b64u}"')
+        else:
+            print(f'$env:ED25519_PRIVKEY_PEM = "{Path(args.out_pem).resolve()}"')
+            print(f"$env:ED25519_PUBKEY_B64URL = \"{b64u}\"")
+    else:
+        # Print Base64URL for an existing PEM (public key)
+        ap = ArgumentParser()
+        ap.add_argument("--pem", default="ed25519-public.pem")
+        args = ap.parse_args()
+        raw = Path(args.pem).read_bytes()
+        pub = serialization.load_pem_public_key(raw)
+        b = pub.public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        print(base64.urlsafe_b64encode(b).rstrip(b"=").decode())
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+===== FILE: scripts/fix_bom.py =====
+```text
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: scripts/fix_bom.py                                            |
+# | ROLE: Re-save *.json as UTF-8 (no BOM), fixing utf-8-sig            |
+# +=====================================================================+
+# ----Bloki----- IMPORTY
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+
+
+# ----Bloki----- MAIN
+def main() -> None:
+    root = Path(os.getenv("PROOF_BUNDLE_DIR") or "./data/public_pco")
+    for p in root.glob("*.json"):
+        data = json.loads(p.read_text(encoding="utf-8-sig"))
+        p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"fixed: {p}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+===== FILE: scripts/generate_proofs.py =====
+```text
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE / PLIK: scripts/generate_proofs.py                             |
+# | ROLE / ROLA:                                                         |
+# |   EN: CLI to generate simulated/stub proof artifacts for Proof Gate |
+# |   PL: CLI do generowania symulowanych/stubowych artefaktów dowodów  |
+# | DATE: 2025-08-17                                                    |
+# +=====================================================================+
+
+"""
+PL:
+  Skrypt CLI generujący pliki dowodów do katalogu wyjściowego (parametr --out).
+  Obsługuje tryby:
+    - "simulate"  -> plik z treścią zawierającą losowy nonce (dla realizmu),
+    - "stub"      -> minimalny stub bez nonce.
+  Obsługiwane formaty:
+    - "drat"  -> z3.drat
+    - "lfsc"  -> cvc5.lfsc
+  Dodatkowo może tworzyć pliki wejściowe:
+    - input.smt2 (SMT-LIB),
+    - input.cnf  (DIMACS),
+  oraz opcjonalnie wygenerować pokwitowanie (receipt) z hashami SHA-256.
+
+EN:
+  CLI script that produces proof files into the given output directory (--out).
+  Modes:
+    - "simulate" -> file content includes a random nonce (more realistic),
+    - "stub"     -> minimal stub content, no nonce.
+  Supported formats:
+    - "drat"  -> z3.drat
+    - "lfsc"  -> cvc5.lfsc
+  It can also emit input files:
+    - input.smt2 (SMT-LIB),
+    - input.cnf  (DIMACS),
+  and optionally write a receipt (manifest) with SHA-256 hashes.
+"""
+
+from __future__ import annotations
+
+# === IMPORTS =================================================== #
+import argparse
+import hashlib
+import json
+import os
+import random
+import string
+import sys
+from collections.abc import Iterable
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Final
+
+# === CONSTANTS / KONSTANTY ===================================== #
+
+FORMAT_TO_FILE: Final[dict[str, str]] = {
+    "drat": "z3.drat",
+    "lfsc": "cvc5.lfsc",
+}
+
+FORMAT_TO_SOLVER: Final[dict[str, str]] = {
+    "drat": "z3",
+    "lfsc": "cvc5",
+}
+
+SMT2_FILE: Final[str] = "input.smt2"
+CNF_FILE: Final[str] = "input.cnf"
+RECEIPT_FILE: Final[str] = "provenance_receipt_v1.json"
+
+
+# === LOGGING (PL/EN) =========================================== #
+
+
+def _lazy_console():
+    """
+    PL: Próbujemy użyć utils.console (Twój projekt). W razie braku – fallback na print.
+    EN: Try to import project's utils.console; fall back to print-based logger if missing.
+    """
+    try:
+        from utils.console import error, info, success  # type: ignore
+
+        return info, success, error
+    except Exception:
+
+        def _info(msg: str) -> None:
+            print(f"[INFO] {msg}")
+
+        def _success(msg: str) -> None:
+            print(f"[OK]   {msg}")
+
+        def _error(msg: str) -> None:
+            print(f"[ERR]  {msg}", file=sys.stderr)
+
+        return _info, _success, _error
+
+
+# === HELPERS / POMOCNICZE ===================================== #
+
+
+def _write_text(path: Path, content: str) -> None:
+    """
+    PL: Zapisuje tekst UTF-8 z LF; tworzy katalogi pośrednie.
+    EN: Writes UTF-8 text with LF; creates parent dirs.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8", newline="\n")
+
+
+def _write_bytes(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "wb") as f:
+        f.write(data)
+
+
+def _sha256_hex(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _rand_token(n: int = 24) -> str:
+    alphabet = string.ascii_letters + string.digits
+    return "".join(random.choices(alphabet, k=n))
+
+
+def _normalize_formats(formats: list[str] | None) -> list[str]:
+    if not formats:
+        return list(FORMAT_TO_FILE.keys())
+    out: list[str] = []
+    for f in formats:
+        lf = f.lower()
+        if lf in FORMAT_TO_FILE:
+            out.append(lf)
+    return out
+
+
+# === DATA / DANE =============================================== #
+
+
+@dataclass
+class Generated:
+    """
+    PL: Informacja o wygenerowanym pliku.
+    EN: Info about a generated file.
+    """
+
+    kind: str  # "proof" | "input" | "receipt"
+    format: str | None  # "drat"/"lfsc" for proofs, None for others
+    path: Path
+    sha256: str
+
+
+# === CORE / LOGIKA ============================================= #
+
+
+def _emit_proof_file(fmt: str, out_dir: Path, mode: str, seed: int | None) -> Path:
+    """
+    PL: Tworzy plik dowodu w zadanym formacie i trybie.
+    EN: Creates a proof file for the given format and mode.
+    """
+    if seed is not None:
+        random.seed(seed)
+
+    solver = FORMAT_TO_SOLVER[fmt]
+    fname = FORMAT_TO_FILE[fmt]
+    dst = out_dir / fname
+
+    if mode == "simulate":
+        # UWAGA: poniższy komunikat "Created simulated proof with content:"
+        # jest istotny dla istniejących testów E2E.
+        payload = f"PROOF::format={fmt}::solver={solver}::nonce={_rand_token(24)}"
+        _write_text(dst, payload)
+    elif mode == "stub":
+        payload = f"PROOF-STUB::format={fmt}::solver={solver}"
+        _write_text(dst, payload)
+    else:
+        raise ValueError(f"Unknown mode: {mode}")
+
+    return dst
+
+
+def _emit_inputs(out_dir: Path, smt2: bool, cnf: bool) -> list[Path]:
+    """
+    PL: Opcjonalnie generuje pliki wejściowe SMT2 / CNF.
+    EN: Optionally generates SMT2 / CNF input files.
+    """
+    created: list[Path] = []
+
+    if smt2:
+        smt_path = out_dir / SMT2_FILE
+        smt_content = "\n".join(
+            [
+                "(set-logic ALL)",
+                "(set-info :source |CERTEUS simulated SMT2 input|)",
+                "(assert true)",
+                "(check-sat)",
+                "(exit)",
+            ]
+        )
+        _write_text(smt_path, smt_content)
+        created.append(smt_path)
+
+    if cnf:
+        cnf_path = out_dir / CNF_FILE
+        # Minimal, valid DIMACS header; no clauses.
+        _write_text(cnf_path, "p cnf 1 0\n")
+        created.append(cnf_path)
+
+    return created
+
+
+def _emit_receipt(out_dir: Path, items: list[Generated]) -> Path:
+    """
+    PL: Zapisuje pokwitowanie (provenance receipt) z hashami i timestampem.
+    EN: Writes a provenance receipt with hashes and timestamp.
+    """
+    now = datetime.now(timezone.utc).isoformat()
+    manifest = {
+        "version": "provenance_receipt_v1",
+        "created_at": now,
+        "artifacts": [
+            {
+                "kind": it.kind,
+                "format": it.format,
+                "path": str(Path(os.path.relpath(it.path, out_dir)).as_posix()),
+                "sha256": it.sha256,
+            }
+            for it in items
+        ],
+    }
+    dst = out_dir / RECEIPT_FILE
+    _write_text(dst, json.dumps(manifest, ensure_ascii=False, indent=2))
+    return dst
+
+
+def generate_proofs(
+    out: Path,
+    formats: list[str] | None = None,
+    mode: str = "simulate",
+    with_inputs: bool = False,
+    seed: int | None = None,
+    write_receipt: bool = False,
+) -> list[Path]:
+    """
+    PL:
+      Generuje pliki dowodów w katalogu `out`. Zwraca listę utworzonych ścieżek.
+      - formats: podzbiór {"drat","lfsc"}; None => oba.
+      - mode: "simulate" | "stub"
+      - with_inputs: czy tworzyć input.smt2 i input.cnf
+      - seed: ustala ziarno losowości (deterministyczny nonce w simulate)
+      - write_receipt: czy zapisać manifest z hashami (provenance_receipt_v1.json)
+
+    EN:
+      Generates proof files in `out`. Returns list of created paths.
+      - formats: subset {"drat","lfsc"}; None => both.
+      - mode: "simulate" | "stub"
+      - with_inputs: whether to create input.smt2 and input.cnf
+      - seed: seed for reproducible nonce in simulate mode
+      - write_receipt: write a manifest with SHA-256 hashes
+    """
+    log_info, log_success, log_error = _lazy_console()
+
+    fs = _normalize_formats(formats)
+    if not fs:
+        log_error("No valid formats provided.")
+        return []
+
+    out.mkdir(parents=True, exist_ok=True)
+
+    created: list[Generated] = []
+
+    # Proofs
+    for fmt in fs:
+        dst = _emit_proof_file(fmt, out, mode, seed)
+        sha = _sha256_hex(dst)
+        created.append(Generated(kind="proof", format=fmt, path=dst, sha256=sha))
+
+        if mode == "simulate":
+            # Ten log jest celowy (używany przez testy):
+            log_success(f"Created simulated proof with content: {dst}")
+        else:
+            log_success(f"Created stub proof: {dst}")
+
+    # Inputs
+    if with_inputs:
+        for ip in _emit_inputs(out, smt2=True, cnf=True):
+            created.append(Generated(kind="input", format=None, path=ip, sha256=_sha256_hex(ip)))
+            log_info(f"Created input file: {ip}")
+
+    # Receipt
+    if write_receipt:
+        receipt_path = _emit_receipt(out, created)  # <-- KLUCZOWE: nowa nazwa zmiennej, nie nadpisuj write_receipt
+        created.append(
+            Generated(
+                kind="receipt",
+                format=None,
+                path=receipt_path,
+                sha256=_sha256_hex(receipt_path),
+            )
+        )
+        log_info(f"Wrote provenance receipt: {receipt_path}")
+
+    # Summary
+    log_info(f"Total artifacts: {len(created)}")
+    for it in created:
+        log_info(f"Wrote: {it.path}")
+
+    return [it.path for it in created]
+
+
+# === CLI ======================================================= #
+
+
+def _build_arg_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="generate_proofs",
+        description="Generate (simulated/stub) proof artifacts into an output directory.",
+    )
+    p.add_argument(
+        "--out",
+        type=Path,
+        required=True,
+        help="Output directory for generated files.",
+    )
+    p.add_argument(
+        "--mode",
+        choices=["simulate", "stub"],
+        default="simulate",
+        help='Generation mode (default: "simulate").',
+    )
+    p.add_argument(
+        "--formats",
+        nargs="*",
+        choices=sorted(FORMAT_TO_FILE.keys()),
+        default=None,
+        help="Formats to generate (space-separated), e.g. --formats drat lfsc. Default: both.",
+    )
+    p.add_argument(
+        "--with-inputs",
+        action="store_true",
+        help="Also create input.smt2 and input.cnf.",
+    )
+    p.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Optional RNG seed for reproducible nonce in simulate mode.",
+    )
+    p.add_argument(
+        "--receipt",
+        action="store_true",
+        help=f"Write provenance receipt JSON ({RECEIPT_FILE}).",
+    )
+    return p
+
+
+def main(argv: Iterable[str] | None = None) -> int:
+    log_info, _log_success, log_error = _lazy_console()
+
+    try:
+        args = _build_arg_parser().parse_args(list(argv) if argv is not None else None)
+        files = generate_proofs(
+            args.out,
+            formats=args.formats,
+            mode=args.mode,
+            with_inputs=args.with_inputs,
+            seed=args.seed,
+            write_receipt=args.receipt,
+        )
+        if not files:
+            log_error("No artifacts generated.")
+            return 2
+        return 0
+    except Exception as exc:  # pragma: no cover
+        log_error(f"Generation failed: {exc}")
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+```
+
+
+===== FILE: scripts/hooks/block_key_extensions.py =====
+```text
+#!/usr/bin/env python3
+# +=============================================================+
+# |                      CERTEUS — GUARD                        |
+# +=============================================================+
+# | FILE: scripts/hooks/block_key_extensions.py                 |
+# | ROLE: Block committing key material by extension.           |
+# | NOTE: Used by pre-commit. Fails commit if any staged file   |
+# |       matches forbidden extensions (pem,key,der,pfx,p12).   |
+# +=============================================================+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+FORBIDDEN_EXT = {".pem", ".key", ".der", ".pfx", ".p12"}
+
+
+def main(argv: list[str]) -> int:
+    bad: list[str] = []
+    for a in argv:
+        p = Path(a)
+        if p.suffix.lower() in FORBIDDEN_EXT:
+            bad.append(str(p))
+    if bad:
+        print("⛔  BLOCKED: key material must not be committed:")
+        for b in bad:
+            print(f"   - {b}")
+        print("\nHint: keep keys local; use env/JWKS or secrets manager instead.")
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
+
+```
+
+
 ===== FILE: scripts/lexlog_eval_smoke.py =====
 ```text
 # +=====================================================================+
@@ -1511,9 +2808,7 @@ class SimpleFact(BaseModel):
     case_id: str = Field(..., description="Case identifier")
     smt2: str = Field(..., description="SMT-LIB2 formula")
     export: bool = Field(False, description="Export report file after solve")
-    force_mismatch: bool = Field(
-        False, description="Flip Core-2 to trigger mismatch protocol (testing)"
-    )
+    force_mismatch: bool = Field(False, description="Flip Core-2 to trigger mismatch protocol (testing)")
 
 
 class SolveResponse(BaseModel):
@@ -1981,9 +3276,7 @@ def record_input(payload: RecordInputRequest) -> RecordInputResponse:
     PL: Rejestruje nowy dokument w księdze (INPUT_INGESTION).
     EN: Records a new document in the ledger (INPUT_INGESTION).
     """
-    result = ledger_service.record_input(
-        case_id=payload.case_id, document_hash=payload.document_hash
-    )
+    result = ledger_service.record_input(case_id=payload.case_id, document_hash=payload.document_hash)
     return RecordInputResponse(**result)
 
 
@@ -2096,56 +3389,71 @@ def get_ticket(ticket_id: str) -> dict[str, Any]:
 # |                              CERTEUS                                |
 # +=====================================================================+
 # | MODULE / MODUŁ: services/api_gateway/routers/pco_public.py          |
-# | DATE / DATA: 2025-08-19                                             |
+# | DATA: 2025-08-19                                                    |
 # +=====================================================================+
-# | ROLE / ROLA:                                                        |
+# | ROLA:                                                               |
 # |  EN: Public PCO (zero PII). Verifies Merkle (MVP/real) + Ed25519.   |
 # |  PL: Publiczny PCO (0 PII). Weryfikuje Merkle (MVP/real) + Ed25519. |
 # +=====================================================================+
-"""
-PL:
-  Endpoint: GET /pco/public/{rid}
-  Payload (publiczny, 0 PII):
-    { rid, smt2_hash, lfsc, [drat?], merkle_proof, signature }
-  Weryfikacje:
-    1) Brak PII (denylists: klucze)
-    2) Merkle: leaf = sha256( sha256(rid) || bundle_hash );
-       root = apply(path) lub leaf gdy path=[]
-       Akceptowane formaty `merkle_proof`:
-         • [] (lista kroków) – MVP
-         • [{"sibling":HEX, "dir":"L|R"}] – pełna ścieżka
-         • {"path":[...]} – zgodność wstecz
-         • alias 'position' ≡ 'dir'
-    3) Ed25519: detached signature (base64url) nad kanonicznym skrótem
-       digest_hex = sha256(
-         sha256(rid) || smt2_hash || sha256(lfsc) || [sha256(drat)?] || merkle_root
-       )
 
-EN:
-  Endpoint: GET /pco/public/{rid}
-  Public payload (zero PII): as above.
-  Validates zero-PII keys, Merkle proof (MVP or full), and Ed25519 signature.
-"""
-
-# ----Bloki----- IMPORTY
 from __future__ import annotations
 
 # stdlib
-import base64
 import hashlib
 import json
 import os
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import Any
 
 # third-party
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 
-# ----Bloki----- KONFIGURACJA
+# core (kanoniczne funkcje i crypto)
+from core.pco.crypto import (
+    b64u_encode,
+    canonical_bundle_hash_hex,
+    canonical_digest_hex,
+    compute_leaf_hex,
+    ed25519_verify_b64u,
+    load_pubkey_bytes_from_env,
+    sha256_hex,
+)
+
 router = APIRouter(prefix="/pco/public", tags=["pco"])
 
-# zero-PII: klucze ZAKAZANE (tylko nazwy kluczy; nie analizujemy treści)
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Pomocnicze aliasy 1:1 pod testy (nie zmieniaj nazw)
+# tests/test_pco_public.py importuje te symbole z tego modułu
+def _hex(s: str) -> str:
+    """SHA-256 hex of UTF-8 text (alias pod testy)."""
+    return sha256_hex(s)
+
+
+def _b64u(data: bytes) -> str:
+    """Base64URL bez '=' (alias pod testy)."""
+    return b64u_encode(data)
+
+
+def _bundle_hash_hex(smt2_hash_hex: str, lfsc_text: str, drat_text: str | None = None) -> str:
+    """Alias pod testy → wywołuje kanoniczną funkcję."""
+    return canonical_bundle_hash_hex(smt2_hash_hex, lfsc_text, drat_text)
+
+
+def _canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
+    """Alias pod testy → wywołuje kanoniczną funkcję."""
+    return canonical_digest_hex(
+        rid=str(pub["rid"]),
+        smt2_hash_hex=str(pub["smt2_hash"]),
+        lfsc_text=str(pub.get("lfsc", "")),
+        drat_text=str(pub["drat"]) if pub.get("drat") is not None else None,
+        merkle_root_hex=merkle_root_hex,
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# zero-PII: prosta denylista kluczy
 FORBIDDEN_KEYS = {
     "name",
     "first_name",
@@ -2172,7 +3480,8 @@ def _bundle_dir() -> Path:
     return Path(os.getenv("PROOF_BUNDLE_DIR") or DEFAULT_BUNDLE_DIR_FALLBACK)
 
 
-# ----Bloki----- MODELE
+# ──────────────────────────────────────────────────────────────────────────────
+# MODELE
 class MerkleStep(BaseModel):
     sibling: str  # hex
     dir: str  # "L" or "R"
@@ -2183,8 +3492,7 @@ class PublicPCO(BaseModel):
     smt2_hash: str = Field(..., min_length=64, max_length=64)  # hex sha256 of SMT2
     lfsc: str = Field(..., min_length=2)  # LFSC (plain text)
     drat: str | None = None  # DRAT (plain text, optional)
-    # Akceptujemy listę kroków; parser przyjmuje też {"path":[...]} (zgodność wstecz)
-    merkle_proof: list[MerkleStep] = Field(default_factory=list)
+    merkle_proof: list[MerkleStep] = Field(default_factory=list)  # list or empty
     signature: str = Field(..., min_length=40)  # detached (base64url, bez '=')
 
     @field_validator("smt2_hash")
@@ -2194,44 +3502,16 @@ class PublicPCO(BaseModel):
         return v.lower()
 
 
-# ----Bloki----- MERKLE (narzędzia)
-class _MerkleStepDict(TypedDict, total=False):
-    sibling: str
-    dir: str
-    position: str  # alias
-
-
+# ──────────────────────────────────────────────────────────────────────────────
+# MERKLE helpers
 def _h(b: bytes) -> bytes:
     return hashlib.sha256(b).digest()
 
 
-def _sha256_hex_utf8(s: str) -> str:
-    return hashlib.sha256(s.encode("utf-8")).hexdigest()
-
-
-def _compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
-    # Kanoniczny JSON (sort_keys, compact) → stabilny hash danych (bez sygnatury)
-    payload: dict[str, str] = {
-        "smt2_hash": str(pub["smt2_hash"]).lower(),
-        "lfsc_sha256": _sha256_hex_utf8(str(pub["lfsc"])),
-    }
-    if pub.get("drat") is not None:
-        payload["drat_sha256"] = _sha256_hex_utf8(str(pub["drat"]))
-    blob = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    return hashlib.sha256(blob).hexdigest()
-
-
-def compute_leaf_hex(rid: str, bundle_hash_hex: str) -> str:
-    """
-    EN/PL: Leaf = sha256( sha256(rid) || bundle_hash ), hex-encoded.
-    Użyj w testach/narzędziach, aby wyliczyć liść spójnie z endpointem.
-    """
-    rid_hash = hashlib.sha256(rid.encode("utf-8")).digest()
-    bundle_hash = bytes.fromhex(bundle_hash_hex)
-    return hashlib.sha256(rid_hash + bundle_hash).hexdigest()
-
-
 def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
+    # Pusta ścieżka ⇒ root == leaf (dokładnie jak w teście)
+    if not path:
+        return leaf_hex.lower()
     cur = bytes.fromhex(leaf_hex)
     for step in path:
         sib = bytes.fromhex(step.sibling)
@@ -2262,61 +3542,27 @@ def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
             if isinstance(step, MerkleStep):  # już zparsowany
                 norm.append(step)
                 continue
-            s: _MerkleStepDict = step  # type: ignore[assignment]
-            d = s.get("dir") or s.get("position")
-            sib = s.get("sibling")
-            if not isinstance(d, str) or d not in ("L", "R"):
-                raise HTTPException(status_code=400, detail="Invalid merkle step.dir/position")
+            if not isinstance(step, dict):
+                raise HTTPException(status_code=400, detail="Invalid merkle step type")
+            d = step.get("dir") or step.get("position")
+            sib = step.get("sibling")
+            if d not in ("L", "R"):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid merkle step.dir/position",
+                )
             if not isinstance(sib, str) or not sib:
-                raise HTTPException(status_code=400, detail="Invalid merkle step: missing 'sibling'")
-            # pydantic zweryfikuje format heksadecymalny
-            norm.append(MerkleStep(sibling=sib, dir=d))
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid merkle step: missing 'sibling'",
+                )
+            norm.append(MerkleStep(sibling=sib, dir=str(d)))
         return norm
     raise HTTPException(status_code=400, detail="merkle_proof must be list or {path:[...] }")
 
 
-# ----Bloki----- PODPIS Ed25519
-def _b64u_decode(s: str) -> bytes:
-    pad = "=" * (-len(s) % 4)
-    return base64.urlsafe_b64decode(s + pad)
-
-
-def _load_pubkey_bytes() -> bytes:
-    b64u = os.getenv("ED25519_PUBKEY_B64URL")
-    if b64u:
-        return _b64u_decode(b64u)
-    hexv = os.getenv("ED25519_PUBKEY_HEX")
-    if hexv:
-        return bytes.fromhex(hexv)
-    raise HTTPException(status_code=500, detail="Missing ED25519_PUBKEY_B64URL or ED25519_PUBKEY_HEX")
-
-
-def _verify_signature(signature_b64u: str, msg_hex: str) -> None:
-    try:
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-    except Exception as e:  # pragma: no cover
-        raise HTTPException(status_code=500, detail="Missing 'cryptography' for Ed25519") from e
-    pub = Ed25519PublicKey.from_public_bytes(_load_pubkey_bytes())
-    try:
-        pub.verify(_b64u_decode(signature_b64u), bytes.fromhex(msg_hex))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Invalid signature") from e
-
-
-def _canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
-    parts = [
-        hashlib.sha256(str(pub["rid"]).encode("utf-8")).hexdigest(),
-        str(pub["smt2_hash"]).lower(),
-        _sha256_hex_utf8(str(pub["lfsc"])),
-    ]
-    if pub.get("drat") is not None:
-        parts.append(_sha256_hex_utf8(str(pub["drat"])))
-    parts.append(merkle_root_hex.lower())
-    data = b"".join(bytes.fromhex(p) for p in parts)
-    return hashlib.sha256(data).hexdigest()
-
-
-# ----Bloki----- STORAGE
+# ──────────────────────────────────────────────────────────────────────────────
+# STORAGE
 def _bundle_path(rid: str) -> Path:
     return _bundle_dir() / f"{rid}.json"
 
@@ -2331,18 +3577,20 @@ def _load_public_bundle_from_fs(rid: str) -> dict[str, Any]:
         if not isinstance(data, dict):
             raise ValueError("Bundle is not an object")
         return data
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Cannot read bundle: {e}") from e
 
 
-# ----Bloki----- PII
+# ──────────────────────────────────────────────────────────────────────────────
+# PII
 def _assert_no_pii(bundle: dict[str, Any]) -> None:
     bad = sorted(set(bundle.keys()) & FORBIDDEN_KEYS)
     if bad:
         raise HTTPException(status_code=422, detail=f"PII field(s) present: {bad}")
 
 
-# ----Bloki----- ENTRYPOINT
+# ──────────────────────────────────────────────────────────────────────────────
+# ENTRYPOINT
 @router.get("/{rid}", response_model=PublicPCO)
 def get_public_pco(rid: str, request: Request) -> PublicPCO:
     """
@@ -2351,13 +3599,29 @@ def get_public_pco(rid: str, request: Request) -> PublicPCO:
     pub = _load_public_bundle_from_fs(rid)
     _assert_no_pii(pub)
 
-    bundle_hash_hex = _compute_bundle_hash_hex(pub)
-    leaf_hex = compute_leaf_hex(pub["rid"], bundle_hash_hex)
+    # 1) Bundle hash → leaf → merkle root
+    bundle_hash_hex = _bundle_hash_hex(
+        str(pub["smt2_hash"]),
+        str(pub.get("lfsc", "")),
+        str(pub["drat"]) if pub.get("drat") is not None else None,
+    )
+    leaf_hex = compute_leaf_hex(str(pub["rid"]), bundle_hash_hex)
     path = _parse_merkle_proof(pub.get("merkle_proof"))
     merkle_root_hex = _apply_merkle_path(leaf_hex, path)
 
+    # 2) Canonical digest (dokładnie jak w testach)
     digest_hex = _canonical_digest_hex(pub, merkle_root_hex)
-    _verify_signature(pub["signature"], digest_hex)
+
+    # 3) Ed25519 (detached, base64url) nad bytes.fromhex(digest_hex)
+    try:
+        ed25519_verify_b64u(
+            load_pubkey_bytes_from_env(),
+            str(pub["signature"]),
+            digest_hex,
+        )
+    except Exception as e:
+        # nie ujawniamy szczegółów kryptograficznych na zewnątrz
+        raise HTTPException(status_code=400, detail="Invalid signature") from e
 
     # Pydantic dodatkowo sanityzuje typy/formaty
     return PublicPCO(**{**pub, "merkle_proof": path})
@@ -2864,9 +4128,7 @@ class ExporterService:
         return out
 
 
-def export_answer_to_txt(
-    answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False
-) -> str:
+def export_answer_to_txt(answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False) -> str:
     p = Path(out_path)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(answer, indent=2, sort_keys=True), encoding="utf-8")
@@ -3257,7 +4519,7 @@ def infer_extension(content_type: str, fallback: str = ".bin") -> str:
     """
     mapping = {
         "application/pdf": ".pdf",
-        "application/" "vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
         "text/plain": ".txt",
         "image/png": ".png",
         "image/jpeg": ".jpg",
@@ -3959,9 +5221,7 @@ class Fact(BaseModel):
     source_document_hash: str = Field(
         ...,
         pattern=r"^sha256:[0-9a-f]{64}$",
-        description=(
-            "PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."
-        ),
+        description=("PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."),
     )
     source_page: int | None = Field(
         None,
@@ -4037,9 +5297,7 @@ class OcrPipeline:
         optional size limit, returning a structured result.
     """
 
-    def process_document(
-        self, file_bytes: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES
-    ) -> dict[str, Any]:
+    def process_document(self, file_bytes: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES) -> dict[str, Any]:
         """
         PL:
         - Waliduje rozmiar wejścia (domyślnie 10 MB).
@@ -4066,9 +5324,7 @@ class OcrPipeline:
             "pages": [
                 {
                     "page_num": 1,
-                    "text": (
-                        "Strona 1: Jan Kowalski twierdzi, że umowa została zawarta dnia 2024-01-15."
-                    ),
+                    "text": ("Strona 1: Jan Kowalski twierdzi, że umowa została zawarta dnia 2024-01-15."),
                 },
                 {
                     "page_num": 2,
@@ -4329,9 +5585,7 @@ def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool 
     return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
 
 
-def verify_provenance_hash(
-    data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False
-) -> bool:
+def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
     return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
 
 
@@ -4360,9 +5614,7 @@ class Ledger:
         body = dict(payload)
         if prev:
             body["prev"] = prev
-        return sha256(
-            json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
+        return sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
     def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
         event_id = self._next_event_id()
@@ -4376,9 +5628,7 @@ class Ledger:
             "timestamp": ts,
         }
         chain_self = self._chain(payload, prev)
-        rec = LedgerRecord(
-            event_id, "INPUT_INGESTION", case_id, document_hash, ts, prev, chain_self
-        )
+        rec = LedgerRecord(event_id, "INPUT_INGESTION", case_id, document_hash, ts, prev, chain_self)
         self._events.append(rec)
         return {
             "event_id": rec.event_id,
@@ -4514,9 +5764,7 @@ def _flag(flags: Mapping[str, bool], name: str) -> bool:
     return bool(flags.get(name, False))
 
 
-def evaluate_rule(
-    ast: LexAst, rule_id: str, flags: Mapping[str, bool], ctx: EvalContext
-) -> RuleEvalResult:
+def evaluate_rule(ast: LexAst, rule_id: str, flags: Mapping[str, bool], ctx: EvalContext) -> RuleEvalResult:
     rule = next((r for r in ast.rules if r.id == rule_id), None)
     if rule is None:
         raise ValueError(f"Unknown rule_id={rule_id}")
@@ -4772,9 +6020,7 @@ def _canonicalize_id(identifier: str) -> str:
 # └─────────────────────────────────────────────────────────────────────┘
 
 # Pattern for DEFINE statements
-_PATTERN_DEFINE: re.Pattern[str] = re.compile(
-    r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE
-)
+_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
 
 # Pattern for PREMISE declarations
 _PATTERN_PREMISE: re.Pattern[str] = re.compile(
@@ -4794,9 +6040,7 @@ _PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
 )
 
 # Alternative pattern for ASSERT on separate line
-_PATTERN_ASSERT: re.Pattern[str] = re.compile(
-    r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL
-)
+_PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
 
 
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -4906,9 +6150,7 @@ def parse_lexlog(text: str) -> LexAst:
                     # Update existing conclusion or create new one
                     for j, concl in enumerate(conclusions):
                         if concl.id == conclusion_id and not concl.assert_expr:
-                            conclusions[j] = Conclusion(
-                                id=concl.id, title=concl.title, assert_expr=assert_expr
-                            )
+                            conclusions[j] = Conclusion(id=concl.id, title=concl.title, assert_expr=assert_expr)
                             break
 
     logger.debug(f"Parsed {len(conclusions)} CONCLUSION declarations")
@@ -4955,9 +6197,7 @@ class LexlogParser:
                 "conclusion": "K_OSZUSTWO_STWIERDZONE",
                 "premises": ["P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"],
                 "smt_assertion": (
-                    "z3.And(cel_korzysci_majatkowej, "
-                    "wprowadzenie_w_blad, "
-                    "niekorzystne_rozporzadzenie_mieniem)"
+                    "z3.And(cel_korzysci_majatkowej, wprowadzenie_w_blad, niekorzystne_rozporzadzenie_mieniem)"
                 ),
             }
         # For other content, attempt full parse
@@ -5119,8 +6359,7 @@ class MismatchTicket(BaseModel):
         values = info.data
         results = values.get("results", [])
         statuses = [
-            getattr(r, "status", None) if isinstance(r, SolverResult) else (r or {}).get("status")
-            for r in results
+            getattr(r, "status", None) if isinstance(r, SolverResult) else (r or {}).get("status") for r in results
         ]
         statuses = [s for s in statuses if s]
         if "sat" in statuses and "unsat" in statuses:
@@ -5334,9 +6573,7 @@ class MismatchService:
         ticket.priority = TicketPriority.CRITICAL
         ticket.updated_at = datetime.now(timezone.utc)
         note = f"[{datetime.now(timezone.utc).isoformat()}] Escalated by {escalated_by}: {reason}"
-        ticket.resolution_notes = (
-            (ticket.resolution_notes + "\n") if ticket.resolution_notes else ""
-        ) + note
+        ticket.resolution_notes = ((ticket.resolution_notes + "\n") if ticket.resolution_notes else "") + note
         self._persist_if_needed()
         logger.warning("Ticket %s escalated by %s: %s", ticket_id, escalated_by, reason)
         return ticket
@@ -5399,9 +6636,7 @@ class MismatchService:
                 logger.error("Failed to load ticket %s: %s", p, e)
 
     # -- Callbacks -------------------------------------------------------
-    def register_resolution_callback(
-        self, callback: Callable[[MismatchTicket, TicketResolution], None]
-    ) -> None:
+    def register_resolution_callback(self, callback: Callable[[MismatchTicket, TicketResolution], None]) -> None:
         self._resolution_callbacks.append(callback)
         logger.debug(
             "Registered resolution callback: %s",
@@ -6042,1455 +7277,5 @@ def test_full_analysis_returns_sat():
     assert data["case_id"] == "pl-286kk-0001"
     assert data["analysis_result"]["status"] == "sat"
     assert "model" in data["analysis_result"]
-
-```
-
-
-===== FILE: tests/plugins/test_plugins_registry.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/plugins/test_plugins_registry.py  |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/plugins/test_plugins_registry.py              |
-
-# | ROLE: Project module.                                       |
-
-# | PLIK: tests/plugins/test_plugins_registry.py              |
-
-# | ROLA: Moduł projektu.                                       |
-
-# +-------------------------------------------------------------+
-
-
-"""
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-"""
-
-
-# +-------------------------------------------------------------+
-
-
-# |                          CERTEUS                            |
-
-
-# +-------------------------------------------------------------+
-
-
-# | FILE: tests/plugins/test_plugins_registry.py              |
-
-
-# | ROLE: Project module.                                       |
-
-
-# | PLIK: tests/plugins/test_plugins_registry.py              |
-
-
-# | ROLA: Moduł projektu.                                       |
-
-
-# +-------------------------------------------------------------+
-
-
-# +------------------------------------------------+
-
-
-# |                  CERTEUS                       |
-
-
-# |                Core Plugin API                 |
-
-
-# +------------------------------------------------+
-
-
-#
-
-
-# PL: Minimalne API rdzenia do rejestracji pluginów oraz
-
-
-#     rejestrów funkcjonalnych (adapters/exporters).
-
-
-#
-
-
-# EN: Minimal core API for plugin registration and
-
-
-#     functional registries (adapters/exporters).
-
-
-#
-
-
-# Konwencje (README "Premium Code Style"):
-
-
-# - Logo, dwujęzyczne komentarze, sekcje, type hints.
-
-
-#
-
-from __future__ import annotations
-
-from typing import Any
-
-
-class PluginAPI:
-    """
-
-
-
-    PL: Prosty rejestr pluginów i entrypointów funkcjonalnych.
-
-
-
-        - register(plugin) lub register(name, plugin)
-
-
-
-        - adapters/exporters jako słowniki funkcji/obiektów
-
-
-
-
-
-
-
-    EN: Simple registry for plugins and functional entrypoints.
-
-
-
-        - register(plugin) or register(name, plugin)
-
-
-
-        - adapters/exporters as dicts of callables/objects
-
-
-
-    """
-
-    def __init__(self) -> None:
-        # === STAN / STATE ===
-
-        self._plugins: dict[str, object] = {}
-
-        self.adapters: dict[str, object] = {}
-
-        self.exporters: dict[str, object] = {}
-
-    # === REJESTRACJA PLUGINU / PLUGIN REGISTRATION ===
-
-    def register(self, *args: Any) -> None:
-        """
-
-
-
-        PL: Obsługuje dwie sygnatury:
-
-
-
-            • register(plugin)
-
-
-
-            • register(name, plugin)
-
-
-
-
-
-
-
-        EN: Supports two signatures:
-
-
-
-            • register(plugin)
-
-
-
-            • register(name, plugin)
-
-
-
-        """
-
-        if len(args) == 1:
-            plugin = args[0]
-
-            # Nazwa z atrybutów lub modułu / Name from attrs or module
-
-            name = getattr(plugin, "name", None) or getattr(plugin, "__plugin_name__", None)
-
-            if not name:
-                mod = getattr(plugin, "__module__", "")
-
-                # Utnij końcówkę .src.main jeżeli występuje / trim .src.main suffix
-
-                if mod.endswith(".src.main"):
-                    parts = mod.split(".")
-
-                    # … ['plugins', '<name>', 'src', 'main'] → weź index -3
-
-                    name = parts[-3] if len(parts) >= 3 else parts[-1]
-
-                else:
-                    name = mod.split(".")[-1] if mod else plugin.__class__.__name__
-
-        else:
-            name, plugin = args[0], args[1]
-
-        self._plugins[str(name)] = plugin
-
-    # === PODGLĄD / INTROSPECTION ===
-
-    def list_plugins(self):
-        """
-
-
-
-        PL: Zwróć widok kluczy (dict_keys), zgodnie z oczekiwaniem testów.
-
-
-
-        EN: Return keys view (dict_keys), as tests expect.
-
-
-
-        """
-
-        return self._plugins.keys()
-
-    # === REJESTRY FUNKCYJNE / FUNCTIONAL REGISTRIES ===
-
-    def register_adapter(self, key: str, fn: object) -> None:
-        """PL: Zarejestruj adapter (np. isap.pl.snapshot). EN: Register adapter."""
-
-        self.adapters[key] = fn
-
-    def register_exporter(self, key: str, fn: object) -> None:
-        """PL: Zarejestruj eksporter (np. pl.exporter.docx_pdf). EN: Register exporter."""
-
-        self.exporters[key] = fn
-
-```
-
-
-===== FILE: tests/services/test_api_gateway.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_api_gateway.py      |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/services/test_api_gateway.py                  |
-
-# | ROLE: Project module.                                       |
-
-# | PLIK: tests/services/test_api_gateway.py                  |
-
-# | ROLA: Moduł projektu.                                       |
-
-# +-------------------------------------------------------------+
-
-
-"""
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-"""
-
-
-# +-------------------------------------------------------------+
-
-
-# |                          CERTEUS                            |
-
-
-# +-------------------------------------------------------------+
-
-
-# | FILE: tests/services/test_api_gateway.py                  |
-
-
-# | ROLE: Project module.                                       |
-
-
-# | PLIK: tests/services/test_api_gateway.py                  |
-
-
-# | ROLA: Moduł projektu.                                       |
-
-
-# +-------------------------------------------------------------+
-
-
-def test_smoke():
-    assert 1 == 1
-
-```
-
-
-===== FILE: tests/services/test_exporter.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_exporter.py         |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |               CERTEUS - Exporter Service Tests              |
-# +-------------------------------------------------------------+
-# | FILE: tests/services/test_exporter.py                       |
-# +-------------------------------------------------------------+
-"""
-PL: Testy serwisu ExporterService – sprawdza poprawność wypełnienia szablonu.
-EN: Tests for ExporterService – verifies template population correctness.
-"""
-
-from __future__ import annotations
-
-import tempfile
-from pathlib import Path
-
-from services.exporter_service import ExporterService
-
-
-def test_export_report_creates_file_with_replaced_content():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        outdir = Path(tmpdir) / "out"
-        service = ExporterService(template_dir="templates", output_dir=str(outdir))
-        case_id = "test-export-007"
-        analysis = {"status": "sat", "model": "[a=True,b=False]"}
-
-        report_path = service.export_report(case_id, analysis)
-
-        assert report_path.exists()
-        content = report_path.read_text(encoding="utf-8")
-        assert case_id in content
-        assert "SAT" in content
-        assert "[a=True,b=False]" in content
-
-```
-
-
-===== FILE: tests/services/test_exporter_provenance.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_exporter_provenance.py|
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-"""
-PL: Testy jednostkowe / integracyjne modułu.
-EN: Module test suite (unit/integration).
-"""
-
-# +-------------------------------------------------------------+
-# | CERTEUS - Tests: Exporter & Ledger                          |
-# +-------------------------------------------------------------+
-from pathlib import Path
-
-from services.exporter_service import export_answer_to_txt
-from services.ledger_service.ledger import (
-    compute_provenance_hash,
-    verify_provenance_hash,
-)
-
-
-def test_export_and_hash(tmp_path: Path):
-    answer = {
-        "case_id": "pl-001",
-        "title": "T",
-        "thesis": "X",
-        "reasoning": "Y",
-        "status": "ok",
-        "confidence": 0.9,
-    }
-    out = tmp_path / "out.txt"
-    path = export_answer_to_txt(answer, out_path=str(out), create_ledger_entry=False)
-    assert Path(path).exists()
-
-    h = compute_provenance_hash(answer, include_timestamp=False)
-    assert verify_provenance_hash(answer, h)
-
-```
-
-
-===== FILE: tests/services/test_ingest.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_ingest.py           |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# | Core Engine for Reliable & Unified Systems                  |
-# +-------------------------------------------------------------+
-# | FILE: tests/services/test_ingest.py                         |
-# | ROLE: Integration tests for /v1/ingest endpoint.            |
-# | PLIK: tests/services/test_ingest.py                         |
-# | ROLA: Testy integracyjne endpointu /v1/ingest.              |
-# +-------------------------------------------------------------+
-
-"""
-PL: Testy sprawdzają ścieżkę sukcesu (OCR stub → FACTLOG), nagłówek łańcucha
-    Ledger oraz walidacje MIME i limit rozmiaru.
-EN: Tests cover the success path (OCR stub → FACTLOG), the Ledger chain header,
-    and MIME/size validations.
-"""
-
-# [BLOCK: IMPORTS]
-from __future__ import annotations
-
-import io
-from typing import IO, Any, Literal, cast
-
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
-
-# Import jako moduł, a typ nadamy przez cast — to ucisza Pylance.
-import services.api_gateway.main as api_main
-
-# [BLOCK: CLIENT]
-fastapi_app_typed: FastAPI = cast(FastAPI, api_main.app)  # type: ignore[attr-defined]
-client: TestClient = TestClient(fastapi_app_typed)
-
-# [BLOCK: TYPES]
-# (filename, fileobj, mimetype)
-FileTuple = tuple[str, IO[bytes], str]
-
-LEDGER_HEADER: Literal["X-CERTEUS-Ledger-Chain"] = "X-CERTEUS-Ledger-Chain"
-
-
-def make_file(filename: str, content: bytes, mimetype: str) -> FileTuple:
-    """
-    PL: Zwraca krotkę pliku akceptowaną przez TestClient (multipart/form-data).
-    EN: Returns a file tuple accepted by TestClient (multipart/form-data).
-    """
-    fileobj: IO[bytes] = io.BytesIO(content)
-    return (filename, fileobj, mimetype)
-
-
-# [BLOCK: TEST • SUCCESS PATH]
-def test_ingest_document_endpoint_success() -> None:
-    """
-    PL: Wysyła mały „PDF” i oczekuje listy 2 faktów oraz poprawnego nagłówka Ledger.
-    EN: Sends a small “PDF” and expects 2 facts and a valid Ledger header.
-    """
-    files: dict[str, FileTuple] = {
-        "file": make_file("test.pdf", b"%PDF-1.4 dummy", "application/pdf")
-    }
-
-    resp = client.post("/v1/ingest", files=files)
-    assert resp.status_code == 200
-
-    data_json: list[dict[str, Any]] = cast(list[dict[str, Any]], resp.json())
-    assert isinstance(data_json, list)
-    assert len(data_json) == 2
-
-    # roles set
-    roles: set[str] = {entry["role"] for entry in data_json}
-    assert roles == {"claim_contract_date", "evidence_payment"}
-
-    # structure spot-check
-    first: dict[str, Any] = data_json[0]
-    assert "fact_id" in first and isinstance(first["fact_id"], str)
-    assert "thesis" in first and isinstance(first["thesis"], str)
-    assert "confidence_score" in first and isinstance(first["confidence_score"], int | float)
-
-    # ledger header
-    assert LEDGER_HEADER in resp.headers
-    chain = resp.headers[LEDGER_HEADER]
-    assert chain  # non-empty
-    parts: list[str] = chain.split(";")
-    assert all(p.startswith("sha256:") for p in parts)
-
-
-# [BLOCK: TEST • MIME VALIDATION]
-def test_ingest_rejects_unsupported_mime() -> None:
-    """
-    PL: MIME spoza białej listy → 415.
-    EN: MIME outside the allowlist → 415.
-    """
-    files_bad: dict[str, FileTuple] = {
-        "file": make_file("x.exe", b"MZ...", "application/x-msdownload")
-    }
-    resp = client.post("/v1/ingest", files=files_bad)
-    assert resp.status_code == 415
-
-
-# [BLOCK: TEST • SIZE LIMIT]
-def test_ingest_rejects_too_large() -> None:
-    """
-    PL: Plik większy niż 10 MiB → 413.
-    EN: File larger than 10 MiB → 413.
-    """
-    # API uses MAX_BYTES = 10 * 1024 * 1024; send +1 byte
-    big: bytes = b"0" * (10 * 1024 * 1024 + 1)
-    files_big: dict[str, FileTuple] = {"file": make_file("big.pdf", big, "application/pdf")}
-    resp = client.post("/v1/ingest", files=files_big)
-    assert resp.status_code == 413
-
-```
-
-
-===== FILE: tests/services/test_ledger.py =====
-```text
-#!/usr/bin/env python3
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_ledger.py           |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-"""
-PL: Testy Ledger – sprawdzanie łańcucha skrótów i nagłówków.
-EN: Ledger tests – verification of hash chain and headers.
-"""
-
-from __future__ import annotations
-
-import json
-from collections.abc import Mapping
-from datetime import datetime, timezone
-from hashlib import sha256
-from typing import Any
-
-
-def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
-    if not include_timestamp and "timestamp" in data:
-        work = {k: v for k, v in data.items() if k != "timestamp"}
-    else:
-        work = dict(data)
-    return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
-
-
-def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
-    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
-
-
-def verify_provenance_hash(
-    data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False
-) -> bool:
-    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
-
-
-class LedgerRecord:
-    """
-    Elastyczny rekord księgi:
-      - przyjmuje zarówno 'document_hash', jak i alias 'hash'
-      - ma opcjonalne 'meta'
-      - wszystkie pola mają domyślne wartości (żeby test mógł wołać bez wszystkich argów)
-    """
-
-    def __init__(
-        self,
-        *,
-        event_id: int = 0,
-        type: str = "INPUT_INGESTION",
-        case_id: str = "",
-        document_hash: str | None = None,
-        timestamp: str = "",
-        chain_prev: str | None = None,
-        chain_self: str = "",
-        meta: Mapping[str, Any] | None = None,
-        **extras: Any,
-    ) -> None:
-        # aliasy z testów: 'hash' -> document_hash
-        if document_hash is None and "hash" in extras:
-            document_hash = str(extras.pop("hash"))
-
-        self.event_id = event_id
-        self.type = type
-        self.case_id = case_id
-        self.document_hash = document_hash
-        self.timestamp = timestamp
-        self.chain_prev = chain_prev
-        self.chain_self = chain_self
-        self.meta = dict(meta) if meta is not None else None
-        # ignorujemy inne nadmiarowe klucze, żeby nie wywalać testów
-
-    # alias tylko do odczytu (jeśli ktoś próbuje sięgnąć po .hash)
-    @property
-    def hash(self) -> str | None:  # noqa: D401
-        return self.document_hash
-
-
-class Ledger:
-    def __init__(self) -> None:
-        self._events: list[LedgerRecord] = []
-
-    # --- API wprost używane w testach ---------------------------------
-    def append(self, rec: LedgerRecord) -> None:
-        """Dodaj istniejący rekord (testy tego używają)."""
-        self._events.append(rec)
-
-    def read_all(self, case_id: str | None = None) -> list[LedgerRecord]:
-        """Zwróć wszystkie rekordy (opcjonalnie tylko dla case_id)."""
-        if case_id is None:
-            return list(self._events)
-        return [r for r in self._events if r.case_id == case_id]
-
-    # --- API używane przez nasze routery ------------------------------
-    def _next_event_id(self) -> int:
-        return len(self._events) + 1
-
-    def _now_iso(self) -> str:
-        return datetime.now(timezone.utc).isoformat()
-
-    def _chain(self, payload: dict[str, Any], prev: str | None) -> str:
-        body = dict(payload)
-        if prev:
-            body["prev"] = prev
-        return sha256(
-            json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
-
-    def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
-        event_id = self._next_event_id()
-        ts = self._now_iso()
-        prev = self._events[-1].chain_self if self._events else None
-
-        payload = {
-            "event_id": event_id,
-            "type": "INPUT_INGESTION",
-            "case_id": case_id,
-            "document_hash": document_hash,
-            "timestamp": ts,
-        }
-        chain_self = self._chain(payload, prev)
-
-        rec = LedgerRecord(
-            event_id=event_id,
-            type="INPUT_INGESTION",
-            case_id=case_id,
-            document_hash=document_hash,
-            timestamp=ts,
-            chain_prev=prev,
-            chain_self=chain_self,
-        )
-        self._events.append(rec)
-
-        return {
-            "event_id": rec.event_id,
-            "type": rec.type,
-            "case_id": rec.case_id,
-            "document_hash": rec.document_hash,
-            "timestamp": rec.timestamp,
-            "chain_prev": rec.chain_prev,
-            "chain_self": rec.chain_self,
-        }
-
-    def get_records_for_case(self, *, case_id: str) -> list[dict[str, Any]]:
-        """Wersja słownikowa (używana przez router /ledger)."""
-        return [
-            {
-                "event_id": r.event_id,
-                "type": r.type,
-                "case_id": r.case_id,
-                "document_hash": r.document_hash,
-                "timestamp": r.timestamp,
-                "chain_prev": r.chain_prev,
-                "chain_self": r.chain_self,
-            }
-            for r in self._events
-            if r.case_id == case_id
-        ]
-
-
-# pojedyncza instancja do użycia przez routery
-ledger_service = Ledger()
-
-__all__ = [
-    "Ledger",
-    "LedgerRecord",
-    "ledger_service",
-    "compute_provenance_hash",
-    "verify_provenance_hash",
-]
-
-```
-
-
-===== FILE: tests/services/test_lexlog.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_lexlog.py           |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |                         CERTEUS                             |
-# |                   LEXLOG Parser Tests                       |
-# +-------------------------------------------------------------+
-
-"""
-PL: Testuje minimalny parser LEXLOG na pliku kk.lex.
-EN: Tests the minimal LEXLOG parser on kk.lex file.
-"""
-
-from __future__ import annotations
-
-from pathlib import Path
-
-from services.lexlog_parser.parser import parse_lexlog
-
-
-def test_lexlog_parser_kk_lex() -> None:
-    lex_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.lex"
-    assert lex_path.exists(), "Missing packs/jurisdictions/PL/rules/kk.lex"
-
-    content = lex_path.read_text(encoding="utf-8")
-    ast = parse_lexlog(content)
-
-    # Defines present
-    names = {d.name for d in ast.defines}
-    assert {
-        "cel_korzysci_majatkowej",
-        "wprowadzenie_w_blad",
-        "niekorzystne_rozporzadzenie_mieniem",
-    }.issubset(names)
-
-    # Premises present
-    pids = {p.id for p in ast.premises}
-    assert {"P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"}.issubset(pids)
-
-    # Rule ties premises to conclusion
-    rule = next(r for r in ast.rules if r.id == "R_286_OSZUSTWO")
-    assert rule.conclusion == "K_OSZUSTWO_STWIERDZONE"
-    assert set(rule.premises) == {"P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"}
-
-    # Conclusion has assertion
-    concl = next(c for c in ast.conclusions if c.id == "K_OSZUSTWO_STWIERDZONE")
-    assert concl.assert_expr is not None and "cel_korzysci_majatkowej" in concl.assert_expr
-
-```
-
-
-===== FILE: tests/services/test_lexlog_eval.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_lexlog_eval.py      |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |                         CERTEUS                             |
-# |                   LEXLOG Evaluator Tests                    |
-# +-------------------------------------------------------------+
-
-"""
-PL: Testy ewaluatora LEXLOG (MVP) dla art. 286 k.k., z loaderem mapowania.
-EN: LEXLOG evaluator tests (MVP) for art. 286 PC, with mapping loader.
-"""
-
-from __future__ import annotations
-
-from pathlib import Path
-
-from services.lexlog_parser.evaluator import choose_article_for_kk, evaluate_rule
-from services.lexlog_parser.mapping import load_mapping
-from services.lexlog_parser.parser import parse_lexlog
-
-
-def _load_kk_ast():
-    lex_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.lex"
-    content = lex_path.read_text(encoding="utf-8")
-    return parse_lexlog(content)
-
-
-def _load_ctx():
-    map_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.mapping.json"
-    assert map_path.exists(), "Missing kk.mapping.json"
-    return load_mapping(map_path)
-
-
-def test_286_passes_when_wprowadzenie_true_and_excludes_false() -> None:
-    ast = _load_kk_ast()
-    ctx = _load_ctx()
-
-    flags = {
-        "ZNAMIE_WPROWADZENIA_W_BLAD": True,
-        "ZNAMIE_POWIERZENIA_MIENIA": False,
-    }
-    res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
-    assert res.satisfied is True
-    assert res.missing_premises == []
-    assert res.failing_excludes == []
-    assert choose_article_for_kk(ast, flags, ctx) == "art286"
-
-
-def test_286_fails_when_excluded_flag_set() -> None:
-    ast = _load_kk_ast()
-    ctx = _load_ctx()
-
-    flags = {
-        "ZNAMIE_WPROWADZENIA_W_BLAD": True,
-        "ZNAMIE_POWIERZENIA_MIENIA": True,  # exclude -> blokuje
-    }
-    res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
-    assert res.satisfied is False
-    assert res.failing_excludes == ["ZNAMIE_POWIERZENIA_MIENIA"]
-    assert choose_article_for_kk(ast, flags, ctx) is None
-
-```
-
-
-===== FILE: tests/services/test_lexlog_parser.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_lexlog_parser.py    |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: tests/services/test_lexlog_parser.py                  |
-# | ROLE: Unit tests for LEXLOG parser AST & legacy stub        |
-# | PLIK: tests/services/test_lexlog_parser.py                  |
-# | ROLA: Testy parsera LEXLOG (AST i zgodność legacy)          |
-# +-------------------------------------------------------------+
-
-"""
-CERTEUS — LEXLOG Parser Tests
-PL: Testy sprawdzające parsowanie: DEFINE/PREMISE/RULE/CONCLUSION,
-    normalizację ID oraz zgodność z legacy stubem.
-EN: Tests for parsing of DEFINE/PREMISE/RULE/CONCLUSION, canonical ID
-    normalization, and legacy stub compatibility.
-"""
-
-from pathlib import Path
-
-from services.lexlog_parser.parser import LexlogParser
-
-RULES = Path("packs/jurisdictions/PL/rules/kk.lex")
-
-
-def test_lexlog_parses_art_286_rule():
-    text = RULES.read_text(encoding="utf-8")
-    ast = LexlogParser().parse(text)
-    assert ast, "AST should not be empty"
-    assert ast["rule_id"] == "R_286_OSZUSTWO"
-    assert ast["conclusion"] == "K_OSZUSTWO_STWIERDZONE"
-    assert set(ast["premises"]) == {"P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"}
-    assert "z3.And(" in ast["smt_assertion"]
-
-```
-
-
-===== FILE: tests/services/test_mismatch_service.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_mismatch_service.py |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-"""
-PL: Testy jednostkowe / integracyjne modułu.
-EN: Module test suite (unit/integration).
-"""
-
-# +-------------------------------------------------------------+
-# | CERTEUS - Tests: Mismatch Service                           |
-# +-------------------------------------------------------------+
-from services.mismatch_service.models import ResolutionType, TicketResolution
-from services.mismatch_service.service import MismatchService
-
-
-def test_create_and_resolve_ticket():
-    svc = MismatchService()
-    t = svc.create_ticket(
-        case_id="case-001",
-        formula_str="p -> q",
-        results={"z3": {"status": "sat"}, "cvc5": {"status": "unsat"}},
-    )
-    assert t.ticket_id.startswith("MM-")
-    assert t.priority in ("high", "critical", "medium", "low")
-
-    res = TicketResolution(
-        ticket_id=t.ticket_id,
-        resolution_type=ResolutionType.HUMAN_OVERRIDE,
-        chosen_result="sat",
-        notes="Expert decision",
-        resolved_by="tester",
-        confidence=0.8,
-    )
-    t2 = svc.resolve_ticket(t.ticket_id, res)
-    assert t2.status == "resolved"
-    assert t2.chosen_result == "sat"
-
-```
-
-
-===== FILE: tests/services/test_preview.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  tests/services/test_preview.py                              |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-# | FILE / PLIK: tests/services/test_preview.py                          |
-# | ROLE / ROLA:                                                         |
-# |  EN: Integration tests for /v1/preview endpoint (file → preview URL).|
-# |  PL: Testy integracyjne endpointu /v1/preview (plik → URL podglądu). |
-# +=====================================================================+
-
-"""
-PL: Testy weryfikują, że endpoint /v1/preview przyjmuje plik (multipart/form-data)
-    i zwraca JSON z kluczem `url` wskazującym ścieżkę podglądu w `/static/previews/...`.
-
-EN: Tests verify that /v1/preview accepts a file (multipart/form-data) and returns
-    JSON with a `url` pointing to a preview path under `/static/previews/...`.
-"""
-
-from __future__ import annotations
-
-from pathlib import Path
-
-from fastapi.testclient import TestClient
-
-import services.api_gateway.main as api_main
-
-
-def test_health_ok() -> None:
-    client = TestClient(api_main.app)
-    r = client.get("/health")
-    assert r.status_code == 200
-    assert r.json().get("status") == "ok"
-
-
-def test_static_app_mount() -> None:
-    client = TestClient(api_main.app)
-    r = client.get("/app/proof_visualizer/index.html")
-    assert r.status_code in (
-        200,
-        404,
-    )  # mount działa; plik może nie istnieć w teście CI
-
-
-def test_preview_upload_roundtrip(tmp_path: Path) -> None:
-    client = TestClient(api_main.app)
-    sample = tmp_path / "sample.txt"
-    sample.write_text("hello", encoding="utf-8")
-    with sample.open("rb") as fh:
-        r = client.post("/v1/preview", files={"file": ("sample.txt", fh, "text/plain")})
-    assert r.status_code == 200
-    url = r.json().get("url")
-    assert isinstance(url, str) and url.startswith("/static/previews/")
-
-    rel = url.removeprefix("/static/")
-    saved = Path("static") / rel
-    assert saved.exists()
-    saved.unlink(missing_ok=True)
-
-```
-
-
-===== FILE: tests/services/test_schemas.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_schemas.py          |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/services/test_schemas.py                      |
-
-# | ROLE: Project module.                                       |
-
-# | PLIK: tests/services/test_schemas.py                      |
-
-# | ROLA: Moduł projektu.                                       |
-
-# +-------------------------------------------------------------+
-
-
-"""
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-"""
-
-
-# +-------------------------------------------------------------+
-
-
-# |                CERTEUS - Schema Contract Tests              |
-
-
-# +-------------------------------------------------------------+
-
-
-# | PLIK / FILE: tests/services/test_schemas.py                 |
-
-
-# | ROLA / ROLE: Sprawdza poprawność przykładowych danych        |
-
-
-# |             względem 'Świętej Trójcy' schematów.            |
-
-
-# +-------------------------------------------------------------+
-
-
-# | STYLE: PL-first, headers & notes dual-language (PL/EN).     |
-
-
-# +-------------------------------------------------------------+
-
-from __future__ import annotations
-
-# === IMPORTY / IMPORTS ===
-import json
-from pathlib import Path
-from typing import Any, Final, Protocol
-
-import pytest
-from jsonschema import Draft7Validator, FormatChecker
-from jsonschema.exceptions import ValidationError
-
-# === ALIASY TYPÓW / TYPE ALIASES ===
-
-
-Schema = dict[str, Any]
-
-
-JSONObj = dict[str, Any]
-
-
-SCHEMA_DIR: Final[Path] = Path("schemas")
-
-
-# === PROTOKÓŁ WALIDATORA / VALIDATOR PROTOCOL ===
-
-
-class _ValidatorProtocol(Protocol):
-    """
-
-
-
-    PL: Minimalny interfejs wymagany od walidatora.
-
-
-
-    EN: Minimal interface required from a validator.
-
-
-
-    """
-
-    def validate(self, instance: Any) -> None: ...
-
-
-def load_schema(name: str) -> Schema:
-    """
-
-
-
-    PL: Ładuje i syntaktycznie weryfikuje schemat JSON (Draft7).
-
-
-
-    EN: Loads and syntactically checks a JSON schema (Draft7).
-
-
-
-    """
-
-    path = SCHEMA_DIR / name
-
-    with path.open("r", encoding="utf-8") as f:
-        schema: Schema = json.load(f)
-
-    Draft7Validator.check_schema(schema)
-
-    return schema
-
-
-def assert_valid(instance: JSONObj, schema: Schema) -> None:
-    """
-
-
-
-    PL: Waliduje instancję względem danego schematu (z FormatCheckerem).
-
-
-
-    EN: Validates the instance against the given schema (with FormatChecker).
-
-
-
-    """
-
-    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
-
-    validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
-
-
-def assert_invalid(instance: JSONObj, schema: Schema) -> None:
-    """
-
-
-
-    PL: Oczekuje błędu walidacji.
-
-
-
-    EN: Expects validation error.
-
-
-
-    """
-
-    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
-
-    with pytest.raises(ValidationError):
-        validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
-
-
-# === FIXTURE’Y / FIXTURES ===
-
-
-@pytest.fixture(scope="module")
-def S_PROVENANCE() -> Schema:
-    return load_schema("provenance_receipt_v1.json")
-
-
-@pytest.fixture(scope="module")
-def S_ANSWER() -> Schema:
-    return load_schema("answer_contract_v1.json")
-
-
-@pytest.fixture(scope="module")
-def S_PCA2() -> Schema:
-    return load_schema("pca2_v1.json")
-
-
-# === TESTY: PROVENANCE ===
-
-
-def test_provenance_valid(S_PROVENANCE: Schema) -> None:
-    ok: JSONObj = {
-        "case_id": "RS-DOM-vs-Stasikowski",
-        "receipt_id": "11111111-2222-3333-4444-555555555555",
-        "inputs": {
-            "lexlog_rule_version": "pl.lexlog/1.0.0",
-            "assumptions_hash": "f" * 64,
-            "question_hash": "a" * 64,
-        },
-        "solvers": {"z3": {"status": "ok", "runtime_ms": 12}, "cvc5": {"status": "ok"}},
-        "mismatch": False,
-        "final_hash": "0" * 64,
-        "timestamp": "2025-08-14T10:00:00Z",
-    }
-
-    assert_valid(ok, S_PROVENANCE)
-
-
-def test_provenance_invalid_missing_required(S_PROVENANCE: Schema) -> None:
-    bad: JSONObj = {
-        "inputs": {"lexlog_rule_version": "x", "assumptions_hash": "f" * 64},
-        "solvers": {},
-        "mismatch": True,
-        "final_hash": "0" * 64,
-        "timestamp": "2025-08-14T10:00:00Z",
-    }
-
-    assert_invalid(bad, S_PROVENANCE)
-
-
-# === TESTY: ANSWER CONTRACT ===
-
-
-def test_answer_valid(S_ANSWER: Schema) -> None:
-    ok: JSONObj = {
-        "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-        "case_id": "RS-DOM-vs-Stasikowski",
-        "question": {"text": "Czy §10 ust. 1 pkt 3 ma zastosowanie?", "lang": "pl"},
-        "answer": {"text": "Tak/Nie + uzasadnienie...", "lang": "pl", "hash": "1" * 64},
-        "citations": [
-            {
-                "type": "statute",
-                "label": "KC art. 647¹",
-                "ref": "Dz.U....",
-                "locator": "art. 647(1) §2",
-            }
-        ],
-        "metrics": {"confidence": 0.92, "latency_ms": 120},
-        "model": {
-            "provider": "LEXENITH",
-            "name": "GPT-5 Thinking",
-            "version": "2025.08",
-        },
-        "provenance": {"receipt_id": "11111111-2222-3333-4444-555555555555"},
-        "timestamps": {"created_at": "2025-08-14T10:01:00Z"},
-    }
-
-    assert_valid(ok, S_ANSWER)
-
-
-def test_answer_invalid_confidence_range(S_ANSWER: Schema) -> None:
-    bad: JSONObj = {
-        "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-        "case_id": "X",
-        "question": {"text": "foo"},
-        "answer": {"text": "bar"},
-        "timestamps": {"created_at": "2025-08-14T10:01:00Z"},
-        "model": {"provider": "LEXENITH", "name": "GPT-5 Thinking"},
-        "metrics": {"confidence": 1.5},
-    }
-
-    assert_invalid(bad, S_ANSWER)
-
-
-# === TESTY: PCA² ===
-
-
-def test_pca2_valid(S_PCA2: Schema) -> None:
-    ok: JSONObj = {
-        "case_id": "RS-DOM-vs-Stasikowski",
-        "policy": ["lexenith.secure.v1", "legal.pl.civil.kc"],
-        "constraints": [{"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}],
-        "assumptions": [{"name": "ryczalt", "value": "tak"}],
-        "attestations": [
-            {
-                "subject": "answer#aaaaaaaa",
-                "by": "auditor.bot",
-                "result": "pass",
-                "at": "2025-08-14T10:05:00Z",
-            }
-        ],
-        "audit_trail": [
-            {
-                "type": "constraint_eval",
-                "at": "2025-08-14T10:05:01Z",
-                "actor": "cerber",
-                "message": "OK",
-            }
-        ],
-        "overall_status": "pass",
-        "final_hash": "2" * 64,
-    }
-
-    assert_valid(ok, S_PCA2)
-
-
-def test_pca2_invalid_status(S_PCA2: Schema) -> None:
-    bad: JSONObj = {"case_id": "X", "overall_status": "unknown"}
-
-    assert_invalid(bad, S_PCA2)
-
-```
-
-
-===== FILE: tests/services/test_sipp.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_sipp.py             |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |                         CERTEUS                             |
-# |      Core Engine for Reliable & Unified Systems             |
-# +-------------------------------------------------------------+
-# | FILE: tests/services/test_sipp.py                           |
-# | ROLE: Integration tests for SIPP Indexer endpoint.          |
-# +-------------------------------------------------------------+
-
-"""
-PL: Testuje endpoint /v1/sipp/snapshot/{act_id}.
-EN: Tests the /v1/sipp/snapshot/{act_id} endpoint.
-"""
-
-from __future__ import annotations
-
-import json
-from pathlib import Path
-
-from fastapi.testclient import TestClient
-
-from services.api_gateway.main import app
-
-client = TestClient(app)
-
-
-def test_get_snapshot_endpoint_success() -> None:
-    act_id = "kk-art-286"
-    resp = client.get(f"/v1/sipp/snapshot/{act_id}")
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["act_id"] == act_id
-    assert data["version_id"] == "2023-10-01"
-    assert data["source_url"]
-    assert data["text_sha256"].startswith("sha256:")
-    assert "snapshot_timestamp" in data
-
-
-def test_get_snapshot_with_at_param() -> None:
-    act_id = "kk-art-286"
-    resp = client.get(f"/v1/sipp/snapshot/{act_id}?at=2024-11-24")
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["act_id"] == act_id
-    # Stub ignores 'at', but API must accept the param gracefully.
-    assert data["version_id"] == "2023-10-01"
-
-
-def test_index_isap_writes_snapshot_file(tmp_path: Path) -> None:
-    from services.sipp_indexer_service.index_isap import index_act
-
-    p = index_act("kk-art-286", out_dir=tmp_path)  # nie piszemy do repo podczas testu
-    assert p.exists()
-
-    data = json.loads(p.read_text(encoding="utf-8"))
-    assert data["act_id"] == "kk-art-286"
-    assert data["text_sha256"].startswith("sha256:")
-    assert "snapshot_timestamp" in data
-    assert "_certeus" in data and "snapshot_timestamp_utc" in data["_certeus"]
-
-```
-
-
-===== FILE: tests/services/test_verify_mismatch.py =====
-```text
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_verify_mismatch.py  |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: tests/services/test_verify_mismatch.py                |
-# | ROLE: Ensures mismatch maps to HTTP 409 requires_human.     |
-# | PLIK: tests/services/test_verify_mismatch.py                |
-# | ROLA: Gwarantuje mapowanie rozjazdu na HTTP 409.            |
-# +-------------------------------------------------------------+
-"""
-PL: Test symuluje rozbieżność rdzeni i sprawdza odpowiedź 409.
-EN: Test simulates core mismatch and checks 409 response.
-"""
-
-# === IMPORTY / IMPORTS ===
-from fastapi.testclient import TestClient
-
-from services.api_gateway.main import app
-
-
-# === TEST / TEST ===
-def test_verify_returns_409_on_mismatch(monkeypatch):
-    """
-    PL: Symulowany MismatchError powinien dać 409 + requires_human:true.
-    EN: Simulated MismatchError should return 409 + requires_human:true.
-    """
-    from kernel import truth_engine
-
-    original = truth_engine.DualCoreVerifier.verify
-
-    def fake_verify(self, formula, lang="smt2"):
-        from kernel.mismatch_protocol import MismatchError
-
-        raise MismatchError("forced mismatch")
-
-    monkeypatch.setattr(truth_engine.DualCoreVerifier, "verify", fake_verify)
-    client = TestClient(app)
-    r = client.post("/v1/verify", json={"formula": "(set-logic QF_LIA)", "lang": "smt2"})
-    assert r.status_code == 409
-    body = r.json()
-    assert body["detail"]["requires_human"] is True
-
-    # porządek
-    monkeypatch.setattr(truth_engine.DualCoreVerifier, "verify", original)
 
 ```

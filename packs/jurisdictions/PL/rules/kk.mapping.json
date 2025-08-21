@@ -1,10 +1,10 @@
 {
-    "premise_to_flag": {
-        "P_CEL": null,
-        "P_WPROWADZENIE": "ZNAMIE_WPROWADZENIA_W_BLAD",
-        "P_ROZPORZADZENIE": null
-    },
-    "conclusion_excludes": {
-        "K_OSZUSTWO_STWIERDZONE": ["ZNAMIE_POWIERZENIA_MIENIA"]
-    }
+  "premise_to_flag": {
+    "P_CEL": null,
+    "P_WPROWADZENIE": "ZNAMIE_WPROWADZENIA_W_BLAD",
+    "P_ROZPORZADZENIE": null
+  },
+  "conclusion_excludes": {
+    "K_OSZUSTWO_STWIERDZONE": ["ZNAMIE_POWIERZENIA_MIENIA"]
+  }
 }

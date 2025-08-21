@@ -1,241 +1,234 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://certeus/schemas/answer_contract_v1.json",
-    "title": "Certeus - Kontrakt Odpowiedzi v1 / Answer Contract v1",
-    "description": "PL: Kanoniczny kontrakt odpowiedzi (treść, cytowania, metryki, model, podpisy). EN: Canonical answer contract (content, citations, metrics, model, signatures).",
-    "type": "object",
-    "additionalProperties": false,
-    "$defs": {
-        "uuid": {
-            "type": "string",
-            "description": "PL: UUID (dowolnej wersji). EN: UUID (any version).",
-            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://certeus/schemas/answer_contract_v1.json",
+  "title": "Certeus - Kontrakt Odpowiedzi v1 / Answer Contract v1",
+  "description": "PL: Kanoniczny kontrakt odpowiedzi (treść, cytowania, metryki, model, podpisy). EN: Canonical answer contract (content, citations, metrics, model, signatures).",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "description": "PL: UUID (dowolnej wersji). EN: UUID (any version).",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "sha256": {
+      "type": "string",
+      "description": "PL: Skrót SHA-256 w hex. EN: SHA-256 hex digest.",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "description": "PL: URI/URL do zasobu. EN: URI/URL to a resource."
+    },
+    "citation": {
+      "type": "object",
+      "description": "PL: Cytowanie źródła. EN: Source citation.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "PL: Typ źródła. EN: Source type.",
+          "enum": ["statute", "case_law", "doctrine", "web", "file", "other"]
         },
-        "sha256": {
-            "type": "string",
-            "description": "PL: Skrót SHA-256 w hex. EN: SHA-256 hex digest.",
-            "pattern": "^[A-Fa-f0-9]{64}$"
+        "label": {
+          "type": "string",
+          "description": "PL: Etykieta/tytuł źródła. EN: Source label/title."
         },
-        "uri": {
-            "type": "string",
-            "format": "uri",
-            "description": "PL: URI/URL do zasobu. EN: URI/URL to a resource."
+        "ref": {
+          "type": "string",
+          "description": "PL: Referencja (sygnatura/URL/ścieżka). EN: Reference (citation/URL/path)."
         },
-        "citation": {
-            "type": "object",
-            "description": "PL: Cytowanie źródła. EN: Source citation.",
-            "additionalProperties": false,
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "description": "PL: Typ źródła. EN: Source type.",
-                    "enum": [
-                        "statute",
-                        "case_law",
-                        "doctrine",
-                        "web",
-                        "file",
-                        "other"
-                    ]
-                },
-                "label": {
-                    "type": "string",
-                    "description": "PL: Etykieta/tytuł źródła. EN: Source label/title."
-                },
-                "ref": {
-                    "type": "string",
-                    "description": "PL: Referencja (sygnatura/URL/ścieżka). EN: Reference (citation/URL/path)."
-                },
-                "locator": {
-                    "type": "string",
-                    "description": "PL: Lokalizator (art., §, strona). EN: Locator (article, §, page)."
-                },
-                "hash": {
-                    "$ref": "#/$defs/sha256",
-                    "description": "PL: Hash treści źródła (jeśli dostępny). EN: Hash of the source content (if available)."
-                }
-            },
-            "required": ["type", "label", "ref"]
+        "locator": {
+          "type": "string",
+          "description": "PL: Lokalizator (art., §, strona). EN: Locator (article, §, page)."
+        },
+        "hash": {
+          "$ref": "#/$defs/sha256",
+          "description": "PL: Hash treści źródła (jeśli dostępny). EN: Hash of the source content (if available)."
+        }
+      },
+      "required": ["type", "label", "ref"]
+    },
+    "signature": {
+      "type": "object",
+      "description": "PL: Podpis kryptograficzny. EN: Cryptographic signature.",
+      "additionalProperties": false,
+      "properties": {
+        "alg": {
+          "type": "string",
+          "description": "PL: Algorytm podpisu. EN: Signature algorithm.",
+          "enum": ["ed25519", "rsa-pss-sha256", "ecdsa-p256-sha256"]
+        },
+        "signer": {
+          "type": "string",
+          "description": "PL: Identyfikator podpisującego. EN: Signer identifier."
         },
         "signature": {
-            "type": "object",
-            "description": "PL: Podpis kryptograficzny. EN: Cryptographic signature.",
-            "additionalProperties": false,
-            "properties": {
-                "alg": {
-                    "type": "string",
-                    "description": "PL: Algorytm podpisu. EN: Signature algorithm.",
-                    "enum": ["ed25519", "rsa-pss-sha256", "ecdsa-p256-sha256"]
-                },
-                "signer": {
-                    "type": "string",
-                    "description": "PL: Identyfikator podpisującego. EN: Signer identifier."
-                },
-                "signature": {
-                    "type": "string",
-                    "description": "PL: Treść podpisu (base64/hex). EN: Signature payload (base64/hex)."
-                },
-                "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "PL: Czas podpisu. EN: Signature timestamp."
-                }
-            },
-            "required": ["alg", "signer", "signature"]
+          "type": "string",
+          "description": "PL: Treść podpisu (base64/hex). EN: Signature payload (base64/hex)."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "PL: Czas podpisu. EN: Signature timestamp."
         }
+      },
+      "required": ["alg", "signer", "signature"]
+    }
+  },
+  "properties": {
+    "answer_id": {
+      "$ref": "#/$defs/uuid",
+      "description": "PL: Unikalny identyfikator odpowiedzi. EN: Unique answer identifier."
     },
-    "properties": {
-        "answer_id": {
-            "$ref": "#/$defs/uuid",
-            "description": "PL: Unikalny identyfikator odpowiedzi. EN: Unique answer identifier."
+    "case_id": {
+      "type": "string",
+      "description": "PL: Identyfikator sprawy. EN: Case identifier."
+    },
+    "question": {
+      "type": "object",
+      "description": "PL: Treść pytania i kontekstu. EN: Question text and context.",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "PL: Pytanie. EN: Question."
         },
-        "case_id": {
-            "type": "string",
-            "description": "PL: Identyfikator sprawy. EN: Case identifier."
+        "lang": {
+          "type": "string",
+          "description": "PL: Język pytania (BCP-47). EN: Language tag (BCP-47)."
         },
-        "question": {
-            "type": "object",
-            "description": "PL: Treść pytania i kontekstu. EN: Question text and context.",
-            "additionalProperties": false,
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "PL: Pytanie. EN: Question."
-                },
-                "lang": {
-                    "type": "string",
-                    "description": "PL: Język pytania (BCP-47). EN: Language tag (BCP-47)."
-                },
-                "context_hash": {
-                    "$ref": "#/$defs/sha256",
-                    "description": "PL: Hash kontekstu. EN: Context hash."
-                }
-            },
-            "required": ["text"]
-        },
-        "answer": {
-            "type": "object",
-            "description": "PL: Treść odpowiedzi. EN: Answer content.",
-            "additionalProperties": false,
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "PL: Tekst odpowiedzi. EN: Answer text."
-                },
-                "lang": {
-                    "type": "string",
-                    "description": "PL: Język odpowiedzi (BCP-47). EN: Language tag (BCP-47)."
-                },
-                "hash": {
-                    "$ref": "#/$defs/sha256",
-                    "description": "PL: Hash odpowiedzi. EN: Answer hash."
-                }
-            },
-            "required": ["text"]
-        },
-        "citations": {
-            "type": "array",
-            "description": "PL: Lista cytowań. EN: List of citations.",
-            "items": { "$ref": "#/$defs/citation" },
-            "minItems": 0
-        },
-        "metrics": {
-            "type": "object",
-            "description": "PL: Metryki generacji i oceny. EN: Generation and evaluation metrics.",
-            "additionalProperties": false,
-            "properties": {
-                "confidence": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "description": "PL: Pewność [0,1]. EN: Confidence [0,1]."
-                },
-                "safety_flags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "PL: Flagi bezpieczeństwa. EN: Safety flags."
-                },
-                "latency_ms": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "description": "PL: Latencja w ms. EN: Latency in ms."
-                }
-            }
-        },
-        "model": {
-            "type": "object",
-            "description": "PL: Informacje o modelu. EN: Model information.",
-            "additionalProperties": false,
-            "properties": {
-                "provider": {
-                    "type": "string",
-                    "description": "PL: Dostawca. EN: Provider."
-                },
-                "name": {
-                    "type": "string",
-                    "description": "PL: Nazwa modelu. EN: Model name."
-                },
-                "version": {
-                    "type": "string",
-                    "description": "PL: Wersja. EN: Version."
-                },
-                "params": {
-                    "type": "object",
-                    "description": "PL: Parametry wywołania. EN: Call parameters."
-                }
-            },
-            "required": ["provider", "name"]
-        },
-        "provenance": {
-            "type": "object",
-            "description": "PL: Odwołanie do paragonu pochodzenia. EN: Reference to provenance receipt.",
-            "additionalProperties": false,
-            "properties": {
-                "receipt_id": {
-                    "$ref": "#/$defs/uuid",
-                    "description": "PL: ID paragonu. EN: Receipt ID."
-                },
-                "receipt_hash": {
-                    "$ref": "#/$defs/sha256",
-                    "description": "PL: Hash paragonu. EN: Receipt hash."
-                },
-                "receipt_uri": {
-                    "$ref": "#/$defs/uri",
-                    "description": "PL: URI paragonu. EN: Receipt URI."
-                }
-            }
-        },
-        "timestamps": {
-            "type": "object",
-            "description": "PL: Czas utworzenia/aktualizacji. EN: Creation/update timestamps.",
-            "additionalProperties": false,
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "PL: Utworzenie. EN: Created at."
-                },
-                "updated_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "PL: Aktualizacja. EN: Updated at."
-                }
-            },
-            "required": ["created_at"]
-        },
-        "signatures": {
-            "type": "array",
-            "description": "PL: Podpisy kryptograficzne. EN: Cryptographic signatures.",
-            "items": { "$ref": "#/$defs/signature" },
-            "minItems": 0
+        "context_hash": {
+          "$ref": "#/$defs/sha256",
+          "description": "PL: Hash kontekstu. EN: Context hash."
         }
+      },
+      "required": ["text"]
     },
-    "required": [
-        "answer_id",
-        "case_id",
-        "question",
-        "answer",
-        "timestamps",
-        "model"
-    ]
+    "answer": {
+      "type": "object",
+      "description": "PL: Treść odpowiedzi. EN: Answer content.",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "PL: Tekst odpowiedzi. EN: Answer text."
+        },
+        "lang": {
+          "type": "string",
+          "description": "PL: Język odpowiedzi (BCP-47). EN: Language tag (BCP-47)."
+        },
+        "hash": {
+          "$ref": "#/$defs/sha256",
+          "description": "PL: Hash odpowiedzi. EN: Answer hash."
+        }
+      },
+      "required": ["text"]
+    },
+    "citations": {
+      "type": "array",
+      "description": "PL: Lista cytowań. EN: List of citations.",
+      "items": { "$ref": "#/$defs/citation" },
+      "minItems": 0
+    },
+    "metrics": {
+      "type": "object",
+      "description": "PL: Metryki generacji i oceny. EN: Generation and evaluation metrics.",
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "PL: Pewność [0,1]. EN: Confidence [0,1]."
+        },
+        "safety_flags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "PL: Flagi bezpieczeństwa. EN: Safety flags."
+        },
+        "latency_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "PL: Latencja w ms. EN: Latency in ms."
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "description": "PL: Informacje o modelu. EN: Model information.",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "description": "PL: Dostawca. EN: Provider."
+        },
+        "name": {
+          "type": "string",
+          "description": "PL: Nazwa modelu. EN: Model name."
+        },
+        "version": {
+          "type": "string",
+          "description": "PL: Wersja. EN: Version."
+        },
+        "params": {
+          "type": "object",
+          "description": "PL: Parametry wywołania. EN: Call parameters."
+        }
+      },
+      "required": ["provider", "name"]
+    },
+    "provenance": {
+      "type": "object",
+      "description": "PL: Odwołanie do paragonu pochodzenia. EN: Reference to provenance receipt.",
+      "additionalProperties": false,
+      "properties": {
+        "receipt_id": {
+          "$ref": "#/$defs/uuid",
+          "description": "PL: ID paragonu. EN: Receipt ID."
+        },
+        "receipt_hash": {
+          "$ref": "#/$defs/sha256",
+          "description": "PL: Hash paragonu. EN: Receipt hash."
+        },
+        "receipt_uri": {
+          "$ref": "#/$defs/uri",
+          "description": "PL: URI paragonu. EN: Receipt URI."
+        }
+      }
+    },
+    "timestamps": {
+      "type": "object",
+      "description": "PL: Czas utworzenia/aktualizacji. EN: Creation/update timestamps.",
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "PL: Utworzenie. EN: Created at."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "PL: Aktualizacja. EN: Updated at."
+        }
+      },
+      "required": ["created_at"]
+    },
+    "signatures": {
+      "type": "array",
+      "description": "PL: Podpisy kryptograficzne. EN: Cryptographic signatures.",
+      "items": { "$ref": "#/$defs/signature" },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "answer_id",
+    "case_id",
+    "question",
+    "answer",
+    "timestamps",
+    "model"
+  ]
 }

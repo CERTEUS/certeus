@@ -1,18 +1,18 @@
 {
-    "rid": "demo-002",
-    "smt2_hash": "b8a0b8f1a8c4e5f8c1a2b3c4d5e6f7089a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
-    "lfsc": "(lfsc proof for demo-002)",
-    "drat": null,
-    "merkle_proof": [
-        {
-            "sibling": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "dir": "L"
-        },
-        {
-            "sibling": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-            "dir": "R"
-        }
-    ],
-    "signature": "P7nZt6b9lqT0j4bD1QwX2e3r4t5y6u7v8w9x0y1z2a3b4c5d6e7f8g9h0i1j2k",
-    "issued_at": "2025-08-19T12:00:00Z"
+  "rid": "demo-002",
+  "smt2_hash": "b8a0b8f1a8c4e5f8c1a2b3c4d5e6f7089a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
+  "lfsc": "(lfsc proof for demo-002)",
+  "drat": null,
+  "merkle_proof": [
+    {
+      "sibling": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "dir": "L"
+    },
+    {
+      "sibling": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "dir": "R"
+    }
+  ],
+  "signature": "P7nZt6b9lqT0j4bD1QwX2e3r4t5y6u7v8w9x0y1z2a3b4c5d6e7f8g9h0i1j2k",
+  "issued_at": "2025-08-19T12:00:00Z"
 }

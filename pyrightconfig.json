@@ -1,20 +1,20 @@
 {
-    "typeCheckingMode": "standard",
-    "reportMissingTypeStubs": false,
-    "stubPath": "typings",
-    "include": ["."],
-    "exclude": [
-        "exports",
-        "artifacts",
-        "reports",
-        "static/previews",
-        "out",
-        "proofs"
-    ],
-    "executionEnvironments": [
-        {
-            "root": ".",
-            "extraPaths": ["."]
-        }
-    ]
+  "typeCheckingMode": "standard",
+  "reportMissingTypeStubs": false,
+  "stubPath": "typings",
+  "include": ["."],
+  "exclude": [
+    "exports",
+    "artifacts",
+    "reports",
+    "static/previews",
+    "out",
+    "proofs"
+  ],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["."]
+    }
+  ]
 }

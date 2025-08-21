@@ -8,6 +8,1448 @@ Guidance: read sequentially; do not assume missing files exist; respect file bou
 
 
 
+===== FILE: tests/plugins/test_plugins_registry.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/plugins/test_plugins_registry.py  |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/plugins/test_plugins_registry.py              |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/plugins/test_plugins_registry.py              |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+"""
+
+
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+
+
+EN: CERTEUS module – please complete the functional description.
+
+
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+
+# |                          CERTEUS                            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | FILE: tests/plugins/test_plugins_registry.py              |
+
+
+# | ROLE: Project module.                                       |
+
+
+# | PLIK: tests/plugins/test_plugins_registry.py              |
+
+
+# | ROLA: Moduł projektu.                                       |
+
+
+# +-------------------------------------------------------------+
+
+
+# +------------------------------------------------+
+
+
+# |                  CERTEUS                       |
+
+
+# |                Core Plugin API                 |
+
+
+# +------------------------------------------------+
+
+
+#
+
+
+# PL: Minimalne API rdzenia do rejestracji pluginów oraz
+
+
+#     rejestrów funkcjonalnych (adapters/exporters).
+
+
+#
+
+
+# EN: Minimal core API for plugin registration and
+
+
+#     functional registries (adapters/exporters).
+
+
+#
+
+
+# Konwencje (README "Premium Code Style"):
+
+
+# - Logo, dwujęzyczne komentarze, sekcje, type hints.
+
+
+#
+
+from __future__ import annotations
+
+from typing import Any
+
+
+class PluginAPI:
+    """
+
+
+
+    PL: Prosty rejestr pluginów i entrypointów funkcjonalnych.
+
+
+
+        - register(plugin) lub register(name, plugin)
+
+
+
+        - adapters/exporters jako słowniki funkcji/obiektów
+
+
+
+
+
+
+
+    EN: Simple registry for plugins and functional entrypoints.
+
+
+
+        - register(plugin) or register(name, plugin)
+
+
+
+        - adapters/exporters as dicts of callables/objects
+
+
+
+    """
+
+    def __init__(self) -> None:
+        # === STAN / STATE ===
+
+        self._plugins: dict[str, object] = {}
+
+        self.adapters: dict[str, object] = {}
+
+        self.exporters: dict[str, object] = {}
+
+    # === REJESTRACJA PLUGINU / PLUGIN REGISTRATION ===
+
+    def register(self, *args: Any) -> None:
+        """
+
+
+
+        PL: Obsługuje dwie sygnatury:
+
+
+
+            • register(plugin)
+
+
+
+            • register(name, plugin)
+
+
+
+
+
+
+
+        EN: Supports two signatures:
+
+
+
+            • register(plugin)
+
+
+
+            • register(name, plugin)
+
+
+
+        """
+
+        if len(args) == 1:
+            plugin = args[0]
+
+            # Nazwa z atrybutów lub modułu / Name from attrs or module
+
+            name = getattr(plugin, "name", None) or getattr(plugin, "__plugin_name__", None)
+
+            if not name:
+                mod = getattr(plugin, "__module__", "")
+
+                # Utnij końcówkę .src.main jeżeli występuje / trim .src.main suffix
+
+                if mod.endswith(".src.main"):
+                    parts = mod.split(".")
+
+                    # … ['plugins', '<name>', 'src', 'main'] → weź index -3
+
+                    name = parts[-3] if len(parts) >= 3 else parts[-1]
+
+                else:
+                    name = mod.split(".")[-1] if mod else plugin.__class__.__name__
+
+        else:
+            name, plugin = args[0], args[1]
+
+        self._plugins[str(name)] = plugin
+
+    # === PODGLĄD / INTROSPECTION ===
+
+    def list_plugins(self):
+        """
+
+
+
+        PL: Zwróć widok kluczy (dict_keys), zgodnie z oczekiwaniem testów.
+
+
+
+        EN: Return keys view (dict_keys), as tests expect.
+
+
+
+        """
+
+        return self._plugins.keys()
+
+    # === REJESTRY FUNKCYJNE / FUNCTIONAL REGISTRIES ===
+
+    def register_adapter(self, key: str, fn: object) -> None:
+        """PL: Zarejestruj adapter (np. isap.pl.snapshot). EN: Register adapter."""
+
+        self.adapters[key] = fn
+
+    def register_exporter(self, key: str, fn: object) -> None:
+        """PL: Zarejestruj eksporter (np. pl.exporter.docx_pdf). EN: Register exporter."""
+
+        self.exporters[key] = fn
+
+```
+
+
+===== FILE: tests/services/test_api_gateway.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_api_gateway.py      |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_api_gateway.py                  |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_api_gateway.py                  |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+"""
+
+
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+
+
+EN: CERTEUS module – please complete the functional description.
+
+
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+
+# |                          CERTEUS                            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | FILE: tests/services/test_api_gateway.py                  |
+
+
+# | ROLE: Project module.                                       |
+
+
+# | PLIK: tests/services/test_api_gateway.py                  |
+
+
+# | ROLA: Moduł projektu.                                       |
+
+
+# +-------------------------------------------------------------+
+
+
+def test_smoke():
+    assert 1 == 1
+
+```
+
+
+===== FILE: tests/services/test_exporter.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_exporter.py         |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |               CERTEUS - Exporter Service Tests              |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_exporter.py                       |
+# +-------------------------------------------------------------+
+"""
+PL: Testy serwisu ExporterService – sprawdza poprawność wypełnienia szablonu.
+EN: Tests for ExporterService – verifies template population correctness.
+"""
+
+from __future__ import annotations
+
+import tempfile
+from pathlib import Path
+
+from services.exporter_service import ExporterService
+
+
+def test_export_report_creates_file_with_replaced_content():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        outdir = Path(tmpdir) / "out"
+        service = ExporterService(template_dir="templates", output_dir=str(outdir))
+        case_id = "test-export-007"
+        analysis = {"status": "sat", "model": "[a=True,b=False]"}
+
+        report_path = service.export_report(case_id, analysis)
+
+        assert report_path.exists()
+        content = report_path.read_text(encoding="utf-8")
+        assert case_id in content
+        assert "SAT" in content
+        assert "[a=True,b=False]" in content
+
+```
+
+
+===== FILE: tests/services/test_exporter_provenance.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_exporter_provenance.py|
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+"""
+PL: Testy jednostkowe / integracyjne modułu.
+EN: Module test suite (unit/integration).
+"""
+
+# +-------------------------------------------------------------+
+# | CERTEUS - Tests: Exporter & Ledger                          |
+# +-------------------------------------------------------------+
+from pathlib import Path
+
+from services.exporter_service import export_answer_to_txt
+from services.ledger_service.ledger import (
+    compute_provenance_hash,
+    verify_provenance_hash,
+)
+
+
+def test_export_and_hash(tmp_path: Path):
+    answer = {
+        "case_id": "pl-001",
+        "title": "T",
+        "thesis": "X",
+        "reasoning": "Y",
+        "status": "ok",
+        "confidence": 0.9,
+    }
+    out = tmp_path / "out.txt"
+    path = export_answer_to_txt(answer, out_path=str(out), create_ledger_entry=False)
+    assert Path(path).exists()
+
+    h = compute_provenance_hash(answer, include_timestamp=False)
+    assert verify_provenance_hash(answer, h)
+
+```
+
+
+===== FILE: tests/services/test_ingest.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_ingest.py           |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# | Core Engine for Reliable & Unified Systems                  |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_ingest.py                         |
+# | ROLE: Integration tests for /v1/ingest endpoint.            |
+# | PLIK: tests/services/test_ingest.py                         |
+# | ROLA: Testy integracyjne endpointu /v1/ingest.              |
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy sprawdzają ścieżkę sukcesu (OCR stub → FACTLOG), nagłówek łańcucha
+    Ledger oraz walidacje MIME i limit rozmiaru.
+EN: Tests cover the success path (OCR stub → FACTLOG), the Ledger chain header,
+    and MIME/size validations.
+"""
+
+# [BLOCK: IMPORTS]
+from __future__ import annotations
+
+import io
+from typing import IO, Any, Literal, cast
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+# Import jako moduł, a typ nadamy przez cast — to ucisza Pylance.
+import services.api_gateway.main as api_main
+
+# [BLOCK: CLIENT]
+fastapi_app_typed: FastAPI = cast(FastAPI, api_main.app)  # type: ignore[attr-defined]
+client: TestClient = TestClient(fastapi_app_typed)
+
+# [BLOCK: TYPES]
+# (filename, fileobj, mimetype)
+FileTuple = tuple[str, IO[bytes], str]
+
+LEDGER_HEADER: Literal["X-CERTEUS-Ledger-Chain"] = "X-CERTEUS-Ledger-Chain"
+
+
+def make_file(filename: str, content: bytes, mimetype: str) -> FileTuple:
+    """
+    PL: Zwraca krotkę pliku akceptowaną przez TestClient (multipart/form-data).
+    EN: Returns a file tuple accepted by TestClient (multipart/form-data).
+    """
+    fileobj: IO[bytes] = io.BytesIO(content)
+    return (filename, fileobj, mimetype)
+
+
+# [BLOCK: TEST • SUCCESS PATH]
+def test_ingest_document_endpoint_success() -> None:
+    """
+    PL: Wysyła mały „PDF” i oczekuje listy 2 faktów oraz poprawnego nagłówka Ledger.
+    EN: Sends a small “PDF” and expects 2 facts and a valid Ledger header.
+    """
+    files: dict[str, FileTuple] = {"file": make_file("test.pdf", b"%PDF-1.4 dummy", "application/pdf")}
+
+    resp = client.post("/v1/ingest", files=files)
+    assert resp.status_code == 200
+
+    data_json: list[dict[str, Any]] = cast(list[dict[str, Any]], resp.json())
+    assert isinstance(data_json, list)
+    assert len(data_json) == 2
+
+    # roles set
+    roles: set[str] = {entry["role"] for entry in data_json}
+    assert roles == {"claim_contract_date", "evidence_payment"}
+
+    # structure spot-check
+    first: dict[str, Any] = data_json[0]
+    assert "fact_id" in first and isinstance(first["fact_id"], str)
+    assert "thesis" in first and isinstance(first["thesis"], str)
+    assert "confidence_score" in first and isinstance(first["confidence_score"], int | float)
+
+    # ledger header
+    assert LEDGER_HEADER in resp.headers
+    chain = resp.headers[LEDGER_HEADER]
+    assert chain  # non-empty
+    parts: list[str] = chain.split(";")
+    assert all(p.startswith("sha256:") for p in parts)
+
+
+# [BLOCK: TEST • MIME VALIDATION]
+def test_ingest_rejects_unsupported_mime() -> None:
+    """
+    PL: MIME spoza białej listy → 415.
+    EN: MIME outside the allowlist → 415.
+    """
+    files_bad: dict[str, FileTuple] = {"file": make_file("x.exe", b"MZ...", "application/x-msdownload")}
+    resp = client.post("/v1/ingest", files=files_bad)
+    assert resp.status_code == 415
+
+
+# [BLOCK: TEST • SIZE LIMIT]
+def test_ingest_rejects_too_large() -> None:
+    """
+    PL: Plik większy niż 10 MiB → 413.
+    EN: File larger than 10 MiB → 413.
+    """
+    # API uses MAX_BYTES = 10 * 1024 * 1024; send +1 byte
+    big: bytes = b"0" * (10 * 1024 * 1024 + 1)
+    files_big: dict[str, FileTuple] = {"file": make_file("big.pdf", big, "application/pdf")}
+    resp = client.post("/v1/ingest", files=files_big)
+    assert resp.status_code == 413
+
+```
+
+
+===== FILE: tests/services/test_ledger.py =====
+```text
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_ledger.py           |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+"""
+PL: Testy Ledger – sprawdzanie łańcucha skrótów i nagłówków.
+EN: Ledger tests – verification of hash chain and headers.
+"""
+
+from __future__ import annotations
+
+import json
+from collections.abc import Mapping
+from datetime import datetime, timezone
+from hashlib import sha256
+from typing import Any
+
+
+def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
+    if not include_timestamp and "timestamp" in data:
+        work = {k: v for k, v in data.items() if k != "timestamp"}
+    else:
+        work = dict(data)
+    return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
+    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
+
+
+def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
+    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
+
+
+class LedgerRecord:
+    """
+    Elastyczny rekord księgi:
+      - przyjmuje zarówno 'document_hash', jak i alias 'hash'
+      - ma opcjonalne 'meta'
+      - wszystkie pola mają domyślne wartości (żeby test mógł wołać bez wszystkich argów)
+    """
+
+    def __init__(
+        self,
+        *,
+        event_id: int = 0,
+        type: str = "INPUT_INGESTION",
+        case_id: str = "",
+        document_hash: str | None = None,
+        timestamp: str = "",
+        chain_prev: str | None = None,
+        chain_self: str = "",
+        meta: Mapping[str, Any] | None = None,
+        **extras: Any,
+    ) -> None:
+        # aliasy z testów: 'hash' -> document_hash
+        if document_hash is None and "hash" in extras:
+            document_hash = str(extras.pop("hash"))
+
+        self.event_id = event_id
+        self.type = type
+        self.case_id = case_id
+        self.document_hash = document_hash
+        self.timestamp = timestamp
+        self.chain_prev = chain_prev
+        self.chain_self = chain_self
+        self.meta = dict(meta) if meta is not None else None
+        # ignorujemy inne nadmiarowe klucze, żeby nie wywalać testów
+
+    # alias tylko do odczytu (jeśli ktoś próbuje sięgnąć po .hash)
+    @property
+    def hash(self) -> str | None:  # noqa: D401
+        return self.document_hash
+
+
+class Ledger:
+    def __init__(self) -> None:
+        self._events: list[LedgerRecord] = []
+
+    # --- API wprost używane w testach ---------------------------------
+    def append(self, rec: LedgerRecord) -> None:
+        """Dodaj istniejący rekord (testy tego używają)."""
+        self._events.append(rec)
+
+    def read_all(self, case_id: str | None = None) -> list[LedgerRecord]:
+        """Zwróć wszystkie rekordy (opcjonalnie tylko dla case_id)."""
+        if case_id is None:
+            return list(self._events)
+        return [r for r in self._events if r.case_id == case_id]
+
+    # --- API używane przez nasze routery ------------------------------
+    def _next_event_id(self) -> int:
+        return len(self._events) + 1
+
+    def _now_iso(self) -> str:
+        return datetime.now(timezone.utc).isoformat()
+
+    def _chain(self, payload: dict[str, Any], prev: str | None) -> str:
+        body = dict(payload)
+        if prev:
+            body["prev"] = prev
+        return sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+    def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
+        event_id = self._next_event_id()
+        ts = self._now_iso()
+        prev = self._events[-1].chain_self if self._events else None
+
+        payload = {
+            "event_id": event_id,
+            "type": "INPUT_INGESTION",
+            "case_id": case_id,
+            "document_hash": document_hash,
+            "timestamp": ts,
+        }
+        chain_self = self._chain(payload, prev)
+
+        rec = LedgerRecord(
+            event_id=event_id,
+            type="INPUT_INGESTION",
+            case_id=case_id,
+            document_hash=document_hash,
+            timestamp=ts,
+            chain_prev=prev,
+            chain_self=chain_self,
+        )
+        self._events.append(rec)
+
+        return {
+            "event_id": rec.event_id,
+            "type": rec.type,
+            "case_id": rec.case_id,
+            "document_hash": rec.document_hash,
+            "timestamp": rec.timestamp,
+            "chain_prev": rec.chain_prev,
+            "chain_self": rec.chain_self,
+        }
+
+    def get_records_for_case(self, *, case_id: str) -> list[dict[str, Any]]:
+        """Wersja słownikowa (używana przez router /ledger)."""
+        return [
+            {
+                "event_id": r.event_id,
+                "type": r.type,
+                "case_id": r.case_id,
+                "document_hash": r.document_hash,
+                "timestamp": r.timestamp,
+                "chain_prev": r.chain_prev,
+                "chain_self": r.chain_self,
+            }
+            for r in self._events
+            if r.case_id == case_id
+        ]
+
+
+# pojedyncza instancja do użycia przez routery
+ledger_service = Ledger()
+
+__all__ = [
+    "Ledger",
+    "LedgerRecord",
+    "ledger_service",
+    "compute_provenance_hash",
+    "verify_provenance_hash",
+]
+
+```
+
+
+===== FILE: tests/services/test_lexlog.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_lexlog.py           |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                         CERTEUS                             |
+# |                   LEXLOG Parser Tests                       |
+# +-------------------------------------------------------------+
+
+"""
+PL: Testuje minimalny parser LEXLOG na pliku kk.lex.
+EN: Tests the minimal LEXLOG parser on kk.lex file.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from services.lexlog_parser.parser import parse_lexlog
+
+
+def test_lexlog_parser_kk_lex() -> None:
+    lex_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.lex"
+    assert lex_path.exists(), "Missing packs/jurisdictions/PL/rules/kk.lex"
+
+    content = lex_path.read_text(encoding="utf-8")
+    ast = parse_lexlog(content)
+
+    # Defines present
+    names = {d.name for d in ast.defines}
+    assert {
+        "cel_korzysci_majatkowej",
+        "wprowadzenie_w_blad",
+        "niekorzystne_rozporzadzenie_mieniem",
+    }.issubset(names)
+
+    # Premises present
+    pids = {p.id for p in ast.premises}
+    assert {"P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"}.issubset(pids)
+
+    # Rule ties premises to conclusion
+    rule = next(r for r in ast.rules if r.id == "R_286_OSZUSTWO")
+    assert rule.conclusion == "K_OSZUSTWO_STWIERDZONE"
+    assert set(rule.premises) == {"P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"}
+
+    # Conclusion has assertion
+    concl = next(c for c in ast.conclusions if c.id == "K_OSZUSTWO_STWIERDZONE")
+    assert concl.assert_expr is not None and "cel_korzysci_majatkowej" in concl.assert_expr
+
+```
+
+
+===== FILE: tests/services/test_lexlog_eval.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_lexlog_eval.py      |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                         CERTEUS                             |
+# |                   LEXLOG Evaluator Tests                    |
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy ewaluatora LEXLOG (MVP) dla art. 286 k.k., z loaderem mapowania.
+EN: LEXLOG evaluator tests (MVP) for art. 286 PC, with mapping loader.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from services.lexlog_parser.evaluator import choose_article_for_kk, evaluate_rule
+from services.lexlog_parser.mapping import load_mapping
+from services.lexlog_parser.parser import parse_lexlog
+
+
+def _load_kk_ast():
+    lex_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.lex"
+    content = lex_path.read_text(encoding="utf-8")
+    return parse_lexlog(content)
+
+
+def _load_ctx():
+    map_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.mapping.json"
+    assert map_path.exists(), "Missing kk.mapping.json"
+    return load_mapping(map_path)
+
+
+def test_286_passes_when_wprowadzenie_true_and_excludes_false() -> None:
+    ast = _load_kk_ast()
+    ctx = _load_ctx()
+
+    flags = {
+        "ZNAMIE_WPROWADZENIA_W_BLAD": True,
+        "ZNAMIE_POWIERZENIA_MIENIA": False,
+    }
+    res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
+    assert res.satisfied is True
+    assert res.missing_premises == []
+    assert res.failing_excludes == []
+    assert choose_article_for_kk(ast, flags, ctx) == "art286"
+
+
+def test_286_fails_when_excluded_flag_set() -> None:
+    ast = _load_kk_ast()
+    ctx = _load_ctx()
+
+    flags = {
+        "ZNAMIE_WPROWADZENIA_W_BLAD": True,
+        "ZNAMIE_POWIERZENIA_MIENIA": True,  # exclude -> blokuje
+    }
+    res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
+    assert res.satisfied is False
+    assert res.failing_excludes == ["ZNAMIE_POWIERZENIA_MIENIA"]
+    assert choose_article_for_kk(ast, flags, ctx) is None
+
+```
+
+
+===== FILE: tests/services/test_lexlog_parser.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_lexlog_parser.py    |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_lexlog_parser.py                  |
+# | ROLE: Unit tests for LEXLOG parser AST & legacy stub        |
+# | PLIK: tests/services/test_lexlog_parser.py                  |
+# | ROLA: Testy parsera LEXLOG (AST i zgodność legacy)          |
+# +-------------------------------------------------------------+
+
+"""
+CERTEUS — LEXLOG Parser Tests
+PL: Testy sprawdzające parsowanie: DEFINE/PREMISE/RULE/CONCLUSION,
+    normalizację ID oraz zgodność z legacy stubem.
+EN: Tests for parsing of DEFINE/PREMISE/RULE/CONCLUSION, canonical ID
+    normalization, and legacy stub compatibility.
+"""
+
+from pathlib import Path
+
+from services.lexlog_parser.parser import LexlogParser
+
+RULES = Path("packs/jurisdictions/PL/rules/kk.lex")
+
+
+def test_lexlog_parses_art_286_rule():
+    text = RULES.read_text(encoding="utf-8")
+    ast = LexlogParser().parse(text)
+    assert ast, "AST should not be empty"
+    assert ast["rule_id"] == "R_286_OSZUSTWO"
+    assert ast["conclusion"] == "K_OSZUSTWO_STWIERDZONE"
+    assert set(ast["premises"]) == {"P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"}
+    assert "z3.And(" in ast["smt_assertion"]
+
+```
+
+
+===== FILE: tests/services/test_mismatch_service.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_mismatch_service.py |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+"""
+PL: Testy jednostkowe / integracyjne modułu.
+EN: Module test suite (unit/integration).
+"""
+
+# +-------------------------------------------------------------+
+# | CERTEUS - Tests: Mismatch Service                           |
+# +-------------------------------------------------------------+
+from services.mismatch_service.models import ResolutionType, TicketResolution
+from services.mismatch_service.service import MismatchService
+
+
+def test_create_and_resolve_ticket():
+    svc = MismatchService()
+    t = svc.create_ticket(
+        case_id="case-001",
+        formula_str="p -> q",
+        results={"z3": {"status": "sat"}, "cvc5": {"status": "unsat"}},
+    )
+    assert t.ticket_id.startswith("MM-")
+    assert t.priority in ("high", "critical", "medium", "low")
+
+    res = TicketResolution(
+        ticket_id=t.ticket_id,
+        resolution_type=ResolutionType.HUMAN_OVERRIDE,
+        chosen_result="sat",
+        notes="Expert decision",
+        resolved_by="tester",
+        confidence=0.8,
+    )
+    t2 = svc.resolve_ticket(t.ticket_id, res)
+    assert t2.status == "resolved"
+    assert t2.chosen_result == "sat"
+
+```
+
+
+===== FILE: tests/services/test_preview.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  tests/services/test_preview.py                              |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+# | FILE / PLIK: tests/services/test_preview.py                          |
+# | ROLE / ROLA:                                                         |
+# |  EN: Integration tests for /v1/preview endpoint (file → preview URL).|
+# |  PL: Testy integracyjne endpointu /v1/preview (plik → URL podglądu). |
+# +=====================================================================+
+
+"""
+PL: Testy weryfikują, że endpoint /v1/preview przyjmuje plik (multipart/form-data)
+    i zwraca JSON z kluczem `url` wskazującym ścieżkę podglądu w `/static/previews/...`.
+
+EN: Tests verify that /v1/preview accepts a file (multipart/form-data) and returns
+    JSON with a `url` pointing to a preview path under `/static/previews/...`.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+
+import services.api_gateway.main as api_main
+
+
+def test_health_ok() -> None:
+    client = TestClient(api_main.app)
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert r.json().get("status") == "ok"
+
+
+def test_static_app_mount() -> None:
+    client = TestClient(api_main.app)
+    r = client.get("/app/proof_visualizer/index.html")
+    assert r.status_code in (
+        200,
+        404,
+    )  # mount działa; plik może nie istnieć w teście CI
+
+
+def test_preview_upload_roundtrip(tmp_path: Path) -> None:
+    client = TestClient(api_main.app)
+    sample = tmp_path / "sample.txt"
+    sample.write_text("hello", encoding="utf-8")
+    with sample.open("rb") as fh:
+        r = client.post("/v1/preview", files={"file": ("sample.txt", fh, "text/plain")})
+    assert r.status_code == 200
+    url = r.json().get("url")
+    assert isinstance(url, str) and url.startswith("/static/previews/")
+
+    rel = url.removeprefix("/static/")
+    saved = Path("static") / rel
+    assert saved.exists()
+    saved.unlink(missing_ok=True)
+
+```
+
+
+===== FILE: tests/services/test_schemas.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_schemas.py          |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_schemas.py                      |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_schemas.py                      |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+"""
+
+
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+
+
+EN: CERTEUS module – please complete the functional description.
+
+
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+
+# |                CERTEUS - Schema Contract Tests              |
+
+
+# +-------------------------------------------------------------+
+
+
+# | PLIK / FILE: tests/services/test_schemas.py                 |
+
+
+# | ROLA / ROLE: Sprawdza poprawność przykładowych danych        |
+
+
+# |             względem 'Świętej Trójcy' schematów.            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | STYLE: PL-first, headers & notes dual-language (PL/EN).     |
+
+
+# +-------------------------------------------------------------+
+
+from __future__ import annotations
+
+# === IMPORTY / IMPORTS ===
+import json
+from pathlib import Path
+from typing import Any, Final, Protocol
+
+import pytest
+from jsonschema import Draft7Validator, FormatChecker
+from jsonschema.exceptions import ValidationError
+
+# === ALIASY TYPÓW / TYPE ALIASES ===
+
+
+Schema = dict[str, Any]
+
+
+JSONObj = dict[str, Any]
+
+
+SCHEMA_DIR: Final[Path] = Path("schemas")
+
+
+# === PROTOKÓŁ WALIDATORA / VALIDATOR PROTOCOL ===
+
+
+class _ValidatorProtocol(Protocol):
+    """
+
+
+
+    PL: Minimalny interfejs wymagany od walidatora.
+
+
+
+    EN: Minimal interface required from a validator.
+
+
+
+    """
+
+    def validate(self, instance: Any) -> None: ...
+
+
+def load_schema(name: str) -> Schema:
+    """
+
+
+
+    PL: Ładuje i syntaktycznie weryfikuje schemat JSON (Draft7).
+
+
+
+    EN: Loads and syntactically checks a JSON schema (Draft7).
+
+
+
+    """
+
+    path = SCHEMA_DIR / name
+
+    with path.open("r", encoding="utf-8") as f:
+        schema: Schema = json.load(f)
+
+    Draft7Validator.check_schema(schema)
+
+    return schema
+
+
+def assert_valid(instance: JSONObj, schema: Schema) -> None:
+    """
+
+
+
+    PL: Waliduje instancję względem danego schematu (z FormatCheckerem).
+
+
+
+    EN: Validates the instance against the given schema (with FormatChecker).
+
+
+
+    """
+
+    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
+
+    validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
+
+
+def assert_invalid(instance: JSONObj, schema: Schema) -> None:
+    """
+
+
+
+    PL: Oczekuje błędu walidacji.
+
+
+
+    EN: Expects validation error.
+
+
+
+    """
+
+    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
+
+    with pytest.raises(ValidationError):
+        validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
+
+
+# === FIXTURE’Y / FIXTURES ===
+
+
+@pytest.fixture(scope="module")
+def S_PROVENANCE() -> Schema:
+    return load_schema("provenance_receipt_v1.json")
+
+
+@pytest.fixture(scope="module")
+def S_ANSWER() -> Schema:
+    return load_schema("answer_contract_v1.json")
+
+
+@pytest.fixture(scope="module")
+def S_PCA2() -> Schema:
+    return load_schema("pca2_v1.json")
+
+
+# === TESTY: PROVENANCE ===
+
+
+def test_provenance_valid(S_PROVENANCE: Schema) -> None:
+    ok: JSONObj = {
+        "case_id": "RS-DOM-vs-Stasikowski",
+        "receipt_id": "11111111-2222-3333-4444-555555555555",
+        "inputs": {
+            "lexlog_rule_version": "pl.lexlog/1.0.0",
+            "assumptions_hash": "f" * 64,
+            "question_hash": "a" * 64,
+        },
+        "solvers": {"z3": {"status": "ok", "runtime_ms": 12}, "cvc5": {"status": "ok"}},
+        "mismatch": False,
+        "final_hash": "0" * 64,
+        "timestamp": "2025-08-14T10:00:00Z",
+    }
+
+    assert_valid(ok, S_PROVENANCE)
+
+
+def test_provenance_invalid_missing_required(S_PROVENANCE: Schema) -> None:
+    bad: JSONObj = {
+        "inputs": {"lexlog_rule_version": "x", "assumptions_hash": "f" * 64},
+        "solvers": {},
+        "mismatch": True,
+        "final_hash": "0" * 64,
+        "timestamp": "2025-08-14T10:00:00Z",
+    }
+
+    assert_invalid(bad, S_PROVENANCE)
+
+
+# === TESTY: ANSWER CONTRACT ===
+
+
+def test_answer_valid(S_ANSWER: Schema) -> None:
+    ok: JSONObj = {
+        "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "case_id": "RS-DOM-vs-Stasikowski",
+        "question": {"text": "Czy §10 ust. 1 pkt 3 ma zastosowanie?", "lang": "pl"},
+        "answer": {"text": "Tak/Nie + uzasadnienie...", "lang": "pl", "hash": "1" * 64},
+        "citations": [
+            {
+                "type": "statute",
+                "label": "KC art. 647¹",
+                "ref": "Dz.U....",
+                "locator": "art. 647(1) §2",
+            }
+        ],
+        "metrics": {"confidence": 0.92, "latency_ms": 120},
+        "model": {
+            "provider": "LEXENITH",
+            "name": "GPT-5 Thinking",
+            "version": "2025.08",
+        },
+        "provenance": {"receipt_id": "11111111-2222-3333-4444-555555555555"},
+        "timestamps": {"created_at": "2025-08-14T10:01:00Z"},
+    }
+
+    assert_valid(ok, S_ANSWER)
+
+
+def test_answer_invalid_confidence_range(S_ANSWER: Schema) -> None:
+    bad: JSONObj = {
+        "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "case_id": "X",
+        "question": {"text": "foo"},
+        "answer": {"text": "bar"},
+        "timestamps": {"created_at": "2025-08-14T10:01:00Z"},
+        "model": {"provider": "LEXENITH", "name": "GPT-5 Thinking"},
+        "metrics": {"confidence": 1.5},
+    }
+
+    assert_invalid(bad, S_ANSWER)
+
+
+# === TESTY: PCA² ===
+
+
+def test_pca2_valid(S_PCA2: Schema) -> None:
+    ok: JSONObj = {
+        "case_id": "RS-DOM-vs-Stasikowski",
+        "policy": ["lexenith.secure.v1", "legal.pl.civil.kc"],
+        "constraints": [{"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}],
+        "assumptions": [{"name": "ryczalt", "value": "tak"}],
+        "attestations": [
+            {
+                "subject": "answer#aaaaaaaa",
+                "by": "auditor.bot",
+                "result": "pass",
+                "at": "2025-08-14T10:05:00Z",
+            }
+        ],
+        "audit_trail": [
+            {
+                "type": "constraint_eval",
+                "at": "2025-08-14T10:05:01Z",
+                "actor": "cerber",
+                "message": "OK",
+            }
+        ],
+        "overall_status": "pass",
+        "final_hash": "2" * 64,
+    }
+
+    assert_valid(ok, S_PCA2)
+
+
+def test_pca2_invalid_status(S_PCA2: Schema) -> None:
+    bad: JSONObj = {"case_id": "X", "overall_status": "unknown"}
+
+    assert_invalid(bad, S_PCA2)
+
+```
+
+
+===== FILE: tests/services/test_sipp.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_sipp.py             |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                         CERTEUS                             |
+# |      Core Engine for Reliable & Unified Systems             |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_sipp.py                           |
+# | ROLE: Integration tests for SIPP Indexer endpoint.          |
+# +-------------------------------------------------------------+
+
+"""
+PL: Testuje endpoint /v1/sipp/snapshot/{act_id}.
+EN: Tests the /v1/sipp/snapshot/{act_id} endpoint.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+
+from services.api_gateway.main import app
+
+client = TestClient(app)
+
+
+def test_get_snapshot_endpoint_success() -> None:
+    act_id = "kk-art-286"
+    resp = client.get(f"/v1/sipp/snapshot/{act_id}")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["act_id"] == act_id
+    assert data["version_id"] == "2023-10-01"
+    assert data["source_url"]
+    assert data["text_sha256"].startswith("sha256:")
+    assert "snapshot_timestamp" in data
+
+
+def test_get_snapshot_with_at_param() -> None:
+    act_id = "kk-art-286"
+    resp = client.get(f"/v1/sipp/snapshot/{act_id}?at=2024-11-24")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["act_id"] == act_id
+    # Stub ignores 'at', but API must accept the param gracefully.
+    assert data["version_id"] == "2023-10-01"
+
+
+def test_index_isap_writes_snapshot_file(tmp_path: Path) -> None:
+    from services.sipp_indexer_service.index_isap import index_act
+
+    p = index_act("kk-art-286", out_dir=tmp_path)  # nie piszemy do repo podczas testu
+    assert p.exists()
+
+    data = json.loads(p.read_text(encoding="utf-8"))
+    assert data["act_id"] == "kk-art-286"
+    assert data["text_sha256"].startswith("sha256:")
+    assert "snapshot_timestamp" in data
+    assert "_certeus" in data and "snapshot_timestamp_utc" in data["_certeus"]
+
+```
+
+
+===== FILE: tests/services/test_verify_mismatch.py =====
+```text
+# +=====================================================================+
+# |                          CERTEUS                                    |
+# +=====================================================================+
+# | MODULE:  F:/projekty/certeus/tests/services/test_verify_mismatch.py  |
+# | DATE:    2025-08-17                                                  |
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_verify_mismatch.py                |
+# | ROLE: Ensures mismatch maps to HTTP 409 requires_human.     |
+# | PLIK: tests/services/test_verify_mismatch.py                |
+# | ROLA: Gwarantuje mapowanie rozjazdu na HTTP 409.            |
+# +-------------------------------------------------------------+
+"""
+PL: Test symuluje rozbieżność rdzeni i sprawdza odpowiedź 409.
+EN: Test simulates core mismatch and checks 409 response.
+"""
+
+# === IMPORTY / IMPORTS ===
+from fastapi.testclient import TestClient
+
+from services.api_gateway.main import app
+
+
+# === TEST / TEST ===
+def test_verify_returns_409_on_mismatch(monkeypatch):
+    """
+    PL: Symulowany MismatchError powinien dać 409 + requires_human:true.
+    EN: Simulated MismatchError should return 409 + requires_human:true.
+    """
+    from kernel import truth_engine
+
+    original = truth_engine.DualCoreVerifier.verify
+
+    def fake_verify(self, formula, lang="smt2"):
+        from kernel.mismatch_protocol import MismatchError
+
+        raise MismatchError("forced mismatch")
+
+    monkeypatch.setattr(truth_engine.DualCoreVerifier, "verify", fake_verify)
+    client = TestClient(app)
+    r = client.post("/v1/verify", json={"formula": "(set-logic QF_LIA)", "lang": "smt2"})
+    assert r.status_code == 409
+    body = r.json()
+    assert body["detail"]["requires_human"] is True
+
+    # porządek
+    monkeypatch.setattr(truth_engine.DualCoreVerifier, "verify", original)
+
+```
+
+
 ===== FILE: tests/test_adapters_local_impl.py =====
 ```text
 # =============================================================================
@@ -55,9 +1497,7 @@ from services.ingest_service.adapters.local_impl import (
 async def test_drive_roundtrip(tmp_path: Path) -> None:
     drive = LocalDriveAdapter(base_dir=tmp_path / "static", base_url_prefix="/static")
     data = b"hello"
-    saved = await drive.save_bytes(
-        data, filename="x.txt", content_type="text/plain", case_id="caseA"
-    )
+    saved = await drive.save_bytes(data, filename="x.txt", content_type="text/plain", case_id="caseA")
     assert saved.file_id.endswith(".txt")
     raw = await drive.read_bytes(saved.file_id)
     assert raw == data
@@ -570,9 +2010,7 @@ def test_generate_proofs_cli_smoke_test() -> None:
         res = subprocess.run(cmd, check=True, capture_output=True, text=True)
         stdout: str = res.stdout
 
-        assert ("Created simulated proof with content" in stdout) or (
-            "Created stub proof" in stdout
-        )
+        assert ("Created simulated proof with content" in stdout) or ("Created stub proof" in stdout)
         assert (out / "z3.drat").exists()
         assert (out / "cvc5.lfsc").exists()
 
@@ -739,9 +2177,7 @@ DOCSTRING_NEAR_TOP_RE = re.compile(r'(?ms)^\s*(["\'])\1\1(?P<body>.*?)(\1\1\1)\s
 
 
 def needs_banner(text: str) -> bool:
-    return not text.lstrip().startswith(
-        "# +====================================================================="
-    )
+    return not text.lstrip().startswith("# +=====================================================================")
 
 
 def needs_docstring(text: str) -> bool:
@@ -1093,9 +2529,7 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
     # 3) Insert canonical banner
     module_path = str(p).replace("\\", "/")
     date_str = (
-        datetime.date.today().isoformat()
-        if set_date_today
-        else (first_date or datetime.date.today().isoformat())
+        datetime.date.today().isoformat() if set_date_today else (first_date or datetime.date.today().isoformat())
     )
     banner = build_banner(module_path, date_str)
 
@@ -1118,9 +2552,7 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(
-        description="Normalize CERTEUS banners and module docstrings across repository."
-    )
+    ap = argparse.ArgumentParser(description="Normalize CERTEUS banners and module docstrings across repository.")
     ap.add_argument("--root", default=".", help="Repository root (default: .)")
     ap.add_argument(
         "--set-date",
