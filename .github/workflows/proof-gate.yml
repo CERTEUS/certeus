@@ -39,8 +39,40 @@ jobs:
       - name: Tests (Pytest)
         env:
           PYTHONWARNINGS: "error,default::DeprecationWarning"
+          PYTEST_JUNIT_XML: reports/junit.xml
         run: |
-          uv run pytest -q
+          mkdir -p "$(dirname "$PYTEST_JUNIT_XML")"
+          uv run pytest -q --junitxml="$PYTEST_JUNIT_XML"
+
+      - name: Compute gauge drift
+        run: |
+          uv run python scripts/gates/compute_gauge_drift.py --flags data/flags/kk.flags.json --out out/gauge.json
+
+      - name: Compute lexqft coverage metrics
+        run: |
+          uv run python scripts/gates/compute_lexqft_coverage.py --flags data/flags/kk.flags.json --out out/lexqft_coverage.json
+
+      - name: Gauge-Gate (holonomy drift)
+        run: |
+          uv run python scripts/gates/gauge_gate.py --epsilon 1e-3
+
+      - name: Path-Coverage Gate (lexqft)
+        env:
+          STRICT_PATH_COVERAGE: "1"
+        run: |
+          uv run python scripts/gates/path_coverage_gate.py --min-gamma 0.90 --max-uncaptured 0.05
+
+      - name: Compute boundary report
+        env:
+          PCO_JWKS_B64URL: ${{ secrets.PCO_JWKS_B64URL }}
+        run: |
+          uv run python scripts/gates/compute_boundary_report.py
+
+      - name: Boundary-Rebuild Gate (delta_bits == 0)
+        env:
+          STRICT_BOUNDARY_REBUILD: "1"
+        run: |
+          uv run python scripts/gates/boundary_rebuild_gate.py
 
       - name: Validate Policy Pack (--strict)
         run: |
@@ -48,6 +80,77 @@ jobs:
             --schema policies/pco/policy_pack.schema.v0.1.json \
             --pack   policies/pco/policy_pack.v0.1.yaml \
             --format text --strict --list-use-cases
+
+      - name: Generate SBOM (CycloneDX JSON)
+        run: |
+          uv run python -m pip install -q cyclonedx-bom
+          uv run cyclonedx-py --format json --output sbom.json
+          test -s sbom.json
+
+      - name: Build provenance (in-toto style)
+        run: |
+          uv run python scripts/supply_chain/make_provenance.py
+
+      - name: Measure SLO metrics
+        run: |
+          uv run python scripts/slo_gate/measure_api.py
+
+      - name: SLO Gate
+        env:
+          SLO_MAX_P95_MS: "250"
+          SLO_MAX_ERROR_RATE: "0.005"
+        run: |
+          uv run python scripts/slo_gate/check_slo.py
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3.7.0
+
+      - name: Cosign sign SBOM (keyless)
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign version
+          cosign sign-blob --yes --output-signature sbom.json.sig --output-certificate sbom.json.cert sbom.json
+          test -s sbom.json.sig
+          test -s sbom.json.cert
+
+      - name: Cosign sign provenance (keyless)
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign sign-blob --yes --output-signature out/provenance.sig --output-certificate out/provenance.cert out/provenance.json
+          test -s out/provenance.sig
+          test -s out/provenance.cert
+
+      - name: Verify supply-chain artifacts (cosign)
+        if: github.event_name != 'pull_request'
+        env:
+          COSIGN_EXPECT_ISSUER: https://token.actions.githubusercontent.com
+          COSIGN_EXPECT_URI_CONTAINS: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          uv run python scripts/supply_chain/verify_cosign_artifacts.py || true
+
+      - name: Upload supply-chain artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply-chain-${{ github.sha }}
+          path: |
+            sbom.json
+            sbom.json.sig
+            sbom.json.cert
+            out/provenance.json
+            out/provenance.sig
+            out/provenance.cert
+
+      - name: Generate OpenAPI
+        run: |
+          uv run python scripts/generate_openapi.py
+
+      - name: Upload OpenAPI
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-${{ github.sha }}
+          path: out/openapi.json
 
       - name: Verify public bundle (Merkle + Ed25519)
         env:

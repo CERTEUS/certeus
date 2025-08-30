@@ -5,6 +5,7 @@
 [![SLSA](https://img.shields.io/badge/slsa-3%2B-8A2BE2)](https://slsa.dev)
 [![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![OpenAPI](https://img.shields.io/badge/openapi-latest-blue)](https://CERTEUS.github.io/certeus/openapi/openapi.json)
 
 <p align="center">
   <picture>
@@ -33,6 +34,11 @@
 - [Gwarancje i bramki CI/SLO](#gwarancje-i-bramki-cislo)
 - [Bezpieczeństwo & łańcuch dostaw](#bezpieczeństwo--łańcuch-dostaw)
 - [Observability & Runbooks](#observability--runbooks)
+- [Operational Playbook](#operational-playbook)
+- [Diagrams](#diagrams)
+- [Security Policy](#security-policy)
+- [Pre-release Checklist](#pre-release-checklist)
+- [OpenAPI & SDK](#openapi--sdk)
 - [Konfiguracja / ENV](#konfiguracja--env)
 - [Struktura repo](#struktura-repo)
 - [Standard kodowania](#standard-kodowania)
@@ -86,8 +92,9 @@ export CER_BASE="http://localhost:8081"
 uv venv && source .venv/bin/activate
 uv pip install -r requirements.txt
 docker compose -f infra/docker-compose.dev.yml up -d --build
-uvicorn services.proofgate.app:app --reload --port 8081
-uvicorn services.boundary_service.app:app --reload --port 8082
+# Gateway + ProofGate (zalecane skróty)
+make run-api           # FastAPI Gateway na :8081
+make run-proofgate     # ProofGate na :8085
 ```
 
 ```powershell
@@ -95,7 +102,9 @@ uvicorn services.boundary_service.app:app --reload --port 8082
 uv venv; .\.venv\Scripts\Activate.ps1
 uv pip install -r requirements.txt
 docker compose -f infra/docker-compose.dev.yml up -d --build
-python -m uvicorn services.proofgate.app:app --reload --port 8081
+# Gateway + ProofGate (zalecane skróty)
+make run-api
+make run-proofgate
 ```
 
 ### SRE (k8s)
@@ -115,17 +124,43 @@ cerctl boundary reconstruct --date 2025-08-30
 
 ---
 
-## ChatOps — pierwsza komenda
+## ChatOps - pierwsza komenda
 
 ```bash
 curl -sX POST "$CER_BASE/v1/chatops/command"   -H 'Content-Type: application/json'   -d '{ "cmd":"cfe.geodesic --case CER-42", "text_context":"demo" }' | jq
 # oczekiwane: {"result":{...},"pco":{...}}
 ```
 
+### Packs — szybki przykład
+
+```bash
+curl -sX GET "$CER_BASE/v1/packs" | jq
+curl -sX POST "$CER_BASE/v1/packs/handle" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "pack":"plugins.packs_fin.fin_alpha:PACK",
+    "kind":"fin.alpha.measure",
+    "payload":{"risk":0.10, "sentiment":0.55}
+  }' | jq
+```
+
+### FINENITH — minimalne zapytania
+
+```bash
+curl -sX POST "$CER_BASE/v1/fin/alpha/measure" -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' | jq
+curl -sX GET  "$CER_BASE/v1/fin/alpha/uncertainty" | jq
+curl -sX GET  "$CER_BASE/v1/fin/alpha/entanglements" | jq
+```
+
 ## MailOps — ingest i PFS://
 
 ```bash
-curl -sX POST "$CER_BASE/v1/mail/ingest"   -H 'Content-Type: application/json'   -d '{ "raw_mime_b64":"..."}' | jq '.attachments, .evidence_ref'
+curl -sX POST "$CER_BASE/v1/mailops/ingest"   -H 'Content-Type: application/json'   -d '{
+  "mail_id":"MID-1", "thread_id":"T-1",
+  "from_addr":"a@ex.com", "to":["b@ex.com"],
+  "subject":"Hello", "body_text":"Hi", "spf":"pass", "dkim":"pass", "dmarc":"pass",
+  "attachments":[{"filename":"a.pdf","content_type":"application/pdf","size":1234}]
+}' | jq
 # Załącznik dostępny jako pfs://mail/<messageId>/<attachment>
 ```
 
@@ -165,12 +200,16 @@ curl -s "$CER_BASE/v1/fin/alpha/entanglements" | jq
 ```text
 POST /v1/proofgate/publish          # decyzja publikacji + PCO + wpis do ledger
 GET  /v1/ledger/{case_id}           # odczyt public payload
-POST /v1/boundary/reconstruct       # Boundary == 0 delta (append-only)
+GET  /v1/packs                      # lista Domain Packs (ABI/capabilities)
+POST /v1/packs/handle               # wywołanie pack.handle(kind,payload)
+POST /v1/fin/alpha/measure          # FINENITH: pomiar Alpha
+GET  /v1/fin/alpha/uncertainty      # FINENITH: dolna granica niepewności
+GET  /v1/fin/alpha/entanglements    # FINENITH: splątania (MI)
 POST /v1/cfe/geodesic               # geodezyjny dowód (CFE)
 POST /v1/cfe/horizon                # horyzont zdarzeń dowodowych (CFE)
 POST /v1/qtm/measure                # kolaps funkcji falowej (QTMP)
 POST /v1/lexqft/tunnel              # tunelowanie dowodowe
-POST /v1/mail/ingest                # ingest e-maila → Evidence DAG/PFS
+POST /v1/mailops/ingest                # ingest e-maila → Evidence DAG/PFS
 POST /v1/chatops/command            # komenda tekstowa → wywołanie usług
 POST /v1/devices/horizon_drive/plan # plan dowodów do horyzontu (HDE)
 ```
@@ -206,19 +245,120 @@ docker compose -f infra/docker-compose.monitoring.yml up -d
 ```
 
 - OTel tracing, eBPF profiling, Pyroscope/Parca
-- Runbooks: `docs/runbooks/` – Boundary stuck, Gauge drift, PCO revoke
+- Runbooks: `docs/runbooks/` - Boundary stuck, Gauge drift, PCO revoke
+
+## Operational Playbook
+
+- Proof‑Only I/O (Ingress/Clients):
+  - Włączenie: ustaw `STRICT_PROOF_ONLY=1` oraz `PCO_JWKS_B64URL` (JWKS OKP/Ed25519) lub `ED25519_PUBKEY_B64URL` (Base64URL klucza publicznego Ed25519).
+  - Klient (egress): ustaw `ED25519_SECRET_B64URL` i użyj `utils/proof_client.ProofHttpxClient` albo `scripts/pco_token_tool.py`.
+    - Przykład: `uv run python scripts/pco_token_tool.py gen-key` → ustaw sekret/publiczny; `... sign --payload '{"sub":"tenant-1"}'` generuje JWS do `Authorization: Bearer ...`.
+  - Test E2E: `pytest -q tests/e2e/test_proof_only_flow.py` (401→200 z tokenem).
+
+- SLO Gate (p95 + error-rate):
+  - Pomiary lokalnie: `uv run python scripts/slo_gate/measure_api.py` → `out/slo_metrics.json`.
+  - Walidacja: `SLO_MAX_P95_MS=250 SLO_MAX_ERROR_RATE=0.005 uv run python scripts/slo_gate/check_slo.py` (exit!=0 przy przekroczeniu progów).
+  - CI: kroki “Measure SLO metrics” + “SLO Gate” w workflow Proof Gate.
+
+- Boundary (snapshot/diff/verify):
+  - Snapshot: `make boundary-reconstruct` → `out/boundary_snapshot.json` (global_digest + shardy).
+  - Diff: `python scripts/boundary_diff.py out/boundary_snapshot_base.json out/boundary_snapshot_head.json`.
+  - Verify bundles: Gate liczy `out/boundary_report.json` (wymaga `PCO_JWKS_B64URL`/`ED25519_PUBKEY_B64URL` i `data/public_pco/`).
+  - Cel: `delta_bits == 0` (raport `bits_delta_map`).
+
+- Truth Gates (AFV/ASE/ATC):
+  - Obliczenia: `uv run python scripts/compute_truth_gates.py --out out/truth_gates.json`.
+  - Źródła: JUnit (`reports/junit.xml`), SLO (`out/slo_metrics.json`), gates (gauge/path_coverage/boundary), artefakty (SBOM/provenance).
+  - PR: workflow `truth_gates` dodaje komentarz z wynikami.
+
+- Gates lokalnie (pełny zestaw):
+  - `make gates` → gauge + lexqft coverage + boundary (strict).
+  - Zależności env: `PCO_JWKS_B64URL`/`ED25519_PUBKEY_B64URL` (boundary verify), `data/flags/kk.flags.json` (coverage).
+
+- cerctl (CLI):
+  - `make cerctl ARGS="init"` — przygotuj workspace (`out/`).
+  - `make cerctl ARGS="pco sign in.json"` — podpisz PCO (Ed25519; wymaga `ED25519_SECRET_B64URL`).
+  - `make cerctl ARGS="pack docs/manifest.md services/api_gateway/main.py"` — cfpack (zip + symbol-map).
+  - `make cerctl ARGS="ledger get CER-1"` — pobierz PCO z ledger (public payload).
+  - `make cerctl ARGS="boundary reconstruct"` — snapshot boundary.
+
+- Domain Packs:
+  - Lista: `GET /v1/packs` — nazwa, ABI, capabilities.
+  - Wywołanie: `POST /v1/packs/handle` body `{ "pack": "plugins.packs_fin.fin_alpha:PACK", "kind": "fin.alpha.measure", "payload": {"risk":0.1, "sentiment":0.5} }`.
+
+- FINENITH:
+  - `POST /v1/fin/alpha/measure` (signals), `GET /v1/fin/alpha/uncertainty`, `GET /v1/fin/alpha/entanglements`.
+
+---
+
+## Diagrams
+
+Zobacz `docs/diagrams.md` — Boundary snapshot/diff oraz pipeline Proof Gate (CI).
+
+---
+
+## Security Policy
+
+- Proof‑Only I/O: produkcyjnie ustaw `STRICT_PROOF_ONLY=1`. Wszystkie mutujące żądania do `/v1/*` muszą nieść poprawny token PCO (JWS Ed25519) w nagłówku `Authorization: Bearer ...` lub `X-PCO-Token`.
+- Klucze publiczne: publikuj pod `/.well-known/jwks.json`. W CI używaj podpisów keyless (cosign Fulcio/Rekor), z weryfikacją issuer/URI.
+- Supply-chain: SBOM (CycloneDX) + provenance (in‑toto style) obowiązkowe; podpisy cosign (keyless) i weryfikacja w ATC.
+- Role i polityki: OPA/Rego, role AFV/ASE/ATC/ATS/AVR; polityka deny-by-default dla zależności (Trivy FS CRITICAL/HIGH → fail).
+- Zobacz `SECURITY.md` po więcej szczegółów i zasady zgłaszania incydentów.
+
+---
+
+## Pre-release Checklist
+
+- Testy i Lint:
+  - `uv run pytest -q` → wszystkie zielone; JUnit w `reports/junit.xml`.
+  - `uv run ruff check .` → bez błędów; format check OK.
+- Gates:
+  - Gauge: `uv run python scripts/gates/compute_gauge_drift.py --flags data/flags/kk.flags.json && uv run python scripts/gates/gauge_gate.py --epsilon 1e-3`.
+  - Coverage: `uv run python scripts/gates/compute_lexqft_coverage.py --flags data/flags/kk.flags.json && uv run python scripts/gates/path_coverage_gate.py`.
+  - Boundary: `uv run python scripts/gates/compute_boundary_report.py && STRICT_BOUNDARY_REBUILD=1 uv run python scripts/gates/boundary_rebuild_gate.py`.
+  - SLO: `uv run python scripts/slo_gate/measure_api.py && uv run python scripts/slo_gate/check_slo.py` (p95 ≤ 250 ms, error-rate ≤ 0.5%).
+- Supply-chain:
+  - SBOM: `uv run cyclonedx-py --format json --output sbom.json` (w CI robione automatycznie).
+  - Provenance: `uv run python scripts/supply_chain/make_provenance.py` → `out/provenance.json`.
+  - Podpisy (CI): cosign keyless dla SBOM i provenance; verify: `uv run python scripts/supply_chain/verify_cosign_artifacts.py` (ATC musi być PASS).
+- Boundary snapshot/diff:
+  - `make boundary-reconstruct` i (opcjonalnie) porównanie z BASE w PR (workflow boundary-diff).
+- OpenAPI:
+  - Upewnij się, że `docs/openapi/certeus.v1.yaml` zawiera najnowsze ścieżki (CFE/QTMP/LexQFT/Devices/MailOps/ChatOps/UPN/DR/Packs/FIN/ProofGate).
+- Dokumentacja:
+  - README: Operational Playbook zaktualizowany.
+  - Diagrams: `docs/diagrams.md` aktualne (Boundary / Proof Gate / ProofFS).
+- Wersjonowanie i release:
+  - SemVer bump + changelog (Conventional Commits), tag `vX.Y.Z` → workflow `release`.
+
+---
+
+## OpenAPI & SDK
+
+- Generowanie lokalnie:
+  - `uv run python scripts/generate_openapi.py` → `out/openapi.json`.
+- Artefakty CI:
+  - Proof Gate publikuje `openapi-${SHA}/openapi.json` jako artifact.
+- GitHub Pages (jeśli włączone):
+  - `https://CERTEUS.github.io/certeus/openapi/openapi.json` — najnowsza specyfikacja (branch Pages).
+- Generowanie SDK (przykłady):
+  - Python (openapi-generator): `openapi-generator generate -i out/openapi.json -g python -o sdk/python`.
+  - TypeScript (fetch): `openapi-generator generate -i out/openapi.json -g typescript-fetch -o sdk/ts`.
+  - Go: `openapi-generator generate -i out/openapi.json -g go -o sdk/go`.
+  - (lub użyj dowolnego generatora wspierającego OpenAPI 3.0).
 
 ---
 
 ## Konfiguracja / ENV
 
-- `CER_PROOF_STRICT=true` (Proof-Only Sockets)
-- `CER_BOUNDARY_BUCKET=s3://...` (WORM)
-- `CER_CRYPTO_MODE=hybrid` (Ed25519+ML-DSA)
-- `CER_TEE_REQUIRED=false|true` (profil Bunkier)
-- `CER_BASE=http://localhost:8081` (bazowy URL dla przykładów)
+- Proof‑Only: `STRICT_PROOF_ONLY=1`, `PCO_JWKS_B64URL` lub `ED25519_PUBKEY_B64URL`.
+- Klient (egress): `ED25519_SECRET_B64URL` (dla ProofHttpxClient/pco_token_tool).
+- Gates: `GAUGE_EPSILON` (domyślnie 1e-3), `PATH_COV_MIN_GAMMA` (0.90), `PATH_COV_MAX_UNCAPTURED` (0.05).
+- SLO: `SLO_MAX_P95_MS` (250), `SLO_MAX_ERROR_RATE` (0.005).
+- Boundary verify: `PCO_JWKS_B64URL` lub `ED25519_PUBKEY_B64URL`, opcjonalnie `PROOF_BUNDLE_DIR` (domyślnie `data/public_pco`).
+- Adresy: `CER_BASE=http://localhost:8081` (Gateway), ProofGate domyślnie `:8085`.
 
-Pełna lista: `docs/configuration.md`
+Pełna lista: `docs/configuration.md` (w przygotowaniu).
 
 ---
 
