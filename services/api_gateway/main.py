@@ -31,26 +31,24 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 # local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
-from services.api_gateway.routers import (
-    cfe,
-    chatops,
-    devices,
-    dr,
-    ethics,
-    export,
-    fin,
-    ledger,
-    lexqft,
-    mailops,
-    mismatch,
-    packs,
-    pco_public,
-    preview,
-    qtm,
-    system,  # /v1/ingest, /v1/analyze, /v1/sipp
-    upn,
-    verify,
-)
+import services.api_gateway.routers.cfe as cfe
+import services.api_gateway.routers.chatops as chatops
+import services.api_gateway.routers.devices as devices
+import services.api_gateway.routers.dr as dr
+import services.api_gateway.routers.ethics as ethics
+import services.api_gateway.routers.export as export
+import services.api_gateway.routers.fin as fin
+import services.api_gateway.routers.ledger as ledger
+import services.api_gateway.routers.lexqft as lexqft
+import services.api_gateway.routers.mailops as mailops
+import services.api_gateway.routers.mismatch as mismatch
+import services.api_gateway.routers.packs as packs
+import services.api_gateway.routers.pco_public as pco_public
+import services.api_gateway.routers.preview as preview
+import services.api_gateway.routers.qtm as qtm
+import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
+import services.api_gateway.routers.upn as upn
+import services.api_gateway.routers.verify as verify
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
 from services.api_gateway.security import attach_proof_only_middleware
 from services.ingest_service.adapters.contracts import Blob
