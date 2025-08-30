@@ -32,15 +32,27 @@ from fastapi.staticfiles import StaticFiles
 
 # local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
 from services.api_gateway.routers import (
+    cfe,
+    chatops,
+    devices,
+    dr,
+    ethics,
     export,
+    fin,
     ledger,
+    lexqft,
+    mailops,
     mismatch,
+    packs,
     pco_public,
     preview,
+    qtm,
     system,  # /v1/ingest, /v1/analyze, /v1/sipp
+    upn,
     verify,
 )
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
+from services.api_gateway.security import attach_proof_only_middleware
 from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.registry import get_llm, get_preview
 
@@ -81,6 +93,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Attach Proof-Only I/O middleware early (safe no-op unless STRICT_PROOF_ONLY=1)
+attach_proof_only_middleware(app)
+
 
 # statyki
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -105,6 +120,17 @@ app.include_router(export.router)
 app.include_router(ledger.router)
 app.include_router(mismatch.router)
 app.include_router(verify.router)
+app.include_router(cfe.router)
+app.include_router(qtm.router)
+app.include_router(devices.router)
+app.include_router(dr.router)
+app.include_router(upn.router)
+app.include_router(lexqft.router)
+app.include_router(chatops.router)
+app.include_router(mailops.router)
+app.include_router(ethics.router)
+app.include_router(fin.router)
+app.include_router(packs.router)
 app.include_router(jwks_router)
 
 # --- blok --- Health i root redirect -------------------------------------------

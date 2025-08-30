@@ -5,18 +5,60 @@ info:
 servers:
   - url: http://localhost:8081
 paths:
+  /v1/cfe/geodesic:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/cfe/horizon:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/cfe/lensing:
+    get:
+      responses: { "200": { description: ok } }
+  /v1/qtm/init_case:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/qtm/measure:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/qtm/commutator:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/qtm/find_entanglement:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/devices/horizon_drive/plan:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/devices/qoracle/expectation:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/devices/entangle:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/devices/chronosync/reconcile:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/upn/register:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/upn/revoke:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/dr/replay:
+    post:
+      responses: { "200": { description: ok } }
+  /v1/dr/recall:
+    post:
+      responses: { "200": { description: ok } }
   /v1/proofgate/publish:
     post:
-      summary: Publish decision with PCO
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        "200":
-          description: ok
+      responses: { "200": { description: ok } }
+  /v1/packs:
+    get:
+      responses: { "200": { description: ok } }
+  /v1/packs/handle:
+    post:
+      responses: { "200": { description: ok } }
   /v1/ledger/{case_id}:
     get:
       parameters:

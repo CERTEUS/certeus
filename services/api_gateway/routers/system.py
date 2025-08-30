@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from hashlib import sha256
 from typing import Annotated, Any
 
-from fastapi import APIRouter, File, HTTPException, Response, UploadFile
+from fastapi import APIRouter, File, HTTPException, Request, Response, UploadFile
 from pydantic import BaseModel, Field
 
 from services.connectors.fhir.router import router as fhir_router  # NEW: FHIR
@@ -53,6 +53,7 @@ class IngestResult(BaseModel):
 
 @router.post("/v1/ingest")
 async def ingest_document(
+    request: Request,
     response: Response,
     file: Annotated[UploadFile, File(...)],
 ) -> list[dict[str, Any]]:
@@ -65,6 +66,11 @@ async def ingest_document(
         validates MIME/size, and sets `X-CERTEUS-Ledger-Chain` header. Also (non-
         invasive) puts OCR snippet into `X-CERTEUS-OCR-Preview` header for PDF/images.
     """
+    # Enforce per-tenant budget/limits
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=2)
+
     MAX_BYTES = 10 * 1024 * 1024  # 10 MiB
     allowed_mime = "application/pdf"
 
@@ -134,11 +140,15 @@ async def ingest_document(
 
 
 @router.post("/v1/analyze")
-async def analyze(case_id: str, file: Annotated[UploadFile, File(...)]) -> dict[str, Any]:
+async def analyze(request: Request, case_id: str, file: Annotated[UploadFile, File(...)]) -> dict[str, Any]:
     """
     Minimalny stub E2E: przyjmuje PDF i zwraca wynik SAT z prostym modelem.
     Zgodne z tests/e2e/test_e2e_pl_286kk_0001.py.
     """
+    # Enforce limits for analysis
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=3)
     await file.read()  # nieużywane w stubie
     return {
         "case_id": case_id,

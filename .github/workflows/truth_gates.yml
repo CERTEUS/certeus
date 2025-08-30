@@ -26,6 +26,21 @@ jobs:
         run: uv run python scripts/compute_truth_gates.py --out out/truth_gates.json
 
       - name: Publish gates as PR comment
-        shell: bash
-        run: |
-          echo "TODO: post results"
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = 'Truth Gates (AFV/ASE/ATC):\\n';
+            try {
+              const data = JSON.parse(fs.readFileSync('out/truth_gates.json', 'utf8'));
+              body += '```json\\n' + JSON.stringify(data, null, 2) + '\\n```';
+            } catch (e) {
+              body += '_failed to read out/truth_gates.json_';
+            }
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
