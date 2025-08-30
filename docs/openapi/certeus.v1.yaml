@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: CERTEUS API
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8081
+paths:
+  /v1/proofgate/publish:
+    post:
+      summary: Publish decision with PCO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: ok
+  /v1/ledger/{case_id}:
+    get:
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses: { "200": { description: ok } }
+  /v1/boundary/reconstruct:
+    post:
+      responses: { "200": { description: ok } }

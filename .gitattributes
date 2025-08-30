@@ -6,10 +6,8 @@
 # |  PL: Polityka końcówek linii i atrybutów plików.                    |
 # |  EN: Line-ending policy & file attributes.                          |
 # +=====================================================================+
-
 # Global: teksty auto-normalizowane
 * text=auto
-
 # Źródła → LF
 *.py     text eol=lf
 *.md     text eol=lf
@@ -29,22 +27,21 @@ Makefile text eol=lf
 .editorconfig  text eol=lf
 CODEOWNERS     text eol=lf
 LICENSE        text eol=lf
-
 # Artefakty dowodów → LF
 *.smt2 text eol=lf
 *.lfsc text eol=lf
 *.drat text eol=lf
-
+* text=auto eol=lf
 # Windows scripts → CRLF (jednoznacznie, bez duplikatów)
 *.ps1  text eol=crlf
 *.bat  text eol=crlf
-
+*.cmd  text eol=crlf
 # Binary → nie dotykać
 *.pdf  -text
 *.docx -text
-*.xlsx -text
+*.xlsx filter=lfs diff=lfs merge=lfs -text
 *.pptx -text
-*.png  -text
+*.png filter=lfs diff=lfs merge=lfs -text
 *.jpg  -text
 *.jpeg -text
 *.gif  -text

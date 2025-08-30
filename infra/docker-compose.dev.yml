@@ -1,8 +1,13 @@
 version: "3.9"
 services:
   proofgate:
-    build: ./services/proofgate
+    build:
+      context: ..
+      dockerfile: infra/services/proofgate/Dockerfile
     ports: ["8081:8081"]
+
   boundary:
-    build: ./services/boundary_service
+    build:
+      context: ..
+      dockerfile: infra/services/boundary_service/Dockerfile
     ports: ["8082:8082"]
