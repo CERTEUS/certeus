@@ -1,0 +1,22 @@
+name: asset-guard
+on: [push, pull_request]
+jobs:
+  check-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert required assets exist
+        run: |
+          set -Eeuo pipefail
+          req=(
+            "docs/assets/brand/certeus-banner-dark.png"
+            "docs/assets/brand/certeus-banner-light.png"
+            "docs/assets/brand/certeus-readme-banner.svg"
+            "docs/assets/brand/certeus-favicon.svg"
+            "docs/assets/brand/certeus-og.png"
+            "clients/web/public/brand/favicon.svg"
+            "clients/web/public/brand/site.webmanifest"
+          )
+          for f in "${req[@]}"; do
+            [[ -f "$f" ]] || { echo "::error file=$f::missing"; exit 1; }
+          done

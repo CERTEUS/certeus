@@ -1,0 +1,45 @@
+{
+  "$id": "schemas/pco.extensions.mailops.chatops.json",
+  "type": "object",
+  "properties": {
+    "io.email": {
+      "type": "object",
+      "properties": {
+        "mail_id": {
+          "type": "string"
+        },
+        "thread_id": {
+          "type": "string"
+        },
+        "spf": {
+          "type": "string"
+        },
+        "dkim": {
+          "type": "string"
+        },
+        "dmarc": {
+          "type": "string"
+        }
+      },
+      "required": ["mail_id"]
+    },
+    "chatops": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "openapi_rev": {
+          "type": "string"
+        }
+      },
+      "required": ["cmd"]
+    }
+  }
+}

@@ -4,7 +4,7 @@
 # 📂 Repozytorium — pełne drzewo
 
 - Source: `F:\projekty\certeus`
-- Generated (UTC): 2025-08-20T20:55:17.470136+00:00
+- Generated (UTC): 2025-08-21T14:14:45.641368+00:00
 
 📦 **Root**
     📄 .editorconfig
@@ -31,6 +31,7 @@
             📄 release.yml
             📄 security-scan.yml
             📄 tests.yml
+            📄 truth_gates.yml
             📄 ui-smoke.yml
     📂 .pytest_cache/
         📄 .gitignore
@@ -95,6 +96,7 @@
             📄 12650679438373952227
             📄 12658869480149559828
             📄 12662137256764055116
+            📄 12735829915035142805
             📄 12764032019615620044
             📄 12771943797614433896
             📄 12869730661675523955
@@ -123,6 +125,7 @@
             📄 15449326753402657103
             📄 15521746394349168029
             📄 15596542530016998834
+            📄 15602072881639090792
             📄 15632340594991325295
             📄 1592376937289548656
             📄 15988942479672892311
@@ -185,6 +188,7 @@
             📄 6352214501552352034
             📄 6454848465026861068
             📄 6762377312924594421
+            📄 6766560518387052951
             📄 6800504837785743931
             📄 7012330808938117649
             📄 7038173748509968415
@@ -194,6 +198,7 @@
             📄 7740268393583445699
             📄 77780379357865197
             📄 7841358193293564607
+            📄 788340613642014936
             📄 7889796814053983010
             📄 7947721933821329221
             📄 7984985660570823937
@@ -201,6 +206,7 @@
             📄 8325999238754884352
             📄 8415845362238095871
             📄 844816437884531651
+            📄 8479088397655880493
             📄 8596382983645807573
             📄 8617439779472388648
             📄 8753833568652162053
@@ -234,21 +240,26 @@
             📄 17499499986664738731
             📄 17810404471533504766
             📄 17898329099974208204
+            📄 17923255783513260711
             📄 1910557618244307583
             📄 2788702961478652233
             📄 3004034027299711514
             📄 322236448155238698
+            📄 3326962839163930982
             📄 3464613716978070192
+            📄 4252386511813276037
             📄 4473103091566134067
             📄 4833212819583518348
             📄 4944786263048431701
             📄 5039516039231885613
             📄 5121303299110596750
+            📄 5644385912577289618
             📄 5857518139140739966
             📄 5913965195367875218
             📄 6090323921520736176
             📄 6780539063203648616
             📄 6908437808581160419
+            📄 8549365374291985794
             📄 8842415538241908746
             📄 8846602423084652500
             📄 9912983740195485954
@@ -474,6 +485,7 @@
                         📄 pastebin.cpython-311.pyc
                         📄 pathlib.cpython-311.pyc
                         📄 pytester.cpython-311.pyc
+                        📄 pytester_assertions.cpython-311.pyc
                         📄 python.cpython-311.pyc
                         📄 python_api.cpython-311.pyc
                         📄 raises.cpython-311.pyc
@@ -555,6 +567,8 @@
                             📄 structures.cpython-311.pyc
                 📂 _yaml/
                     📄 __init__.py
+                    📂 __pycache__/
+                        📄 __init__.cpython-311.pyc
                 📂 annotated_types-0.7.0.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -569,6 +583,7 @@
                     📄 test_cases.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 test_cases.cpython-311.pyc
                 📂 anyio-4.10.0.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -596,6 +611,9 @@
                         📄 lowlevel.cpython-311-pytest-8.4.1.pyc
                         📄 lowlevel.cpython-311.pyc
                         📄 pytest_plugin.cpython-311-pytest-8.4.1.pyc
+                        📄 pytest_plugin.cpython-311.pyc
+                        📄 to_interpreter.cpython-311.pyc
+                        📄 to_process.cpython-311.pyc
                         📄 to_thread.cpython-311-pytest-8.4.1.pyc
                         📄 to_thread.cpython-311.pyc
                     📂 _backends/
@@ -607,6 +625,7 @@
                             📄 __init__.cpython-311.pyc
                             📄 _asyncio.cpython-311-pytest-8.4.1.pyc
                             📄 _asyncio.cpython-311.pyc
+                            📄 _trio.cpython-311.pyc
                     📂 _core/
                         📄 __init__.py
                         📄 _asyncio_selector_thread.py
@@ -627,6 +646,7 @@
                         📂 __pycache__/
                             📄 __init__.cpython-311-pytest-8.4.1.pyc
                             📄 __init__.cpython-311.pyc
+                            📄 _asyncio_selector_thread.cpython-311.pyc
                             📄 _contextmanagers.cpython-311-pytest-8.4.1.pyc
                             📄 _contextmanagers.cpython-311.pyc
                             📄 _eventloop.cpython-311-pytest-8.4.1.pyc
@@ -692,10 +712,13 @@
                         📂 __pycache__/
                             📄 __init__.cpython-311-pytest-8.4.1.pyc
                             📄 __init__.cpython-311.pyc
+                            📄 buffered.cpython-311.pyc
+                            📄 file.cpython-311.pyc
                             📄 memory.cpython-311-pytest-8.4.1.pyc
                             📄 memory.cpython-311.pyc
                             📄 stapled.cpython-311-pytest-8.4.1.pyc
                             📄 stapled.cpython-311.pyc
+                            📄 text.cpython-311.pyc
                             📄 tls.cpython-311-pytest-8.4.1.pyc
                             📄 tls.cpython-311.pyc
                 📂 attr/
@@ -784,6 +807,10 @@
                     📄 cacert.pem
                     📄 core.py
                     📄 py.typed
+                    📂 __pycache__/
+                        📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
+                        📄 core.cpython-311.pyc
                 📂 cffi-1.17.1.dist-info/
                     📄 INSTALLER
                     📄 LICENSE
@@ -871,6 +898,8 @@
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
                         📄 _compat.cpython-311.pyc
+                        📄 _termui_impl.cpython-311.pyc
+                        📄 _textwrap.cpython-311.pyc
                         📄 _winconsole.cpython-311.pyc
                         📄 core.cpython-311.pyc
                         📄 decorators.cpython-311.pyc
@@ -878,7 +907,9 @@
                         📄 formatting.cpython-311.pyc
                         📄 globals.cpython-311.pyc
                         📄 parser.cpython-311.pyc
+                        📄 shell_completion.cpython-311.pyc
                         📄 termui.cpython-311.pyc
+                        📄 testing.cpython-311.pyc
                         📄 types.cpython-311.pyc
                         📄 utils.cpython-311.pyc
                 📂 colorama-0.4.6.dist-info/
@@ -911,6 +942,14 @@
                         📄 isatty_test.py
                         📄 utils.py
                         📄 winterm_test.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 ansi_test.cpython-311.pyc
+                            📄 ansitowin32_test.cpython-311.pyc
+                            📄 initialise_test.cpython-311.pyc
+                            📄 isatty_test.cpython-311.pyc
+                            📄 utils.cpython-311.pyc
+                            📄 winterm_test.cpython-311.pyc
                 📂 cryptography-42.0.8.dist-info/
                     📄 INSTALLER
                     📄 LICENSE
@@ -1143,9 +1182,17 @@
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
                         📄 compat.cpython-311.pyc
+                        📄 database.cpython-311.pyc
+                        📄 index.cpython-311.pyc
+                        📄 locators.cpython-311.pyc
+                        📄 manifest.cpython-311.pyc
+                        📄 markers.cpython-311.pyc
+                        📄 metadata.cpython-311.pyc
                         📄 resources.cpython-311.pyc
                         📄 scripts.cpython-311.pyc
                         📄 util.cpython-311.pyc
+                        📄 version.cpython-311.pyc
+                        📄 wheel.cpython-311.pyc
                 📂 fastapi-0.116.1.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -1182,9 +1229,11 @@
                     📄 websockets.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
                         📄 _compat.cpython-311.pyc
                         📄 applications.cpython-311.pyc
                         📄 background.cpython-311.pyc
+                        📄 cli.cpython-311.pyc
                         📄 concurrency.cpython-311.pyc
                         📄 datastructures.cpython-311.pyc
                         📄 encoders.cpython-311.pyc
@@ -1197,6 +1246,7 @@
                         📄 responses.cpython-311.pyc
                         📄 routing.cpython-311.pyc
                         📄 staticfiles.cpython-311.pyc
+                        📄 templating.cpython-311.pyc
                         📄 testclient.cpython-311.pyc
                         📄 types.cpython-311.pyc
                         📄 utils.cpython-311.pyc
@@ -1219,6 +1269,10 @@
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
                             📄 cors.cpython-311.pyc
+                            📄 gzip.cpython-311.pyc
+                            📄 httpsredirect.cpython-311.pyc
+                            📄 trustedhost.cpython-311.pyc
+                            📄 wsgi.cpython-311.pyc
                     📂 openapi/
                         📄 __init__.py
                         📄 constants.py
@@ -1328,6 +1382,15 @@
                     📄 _trace.py
                     📄 _utils.py
                     📄 py.typed
+                    📂 __pycache__/
+                        📄 __init__.cpython-311.pyc
+                        📄 _api.cpython-311.pyc
+                        📄 _exceptions.cpython-311.pyc
+                        📄 _models.cpython-311.pyc
+                        📄 _ssl.cpython-311.pyc
+                        📄 _synchronization.cpython-311.pyc
+                        📄 _trace.cpython-311.pyc
+                        📄 _utils.cpython-311.pyc
                     📂 _async/
                         📄 __init__.py
                         📄 connection.py
@@ -1337,6 +1400,15 @@
                         📄 http_proxy.py
                         📄 interfaces.py
                         📄 socks_proxy.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 connection.cpython-311.pyc
+                            📄 connection_pool.cpython-311.pyc
+                            📄 http11.cpython-311.pyc
+                            📄 http2.cpython-311.pyc
+                            📄 http_proxy.cpython-311.pyc
+                            📄 interfaces.cpython-311.pyc
+                            📄 socks_proxy.cpython-311.pyc
                     📂 _backends/
                         📄 __init__.py
                         📄 anyio.py
@@ -1345,6 +1417,14 @@
                         📄 mock.py
                         📄 sync.py
                         📄 trio.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 anyio.cpython-311.pyc
+                            📄 auto.cpython-311.pyc
+                            📄 base.cpython-311.pyc
+                            📄 mock.cpython-311.pyc
+                            📄 sync.cpython-311.pyc
+                            📄 trio.cpython-311.pyc
                     📂 _sync/
                         📄 __init__.py
                         📄 connection.py
@@ -1354,6 +1434,15 @@
                         📄 http_proxy.py
                         📄 interfaces.py
                         📄 socks_proxy.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 connection.cpython-311.pyc
+                            📄 connection_pool.cpython-311.pyc
+                            📄 http11.cpython-311.pyc
+                            📄 http2.cpython-311.pyc
+                            📄 http_proxy.cpython-311.pyc
+                            📄 interfaces.cpython-311.pyc
+                            📄 socks_proxy.cpython-311.pyc
                 📂 httpx-0.28.1.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -1432,6 +1521,7 @@
                     📄 py.typed
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 cli.cpython-311.pyc
                         📄 extensions.cpython-311.pyc
                         📄 identify.cpython-311.pyc
                         📄 interpreters.cpython-311.pyc
@@ -1460,10 +1550,13 @@
                     📄 uts46data.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 codec.cpython-311.pyc
+                        📄 compat.cpython-311.pyc
                         📄 core.cpython-311.pyc
                         📄 idnadata.cpython-311.pyc
                         📄 intranges.cpython-311.pyc
                         📄 package_data.cpython-311.pyc
+                        📄 uts46data.cpython-311.pyc
                 📂 iniconfig-2.1.0.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -1481,6 +1574,7 @@
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
                         📄 _parse.cpython-311.pyc
+                        📄 _version.cpython-311.pyc
                         📄 exceptions.cpython-311.pyc
                 📂 jsonschema-4.25.0.dist-info/
                     📄 INSTALLER
@@ -1506,12 +1600,14 @@
                     📄 validators.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
                         📄 _format.cpython-311.pyc
                         📄 _keywords.cpython-311.pyc
                         📄 _legacy_keywords.cpython-311.pyc
                         📄 _types.cpython-311.pyc
                         📄 _typing.cpython-311.pyc
                         📄 _utils.cpython-311.pyc
+                        📄 cli.cpython-311.pyc
                         📄 exceptions.cpython-311.pyc
                         📄 protocols.cpython-311.pyc
                         📄 validators.cpython-311.pyc
@@ -1527,6 +1623,18 @@
                         📄 useless_applicator_schemas.py
                         📄 useless_keywords.py
                         📄 validator_creation.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 const_vs_enum.cpython-311.pyc
+                            📄 contains.cpython-311.pyc
+                            📄 issue232.cpython-311.pyc
+                            📄 json_schema_test_suite.cpython-311.pyc
+                            📄 nested_schemas.cpython-311.pyc
+                            📄 subcomponents.cpython-311.pyc
+                            📄 unused_registry.cpython-311.pyc
+                            📄 useless_applicator_schemas.cpython-311.pyc
+                            📄 useless_keywords.cpython-311.pyc
+                            📄 validator_creation.cpython-311.pyc
                         📂 issue232/
                             📄 issue.json
                     📂 tests/
@@ -1541,6 +1649,18 @@
                         📄 test_types.py
                         📄 test_utils.py
                         📄 test_validators.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 _suite.cpython-311.pyc
+                            📄 fuzz_validate.cpython-311.pyc
+                            📄 test_cli.cpython-311.pyc
+                            📄 test_deprecations.cpython-311.pyc
+                            📄 test_exceptions.cpython-311.pyc
+                            📄 test_format.cpython-311.pyc
+                            📄 test_jsonschema_test_suite.cpython-311.pyc
+                            📄 test_types.cpython-311.pyc
+                            📄 test_utils.cpython-311.pyc
+                            📄 test_validators.cpython-311.pyc
                 📂 jsonschema_specifications-2025.4.1.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -1587,11 +1707,19 @@
                     📂 tests/
                         📄 __init__.py
                         📄 test_jsonschema_specifications.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 test_jsonschema_specifications.cpython-311.pyc
                 📂 multipart/
                     📄 __init__.py
                     📄 decoders.py
                     📄 exceptions.py
                     📄 multipart.py
+                    📂 __pycache__/
+                        📄 __init__.cpython-311.pyc
+                        📄 decoders.cpython-311.pyc
+                        📄 exceptions.cpython-311.pyc
+                        📄 multipart.cpython-311.pyc
                 📂 nodeenv-1.9.1.dist-info/
                     📄 AUTHORS
                     📄 INSTALLER
@@ -1628,9 +1756,27 @@
                     📄 tags.py
                     📄 utils.py
                     📄 version.py
+                    📂 __pycache__/
+                        📄 __init__.cpython-311.pyc
+                        📄 _elffile.cpython-311.pyc
+                        📄 _manylinux.cpython-311.pyc
+                        📄 _musllinux.cpython-311.pyc
+                        📄 _parser.cpython-311.pyc
+                        📄 _structures.cpython-311.pyc
+                        📄 _tokenizer.cpython-311.pyc
+                        📄 markers.cpython-311.pyc
+                        📄 metadata.cpython-311.pyc
+                        📄 requirements.cpython-311.pyc
+                        📄 specifiers.cpython-311.pyc
+                        📄 tags.cpython-311.pyc
+                        📄 utils.cpython-311.pyc
+                        📄 version.cpython-311.pyc
                     📂 licenses/
                         📄 __init__.py
                         📄 _spdx.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 _spdx.cpython-311.pyc
                 📂 pip-25.2.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -2744,7 +2890,11 @@
                     📄 windows.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
+                        📄 android.cpython-311.pyc
                         📄 api.cpython-311.pyc
+                        📄 macos.cpython-311.pyc
+                        📄 unix.cpython-311.pyc
                         📄 version.cpython-311.pyc
                         📄 windows.cpython-311.pyc
                 📂 pluggy-1.6.0.dist-info/
@@ -2915,6 +3065,11 @@
                         📄 check_hooks_apply.py
                         📄 check_useless_excludes.py
                         📄 identity.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 check_hooks_apply.cpython-311.pyc
+                            📄 check_useless_excludes.cpython-311.pyc
+                            📄 identity.cpython-311.pyc
                     📂 resources/
                         📄 __init__.py
                         📄 empty_template_.npmignore
@@ -2938,6 +3093,7 @@
                         📄 ruby-download.tar.gz
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
+                            📄 empty_template_setup.cpython-311.pyc
                 📂 pycparser-2.22.dist-info/
                     📄 INSTALLER
                     📄 LICENSE
@@ -3032,19 +3188,37 @@
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
                         📄 _migration.cpython-311.pyc
+                        📄 alias_generators.cpython-311.pyc
                         📄 aliases.cpython-311.pyc
                         📄 annotated_handlers.cpython-311.pyc
+                        📄 class_validators.cpython-311.pyc
                         📄 color.cpython-311.pyc
                         📄 config.cpython-311.pyc
+                        📄 dataclasses.cpython-311.pyc
+                        📄 datetime_parse.cpython-311.pyc
+                        📄 decorator.cpython-311.pyc
+                        📄 env_settings.cpython-311.pyc
+                        📄 error_wrappers.cpython-311.pyc
                         📄 errors.cpython-311.pyc
                         📄 fields.cpython-311.pyc
+                        📄 functional_serializers.cpython-311.pyc
                         📄 functional_validators.cpython-311.pyc
+                        📄 generics.cpython-311.pyc
+                        📄 json.cpython-311.pyc
                         📄 json_schema.cpython-311.pyc
                         📄 main.cpython-311.pyc
+                        📄 mypy.cpython-311.pyc
                         📄 networks.cpython-311.pyc
+                        📄 parse.cpython-311.pyc
                         📄 root_model.cpython-311.pyc
+                        📄 schema.cpython-311.pyc
+                        📄 tools.cpython-311.pyc
                         📄 type_adapter.cpython-311.pyc
                         📄 types.cpython-311.pyc
+                        📄 typing.cpython-311.pyc
+                        📄 utils.cpython-311.pyc
+                        📄 validate_call_decorator.cpython-311.pyc
+                        📄 validators.cpython-311.pyc
                         📄 version.cpython-311.pyc
                         📄 warnings.cpython-311.pyc
                     📂 _internal/
@@ -3082,13 +3256,16 @@
                             📄 _config.cpython-311.pyc
                             📄 _core_metadata.cpython-311.pyc
                             📄 _core_utils.cpython-311.pyc
+                            📄 _dataclasses.cpython-311.pyc
                             📄 _decorators.cpython-311.pyc
+                            📄 _decorators_v1.cpython-311.pyc
                             📄 _discriminated_union.cpython-311.pyc
                             📄 _docs_extraction.cpython-311.pyc
                             📄 _fields.cpython-311.pyc
                             📄 _forward_ref.cpython-311.pyc
                             📄 _generate_schema.cpython-311.pyc
                             📄 _generics.cpython-311.pyc
+                            📄 _git.cpython-311.pyc
                             📄 _import_utils.cpython-311.pyc
                             📄 _internal_dataclass.cpython-311.pyc
                             📄 _known_annotated_metadata.cpython-311.pyc
@@ -3098,9 +3275,11 @@
                             📄 _repr.cpython-311.pyc
                             📄 _schema_gather.cpython-311.pyc
                             📄 _schema_generation_shared.cpython-311.pyc
+                            📄 _serializers.cpython-311.pyc
                             📄 _signature.cpython-311.pyc
                             📄 _typing_extra.cpython-311.pyc
                             📄 _utils.cpython-311.pyc
+                            📄 _validate_call.cpython-311.pyc
                             📄 _validators.cpython-311.pyc
                     📂 deprecated/
                         📄 __init__.py
@@ -3111,10 +3290,23 @@
                         📄 json.py
                         📄 parse.py
                         📄 tools.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 class_validators.cpython-311.pyc
+                            📄 config.cpython-311.pyc
+                            📄 copy_internals.cpython-311.pyc
+                            📄 decorator.cpython-311.pyc
+                            📄 json.cpython-311.pyc
+                            📄 parse.cpython-311.pyc
+                            📄 tools.cpython-311.pyc
                     📂 experimental/
                         📄 __init__.py
                         📄 arguments_schema.py
                         📄 pipeline.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 arguments_schema.cpython-311.pyc
+                            📄 pipeline.cpython-311.pyc
                     📂 plugin/
                         📄 __init__.py
                         📄 _loader.py
@@ -3151,6 +3343,33 @@
                         📄 utils.py
                         📄 validators.py
                         📄 version.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 _hypothesis_plugin.cpython-311.pyc
+                            📄 annotated_types.cpython-311.pyc
+                            📄 class_validators.cpython-311.pyc
+                            📄 color.cpython-311.pyc
+                            📄 config.cpython-311.pyc
+                            📄 dataclasses.cpython-311.pyc
+                            📄 datetime_parse.cpython-311.pyc
+                            📄 decorator.cpython-311.pyc
+                            📄 env_settings.cpython-311.pyc
+                            📄 error_wrappers.cpython-311.pyc
+                            📄 errors.cpython-311.pyc
+                            📄 fields.cpython-311.pyc
+                            📄 generics.cpython-311.pyc
+                            📄 json.cpython-311.pyc
+                            📄 main.cpython-311.pyc
+                            📄 mypy.cpython-311.pyc
+                            📄 networks.cpython-311.pyc
+                            📄 parse.cpython-311.pyc
+                            📄 schema.cpython-311.pyc
+                            📄 tools.cpython-311.pyc
+                            📄 types.cpython-311.pyc
+                            📄 typing.cpython-311.pyc
+                            📄 utils.cpython-311.pyc
+                            📄 validators.cpython-311.pyc
+                            📄 version.cpython-311.pyc
                 📂 pydantic_core-2.33.2.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -3197,6 +3416,8 @@
                     📄 util.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
+                        📄 cmdline.cpython-311.pyc
                         📄 console.cpython-311.pyc
                         📄 filter.cpython-311.pyc
                         📄 formatter.cpython-311.pyc
@@ -3204,6 +3425,9 @@
                         📄 modeline.cpython-311.pyc
                         📄 plugin.cpython-311.pyc
                         📄 regexopt.cpython-311.pyc
+                        📄 scanner.cpython-311.pyc
+                        📄 sphinxext.cpython-311.pyc
+                        📄 style.cpython-311.pyc
                         📄 token.cpython-311.pyc
                         📄 unistring.cpython-311.pyc
                         📄 util.cpython-311.pyc
@@ -3229,7 +3453,18 @@
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
                             📄 _mapping.cpython-311.pyc
+                            📄 bbcode.cpython-311.pyc
+                            📄 groff.cpython-311.pyc
+                            📄 html.cpython-311.pyc
+                            📄 img.cpython-311.pyc
+                            📄 irc.cpython-311.pyc
+                            📄 latex.cpython-311.pyc
+                            📄 other.cpython-311.pyc
+                            📄 pangomarkup.cpython-311.pyc
+                            📄 rtf.cpython-311.pyc
+                            📄 svg.cpython-311.pyc
                             📄 terminal.cpython-311.pyc
+                            📄 terminal256.cpython-311.pyc
                     📂 lexers/
                         📄 __init__.py
                         📄 _ada_builtins.py
@@ -3492,9 +3727,264 @@
                         📄 zig.py
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
+                            📄 _ada_builtins.cpython-311.pyc
+                            📄 _asy_builtins.cpython-311.pyc
+                            📄 _cl_builtins.cpython-311.pyc
+                            📄 _cocoa_builtins.cpython-311.pyc
+                            📄 _csound_builtins.cpython-311.pyc
+                            📄 _css_builtins.cpython-311.pyc
+                            📄 _googlesql_builtins.cpython-311.pyc
+                            📄 _julia_builtins.cpython-311.pyc
+                            📄 _lasso_builtins.cpython-311.pyc
+                            📄 _lilypond_builtins.cpython-311.pyc
+                            📄 _lua_builtins.cpython-311.pyc
+                            📄 _luau_builtins.cpython-311.pyc
                             📄 _mapping.cpython-311.pyc
+                            📄 _mql_builtins.cpython-311.pyc
+                            📄 _mysql_builtins.cpython-311.pyc
+                            📄 _openedge_builtins.cpython-311.pyc
+                            📄 _php_builtins.cpython-311.pyc
+                            📄 _postgres_builtins.cpython-311.pyc
+                            📄 _qlik_builtins.cpython-311.pyc
+                            📄 _scheme_builtins.cpython-311.pyc
+                            📄 _scilab_builtins.cpython-311.pyc
+                            📄 _sourcemod_builtins.cpython-311.pyc
+                            📄 _sql_builtins.cpython-311.pyc
+                            📄 _stan_builtins.cpython-311.pyc
+                            📄 _stata_builtins.cpython-311.pyc
+                            📄 _tsql_builtins.cpython-311.pyc
+                            📄 _usd_builtins.cpython-311.pyc
+                            📄 _vbscript_builtins.cpython-311.pyc
+                            📄 _vim_builtins.cpython-311.pyc
+                            📄 actionscript.cpython-311.pyc
+                            📄 ada.cpython-311.pyc
+                            📄 agile.cpython-311.pyc
+                            📄 algebra.cpython-311.pyc
+                            📄 ambient.cpython-311.pyc
+                            📄 amdgpu.cpython-311.pyc
+                            📄 ampl.cpython-311.pyc
+                            📄 apdlexer.cpython-311.pyc
+                            📄 apl.cpython-311.pyc
+                            📄 archetype.cpython-311.pyc
+                            📄 arrow.cpython-311.pyc
+                            📄 arturo.cpython-311.pyc
+                            📄 asc.cpython-311.pyc
+                            📄 asm.cpython-311.pyc
+                            📄 asn1.cpython-311.pyc
+                            📄 automation.cpython-311.pyc
+                            📄 bare.cpython-311.pyc
+                            📄 basic.cpython-311.pyc
+                            📄 bdd.cpython-311.pyc
+                            📄 berry.cpython-311.pyc
+                            📄 bibtex.cpython-311.pyc
+                            📄 blueprint.cpython-311.pyc
+                            📄 boa.cpython-311.pyc
+                            📄 bqn.cpython-311.pyc
+                            📄 business.cpython-311.pyc
+                            📄 c_cpp.cpython-311.pyc
+                            📄 c_like.cpython-311.pyc
+                            📄 capnproto.cpython-311.pyc
+                            📄 carbon.cpython-311.pyc
+                            📄 cddl.cpython-311.pyc
+                            📄 chapel.cpython-311.pyc
+                            📄 clean.cpython-311.pyc
+                            📄 codeql.cpython-311.pyc
+                            📄 comal.cpython-311.pyc
+                            📄 compiled.cpython-311.pyc
+                            📄 configs.cpython-311.pyc
+                            📄 console.cpython-311.pyc
+                            📄 cplint.cpython-311.pyc
+                            📄 crystal.cpython-311.pyc
+                            📄 csound.cpython-311.pyc
+                            📄 css.cpython-311.pyc
+                            📄 d.cpython-311.pyc
+                            📄 dalvik.cpython-311.pyc
+                            📄 data.cpython-311.pyc
+                            📄 dax.cpython-311.pyc
+                            📄 devicetree.cpython-311.pyc
                             📄 diff.cpython-311.pyc
+                            📄 dns.cpython-311.pyc
+                            📄 dotnet.cpython-311.pyc
+                            📄 dsls.cpython-311.pyc
+                            📄 dylan.cpython-311.pyc
+                            📄 ecl.cpython-311.pyc
+                            📄 eiffel.cpython-311.pyc
+                            📄 elm.cpython-311.pyc
+                            📄 elpi.cpython-311.pyc
+                            📄 email.cpython-311.pyc
+                            📄 erlang.cpython-311.pyc
+                            📄 esoteric.cpython-311.pyc
+                            📄 ezhil.cpython-311.pyc
+                            📄 factor.cpython-311.pyc
+                            📄 fantom.cpython-311.pyc
+                            📄 felix.cpython-311.pyc
+                            📄 fift.cpython-311.pyc
+                            📄 floscript.cpython-311.pyc
+                            📄 forth.cpython-311.pyc
+                            📄 fortran.cpython-311.pyc
+                            📄 foxpro.cpython-311.pyc
+                            📄 freefem.cpython-311.pyc
+                            📄 func.cpython-311.pyc
+                            📄 functional.cpython-311.pyc
+                            📄 futhark.cpython-311.pyc
+                            📄 gcodelexer.cpython-311.pyc
+                            📄 gdscript.cpython-311.pyc
+                            📄 gleam.cpython-311.pyc
+                            📄 go.cpython-311.pyc
+                            📄 grammar_notation.cpython-311.pyc
+                            📄 graph.cpython-311.pyc
+                            📄 graphics.cpython-311.pyc
+                            📄 graphql.cpython-311.pyc
+                            📄 graphviz.cpython-311.pyc
+                            📄 gsql.cpython-311.pyc
+                            📄 hare.cpython-311.pyc
+                            📄 haskell.cpython-311.pyc
+                            📄 haxe.cpython-311.pyc
+                            📄 hdl.cpython-311.pyc
+                            📄 hexdump.cpython-311.pyc
+                            📄 html.cpython-311.pyc
+                            📄 idl.cpython-311.pyc
+                            📄 igor.cpython-311.pyc
+                            📄 inferno.cpython-311.pyc
+                            📄 installers.cpython-311.pyc
+                            📄 int_fiction.cpython-311.pyc
+                            📄 iolang.cpython-311.pyc
+                            📄 j.cpython-311.pyc
+                            📄 javascript.cpython-311.pyc
+                            📄 jmespath.cpython-311.pyc
+                            📄 jslt.cpython-311.pyc
+                            📄 json5.cpython-311.pyc
+                            📄 jsonnet.cpython-311.pyc
+                            📄 jsx.cpython-311.pyc
+                            📄 julia.cpython-311.pyc
+                            📄 jvm.cpython-311.pyc
+                            📄 kuin.cpython-311.pyc
+                            📄 kusto.cpython-311.pyc
+                            📄 ldap.cpython-311.pyc
+                            📄 lean.cpython-311.pyc
+                            📄 lilypond.cpython-311.pyc
+                            📄 lisp.cpython-311.pyc
+                            📄 macaulay2.cpython-311.pyc
+                            📄 make.cpython-311.pyc
+                            📄 maple.cpython-311.pyc
+                            📄 markup.cpython-311.pyc
+                            📄 math.cpython-311.pyc
+                            📄 matlab.cpython-311.pyc
+                            📄 maxima.cpython-311.pyc
+                            📄 meson.cpython-311.pyc
+                            📄 mime.cpython-311.pyc
+                            📄 minecraft.cpython-311.pyc
+                            📄 mips.cpython-311.pyc
+                            📄 ml.cpython-311.pyc
+                            📄 modeling.cpython-311.pyc
+                            📄 modula2.cpython-311.pyc
+                            📄 mojo.cpython-311.pyc
+                            📄 monte.cpython-311.pyc
+                            📄 mosel.cpython-311.pyc
+                            📄 ncl.cpython-311.pyc
+                            📄 nimrod.cpython-311.pyc
+                            📄 nit.cpython-311.pyc
+                            📄 nix.cpython-311.pyc
+                            📄 numbair.cpython-311.pyc
+                            📄 oberon.cpython-311.pyc
+                            📄 objective.cpython-311.pyc
+                            📄 ooc.cpython-311.pyc
+                            📄 openscad.cpython-311.pyc
+                            📄 other.cpython-311.pyc
+                            📄 parasail.cpython-311.pyc
+                            📄 parsers.cpython-311.pyc
+                            📄 pascal.cpython-311.pyc
+                            📄 pawn.cpython-311.pyc
+                            📄 pddl.cpython-311.pyc
+                            📄 perl.cpython-311.pyc
+                            📄 phix.cpython-311.pyc
+                            📄 php.cpython-311.pyc
+                            📄 pointless.cpython-311.pyc
+                            📄 pony.cpython-311.pyc
+                            📄 praat.cpython-311.pyc
+                            📄 procfile.cpython-311.pyc
+                            📄 prolog.cpython-311.pyc
+                            📄 promql.cpython-311.pyc
+                            📄 prql.cpython-311.pyc
+                            📄 ptx.cpython-311.pyc
                             📄 python.cpython-311.pyc
+                            📄 q.cpython-311.pyc
+                            📄 qlik.cpython-311.pyc
+                            📄 qvt.cpython-311.pyc
+                            📄 r.cpython-311.pyc
+                            📄 rdf.cpython-311.pyc
+                            📄 rebol.cpython-311.pyc
+                            📄 rego.cpython-311.pyc
+                            📄 resource.cpython-311.pyc
+                            📄 ride.cpython-311.pyc
+                            📄 rita.cpython-311.pyc
+                            📄 rnc.cpython-311.pyc
+                            📄 roboconf.cpython-311.pyc
+                            📄 robotframework.cpython-311.pyc
+                            📄 ruby.cpython-311.pyc
+                            📄 rust.cpython-311.pyc
+                            📄 sas.cpython-311.pyc
+                            📄 savi.cpython-311.pyc
+                            📄 scdoc.cpython-311.pyc
+                            📄 scripting.cpython-311.pyc
+                            📄 sgf.cpython-311.pyc
+                            📄 shell.cpython-311.pyc
+                            📄 sieve.cpython-311.pyc
+                            📄 slash.cpython-311.pyc
+                            📄 smalltalk.cpython-311.pyc
+                            📄 smithy.cpython-311.pyc
+                            📄 smv.cpython-311.pyc
+                            📄 snobol.cpython-311.pyc
+                            📄 solidity.cpython-311.pyc
+                            📄 soong.cpython-311.pyc
+                            📄 sophia.cpython-311.pyc
+                            📄 special.cpython-311.pyc
+                            📄 spice.cpython-311.pyc
+                            📄 sql.cpython-311.pyc
+                            📄 srcinfo.cpython-311.pyc
+                            📄 stata.cpython-311.pyc
+                            📄 supercollider.cpython-311.pyc
+                            📄 tablegen.cpython-311.pyc
+                            📄 tact.cpython-311.pyc
+                            📄 tal.cpython-311.pyc
+                            📄 tcl.cpython-311.pyc
+                            📄 teal.cpython-311.pyc
+                            📄 templates.cpython-311.pyc
+                            📄 teraterm.cpython-311.pyc
+                            📄 testing.cpython-311.pyc
+                            📄 text.cpython-311.pyc
+                            📄 textedit.cpython-311.pyc
+                            📄 textfmts.cpython-311.pyc
+                            📄 theorem.cpython-311.pyc
+                            📄 thingsdb.cpython-311.pyc
+                            📄 tlb.cpython-311.pyc
+                            📄 tls.cpython-311.pyc
+                            📄 tnt.cpython-311.pyc
+                            📄 trafficscript.cpython-311.pyc
+                            📄 typoscript.cpython-311.pyc
+                            📄 typst.cpython-311.pyc
+                            📄 ul4.cpython-311.pyc
+                            📄 unicon.cpython-311.pyc
+                            📄 urbi.cpython-311.pyc
+                            📄 usd.cpython-311.pyc
+                            📄 varnish.cpython-311.pyc
+                            📄 verification.cpython-311.pyc
+                            📄 verifpal.cpython-311.pyc
+                            📄 vip.cpython-311.pyc
+                            📄 vyper.cpython-311.pyc
+                            📄 web.cpython-311.pyc
+                            📄 webassembly.cpython-311.pyc
+                            📄 webidl.cpython-311.pyc
+                            📄 webmisc.cpython-311.pyc
+                            📄 wgsl.cpython-311.pyc
+                            📄 whiley.cpython-311.pyc
+                            📄 wowtoc.cpython-311.pyc
+                            📄 wren.cpython-311.pyc
+                            📄 x10.cpython-311.pyc
+                            📄 xorg.cpython-311.pyc
+                            📄 yang.cpython-311.pyc
+                            📄 yara.cpython-311.pyc
+                            📄 zig.cpython-311.pyc
                     📂 styles/
                         📄 __init__.py
                         📄 _mapping.py
@@ -3547,6 +4037,52 @@
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
                             📄 _mapping.cpython-311.pyc
+                            📄 abap.cpython-311.pyc
+                            📄 algol.cpython-311.pyc
+                            📄 algol_nu.cpython-311.pyc
+                            📄 arduino.cpython-311.pyc
+                            📄 autumn.cpython-311.pyc
+                            📄 borland.cpython-311.pyc
+                            📄 bw.cpython-311.pyc
+                            📄 coffee.cpython-311.pyc
+                            📄 colorful.cpython-311.pyc
+                            📄 default.cpython-311.pyc
+                            📄 dracula.cpython-311.pyc
+                            📄 emacs.cpython-311.pyc
+                            📄 friendly.cpython-311.pyc
+                            📄 friendly_grayscale.cpython-311.pyc
+                            📄 fruity.cpython-311.pyc
+                            📄 gh_dark.cpython-311.pyc
+                            📄 gruvbox.cpython-311.pyc
+                            📄 igor.cpython-311.pyc
+                            📄 inkpot.cpython-311.pyc
+                            📄 lightbulb.cpython-311.pyc
+                            📄 lilypond.cpython-311.pyc
+                            📄 lovelace.cpython-311.pyc
+                            📄 manni.cpython-311.pyc
+                            📄 material.cpython-311.pyc
+                            📄 monokai.cpython-311.pyc
+                            📄 murphy.cpython-311.pyc
+                            📄 native.cpython-311.pyc
+                            📄 nord.cpython-311.pyc
+                            📄 onedark.cpython-311.pyc
+                            📄 paraiso_dark.cpython-311.pyc
+                            📄 paraiso_light.cpython-311.pyc
+                            📄 pastie.cpython-311.pyc
+                            📄 perldoc.cpython-311.pyc
+                            📄 rainbow_dash.cpython-311.pyc
+                            📄 rrt.cpython-311.pyc
+                            📄 sas.cpython-311.pyc
+                            📄 solarized.cpython-311.pyc
+                            📄 staroffice.cpython-311.pyc
+                            📄 stata_dark.cpython-311.pyc
+                            📄 stata_light.cpython-311.pyc
+                            📄 tango.cpython-311.pyc
+                            📄 trac.cpython-311.pyc
+                            📄 vim.cpython-311.pyc
+                            📄 vs.cpython-311.pyc
+                            📄 xcode.cpython-311.pyc
+                            📄 zenburn.cpython-311.pyc
                 📂 pytest-8.4.1.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -3582,8 +4118,11 @@
                     📄 py.typed
                     📂 __pycache__/
                         📄 __init__.cpython-311-pytest-8.4.1.pyc
+                        📄 __init__.cpython-311.pyc
                         📄 _version.cpython-311-pytest-8.4.1.pyc
+                        📄 _version.cpython-311.pyc
                         📄 plugin.cpython-311-pytest-8.4.1.pyc
+                        📄 plugin.cpython-311.pyc
                 📂 python_multipart-0.0.20.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -3627,6 +4166,7 @@
                         📄 _core.cpython-311.pyc
                         📄 exceptions.cpython-311.pyc
                         📄 jsonschema.cpython-311.pyc
+                        📄 retrieval.cpython-311.pyc
                         📄 typing.cpython-311.pyc
                     📂 tests/
                         📄 __init__.py
@@ -3635,6 +4175,13 @@
                         📄 test_jsonschema.py
                         📄 test_referencing_suite.py
                         📄 test_retrieval.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 test_core.cpython-311.pyc
+                            📄 test_exceptions.cpython-311.pyc
+                            📄 test_jsonschema.cpython-311.pyc
+                            📄 test_referencing_suite.cpython-311.pyc
+                            📄 test_retrieval.cpython-311.pyc
                 📂 rpds/
                     📄 __init__.py
                     📄 __init__.pyi
@@ -3662,6 +4209,9 @@
                 📂 ruff/
                     📄 __init__.py
                     📄 __main__.py
+                    📂 __pycache__/
+                        📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
                 📂 setuptools-65.5.0.dist-info/
                     📄 INSTALLER
                     📄 LICENSE
@@ -4094,6 +4644,9 @@
                     📂 _tests/
                         📄 __init__.py
                         📄 test_sniffio.py
+                        📂 __pycache__/
+                            📄 __init__.cpython-311.pyc
+                            📄 test_sniffio.cpython-311.pyc
                 📂 starlette-0.47.2.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -4132,17 +4685,22 @@
                         📄 _exception_handler.cpython-311.pyc
                         📄 _utils.cpython-311.pyc
                         📄 applications.cpython-311.pyc
+                        📄 authentication.cpython-311.pyc
                         📄 background.cpython-311.pyc
                         📄 concurrency.cpython-311.pyc
+                        📄 config.cpython-311.pyc
                         📄 convertors.cpython-311.pyc
                         📄 datastructures.cpython-311.pyc
+                        📄 endpoints.cpython-311.pyc
                         📄 exceptions.cpython-311.pyc
                         📄 formparsers.cpython-311.pyc
                         📄 requests.cpython-311.pyc
                         📄 responses.cpython-311.pyc
                         📄 routing.cpython-311.pyc
+                        📄 schemas.cpython-311.pyc
                         📄 staticfiles.cpython-311.pyc
                         📄 status.cpython-311.pyc
+                        📄 templating.cpython-311.pyc
                         📄 testclient.cpython-311.pyc
                         📄 types.cpython-311.pyc
                         📄 websockets.cpython-311.pyc
@@ -4160,10 +4718,16 @@
                         📄 wsgi.py
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
+                            📄 authentication.cpython-311.pyc
                             📄 base.cpython-311.pyc
                             📄 cors.cpython-311.pyc
                             📄 errors.cpython-311.pyc
                             📄 exceptions.cpython-311.pyc
+                            📄 gzip.cpython-311.pyc
+                            📄 httpsredirect.cpython-311.pyc
+                            📄 sessions.cpython-311.pyc
+                            📄 trustedhost.cpython-311.pyc
+                            📄 wsgi.cpython-311.pyc
                 📂 typing_extensions-4.14.1.dist-info/
                     📄 INSTALLER
                     📄 METADATA
@@ -4231,6 +4795,7 @@
                     📄 workers.py
                     📂 __pycache__/
                         📄 __init__.cpython-311.pyc
+                        📄 __main__.cpython-311.pyc
                         📄 _subprocess.cpython-311.pyc
                         📄 _types.cpython-311.pyc
                         📄 config.cpython-311.pyc
@@ -4238,12 +4803,14 @@
                         📄 logging.cpython-311.pyc
                         📄 main.cpython-311.pyc
                         📄 server.cpython-311.pyc
+                        📄 workers.cpython-311.pyc
                     📂 lifespan/
                         📄 __init__.py
                         📄 off.py
                         📄 on.py
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
+                            📄 off.cpython-311.pyc
                             📄 on.cpython-311.pyc
                     📂 loops/
                         📄 __init__.py
@@ -4254,6 +4821,7 @@
                             📄 __init__.cpython-311.pyc
                             📄 asyncio.cpython-311.pyc
                             📄 auto.cpython-311.pyc
+                            📄 uvloop.cpython-311.pyc
                     📂 middleware/
                         📄 __init__.py
                         📄 asgi2.py
@@ -4283,6 +4851,7 @@
                                 📄 auto.cpython-311.pyc
                                 📄 flow_control.cpython-311.pyc
                                 📄 h11_impl.cpython-311.pyc
+                                📄 httptools_impl.cpython-311.pyc
                         📂 websockets/
                             📄 __init__.py
                             📄 auto.py
@@ -4292,6 +4861,9 @@
                             📂 __pycache__/
                                 📄 __init__.cpython-311.pyc
                                 📄 auto.cpython-311.pyc
+                                📄 websockets_impl.cpython-311.pyc
+                                📄 websockets_sansio_impl.cpython-311.pyc
+                                📄 wsproto_impl.cpython-311.pyc
                     📂 supervisors/
                         📄 __init__.py
                         📄 basereload.py
@@ -4370,6 +4942,7 @@
                             📄 activate_this.py
                             📂 __pycache__/
                                 📄 __init__.cpython-311.pyc
+                                📄 activate_this.cpython-311.pyc
                     📂 app_data/
                         📄 __init__.py
                         📄 base.py
@@ -4417,6 +4990,7 @@
                         📂 __pycache__/
                             📄 __init__.cpython-311.pyc
                             📄 creator.cpython-311.pyc
+                            📄 debug.cpython-311.pyc
                             📄 describe.cpython-311.pyc
                             📄 pyenv_cfg.cpython-311.pyc
                         📂 via_global_ref/
@@ -4427,6 +5001,7 @@
                             📄 venv.py
                             📂 __pycache__/
                                 📄 __init__.cpython-311.pyc
+                                📄 _virtualenv.cpython-311.pyc
                                 📄 api.cpython-311.pyc
                                 📄 store.cpython-311.pyc
                                 📄 venv.cpython-311.pyc
@@ -4481,6 +5056,9 @@
                         📂 windows/
                             📄 __init__.py
                             📄 pep514.py
+                            📂 __pycache__/
+                                📄 __init__.cpython-311.pyc
+                                📄 pep514.cpython-311.pyc
                     📂 run/
                         📄 __init__.py
                         📄 session.py
@@ -4698,6 +5276,8 @@
     📂 .vscode/
         📄 launch.json
         📄 settings.json
+    📂 __pycache__/
+        📄 repo_to_packs.cpython-311.pyc
     📂 architectus/
         📂 axiom_modulator/
             📄 README.md
@@ -4707,6 +5287,10 @@
             📄 README.md
         📂 simulation_substrate/
             📄 README.md
+    📂 billing/
+        📄 proof_token_bank.py
+        📂 __pycache__/
+            📄 proof_token_bank.cpython-311.pyc
     📂 build/
         📂 exports/
             📄 pl-286kk-0001.json
@@ -4719,9 +5303,13 @@
     📂 cje/
         📂 dissensus/
             📄 ranking.py
+            📂 __pycache__/
+                📄 ranking.cpython-311.pyc
     📂 clients/
         📂 cli/
             📄 certeus_cli.py
+            📂 __pycache__/
+                📄 certeus_cli.cpython-311.pyc
         📂 vscode-plugin/
             📄 README.md
         📂 web/
@@ -4754,6 +5342,8 @@
                 📄 public_payload.cpython-311.pyc
         📂 truthops/
             📄 engine.py
+            📂 __pycache__/
+                📄 engine.cpython-311.pyc
     📂 data/
         📂 public_pco/
             📄 demo-001.json
@@ -4773,11 +5363,17 @@
         📂 legal/
             📂 provisional_patent/
                 📄 placeholder.txt
+    📂 dr/
+        📄 temporal_fortress.py
+        📂 __pycache__/
+            📄 temporal_fortress.cpython-311.pyc
     📂 exports/
         📄 raport_pl-286kk-0001.txt
         📂 e2e/
     📂 governance/
         📄 pcu_breakglass.py
+        📂 __pycache__/
+            📄 pcu_breakglass.cpython-311.pyc
     📂 ingest_repo/
         📄 MANIFEST.json
         📄 MANIFEST.md
@@ -4807,6 +5403,8 @@
     📂 monitoring/
         📄 alert-rules.yaml
         📄 metrics_goodhart.py
+        📂 __pycache__/
+            📄 metrics_goodhart.cpython-311.pyc
     📂 node_modules/
         📂 .cache/
             📂 prettier/
@@ -4817,6 +5415,7 @@
             📄 alerts.yaml
             📄 rules.yaml
     📂 ops/
+        📄 kill_switch.sh
         📂 k8s/
             📂 helm/
                 📄 README.md
@@ -4850,6 +5449,8 @@
                     📄 kk.mapping.json
     📂 plugins/
         📄 init.py
+        📂 __pycache__/
+            📄 init.cpython-311.pyc
         📂 exporter_pl/
             📄 plugin.yaml
             📂 src/
@@ -4864,6 +5465,8 @@
                     📄 main.cpython-311.pyc
         📂 lexenith_pl/
             📄 adapter.py
+            📂 __pycache__/
+                📄 adapter.cpython-311.pyc
             📂 tests/
                 📂 gold_sets/
                     📄 example.yaml
@@ -4880,6 +5483,10 @@
                 📂 __pycache__/
                     📄 main.cpython-311.pyc
     📂 policies/
+        📂 ips/
+            📄 immutable_store.py
+            📂 __pycache__/
+                📄 immutable_store.cpython-311.pyc
         📂 pco/
             📄 lex.advisory.yaml
             📄 lex.release.yaml
@@ -4890,10 +5497,14 @@
         📄 input.cnf
         📄 input.smt2
         📄 z3.drat
-    📂 recovered/
     📂 runtime/
         📄 complexity_estimator.py
+        📄 pco_encryptor.py
         📄 proof_queue.py
+        📂 __pycache__/
+            📄 complexity_estimator.cpython-311.pyc
+            📄 pco_encryptor.cpython-311.pyc
+            📄 proof_queue.cpython-311.pyc
         📂 truthops/
             📄 policies.yaml
     📂 schemas/
@@ -4909,6 +5520,7 @@
         📄 check_headers.py
         📄 check_lfsc.sh
         📄 check_proofs.py
+        📄 compute_truth_gates.py
         📄 ed25519_keytool.py
         📄 fix_bom.py
         📄 generate_proofs.py
@@ -4926,9 +5538,28 @@
         📄 validate_schemas.py
         📄 verify_bundle.py
         📂 __pycache__/
+            📄 apply_headers.cpython-311.pyc
+            📄 build_flags_from_mapping.cpython-311.pyc
+            📄 check_headers.cpython-311.pyc
+            📄 check_proofs.cpython-311.pyc
+            📄 compute_truth_gates.cpython-311.pyc
+            📄 ed25519_keytool.cpython-311.pyc
+            📄 fix_bom.cpython-311.pyc
             📄 generate_proofs.cpython-311.pyc
+            📄 lexlog_eval_smoke.cpython-311.pyc
+            📄 lexlog_eval_smoke_fallback.cpython-311.pyc
+            📄 make_merkle_sample.cpython-311.pyc
+            📄 make_pco_bundle.cpython-311.pyc
+            📄 pem_to_b64url.cpython-311.pyc
+            📄 sign_bundle.cpython-311.pyc
+            📄 temporal_fortress.cpython-311.pyc
+            📄 validate_policy_pack.cpython-311.pyc
+            📄 validate_schemas.cpython-311.pyc
+            📄 verify_bundle.cpython-311.pyc
         📂 hooks/
             📄 block_key_extensions.py
+            📂 __pycache__/
+                📄 block_key_extensions.cpython-311.pyc
     📂 security/
         📄 proofs.md
         📄 rbac_policies.md
@@ -4938,9 +5569,11 @@
             📄 __init__.cpython-311.pyc
         📂 api_gateway/
             📄 app_e2e.py
+            📄 limits.py
             📄 main.py
             📂 __pycache__/
                 📄 app_e2e.cpython-311.pyc
+                📄 limits.cpython-311.pyc
                 📄 main.cpython-311.pyc
             📂 routers/
                 📄 __init__.py
@@ -4960,9 +5593,15 @@
                     📄 mismatch.cpython-311.pyc
                     📄 pco_public.cpython-311.pyc
                     📄 preview.cpython-311.pyc
+                    📄 publish.cpython-311.pyc
                     📄 system.cpython-311.pyc
                     📄 verify.cpython-311.pyc
                     📄 well_known_jwks.cpython-311.pyc
+        📂 connectors/
+            📂 fhir/
+                📄 router.py
+                📂 __pycache__/
+                    📄 router.cpython-311.pyc
         📂 exporter_service/
             📄 __init__.py
             📄 exporter.py
@@ -5017,6 +5656,8 @@
                 📄 service.cpython-311.pyc
         📂 raas_service/
             📄 main.py
+            📂 __pycache__/
+                📄 main.cpython-311.pyc
         📂 sipp_indexer_service/
             📄 __init__.py
             📄 index_isap.py
@@ -5029,12 +5670,16 @@
                 📄 models.cpython-311.pyc
         📂 zkp_service/
             📄 stub.py
+            📂 __pycache__/
+                📄 stub.cpython-311.pyc
     📂 static/
         📂 previews/
             📄 80b22202b75648e5b750db1cfb791246.pdf
     📂 storage/
         📂 proof_cache/
             📄 cache.py
+            📂 __pycache__/
+                📄 cache.cpython-311.pyc
     📂 templates/
         📄 answer_contract.docx.placeholder
         📄 answer_contract.txt.placeholder
@@ -5047,20 +5692,33 @@
         📄 test_pco_public.py
         📂 __pycache__/
             📄 conftest.cpython-311-pytest-8.4.1.pyc
+            📄 conftest.cpython-311.pyc
             📄 test_adapters_local_impl.cpython-311-pytest-8.4.1.pyc
+            📄 test_adapters_local_impl.cpython-311.pyc
             📄 test_merkle.cpython-311-pytest-8.4.1.pyc
+            📄 test_merkle.cpython-311.pyc
             📄 test_pco_core.cpython-311-pytest-8.4.1.pyc
+            📄 test_pco_core.cpython-311.pyc
             📄 test_pco_public.cpython-311-pytest-8.4.1.pyc
+            📄 test_pco_public.cpython-311.pyc
         📂 e2e/
             📄 test_e2e_export_endpoint.py
             📄 test_e2e_pl_286kk_0001.py
             📂 __pycache__/
                 📄 test_e2e_export_endpoint.cpython-311-pytest-8.4.1.pyc
+                📄 test_e2e_export_endpoint.cpython-311.pyc
                 📄 test_e2e_pl_286kk_0001.cpython-311-pytest-8.4.1.pyc
+                📄 test_e2e_pl_286kk_0001.cpython-311.pyc
         📂 plugins/
             📄 test_plugins_registry.py
             📂 __pycache__/
                 📄 test_plugins_registry.cpython-311-pytest-8.4.1.pyc
+                📄 test_plugins_registry.cpython-311.pyc
+        📂 runtime/
+            📄 test_pco_encryptor.py
+            📂 __pycache__/
+                📄 test_pco_encryptor.cpython-311-pytest-8.4.1.pyc
+                📄 test_pco_encryptor.cpython-311.pyc
         📂 services/
             📄 test_api_gateway.py
             📄 test_exporter.py
@@ -5070,6 +5728,7 @@
             📄 test_lexlog.py
             📄 test_lexlog_eval.py
             📄 test_lexlog_parser.py
+            📄 test_limits.py
             📄 test_mismatch_service.py
             📄 test_preview.py
             📄 test_schemas.py
@@ -5077,37 +5736,60 @@
             📄 test_verify_mismatch.py
             📂 __pycache__/
                 📄 test_api_gateway.cpython-311-pytest-8.4.1.pyc
+                📄 test_api_gateway.cpython-311.pyc
                 📄 test_exporter.cpython-311-pytest-8.4.1.pyc
+                📄 test_exporter.cpython-311.pyc
                 📄 test_exporter_provenance.cpython-311-pytest-8.4.1.pyc
+                📄 test_exporter_provenance.cpython-311.pyc
                 📄 test_ingest.cpython-311-pytest-8.4.1.pyc
+                📄 test_ingest.cpython-311.pyc
                 📄 test_ledger.cpython-311-pytest-8.4.1.pyc
+                📄 test_ledger.cpython-311.pyc
                 📄 test_lexlog.cpython-311-pytest-8.4.1.pyc
+                📄 test_lexlog.cpython-311.pyc
                 📄 test_lexlog_eval.cpython-311-pytest-8.4.1.pyc
+                📄 test_lexlog_eval.cpython-311.pyc
                 📄 test_lexlog_parser.cpython-311-pytest-8.4.1.pyc
+                📄 test_lexlog_parser.cpython-311.pyc
+                📄 test_limits.cpython-311-pytest-8.4.1.pyc
+                📄 test_limits.cpython-311.pyc
                 📄 test_mismatch_service.cpython-311-pytest-8.4.1.pyc
+                📄 test_mismatch_service.cpython-311.pyc
                 📄 test_preview.cpython-311-pytest-8.4.1.pyc
+                📄 test_preview.cpython-311.pyc
                 📄 test_schemas.cpython-311-pytest-8.4.1.pyc
+                📄 test_schemas.cpython-311.pyc
                 📄 test_sipp.cpython-311-pytest-8.4.1.pyc
+                📄 test_sipp.cpython-311.pyc
                 📄 test_verify_mismatch.cpython-311-pytest-8.4.1.pyc
+                📄 test_verify_mismatch.cpython-311.pyc
         📂 truth/
             📄 test_smt_translator_ext.py
             📄 test_solvers.py
             📂 __pycache__/
                 📄 test_smt_translator_ext.cpython-311-pytest-8.4.1.pyc
+                📄 test_smt_translator_ext.cpython-311.pyc
                 📄 test_solvers.cpython-311-pytest-8.4.1.pyc
+                📄 test_solvers.cpython-311.pyc
         📂 utils/
             📄 test_console.py
             📂 __pycache__/
                 📄 test_console.cpython-311-pytest-8.4.1.pyc
+                📄 test_console.cpython-311.pyc
     📂 tmp/
         📄 cvc5.lfsc
         📄 z3.drat
     📂 tools/
         📄 fix_certeus_headers.py
         📄 normalize_certeus_headers.py
+        📂 __pycache__/
+            📄 fix_certeus_headers.cpython-311.pyc
+            📄 normalize_certeus_headers.cpython-311.pyc
     📂 typings/
         📂 z3/
             📄 __init__.py
+            📂 __pycache__/
+                📄 __init__.cpython-311.pyc
     📂 utils/
         📄 __init__.py
         📄 console.py
@@ -5116,4 +5798,4 @@
             📄 console.cpython-311.pyc
 
 ---
-**Łączna liczba plików:** 4420
+**Łączna liczba plików:** 5056

@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  proofgate:
+    build: ./services/proofgate
+    ports: ["8081:8081"]
+  boundary:
+    build: ./services/boundary_service
+    ports: ["8082:8082"]

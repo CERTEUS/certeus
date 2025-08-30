@@ -1,0 +1,930 @@
+├── .github/
+│   ├── ISSUE_TEMPLATE/
+│   │   └── refutation_ticket.md
+│   ├── workflows/
+│   │   ├── asset-guard.yml
+│   │   ├── proof-gate.yml
+│   │   ├── release.yml
+│   │   ├── security-scan.yml
+│   │   ├── tests.yml
+│   │   ├── truth_gates.yml
+│   │   └── ui-smoke.yml
+│   └── pull_request_template.md
+├── .pytest_cache/
+│   ├── v/
+│   │   └── cache/
+│   │       ├── lastfailed
+│   │       └── nodeids
+│   ├── .gitignore
+│   ├── CACHEDIR.TAG
+│   └── README.md
+├── .ruff_cache/
+│   ├── 0.12.8/
+│   │   ├── 10268174003175166968
+│   │   ├── 11258237515305460665
+│   │   ├── 11917823960253109682
+│   │   ├── 12480369989398807353
+│   │   ├── 13987162755793700697
+│   │   ├── 14355001034841340121
+│   │   ├── 14542844053876753157
+│   │   ├── 14842549051596506411
+│   │   ├── 15449326753402657103
+│   │   ├── 15521746394349168029
+│   │   ├── 17510200252930591661
+│   │   ├── 18092742971912226203
+│   │   ├── 1897311548495268147
+│   │   ├── 241742105943884419
+│   │   ├── 252147807110171387
+│   │   ├── 4277942219909683425
+│   │   ├── 4366126865228264820
+│   │   ├── 4401545034515409749
+│   │   ├── 6454848465026861068
+│   │   ├── 7012330808938117649
+│   │   ├── 9359244238795640098
+│   │   ├── 9578239816099455093
+│   │   └── 9813271330113992090
+│   ├── 0.12.9/
+│   │   ├── 10132902774127970691
+│   │   ├── 10197226188549800396
+│   │   ├── 10268174003175166968
+│   │   ├── 10434042075656241073
+│   │   ├── 10483472308339101169
+│   │   ├── 10625842232977088538
+│   │   ├── 10895648747543907084
+│   │   ├── 1095639986475059630
+│   │   ├── 11029219806210085243
+│   │   ├── 11255288268027039663
+│   │   ├── 11258237515305460665
+│   │   ├── 11328350146576025254
+│   │   ├── 11878507231690641895
+│   │   ├── 11917823960253109682
+│   │   ├── 11930187891887238649
+│   │   ├── 12040512234444748816
+│   │   ├── 12085176794978361178
+│   │   ├── 12120593259904588941
+│   │   ├── 12125863933419405335
+│   │   ├── 1223624241881851861
+│   │   ├── 12240497669370826465
+│   │   ├── 12446307565957837341
+│   │   ├── 12477311395371577221
+│   │   ├── 12480369989398807353
+│   │   ├── 12650679438373952227
+│   │   ├── 12658869480149559828
+│   │   ├── 12662137256764055116
+│   │   ├── 12735829915035142805
+│   │   ├── 12764032019615620044
+│   │   ├── 12771943797614433896
+│   │   ├── 12869730661675523955
+│   │   ├── 12880075082934036232
+│   │   ├── 12933645556346822824
+│   │   ├── 13032956321016057376
+│   │   ├── 13038495525739188407
+│   │   ├── 13133407912433257958
+│   │   ├── 13137243389266190627
+│   │   ├── 13231517840726812732
+│   │   ├── 13396923669981304963
+│   │   ├── 1352328244748177042
+│   │   ├── 13823599438773314173
+│   │   ├── 13852786283340442625
+│   │   ├── 13869085701874923662
+│   │   ├── 13987162755793700697
+│   │   ├── 14089989851230551494
+│   │   ├── 14355001034841340121
+│   │   ├── 14542844053876753157
+│   │   ├── 14750972341083198612
+│   │   ├── 14763635886786703477
+│   │   ├── 14842549051596506411
+│   │   ├── 15112021396050554357
+│   │   ├── 15169122284147128097
+│   │   ├── 15429902053205359270
+│   │   ├── 15449326753402657103
+│   │   ├── 15521746394349168029
+│   │   ├── 15596542530016998834
+│   │   ├── 15602072881639090792
+│   │   ├── 15632340594991325295
+│   │   ├── 1592376937289548656
+│   │   ├── 15988942479672892311
+│   │   ├── 16109545938023981333
+│   │   ├── 16441902051580182882
+│   │   ├── 16530278022106509565
+│   │   ├── 16829170086947229602
+│   │   ├── 17125260620817108153
+│   │   ├── 17389199405223994427
+│   │   ├── 17510200252930591661
+│   │   ├── 17648787850113968904
+│   │   ├── 17804170122521489568
+│   │   ├── 17865434023315395302
+│   │   ├── 17908894871059634510
+│   │   ├── 17944159274226267980
+│   │   ├── 18092742971912226203
+│   │   ├── 18280699803430124146
+│   │   ├── 18358945998870791795
+│   │   ├── 183812469366087162
+│   │   ├── 18383115484620960149
+│   │   ├── 1885203163624994120
+│   │   ├── 1897311548495268147
+│   │   ├── 1909574132158340709
+│   │   ├── 1927707415463180347
+│   │   ├── 1990799192719389648
+│   │   ├── 2077282199716552665
+│   │   ├── 2154846845114458621
+│   │   ├── 2379635856869156298
+│   │   ├── 2401354199318792880
+│   │   ├── 241742105943884419
+│   │   ├── 252147807110171387
+│   │   ├── 2675544208182693029
+│   │   ├── 2684291226737556731
+│   │   ├── 2685400455178933898
+│   │   ├── 2723016021800521257
+│   │   ├── 3165791775865679209
+│   │   ├── 3896615385232056970
+│   │   ├── 3953654991999656361
+│   │   ├── 4125731815850102024
+│   │   ├── 4277942219909683425
+│   │   ├── 4322537747430344992
+│   │   ├── 4366126865228264820
+│   │   ├── 4401545034515409749
+│   │   ├── 4704947220924549080
+│   │   ├── 4715288032584107761
+│   │   ├── 4853958279394126332
+│   │   ├── 5044946783736102849
+│   │   ├── 5269175129707063324
+│   │   ├── 5291125716443577863
+│   │   ├── 5354336982344429579
+│   │   ├── 5382507679440697054
+│   │   ├── 5416648286412907267
+│   │   ├── 5622362298383444111
+│   │   ├── 5675788266831300703
+│   │   ├── 5768740799765388349
+│   │   ├── 5975821817844094488
+│   │   ├── 6150510651521596441
+│   │   ├── 6189596012645156797
+│   │   ├── 6258297361724463247
+│   │   ├── 6352214501552352034
+│   │   ├── 6454848465026861068
+│   │   ├── 6762377312924594421
+│   │   ├── 6766560518387052951
+│   │   ├── 6800504837785743931
+│   │   ├── 7012330808938117649
+│   │   ├── 7038173748509968415
+│   │   ├── 7204464938843640761
+│   │   ├── 7234986907322441391
+│   │   ├── 753508562448809501
+│   │   ├── 7740268393583445699
+│   │   ├── 77780379357865197
+│   │   ├── 7841358193293564607
+│   │   ├── 788340613642014936
+│   │   ├── 7889796814053983010
+│   │   ├── 7947721933821329221
+│   │   ├── 7984985660570823937
+│   │   ├── 8007359055383675921
+│   │   ├── 8325999238754884352
+│   │   ├── 8415845362238095871
+│   │   ├── 844816437884531651
+│   │   ├── 8479088397655880493
+│   │   ├── 8596382983645807573
+│   │   ├── 8617439779472388648
+│   │   ├── 8753833568652162053
+│   │   ├── 8815318512037428297
+│   │   ├── 8994899199715363184
+│   │   ├── 9164229085968988380
+│   │   ├── 9359244238795640098
+│   │   ├── 9437535099629669212
+│   │   ├── 9578239816099455093
+│   │   ├── 9611188714458741103
+│   │   ├── 9813271330113992090
+│   │   ├── 9833136046239385554
+│   │   └── 9869723565537106205
+│   ├── 0.5.6/
+│   │   ├── 1003561452143786363
+│   │   ├── 10050901158104999420
+│   │   ├── 10824276408400536631
+│   │   ├── 11424243866857845493
+│   │   ├── 1168010790731609035
+│   │   ├── 12825808672825220548
+│   │   ├── 13364911904185451886
+│   │   ├── 13409892960965270164
+│   │   ├── 14309752117782828567
+│   │   ├── 14543303821354738713
+│   │   ├── 14739229333137107640
+│   │   ├── 15306782934693035411
+│   │   ├── 16543257163195413316
+│   │   ├── 16675143488984423006
+│   │   ├── 17092951272514792694
+│   │   ├── 17294988743695374369
+│   │   ├── 17499499986664738731
+│   │   ├── 17810404471533504766
+│   │   ├── 17898329099974208204
+│   │   ├── 17923255783513260711
+│   │   ├── 1910557618244307583
+│   │   ├── 2788702961478652233
+│   │   ├── 3004034027299711514
+│   │   ├── 322236448155238698
+│   │   ├── 3326962839163930982
+│   │   ├── 3464613716978070192
+│   │   ├── 4252386511813276037
+│   │   ├── 4473103091566134067
+│   │   ├── 4833212819583518348
+│   │   ├── 4944786263048431701
+│   │   ├── 5039516039231885613
+│   │   ├── 5121303299110596750
+│   │   ├── 5644385912577289618
+│   │   ├── 5857518139140739966
+│   │   ├── 5913965195367875218
+│   │   ├── 6090323921520736176
+│   │   ├── 6780539063203648616
+│   │   ├── 6908437808581160419
+│   │   ├── 8549365374291985794
+│   │   ├── 8842415538241908746
+│   │   ├── 8846602423084652500
+│   │   └── 9912983740195485954
+│   ├── 0.6.8/
+│   │   ├── 10626799946040492811
+│   │   ├── 12777267325002588031
+│   │   ├── 14111899312577752582
+│   │   ├── 14114518484428291607
+│   │   ├── 15742954648668088170
+│   │   ├── 16641309401307944980
+│   │   ├── 17311256591632104948
+│   │   ├── 17354067462598257805
+│   │   ├── 17672216588110175521
+│   │   ├── 2856107410835496979
+│   │   ├── 438487271617172738
+│   │   ├── 4672133320380613121
+│   │   ├── 4719956917139176022
+│   │   ├── 5070746769958982154
+│   │   ├── 5240884579781156147
+│   │   ├── 6127865363718796318
+│   │   ├── 6242347299618629207
+│   │   ├── 7230690919086936186
+│   │   ├── 7670861775709876194
+│   │   ├── 7740401334246243357
+│   │   ├── 7855494011334104272
+│   │   ├── 9019848884650643753
+│   │   └── 9407972753726064708
+│   ├── 0.6.9/
+│   │   ├── 10238119136454547137
+│   │   ├── 10361413687891973795
+│   │   ├── 10549319015944411207
+│   │   ├── 10728051528823146433
+│   │   ├── 10832422353089246556
+│   │   ├── 10950809079764680096
+│   │   ├── 10976461623823832938
+│   │   ├── 11084272506559458647
+│   │   ├── 11144928060863465455
+│   │   ├── 1170624633648015044
+│   │   ├── 11758113825077066445
+│   │   ├── 11761047327513068204
+│   │   ├── 11890223535534121287
+│   │   ├── 12175306454546094108
+│   │   ├── 12239157155121221369
+│   │   ├── 12677715411059382245
+│   │   ├── 12757286797826890374
+│   │   ├── 13003355179871383983
+│   │   ├── 13179245251600877559
+│   │   ├── 13408902210456471108
+│   │   ├── 13754052181484586213
+│   │   ├── 13854350038398110837
+│   │   ├── 14033954239226517683
+│   │   ├── 14068323775528763760
+│   │   ├── 14814613817789245701
+│   │   ├── 14865114320590062225
+│   │   ├── 15219315338494300389
+│   │   ├── 153545287324008762
+│   │   ├── 15360369975651667894
+│   │   ├── 15426331759917931194
+│   │   ├── 16064993083732929297
+│   │   ├── 16115142309025450725
+│   │   ├── 16235062130652897357
+│   │   ├── 16408114659368995477
+│   │   ├── 16668523500001689572
+│   │   ├── 1674160940002406739
+│   │   ├── 16802088476536356055
+│   │   ├── 16994990612383559891
+│   │   ├── 1700868747974998874
+│   │   ├── 1707908877282152775
+│   │   ├── 17580250443062842746
+│   │   ├── 17928788708577769716
+│   │   ├── 17935344275996131155
+│   │   ├── 18164950107994730213
+│   │   ├── 18171291770133987138
+│   │   ├── 217941885560400046
+│   │   ├── 2217117144368485480
+│   │   ├── 2227169407327769275
+│   │   ├── 2508095305040089690
+│   │   ├── 2621910741001653374
+│   │   ├── 2771875984456460133
+│   │   ├── 2964334911368220853
+│   │   ├── 3004461034757495303
+│   │   ├── 3037030145759615336
+│   │   ├── 3208513729523730541
+│   │   ├── 3214355647243933264
+│   │   ├── 3491592063131173306
+│   │   ├── 3513187112905731953
+│   │   ├── 3695907377734969622
+│   │   ├── 3701360744556774635
+│   │   ├── 3896691973283112555
+│   │   ├── 4154322536938617057
+│   │   ├── 4293947746573770803
+│   │   ├── 4446730225746808933
+│   │   ├── 4643872232804618623
+│   │   ├── 4731443157968395719
+│   │   ├── 4812920620256560848
+│   │   ├── 4844117842615763454
+│   │   ├── 5292139495985785318
+│   │   ├── 5322764067271691625
+│   │   ├── 5326172411373942186
+│   │   ├── 5477835967998626342
+│   │   ├── 5480789465912777799
+│   │   ├── 560111549433906651
+│   │   ├── 5703663545259257455
+│   │   ├── 5767361883301323082
+│   │   ├── 5786787543997977986
+│   │   ├── 5854817847962345447
+│   │   ├── 5906350611338865406
+│   │   ├── 6162386123092772186
+│   │   ├── 7297824707782962682
+│   │   ├── 7351978615106460953
+│   │   ├── 7730880798423773489
+│   │   ├── 8112851990223990949
+│   │   ├── 8263670540035386733
+│   │   ├── 8371970687467174094
+│   │   ├── 8612781503179448243
+│   │   ├── 8763732628731711250
+│   │   ├── 9214016566419063467
+│   │   └── 9214461458865640593
+│   ├── .gitignore
+│   └── CACHEDIR.TAG
+├── architectus/
+│   ├── axiom_modulator/
+│   │   └── README.md
+│   ├── ethical_oracle/
+│   │   └── README.md
+│   ├── instrumentation_bridge/
+│   │   └── README.md
+│   └── simulation_substrate/
+│       └── README.md
+├── billing/
+│   ├── __pycache__/
+│   │   └── proof_token_bank.cpython-311.pyc
+│   └── proof_token_bank.py
+├── build/
+│   └── exports/
+│       └── pl-286kk-0001.json
+├── certeus.egg-info/
+│   ├── PKG-INFO
+│   ├── SOURCES.txt
+│   ├── dependency_links.txt
+│   ├── requires.txt
+│   └── top_level.txt
+├── ci/
+├── cje/
+│   └── dissensus/
+│       ├── __pycache__/
+│       │   └── ranking.cpython-311.pyc
+│       └── ranking.py
+├── clients/
+│   ├── cli/
+│   │   ├── __pycache__/
+│   │   │   └── certeus_cli.cpython-311.pyc
+│   │   └── certeus_cli.py
+│   ├── vscode-plugin/
+│   │   └── README.md
+│   └── web/
+│       ├── mismatch_console/
+│       │   ├── README.md
+│       │   └── index.html
+│       ├── proof_visualizer/
+│       │   ├── README.md
+│       │   ├── case_manager.js
+│       │   ├── file_list.js
+│       │   ├── file_list_bridge.js
+│       │   └── index.html
+│       ├── public/
+│       │   └── brand/
+│       │       ├── apple-touch-icon.png
+│       │       ├── favicon.svg
+│       │       └── site.webmanifest
+│       └── tpl_diff/
+│           └── index.html
+├── core/
+│   ├── __pycache__/
+│   │   ├── api.cpython-311.pyc
+│   │   └── plugin_loader.cpython-311.pyc
+│   ├── pco/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── crypto.cpython-311.pyc
+│   │   │   ├── merkle.cpython-311.pyc
+│   │   │   └── public_payload.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   ├── crypto.py
+│   │   ├── merkle.py
+│   │   └── public_payload.py
+│   ├── truthops/
+│   │   ├── __pycache__/
+│   │   │   └── engine.cpython-311.pyc
+│   │   └── engine.py
+│   ├── api.py
+│   └── plugin_loader.py
+├── data/
+│   └── public_pco/
+│       ├── demo-001.json
+│       └── demo-002.json
+├── docs/
+│   ├── adr/
+│   │   └── 000-architecture-overview.md
+│   ├── api/
+│   │   └── openapi.yaml
+│   ├── assets/
+│   │   └── brand/
+│   │       ├── certeus-banner-dark.png
+│   │       ├── certeus-banner-light.png
+│   │       ├── certeus-favicon.svg
+│   │       ├── certeus-og.png
+│   │       └── certeus-readme-banner.svg
+│   ├── dsl/
+│   │   ├── AXIOMLOG.md
+│   │   ├── LEXLOG.md
+│   │   └── OPTLOG.md
+│   ├── guides/
+│   │   ├── dev-setup.md
+│   │   └── lkew-handbook.md
+│   ├── legal/
+│   │   └── provisional_patent/
+│   │       └── placeholder.txt
+│   ├── runbooks/
+│   │   ├── boundary-stuck.md
+│   │   ├── gauge-drift.md
+│   │   └── pco-revoke.md
+│   ├── configuration.md
+│   ├── manifest.md
+│   └── sla.md
+├── dr/
+│   ├── __pycache__/
+│   │   └── temporal_fortress.cpython-311.pyc
+│   └── temporal_fortress.py
+├── exports/
+│   ├── e2e/
+│   └── raport_pl-286kk-0001.txt
+├── governance/
+│   ├── __pycache__/
+│   │   └── pcu_breakglass.cpython-311.pyc
+│   └── pcu_breakglass.py
+├── infra/
+│   ├── k8s/
+│   │   ├── core.yaml
+│   │   ├── ingress.yaml
+│   │   └── services.yaml
+│   ├── docker-compose.dev.yml
+│   └── docker-compose.monitoring.yml
+├── ingest_repo/
+│   ├── MANIFEST.json
+│   ├── MANIFEST.md
+│   ├── REPO_TREE.md
+│   ├── pack_01.txt
+│   ├── pack_02.txt
+│   └── pack_03.txt
+├── kernel/
+│   ├── __pycache__/
+│   │   ├── __init__.cpython-311.pyc
+│   │   ├── e2e_verifier.cpython-311.pyc
+│   │   ├── mismatch_protocol.cpython-311.pyc
+│   │   ├── smt_translator.cpython-311.pyc
+│   │   └── truth_engine.cpython-311.pyc
+│   ├── dual_core/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── cvc5_adapter.cpython-311.pyc
+│   │   │   └── z3_adapter.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   ├── cvc5_adapter.py
+│   │   └── z3_adapter.py
+│   ├── __init__.py
+│   ├── e2e_verifier.py
+│   ├── mismatch_protocol.py
+│   ├── smt_translator.py
+│   └── truth_engine.py
+├── monitoring/
+│   ├── __pycache__/
+│   │   └── metrics_goodhart.cpython-311.pyc
+│   ├── alert-rules.yaml
+│   └── metrics_goodhart.py
+├── node_modules/
+│   └── .cache/
+│       └── prettier/
+│           └── .prettier-caches/
+│               └── fcb588f8fbd3f28c0472c12784320bad52fd870a.json
+├── observability/
+│   └── slo_gate/
+│       ├── alerts.yaml
+│       └── rules.yaml
+├── ops/
+│   ├── k8s/
+│   │   ├── helm/
+│   │   │   └── README.md
+│   │   └── opa_policies/
+│   │       └── README.md
+│   ├── terraform/
+│   │   └── README.md
+│   └── kill_switch.sh
+├── out/
+│   └── raport_pl-286kk-0001.txt
+├── packs/
+│   ├── domains/
+│   │   └── law/
+│   │       ├── confidence_levels.md
+│   │       └── metrics.md
+│   └── jurisdictions/
+│       └── PL/
+│           ├── benchmarks/
+│           │   └── pl-286kk-0001/
+│           │       ├── expected/
+│           │       │   └── pca2.json
+│           │       └── input/
+│           │           ├── evidence.pdf
+│           │           └── notes.txt
+│           ├── evidence/
+│           │   └── evidence-log.csv
+│           ├── flags/
+│           │   ├── flags_ok.json
+│           │   └── lexenith_results_latest.json
+│           └── rules/
+│               ├── kk.lex
+│               └── kk.mapping.json
+├── plugins/
+│   ├── __pycache__/
+│   │   └── init.cpython-311.pyc
+│   ├── exporter_pl/
+│   │   ├── src/
+│   │   │   ├── __pycache__/
+│   │   │   │   └── main.cpython-311.pyc
+│   │   │   └── main.py
+│   │   └── plugin.yaml
+│   ├── isap_adapter_pl/
+│   │   ├── src/
+│   │   │   ├── __pycache__/
+│   │   │   │   └── main.cpython-311.pyc
+│   │   │   └── main.py
+│   │   └── plugin.yaml
+│   ├── lexenith_pl/
+│   │   ├── __pycache__/
+│   │   │   └── adapter.cpython-311.pyc
+│   │   ├── tests/
+│   │   │   └── gold_sets/
+│   │   │       └── example.yaml
+│   │   └── adapter.py
+│   ├── lexlog_rules_pl/
+│   │   ├── src/
+│   │   │   ├── __pycache__/
+│   │   │   │   └── main.cpython-311.pyc
+│   │   │   └── main.py
+│   │   └── plugin.yaml
+│   ├── tpl_diff_pl/
+│   │   ├── src/
+│   │   │   ├── __pycache__/
+│   │   │   │   └── main.cpython-311.pyc
+│   │   │   └── main.py
+│   │   └── plugin.yaml
+│   └── init.py
+├── policies/
+│   ├── ips/
+│   │   ├── __pycache__/
+│   │   │   └── immutable_store.cpython-311.pyc
+│   │   └── immutable_store.py
+│   └── pco/
+│       ├── lex.advisory.yaml
+│       ├── lex.release.yaml
+│       ├── policy_pack.schema.v0.1.json
+│       └── policy_pack.v0.1.yaml
+├── proof_artifacts/
+│   ├── cvc5.lfsc
+│   ├── input.cnf
+│   ├── input.smt2
+│   └── z3.drat
+├── runtime/
+│   ├── __pycache__/
+│   │   ├── complexity_estimator.cpython-311.pyc
+│   │   ├── pco_encryptor.cpython-311.pyc
+│   │   └── proof_queue.cpython-311.pyc
+│   ├── truthops/
+│   │   └── policies.yaml
+│   ├── complexity_estimator.py
+│   ├── pco_encryptor.py
+│   └── proof_queue.py
+├── schemas/
+│   ├── answer_contract_v1.json
+│   ├── pca2_v1.json
+│   ├── pco.extensions.mailops.chatops.json
+│   ├── provenance_receipt_v1.json
+│   └── publication_contract_v1.json
+├── scripts/
+│   ├── __pycache__/
+│   │   ├── apply_headers.cpython-311.pyc
+│   │   ├── build_flags_from_mapping.cpython-311.pyc
+│   │   ├── check_headers.cpython-311.pyc
+│   │   ├── check_proofs.cpython-311.pyc
+│   │   ├── compute_truth_gates.cpython-311.pyc
+│   │   ├── ed25519_keytool.cpython-311.pyc
+│   │   ├── fix_bom.cpython-311.pyc
+│   │   ├── generate_proofs.cpython-311.pyc
+│   │   ├── lexlog_eval_smoke.cpython-311.pyc
+│   │   ├── lexlog_eval_smoke_fallback.cpython-311.pyc
+│   │   ├── make_merkle_sample.cpython-311.pyc
+│   │   ├── make_pco_bundle.cpython-311.pyc
+│   │   ├── pem_to_b64url.cpython-311.pyc
+│   │   ├── sign_bundle.cpython-311.pyc
+│   │   ├── temporal_fortress.cpython-311.pyc
+│   │   ├── validate_policy_pack.cpython-311.pyc
+│   │   ├── validate_schemas.cpython-311.pyc
+│   │   └── verify_bundle.cpython-311.pyc
+│   ├── hooks/
+│   │   ├── __pycache__/
+│   │   │   └── block_key_extensions.cpython-311.pyc
+│   │   └── block_key_extensions.py
+│   ├── prooffs/
+│   │   └── mount_ro.sh
+│   ├── apply_headers.py
+│   ├── build_flags_from_mapping.py
+│   ├── check_drat.sh
+│   ├── check_hashes.ps1
+│   ├── check_headers.py
+│   ├── check_lfsc.sh
+│   ├── check_proofs.py
+│   ├── compute_truth_gates.py
+│   ├── ed25519_keytool.py
+│   ├── fix_bom.py
+│   ├── generate_proofs.py
+│   ├── lexlog_eval_smoke.py
+│   ├── lexlog_eval_smoke_fallback.py
+│   ├── make_merkle_sample.py
+│   ├── make_pco_bundle.py
+│   ├── pem_to_b64url.py
+│   ├── sign_bundle.py
+│   ├── smoke286.ps1
+│   ├── smoke_ingest.ps1
+│   ├── smoke_ingest.sh
+│   ├── temporal_fortress.py
+│   ├── validate_policy_pack.py
+│   ├── validate_schemas.py
+│   └── verify_bundle.py
+├── security/
+│   ├── proofs.md
+│   └── rbac_policies.md
+├── services/
+│   ├── __pycache__/
+│   │   └── __init__.cpython-311.pyc
+│   ├── api_gateway/
+│   │   ├── __pycache__/
+│   │   │   ├── app_e2e.cpython-311.pyc
+│   │   │   ├── limits.cpython-311.pyc
+│   │   │   └── main.cpython-311.pyc
+│   │   ├── routers/
+│   │   │   ├── __pycache__/
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   ├── export.cpython-311.pyc
+│   │   │   │   ├── ledger.cpython-311.pyc
+│   │   │   │   ├── mismatch.cpython-311.pyc
+│   │   │   │   ├── pco_public.cpython-311.pyc
+│   │   │   │   ├── preview.cpython-311.pyc
+│   │   │   │   ├── publish.cpython-311.pyc
+│   │   │   │   ├── system.cpython-311.pyc
+│   │   │   │   ├── verify.cpython-311.pyc
+│   │   │   │   └── well_known_jwks.cpython-311.pyc
+│   │   │   ├── __init__.py
+│   │   │   ├── export.py
+│   │   │   ├── ledger.py
+│   │   │   ├── mismatch.py
+│   │   │   ├── pco_public.py
+│   │   │   ├── preview.py
+│   │   │   ├── publish.py
+│   │   │   ├── system.py
+│   │   │   ├── verify.py
+│   │   │   └── well_known_jwks.py
+│   │   ├── app_e2e.py
+│   │   ├── limits.py
+│   │   └── main.py
+│   ├── connectors/
+│   │   └── fhir/
+│   │       ├── __pycache__/
+│   │       │   └── router.cpython-311.pyc
+│   │       └── router.py
+│   ├── exporter_service/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   └── exporter.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   └── exporter.py
+│   ├── ingest_service/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── factlog_mapper.cpython-311.pyc
+│   │   │   ├── models.cpython-311.pyc
+│   │   │   └── ocr_pipeline.cpython-311.pyc
+│   │   ├── adapters/
+│   │   │   ├── __pycache__/
+│   │   │   │   ├── __init__.cpython-311.pyc
+│   │   │   │   ├── contracts.cpython-311.pyc
+│   │   │   │   ├── local_impl.cpython-311.pyc
+│   │   │   │   ├── ocr_injector.cpython-311.pyc
+│   │   │   │   └── registry.cpython-311.pyc
+│   │   │   ├── __init__.py
+│   │   │   ├── contracts.py
+│   │   │   ├── local_impl.py
+│   │   │   ├── ocr_injector.py
+│   │   │   └── registry.py
+│   │   ├── __init__.py
+│   │   ├── factlog_mapper.py
+│   │   ├── models.py
+│   │   └── ocr_pipeline.py
+│   ├── ledger_service/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── cosmic_merkle.cpython-311.pyc
+│   │   │   └── ledger.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   ├── cosmic_merkle.py
+│   │   └── ledger.py
+│   ├── lexlog_parser/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── evaluator.cpython-311.pyc
+│   │   │   ├── mapping.cpython-311.pyc
+│   │   │   └── parser.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   ├── evaluator.py
+│   │   ├── mapping.py
+│   │   └── parser.py
+│   ├── mismatch_service/
+│   │   ├── __pycache__/
+│   │   │   ├── models.cpython-311.pyc
+│   │   │   └── service.cpython-311.pyc
+│   │   ├── models.py
+│   │   └── service.py
+│   ├── raas_service/
+│   │   ├── __pycache__/
+│   │   │   └── main.cpython-311.pyc
+│   │   └── main.py
+│   ├── sipp_indexer_service/
+│   │   ├── __pycache__/
+│   │   │   ├── __init__.cpython-311.pyc
+│   │   │   ├── index_isap.cpython-311.pyc
+│   │   │   ├── isap_adapter.cpython-311.pyc
+│   │   │   └── models.cpython-311.pyc
+│   │   ├── __init__.py
+│   │   ├── index_isap.py
+│   │   ├── isap_adapter.py
+│   │   └── models.py
+│   ├── zkp_service/
+│   │   ├── __pycache__/
+│   │   │   └── stub.cpython-311.pyc
+│   │   └── stub.py
+│   └── __init__.py
+├── static/
+│   └── previews/
+│       └── 80b22202b75648e5b750db1cfb791246.pdf
+├── storage/
+│   └── proof_cache/
+│       ├── __pycache__/
+│       │   └── cache.cpython-311.pyc
+│       └── cache.py
+├── templates/
+│   ├── answer_contract.docx.placeholder
+│   ├── answer_contract.txt.placeholder
+│   └── truth_bill.docx.placeholder
+├── tests/
+│   ├── __pycache__/
+│   │   ├── conftest.cpython-311-pytest-8.4.1.pyc
+│   │   ├── conftest.cpython-311.pyc
+│   │   ├── test_adapters_local_impl.cpython-311-pytest-8.4.1.pyc
+│   │   ├── test_adapters_local_impl.cpython-311.pyc
+│   │   ├── test_merkle.cpython-311-pytest-8.4.1.pyc
+│   │   ├── test_merkle.cpython-311.pyc
+│   │   ├── test_pco_core.cpython-311-pytest-8.4.1.pyc
+│   │   ├── test_pco_core.cpython-311.pyc
+│   │   ├── test_pco_public.cpython-311-pytest-8.4.1.pyc
+│   │   └── test_pco_public.cpython-311.pyc
+│   ├── e2e/
+│   │   ├── __pycache__/
+│   │   │   ├── test_e2e_export_endpoint.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_e2e_export_endpoint.cpython-311.pyc
+│   │   │   ├── test_e2e_pl_286kk_0001.cpython-311-pytest-8.4.1.pyc
+│   │   │   └── test_e2e_pl_286kk_0001.cpython-311.pyc
+│   │   ├── test_e2e_export_endpoint.py
+│   │   └── test_e2e_pl_286kk_0001.py
+│   ├── plugins/
+│   │   ├── __pycache__/
+│   │   │   ├── test_plugins_registry.cpython-311-pytest-8.4.1.pyc
+│   │   │   └── test_plugins_registry.cpython-311.pyc
+│   │   └── test_plugins_registry.py
+│   ├── runtime/
+│   │   ├── __pycache__/
+│   │   │   ├── test_pco_encryptor.cpython-311-pytest-8.4.1.pyc
+│   │   │   └── test_pco_encryptor.cpython-311.pyc
+│   │   └── test_pco_encryptor.py
+│   ├── services/
+│   │   ├── __pycache__/
+│   │   │   ├── test_api_gateway.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_api_gateway.cpython-311.pyc
+│   │   │   ├── test_exporter.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_exporter.cpython-311.pyc
+│   │   │   ├── test_exporter_provenance.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_exporter_provenance.cpython-311.pyc
+│   │   │   ├── test_ingest.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_ingest.cpython-311.pyc
+│   │   │   ├── test_ledger.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_ledger.cpython-311.pyc
+│   │   │   ├── test_lexlog.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_lexlog.cpython-311.pyc
+│   │   │   ├── test_lexlog_eval.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_lexlog_eval.cpython-311.pyc
+│   │   │   ├── test_lexlog_parser.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_lexlog_parser.cpython-311.pyc
+│   │   │   ├── test_limits.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_limits.cpython-311.pyc
+│   │   │   ├── test_mismatch_service.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_mismatch_service.cpython-311.pyc
+│   │   │   ├── test_preview.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_preview.cpython-311.pyc
+│   │   │   ├── test_schemas.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_schemas.cpython-311.pyc
+│   │   │   ├── test_sipp.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_sipp.cpython-311.pyc
+│   │   │   ├── test_verify_mismatch.cpython-311-pytest-8.4.1.pyc
+│   │   │   └── test_verify_mismatch.cpython-311.pyc
+│   │   ├── test_api_gateway.py
+│   │   ├── test_exporter.py
+│   │   ├── test_exporter_provenance.py
+│   │   ├── test_ingest.py
+│   │   ├── test_ledger.py
+│   │   ├── test_lexlog.py
+│   │   ├── test_lexlog_eval.py
+│   │   ├── test_lexlog_parser.py
+│   │   ├── test_limits.py
+│   │   ├── test_mismatch_service.py
+│   │   ├── test_preview.py
+│   │   ├── test_schemas.py
+│   │   ├── test_sipp.py
+│   │   └── test_verify_mismatch.py
+│   ├── truth/
+│   │   ├── __pycache__/
+│   │   │   ├── test_smt_translator_ext.cpython-311-pytest-8.4.1.pyc
+│   │   │   ├── test_smt_translator_ext.cpython-311.pyc
+│   │   │   ├── test_solvers.cpython-311-pytest-8.4.1.pyc
+│   │   │   └── test_solvers.cpython-311.pyc
+│   │   ├── test_smt_translator_ext.py
+│   │   └── test_solvers.py
+│   ├── utils/
+│   │   ├── __pycache__/
+│   │   │   ├── test_console.cpython-311-pytest-8.4.1.pyc
+│   │   │   └── test_console.cpython-311.pyc
+│   │   └── test_console.py
+│   ├── conftest.py
+│   ├── test_adapters_local_impl.py
+│   ├── test_merkle.py
+│   ├── test_pco_core.py
+│   └── test_pco_public.py
+├── tmp/
+│   ├── cvc5.lfsc
+│   └── z3.drat
+├── tools/
+│   ├── __pycache__/
+│   │   ├── fix_certeus_headers.cpython-311.pyc
+│   │   └── normalize_certeus_headers.cpython-311.pyc
+│   ├── fix_certeus_headers.py
+│   └── normalize_certeus_headers.py
+├── typings/
+│   └── z3/
+│       ├── __pycache__/
+│       │   └── __init__.cpython-311.pyc
+│       └── __init__.py
+├── utils/
+│   ├── __pycache__/
+│   │   ├── __init__.cpython-311.pyc
+│   │   └── console.cpython-311.pyc
+│   ├── __init__.py
+│   └── console.py
+├── .editorconfig
+├── .gitattributes
+├── .gitignore
+├── .pre-commit-config.yaml
+├── .prettierignore
+├── CERTEUS_Blueprint_v1_0.md
+├── CERTEUS_Standard_Model_of_Law.xlsx
+├── CERTEUS_Standard_Model_of_Law_v2.xlsx
+├── CERTEUS_Standard_Model_of_Law_v3.xlsx
+├── GOVERNANCE.md
+├── LICENSE
+├── Makefile
+├── QTMP_Spec_v1_0.md
+├── README.md
+├── SECURITY.md
+├── build_flags.log
+├── certeus_pco_qtmp_ui_patch_v1.zip
+├── lexqft_spec_v0_1.zip
+├── pyproject.toml
+├── pyrightconfig.json
+├── pytest.ini
+├── qtm_spec_v0_1.zip
+├── repo_to_packs.py
+└── uv.lock

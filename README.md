@@ -1,328 +1,295 @@
-+======================================================================+
-| CERTEUS — Prime Repository |
-+======================================================================+
-| PLIK / FILE: README.md |
-| ROLA / ROLE: |
-| PL: Dokument główny repo: struktura, standardy, uruchomienie, CI. |
-| EN: Primary repo doc: structure, standards, bootstrap, CI. |
-+======================================================================+
+# CERTEUS <img src="docs/assets/brand/certeus-favicon.svg" height="24" alt="CERTEUS" />
 
-# CERTEUS — Verifiable Cognitive Intelligence (VCI)
+[![CI](https://github.com/ORG/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/ORG/REPO/actions)
+[![SemVer](https://img.shields.io/badge/semver-1.x-blue)](#versioning-deprecation-support)
+[![SLSA](https://img.shields.io/badge/slsa-3%2B-8A2BE2)](https://slsa.dev)
+[![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> „Czysty kod to czyste myśli.” // "Clean code is clear thinking."
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/certeus-banner-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/brand/certeus-banner-light.png">
+    <img alt="CERTEUS — Proof-native AI System" src="docs/assets/brand/certeus-readme-banner.svg" />
+  </picture>
+</p>
 
-CERTEUS to inżynieria jakości, dowód i porządek – kernel prawdy + mikroserwisy
-z bramką dowodową. Ten plik prowadzi Cię przez **strukturę repo**, **standard
-kodowania (banery + docstringi PL/EN)**, **uruchomienie (Windows/macOS/Linux)**
-oraz **CI/QA**. Zero partyzantki. NASA-poziom rzemiosła.
-
----
-
-## Spis treści / Table of Contents
-
-1. [Architektura w skrócie / Architecture at a glance] (#architektura)
-2. [Struktura repo / Repository structure] (#struktura)
-3. [Standard Kodowania (banery, docstringi, PL/EN)] (#standard)
-4. [Szybki start (Windows & Unix)] (#start)
-5. [Jakość i CI (Ruff, pre-commit, Proof Gate)] (#jakosc)
-6. [Konwencje commitów i branchy] (#konwencje)
-7. [Zasady bezpieczeństwa i provenance] (#security)
-8. [Wkład / Contributing] (#contrib)
-9. [Licencja i prawa] (#licencja)
+> **Proof-native system dla dowodów, decyzji i modeli.** Rdzeń _niezmienialny_ (PCO/Boundary), wszystko inne – _wtyczki_ i _polityki_.
+>
+> **Fizyka sensu:** CFE (geometria), lexqft (ścieżki), QTMP (pomiar). **Interfejsy 1. klasy:** MailOps, ChatOps.
+> (Technikalia: Manifest Jednolity v1.5 w `docs/manifest.md`.)
 
 ---
 
-## 1) Architektura w skrócie < a name="architektura"></a >
+## Spis treści
 
-- **Kernel Prawdy (Truth Engine)** — kontrakt `verify(assumptions)` z dwoma
-  solverami SMT (Z3/CVC5) i flagą `mismatch`.
-- **Mikroserwisy** (ingest → map → verify → export) — API jedynie orkiestruje,
-  nie implementuje logiki dziedzinowej.
-- **Proof Gate (CI)** — każdy PR generuje artefakty dowodów (`.drat`/`.lfsc`)
-  i uruchamia zewnętrzne weryfikatory; merge bez dowodu jest blokowany.
-- **Packs/ i Schemas/** — reguły/benchmarki i jedyne źródło prawdy struktur
-  (wersjonowane `*_vN.json`).
-
----
-
-## 2) Struktura repo < a name="struktura"></a >
-
-├─ services/ # Mikroserwisy (API Gateway, ingest/export/ledger/...)
-│ └─ api_gateway/
-│ ├─ main.py # FastAPI app (health, ingest, verify, export, sipp...)
-│ └─ routers/ # /v1/ingest, /v1/export, /v1/sipp, /v1/verify...
-│
-├─ kernel/ # Truth Engine, SMT translator, dual-core adapters
-│ ├─ dual_core/ # Z3/CVC5 adapters
-│ └─ ... # verify(), mismatch protocol, etc.
-│
-├─ plugins/ # Rozszerzalność: exporter_pl, lexlog_rules_pl, ...
-│
-├─ clients/
-│ └─ web/
-│ ├─ proof_visualizer/ # Wizualizacja dowodów (stub i UI skeleton)
-│ └─ tpl_diff/ # Diff TPL (UI skeleton)
-│
-├─ scripts/ # check_drat.sh, check_lfsc.sh, generate_proofs.py, ...
-├─ tools/ # normalize/fix_certeus_headers.py (banery/docstrings)
-├─ tests/ # e2e + services + truth + utils (pytest)
-├─ .github/workflows/ # tests.yml, proof-gate.yml, security-scan.yml
-└─ README.md
-
-Zasady struktury: API = orkiestracja; dowody z artefaktami i checkiem zewnętrznym;
-schematy i reguły wersjonowane; rozbudowa przez `plugins/`.
+- [Dlaczego CERTEUS?](#dlaczego-certeus)
+- [Architektura (1 obraz)](#architektura-1-obraz)
+- [Szybki start (Dev/SRE/Audytor)](#szybki-start-devsreaudytor)
+- [ChatOps — pierwsza komenda](#chatops--pierwsza-komenda)
+- [MailOps — ingest i PFS://](#mailops--ingest-i-pfs)
+- [Cookbooki domenowe](#cookbooki-domenowe)
+- [API — 10 najważniejszych endpointów](#api--10-najważniejszych-endpointów)
+- [Gwarancje i bramki CI/SLO](#gwarancje-i-bramki-cislo)
+- [Bezpieczeństwo & łańcuch dostaw](#bezpieczeństwo--łańcuch-dostaw)
+- [Observability & Runbooks](#observability--runbooks)
+- [Konfiguracja / ENV](#konfiguracja--env)
+- [Struktura repo](#struktura-repo)
+- [Standard kodowania](#standard-kodowania)
+- [Brand & Assets](#brand--assets)
+- [Versioning, Deprecation, Support](#versioning-deprecation-support)
+- [FAQ](#faq)
+- [Glosariusz](#glosariusz)
+- [Licencja](#licencja)
 
 ---
 
-## 3) Standard Kodowania — Premium Code Style < a name="standard"></a >
+## Dlaczego CERTEUS?
 
-**Zawsze** na górze pliku:
-
-- **Baner** (box ASCII) z nazwą, rolą (PL/EN).
-- **Docstring / komentarz modułu** (PL/EN, krótko, konkretnie).
-- Sekcje w kodzie z wyraźnymi nagłówkami:
-  `# === KONFIGURACJA / CONFIGURATION ===`, `# === LOGIKA / LOGIC ===` itd.
-
-**Przykład (Python):**
-
-```python
-# +-------------------------------------------------------------+
-# |                CERTEUS - Ingest Service (API)               |
-# +-------------------------------------------------------------+
-# | PLIK / FILE: services/ingest_service/models.py              |
-# | ROLA / ROLE:                                                |
-# |  PL: Modele danych ingestu (fakty, źródła, metryki).        |
-# |  EN: Ingest data models (facts, sources, metrics).          |
-# +-------------------------------------------------------------+
-
-"""PL: Modele danych dla ingest. EN: Data models for ingest."""
-from __future__ import annotations
-
-# === IMPORTY / IMPORTS ===
-# ...
-
-# === MODELE / MODELS ===
-# ...
-Przykład (Shell):
-
-#!/usr/bin/env bash
-# +-------------------------------------------------------------+
-# |                    CERTEUS - DRAT Checker                   |
-# +-------------------------------------------------------------+
-# | PLIK / FILE: scripts/check_drat.sh                          |
-# | ROLA / ROLE:                                                |
-# |  PL: Weryfikacja plików DRAT (stub/real).                   |
-# |  EN: DRAT files verification (stub/real).                   |
-# +-------------------------------------------------------------+
-set -Eeuo pipefail
-# ...
-
-
-Przykład (HTML):
-
-<!--
-+-------------------------------------------------------------+
-|            CERTEUS - Proof Visualizer (Skeleton)            |
-+-------------------------------------------------------------+
-| FILE: clients/web/proof_visualizer/index.html               |
-| ROLE: Placeholder UI for interactive proof graph.           |
-+-------------------------------------------------------------+
--->
-<!DOCTYPE html>
-<html lang="pl">...</html>
-
-
-Nazewnictwo: pliki snake_case, klasy PascalCase, funkcje/zmienne snake_case,
-stałe UPPER_CASE. Każda publiczna funkcja/klasa ma docstring PL/EN.
-
-4) Szybki start (Windows & Unix) <a name="start"></a>
-
-Wymagania: Python 3.11+, uv (do zarządzania deps), pre-commit.
-
-Windows (PowerShell):
-
-# 1) Utwórz i aktywuj venv
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-# 2) Zainstaluj narzędzia i zależności
-pip install uv
-uv sync
-
-# 3) Zainstaluj pre-commit hooki
-pre-commit install
-
-# 4) Uruchom testy i linty
-uv run ruff check .
-uv run ruff format --check
-uv run pytest -q
-
-# 5) Dev server (FastAPI)
-uv run uvicorn services.api_gateway.main:app --reload --port 8000
-
-
-macOS/Linux (bash):
-
-python -m venv .venv
-source .venv/bin/activate
-pip install uv
-uv sync
-pre-commit install
-uv run ruff check .
-uv run ruff format --check
-uv run pytest -q
-uv run uvicorn services.api_gateway.main:app --reload --port 8000
-
-5) Jakość i CI (Ruff, pre-commit, Proof Gate) <a name="jakosc"></a>
-
-pre-commit: uruchamia Ruff lint/format i nasze bramki (banery/docstringi).
-Blokuje commit, jeśli coś nie spełnia standardu.
-
-CI (tests.yml): checkout, uv sync, Ruff check/format (—check), pytest.
-
-Proof Gate (proof-gate.yml): generacja artefaktów + zewnętrzna weryfikacja
-(scripts/check_drat.sh, scripts/check_lfsc.sh). Na start mogą być stuby;
-docelowo wpinamy drat-trim i weryfikator LFSC.
-
-6) Konwencje commitów i branchy <a name="konwencje"></a>
-
-Conventional Commits: feat:, fix:, chore:, docs:, refactor:,
-test:, ci: …
-
-Branże: feat/…, fix/…, chore/…. PR musi przejść Proof Gate i testy.
-
-7) Zasady bezpieczeństwa i provenance <a name="security"></a>
-
-Każdy raport/eksport i dowód posiada hash (sha256), timestamp oraz ścieżki
-do artefaktów. Ledger nagłówkiem przekazuje łańcuch sha256:…;sha256:….
-
-Publikacja i archiwizacja artefaktów dowodowych odbywa się wg polityk repo
-(CI + scripts/).
-
-8) Wkład / Contributing <a name="contrib"></a>
-
-Upewnij się, że masz baner + docstring PL/EN w każdym nowym pliku.
-
-Uruchom lokalnie: pre-commit run -a, pytest -q.
-
-Dodaj test(y) do każdej zmiany publicznego kontraktu.
-
-PR musi przejść CI + Proof Gate.
-
-9) Licencja i prawa <a name="licencja"></a>
-
-© CERTEUS. Wszelkie prawa zastrzeżone w ramach projektu.
-Kontakt: maintainerzy projektu.
-
-
-**Dlaczego to jest „stabilny” README?**
-– Podsumowuje i **ujednolica** Twoje standardy „Premium Code Style” (banery, docstringi, PL/EN) oraz „Szynę Jakości” (pre-commit, Ruff, Proof Gate) – dokładnie to masz w swoim README oraz dokumentach VCI/Dziennika, które narzucają jakość, automaty i strukturę (tests/proof-gate/workflows).
+- **Proof-Only I/O**: każdy wynik publikowalny musi nieść **PCO** (Proof-Carrying Output); inaczej — **DROP**.
+- **Boundary = audyt natychmiastowy**: stan systemu rekonstruowalny z „brzegu” (append-only), docelowo `delta_bits == 0`.
+- **Fizyka sensu**: CFE/lexqft/QTMP zamiast „heurystyk”. Geodezyjny dowód, horyzont zdarzeń evidencyjnych, nieoznaczoność operatorów.
+- **Modułowość**: _Domain Packs_ (Prawo/Finanse/Kod/Sec/Med), _Devices_ (HDE/Q-Oracle/Entangler/Chronosync).
+- **Enterprise**: PQ-crypto (Ed25519 + ML-DSA), FROST 2-z-3, SLSA/in-toto/SBOM, TEE (Bunkier).
 
 ---
 
-### Szybkie résumé: co mamy „na zielono” po Dniu 11
+## Architektura (1 obraz)
 
-- Spójny standard plików (banery, docstringi, PL/EN) i narzędzia lint/format. :contentReference[oaicite:15]{index=15}
-- CI/workflows (tests, proof-gate), skrypty checkerów (stub), testy repo – przechodzą.
-- Orkiestracja usług przez API (ingest/verify/export/sipp) – trzymamy kontrakty testów (ledger header, fields).
-- Szkielety UI (proof visualizer / tpl diff) gotowe do rozbudowy. (Cockpit Architekta – kierunek rozwoju). :contentReference[oaicite:18]{index=18}
-
-# CERTEUS — Verifiable Cognitive Intelligence (VCI)
-
-> „Czysty kod to czyste myśli.” // "Clean code is clear thinking."
-
-CERTEUS to inżynieria jakości, dowód i porządek — kernel prawdy + mikroserwisy z **Proof Gate**.
-Ten dokument jest Twoim stabilnym punktem startu: **struktura repo**, **standard kodowania (banery + docstringi PL/EN)**,
-**uruchomienie**, **CI/QA**, **bezpieczeństwo/provenance**.
-
----
-
-## Architektura (w skrócie / at a glance)
-
-- **Truth Engine** — kontrakt `verify(assumptions)` z dwoma solverami (Z3/CVC5) + flaga `mismatch`.
-- **Mikroserwisy** — ingest → map → verify → export (API tylko orkiestruje).
-- **Proof Gate (CI)** — PR generuje artefakty (`.drat`/`.lfsc`) i odpala zewnętrzne checkery; bez dowodu nie ma merge.
-- **Packs/** i **Schemas/** — wersjonowane reguły i kontrakty JSON (AnswerContract, PCA², Provenance).
-
----
-
-## Struktura repo (skrót)
-
-``
-services/      # FastAPI API Gateway + routers (ingest/verify/export/sipp/mismatch/ledger)
-kernel/        # Truth Engine + dual_core adapters (z3/cvc5) + mismatch protocol
-plugins/       # Rozszerzenia: exporter_pl, isap_adapter_pl, lexlog_rules_pl, tpl_diff_pl
-packs/         # Jurysdykcje, reguły LEXLOG i benchmarki (PL/286 k.k. itd.)
-schemas/       # answer_contract_v1.json, pca2_v1.json, provenance_receipt_v1.json
-scripts/       # generate_proofs.py + check_drat.sh + check_lfsc.sh + validate_schemas.py
-tests/         # e2e + services + truth + plugins
-.github/workflows/  # tests.yml, proof-gate.yml, security-scan.yml
+```
+Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 ```
 
+- **Core**: Truth Engine, PCO SDK, Crypto, Contracts
+- **Services**: ProofGate, Ledger, Boundary, Context Forge, MailOps, ChatOps
+- **Modules**: CFE, lexqft, QTMP, ethics (Equity-Meter/HHE)
+- **Plugins**: packs-law / packs-fin / packs-code / packs-sec / packs-med
+- **Clients**: CERT-Cockpit (Web/Desktop/Mobile)
+- **Infra**: CI/SLO-Gates, k8s, OTel, Grafana
+
+> Szczegóły: patrz „Manifest v1.5” w `docs/manifest.md`.
+
 ---
 
-## Szybki start (Windows/macOS/Linux)
+## Szybki start (Dev/SRE/Audytor)
+
+> Ustal bazowy adres usług:
 
 ```bash
-# 1) Virtualenv + deps
-python -m venv .venv && source .venv/bin/activate    # Windows: .\.venv\Scripts\Activate.ps1
-pip install uv && uv sync
+export CER_BASE="http://localhost:8081"
+```
 
-# 2) Pre-commit
-pre-commit install
+### Dev (lokalnie)
 
-# 3) Lint + test
-uv run ruff check .
-uv run ruff format --check
-uv run pytest -q
+```bash
+# Linux/macOS
+uv venv && source .venv/bin/activate
+uv pip install -r requirements.txt
+docker compose -f infra/docker-compose.dev.yml up -d --build
+uvicorn services.proofgate.app:app --reload --port 8081
+uvicorn services.boundary_service.app:app --reload --port 8082
+```
 
-# 4) Dev server (FastAPI)
-uv run uvicorn services.api_gateway.main:app --reload --port 8000
+```powershell
+# Windows PowerShell
+uv venv; .\.venv\Scripts\Activate.ps1
+uv pip install -r requirements.txt
+docker compose -f infra/docker-compose.dev.yml up -d --build
+python -m uvicorn services.proofgate.app:app --reload --port 8081
+```
+
+### SRE (k8s)
+
+```bash
+kubectl apply -f infra/k8s/core.yaml
+kubectl apply -f infra/k8s/services.yaml
+kubectl apply -f infra/k8s/ingress.yaml
+```
+
+### Audytor (weryfikacja PCO)
+
+```bash
+cerctl ledger get CER-1 | jq '.proof, .claims[0]'
+cerctl boundary reconstruct --date 2025-08-30
 ```
 
 ---
 
-## Jakość i CI
+## ChatOps — pierwsza komenda
 
-- **pre-commit**: banery/docstringi PL/EN + Ruff.
-- **tests.yml**: lint, format (—check), pytest.
-- **proof-gate.yml**: generuje artefakty + zewnętrzny check przez `scripts/check_*.sh`.
+```bash
+curl -sX POST "$CER_BASE/v1/chatops/command"   -H 'Content-Type: application/json'   -d '{ "cmd":"cfe.geodesic --case CER-42", "text_context":"demo" }' | jq
+# oczekiwane: {"result":{...},"pco":{...}}
+```
 
----
+## MailOps — ingest i PFS://
 
-## Standard Kodowania — Premium Code Style (skrót)
-
-- Baner ASCII + rola (PL/EN) na górze każdego pliku.
-- Komentarze dwujęzyczne (PL/EN) dla publicznych funkcji/klas.
-- Sekcje z nagłówkami (`# === LOGIKA / LOGIC ===`, etc.).
-- Nazewnictwo: `snake_case` dla funkcji/zmiennych, `PascalCase` dla klas.
-
-> Pełna wersja: `docs/coding_style.md` (przenieś dotychczasowe README do tego pliku).
+```bash
+curl -sX POST "$CER_BASE/v1/mail/ingest"   -H 'Content-Type: application/json'   -d '{ "raw_mime_b64":"..."}' | jq '.attachments, .evidence_ref'
+# Załącznik dostępny jako pfs://mail/<messageId>/<attachment>
+```
 
 ---
 
-## Bezpieczeństwo i Provenance
+## Cookbooki domenowe
 
-- Każdy eksport/dowód: `sha256 + timestamp + ścieżki artefaktów` (Truth Bill / Provenance Receipt).
-- Ledger: chain‑of‑custody dla wejść, transformacji i eksportów.
+### Prawo (LEXENITH)
+
+```bash
+# Geodezyjny dowód
+curl -sX POST "$CER_BASE/v1/cfe/geodesic" -d '{"case":"CER-LEX-7"}' | jq
+# Horyzont zdarzeń dowodowych (lock)
+curl -sX POST "$CER_BASE/v1/cfe/horizon" -d '{"case":"CER-LEX-7"}' | jq
+```
+
+### Finanse (FINENITH „Quantum Alpha”)
+
+```bash
+# Pomiar na superpozycji (R/S operators)
+curl -sX POST "$CER_BASE/v1/fin/alpha/measure" -d '{"pair":"BTC/USD"}' | jq
+# Splątania aktywów
+curl -s "$CER_BASE/v1/fin/alpha/entanglements" | jq
+```
+
+### Security (ProofFS / artefakty)
+
+```bash
+# Montaż pfs:// tylko-do-odczytu (kontener sidecar lub host)
+# przykładowy skrypt: scripts/prooffs/mount_ro.sh (placeholder)
+```
 
 ---
 
-## Konwencje
+## API — 10 najważniejszych endpointów
 
-- **Commity**: Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `ci:`…).
-- **Branche**: `feat/*`, `fix/*`, `chore/*`, `refactor/*`.
-- **SemVer**: `0.x` do wyjścia z MVP.
+```text
+POST /v1/proofgate/publish          # decyzja publikacji + PCO + wpis do ledger
+GET  /v1/ledger/{case_id}           # odczyt public payload
+POST /v1/boundary/reconstruct       # Boundary == 0 delta (append-only)
+POST /v1/cfe/geodesic               # geodezyjny dowód (CFE)
+POST /v1/cfe/horizon                # horyzont zdarzeń dowodowych (CFE)
+POST /v1/qtm/measure                # kolaps funkcji falowej (QTMP)
+POST /v1/lexqft/tunnel              # tunelowanie dowodowe
+POST /v1/mail/ingest                # ingest e-maila → Evidence DAG/PFS
+POST /v1/chatops/command            # komenda tekstowa → wywołanie usług
+POST /v1/devices/horizon_drive/plan # plan dowodów do horyzontu (HDE)
+```
 
 ---
 
-## Wkład / Contributing (TL;DR)
+## Gwarancje i bramki CI/SLO
 
-1. Dodajesz baner + docstring PL/EN.
-2. `pre-commit run -a` i `pytest -q` lokalnie.
-3. Pilnujesz kontraktów w `schemas/` (walidacja w CI).
-4. PR przechodzi `tests.yml` + `proof-gate.yml`.
+- **Gauge-Gate:** `gauge.holonomy_drift ≤ 1e-3`
+- **Path-Coverage (lexqft):** `coverage_gamma ≥ 0.90`, `uncaptured_mass ≤ 0.05`
+- **Boundary-Rebuild:** `delta_bits == 0` (raport `bits_delta_map`)
+- **Supply-chain:** SBOM + in-toto + cosign **wymagane** (deny-by-default)
+- **SLO**: p95 latencja API, error-budget, alerty \*\*multi-burn-rate`
+
+> Bramka publikacji: **Proof-Only** — brak PCO ⇒ DROP.
 
 ---
 
-© CERTEUS — Verifiable Cognitive Intelligence.
+## Bezpieczeństwo & łańcuch dostaw
+
+- **PQ-crypto**: Ed25519 + ML-DSA (hybrydowo), **FROST 2-z-3**
+- **TEE (Bunkier)**: TDX/SEV-SNP/SGX + attestation w ProofGate
+- **SLSA 3+ / in-toto / SBOM CycloneDX / cosign / trivy**
+- **OPA/Rego**: polityki dostępu, role **AFV/ASE/ATC/ATS/AVR**
+
+---
+
+## Observability & Runbooks
+
+```bash
+# monitoring lokalny
+docker compose -f infra/docker-compose.monitoring.yml up -d
+```
+
+- OTel tracing, eBPF profiling, Pyroscope/Parca
+- Runbooks: `docs/runbooks/` – Boundary stuck, Gauge drift, PCO revoke
+
+---
+
+## Konfiguracja / ENV
+
+- `CER_PROOF_STRICT=true` (Proof-Only Sockets)
+- `CER_BOUNDARY_BUCKET=s3://...` (WORM)
+- `CER_CRYPTO_MODE=hybrid` (Ed25519+ML-DSA)
+- `CER_TEE_REQUIRED=false|true` (profil Bunkier)
+- `CER_BASE=http://localhost:8081` (bazowy URL dla przykładów)
+
+Pełna lista: `docs/configuration.md`
+
+---
+
+## Struktura repo
+
+```
+core/       services/    modules/    plugins/     clients/    schemas/    policies/
+ci/         infra/       scripts/    docs/
+```
+
+---
+
+## Standard kodowania
+
+Zob. `docs/manifest.md` — sekcja **21) Premium Code Style** (baner, docstring PL/EN, PNIP/PCO, OTel, testy, linty).
+Przykłady w: Python/TS/Go/Rust/Bash/HTML/YAML/JSON/SQL.
+
+---
+
+## Brand & Assets
+
+- Pliki trzymamy w `docs/assets/brand/` i `clients/web/public/brand/`.
+- README używa `<picture>` z wariantami dark/light i fallbackiem SVG.
+- Social preview: `docs/assets/brand/certeus-og.png` (1200×630) – ustaw w **Repo → Settings → Social preview**.
+
+Struktura:
+
+```
+docs/assets/brand/
+  certeus-banner-dark.png
+  certeus-banner-light.png
+  certeus-readme-banner.svg
+  certeus-favicon.svg
+  certeus-og.png
+clients/web/public/brand/
+  favicon.svg
+  apple-touch-icon.png
+  site.webmanifest
+```
+
+---
+
+## Versioning, Deprecation, Support
+
+- **SemVer** (major.minor.patch) + wersjonowanie **PCO schema** (`pco.vX.Y`).
+- **Deprecation policy**: 1 wersja major „overlap”; ostrzeżenia w ChatOps/ProofGate.
+- **Support**: Enterprise SLA (p1/p2/p3), targety SLO w `docs/sla.md`.
+
+---
+
+## FAQ
+
+**1. Czemu moja odpowiedź nie wychodzi?**
+Bo jest **Proof-Only** — brak PCO ⇒ `DROP`. Użyj `POST /v1/proofgate/publish`.
+
+**2. „Gauge drift > ε” — co to znaczy?**
+Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/rewizja). Sprawdź mapowania Ω-Kernel.
+
+**3. Jak audytować bez zaufania?**
+`cerctl ledger get <CASE>` + `boundary reconstruct` + weryfikacja podpisów PCO (hybryda + FROST).
+
+---
+
+## Glosariusz
+
+**PCO** – Proof-Carrying Output • **PNIP** – Proof-Native Ingress Payload • **Ω-Kernel** – rejestr transformacji
+**Boundary** – append-only „brzeg” systemu • **CFE/lexqft/QTMP** – fizyka sensu • **HDE/Q-Oracle/Entangler/Chronosync** – devices
+**Domain Pack** – wtyczka dziedzinowa (Prawo/Finanse/…) • **ProofFS** – read-only FS z Merkle-dowodami
+
+---
+
+## Licencja
+
+MIT © 2025 CERTEUS Contributors

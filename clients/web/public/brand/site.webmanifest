@@ -1,0 +1,19 @@
+{
+  "name": "CERTEUS",
+  "short_name": "CERTEUS",
+  "icons": [
+    {
+      "src": "/brand/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/brand/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ],
+  "theme_color": "#0D1B2A",
+  "background_color": "#0D1B2A",
+  "display": "standalone"
+}
