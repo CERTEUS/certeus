@@ -88,6 +88,7 @@ def test_generate_proofs_cli_smoke_test() -> None:
         cmd: list[str] = [
             "uv",
             "run",
+            "--no-sync",
             sys.executable,  # aktywny Python z venv
             "scripts/generate_proofs.py",
             "--out",

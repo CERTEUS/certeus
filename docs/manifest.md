@@ -702,4 +702,173 @@ Transport **QUIC/Noise**, multipath; **DHT** kompetencji; fraktalny router (loka
 
 ---
 
+## 25) Threat Model & Security Invariants
+
+**Inwarianty (nie negocjujemy):**
+
+- **Proof-Only I/O** — brak PCO ⇒ **DROP**.
+- **Boundary = append-only**, audyt odtwarzalny (`boundary.delta_bits == 0`).
+- **PQ-crypto hybrydowo** (Ed25519 + ML-DSA), **FROST 2-z-3**, rotacja kluczy wg harmonogramu (§26).
+- **Brak PII w Ledger (public payload)**; PII wyłącznie w warstwie danych z polityką dostępu (OPA/Rego) i DPCO.
+- **Sandbox**: pluginy w **ProofWASM (WASI)**; „escape” tylko przez whitelisting z PCO.
+- **Reproducible builds** + **SLSA/in-toto/SBOM**; deny-by-default.
+
+**Model zagrożeń (STRIDE → Kontrole):**
+
+- **S**poofing → mTLS (SPIFFE/SPIRE), PCO-tokeny zdolności (PCA).
+- **T**ampering → Merkle-DAG, WORM, podpisy hybrydowe, attestation (TEE).
+- **R**epudiation → PCO/UPN, kotwice czasu, nieusuwalne logi audytowe.
+- **I**nformation disclosure → DP/MPC/ZK; redakcja/maskowanie; ProofFS (RO).
+- **D**oS → rate-limit + **load-shedding sterowany QTMP**; „brownout modes”.
+- **E**levation → OPA/Rego + least privilege; feature-gates; supply-chain policy.
+
+---
+
+## 26) Data Governance & Retention (DPCO/MCO)
+
+**Klasy danych:** Public / Restricted / Sensitive (domyślnie _Restricted_).
+
+**DPCO (Data-PCO):** `dataset.hash, lineage[], dp_epsilon, consent_refs[]` (powiązane z Boundary/Consent SSB).
+
+**Retencja i kasowanie:**
+
+- Evidence RAW (Sensitive): **T**=180 dni (WORM), potem redakcja i hash-only (lineage).
+- Artefakty modelowe (MCO): T=12 mies., z pełnym **SBOM** i commit-pin.
+- **UPN revoke**: kasowanie z dowodem (Merkle-proof) + `DR-Recall` link.
+
+**Rotacja kluczy:** KDS policy `rotate:<ed25519:90d|ml-dsa:180d|frost-shares:90d>`; roll-forward, nie roll-back.
+
+---
+
+## 27) Release / Branching / Promotion
+
+**Strategia:** trunk-based (preferowane) lub krótki GitFlow.
+
+**Zasady ochrony gałęzi:**
+
+- PR z zielonymi **gates** (§13) + **ZHG** (AFV/ASE/ATC/ATS/AVR = green).
+- Tagowanie **SemVer**; changelog generowany automatem (Conventional Commits).
+
+**Promocja środowisk:** `dev → stage → prod`
+
+- „Freeze window” + canary/progressive delivery.
+- Dowód promocji: PCO z zestawem attestations (build, test, gates, sign).
+
+---
+
+## 28) Versioning & Compatibility (API/ABI Packs)
+
+**API:** `/v{major}/...`; 1-major overlap na deprecacje (warn w ChatOps/ProofGate).
+
+**ABI dla Domain Packs:**
+
+- `pack_abi.major.minor` + `capabilities()`; **Compatibility Matrix** (Core↔Pack).
+- Feature-gates: `features: ["qtmp.sequence","fin.splitting.mi"]`.
+
+**Breaking rules:** Zmiany pól obowiązkowych w PCO/PNIP/MCO/DPCO ⇒ **major bump**.
+
+---
+
+## 29) Performance & Capacity (Budżety)
+
+**Budżety:**
+
+- p95 **API** ≤ 250 ms (intra-DC), p99 błędów ≤ 0.5%/30d.
+- **CFE/lexqft/QTMP**: budżet `compute.cost_tokens` na request z **hard cap** (ProofGate).
+- **Kolejki**: max **queue_time** 200 ms; load shedding przez `qtm.lapse_N` i priorytety.
+
+**Sizing (guideline):**
+
+- Front (ProofGate/ChatOps): CPU-heavy, 1 vCPU/600 RPS (p95 200 ms).
+- CFE/QTMP: GPU opcjonalnie; batch window ≤ 50 ms; pre-allocation pamięci.
+
+---
+
+## 30) OpenAPI & SDK
+
+**Spec:** `docs/openapi/certeus.v1.yaml` (generowany w CI).
+
+**SDK (SemVer):**
+
+- Python: `pip install certeus-sdk` — `CerteusClient(base_url).cfe.geodesic(...)`.
+- TS/Node: `npm i @certeus/sdk` — `client.qtm.measure({})`.
+- Go: `go get github.com/ORG/REPO/sdk/go`.
+
+**Kontrakt:**
+
+- SDK ma wbudowane walidatory PNIP/PCO.
+- Wersja SDK ≤ wersji API (kompatybilność w dół w obrębie major).
+
+---
+
+## 31) Compliance Map (ISO/SOC2/RODO)
+
+**ISO 27001:** A.5 (polityki), A.8 (asset mgmt), A.12 (operacje), A.14 (system devel), A.18 (zgodność) → mapowanie do modułów (Boundary/ProofGate/OPA/DP).
+
+**SOC2:** Security/Availability/Confidentiality → gates + SLO + DR-drills.
+
+**RODO:** Minimalizacja danych, prawo do bycia zapomnianym (UPN/DR-Recall), DPIA dla Domain Packs Med/Sec/Fin.
+_(To nie porada prawna. Sekcja wskazuje implementacyjne punkty zaczepienia.)_
+
+---
+
+## 32) End-to-End Cookbooks (2 przepływy)
+
+**32.1 MailOps → Decyzja (Law):**
+
+1. `POST /v1/mail/ingest` (MIME b64) → Evidence DAG + `pfs://mail/<id>`.
+2. `POST /v1/cfe/geodesic` (case) + `POST /v1/cfe/horizon` (lock).
+3. `POST /v1/qtm/measure` (kolejność pomiarów `qtm.sequence[]: ["Ļ","Ŧ"]`).
+4. `POST /v1/proofgate/publish` → **PCO** + wpis do **Ledger**.
+5. `GET /v1/ledger/{case}` → public payload (bez PII) + Merkle-proof.
+
+**32.2 ChatOps → HDE (plan dowodów):**
+
+1. `POST /v1/chatops/command` `{cmd:"hde.plan --case CER-7 --budget 100"}`.
+2. Router → `devices/horizon_drive/plan` (PCO z `plan_of_evidence[]`).
+3. Operator zatwierdza budżet (`POST /v1/cost/allocate`).
+4. Publikacja planu z PCO i linkiem do Boundary snapshot.
+
+---
+
+## 33) Testing Strategy & Quality Gates
+
+**Piramida:** unit → integration → e2e → property-based → fuzz.
+
+- **Unit:** ≥80% coverage na Core/Services.
+- **Property-based:** QTMP/CFE (inwarianty: normalizacja, idempotencja transformacji).
+- **E2E:** MailOps/ChatOps happy-path + błędy (Proof-Only).
+- **Fuzz:** parsowanie PNIP/PCO/ProofFS; malformed MIME; API schema fuzz.
+- **Drift tests:** `gauge.holonomy_drift ≤ ε`; `coverage_gamma ≥ 0.90`.
+
+---
+
+## 34) Incident Response & DR
+
+**Severities:** P1 (ProofGate/Boundary down), P2 (SLO breach), P3 (degradacja częściowa).
+
+**Proces:**
+
+- On-call rota; war-room (ChatOps); decision log (PCO).
+- **DR-Replay/Recall**: odtworzenie stanu na t=czas; RTO 30 min / RPO 5 min.
+- **Postmortem (bez winnych)**: PCO z korektą polityk/gates.
+
+---
+
+## 35) UX: Accessibility & Localization
+
+- **A11y:** WCAG 2.2 AA; kontrast ≥ 4.5:1; pełna nawigacja klawiaturą; ARIA-roles.
+- **i18n:** PL/EN w UI/Docstring; **Ω-Kernel** wspiera `lang` jako transformację bazową.
+- **Datetime/Zone:** wszystkie czasy ISO-8601 + TZ; klient wybiera prezentację.
+
+---
+
+## 36) Dokumentacja & ADR
+
+- **ADR** (`docs/adr/ADR-xxxx-title.md`): decyzja, kontekst, konsekwencje, alternatywy.
+- **Runbooki** (§15) + **Reference Guides** (`docs/guides/`) — CFE/QTMP/Devices.
+- **Diagramy**: katalog `docs/diagrams/` (puml/mermaid); generowane w CI.
+
+---
+
 **Koniec Manifestu Jednolitego v1.5 (Immutable).**
