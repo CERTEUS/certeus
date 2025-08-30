@@ -27,12 +27,11 @@ EN: Builds flags JSON from mapping of premises→engine flags. Fills missing
 from __future__ import annotations
 
 import argparse
-import json
-import re
-from collections.abc import Iterable as AbcIterable
-from collections.abc import Mapping, MutableMapping, Sequence
+from collections.abc import Iterable as AbcIterable, Mapping, MutableMapping, Sequence
 from inspect import Signature, signature
+import json
 from pathlib import Path
+import re
 from typing import (
     Any,
     cast,

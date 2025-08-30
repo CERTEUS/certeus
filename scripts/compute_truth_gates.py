@@ -13,8 +13,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import xml.etree.ElementTree as ET
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 
 def _read_json(p: Path):

@@ -30,8 +30,8 @@ EN: The script scans the repo for .py files and adds:
 from __future__ import annotations
 
 import ast
-import os
 from collections.abc import Iterable
+import os
 from pathlib import Path
 
 # === KONFIG: które katalogi skanować ========================== #

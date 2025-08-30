@@ -9,8 +9,8 @@
 
 from __future__ import annotations
 
-import pytest
 from cryptography.exceptions import InvalidTag
+import pytest
 
 from runtime.pco_encryptor import decrypt, encrypt, new_dek
 

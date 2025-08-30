@@ -33,8 +33,8 @@ EN: Truth Engine smoke test: loads flags JSON and checks satisfiability.
 from __future__ import annotations
 
 import argparse
-import json
 from collections.abc import Mapping
+import json
 from pathlib import Path
 
 from services.lexlog_parser.evaluator import evaluate_rule

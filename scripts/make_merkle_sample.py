@@ -17,14 +17,14 @@
 
 from __future__ import annotations
 
+from argparse import ArgumentParser
 import base64
+from collections.abc import Iterable
 import hashlib
 import json
 import os
-import sys
-from argparse import ArgumentParser
-from collections.abc import Iterable
 from pathlib import Path
+import sys
 from typing import Any, TypedDict
 
 from cryptography.hazmat.primitives import serialization

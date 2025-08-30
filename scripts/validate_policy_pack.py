@@ -19,14 +19,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
 from typing import Any
+
+from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validator
 
 # third-party
 import yaml  # type: ignore
-from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validator
 
 # ----Bloki----- STAŁE
 DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")

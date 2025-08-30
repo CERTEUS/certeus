@@ -71,9 +71,9 @@ import json
 from pathlib import Path
 from typing import Any, Final, Protocol
 
-import pytest
 from jsonschema import Draft7Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
+import pytest
 
 # === ALIASY TYPÓW / TYPE ALIASES ===
 

@@ -7,11 +7,11 @@
 # ----Bloki----- IMPORTY
 from __future__ import annotations
 
+from argparse import ArgumentParser
 import base64
 import hashlib
 import json
 import os
-from argparse import ArgumentParser
 from pathlib import Path
 from typing import Any, cast
 

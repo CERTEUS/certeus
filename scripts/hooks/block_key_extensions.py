@@ -9,8 +9,8 @@
 # +=============================================================+
 from __future__ import annotations
 
-import sys
 from pathlib import Path
+import sys
 
 FORBIDDEN_EXT = {".pem", ".key", ".der", ".pfx", ".p12"}
 

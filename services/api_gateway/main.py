@@ -43,6 +43,7 @@ import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
+import services.api_gateway.routers.pco_bundle as pco_bundle
 import services.api_gateway.routers.pco_public as pco_public
 import services.api_gateway.routers.preview as preview
 import services.api_gateway.routers.qtm as qtm
@@ -114,6 +115,7 @@ app.add_middleware(
 app.include_router(system.router)
 app.include_router(preview.router)
 app.include_router(pco_public.router)
+app.include_router(pco_bundle.router)
 app.include_router(export.router)
 app.include_router(ledger.router)
 app.include_router(mismatch.router)

@@ -21,8 +21,8 @@ EN: Shared pytest fixtures and helpers used across the test suite.
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:

@@ -13,9 +13,9 @@ EN: Returns proof_task_id & eta_hint; exposes queue depth metric.
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 import heapq
 import time
-from dataclasses import dataclass, field
 from typing import Any
 
 from .complexity_estimator import Heat

@@ -25,10 +25,10 @@ EN: Export endpoint. Accepts `case_id` and `analysis_result`, writes a text
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from datetime import UTC, datetime
 import hashlib
 import json
-from collections.abc import Mapping
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -61,7 +61,7 @@ def _hash_file_sha256(path: Path) -> str:
 
 
 def _now_iso_utc() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Path) -> Path:

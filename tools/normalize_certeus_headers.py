@@ -26,10 +26,10 @@ EN: CERTEUS header & module docstring normalizer.
 from __future__ import annotations
 
 import argparse
-import datetime
-import re
 from collections.abc import Iterable
+import datetime
 from pathlib import Path
+import re
 
 BORDER = "# +=====================================================================+"
 CERTEUS_LINE = "# |                          CERTEUS                                    |"

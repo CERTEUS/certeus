@@ -27,9 +27,9 @@ EN: Local stub implementations of adapters (no cloud).
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Iterable, Sequence
 from dataclasses import asdict
+import hashlib
 from pathlib import Path
 
 from .contracts import (

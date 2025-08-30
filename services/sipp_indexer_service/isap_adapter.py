@@ -23,8 +23,8 @@ EN: ISAP adapter stub. MVP version: returns a constant snapshot
 
 from __future__ import annotations
 
+from datetime import UTC, date, datetime
 import hashlib
-from datetime import date, datetime, timezone
 
 from .models import LegalActSnapshot
 
@@ -69,6 +69,6 @@ class IsapAdapter:
             text_sha256=text_hash,
             source_url="https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19970880553",
             valid_from=date(2023, 10, 1),
-            snapshot_timestamp=datetime.now(timezone.utc),
+            snapshot_timestamp=datetime.now(UTC),
         )
         return snapshot

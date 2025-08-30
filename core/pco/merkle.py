@@ -11,9 +11,10 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 # ----Bloki----- IMPORTY
 import hashlib
-from dataclasses import dataclass
 from typing import Any, Literal
 
 # ----Bloki----- TYPY

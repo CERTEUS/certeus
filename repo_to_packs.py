@@ -33,18 +33,18 @@ ADD: Generates a complete repository inventory for machines (MANIFEST.json)
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterator, Sequence
+from dataclasses import dataclass
+from datetime import UTC, datetime
 import fnmatch
 import hashlib
 import io
 import json
 import os
+from pathlib import Path
 import subprocess
 import sys
 import time
-from collections.abc import Iterator, Sequence
-from dataclasses import dataclass
-from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 BANNER = (
@@ -415,7 +415,7 @@ def write_repo_tree_md(root: Path, out_dir: Path) -> Path:
     sio.write(BANNER)
     sio.write("# 📂 Repozytorium — pełne drzewo\n\n")
     sio.write(f"- Source: `{root}`\n")
-    sio.write(f"- Generated (UTC): {datetime.now(timezone.utc).isoformat()}\n\n")
+    sio.write(f"- Generated (UTC): {datetime.now(UTC).isoformat()}\n\n")
 
     # Build a nested map for pretty printing
     tree: dict[str, Any] = {}
@@ -513,7 +513,7 @@ def write_packs(
     manifest: dict[str, Any] = {
         "banner": BANNER.strip(),
         "src_root": str(root),
-        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "created_utc": datetime.now(UTC).isoformat(),
         "params": {
             "pack_chars": pack_chars,
             "file_chunk": file_chunk,

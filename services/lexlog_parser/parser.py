@@ -22,13 +22,12 @@ Polish/English bilingual documentation maintained throughout.
 
 from __future__ import annotations
 
-import logging
-import re
-
 # ┌─────────────────────────────────────────────────────────────────────┐
 # │                           IMPORTS BLOCK                             │
 # └─────────────────────────────────────────────────────────────────────┘
 from dataclasses import dataclass, field
+import logging
+import re
 from re import Match
 from typing import Any
 

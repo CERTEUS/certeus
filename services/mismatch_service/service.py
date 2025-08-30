@@ -11,14 +11,14 @@
 
 from __future__ import annotations
 
-import json
-import logging
-import uuid
 from collections import defaultdict
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+import json
+import logging
 from pathlib import Path
 from typing import Any
+import uuid
 
 from .models import (
     MismatchTicket,
@@ -132,12 +132,12 @@ class MismatchService:
             raise ValueError(f"Ticket already resolved: {ticket_id}")
 
         ticket.status = TicketStatus.RESOLVED
-        ticket.resolved_at = datetime.now(timezone.utc)
+        ticket.resolved_at = datetime.now(UTC)
         ticket.resolution_type = resolution.resolution_type
         ticket.resolution_notes = resolution.notes
         ticket.resolved_by = resolution.resolved_by
         ticket.chosen_result = resolution.chosen_result
-        ticket.updated_at = datetime.now(timezone.utc)
+        ticket.updated_at = datetime.now(UTC)
 
         self._persist_if_needed()
 
@@ -161,8 +161,8 @@ class MismatchService:
             raise KeyError(f"Ticket not found: {ticket_id}")
         ticket.status = TicketStatus.ESCALATED
         ticket.priority = TicketPriority.CRITICAL
-        ticket.updated_at = datetime.now(timezone.utc)
-        note = f"[{datetime.now(timezone.utc).isoformat()}] Escalated by {escalated_by}: {reason}"
+        ticket.updated_at = datetime.now(UTC)
+        note = f"[{datetime.now(UTC).isoformat()}] Escalated by {escalated_by}: {reason}"
         ticket.resolution_notes = ((ticket.resolution_notes + "\n") if ticket.resolution_notes else "") + note
         self._persist_if_needed()
         logger.warning("Ticket %s escalated by %s: %s", ticket_id, escalated_by, reason)

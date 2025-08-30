@@ -13,14 +13,15 @@
 
 from __future__ import annotations
 
-# ----Bloki----- IMPORTY
-import time
 from hashlib import sha256
 
-import pytest
+# ----Bloki----- IMPORTY
+import time
+
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+import pytest
 
 from core.pco import (
     PublicPCO,

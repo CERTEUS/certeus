@@ -40,16 +40,16 @@ from __future__ import annotations
 
 # === IMPORTS =================================================== #
 import argparse
+from collections.abc import Iterable
+from dataclasses import dataclass
+from datetime import UTC, datetime
 import hashlib
 import json
 import os
+from pathlib import Path
 import random
 import string
 import sys
-from collections.abc import Iterable
-from dataclasses import dataclass
-from datetime import datetime, timezone
-from pathlib import Path
 from typing import Final
 
 # === CONSTANTS / KONSTANTY ===================================== #
@@ -217,7 +217,7 @@ def _emit_receipt(out_dir: Path, items: list[Generated]) -> Path:
     PL: Zapisuje pokwitowanie (provenance receipt) z hashami i timestampem.
     EN: Writes a provenance receipt with hashes and timestamp.
     """
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     manifest = {
         "version": "provenance_receipt_v1",
         "created_at": now,

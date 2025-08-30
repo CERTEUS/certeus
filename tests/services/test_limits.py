@@ -9,8 +9,8 @@
 
 from __future__ import annotations
 
-import pytest
 from fastapi import HTTPException
+import pytest
 from starlette.requests import Request  # FastAPI re-exports this class
 
 from services.api_gateway.limits import enforce_limits, get_tenant_id, set_tenant_quota

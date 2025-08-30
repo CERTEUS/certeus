@@ -31,10 +31,10 @@ EN: This module transforms raw OCR output into a list of `Fact` objects.
 # [BLOCK: IMPORTS / IMPORTY]
 from __future__ import annotations
 
-import hashlib
-import uuid
 from datetime import date
+import hashlib
 from typing import Any
+import uuid
 
 from .models import Fact, FactRole
 

@@ -13,11 +13,11 @@ EN: Provenance ledger – logic.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from hashlib import sha256
+import json
 from typing import Any
 
 
@@ -56,7 +56,7 @@ class Ledger:
         return len(self._events) + 1
 
     def _now_iso(self) -> str:
-        return datetime.now(timezone.utc).isoformat()
+        return datetime.now(UTC).isoformat()
 
     def _chain(self, payload: dict[str, Any], prev: str | None) -> str:
         body = dict(payload)

@@ -15,16 +15,17 @@ from __future__ import annotations
 
 # stdlib
 import base64
-import json
-import time
 from hashlib import sha256
+import json
 from pathlib import Path
+import time
 
-# third-party
-import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from fastapi.testclient import TestClient
+
+# third-party
+import pytest
 
 # project
 from services.api_gateway.main import app

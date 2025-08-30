@@ -21,9 +21,9 @@
 
 from __future__ import annotations
 
-import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from hashlib import sha256
+import json
 from typing import Annotated, Any
 
 from fastapi import APIRouter, File, HTTPException, Request, Response, UploadFile
@@ -169,7 +169,7 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
         "do niekorzystnego rozporządzenia mieniem za pomocą wprowadzenia w błąd..."
     ).strip()
     digest = "sha256:" + sha256(text.encode("utf-8")).hexdigest()
-    snap_ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    snap_ts = datetime.now(UTC).isoformat(timespec="seconds")
 
     return {
         "act_id": act_id,

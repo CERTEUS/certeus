@@ -7,8 +7,8 @@
 # +=====================================================================+
 from __future__ import annotations
 
-import base64
 from argparse import ArgumentParser
+import base64
 from pathlib import Path
 
 from cryptography.hazmat.primitives import serialization

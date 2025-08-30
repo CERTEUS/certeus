@@ -11,10 +11,10 @@
 
 from __future__ import annotations
 
-import shutil
-import uuid
 from pathlib import Path
+import shutil
 from typing import Annotated
+import uuid
 
 from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse

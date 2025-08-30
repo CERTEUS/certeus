@@ -31,9 +31,9 @@ from __future__ import annotations
 # === stdlib imports (one-per-line for Ruff) ===================
 import argparse
 import ast
-import sys
 from collections.abc import Iterable
 from pathlib import Path
+import sys
 
 # ==============================================================
 # == BLOCK: detection helpers                                  =

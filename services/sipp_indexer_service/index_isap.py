@@ -16,10 +16,10 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
 
 from __future__ import annotations
 
-import json
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from hashlib import sha256
+import json
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +44,7 @@ def _snapshot_for(act_id: str) -> ActSnapshot:
         "za pomocą wprowadzenia w błąd..."
     )
     digest = "sha256:" + sha256(text.encode("utf-8")).hexdigest()
-    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    now = datetime.now(UTC).isoformat(timespec="seconds")
 
     return ActSnapshot(
         act_id=act_id,
