@@ -1,6 +1,7 @@
 # CERTEUS <img src="docs/assets/brand/certeus-favicon.svg" height="24" alt="CERTEUS" />
 
-[![CI](https://github.com/ORG/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/ORG/REPO/actions)
+[![Tests](https://github.com/CERTEUS/certeus/actions/workflows/tests.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/tests.yml)
+[![Proof Gate](https://github.com/CERTEUS/certeus/actions/workflows/proof-gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/proof-gate.yml)
 [![OpenAPI Pages](https://github.com/CERTEUS/certeus/actions/workflows/openapi-pages.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/openapi-pages.yml)
 [![OpenAPI Diff](https://github.com/CERTEUS/certeus/actions/workflows/openapi-diff.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/openapi-diff.yml)
 [![SemVer](https://img.shields.io/badge/semver-1.x-blue)](#versioning-deprecation-support)
