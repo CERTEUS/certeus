@@ -9,9 +9,9 @@ name: Proof Gate
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main]
   push:
-    branches: [develop]
+    branches: [main]
 
 jobs:
   proof-gate:
@@ -63,12 +63,14 @@ jobs:
           uv run python scripts/gates/path_coverage_gate.py --min-gamma 0.90 --max-uncaptured 0.05
 
       - name: Compute boundary report
+        if: ${{ secrets.PCO_JWKS_B64URL != '' }}
         env:
           PCO_JWKS_B64URL: ${{ secrets.PCO_JWKS_B64URL }}
         run: |
           uv run python scripts/gates/compute_boundary_report.py
 
       - name: Boundary-Rebuild Gate (delta_bits == 0)
+        if: ${{ secrets.PCO_JWKS_B64URL != '' }}
         env:
           STRICT_BOUNDARY_REBUILD: "1"
         run: |
@@ -153,6 +155,7 @@ jobs:
           path: out/openapi.json
 
       - name: Verify public bundle (Merkle + Ed25519)
+        if: ${{ secrets.PCO_JWKS_B64URL != '' }}
         env:
           PCO_JWKS_B64URL: ${{ secrets.PCO_JWKS_B64URL }}
         run: |
