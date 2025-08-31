@@ -73,6 +73,14 @@ paths:
                   items:
                     type: object
                     properties: { sibling: { type: string }, dir: { type: string, enum: [L, R] } }
+            examples:
+              minimal:
+                summary: Minimal request
+                value:
+                  rid: "case-001"
+                  smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  lfsc: "(lfsc proof)"
+                  merkle_proof: []
       responses:
         "200":
           description: ProofBundle published
@@ -80,6 +88,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProofBundleV0_2'
+              examples:
+                example:
+                  summary: Minimal ProofBundle response (truncated)
+                  value:
+                    version: "0.2"
+                    case_id: "case-001"
+                    rid: "case-001"
+                    smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    lfsc: "(lfsc proof)"
+                    merkle_proof: []
+                    signatures: [{ role: producer, alg: ed25519, key_id: "kid123", signature: "b64u..." }]
+                    risk: { ece: 0, brier: 0, p95_latency_ms: 0, abstain_rate: 0 }
+                    status: "PENDING"
   /pco/public/{case_id}:
     get:
       summary: Public payload of ProofBundle (zero PII)
@@ -95,6 +116,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PublicPCO'
+              examples:
+                example:
+                  value:
+                    rid: "case-001"
+                    smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    lfsc: "(lfsc proof)"
+                    merkle_proof: []
+                    signature: "b64u..."
   /.well-known/jwks.json:
     get:
       summary: JWKS
