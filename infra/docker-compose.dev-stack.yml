@@ -39,4 +39,7 @@ services:
     ports: ["3000:3000"]
     depends_on:
       - prometheus
-
+    volumes:
+      - ../observability/grafana/provisioning/datasources/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+      - ../observability/grafana/provisioning/dashboards/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml:ro
+      - ../observability/grafana/certeus-slo-dashboard.json:/var/lib/grafana/dashboards/certeus-slo-dashboard.json:ro

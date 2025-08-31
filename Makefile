@@ -6,7 +6,7 @@
 # |  PL/EN: Skróty: lint, test, proof-gate, bench, packs.               |
 # +=====================================================================+
 
-.PHONY: lint test fmt proof-gate bench packs run-api run-proofgate gates gates-gauge gates-coverage gates-boundary token cerctl
+.PHONY: lint test fmt proof-gate bench packs run-api run-proofgate run-stack down-stack gates gates-gauge gates-coverage gates-boundary token cerctl
 
 lint:
 	uv run ruff check .
@@ -32,6 +32,12 @@ run-api:
 
 run-proofgate:
 	uv run uvicorn services.proofgate.app:app --reload --port 8085
+
+run-stack:
+	docker compose -f infra/docker-compose.dev-stack.yml up -d --build
+
+down-stack:
+	docker compose -f infra/docker-compose.dev-stack.yml down
 
 # --- CI Gates (local) ---
 gates-gauge:
