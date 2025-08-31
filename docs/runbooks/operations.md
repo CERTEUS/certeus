@@ -34,4 +34,14 @@
   - High `certeus_abstain_rate`: inspect proof verification failures, budget tokens, SLO thresholds
   - Source fetch errors: check network, adapter retries, LAW_CACHE_DIR
   - JWKS errors: verify key backend envs, Vault token/URL
+## DEV Stack (docker-compose)
+
+- Start stack:
+  - `make run-stack`
+- Smoke test (simple E2E):
+  - `make smoke`
+- Stop stack:
+  - `make down-stack`
+
+Grafana login (DEV): user `admin`, password `admin` (anonymous access also enabled).
 

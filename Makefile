@@ -39,6 +39,9 @@ run-stack:
 down-stack:
 	docker compose -f infra/docker-compose.dev-stack.yml down
 
+smoke:
+	uv run python scripts/smoke_stack.py
+
 # --- CI Gates (local) ---
 gates-gauge:
 	uv run python scripts/gates/compute_gauge_drift.py --flags data/flags/kk.flags.json --out out/gauge.json
