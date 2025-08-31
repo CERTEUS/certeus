@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CERTEUS ProofBundle v0.2",
+  "type": "object",
+  "required": [
+    "version",
+    "case_id",
+    "created_at",
+    "jurisdiction",
+    "claims",
+    "sources",
+    "risk",
+    "signatures",
+    "reproducibility",
+    "status"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "0.2" },
+    "case_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["country", "domain"],
+      "properties": {
+        "country": { "type": "string" },
+        "domain": {
+          "type": "string",
+          "enum": ["civil", "criminal", "commercial", "administrative", "labor", "other"]
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "legal_basis"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "legal_basis": {
+            "type": "object",
+            "required": ["statutes", "cases"],
+            "properties": {
+              "statutes": { "type": "array", "items": { "type": "string" } },
+              "cases": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "uri", "digest", "retrieved_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "uri": { "type": "string" },
+          "digest": { "type": "string" },
+          "retrieved_at": { "type": "string", "format": "date-time" },
+          "license": { "type": "string" }
+        }
+      }
+    },
+    "derivations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "solver", "proof_format", "artifact_digest"],
+        "properties": {
+          "claim_id": { "type": "string" },
+          "solver": { "type": "string", "enum": ["z3", "cvc5", "other"] },
+          "proof_format": {
+            "type": "string",
+            "enum": ["DRAT", "LRAT", "LFSC", "AIGER", "OTHER"]
+          },
+          "artifact_digest": { "type": "string" },
+          "verifier_cmd": { "type": "string" }
+        }
+      }
+    },
+    "computations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "artifact_digest"],
+        "properties": {
+          "name": { "type": "string" },
+          "artifact_digest": { "type": "string" },
+          "notebook_cells": { "type": "integer" }
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": ["ece", "brier", "p95_latency_ms", "abstain_rate"],
+      "properties": {
+        "ece": { "type": "number", "minimum": 0 },
+        "brier": { "type": "number", "minimum": 0 },
+        "p95_latency_ms": { "type": "number", "minimum": 0 },
+        "abstain_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "properties": {
+        "pco_tx_id": { "type": "string" },
+        "merkle_root": { "type": "string" }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "alg", "signature", "key_id"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["producer", "auditor", "counsel", "court", "insurer"]
+          },
+          "alg": { "type": "string", "enum": ["ed25519", "p256", "p384", "rsa"] },
+          "key_id": { "type": "string" },
+          "signature": { "type": "string" }
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["image", "image_digest", "seed"],
+      "properties": {
+        "image": { "type": "string" },
+        "image_digest": { "type": "string" },
+        "seed": { "type": "string" },
+        "env": { "type": "object" }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "mime", "digest"],
+        "properties": {
+          "name": { "type": "string" },
+          "mime": { "type": "string" },
+          "digest": { "type": "string" }
+        }
+      }
+    },
+    "status": { "type": "string", "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"] }
+  }
+}
+

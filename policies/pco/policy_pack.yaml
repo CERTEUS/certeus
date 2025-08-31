@@ -1,0 +1,67 @@
+meta:
+  id: pco-policy-pack
+  version: "0.1"
+  jurisdiction: "PL"
+  tags: [ai_act:high_risk, rodo, legal_ai, proof_native]
+
+publish_contract:
+  thresholds:
+    risk:
+      ece_max: 0.02
+      brier_max: 0.10
+      abstain_rate_max: 0.15
+    reproducibility:
+      required: true
+      verifier: "certeus-proof-verifier>=0.2"
+    sources:
+      digest_required: true
+      offline_cache_required: true
+    proofs:
+      formats_allowed: ["DRAT", "LRAT", "LFSC"]
+      solver_allowed: ["z3", "cvc5"]
+      verification_required: true
+
+checks:
+  - id: sources_digest
+    description: "Każde źródło posiada digest i retrieved_at"
+    required: true
+  - id: proof_verification
+    description: "Wszystkie proofy zweryfikowane narzędziem referencyjnym"
+    required: true
+  - id: rodo_guard
+    description: "Brak PII w payloadzie publicznym"
+    required: true
+  - id: counsel_signature
+    description: "Podpis roli 'counsel' przy PUBLISH/CONDITIONAL"
+    required: true
+
+abstain_rules:
+  - when: "risk.ece > thresholds.risk.ece_max"
+  - when: "risk.brier > thresholds.risk.brier_max"
+  - when: "risk.abstain_rate > thresholds.risk.abstain_rate_max"
+  - when: "proofs.verification_failed == true"
+  - when: "sources.digest_missing > 0"
+
+roles:
+  producer: { can_sign: true }
+  auditor:  { can_sign: true }
+  counsel:  { can_sign: true, required_for: ["PUBLISH", "CONDITIONAL"] }
+
+ledger:
+  backend: "pco_ledger_v1"
+  finalize_after: "2 confirmations"
+
+retention:
+  public_payload_days: 3650
+  private_artifacts_days: 3650
+
+redaction:
+  pii_patterns:
+    - "\\bPESEL\\b"
+    - "\\b[A-Z]{2}\\d{7}\\b"
+  mode: "remove"
+
+compliance:
+  rodo: { controller: "Client (law firm)", processor: "CERTEUS" }
+  ai_act: { risk_class: "high" }
+
