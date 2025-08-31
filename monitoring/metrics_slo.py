@@ -54,3 +54,12 @@ def observe_decision(decision: str) -> None:
             certeus_abstain_rate.set(abstain / total)
     except Exception:
         pass
+
+
+# HTTP request duration (Gateway)
+certeus_http_request_duration_ms = Histogram(
+    "certeus_http_request_duration_ms",
+    "Gateway HTTP request duration (ms)",
+    labelnames=("path", "method", "status"),
+    buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
+)

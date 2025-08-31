@@ -30,6 +30,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from monitoring.metrics_slo import certeus_http_request_duration_ms
+
 # local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -166,3 +168,24 @@ def _make_blob(upload: UploadFile, data: bytes) -> Blob:
         content_type=upload.content_type or "application/octet-stream",
         data=data,
     )
+
+
+# --- blok --- Metrics middleware (request duration) -----------------------------
+
+
+@app.middleware("http")
+async def _metrics_timing(request, call_next):  # type: ignore[override]
+    import time as _t
+
+    start = _t.perf_counter()
+    response = await call_next(request)
+    try:
+        route = request.scope.get("route")
+        path_tmpl = getattr(route, "path", request.url.path)
+        status = getattr(response, "status_code", 0)
+        certeus_http_request_duration_ms.labels(path=path_tmpl, method=request.method, status=str(status)).observe(
+            (_t.perf_counter() - start) * 1000.0
+        )
+    except Exception:
+        pass
+    return response
