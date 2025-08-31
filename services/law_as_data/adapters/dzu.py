@@ -7,7 +7,7 @@ from ..cache import FileCache, cache_from_uri
 
 
 @dataclass
-class LawDocument:
+class DzULawDocument:
     uri: str
     digest: str
     path: str
@@ -25,11 +25,11 @@ def extract_title(html_bytes: bytes) -> str | None:
         return None
 
 
-def fetch_and_cache_isap(uri: str, cache: FileCache | None = None) -> LawDocument:
+def fetch_and_cache_dzu(uri: str, cache: FileCache | None = None) -> DzULawDocument:
     cs = cache_from_uri(uri, cache)
     title = None
     try:
         title = extract_title(cs.path.read_bytes())
     except Exception:
         title = None
-    return LawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)
+    return DzULawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)

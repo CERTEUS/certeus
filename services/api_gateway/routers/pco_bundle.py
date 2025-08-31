@@ -30,6 +30,7 @@ from monitoring.metrics_slo import (
     certeus_proof_verification_failed_total,
 )
 from services.api_gateway.limits import enforce_limits
+from services.proofgate.app import PublishRequest, PublishResponse, publish
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
@@ -268,6 +269,22 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     try:
         proofbundle = _build_proofbundle(payload, merkle_root_hex, digest_hex, signature_b64u, sk, status=pb_status)
         out_obj.update(proofbundle)
+        # ProofGate: publication decision + ledger write; update status/ledger_ref (ignore errors)
+        try:
+            try:
+                budget = int(os.getenv("DEFAULT_BUDGET_TOKENS", "10"))
+            except Exception:
+                budget = 0
+            req = PublishRequest(pco={**out_obj, **proofbundle}, policy=None, budget_tokens=budget)  # type: ignore[call-arg]
+            pg_resp: PublishResponse = publish(req)
+            if pb_status != "ABSTAIN":
+                out_obj["status"] = pg_resp.status
+            if getattr(pg_resp, "ledger_ref", None):
+                if not isinstance(out_obj.get("ledger"), dict):
+                    out_obj["ledger"] = {}
+                out_obj["ledger"]["pco_tx_id"] = pg_resp.ledger_ref  # type: ignore[index]
+        except Exception:
+            pass
     except Exception as e:
         # Gdyby walidacja padła, zgłoś błąd 400 (nie zapisujemy wadliwego bundle)
         raise HTTPException(status_code=400, detail=f"Invalid ProofBundle: {e}") from e

@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import yaml
 
+from monitoring.metrics_slo import observe_decision
 from services.ledger_service.ledger import (
     compute_provenance_hash,
     ledger_service,
@@ -92,5 +93,11 @@ def publish(req: PublishRequest) -> PublishResponse:
         doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
         rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
         ledger = rec.get("chain_self")
+
+    # Observe decision metrics (SLO)
+    try:
+        observe_decision(decision)
+    except Exception:
+        pass
 
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)

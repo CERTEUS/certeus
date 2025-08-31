@@ -23,3 +23,34 @@ certeus_source_fetch_errors_total = Counter("certeus_source_fetch_errors_total",
 # Gauge for missing digests (alias for SLO Gate input). Kept at 0 unless
 # validation flows explicitly set it.
 certeus_sources_digest_missing = Gauge("certeus_sources_digest_missing", "Count of sources missing required digests")
+
+# Decision counters (ProofGate)
+certeus_publish_total = Counter("certeus_publish_total", "Number of PUBLISH decisions")
+certeus_conditional_total = Counter("certeus_conditional_total", "Number of CONDITIONAL decisions")
+certeus_pending_total = Counter("certeus_pending_total", "Number of PENDING decisions")
+certeus_abstain_total = Counter("certeus_abstain_total", "Number of ABSTAIN decisions")
+
+
+def observe_decision(decision: str) -> None:
+    """Increment counters and update abstain_rate gauge (lifetime ratio)."""
+    if decision == "PUBLISH":
+        certeus_publish_total.inc()
+    elif decision == "CONDITIONAL":
+        certeus_conditional_total.inc()
+    elif decision == "PENDING":
+        certeus_pending_total.inc()
+    elif decision == "ABSTAIN":
+        certeus_abstain_total.inc()
+    # Update abstain rate as ratio of abstain to total
+    try:
+        total = (
+            certeus_publish_total._value.get()  # type: ignore[attr-defined]
+            + certeus_conditional_total._value.get()  # type: ignore[attr-defined]
+            + certeus_pending_total._value.get()  # type: ignore[attr-defined]
+            + certeus_abstain_total._value.get()  # type: ignore[attr-defined]
+        )
+        abstain = certeus_abstain_total._value.get()  # type: ignore[attr-defined]
+        if total > 0:
+            certeus_abstain_rate.set(abstain / total)
+    except Exception:
+        pass
