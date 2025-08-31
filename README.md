@@ -81,6 +81,27 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 ---
 
 
+
+## 60 seconds: run and check
+
+- Linux/macOS
+```
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+# in another terminal
+curl -s http://127.0.0.1:8000/health
+```
+
+- Windows (PowerShell)
+```
+py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
+$py = ".\\.venv\\Scripts\\python.exe"
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+& $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+# in another terminal
+curl.exe -s http://127.0.0.1:8000/health
+```
 ## 60 sekund: uruchom i sprawdź
 
 - Linux/macOS
@@ -490,5 +511,6 @@ Pełny przewodnik PL (bez artefaktów kodowania): `docs/README_PL.md`
 ## Licencja
 
 MIT © 2025 CERTEUS Contributors
+
 
 
