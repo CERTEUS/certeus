@@ -128,6 +128,59 @@ paths:
     get:
       summary: JWKS
       responses: { "200": { description: ok } }
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      responses:
+        "200": { description: ok }
+  /v1/sources/cache:
+    post:
+      summary: Cache a legal source by URI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [uri]
+              properties:
+                uri: { type: string }
+      responses:
+        "200":
+          description: Cached source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri: { type: string }
+                  digest: { type: string }
+                  path: { type: string }
+                  retrieved_at: { type: string }
+  /v1/proofgate/publish:
+    post:
+      summary: Publication decision (ProofGate)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pco: { $ref: '#/components/schemas/ProofBundleV0_2' }
+                policy: { type: object }
+                budget_tokens: { type: integer }
+      responses:
+        "200":
+          description: Decision
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [PUBLISH, CONDITIONAL, PENDING, ABSTAIN] }
+                  pco: { type: object }
+                  ledger_ref: { type: string }
   /v1/packs:
     get:
       responses: { "200": { description: ok } }
