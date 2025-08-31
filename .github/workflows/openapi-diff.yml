@@ -1,0 +1,16 @@
+name: openapi-diff
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diff placeholder
+        run: |
+          echo "OpenAPI diff placeholder"
+

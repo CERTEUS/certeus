@@ -28,7 +28,7 @@ packs:
 
 # --- Runtime helpers ---
 run-api:
-	uv run uvicorn services.api_gateway.main:app --reload --port 8081
+	uv run uvicorn services.api_gateway.main:app --reload --port 8000
 
 run-proofgate:
 	uv run uvicorn services.proofgate.app:app --reload --port 8085

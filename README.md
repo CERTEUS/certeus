@@ -85,30 +85,50 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 > Ustal bazowy adres usług:
 
 ```bash
-export CER_BASE="http://localhost:8081"
+export CER_BASE="http://localhost:8000"
 ```
 
 ### Dev (lokalnie)
 
 ```bash
-# Linux/macOS
-uv venv && source .venv/bin/activate
-uv pip install -r requirements.txt
-docker compose -f infra/docker-compose.dev.yml up -d --build
-# Gateway + ProofGate (zalecane skróty)
-make run-api           # FastAPI Gateway na :8081
-make run-proofgate     # ProofGate na :8085
+# Linux/macOS (Python 3.11)
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+python -m ruff check . --fix && python -m ruff format .
+python -m pytest -q
+
+# API Gateway (DEV)
+python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+
+# (Opcjonalnie) ProofGate lokalnie
+python -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 ```
 
 ```powershell
-# Windows PowerShell
-uv venv; .\.venv\Scripts\Activate.ps1
-uv pip install -r requirements.txt
-docker compose -f infra/docker-compose.dev.yml up -d --build
-# Gateway + ProofGate (zalecane skróty)
-make run-api
-make run-proofgate
+# Windows PowerShell (Python 3.11)
+py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
+$py = ".\.venv\Scripts\python.exe"
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+& $py -m ruff check . --fix; & $py -m ruff format .
+& $py -m pytest -q --junitxml="reports\junit.xml"
+
+# API Gateway (DEV)
+& $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+
+# (Opcjonalnie) ProofGate lokalnie
+& $py -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 ```
+
+### Dev stack (Docker Compose)
+
+```bash
+make run-stack   # start API+ProofGate+Prometheus+Grafana
+make smoke       # szybki smoke test E2E
+make down-stack  # zatrzymaj stack
+```
+
+Grafana: http://localhost:3000 (admin/admin), Prometheus: http://localhost:9090.
+
 
 ### SRE (k8s)
 
@@ -435,6 +455,8 @@ Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/re
 - Prometheus recording rules: `observability/prometheus/recording_rules.yml`
 - Grafana SLO dashboard: `observability/grafana/certeus-slo-dashboard.json`
 - Supply-chain CI: `.github/workflows/supply-chain.yml`
+
+Pełny przewodnik PL (bez artefaktów kodowania): `docs/README_PL.md`
 
 ## Glosariusz
 
