@@ -29,6 +29,7 @@ EN: FastAPI router for the provenance ledger:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, Protocol, cast
 
@@ -58,7 +59,7 @@ try:
 except Exception:  # pragma: no cover
     Draft7Validator = None  # type: ignore[assignment]
 
-router = APIRouter()
+router = APIRouter(prefix="/v1/ledger")
 
 # Repo paths
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -140,7 +141,8 @@ def prove_case(case_id: str) -> dict[str, Any]:
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
 
-    if _provenance_validator is not None:
+    # Optional schema validation (enable with LEDGER_VALIDATE_SCHEMA=1)
+    if os.getenv("LEDGER_VALIDATE_SCHEMA") == "1" and _provenance_validator is not None:
         try:
             _provenance_validator.validate(receipt)  # type: ignore[union-attr]
         except Exception as e:
