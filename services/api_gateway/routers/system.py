@@ -135,6 +135,33 @@ async def ingest_document(
 
 
 # ---------------------------------------------------------------------
+# /v1/sources/cache
+# ---------------------------------------------------------------------
+
+
+class SourceCacheRequest(BaseModel):
+    uri: str
+
+
+class SourceCacheResponse(BaseModel):
+    uri: str
+    digest: str
+    path: str
+    retrieved_at: str
+
+
+@router.post("/v1/sources/cache", response_model=SourceCacheResponse)
+def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
+    """
+    Cache a legal source by URI using Law-as-Data cache; return digest and path.
+    """
+    from services.law_as_data.cache import cache_from_uri
+
+    cs = cache_from_uri(req.uri)
+    return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
+
+
+# ---------------------------------------------------------------------
 # /v1/analyze
 # ---------------------------------------------------------------------
 
