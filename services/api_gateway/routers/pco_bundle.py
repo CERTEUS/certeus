@@ -30,6 +30,7 @@ from monitoring.metrics_slo import (
     certeus_proof_verification_failed_total,
 )
 from services.api_gateway.limits import enforce_limits
+from services.proof_verifier import verify_drat, verify_lfsc
 from services.proofgate.app import PublishRequest, PublishResponse, publish
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
@@ -264,6 +265,25 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
                 certeus_compile_duration_ms.observe((time.perf_counter() - t0) * 1000.0)
             except Exception:
                 pass
+
+    # Proof verification for LFSC/DRAT (light heuristic). Any failure -> ABSTAIN
+    try:
+        vr_lfsc = verify_lfsc(payload.lfsc)
+        if not vr_lfsc.ok:
+            certeus_proof_verification_failed_total.inc()
+            pb_status = "ABSTAIN"
+    except Exception:
+        certeus_proof_verification_failed_total.inc()
+        pb_status = "ABSTAIN"
+    if payload.drat is not None:
+        try:
+            vr_drat = verify_drat(payload.drat)
+            if not vr_drat.ok:
+                certeus_proof_verification_failed_total.inc()
+                pb_status = "ABSTAIN"
+        except Exception:
+            certeus_proof_verification_failed_total.inc()
+            pb_status = "ABSTAIN"
 
     # Zbuduj pełny ProofBundle wg schematu i dołącz do payloadu publicznego (kompatybilnie)
     try:

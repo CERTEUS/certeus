@@ -18,6 +18,11 @@ import os
 
 from fastapi import APIRouter, HTTPException
 
+try:
+    from security.key_manager import load_ed25519_public_bytes  # type: ignore
+except Exception:  # pragma: no cover
+    load_ed25519_public_bytes = None  # type: ignore[assignment]
+
 # ----Bloki----- KONFIGURACJA
 router = APIRouter(prefix="", tags=["well-known"])
 
@@ -27,6 +32,9 @@ def _b64u(data: bytes) -> str:
 
 
 def _load_pubkey_bytes() -> bytes:
+    backend = os.getenv("KEYS_BACKEND")
+    if backend and load_ed25519_public_bytes is not None:
+        return load_ed25519_public_bytes()
     b64u = os.getenv("ED25519_PUBKEY_B64URL")
     if b64u:
         pad = "=" * (-len(b64u) % 4)

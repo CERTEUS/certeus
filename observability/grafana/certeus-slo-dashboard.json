@@ -1,0 +1,27 @@
+{
+  "title": "CERTEUS SLO Dashboard",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Abstain Rate",
+      "targets": [ { "expr": "certeus_abstain_rate" } ]
+    },
+    {
+      "type": "graph",
+      "title": "Compile/Verification p95 (ms)",
+      "targets": [ { "expr": "histogram_quantile(0.95, sum(rate(certeus_compile_duration_ms_bucket[5m])) by (le))" } ]
+    },
+    {
+      "type": "stat",
+      "title": "Proof Verification Failures (rate)",
+      "targets": [ { "expr": "rate(certeus_proof_verification_failed_total[5m])" } ]
+    },
+    {
+      "type": "stat",
+      "title": "Source Fetch Errors (rate)",
+      "targets": [ { "expr": "rate(certeus_source_fetch_errors_total[1h])" } ]
+    }
+  ],
+  "schemaVersion": 36
+}
+

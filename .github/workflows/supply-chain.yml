@@ -1,0 +1,80 @@
+name: supply-chain
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install cyclonedx-bom
+        run: |
+          python -m pip install --upgrade pip
+          pip install cyclonedx-bom
+      - name: Generate SBOM (CycloneDX JSON)
+        run: |
+          cyclonedx-py --format json --output sbom.json || cyclonedx-bom -o sbom.json -F json || true
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom.json
+          path: sbom.json
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy FS scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          ignore-unfixed: true
+          format: sarif
+          output: trivy-results.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+  cosign:
+    if: ${{ secrets.COSIGN_PRIVATE_KEY != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: 'v2.2.4'
+      - name: Create dummy artifact digest
+        id: digest
+        run: echo "digest=$(echo -n $GITHUB_SHA | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+      - name: Cosign attest provenance (keyless or keyful)
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          echo "Attesting build for $GITHUB_SHA" 
+          # Example attest (would apply to OCI digest normally)
+          cosign attest --predicate sbom.json --type cyclonedx $GITHUB_SHA || true
+
+  provenance:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate artifact (SBOM) placeholder
+        run: |
+          echo "{}" > artifact.json
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: artifact.json
+
