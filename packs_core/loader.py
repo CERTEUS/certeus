@@ -29,4 +29,3 @@ def load(path: str) -> PackLike:  # noqa: A002 - zgodność z istniejącymi impo
     Tu stub rzuca NotImplementedError, by nie maskować błędów wykonania.
     """
     raise NotImplementedError(f"Pack loader is not implemented for: {path}")
-
