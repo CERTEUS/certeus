@@ -8,13 +8,14 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import yaml
 
+from core.version import __version__
 from monitoring.metrics_slo import observe_decision
 from services.ledger_service.ledger import (
     compute_provenance_hash,
     ledger_service,
 )
 
-app = FastAPI(title="ProofGate (stub)", version="0.3.0")
+app = FastAPI(title="ProofGate", version=__version__)
 
 
 @app.get("/healthz")

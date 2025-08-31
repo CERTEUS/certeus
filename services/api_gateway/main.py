@@ -20,8 +20,10 @@ EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 # --- blok --- Importy ----------------------------------------------------------
 from __future__ import annotations
 
-# stdlib
 from contextlib import asynccontextmanager
+
+# stdlib
+import os
 from pathlib import Path
 
 # third-party
@@ -30,6 +32,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
 
 # local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
@@ -69,7 +72,7 @@ STATIC_PREVIEWS.mkdir(parents=True, exist_ok=True)
 CLIENTS_WEB.mkdir(parents=True, exist_ok=True)
 
 APP_TITLE = "CERTEUS API Gateway"
-APP_VERSION = "1.1.5"
+APP_VERSION = __version__
 
 # --- blok --- Lifespan (inicjalizacja adapterów) -------------------------------
 
@@ -103,8 +106,13 @@ attach_proof_only_middleware(app)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
 
-# CORS (DEV) – szeroko, bez credentials
-DEV_ORIGINS: list[str] = ["*"]
+# CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
+ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS", "*")
+DEV_ORIGINS: list[str] = (
+    [o.strip() for o in ALLOW_ORIGINS_ENV.split(",") if o.strip()]
+    if ALLOW_ORIGINS_ENV and ALLOW_ORIGINS_ENV != "*"
+    else ["*"]
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=DEV_ORIGINS,
