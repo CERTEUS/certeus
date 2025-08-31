@@ -53,6 +53,52 @@ paths:
   /v1/proofgate/publish:
     post:
       responses: { "200": { description: ok } }
+  /v1/pco/bundle:
+    post:
+      summary: Create and publish ProofBundle (v0.2)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rid, smt2_hash, lfsc]
+              properties:
+                rid: { type: string }
+                smt2_hash: { type: string, minLength: 64, maxLength: 64 }
+                lfsc: { type: string }
+                drat: { type: string, nullable: true }
+                merkle_proof:
+                  type: array
+                  items:
+                    type: object
+                    properties: { sibling: { type: string }, dir: { type: string, enum: [L, R] } }
+      responses:
+        "200":
+          description: ProofBundle published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofBundleV0_2'
+  /pco/public/{case_id}:
+    get:
+      summary: Public payload of ProofBundle (zero PII)
+      parameters:
+        - in: path
+          name: case_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Public PCO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicPCO'
+  /.well-known/jwks.json:
+    get:
+      summary: JWKS
+      responses: { "200": { description: ok } }
   /v1/packs:
     get:
       responses: { "200": { description: ok } }
@@ -70,3 +116,69 @@ paths:
   /v1/boundary/reconstruct:
     post:
       responses: { "200": { description: ok } }
+components:
+  schemas:
+    ProofBundleV0_2:
+      description: Schema aligned with services/api_gateway/schemas/proofbundle_v0.2.json
+      type: object
+      required: [version, case_id, created_at, jurisdiction, claims, sources, risk, signatures, reproducibility, status]
+      properties:
+        version: { type: string, enum: ["0.2"] }
+        case_id: { type: string }
+        created_at: { type: string, format: date-time }
+        jurisdiction:
+          type: object
+          properties:
+            country: { type: string }
+            domain: { type: string }
+        claims:
+          type: array
+          items:
+            type: object
+        sources:
+          type: array
+          items:
+            type: object
+        derivations:
+          type: array
+          items:
+            type: object
+        computations:
+          type: array
+          items:
+            type: object
+        risk:
+          type: object
+          properties:
+            ece: { type: number }
+            brier: { type: number }
+            p95_latency_ms: { type: number }
+            abstain_rate: { type: number }
+        ledger:
+          type: object
+        signatures:
+          type: array
+          items:
+            type: object
+        reproducibility:
+          type: object
+        attachments:
+          type: array
+          items:
+            type: object
+        status:
+          type: string
+          enum: [PUBLISH, CONDITIONAL, PENDING, ABSTAIN]
+    PublicPCO:
+      type: object
+      properties:
+        rid: { type: string }
+        smt2_hash: { type: string }
+        lfsc: { type: string }
+        drat: { type: string }
+        merkle_proof:
+          type: array
+          items:
+            type: object
+            properties: { sibling: { type: string }, dir: { type: string } }
+        signature: { type: string }

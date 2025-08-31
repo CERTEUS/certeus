@@ -8,6 +8,8 @@ from pathlib import Path
 import time
 import urllib.request
 
+from monitoring.metrics_slo import certeus_source_fetch_errors_total
+
 
 def compute_digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -63,8 +65,15 @@ class FileCache:
 
 
 def _fetch_uri(uri: str) -> bytes:
-    with urllib.request.urlopen(uri) as resp:  # nosec - trusted adapter path only
-        return resp.read()
+    try:
+        with urllib.request.urlopen(uri) as resp:  # nosec - trusted adapter path only
+            return resp.read()
+    except Exception:
+        try:
+            certeus_source_fetch_errors_total.inc()
+        except Exception:
+            pass
+        raise
 
 
 def cache_from_uri(uri: str, cache: FileCache | None = None) -> CachedSource:

@@ -41,6 +41,7 @@ import services.api_gateway.routers.fin as fin
 import services.api_gateway.routers.ledger as ledger
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
+import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pco_bundle as pco_bundle
@@ -132,6 +133,7 @@ app.include_router(ethics.router)
 app.include_router(fin.router)
 app.include_router(packs.router)
 app.include_router(jwks_router)
+app.include_router(metrics.router)
 
 # --- blok --- Health i root redirect -------------------------------------------
 
