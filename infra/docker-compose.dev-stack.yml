@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: infra/services/api_gateway/Dockerfile
+    environment:
+      PROOF_BUNDLE_DIR: /data/public_pco
+      DEFAULT_BUDGET_TOKENS: "10"
+    ports: ["8000:8000"]
+    volumes:
+      - ../data/public_pco:/data/public_pco
+    depends_on:
+      - proofgate
+
+  proofgate:
+    build:
+      context: ..
+      dockerfile: infra/services/proofgate/Dockerfile
+    environment:
+      # Provide keys via env or Vault (see docs/security/key_management.md)
+      # ED25519_PRIVKEY_PEM: "..."
+      # ED25519_PUBKEY_B64URL: "..."
+      DEFAULT_BUDGET_TOKENS: "10"
+    ports: ["8081:8081"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]
+    volumes:
+      - ../observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../observability/prometheus/recording_rules.yml:/etc/prometheus/recording_rules.yml:ro
+    depends_on:
+      - api
+      - proofgate
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+    depends_on:
+      - prometheus
+
