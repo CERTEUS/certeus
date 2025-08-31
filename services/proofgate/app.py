@@ -8,6 +8,11 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import yaml
 
+from services.ledger_service.ledger import (
+    compute_provenance_hash,
+    ledger_service,
+)
+
 app = FastAPI(title="ProofGate (stub)", version="0.3.0")
 
 
@@ -79,5 +84,13 @@ def publish(req: PublishRequest) -> PublishResponse:
         return PublishResponse(status="ABSTAIN", pco=None, ledger_ref=None)
     policy = req.policy or _load_policy_pack()
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
-    ledger = "LEDGER-STUB-001" if decision == "PUBLISH" else None
+
+    ledger: str | None = None
+    # On PUBLISH, persist a ledger event with a provenance hash of the PCO
+    if decision == "PUBLISH":
+        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "")
+        doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+        rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
+        ledger = rec.get("chain_self")
+
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)

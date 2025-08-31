@@ -64,19 +64,19 @@ class Ledger:
             body["prev"] = prev
         return sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
-    def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
+    def record_event(self, *, event_type: str, case_id: str, document_hash: str | None) -> dict[str, Any]:
         event_id = self._next_event_id()
         ts = self._now_iso()
         prev = self._events[-1].chain_self if self._events else None
         payload = {
             "event_id": event_id,
-            "type": "INPUT_INGESTION",
+            "type": event_type,
             "case_id": case_id,
             "document_hash": document_hash,
             "timestamp": ts,
         }
         chain_self = self._chain(payload, prev)
-        rec = LedgerRecord(event_id, "INPUT_INGESTION", case_id, document_hash, ts, prev, chain_self)
+        rec = LedgerRecord(event_id, event_type, case_id, document_hash, ts, prev, chain_self)
         self._events.append(rec)
         return {
             "event_id": rec.event_id,
@@ -87,6 +87,9 @@ class Ledger:
             "chain_prev": rec.chain_prev,
             "chain_self": rec.chain_self,
         }
+
+    def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
+        return self.record_event(event_type="INPUT_INGESTION", case_id=case_id, document_hash=document_hash)
 
     def get_records_for_case(self, *, case_id: str) -> list[dict[str, Any]]:
         return [
