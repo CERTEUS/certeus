@@ -25,6 +25,10 @@ from jsonschema import Draft202012Validator
 from pydantic import BaseModel, Field, field_validator
 
 from core.pco.crypto import canonical_bundle_hash_hex, canonical_digest_hex, compute_leaf_hex
+from monitoring.metrics_slo import (
+    certeus_compile_duration_ms,
+    certeus_proof_verification_failed_total,
+)
 from services.api_gateway.limits import enforce_limits
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
@@ -41,6 +45,7 @@ class PublicBundleIn(BaseModel):
     lfsc: str = Field(..., min_length=2)
     drat: str | None = None
     merkle_proof: list[MerkleStep] | dict | None = Field(default=None)
+    smt2: str | None = None
 
     @field_validator("smt2_hash")
     @classmethod
@@ -136,6 +141,8 @@ def _build_proofbundle(
     digest_hex: str,
     signature_b64u: str,
     sk: Ed25519PrivateKey,
+    *,
+    status: str = "PENDING",
 ) -> dict[str, Any]:
     # Minimal, ale zgodny ze schematem ProofBundle v0.2 (z polami domyślnymi)
     # Zachowujemy spójność z istniejącym public payloadem: będziemy zapisywać oba zestawy pól.
@@ -200,7 +207,7 @@ def _build_proofbundle(
         ],
         "reproducibility": {"image": image, "image_digest": image_digest, "seed": seed, "env": {}},
         "attachments": [],
-        "status": "PENDING",
+        "status": status,
     }
 
     # Walidacja ze schematem
@@ -240,9 +247,26 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     if payload.drat is not None:
         out_obj["drat"] = payload.drat
 
+    # Optional verification of SMT2 if provided; record SLO metrics
+    pb_status = "PENDING"
+    if getattr(payload, "smt2", None):
+        t0 = time.perf_counter()
+        try:
+            from kernel.truth_engine import DualCoreVerifier  # type: ignore
+
+            _ = DualCoreVerifier().verify(payload.smt2 or "", lang="smt2", case_id=payload.rid)
+        except Exception:
+            certeus_proof_verification_failed_total.inc()
+            pb_status = "ABSTAIN"
+        finally:
+            try:
+                certeus_compile_duration_ms.observe((time.perf_counter() - t0) * 1000.0)
+            except Exception:
+                pass
+
     # Zbuduj pełny ProofBundle wg schematu i dołącz do payloadu publicznego (kompatybilnie)
     try:
-        proofbundle = _build_proofbundle(payload, merkle_root_hex, digest_hex, signature_b64u, sk)
+        proofbundle = _build_proofbundle(payload, merkle_root_hex, digest_hex, signature_b64u, sk, status=pb_status)
         out_obj.update(proofbundle)
     except Exception as e:
         # Gdyby walidacja padła, zgłoś błąd 400 (nie zapisujemy wadliwego bundle)
