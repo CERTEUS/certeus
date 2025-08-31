@@ -20,8 +20,23 @@
       "type": "stat",
       "title": "Source Fetch Errors (rate)",
       "targets": [ { "expr": "rate(certeus_source_fetch_errors_total[1h])" } ]
+    },
+    {
+      "type": "graph",
+      "title": "HTTP p95 latency (ms) by path/method",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, path, method))" }
+      ],
+      "legend": { "show": true }
+    },
+    {
+      "type": "graph",
+      "title": "HTTP RPS by path/method/status",
+      "targets": [
+        { "expr": "sum(rate(certeus_http_request_duration_ms_count[5m])) by (path, method, status)" }
+      ],
+      "legend": { "show": true }
     }
   ],
   "schemaVersion": 36
 }
-
