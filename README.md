@@ -494,6 +494,7 @@ Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/re
 - OpenAPI spec: `docs/openapi/certeus.v1.yaml`
 - Operations runbook: `docs/runbooks/operations.md`
 - Key management (ENV/Vault): `docs/security/key_management.md`
+- Proof verification: `docs/verification.md`
 - Prometheus recording rules: `observability/prometheus/recording_rules.yml`
 - Grafana SLO dashboard: `observability/grafana/certeus-slo-dashboard.json`
 - Supply-chain CI: `.github/workflows/supply-chain.yml`
