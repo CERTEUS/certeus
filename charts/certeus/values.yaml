@@ -1,0 +1,52 @@
+api:
+  image:
+    repository: ghcr.io/OWNER/REPO-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    ALLOW_ORIGINS: "*"
+    SEC_HEADERS: "1"
+    RATE_LIMIT_PER_MIN: "0"
+    STRICT_PROOF_ONLY: "0"
+    PROOF_BUNDLE_DIR: "/data/public_pco"
+    # Key management (prefer Vault in production)
+    KEYS_BACKEND: "env"
+    # ED25519_PUBKEY_B64URL: "..."
+    # ED25519_PRIVKEY_PEM: "..."
+
+proofgate:
+  image:
+    repository: ghcr.io/OWNER/REPO-proofgate
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8081
+  env:
+    DEFAULT_BUDGET_TOKENS: "10"
+
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - host: api.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: api
+    - host: proofgate.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: proofgate
+  tls: []
+
+resources:
+  api: {}
+  proofgate: {}
+

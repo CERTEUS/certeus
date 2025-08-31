@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "certeus.fullname" . }}-proofgate
+  labels:
+    app.kubernetes.io/name: {{ include "certeus.name" . }}
+    app.kubernetes.io/component: proofgate
+spec:
+  replicas: {{ .Values.proofgate.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "certeus.name" . }}
+      app.kubernetes.io/component: proofgate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "certeus.name" . }}
+        app.kubernetes.io/component: proofgate
+    spec:
+      containers:
+        - name: proofgate
+          image: "{{ .Values.proofgate.image.repository }}:{{ .Values.proofgate.image.tag }}"
+          imagePullPolicy: {{ .Values.proofgate.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.proofgate.service.port }}
+              name: http
+          env:
+            - name: DEFAULT_BUDGET_TOKENS
+              value: {{ .Values.proofgate.env.DEFAULT_BUDGET_TOKENS | quote }}
+

@@ -499,6 +499,18 @@ Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/re
 - Prometheus recording rules: `observability/prometheus/recording_rules.yml`
 - Grafana SLO dashboard: `observability/grafana/certeus-slo-dashboard.json`
 - Supply-chain CI: `.github/workflows/supply-chain.yml`
+ - Release guide: `docs/RELEASE.md`
+ - Helm chart: `charts/certeus/`
+
+## Production Hardening (quick notes)
+- CORS: set `ALLOW_ORIGINS` to a comma‑separated allowlist (avoid `*` in production).
+- Security headers: keep `SEC_HEADERS=1`; configure `CSP` and `HSTS_MAX_AGE` to match your domain and TLS posture.
+- Rate limiting: enable `RATE_LIMIT_PER_MIN` for burst protection at the gateway.
+- Proof‑only I/O: set `STRICT_PROOF_ONLY=1` to enforce Proof‑Carrying Output surface.
+- Key management: prefer `KEYS_BACKEND=vault` (see `docs/security/key_management.md`); do not embed secrets in images.
+- Proof verification: configure real verifiers (`CVC5_CMD`, `DRAT_CHECK_CMD`) and proper timeouts.
+- SBOM/SLSA/Trivy: ensure `supply-chain` workflow is green before tagging a release.
+- Helm deploy: check `charts/certeus/values.yaml` and override image repositories/tags.
 
 Pełny przewodnik PL (bez artefaktów kodowania): `docs/README_PL.md`
 
