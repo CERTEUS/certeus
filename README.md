@@ -80,6 +80,27 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 
 ---
 
+
+## 60 sekund: uruchom i sprawdź
+
+- Linux/macOS
+```
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+# w drugim oknie
+curl -s http://127.0.0.1:8000/health
+```
+
+- Windows (PowerShell)
+```
+py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
+$py = ".\\.venv\\Scripts\\python.exe"
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+& $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+# w drugim oknie
+curl.exe -s http://127.0.0.1:8000/health
+```
 ## Szybki start (Dev/SRE/Audytor)
 
 > Ustal bazowy adres usług:
@@ -379,7 +400,7 @@ Zobacz `docs/diagrams.md` — Boundary snapshot/diff oraz pipeline Proof Gate (C
 - Gates: `GAUGE_EPSILON` (domyślnie 1e-3), `PATH_COV_MIN_GAMMA` (0.90), `PATH_COV_MAX_UNCAPTURED` (0.05).
 - SLO: `SLO_MAX_P95_MS` (250), `SLO_MAX_ERROR_RATE` (0.005).
 - Boundary verify: `PCO_JWKS_B64URL` lub `ED25519_PUBKEY_B64URL`, opcjonalnie `PROOF_BUNDLE_DIR` (domyślnie `data/public_pco`).
-- Adresy: `CER_BASE=http://localhost:8081` (Gateway), ProofGate domyślnie `:8085`.
+- Adresy: `CER_BASE=http://localhost:8000` (Gateway), ProofGate domyślnie `:8085`.
 
 Pełna lista: `docs/configuration.md` (w przygotowaniu).
 
@@ -469,3 +490,5 @@ Pełny przewodnik PL (bez artefaktów kodowania): `docs/README_PL.md`
 ## Licencja
 
 MIT © 2025 CERTEUS Contributors
+
+

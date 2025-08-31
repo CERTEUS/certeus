@@ -873,3 +873,4 @@ _(To nie porada prawna. Sekcja wskazuje implementacyjne punkty zaczepienia.)_
 
 **Koniec Manifestu Jednolitego v1.5 (Immutable).**
 
+
