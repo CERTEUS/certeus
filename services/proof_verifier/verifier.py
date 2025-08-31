@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import logging
 import os
 import re
 import subprocess
@@ -34,6 +35,9 @@ def verify_lfsc(text: str) -> VerificationResult:
     cmd = os.getenv("CVC5_CMD")
     if cmd:
         try:
+            debug = os.getenv("PROOF_VERIFY_DEBUG") == "1"
+            if debug:
+                logging.getLogger(__name__).debug("LFSC verify: running %s", cmd)
             proc = subprocess.run(
                 cmd.split(),
                 input=data,
@@ -42,10 +46,16 @@ def verify_lfsc(text: str) -> VerificationResult:
                 check=False,
             )
             ok = proc.returncode == 0
+            if debug:
+                out = (proc.stdout or b"").decode("utf-8", errors="ignore")[:200]
+                err = (proc.stderr or b"").decode("utf-8", errors="ignore")[:200]
+                logging.getLogger(__name__).debug("LFSC verify rc=%s out='%s' err='%s'", proc.returncode, out, err)
             return VerificationResult(
                 ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "external:cvc5", "rc": proc.returncode}
             )
         except Exception as e:
+            if os.getenv("PROOF_VERIFY_DEBUG") == "1":
+                logging.getLogger(__name__).exception("LFSC external verifier error: %s", e)
             return VerificationResult(
                 ok=False, proof_hash=_sha256_hex(data), details={"verifier": f"external:cvc5:error:{e}"}
             )
@@ -67,6 +77,9 @@ def verify_drat(text: str) -> VerificationResult:
     cmd = os.getenv("DRAT_CHECK_CMD")
     if cmd:
         try:
+            debug = os.getenv("PROOF_VERIFY_DEBUG") == "1"
+            if debug:
+                logging.getLogger(__name__).debug("DRAT verify: running %s", cmd)
             proc = subprocess.run(
                 cmd.split(),
                 input=data,
@@ -75,10 +88,16 @@ def verify_drat(text: str) -> VerificationResult:
                 check=False,
             )
             ok = proc.returncode == 0
+            if debug:
+                out = (proc.stdout or b"").decode("utf-8", errors="ignore")[:200]
+                err = (proc.stderr or b"").decode("utf-8", errors="ignore")[:200]
+                logging.getLogger(__name__).debug("DRAT verify rc=%s out='%s' err='%s'", proc.returncode, out, err)
             return VerificationResult(
                 ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "external:drat", "rc": proc.returncode}
             )
         except Exception as e:
+            if os.getenv("PROOF_VERIFY_DEBUG") == "1":
+                logging.getLogger(__name__).exception("DRAT external verifier error: %s", e)
             return VerificationResult(
                 ok=False, proof_hash=_sha256_hex(data), details={"verifier": f"external:drat:error:{e}"}
             )

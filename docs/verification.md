@@ -23,6 +23,8 @@ When these are set, the service will:
 
 If the commands are not set, the system uses a safe heuristic fallback (format signatures). Fallback may be looser; for enforcement, prefer real verifiers.
 
+Debug logging (optional): set `PROOF_VERIFY_DEBUG=1` to emit short logs with verifier rc/stdout/stderr (first 200 chars). This is useful during integration and is disabled by default.
+
 ## Mocks (DEV/Tests)
 
 To simulate outcomes without external tools, use `PROOF_VERIFIER_MOCK`:
@@ -74,4 +76,3 @@ $env:PROOF_VERIFY_TIMEOUT_SECS = "15"
   - Inspect logs and return codes; ensure inputs (LFSC/DRAT) are formatted for the given tool.
 - ABSTAIN decisions:
   - Per Manifest v1.7, ProofGate prefers fail‑closed; ensure policy prerequisites (sources/derivations/repro/counsel) are met and verification passes.
-
