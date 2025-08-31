@@ -19,3 +19,7 @@ certeus_proof_verification_failed_total = Counter(
     "certeus_proof_verification_failed_total", "Proof verification failures"
 )
 certeus_source_fetch_errors_total = Counter("certeus_source_fetch_errors_total", "Source retrieval/digest errors")
+
+# Gauge for missing digests (alias for SLO Gate input). Kept at 0 unless
+# validation flows explicitly set it.
+certeus_sources_digest_missing = Gauge("certeus_sources_digest_missing", "Count of sources missing required digests")
