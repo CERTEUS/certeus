@@ -31,11 +31,26 @@
     },
     {
       "type": "graph",
+      "title": "HTTP p95 latency (ms) by status",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, status))" }
+      ],
+      "legend": { "show": true }
+    },
+    {
+      "type": "graph",
       "title": "HTTP RPS by path/method/status",
       "targets": [
         { "expr": "sum(rate(certeus_http_request_duration_ms_count[5m])) by (path, method, status)" }
       ],
       "legend": { "show": true }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP 5xx rate (req/s)",
+      "targets": [
+        { "expr": "sum(rate(certeus_http_request_duration_ms_count{status=~\"5..\"}[5m]))" }
+      ]
     }
   ],
   "schemaVersion": 36

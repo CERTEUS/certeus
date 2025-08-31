@@ -45,3 +45,14 @@
 
 Grafana login (DEV): user `admin`, password `admin` (anonymous access also enabled).
 
+## Reading the SLO Dashboard
+
+- Abstain Rate: current fraction of ABSTAIN decisions (`certeus_abstain_rate`). Sustained increase suggests policy/verifier or data issues.
+- Compile/Verification p95 (ms): 95th percentile for proof compile/verification durations — budget and latency SLO proxy.
+- Proof Verification Failures (rate): near‑real‑time failure rate; any value > 0 should page according to Alert rules.
+- Source Fetch Errors (rate): link rot/cache issues; watch for spikes.
+- HTTP p95 latency (ms) by path/method: service latency per route; track regressions.
+- HTTP p95 latency (ms) by status: isolates high latency per status class (useful for 4xx/5xx hotspots).
+- HTTP RPS by path/method/status: throughput and error mix across routes.
+- HTTP 5xx rate (req/s): global failure rate; must be ≈ 0.
+
