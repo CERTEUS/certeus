@@ -1,0 +1,8 @@
+# CERTEUS – Raport analityczny / Analytical Report
+Case: pl-286kk-0001
+
+=== ANALIZA / ANALYSIS ===
+{
+  "model": "[x=True]",
+  "status": "sat"
+}
