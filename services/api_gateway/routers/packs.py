@@ -31,5 +31,5 @@ async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
         pack = load_pack(req.pack)
         result = pack.handle(req.kind, dict(req.payload or {}))
         return {"ok": True, "result": result}
-    except Exception as e:  # nosec
+    except Exception as e:  # nosec - błąd pakietu mapujemy na 400
         raise HTTPException(status_code=400, detail=f"pack handle error: {e}") from e
