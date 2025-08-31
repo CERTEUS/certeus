@@ -26,7 +26,7 @@
 
 ## 0) RFC2119 – słowa mocy
 
-**MUST/SHALL** = bezwzględnie wymagane; **SHOULD** = zalecane (odchylenie wymaga uzasadnienia); **MAY** = opcjonalne.
+**MUST/SHALL** = bezwzględnie Wymagane; **SHOULD** = zalecane (odchylenie wymaga uzasadnienia); **MAY** = opcjonalne.
 
 ---
 
@@ -105,8 +105,8 @@ Pełny JSON Schema — **Aneks B**.
 
 - **Digest (MUST):** każda ustawa, rozporządzenie, orzeczenie, komentarz — `digest = SHA256|Blake3` + `retrieved_at`.
 - **Cache (MUST):** lokalny cache `storage/law/{digest}`; publikacja bez PII i bez ograniczeń licencyjnych.
-- **Zakaz (MUST):** brak „gołych linków” w ProofBundle (linki tylko jako metadane dodatkowe).
-- **Wersjonowanie (SHOULD):** mapowanie `Dz.U./LEX/curia` → digest + zakres obowiązywania w czasie.
+- **Zakaz (MUST):** brak „gołych linków” w ProofBundle (linki tylko jako metadane DoDatkowe).
+- **wersjonowanie (SHOULD):** mapowanie `Dz.U./LEX/curia` → digest + zakres obowiązywania w czasie.
 
 ---
 
@@ -183,7 +183,7 @@ Pełny JSON Schema — **Aneks B**.
 
 ## 15) Release & wersjonowanie
 
-- **Immutable**: każda zmiana = nowa wersja manifestu i schematów.
+- **Immutable**: każda zmiana = nowa Wersja manifestu i schematów.
 - **Tagi:** `vX.Y` + hash; CHANGELOG z odnośnikiem do Merkle‑root.
 
 ---
@@ -393,3 +393,4 @@ gate_decision:
     else_if_any_alert_critical: "ABSTAIN"
     else: "CONDITIONAL"
 ```
+

@@ -495,6 +495,7 @@ Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/re
 - Operations runbook: `docs/runbooks/operations.md`
 - Key management (ENV/Vault): `docs/security/key_management.md`
 - Proof verification: `docs/verification.md`
+- DoD checklist: `docs/DoD_checklist.md`
 - Prometheus recording rules: `observability/prometheus/recording_rules.yml`
 - Grafana SLO dashboard: `observability/grafana/certeus-slo-dashboard.json`
 - Supply-chain CI: `.github/workflows/supply-chain.yml`
