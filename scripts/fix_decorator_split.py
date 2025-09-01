@@ -21,8 +21,8 @@ target (class/def). Also removes stray mid-file shebang lines.
 
 from __future__ import annotations
 
-from pathlib import Path
 import argparse
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIR_CONTAINS = (
@@ -40,12 +40,10 @@ SKIP_DIR_CONTAINS = (
 def fix_file(p: Path, *, check_only: bool = False) -> bool:
     text = p.read_text(encoding="utf-8", errors="ignore")
     lines = text.splitlines(keepends=True)
-    n = len(lines)
     out: list[str] = []
     changed = False
 
-    # Track first non-empty/non-comment to allow shebang only at very top
-    seen_code_or_doc = False
+    # (we only ensure no mid-file shebangs; top-only allowed)
 
     for _i, line in enumerate(lines):
         stripped = line.lstrip()
