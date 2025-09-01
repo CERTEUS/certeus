@@ -90,7 +90,7 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 ```
 python -m venv .venv && source .venv/bin/activate
 source ./scripts/dev_env.sh
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
 python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # in another terminal
 curl -s http://127.0.0.1:8000/health
@@ -101,7 +101,7 @@ curl -s http://127.0.0.1:8000/health
 py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
 $py = ".\\.venv\\Scripts\\python.exe"
 . .\\scripts\\dev_env.ps1
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
 & $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # in another terminal
 curl.exe -s http://127.0.0.1:8000/health
@@ -112,7 +112,7 @@ curl.exe -s http://127.0.0.1:8000/health
 ```
 python -m venv .venv && source .venv/bin/activate
 source ./scripts/dev_env.sh
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
 python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # w drugim oknie
 curl -s http://127.0.0.1:8000/health
@@ -123,7 +123,7 @@ curl -s http://127.0.0.1:8000/health
 py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
 $py = ".\\.venv\\Scripts\\python.exe"
 . .\\scripts\\dev_env.ps1
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
 & $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # w drugim oknie
 curl.exe -s http://127.0.0.1:8000/health
@@ -142,7 +142,7 @@ export CER_BASE="http://localhost:8000"
 # Linux/macOS (Python 3.11)
 python -m venv .venv && source .venv/bin/activate
 source ./scripts/dev_env.sh
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
 python -m ruff check . --fix && python -m ruff format .
 python -m pytest -q
 
@@ -158,7 +158,7 @@ python -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
 $py = ".\.venv\Scripts\python.exe"
 . .\\scripts\\dev_env.ps1
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
 & $py -m ruff check . --fix; & $py -m ruff format .
 & $py -m pytest -q --junitxml="reports\junit.xml"
 
@@ -537,4 +537,24 @@ MIT © 2025 CERTEUS Contributors
 
 
 
+---
 
+## CI — Required Checks & Branch Protection
+
+- Required checks: Smoke (ubuntu-latest) and Smoke (windows-latest).
+- Branch protection is configured by the workflow “Enforce Branch Protection (Smoke Required)”.
+- Repo secret required: `ADMIN_TOKEN` (GitHub PAT with Administration Read/Write for this repo).
+  - Add in: Settings → Secrets and variables → Actions → New repository secret.
+  - Token format: fine‑grained `github_pat_...` (recommended) or classic `ghp_...`.
+
+## CI Status Mirror (API-free)
+
+- Workflow `ci-gates` mirrors the latest status to branch `ci-status` as `ci/status.json`.
+- Read it locally:
+  - `git fetch origin ci-status`
+  - `git show origin/ci-status:ci/status.json`
+
+## OpenAPI Notes
+
+- Source of truth: `docs/openapi/certeus.v1.yaml` (used by Pages workflow to publish JSON).
+- To inspect runtime JSON locally: `curl -s http://127.0.0.1:8000/openapi.json -o out/openapi.json`.
