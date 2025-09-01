@@ -66,19 +66,18 @@ jobs:
               git rm -rf . || true
             fi
             mkdir -p ci
-            cat > ci/status.json <<'JSON'
-            {
-              "repo": "${{ github.repository }}",
-              "workflow": "${{ github.workflow }}",
-              "run_id": "${{ github.run_id }}",
-              "run_number": "${{ github.run_number }}",
-              "event": "${{ github.event_name }}",
-              "branch": "${{ github.ref_name }}",
-              "sha": "${{ github.sha }}",
-              "status": "${{ job.status }}",
-              "updated_at": "$(date -u +%FT%TZ)"
-            }
-            JSON
+            ts="$(date -u +%FT%TZ)"
+            printf '%s\n' '{' \
+              "  \"repo\": \"${{ github.repository }}\"," \
+              "  \"workflow\": \"${{ github.workflow }}\"," \
+              "  \"run_id\": \"${{ github.run_id }}\"," \
+              "  \"run_number\": \"${{ github.run_number }}\"," \
+              "  \"event\": \"${{ github.event_name }}\"," \
+              "  \"branch\": \"${{ github.ref_name }}\"," \
+              "  \"sha\": \"${{ github.sha }}\"," \
+              "  \"status\": \"${{ job.status }}\"," \
+              "  \"updated_at\": \"${ts}\"" \
+            '}' > ci/status.json
             git add ci/status.json
             git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
             if git push origin ci-status; then
