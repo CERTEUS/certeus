@@ -9,6 +9,10 @@
 [![Gauge-Gate](https://github.com/CERTEUS/certeus/actions/workflows/gauge_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/gauge_gate.yml)
 [![Path-Coverage-Gate](https://github.com/CERTEUS/certeus/actions/workflows/path_coverage_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/path_coverage_gate.yml)
 [![Boundary-Rebuild-Gate](https://github.com/CERTEUS/certeus/actions/workflows/boundary_rebuild_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/boundary_rebuild_gate.yml)
+<<<<<<< HEAD
+=======
+[![Security Policy](https://img.shields.io/badge/security-policy-blue)](https://github.com/CERTEUS/certeus/security/policy)
+>>>>>>> chore/templates-codeowners-openapi
 [![SemVer](https://img.shields.io/badge/semver-1.x-blue)](#versioning-deprecation-support)
 [![SLSA](https://img.shields.io/badge/slsa-3%2B-8A2BE2)](https://slsa.dev)
 [![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
