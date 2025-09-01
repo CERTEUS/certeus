@@ -208,81 +208,58 @@ else
 fi
 
 # Health payload shape
-if curl -s http://127.0.0.1:8000/health | ./.venv/bin/python - << 'PY'
-import sys,json
-j=json.load(sys.stdin)
-assert j.get('status')=='ok' and isinstance(j.get('version'),str) and j['version']
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s http://127.0.0.1:8000/health | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); assert j.get("status")=="ok" and isinstance(j.get("version"),str) and j["version"]; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
 # JWKS payload shape
-if curl -s http://127.0.0.1:8000/.well-known/jwks.json | ./.venv/bin/python - << 'PY'
-import sys,json
-j=json.load(sys.stdin)
-ks=j.get('keys') or []
-assert ks and ks[0].get('kty')=='OKP' and ks[0].get('crv')=='Ed25519' and isinstance(ks[0].get('x'),str)
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s http://127.0.0.1:8000/.well-known/jwks.json | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); ks=j.get("keys") or []; assert ks and ks[0].get("kty")=="OKP" and ks[0].get("crv")=="Ed25519" and isinstance(ks[0].get("x"),str); print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
 # FIN measure payload shape
-if curl -s -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' http://127.0.0.1:8000/v1/fin/alpha/measure | ./.venv/bin/python - << 'PY'
-import sys,json
-j=json.load(sys.stdin)
-assert isinstance(j.get('outcome'),str) and isinstance(j.get('p'),(int,float))
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' http://127.0.0.1:8000/v1/fin/alpha/measure | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); assert isinstance(j.get("outcome"),str) and isinstance(j.get("p"),(int,float)); print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
 # QTMP regressions
-if curl -s -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case | ./.venv/bin/python - << 'PY'
-import sys,json,math
-j=json.load(sys.stdin)
-pd=j.get('predistribution') or []
-s=sum(float(it.get('p',0)) for it in pd)
-assert len(pd)==3 and abs(s-1.0)<=1e-3
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case | ./.venv/bin/python -c 'import sys,json,math; j=json.load(sys.stdin); pd=j.get("predistribution") or []; s=sum(float(it.get("p",0)) for it in pd); assert len(pd)==3 and abs(s-1.0)<=1e-3; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
-if curl -s -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure | ./.venv/bin/python - << 'PY'
-import sys,json
-j=json.load(sys.stdin)
-assert j.get('verdict') in ['ALLOW','DENY','ABSTAIN']
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); assert j.get("verdict") in ["ALLOW","DENY","ABSTAIN"]; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
-if curl -s -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator | ./.venv/bin/python - << 'PY'
-import sys,json
-j=json.load(sys.stdin)
-assert float(j.get('value',-1))==1.0
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); assert float(j.get("value",-1))==1.0; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
 # PCO public rid equals requested rid
-if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
-import sys,json
-j=json.load(sys.stdin)
-assert j.get('rid')=='RID-SMOKE-1'
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); assert j.get("rid")=="RID-SMOKE-1"; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 
 # PCO signature b64url and ledger merkle_root hex
-if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
-import sys,json,re
-j=json.load(sys.stdin)
-sig=j.get('signature') or ''
-ok=re.match(r'^[A-Za-z0-9_-]+$', sig) and ('=' not in sig)
-root=((j.get('ledger') or {}).get('merkle_root') or '')
-ok = ok and (len(root)==64 and re.match(r'^[0-9a-f]+$', root))
-assert ok
-print('ok')
-PY
-then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
+if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python -c 'import sys,json,re; j=json.load(sys.stdin); sig=j.get("signature") or ""; ok=bool(re.match(r"^[A-Za-z0-9_-]+$", sig)) and ("=" not in sig); root=((j.get("ledger") or {}).get("merkle_root") or ""); ok = ok and (len(root)==64 and bool(re.match(r"^[0-9a-f]+$", root))); assert ok; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
 THRESH="${SLO_MAX_P95_MS:-}"
 if [[ -n "$THRESH" && "$P95_MS" != "n/a" ]]; then
   awk -v p95="$P95_MS" -v thr="$THRESH" 'BEGIN { if (p95+0 > thr+0) { exit 1 } else { exit 0 } }'

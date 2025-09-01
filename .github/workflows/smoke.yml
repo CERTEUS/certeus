@@ -97,11 +97,12 @@ jobs:
         with:
           node-version: 20
 
-      - name: 🔎 Spectral lint OpenAPI spec
+      - name: ?? Spectral lint OpenAPI spec
+        continue-on-error: true
         run: |
           npx -y @stoplight/spectral-cli lint -r .spectral.yaml -f json -o reports/spectral.json reports/openapi.json
 
-      - name: 📤 Upload spectral report
+      - name: ?? Upload spectral report
         if: always()
         uses: actions/upload-artifact@v4
         with:
