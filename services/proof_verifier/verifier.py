@@ -24,18 +24,22 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import hashlib
+
 import logging
+
 import os
+
 import re
+
 import subprocess
+
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
-@dataclass
 class VerificationResult:
     ok: bool
 
@@ -43,8 +47,15 @@ class VerificationResult:
 
     details: dict[str, Any]
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+@dataclass
+
+
 
 
 _LFSC_HEADER_RE = re.compile(r"\(\s*lfsc\b", re.IGNORECASE)
@@ -167,6 +178,8 @@ def verify_drat(text: str) -> VerificationResult:
     return VerificationResult(ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:drat-check"})
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

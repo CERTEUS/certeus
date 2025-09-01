@@ -28,16 +28,18 @@ EN: CERTEUS system module.
 from __future__ import annotations
 
 from pathlib import Path
+
 from typing import Any
 
 from fastapi import FastAPI
+
 from pydantic import BaseModel, Field
 
 from kernel.truth_engine import DualCoreVerifier
+
 from services.exporter_service.exporter import ExporterService
 
 # === KONFIGURACJA / CONFIGURATION ===
-
 
 # === MODELE / MODELS ===
 class SimpleFact(BaseModel):
@@ -50,7 +52,6 @@ class SimpleFact(BaseModel):
     export: bool = Field(False, description="Export report file after solve")
 
     force_mismatch: bool = Field(False, description="Flip Core-2 to trigger mismatch protocol (testing)")
-
 
 class SolveResponse(BaseModel):
     status: str
@@ -65,8 +66,18 @@ class SolveResponse(BaseModel):
 
     version: str | None = None
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
+
+
 
 
 #!/usr/bin/env python3
@@ -141,6 +152,8 @@ def e2e_solve(payload: SimpleFact) -> SolveResponse:
     )
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

@@ -28,12 +28,12 @@ EN: SMT translator and related logic.
 from __future__ import annotations
 
 from collections.abc import Mapping
+
 from typing import Any, Literal, TypedDict, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
 
 # === KONFIGURACJA / CONFIGURATION ===
-
 
 # === MODELE / MODELS ===
 class VarNode(TypedDict):
@@ -41,14 +41,12 @@ class VarNode(TypedDict):
 
     name: str
 
-
 class UnaryNode(TypedDict):
     kind: Literal["unary"]
 
     op: Literal["NOT"]
 
     arg: Any
-
 
 class BinaryNode(TypedDict):
     kind: Literal["binary"]
@@ -59,7 +57,6 @@ class BinaryNode(TypedDict):
 
     right: Any
 
-
 class NaryNode(TypedDict):
     kind: Literal["nary"]
 
@@ -67,8 +64,21 @@ class NaryNode(TypedDict):
 
     args: list[Any]
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 _Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
@@ -241,6 +251,8 @@ __all__ = [
 ]
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/check_premium_style.py                      |
+# | ROLE: Project module.                                       |
+# | PLIK: scripts/check_premium_style.py                      |
+# | ROLA: Moduł projektu.                                       |
+# +-------------------------------------------------------------+
+
 """
 CI Gate: Premium Code Style (sec. 21)
 

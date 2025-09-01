@@ -32,6 +32,12 @@ EN: Package for the legal acts indexing service (SIPP Indexer).
 # === LOGIKA / LOGIC ===
 
 
+
+
+
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

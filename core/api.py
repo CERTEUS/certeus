@@ -25,7 +25,6 @@ EN: CERTEUS core API: high-level interfaces.
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
 class PluginAPI:
     def __init__(self):
@@ -56,8 +55,13 @@ class PluginAPI:
     def register_exporter(self, key: str, fn):
         self.exporters[key] = fn
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
 
 
 # +-------------------------------------------------------------+
@@ -84,6 +88,8 @@ class PluginAPI:
 # +-------------------------------------------------------------+
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

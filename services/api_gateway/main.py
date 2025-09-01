@@ -28,38 +28,67 @@ EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+
 import os
+
 from pathlib import Path
 
 from fastapi import FastAPI, UploadFile
+
 from fastapi.middleware.cors import CORSMiddleware
+
 from fastapi.responses import RedirectResponse
+
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
+
 from monitoring.metrics_slo import certeus_http_request_duration_ms
+
 import services.api_gateway.routers.cfe as cfe
+
 import services.api_gateway.routers.chatops as chatops
+
 import services.api_gateway.routers.devices as devices
+
 import services.api_gateway.routers.dr as dr
+
 import services.api_gateway.routers.ethics as ethics
+
 import services.api_gateway.routers.export as export
+
 import services.api_gateway.routers.fin as fin
+
 import services.api_gateway.routers.ledger as ledger
+
 import services.api_gateway.routers.lexqft as lexqft
+
 import services.api_gateway.routers.mailops as mailops
+
 import services.api_gateway.routers.metrics as metrics
+
 import services.api_gateway.routers.mismatch as mismatch
+
 import services.api_gateway.routers.packs as packs
+
 import services.api_gateway.routers.pco_public as pco_public
+
 import services.api_gateway.routers.preview as preview
+
 import services.api_gateway.routers.qtm as qtm
+
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
+
 import services.api_gateway.routers.upn as upn
+
 import services.api_gateway.routers.verify as verify
+
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
+
 from services.api_gateway.security import attach_proof_only_middleware
+
 from services.ingest_service.adapters.contracts import Blob
+
 from services.ingest_service.adapters.registry import get_llm, get_preview
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -68,6 +97,13 @@ APP_TITLE = "CERTEUS API Gateway"
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -289,6 +325,8 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
     return response
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

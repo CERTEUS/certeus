@@ -31,6 +31,10 @@ from services.sipp_indexer_service.index_isap import snapshot_pl
 # === LOGIKA / LOGIC ===
 
 
+
+
+
+
 # +-------------------------------------------------------------+
 
 
@@ -63,6 +67,8 @@ def register(api):
     api.register_adapter("isap.pl.snapshot", snapshot_pl)
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

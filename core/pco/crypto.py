@@ -25,9 +25,13 @@ EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
 from __future__ import annotations
 
 import base64
+
 import hashlib
+
 import json
+
 import os
+
 from typing import Any
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
@@ -40,6 +44,12 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
 
 
 #!/usr/bin/env python3
@@ -249,6 +259,8 @@ def load_pubkey_bytes_from_env() -> bytes:
     )
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

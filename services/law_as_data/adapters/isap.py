@@ -24,15 +24,14 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import re
 
 from ..cache import FileCache, cache_from_uri
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
-@dataclass
 class LawDocument:
     uri: str
 
@@ -42,8 +41,16 @@ class LawDocument:
 
     title: str | None = None
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+@dataclass
+
+
 
 
 _TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
@@ -73,6 +80,8 @@ def fetch_and_cache_isap(uri: str, cache: FileCache | None = None) -> LawDocumen
     return LawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

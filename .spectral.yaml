@@ -21,6 +21,24 @@ rules:
   operation-2xx-response:
     severity: error
 
+  # Require a short summary for each operation
+  operation-summary-required:
+    description: Each operation SHOULD define a short summary
+    given: $.paths[*][*]
+    then:
+      field: summary
+      function: truthy
+    severity: error
+
+  # Require at least one tag per operation for grouping
+  operation-tags-required:
+    description: Each operation MUST have at least one tag
+    given: $.paths[*][*]
+    then:
+      field: tags
+      function: truthy
+    severity: error
+
   # Helpful, but not blocking: valid response codes
   oas3-valid-response-status-codes:
     severity: warn

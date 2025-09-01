@@ -27,13 +27,14 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
+
 from pydantic import BaseModel
 
 from packs_core.loader import discover, load as load_pack
+
 from services.api_gateway.limits import enforce_limits
 
 # === KONFIGURACJA / CONFIGURATION ===
-
 
 # === MODELE / MODELS ===
 class HandleRequest(BaseModel):
@@ -43,8 +44,16 @@ class HandleRequest(BaseModel):
 
     payload: dict[str, Any] | None = None
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
 
 
 #!/usr/bin/env python3
@@ -75,6 +84,8 @@ async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=400, detail=f"pack handle error: {e}") from e
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

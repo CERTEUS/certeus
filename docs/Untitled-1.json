@@ -1,0 +1,12 @@
+{
+    "keys": [
+        {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "kid": "counsel-key-1",
+            "use": "sig",
+            "alg": "EdDSA",
+            "x": "REPLACE_ME_BASE64URL"
+        }
+    ]
+}

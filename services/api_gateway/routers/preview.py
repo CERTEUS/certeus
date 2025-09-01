@@ -21,11 +21,15 @@
 from __future__ import annotations
 
 from pathlib import Path
+
 import shutil
+
 from typing import Annotated
+
 import uuid
 
 from fastapi import APIRouter, File, UploadFile
+
 from fastapi.responses import JSONResponse
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -33,6 +37,12 @@ from fastapi.responses import JSONResponse
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
 
 
 STATIC_PREV = Path("static/previews")
@@ -72,6 +82,8 @@ async def preview(file: Annotated[UploadFile, File(...)]) -> JSONResponse:
     return JSONResponse({"url": f"/static/previews/{safe_name}"})
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

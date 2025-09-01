@@ -25,10 +25,15 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from hashlib import sha256
+
 import os
+
 import random
+
 import string
+
 import sys
+
 import time
 
 import requests
@@ -38,6 +43,12 @@ import requests
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
 
 
 BASE = os.getenv("CER_BASE", "http://127.0.0.1:8000").rstrip("/")
@@ -148,6 +159,8 @@ if __name__ == "__main__":
     sys.exit(main())
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

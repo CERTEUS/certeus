@@ -30,6 +30,10 @@ EN: CERTEUS project module (generic description).
 # === LOGIKA / LOGIC ===
 
 
+
+
+
+
 # +-------------------------------------------------------------+
 
 
@@ -62,6 +66,8 @@ if __name__ == "__main__":
     main()
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

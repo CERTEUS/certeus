@@ -61,13 +61,14 @@ Style compliance:
 from __future__ import annotations
 
 from datetime import date
+
 from enum import Enum
+
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
-
 
 # === MODELE / MODELS ===
 class FactRole(str, Enum):
@@ -86,7 +87,6 @@ class FactRole(str, Enum):
     # PL: dowód wpłaty / EN: proof of payment
 
     evidence_payment = "evidence_payment"
-
 
 class Fact(BaseModel):
     """
@@ -183,8 +183,17 @@ class Fact(BaseModel):
         description=("PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0]."),
     )
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
+
 
 
 # [BLOCK: IMPORTS / IMPORTY]
@@ -196,6 +205,8 @@ class Fact(BaseModel):
 # [BLOCK: MODELS / MODELE]
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+
