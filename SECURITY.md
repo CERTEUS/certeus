@@ -4,7 +4,7 @@ Zależy nam na bezpieczeństwie użytkowników i danych. Poniżej zasady, wymaga
 
 ### Zgłaszanie podatności
 
-- Kontakt: security@twojadomena (PGP mile widziane).
+- Kontakt: skarzyckiradoslaw@gmail.com (PGP mile widziane).
 - Responsible disclosure: prosimy o niepublikowanie 0‑day; standardowe okno na naprawę to 90 dni (lub szybciej dla krytycznych).
 - Do zgłoszenia dołącz: wersja/commit SHA, minimalny reproduktor, logi, PCO/artefakty (jeśli dotyczy), kontekst środowiska.
 
@@ -41,3 +41,4 @@ Zależy nam na bezpieczeństwie użytkowników i danych. Poniżej zasady, wymaga
 ### Incydenty
 
 - Zgłaszaj niezwłocznie; dołącz logi/artefakty (PCO), zrzuty czasowe (Boundary snapshot). Triage wg powagi (p1/p2/p3) i publikacja poprawek/porad.
+
