@@ -6,7 +6,9 @@
 
 # └──────────────────────────────────────────────────────────────┘
 
-# **Manifest Jednolity v1.7 (Immutable)**
+# **Manifest Jednolity v1.7 (R&D / DRAFT)**
+
+> Uwaga: dokument badawczy. Źródłem prawdy pozostaje `docs/manifest.md` (v1.5 Immutable).
 
 **Opis (PL):** Kanoniczny manifest systemu CERTEUS, gotowy „pod ukończenie”. Zawiera normy (MUST/SHOULD), kontrakt publikacji (PCO), schemat **ProofBundle v0.2**, progi **SLO‑Gate**, zasady **Law‑as‑Data**, redakcję PII, zgodność **AI Act/RODO**, reprodukowalność, bezpieczeństwo, API i Definition of Done.  
 **Description (EN):** Canonical CERTEUS manifest, release‑ready. Includes RFC2119 terms, PCO publication contract, **ProofBundle v0.2** schema, **SLO‑Gate** thresholds, **Law‑as‑Data** rules, PII redaction, **AI Act/GDPR** compliance, reproducibility, security, APIs, and Definition of Done.

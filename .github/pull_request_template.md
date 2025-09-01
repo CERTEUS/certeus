@@ -1,22 +1,24 @@
-## Zmiana
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/PULL_REQUEST_TEMPLATE.md                     |
+# | ROLE: Project Markdown.                                      |
+# | PLIK: .github/PULL_REQUEST_TEMPLATE.md                     |
+# | ROLA: Dokument Markdown.                                      |
+# +-------------------------------------------------------------+
 
-- [ ] feature
-- [ ] fix
-- [ ] docs
-- [ ] refactor
-- [ ] perf
-- [ ] chore
+## Opis zmian / Summary
 
-## Zakres
+- [ ] Krótki opis co i dlaczego
 
-Krótko: co, po co, ryzyka.
+## Checklist (CI Gates / Proof-Only)
 
-## Bramki jakości
+- [ ] Gauge-Gate (holonomy) zielony
+- [ ] Path-Coverage-Gate (γ ≥ 0.90, uncaptured ≤ 0.05) zielony
+- [ ] Boundary-Rebuild-Gate (delta_bits == 0) zielony
+- [ ] Proof-Only I/O: publikowalne wyniki zawierają PCO
 
-- [ ] Testy zielone (unit/integration/e2e)
-- [ ] Linty/typy/security OK
-- [ ] Gauge-Gate: ≤ 1e-3 (jeśli dotyczy)
-- [ ] Path-Coverage: ≥ 0.90 (jeśli dotyczy)
-- [ ] Boundary delta_bits == 0 (raport, jeśli dotyczy)
-- [ ] SBOM + in-toto + cosign (jeśli dotyczy)
-- [ ] Zmiany w API odzwierciedlone w `docs/openapi/certeus.v1.yaml`
+## Dodatkowo
+
+- [ ] Lint (ruff) i testy (pytest) zielone
+- [ ] Premium Style (sec.21) OK (banery/docstringi/sekcje)

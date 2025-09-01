@@ -1,4 +1,6 @@
-# CERTEUS — Manifest Jednolity **v1.5 (Immutable)**
+# CERTEUS - Manifest Jednolity **v1.5 (Immutable)**
+
+> Źródło prawdy (production). Wersje robocze: zob. `docs/manifest_v1_7.md` (R&D/DRAFT).
 
 **Motto:** _Dowód, nie opinia._
 **Teza:** rdzeń _niezmienialny_, wszystko inne – _wtyczki_ i _polityki_.
