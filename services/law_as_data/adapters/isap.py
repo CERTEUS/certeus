@@ -32,6 +32,7 @@ from ..cache import FileCache, cache_from_uri
 
 
 # === MODELE / MODELS ===
+@dataclass
 class LawDocument:
     uri: str
 
@@ -48,7 +49,6 @@ class LawDocument:
 _TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
-@dataclass
 def extract_title(html_bytes: bytes) -> str | None:
     try:
         m = _TITLE_RE.search(html_bytes.decode("utf-8", errors="ignore"))

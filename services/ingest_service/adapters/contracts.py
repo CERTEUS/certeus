@@ -82,18 +82,23 @@ PL: Kontrakty adapterów i lekkie DTO (Preview/OCR/Drive/LLM) używane przez API
 EN: Adapter contracts and lightweight DTOs (Preview/OCR/Drive/LLM) used by the API.
 
 """
-
 # === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal, Protocol
 
-# === KONFIGURACJA / CONFIGURATION ===
+# ----------------------------- Common DTOs ----------------------------------
 
 
-# === MODELE / MODELS ===
+@dataclass(slots=True)
 class Blob:
     """
 
@@ -110,6 +115,7 @@ class Blob:
     data: bytes
 
 
+@dataclass(slots=True)
 class PreviewRequest:
     """
 
@@ -128,6 +134,7 @@ class PreviewRequest:
     deterministic: bool = True
 
 
+@dataclass
 class PreviewResult:
     """
 
@@ -148,6 +155,7 @@ class PreviewResult:
     meta: Mapping[str, Any] = field(default_factory=dict)
 
 
+@dataclass
 class OCRPage:
     """
 
@@ -168,6 +176,7 @@ class OCRPage:
     meta: Mapping[str, Any] = field(default_factory=dict)
 
 
+@dataclass
 class OCRRequest:
     """
 
@@ -188,6 +197,7 @@ class OCRRequest:
     case_id: str | None = None
 
 
+@dataclass
 class DriveSaveResult:
     """
 
@@ -208,6 +218,7 @@ class DriveSaveResult:
     meta: Mapping[str, Any] = field(default_factory=dict)
 
 
+@dataclass
 class Attachment:
     """
 
@@ -226,6 +237,7 @@ class Attachment:
     content_type: str | None = None
 
 
+@dataclass
 class LLMRequest:
     """
 
@@ -248,6 +260,7 @@ class LLMRequest:
     max_tokens: int | None = None
 
 
+@dataclass
 class LLMResponse:
     """
 
@@ -445,28 +458,6 @@ class LLMAdapter(Protocol):
 
 
 # === LOGIKA / LOGIC ===
-
-
-# ----------------------------- Common DTOs ----------------------------------
-
-
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-@dataclass(slots=True)
-
-# ------------------------------- Errors -------------------------------------
-
-
-# ------------------------------ Interfaces ----------------------------------
-
-
-# ----------------------------- Helper Contracts -----------------------------
 
 
 def infer_extension(content_type: str, fallback: str = ".bin") -> str:

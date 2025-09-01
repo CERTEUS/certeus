@@ -67,12 +67,12 @@ def is_model_class(node: ast.ClassDef) -> bool:
 
 def _is_simple_literal(value: ast.AST) -> bool:
     """Return True for literals/containers only (no Calls/Names), safe for CONFIG."""
-    if isinstance(value, (ast.Constant)):
+    if isinstance(value, ast.Constant):
         return True
-    if isinstance(value, (ast.Dict, ast.List, ast.Tuple, ast.Set)):
+    if isinstance(value, ast.Dict | ast.List | ast.Tuple | ast.Set):
         # ensure children are simple as well
         for child in ast.walk(value):
-            if isinstance(child, (ast.Call, ast.Lambda, ast.Name, ast.Attribute)):
+            if isinstance(child, ast.Call | ast.Lambda | ast.Name | ast.Attribute):
                 return False
         return True
     return False

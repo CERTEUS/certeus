@@ -37,6 +37,7 @@ from monitoring.metrics_slo import certeus_source_fetch_errors_total
 
 
 # === MODELE / MODELS ===
+@dataclass
 class CachedSource:
     uri: str
 
@@ -109,7 +110,6 @@ def compute_digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-@dataclass
 def _fetch_uri(uri: str) -> bytes:
     try:
         with urllib.request.urlopen(uri) as resp:  # nosec - trusted adapter path only

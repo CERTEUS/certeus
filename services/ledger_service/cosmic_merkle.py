@@ -37,6 +37,7 @@ from threading import RLock
 
 
 # === MODELE / MODELS ===
+@dataclass(frozen=True)
 class MerklePathElem:
     """One step in a Merkle proof path."""
 
@@ -45,6 +46,7 @@ class MerklePathElem:
     position: str  # "L" or "R" (informative; verification uses canonical order)
 
 
+@dataclass(frozen=True)
 class MerkleReceipt:
     """Proof that a leaf is included under a Merkle root."""
 
@@ -197,15 +199,6 @@ class CosmicMerkle:
 _LEDGER = CosmicMerkle()
 
 
-#!/usr/bin/env python3
-
-
-# --- blok --- Importy ----------------------------------------------------------
-
-
-# --- blok --- Pomocnicze funkcje hashujące ------------------------------------
-
-
 def _h(x: str, y: str) -> str:
     """Hash two hex nodes (order-independent canonicalization)."""
 
@@ -222,18 +215,6 @@ def _hh(x: bytes) -> str:
     """Hash raw bytes to hex."""
 
     return sha256(x).hexdigest()
-
-
-# --- blok --- Struktury danych -------------------------------------------------
-
-
-@dataclass(frozen=True)
-@dataclass(frozen=True)
-
-# --- blok --- Rdzeń drzewa Merkle ----------------------------------------------
-
-
-# --- blok --- Facade (poziom modułu) -------------------------------------------
 
 
 def anchor_bundle(rid_hash: str, bundle_hash: str) -> MerkleReceipt:

@@ -22,7 +22,6 @@ CERTEUS LEXLOG Parser - Production Implementation
 
 
 This module provides a comprehensive parser for LEXLOG legal logic files,
-
 supporting both structural AST generation and legacy stub compatibility.
 
 
@@ -40,7 +39,6 @@ Key Components:
 Polish/English bilingual documentation maintained throughout.
 
 """
-
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
@@ -60,9 +58,10 @@ _CANONICAL_ID_MAP: dict[str, str] = {
     "P_CEL_OSIAGNIECIA_KORZYSCI_MAJATKOWEJ": "P_CEL",
     "P_NIEKORZYSTNE_ROZPORZADZENIE_MIENIEM": "P_ROZPORZADZENIE",
 }
-
+logger = logging.getLogger(__name__)
 
 # === MODELE / MODELS ===
+@dataclass
 class Define:
     """
 
@@ -78,7 +77,7 @@ class Define:
 
 
 
-    PL: Definicja zmiennej w LEXLOG z opcjonalnym typem.
+    PL: Definicja zmiennej wLEXLOG z opcjonalnym typem.
 
     EN: Variable definition in LEXLOG with optional type.
 
@@ -88,7 +87,7 @@ class Define:
 
     type: str | None = None
 
-
+@dataclass
 class Premise:
     """
 
@@ -114,7 +113,7 @@ class Premise:
 
     title: str | None = None
 
-
+@dataclass
 class RuleDecl:
     """
 
@@ -144,7 +143,7 @@ class RuleDecl:
 
     conclusion: str | None = None
 
-
+@dataclass
 class Conclusion:
     """
 
@@ -174,7 +173,7 @@ class Conclusion:
 
     assert_expr: str | None = None  # CRITICAL: Required by tests!
 
-
+@dataclass
 class LexAst:
     """
 
@@ -188,13 +187,13 @@ class LexAst:
 
     """
 
-    defines: list[Define] = field(default_factory=list)  # type: ignore[arg-type]
+    defines: list[Define] = field(default_factory=list)
 
-    premises: list[Premise] = field(default_factory=list)  # type: ignore[arg-type]
+    premises: list[Premise] = field(default_factory=list)
 
-    rules: list[RuleDecl] = field(default_factory=list)  # type: ignore[arg-type]
+    rules: list[RuleDecl] = field(default_factory=list)
 
-    conclusions: list[Conclusion] = field(default_factory=list)  # type: ignore[arg-type]
+    conclusions: list[Conclusion] = field(default_factory=list)
 
 
 class LexlogParser:
@@ -305,55 +304,24 @@ class LexlogParser:
 # === LOGIKA / LOGIC ===
 
 
-_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
+_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$\n", re.MULTILINE)
 
 _PATTERN_PREMISE: re.Pattern[str] = re.compile(
-    r'^\s*PREMISE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*$', re.MULTILINE
+    r'^\s*PREMISE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*$\n',
+    re.MULTILINE
 )
 
 _PATTERN_RULE: re.Pattern[str] = re.compile(
-    r"^\s*RULE\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*?)\)\s*->\s*([A-Za-z_][A-Za-z0-9_]*)\s*$",
+    r"^\s*RULE\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([A-Za-z_][A-Za-z0-9_,\s]*)\)\s*->\s*([A-Za-z_][A-Za-z0-9_]*)\s*$",
     re.MULTILINE,
 )
 
 _PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
     r'^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*(?:ASSERT\s*\((.*?)\))?\s*$',
-    re.MULTILINE | re.DOTALL,
+    re.MULTILINE | re.DOTALL
 )
 
 _PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
-
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-# │                           IMPORTS BLOCK                             │
-# └─────────────────────────────────────────────────────────────────────┘
-
-# Configure module logger
-
-logger = logging.getLogger(__name__)
-
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                      AST DATA STRUCTURES                            │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
-@dataclass(frozen=True)
-@dataclass(frozen=True)
-@dataclass(frozen=True)
-@dataclass(frozen=True)
-@dataclass(frozen=True)
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                    CANONICAL ID NORMALIZATION                       │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
-# Mapping from verbose IDs to canonical short forms
 
 
 def _canonicalize_id(identifier: str) -> str:
@@ -384,37 +352,6 @@ def _canonicalize_id(identifier: str) -> str:
     cleaned = identifier.strip()
 
     return _CANONICAL_ID_MAP.get(cleaned, cleaned)
-
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                        REGEX PATTERNS                               │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
-# Pattern for DEFINE statements
-
-
-# Pattern for PREMISE declarations
-
-
-# Pattern for RULE declarations
-
-
-# Pattern for CONCLUSION declarations (with optional ASSERT)
-
-
-# Alternative pattern for ASSERT on separate line
-
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                      MAIN PARSING FUNCTION                          │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
 def parse_lexlog(text: str) -> LexAst:
     """
 
@@ -589,20 +526,6 @@ def parse_lexlog(text: str) -> LexAst:
     return LexAst(defines=defines, premises=premises, rules=rules, conclusions=conclusions)
 
 
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                    LEGACY COMPATIBILITY STUB                        │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                         MODULE EXPORTS                              │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
 __all__ = [
     "parse_lexlog",
     "LexlogParser",
@@ -612,13 +535,6 @@ __all__ = [
     "RuleDecl",
     "Conclusion",
 ]
-
-
-# ═══════════════════════════════════════════════════════════════════════
-
-# END OF FILE: services/lexlog_parser/parser.py
-
-# ═══════════════════════════════════════════════════════════════════════
 
 
 # === I/O / ENDPOINTS ===
