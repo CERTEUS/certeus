@@ -70,3 +70,22 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
 ## Manifest
 
 - Bieżący: `docs/manifest_v1_7.md` (linkowany również z README).
+
+---
+
+## Smoke & E2E (DEV/CI)
+
+- Uruchomienie lokalne:
+  - Windows: `pwsh -File .\scripts\smoke_api.ps1`
+  - Linux/macOS: `bash ./scripts/smoke_api.sh`
+- Kryteria przejścia (domyślne):
+  - Wszystkie sprawdzane endpointy zwracają 2xx (zero `fails`).
+  - `p95_ms` z podsumowania smoke (liczony z `/metrics` histogramu `certeus_http_request_duration_ms_bucket`) ≤ `SLO_MAX_P95_MS` (domyślnie 250 ms w DEV).
+  - Skrypty zwracają kod wyjścia ≠ 0 przy błędach (fail CI).
+- Pytest e2e:
+  - `tests/e2e/test_smoke_endpoints.py` – wykorzystuje `TestClient`, generuje tymczasowy klucz Ed25519, ustawia izolowane katalogi na bundle/cache.
+- Wskazówki debugowania:
+  - JWKS/PCO: uruchom `pwsh -File .\scripts\keys_dev.ps1`, potem `. .\scripts\env_load.ps1` (PS) lub `source ./scripts/dev_env.sh` (bash); sprawdź `/.well-known/jwks.json`.
+  - Weryfikatory proofów: ustaw `PROOF_VERIFY_DEBUG=1`; do szybkiej diagnostyki możesz użyć `PROOF_VERIFIER_MOCK=lfsc_ok` lub `drat_ok`.
+  - P95: powtórz smoke lokalnie i sprawdź `/metrics`; problemy zwykle wynikają z zimnego startu albo konfliktów portów.
+  - Multipart: w Windows używamy `curl.exe -F ...` (Invoke-RestMethod bywa wrażliwy na boundary i typy MIME).
