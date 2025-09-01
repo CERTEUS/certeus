@@ -42,8 +42,6 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 # === LOGIKA / LOGIC ===
 
 
-
-
 # ----Bloki----- IMPORTY
 
 

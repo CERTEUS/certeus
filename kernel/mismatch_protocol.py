@@ -36,8 +36,6 @@ class MismatchError(RuntimeError):
 # === LOGIKA / LOGIC ===
 
 
-
-
 def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> None:
     ticket = mismatch_service.create_ticket(
         case_id=case_id,

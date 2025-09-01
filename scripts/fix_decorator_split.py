@@ -44,7 +44,7 @@ def fix_file(p: Path) -> bool:
     # Track first non-empty/non-comment to allow shebang only at very top
     seen_code_or_doc = False
 
-    for i, line in enumerate(lines):
+    for _i, line in enumerate(lines):
         stripped = line.lstrip()
         # Remove mid-file shebangs
         if stripped.startswith("#!/usr/bin/env python3"):
@@ -82,4 +82,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

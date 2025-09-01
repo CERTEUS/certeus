@@ -32,7 +32,6 @@ EN: Export endpoint. Accepts `case_id` and `analysis_result`, writes a text
 
 """
 
-
 from __future__ import annotations
 
 from collections.abc import Mapping

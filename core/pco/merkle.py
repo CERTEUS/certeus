@@ -27,8 +27,6 @@ EN: Merkle DAG: build and verify (root/leaf/proof paths).
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
-
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -47,8 +47,6 @@ class HandleRequest(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-
-
 router = APIRouter(prefix="/v1/packs", tags=["packs"])
 
 

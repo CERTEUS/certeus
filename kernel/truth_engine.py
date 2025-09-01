@@ -114,8 +114,6 @@ class DualCoreVerifier:
 _Z3 = cast(Any, z3)
 
 
-
-
 # Import adapter class if dostępny; w przeciwnym razie fallback.
 
 try:

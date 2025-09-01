@@ -70,8 +70,6 @@ class ExporterService:
 # === LOGIKA / LOGIC ===
 
 
-
-
 # (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
 
 

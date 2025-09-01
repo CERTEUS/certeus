@@ -29,8 +29,6 @@ EN: CERTEUS module – please complete the functional description.
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
-
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

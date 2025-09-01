@@ -49,8 +49,6 @@ from .public_payload import PublicPCO  # noqa: E402
 # === LOGIKA / LOGIC ===
 
 
-
-
 __all__ = [
     "b64u_encode",
     "b64u_decode",

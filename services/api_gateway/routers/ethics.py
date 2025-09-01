@@ -66,8 +66,6 @@ class DoubleVerdictResponse(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-
-
 # +=====================================================================+
 
 

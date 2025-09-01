@@ -311,8 +311,6 @@ class MismatchService:
 STORAGE_PATH = Path("data/mismatch_tickets")
 
 
-
-
 logger = logging.getLogger(__name__)
 
 

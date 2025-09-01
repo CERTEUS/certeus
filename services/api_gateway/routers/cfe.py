@@ -86,7 +86,6 @@ class LensingResponse(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-
 # +=====================================================================+
 
 # |                              CERTEUS                                |

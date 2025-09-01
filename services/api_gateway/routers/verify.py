@@ -62,7 +62,6 @@ _verifier = DualCoreVerifier()
 
 # === I/O / ENDPOINTS ===
 @router.post("/verify")
-
 def verify_formula(req: VerificationRequest) -> dict[str, Any]:
     """
 

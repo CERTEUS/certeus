@@ -121,8 +121,6 @@ class E2EVerifier:
 # === LOGIKA / LOGIC ===
 
 
-
-
 logger = logging.getLogger(__name__)
 
 

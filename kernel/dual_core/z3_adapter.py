@@ -88,8 +88,6 @@ class Z3Adapter:
 _Z3 = cast(Any, z3)
 
 
-
-
 logger = logging.getLogger(__name__)
 
 

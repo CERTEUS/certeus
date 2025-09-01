@@ -36,8 +36,6 @@ from .exporter import ExporterService, export_answer, export_answer_to_txt
 # === LOGIKA / LOGIC ===
 
 
-
-
 __all__ = ["ExporterService", "export_answer_to_txt", "export_answer"]
 
 

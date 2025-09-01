@@ -89,7 +89,6 @@ EN: Adapter contracts and lightweight DTOs (Preview/OCR/Drive/LLM) used by the A
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence

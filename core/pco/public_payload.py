@@ -27,8 +27,6 @@ EN: PCO public payload: extraction and validation (no PII).
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
-
 from __future__ import annotations
 
 # ----Bloki----- IMPORTY

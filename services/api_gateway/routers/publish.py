@@ -56,8 +56,6 @@ router = APIRouter()
 
 # === I/O / ENDPOINTS ===
 @router.post("/defx/reason")
-
-
 def reason(
     body: dict[str, Any],
     x_norm_pack_id: str = Header(..., alias="X-Norm-Pack-ID"),

@@ -26,7 +26,6 @@ EN: CERTEUS project module (generic description).
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 from dataclasses import dataclass
