@@ -20,14 +20,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install tooling
-        run: |
-          python -m pip install -U pip wheel setuptools
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
       - name: Run holonomy checks
         run: |
-          # Oblicz metryki (stub) i oceń bramkę; jeśli brak wejścia, gate oblicza wartości samodzielnie
-          python scripts/gates/compute_gauge_drift.py --out out/gauge.json || true
-          python scripts/gates/gauge_gate.py --epsilon 1e-3 --input out/gauge.json
+          # Oblicz metryki in-proc (uv zapewni zależności) i oceń bramkę na realnym kappa_max
+          uv run python scripts/gates/compute_gauge_drift.py --out out/gauge.json || true
+          uv run python scripts/gates/gauge_gate.py --epsilon 1e-3 --input out/gauge.json
 
   pr-summary:
     if: github.event_name == 'pull_request' && always()
