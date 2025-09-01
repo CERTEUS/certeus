@@ -1,0 +1,32 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/boundary_rebuild_gate.yml          |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/boundary_rebuild_gate.yml          |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: Boundary-Rebuild-Gate
+
+on: [push, pull_request]
+
+jobs:
+  boundary-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tooling
+        run: |
+          python -m pip install -U pip wheel setuptools
+      - name: Rebuild boundary & gate
+        env:
+          STRICT_BOUNDARY_REBUILD: "1"
+        run: |
+          python scripts/gates/compute_boundary_report.py --out out/boundary_report.json || true
+          python scripts/gates/boundary_rebuild_gate.py --report out/boundary_report.json
+

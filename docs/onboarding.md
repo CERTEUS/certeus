@@ -1,36 +1,29 @@
-# Onboarding (First 30 Minutes)
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: docs/onboarding.md                                   |
+# | ROLE: Project Markdown.                                      |
+# | PLIK: docs/onboarding.md                                   |
+# | ROLA: Dokument Markdown.                                      |
+# +-------------------------------------------------------------+
 
-> Cel: uruchom lokalnie ProofGate/Boundary, zrób jeden PCO, zobacz wpis w Ledger.
+# Onboarding — First 30 Minutes
 
-## DEV
-
-```bash
-uv venv && source .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
-uv pip install -r requirements.txt
-docker compose -f infra/docker-compose.local-infra.yml up -d           # postgres/redis/minio
-docker compose -f infra/docker-compose.dev.yml up -d --build proofgate boundary
-
-# zdrowie
-curl -s http://localhost:8081/healthz | jq .
-```
+## Dev
+- Zainstaluj Python 3.11, `py -3.11 -m venv .venv`
+- `pip install -U pip wheel setuptools ruff pytest`
+- Start API: `uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000`
+- Smoke: `pwsh -File .\scripts\smoke_api.ps1` lub `bash ./scripts/smoke_api.sh`
 
 ## SRE
+- `docker compose -f infra/docker-compose.monitoring.yml up -d`
+- Grafana: http://localhost:3000, Prometheus: http://localhost:9090
 
-```bash
-kubectl apply -f infra/k8s/core.yaml
-kubectl apply -f infra/k8s/services.yaml
-kubectl apply -f infra/k8s/ingress.yaml
-docker compose -f infra/docker-compose.monitoring.yml up -d
-```
+## Auditor
+- Pobierz PCO: `curl -s http://127.0.0.1:8000/pco/public/RID-EXAMPLE`
+- Zweryfikuj: `python scripts/verify_bundle.py`
 
-## AUDYTOR
-
-```bash
-# przykładowe polecenia - stuby
-curl -s http://localhost:8081/v1/ledger/CER-DEMO | jq . || true
-```
-
-## LEGAL/PM
-
-- Otwórz README i Manifest.
-- Social preview: ustaw `docs/assets/brand/certeus-og.png`.
+## Legal / Compliance
+- Manifest: `docs/manifest.md` (źródło prawdy)
+- OpenAPI: `docs/openapi/certeus.v1.yaml` / `/openapi.json`
+- Security Policy: `SECURITY.md`
