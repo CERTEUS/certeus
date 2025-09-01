@@ -38,7 +38,25 @@ function hit() {
 
 declare -i PASSES=0
 declare -i FAILS=0
-trap 'stop_server; echo "SMOKE SUMMARY: total=$((PASSES+FAILS)) passes=$PASSES fails=$FAILS"; [[ $FAILS -eq 0 ]]' EXIT
+P95_MS="n/a"
+metrics_p95() {
+  curl -s http://127.0.0.1:8000/metrics | awk '
+  /^certeus_http_request_duration_ms_bucket\{/ {
+    match($0, /le="([^"]+)"/, m);
+    if (m[1] != "") { buckets[m[1]] += $(NF) }
+  }
+  END {
+    n=0; total=0; hasInf=0;
+    for (le in buckets) { if (le=="+Inf") { total=buckets[le]; hasInf=1 } else { arr[++n]=le } }
+    # sort numeric
+    for (i=1;i<=n;i++) for (j=i+1;j<=n;j++) if ((arr[i]+0)>(arr[j]+0)) { t=arr[i]; arr[i]=arr[j]; arr[j]=t }
+    if (!hasInf && n>0) total=buckets[arr[n]]
+    thr=total*0.95; cum=0; p95="n/a";
+    for (i=1;i<=n;i++) { cum+=buckets[arr[i]]; if (cum>=thr) { p95=arr[i]; break } }
+    print p95;
+  }'
+}
+trap 'stop_server; echo "SMOKE SUMMARY: total=$((PASSES+FAILS)) passes=$PASSES fails=$FAILS p95_ms=$P95_MS"; [[ $FAILS -eq 0 ]]' EXIT
 start_server
 
 hit GET /health && PASSES+=1 || FAILS+=1
@@ -91,3 +109,6 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 
 # Publish
 # Publish not mounted in app; skipping
+
+# Compute p95 from /metrics
+P95_MS=$(metrics_p95)

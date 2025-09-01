@@ -141,5 +141,37 @@ foreach ($r in $results) {
 $total = $results.Count
 $passes = ($results | Where-Object { $_.ok }).Count
 $fails = $total - $passes
-Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails")
+# Compute p95 from /metrics histogram (certeus_http_request_duration_ms_bucket)
+$p95 = 'n/a'
+try {
+  $m = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/metrics' -TimeoutSec 5
+  $lines = ($m.Content -split "`n")
+  $buckets = @{}
+  foreach ($ln in $lines) {
+    if ($ln -match '^certeus_http_request_duration_ms_bucket\{[^}]*le="([^"]+)"[^}]*\}\s+([0-9\.eE\+\-]+)\s*$') {
+      $leStr = $Matches[1]
+      $cnt = [double]::Parse($Matches[2], [Globalization.CultureInfo]::InvariantCulture)
+      if ($buckets.ContainsKey($leStr)) { $buckets[$leStr] += $cnt } else { $buckets[$leStr] = $cnt }
+    }
+  }
+  if ($buckets.Count -gt 0) {
+    $entries = @()
+    foreach ($k in $buckets.Keys) {
+      $num = if ($k -eq '+Inf') { [double]::PositiveInfinity } else { [double]::Parse($k, [Globalization.CultureInfo]::InvariantCulture) }
+      $entries += [pscustomobject]@{ le=$k; num=$num; cnt=$buckets[$k] }
+    }
+    $entries = $entries | Sort-Object -Property num
+    $totalCount = ($entries | Where-Object { $_.le -eq '+Inf' } | Select-Object -First 1).cnt
+    if (-not $totalCount) { $totalCount = ($entries | Select-Object -Last 1).cnt }
+    $threshold = 0.95 * $totalCount
+    $cum = 0.0
+    foreach ($e in $entries) {
+      if ($e.le -eq '+Inf') { continue }
+      $cum += $e.cnt
+      if ($cum -ge $threshold) { $p95 = [string]::Format([Globalization.CultureInfo]::InvariantCulture, '{0:0.###}', $e.num); break }
+    }
+  }
+} catch { }
+
+Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95")
 if ($fails -gt 0) { exit 1 } else { exit 0 }

@@ -188,7 +188,7 @@ Pełny JSON Schema — **Aneks B**.
 
 ---
 
-## 16) Definition of Done (DoD) — „ukończenie systemu”
+## 16) Definition of Done (DoD) - "ukończenie systemu"
 
 **A. KOD i SCHEMATY** (MUST)
 
@@ -196,7 +196,25 @@ Pełny JSON Schema — **Aneks B**.
 - [ ] Endpointy `/v1/pco/bundle`, `/pco/public/{case_id}`, `/.well-known/jwks.json` (testy e2e).
 - [ ] `policies/pco/policy_pack.yaml` jak w Anekście A (progi PCO, redakcja, role).
 - [ ] `monitoring/slo/slo_gate.yml` jak w Anekście C (reguły i bramki).
-- [ ] Moduł **Law‑as‑Data**: cache + digest + adaptery.
+- [ ] Moduł **Law-as-Data**: cache + digest + adaptery.
+
+---
+
+## 17) Smoke & E2E
+
+**Cel (MUST):** Każda zmiana przechodzi szybki, przekrojowy test działania API (smoke) oraz e2e w pytest, z twardym raportowaniem błędów i SLO (p95).
+
+- Lokalne uruchomienie (Windows):
+  - `. .\scripts\dev_env.ps1`; `pwsh -File .\scripts\smoke_api.ps1`
+- Lokalne uruchomienie (Linux/macOS):
+  - `source ./scripts/dev_env.sh`; `bash ./scripts/smoke_api.sh`
+- CI (GitHub Actions):
+  - Workflow `Smoke` (Ubuntu + Windows) w `.github/workflows/smoke.yml` – tworzy `.venv`, instaluje zależności (z `constraints/requirements-constraints.txt`) i uruchamia skrypty smoke.
+- Zakres: health/root/metrics/JWKS, CFE, QTMP, Devices, Ethics, DR, Export, ChatOps, Ledger, Verify, PCO bundle + public verify, Preview (multipart), Ingest/Analyze (PDF), Source cache.
+- Raportowanie (MUST):
+  - Skrypty smoke drukują listę wyników [OK/ERR] oraz podsumowanie: `total`, `passes`, `fails`, `p95_ms`.
+  - `p95_ms` liczony na podstawie histogramu Prometheus `certeus_http_request_duration_ms_bucket` z `/metrics` (sumarycznie dla całego smoke).
+- Kryterium: jakikolwiek błąd -> exit code != 0 (fail CI). p95 buduje się z histogramu startującego od zera (serwer startuje świeżo w smoke).
 
 **B. OBSERVABILITY/SECURITY** (MUST)
 
