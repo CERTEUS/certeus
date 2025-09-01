@@ -23,6 +23,12 @@ PL: Router FastAPI dla usług CERTEUS.
 EN: FastAPI router for CERTEUS services.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

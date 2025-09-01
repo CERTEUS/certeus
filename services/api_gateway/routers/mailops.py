@@ -4,6 +4,12 @@ PL: Router FastAPI dla obszaru MailOps ingest/headers.
 
 EN: FastAPI router for MailOps ingest/headers.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

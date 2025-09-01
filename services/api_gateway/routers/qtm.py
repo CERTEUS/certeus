@@ -5,6 +5,12 @@ PL: Stub API dla QTMP (pomiar). Zawiera wymagane pola: sequence[],
 EN: QTMP (measurement) stub API. Includes required fields: sequence[],
     uncertainty_bound.*, optional decoherence and entanglement.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 # +=====================================================================+

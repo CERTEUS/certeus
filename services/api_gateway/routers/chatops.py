@@ -4,6 +4,12 @@ PL: Router FastAPI dla obszaru interfejs ChatOps.
 
 EN: FastAPI router for ChatOps interface.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

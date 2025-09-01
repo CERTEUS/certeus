@@ -23,6 +23,12 @@ PL: Główna aplikacja FastAPI dla CERTEUS: statyki, routery, CORS (DEV), health
 EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

@@ -22,6 +22,11 @@ PL: Minimalne __init__, by uniknąć ostrzeżeń Pylance/Ruff o „unused import
 EN: Minimal __init__ to avoid Pylance/Ruff 'unused import' warnings.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
 
 
 # [UWAGA]

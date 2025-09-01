@@ -16,6 +16,11 @@
 
 
 """PL: Router podglądu plików. EN: Preview router."""
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
 
 from __future__ import annotations
 

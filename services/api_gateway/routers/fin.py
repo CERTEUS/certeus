@@ -4,6 +4,12 @@ PL: Router FastAPI dla obszaru FINENITH (quantum alpha).
 
 EN: FastAPI router for FINENITH (quantum alpha).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

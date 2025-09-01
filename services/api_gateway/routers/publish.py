@@ -1,4 +1,10 @@
 """PL: Mapuje wynik rdzenia na kontrakt publikacji. EN: Map core to publication contract."""
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |

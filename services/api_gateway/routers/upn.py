@@ -4,6 +4,12 @@ PL: Router FastAPI dla obszaru rejestr UPN.
 
 EN: FastAPI router for UPN registry.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

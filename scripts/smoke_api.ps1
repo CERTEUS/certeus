@@ -144,12 +144,34 @@ try {
     New-Item -ItemType Directory -Force -Path reports | Out-Null
     $open = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/openapi.json' -TimeoutSec 8
     if ($open.StatusCode -eq 200) { Set-Content -LiteralPath 'reports\openapi.json' -Value $open.Content -Encoding UTF8 }
-    $ok = $false
-    try {
-      $spec = $open.Content | ConvertFrom-Json
-      if ($spec.openapi -and $spec.paths) { $ok = $true }
-    } catch { $ok = $false }
-    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'missing openapi/paths'} }
+    $py = (Resolve-Path .\.venv\Scripts\python.exe).Path
+    $code = @'
+import json, sys
+from pathlib import Path
+spec = json.loads(Path('reports/openapi.json').read_text(encoding='utf-8'))
+ok = ('openapi' in spec and 'paths' in spec)
+try:
+    # Try modern API first
+    try:
+        from openapi_spec_validator import validate_spec as _validate
+    except Exception:
+        try:
+            from openapi_spec_validator.validators import validate as _validate
+        except Exception:
+            _validate = None
+    if _validate is not None:
+        _validate(spec)
+        ok = True
+except Exception as e:
+    ok = False
+sys.exit(0 if ok else 1)
+'@
+    $tmp = Join-Path $env:TEMP ('oapi_val_' + [guid]::NewGuid().ToString('N') + '.py')
+    Set-Content -LiteralPath $tmp -Value $code -Encoding UTF8
+    & $py $tmp
+    $ok = ($LASTEXITCODE -eq 0)
+    Remove-Item -LiteralPath $tmp -ErrorAction SilentlyContinue
+    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'invalid openapi'} }
   } catch { $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # Health payload shape
@@ -173,6 +195,32 @@ try {
     $ok = (($fm.outcome -is [string]) -and ($fm.p -is [double] -or $fm.p -is [decimal] -or $fm.p -is [int]))
     $results += [pscustomobject]@{ method='POST'; path='/v1/fin/alpha/measure#schema'; code=200; ok=$ok; msg=if($ok){'ok'}else{'missing outcome/p'} }
   } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/fin/alpha/measure#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # QTMP regressions: predistribution sums ~ 1, verdict in basis, commutator(A!=B)==1
+  try {
+    $basis = @('ALLOW','DENY','ABSTAIN')
+    $qinit = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/qtm/init_case' -TimeoutSec 8 -ContentType 'application/json' -Body '{"basis":["ALLOW","DENY","ABSTAIN"]}'
+    $sum = 0.0; foreach ($it in $qinit.predistribution) { $sum += [double]$it.p }
+    $ok = ([math]::Abs($sum - 1.0) -le 1e-3 -and $qinit.predistribution.Count -eq $basis.Count)
+    $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/init_case#regression'; code=200; ok=$ok; msg=if($ok){'ok'}else{"bad predistribution sum=$sum"} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/init_case#regression'; code=0; ok=$false; msg=$_.Exception.Message } }
+  try {
+    $qmeas = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/qtm/measure' -TimeoutSec 8 -ContentType 'application/json' -Body '{"operator":"W","source":"ui"}'
+    $ok = ($basis -contains $qmeas.verdict)
+    $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/measure#regression'; code=200; ok=$ok; msg=if($ok){'ok'}else{"verdict=$($qmeas.verdict) not in basis"} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/measure#regression'; code=0; ok=$false; msg=$_.Exception.Message } }
+  try {
+    $comm = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/qtm/commutator' -TimeoutSec 8 -ContentType 'application/json' -Body '{"A":"X","B":"Y"}'
+    $ok = ([double]$comm.value -eq 1.0)
+    $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/commutator#regression'; code=200; ok=$ok; msg=if($ok){'ok'}else{"value=$($comm.value)"} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/commutator#regression'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # PCO public rid regression: equals requested rid
+  try {
+    $pub = Invoke-RestMethod -Uri ('http://127.0.0.1:8000/pco/public/' + $rid) -TimeoutSec 8
+    $ok = ($pub.rid -eq $rid)
+    $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#rid'; code=200; ok=$ok; msg=if($ok){'ok'}else{"rid=$($pub.rid) != $rid"} }
+  } catch { $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#rid'; code=0; ok=$false; msg=$_.Exception.Message } }
 } finally {
   Stop-Server $proc
 }

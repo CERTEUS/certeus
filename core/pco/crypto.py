@@ -20,6 +20,12 @@ PL: Krypto-pomocniki: sha256 (kanoniczne), b64url, Ed25519 (podpis/weryfikacja).
 
 EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

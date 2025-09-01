@@ -20,6 +20,12 @@ PL: Router FastAPI dla obszaru publiczne PCO i JWKS.
 
 EN: FastAPI router for public PCO and JWKS.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

@@ -20,6 +20,12 @@ PL: Router FastAPI dla obszaru diagnostyka/system info.
 
 EN: FastAPI router for diagnostics/system info.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

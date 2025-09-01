@@ -4,6 +4,12 @@ PL: Router FastAPI dla obszaru lexqft / geometria sensu.
 
 EN: FastAPI router for lexqft / geometry of meaning.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

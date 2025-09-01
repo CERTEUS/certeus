@@ -20,6 +20,12 @@ PL: Public payload PCO: ekstrakcja i walidacja (bez PII).
 
 EN: PCO public payload: extraction and validation (no PII).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

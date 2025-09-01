@@ -20,6 +20,12 @@ PL: Merkle-DAG: konstrukcja i weryfikacja (root/leaf/ścieżki dowodu).
 
 EN: Merkle DAG: build and verify (root/leaf/proof paths).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

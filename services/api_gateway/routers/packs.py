@@ -20,6 +20,12 @@ PL: Router FastAPI dla obszaru Domain Packs / capabilities.
 
 EN: FastAPI router for Domain Packs / capabilities.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

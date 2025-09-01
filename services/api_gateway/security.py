@@ -35,6 +35,12 @@ EN: Security middleware:
     - Simple per-IP rate limiting (RATE_LIMIT_PER_MIN=N)
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

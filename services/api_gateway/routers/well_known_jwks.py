@@ -22,6 +22,11 @@ PL: Endpoint publikujący klucz publiczny Ed25519 w formacie JWKS (/.well-known/
 EN: Endpoint exposing Ed25519 public key via JWKS (/.well-known/jwks.json).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
 
 
 # ----Bloki----- IMPORTY

@@ -20,6 +20,12 @@ PL: Router FastAPI dla obszaru metryki Prometheus.
 
 EN: FastAPI router for Prometheus metrics.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 

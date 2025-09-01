@@ -4,6 +4,12 @@ PL: Router FastAPI dla obszaru urządzenia HDE/Q-Oracle/Entangle/Chronosync.
 
 EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+
 
 #!/usr/bin/env python3
 
