@@ -36,7 +36,6 @@ jobs:
           fi
       - name: Set required status checks for Smoke (per OS)
         if: steps.check.outputs.has_token == 'true'
-        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
