@@ -94,6 +94,23 @@ REQUIRED_PUBLIC_FIELDS: set[str] = {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")
 
 DEFAULT_PACK = Path("policies/pco/policy_pack.v0.1.yaml")
@@ -390,6 +407,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
 
 
 

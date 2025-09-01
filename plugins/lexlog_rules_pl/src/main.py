@@ -132,6 +132,12 @@ class Plugin:
 
 
 
+
+
+
+
+
+
 # +-------------------------------------------------------------+
 
 
@@ -370,6 +376,8 @@ def register(api: Any, name: str | None = None) -> None:
     plugin.setup()
 
     _safe_register(api, plugin, name or PLUGIN_NAME)
+
+
 
 
 

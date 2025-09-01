@@ -47,6 +47,12 @@ EN: Adapters package (Preview/OCR/Drive/LLM).
 
 
 
+
+
+
+
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

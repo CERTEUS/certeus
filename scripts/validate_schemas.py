@@ -57,6 +57,14 @@ from jsonschema import Draft7Validator  # Only what we truly use
 
 
 
+
+
+
+
+
+
+
+
 SCHEMA_DIR = Path("schemas")
 
 
@@ -167,6 +175,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

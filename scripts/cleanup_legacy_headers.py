@@ -87,6 +87,11 @@ ROOTS = [
 
 
 
+
+
+
+
+
 def strip_legacy_block(text: str) -> tuple[str, bool]:
 
     lines = text.splitlines(keepends=True)
@@ -180,6 +185,8 @@ def main() -> None:
 if __name__ == "__main__":
 
     main()
+
+
 
 
 

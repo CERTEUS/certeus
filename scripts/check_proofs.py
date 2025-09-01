@@ -52,6 +52,14 @@ import sys
 
 
 
+
+
+
+
+
+
+
+
 # [BLOCK: IMPORTS / IMPORTY]
 
 
@@ -103,6 +111,8 @@ ok2 = verify(d / "cvc5.lfsc", d / "cvc5.lfsc.sha256")
 
 
 sys.exit(0 if (ok1 and ok2) else 1)
+
+
 
 
 

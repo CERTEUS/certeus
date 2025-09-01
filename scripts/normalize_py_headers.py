@@ -84,6 +84,12 @@ ROOTS = [
 
 
 
+
+
+
+
+
+
 def detect_shebang_and_encoding(lines: list[str]) -> tuple[int, int]:
 
     """Return indices for shebang line and encoding cookie (0 or -1 if missing)."""
@@ -411,6 +417,8 @@ def main() -> None:
 if __name__ == "__main__":
 
     main()
+
+
 
 
 

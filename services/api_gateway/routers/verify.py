@@ -64,9 +64,20 @@ class VerificationRequest(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 router = APIRouter(prefix="/v1", tags=["Truth Engine"])
 
 _verifier = DualCoreVerifier()
+
+
 
 
 

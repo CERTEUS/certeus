@@ -106,6 +106,42 @@ APP_TITLE = "CERTEUS API Gateway"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ROOT = Path(__file__).resolve().parents[2]
 
 STATIC_DIR = ROOT / "static"
@@ -323,6 +359,8 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
         pass
 
     return response
+
+
 
 
 

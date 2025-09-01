@@ -135,6 +135,17 @@ class LensingResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 # +=====================================================================+
@@ -212,6 +223,8 @@ async def lensing() -> LensingResponse:
         critical_precedents=["precedent:K_2001"],
 
     )
+
+
 
 
 

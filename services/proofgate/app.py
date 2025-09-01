@@ -75,6 +75,20 @@ class PublishResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app = FastAPI(title="ProofGate", version=__version__)
 
 
@@ -280,6 +294,8 @@ def publish(req: PublishRequest) -> PublishResponse:
         pass
 
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
+
+
 
 
 

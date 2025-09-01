@@ -109,6 +109,15 @@ class RecallResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -178,6 +187,8 @@ async def recall(req: RecallRequest, request: Request) -> RecallResponse:
 
 
     return RecallResponse(ok=True, link=f"ledger://revocations/{req.upn}")
+
+
 
 
 

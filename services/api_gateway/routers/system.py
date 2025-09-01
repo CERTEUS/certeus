@@ -84,6 +84,21 @@ class SourceCacheResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -284,6 +299,8 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
         "snapshot_timestamp": snap_ts,
         "_certeus": {"snapshot_timestamp_utc": snap_ts},
     }
+
+
 
 
 

@@ -196,6 +196,15 @@ class Fact(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 # [BLOCK: IMPORTS / IMPORTY]
 
 
@@ -203,6 +212,8 @@ class Fact(BaseModel):
 
 
 # [BLOCK: MODELS / MODELE]
+
+
 
 
 

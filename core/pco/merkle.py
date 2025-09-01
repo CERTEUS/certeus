@@ -41,6 +41,13 @@ class MerkleStep:
 # === LOGIKA / LOGIC ===
 
 
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -123,6 +130,8 @@ def apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
             cur = _h(cur + sib)
 
     return cur.hex()
+
+
 
 # === I/O / ENDPOINTS ===
 

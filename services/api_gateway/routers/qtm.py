@@ -176,6 +176,22 @@ class FindEntanglementResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 # +=====================================================================+
@@ -317,6 +333,8 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
     # Provide low MI/negativity placeholders
 
     return FindEntanglementResponse(pairs=pairs, mi=0.05 if pairs else 0.0, negativity=0.03 if pairs else 0.0)
+
+
 
 
 

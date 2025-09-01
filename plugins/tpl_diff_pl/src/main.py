@@ -35,6 +35,10 @@ from datetime import datetime
 
 
 
+
+
+
+
 # +-------------------------------------------------------------+
 
 
@@ -80,6 +84,8 @@ def register(api):
     # Register as an adapter-like callable; convention: 'tpl.diff.pl'
 
     api.register_adapter("tpl.diff.pl", _mock_diff)
+
+
 
 
 

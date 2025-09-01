@@ -36,11 +36,17 @@ EN: Minimal __init__ to avoid Pylance/Ruff 'unused import' warnings.
 
 
 
+
+
+
+
 # [UWAGA]
 
 # Nie re-eksportujemy tutaj verify/system/export/ledger, żeby nie generować
 
 # F401/unused-import. Moduły importujemy bezpośrednio w main.py.
+
+
 
 
 

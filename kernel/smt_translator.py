@@ -81,6 +81,16 @@ class NaryNode(TypedDict):
 
 
 
+
+
+
+
+
+
+
+
+
+
 _Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
 
 
@@ -249,6 +259,8 @@ __all__ = [
     "validate_ast",
     "compile_bool_ast",
 ]
+
+
 
 
 

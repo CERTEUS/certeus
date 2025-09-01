@@ -1,3 +1,8 @@
+"""
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+EN: CERTEUS module – please complete the functional description.
+"""
+
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |

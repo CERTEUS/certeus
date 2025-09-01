@@ -69,6 +69,13 @@ _TOKEN_BUDGETS: dict[str, int] = {}
 
 
 
+
+
+
+
+
+
+
 _LOCK = Lock()
 
 
@@ -230,6 +237,8 @@ def enforce_limits(req: Request, *, cost_units: int = 1) -> None:
     if not ok:
 
         raise HTTPException(status_code=429, detail="Rate/Budget limits exceeded")
+
+
 
 # === I/O / ENDPOINTS ===
 

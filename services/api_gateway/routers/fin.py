@@ -109,6 +109,15 @@ class EntanglementsResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -224,6 +233,8 @@ async def entanglements(request: Request) -> EntanglementsResponse:
 
 
     return EntanglementsResponse(pairs=pairs, mi=0.12)
+
+
 
 
 

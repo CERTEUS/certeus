@@ -95,6 +95,13 @@ class TunnelResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -166,6 +173,8 @@ async def tunnel(req: TunnelRequest, request: Request) -> TunnelResponse:
 
 
     return TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
+
+
 
 
 

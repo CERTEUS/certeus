@@ -71,6 +71,16 @@ class ActSnapshot:
 
 
 
+
+
+
+
+
+
+
+
+
+
 @dataclass
 
 
@@ -114,6 +124,8 @@ def index_act(act_id: str, out_dir: Path | None = None) -> Path:
     path.write_text(json.dumps(asdict(snap), ensure_ascii=False, indent=2), encoding="utf-8")
 
     return path
+
+
 
 
 

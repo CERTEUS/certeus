@@ -93,6 +93,11 @@ class LexenithPLAdapter:  # (IDomainPlugin)
 
 
 
+
+
+
+
+
 # +=====================================================================+
 
 # |                          CERTEUS — HEART                            |
@@ -114,6 +119,8 @@ class LexenithPLAdapter:  # (IDomainPlugin)
 
 
 # from core.plugins import IDomainPlugin, FACTLOG  # zachowaj importy jak w repo
+
+
 
 
 

@@ -93,6 +93,14 @@ class Z3Adapter:
 
 
 
+
+
+
+
+
+
+
+
 _Z3 = cast(Any, z3)
 
 
@@ -121,6 +129,8 @@ def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
 
     return expr
+
+
 
 
 

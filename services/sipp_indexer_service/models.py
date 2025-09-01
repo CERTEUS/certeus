@@ -84,6 +84,14 @@ class LegalActSnapshot(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
