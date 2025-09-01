@@ -1,0 +1,10 @@
+from fastapi import APIRouter
+
+router = APIRouter()
+
+
+@router.get("/pco/public/{case_id}")
+async def get_public(case_id: str):
+    # TODO: pobierz z PCO-Ledger, usuń/redaguj PII zgodnie z policy_pack.yaml
+    # Placeholder response
+    return {"case_id": case_id, "public_payload": None, "note": "public payload generation not implemented"}

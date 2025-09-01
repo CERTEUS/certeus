@@ -31,6 +31,10 @@ from datetime import datetime
 # === LOGIKA / LOGIC ===
 
 
+
+
+
+
 # +-------------------------------------------------------------+
 
 
@@ -78,6 +82,8 @@ def register(api):
     api.register_adapter("tpl.diff.pl", _mock_diff)
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

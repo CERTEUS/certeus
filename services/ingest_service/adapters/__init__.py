@@ -42,6 +42,12 @@ EN: Adapters package (Preview/OCR/Drive/LLM).
 # === LOGIKA / LOGIC ===
 
 
+
+
+
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

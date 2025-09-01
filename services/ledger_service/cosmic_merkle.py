@@ -30,14 +30,14 @@ EN: Minimal deterministic Merkle with RLock. No PII — operates on hex hashes.
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 from hashlib import sha256
+
 from threading import RLock
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
-@dataclass(frozen=True)
 class MerklePathElem:
     """One step in a Merkle proof path."""
 
@@ -45,8 +45,6 @@ class MerklePathElem:
 
     position: str  # "L" or "R" (informative; verification uses canonical order)
 
-
-@dataclass(frozen=True)
 class MerkleReceipt:
     """Proof that a leaf is included under a Merkle root."""
 
@@ -55,7 +53,6 @@ class MerkleReceipt:
     path: list[MerklePathElem]
 
     leaf: str  # leaf = H(rid_hash || bundle_hash) as hex
-
 
 class CosmicMerkle:
     """
@@ -192,8 +189,20 @@ class CosmicMerkle:
 
         return cur == receipt.root
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+@dataclass(frozen=True)
+
+
+@dataclass(frozen=True)
+
+
+
+
 
 
 _LEDGER = CosmicMerkle()
@@ -229,6 +238,8 @@ def verify_proof(receipt: MerkleReceipt) -> bool:
     return CosmicMerkle.verify_proof(receipt)
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

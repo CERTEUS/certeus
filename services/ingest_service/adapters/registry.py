@@ -47,6 +47,7 @@ EN: Adapters registry (lazy singletons) — side-effect free.
 from __future__ import annotations
 
 from pathlib import Path
+
 from typing import cast
 
 from .contracts import (
@@ -55,6 +56,7 @@ from .contracts import (
     OCRAdapter,
     PreviewAdapter,
 )
+
 from .local_impl import (
     LocalDriveAdapter,
     StubLLMAdapter,
@@ -74,6 +76,15 @@ _LLM: LLMAdapter | None = None
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
 
 
 # ----------------------------- Globals (private) -----------------------------
@@ -179,6 +190,8 @@ def get_llm() -> LLMAdapter:
     return _LLM
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

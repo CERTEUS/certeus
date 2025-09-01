@@ -60,17 +60,11 @@ FORBIDDEN_KEYS: set[str] = {
 # === MODELE / MODELS ===
 class PublicPCO:
     rid: str
-
     smt2_hash: str
-
     lfsc: str
-
     merkle_proof: list[MerkleStep]
-
     signature: str
-
     drat: str | None = None
-
     issued_at: str | None = None  # informacyjne, niewchodzące do digestu
 
     # ----Bloki----- BUDOWA
@@ -149,24 +143,10 @@ class PublicPCO:
 
 
 
-
-
-#!/usr/bin/env python3
-
-
-# ----Bloki----- IMPORTY
-
-
-# ----Bloki----- KONSTANTY
-
-
-# ----Bloki----- MODEL
-
-
 @dataclass(slots=True)
 
 
-
+__all__ = ["PublicPCO"]
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

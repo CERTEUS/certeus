@@ -29,13 +29,14 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
+
 from pydantic import BaseModel
 
 from kernel.mismatch_protocol import MismatchError
+
 from kernel.truth_engine import DualCoreVerifier
 
 # === KONFIGURACJA / CONFIGURATION ===
-
 
 # === MODELE / MODELS ===
 class VerificationRequest(BaseModel):
@@ -51,13 +52,23 @@ class VerificationRequest(BaseModel):
 
     lang: str = "smt2"
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
 
 
 router = APIRouter(prefix="/v1", tags=["Truth Engine"])
 
 _verifier = DualCoreVerifier()
+
+
 
 
 # === I/O / ENDPOINTS ===
@@ -90,5 +101,5 @@ def verify_formula(req: VerificationRequest) -> dict[str, Any]:
     except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Unexpected error: {e}") from e
 
-
 # === TESTY / TESTS ===
+

@@ -31,6 +31,7 @@ EN: LEXLOG evaluator (MVP). Checks if AST rules hold based on engine
 from __future__ import annotations
 
 from collections.abc import Mapping
+
 from typing import cast
 
 from pydantic import BaseModel, Field
@@ -39,7 +40,6 @@ from services.lexlog_parser.parser import LexAst
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
 class EvalContext(BaseModel):
     """Mapping context LEXLOG -> engine flags."""
@@ -47,7 +47,6 @@ class EvalContext(BaseModel):
     premise_to_flag: dict[str, str] = Field(default_factory=dict)
 
     conclusion_excludes: dict[str, list[str]] = Field(default_factory=dict)
-
 
 class RuleEvalResult(BaseModel):
     rule_id: str
@@ -60,8 +59,18 @@ class RuleEvalResult(BaseModel):
 
     failing_excludes: list[str] = Field(default_factory=list)
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
+
+
 
 
 def _flag(flags: Mapping[str, bool], name: str) -> bool:
@@ -110,6 +119,8 @@ def choose_article_for_kk(ast: LexAst, flags: Mapping[str, bool], ctx: EvalConte
     return "art286" if res.satisfied else None
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

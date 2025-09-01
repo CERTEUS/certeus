@@ -28,6 +28,7 @@ EN: Adapter for Z3 and SMT.
 from __future__ import annotations
 
 import logging
+
 from typing import Any, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
@@ -38,7 +39,6 @@ from kernel.smt_translator import (
 )  # <- wszystkie importy nad kodem
 
 # === KONFIGURACJA / CONFIGURATION ===
-
 
 # === MODELE / MODELS ===
 class Z3Adapter:
@@ -81,8 +81,16 @@ class Z3Adapter:
 
         return result
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
 
 
 _Z3 = cast(Any, z3)
@@ -115,6 +123,8 @@ def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     return expr
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

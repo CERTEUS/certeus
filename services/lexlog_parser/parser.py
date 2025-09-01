@@ -39,13 +39,18 @@ Key Components:
 Polish/English bilingual documentation maintained throughout.
 
 """
+
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+
 import logging
+
 import re
+
 from re import Match
+
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -58,10 +63,8 @@ _CANONICAL_ID_MAP: dict[str, str] = {
     "P_CEL_OSIAGNIECIA_KORZYSCI_MAJATKOWEJ": "P_CEL",
     "P_NIEKORZYSTNE_ROZPORZADZENIE_MIENIEM": "P_ROZPORZADZENIE",
 }
-logger = logging.getLogger(__name__)
 
 # === MODELE / MODELS ===
-@dataclass
 class Define:
     """
 
@@ -87,7 +90,6 @@ class Define:
 
     type: str | None = None
 
-@dataclass
 class Premise:
     """
 
@@ -113,7 +115,6 @@ class Premise:
 
     title: str | None = None
 
-@dataclass
 class RuleDecl:
     """
 
@@ -143,7 +144,6 @@ class RuleDecl:
 
     conclusion: str | None = None
 
-@dataclass
 class Conclusion:
     """
 
@@ -173,7 +173,6 @@ class Conclusion:
 
     assert_expr: str | None = None  # CRITICAL: Required by tests!
 
-@dataclass
 class LexAst:
     """
 
@@ -194,7 +193,6 @@ class LexAst:
     rules: list[RuleDecl] = field(default_factory=list)
 
     conclusions: list[Conclusion] = field(default_factory=list)
-
 
 class LexlogParser:
     """
@@ -300,8 +298,24 @@ class LexlogParser:
 
         return "True"
 
-
 # === LOGIKA / LOGIC ===
+
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+
+@dataclass
+
+@dataclass
+
+@dataclass
+
+@dataclass
+
+
+
+
 
 
 _PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$\n", re.MULTILINE)
@@ -537,6 +551,8 @@ __all__ = [
 ]
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

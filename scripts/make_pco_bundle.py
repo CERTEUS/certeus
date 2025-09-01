@@ -80,10 +80,15 @@ Weryfikacja:
 from __future__ import annotations
 
 import argparse
+
 from hashlib import sha256
+
 import json
+
 import os
+
 from pathlib import Path
+
 from typing import Final
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -91,6 +96,11 @@ from typing import Final
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
 
 
 DEFAULT_DIR: Final[str] = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
@@ -317,6 +327,8 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

@@ -25,14 +25,21 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 import argparse
+
 import json
+
 import os
+
 from pathlib import Path
+
 import re
+
 import sys
+
 from typing import Any
 
 from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validator
+
 import yaml  # type: ignore
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -75,6 +82,16 @@ REQUIRED_PUBLIC_FIELDS: set[str] = {
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+
+
 
 
 DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")
@@ -375,6 +392,8 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

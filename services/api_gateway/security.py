@@ -40,7 +40,9 @@ EN: Security middleware:
 from __future__ import annotations
 
 from collections.abc import Callable
+
 import os
+
 import time
 
 from fastapi import FastAPI, Request, Response
@@ -50,6 +52,12 @@ from fastapi import FastAPI, Request, Response
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
 
 
 #!/usr/bin/env python3
@@ -131,6 +139,8 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
             return await call_next(request)
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

@@ -22,12 +22,19 @@
 from __future__ import annotations
 
 from collections import defaultdict
+
 from collections.abc import Callable
+
 from datetime import UTC, datetime
+
 import json
+
 import logging
+
 from pathlib import Path
+
 from typing import Any
+
 import uuid
 
 from .models import (
@@ -41,7 +48,6 @@ from .models import (
 
 # === KONFIGURACJA / CONFIGURATION ===
 STORAGE_MODE = "memory"  # "file" w razie potrzeby
-
 
 # === MODELE / MODELS ===
 class MismatchService:
@@ -304,8 +310,15 @@ class MismatchService:
             getattr(callback, "__name__", str(callback)),
         )
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
 
 
 STORAGE_PATH = Path("data/mismatch_tickets")
@@ -322,6 +335,8 @@ logger = logging.getLogger(__name__)
 mismatch_service = MismatchService()
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

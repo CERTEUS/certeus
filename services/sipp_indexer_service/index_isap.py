@@ -32,17 +32,20 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+
 from datetime import UTC, datetime
+
 from hashlib import sha256
+
 import json
+
 from pathlib import Path
+
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
-@dataclass
 class ActSnapshot:
     act_id: str
 
@@ -62,8 +65,15 @@ class ActSnapshot:
 
     _certeus: dict[str, Any] = field(default_factory=dict)
 
-
 # === LOGIKA / LOGIC ===
+
+
+
+
+
+@dataclass
+
+
 
 
 def _snapshot_for(act_id: str) -> ActSnapshot:
@@ -106,6 +116,8 @@ def index_act(act_id: str, out_dir: Path | None = None) -> Path:
     return path
 
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+
