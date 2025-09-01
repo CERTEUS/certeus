@@ -24,6 +24,13 @@ PL: Księga pochodzenia (ledger) – logika.
 EN: Provenance ledger – logic.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 from __future__ import annotations
 

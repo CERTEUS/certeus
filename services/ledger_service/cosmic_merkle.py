@@ -5,6 +5,20 @@ EN: CERTEUS module – please complete the functional description.
 """
 
 # +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: services/ledger_service/cosmic_merkle.py            |
+# | ROLE: Project module.                                       |
+# | PLIK: services/ledger_service/cosmic_merkle.py            |
+# | ROLA: Moduł projektu.                                       |
+# +-------------------------------------------------------------+
+
+"""
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+EN: CERTEUS module – please complete the functional description.
+"""
+
+# +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
 

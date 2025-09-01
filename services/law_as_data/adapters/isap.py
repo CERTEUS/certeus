@@ -4,6 +4,20 @@ EN: CERTEUS module – please complete the functional description.
 """
 
 # +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: services/law_as_data/adapters/isap.py               |
+# | ROLE: Project module.                                       |
+# | PLIK: services/law_as_data/adapters/isap.py               |
+# | ROLA: Moduł projektu.                                       |
+# +-------------------------------------------------------------+
+
+"""
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+EN: CERTEUS module – please complete the functional description.
+"""
+
+# +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
 

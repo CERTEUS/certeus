@@ -51,7 +51,10 @@ import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
-import services.api_gateway.routers.pco_public as pco_public
+try:  # optional: avoid hard fail if core/pco deps are unavailable
+    import services.api_gateway.routers.pco_public as pco_public  # type: ignore
+except Exception:
+    pco_public = None  # type: ignore[assignment]
 import services.api_gateway.routers.preview as preview
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
@@ -179,7 +182,8 @@ app.include_router(system.router)
 
 app.include_router(preview.router)
 
-app.include_router(pco_public.router)
+if pco_public is not None:
+    app.include_router(pco_public.router)
 
 if pco_bundle is not None:  # only include if import succeeded
     app.include_router(pco_bundle.router)

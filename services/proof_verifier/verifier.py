@@ -4,6 +4,20 @@ EN: CERTEUS module – please complete the functional description.
 """
 
 # +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: services/proof_verifier/verifier.py                 |
+# | ROLE: Project module.                                       |
+# | PLIK: services/proof_verifier/verifier.py                 |
+# | ROLA: Moduł projektu.                                       |
+# +-------------------------------------------------------------+
+
+"""
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+EN: CERTEUS module – please complete the functional description.
+"""
+
+# +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
 

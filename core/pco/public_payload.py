@@ -5,6 +5,20 @@ EN: CERTEUS module – please complete the functional description.
 """
 
 # +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: core/pco/public_payload.py                          |
+# | ROLE: Project module.                                       |
+# | PLIK: core/pco/public_payload.py                          |
+# | ROLA: Moduł projektu.                                       |
+# +-------------------------------------------------------------+
+
+"""
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+EN: CERTEUS module – please complete the functional description.
+"""
+
+# +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
 

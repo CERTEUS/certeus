@@ -50,14 +50,14 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           python -m venv .venv
-          ./.venv/bin/python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn openapi-spec-validator -c constraints/requirements-constraints.txt || ./.venv/bin/python -m pip install -U openapi-spec-validator
+          ./.venv/bin/python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator -c constraints/requirements-constraints.txt || ./.venv/bin/python -m pip install -U prometheus-client openapi-spec-validator
 
       - name: 📦 Create venv and install (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           py -3 -m venv .venv
-          .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn openapi-spec-validator -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { .\.venv\Scripts\python.exe -m pip install -U openapi-spec-validator }
+          .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { .\.venv\Scripts\python.exe -m pip install -U prometheus-client openapi-spec-validator }
 
       - name: 🚀 Run server (Ubuntu)
         if: matrix.os == 'ubuntu-latest'

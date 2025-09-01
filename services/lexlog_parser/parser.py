@@ -4,6 +4,20 @@ EN: CERTEUS module – please complete the functional description.
 """
 
 # +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: services/lexlog_parser/parser.py                    |
+# | ROLE: Project module.                                       |
+# | PLIK: services/lexlog_parser/parser.py                    |
+# | ROLA: Moduł projektu.                                       |
+# +-------------------------------------------------------------+
+
+"""
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+EN: CERTEUS module – please complete the functional description.
+"""
+
+# +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
 
