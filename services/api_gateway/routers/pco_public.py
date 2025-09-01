@@ -20,29 +20,19 @@ PL: Router FastAPI dla obszaru publiczne PCO i JWKS.
 
 EN: FastAPI router for public PCO and JWKS.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
-# stdlib
 import hashlib
 import json
 import os
 from pathlib import Path
 from typing import Any
 
-# third-party
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 
-# core (kanoniczne funkcje i crypto)
 from core.pco.crypto import (
     b64u_encode,
     canonical_bundle_hash_hex,
@@ -52,6 +42,68 @@ from core.pco.crypto import (
     load_pubkey_bytes_from_env,
     sha256_hex,
 )
+
+# === KONFIGURACJA / CONFIGURATION ===
+FORBIDDEN_KEYS = {
+    "name",
+    "first_name",
+    "last_name",
+    "pesel",
+    "email",
+    "phone",
+    "address",
+    "dob",
+    "ssn",
+    "patient_id",
+    "person_id",
+    "user_id",
+    "ip",
+    "session_id",
+    "headers",
+}
+
+DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
+
+
+# === MODELE / MODELS ===
+class MerkleStep(BaseModel):
+    sibling: str  # hex
+
+    dir: str  # "L" or "R"
+
+
+class PublicPCO(BaseModel):
+    rid: str = Field(..., min_length=3)
+
+    smt2_hash: str = Field(..., min_length=64, max_length=64)  # hex sha256 of SMT2
+
+    lfsc: str = Field(..., min_length=2)  # LFSC (plain text)
+
+    drat: str | None = None  # DRAT (plain text, optional)
+
+    merkle_proof: list[MerkleStep] = Field(default_factory=list)  # list or empty
+
+    signature: str = Field(..., min_length=40)  # detached (base64url, bez '=')
+
+    @field_validator("smt2_hash")
+    @classmethod
+    def _hex64(cls, v: str) -> str:
+        int(v, 16)  # raises on invalid hex
+
+        return v.lower()
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+# stdlib
+
+# third-party
+
+# core (kanoniczne funkcje i crypto)
 
 router = APIRouter(prefix="/pco/public", tags=["pco"])
 
@@ -97,27 +149,6 @@ def _canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
 
 # zero-PII: prosta denylista kluczy
 
-FORBIDDEN_KEYS = {
-    "name",
-    "first_name",
-    "last_name",
-    "pesel",
-    "email",
-    "phone",
-    "address",
-    "dob",
-    "ssn",
-    "patient_id",
-    "person_id",
-    "user_id",
-    "ip",
-    "session_id",
-    "headers",
-}
-
-
-DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
-
 
 def _bundle_dir() -> Path:
     """Resolve bundle dir at call time, honoring current ENV."""
@@ -128,33 +159,6 @@ def _bundle_dir() -> Path:
 # ──────────────────────────────────────────────────────────────────────────────
 
 # MODELE
-
-
-class MerkleStep(BaseModel):
-    sibling: str  # hex
-
-    dir: str  # "L" or "R"
-
-
-class PublicPCO(BaseModel):
-    rid: str = Field(..., min_length=3)
-
-    smt2_hash: str = Field(..., min_length=64, max_length=64)  # hex sha256 of SMT2
-
-    lfsc: str = Field(..., min_length=2)  # LFSC (plain text)
-
-    drat: str | None = None  # DRAT (plain text, optional)
-
-    merkle_proof: list[MerkleStep] = Field(default_factory=list)  # list or empty
-
-    signature: str = Field(..., min_length=40)  # detached (base64url, bez '=')
-
-    @field_validator("smt2_hash")
-    @classmethod
-    def _hex64(cls, v: str) -> str:
-        int(v, 16)  # raises on invalid hex
-
-        return v.lower()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -291,7 +295,9 @@ def _assert_no_pii(bundle: dict[str, Any]) -> None:
 # ENTRYPOINT
 
 
+# === I/O / ENDPOINTS ===
 @router.get("/{rid}", response_model=PublicPCO)
+# === I/O / ENDPOINTS ===
 def get_public_pco(rid: str, request: Request) -> PublicPCO:
     """
 
@@ -338,3 +344,6 @@ def get_public_pco(rid: str, request: Request) -> PublicPCO:
     # Pydantic dodatkowo sanityzuje typy/formaty
 
     return PublicPCO(**{**pub, "merkle_proof": path})
+
+
+# === TESTY / TESTS ===

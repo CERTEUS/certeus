@@ -20,15 +20,8 @@ PL: Router FastAPI dla obszaru diagnostyka/system info.
 
 EN: FastAPI router for diagnostics/system info.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -43,6 +36,42 @@ from services.connectors.fhir.router import router as fhir_router  # NEW: FHIR
 from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.ocr_injector import build_ocr_preview
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+
+# === MODELE / MODELS ===
+class IngestResult(BaseModel):
+    kind: str = Field(default="fact")
+
+    role: str
+
+    source: str
+
+    value: str
+
+    fact_id: str
+
+
+class SourceCacheRequest(BaseModel):
+    uri: str
+
+
+class SourceCacheResponse(BaseModel):
+    uri: str
+
+    digest: str
+
+    path: str
+
+    retrieved_at: str
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
 router = APIRouter(tags=["system"])
 
 
@@ -56,18 +85,6 @@ router.include_router(fhir_router)
 # /v1/ingest
 
 # ---------------------------------------------------------------------
-
-
-class IngestResult(BaseModel):
-    kind: str = Field(default="fact")
-
-    role: str
-
-    source: str
-
-    value: str
-
-    fact_id: str
 
 
 @router.post("/v1/ingest")
@@ -189,35 +206,7 @@ async def ingest_document(
 # ---------------------------------------------------------------------
 
 
-class SourceCacheRequest(BaseModel):
-    uri: str
-
-
-class SourceCacheResponse(BaseModel):
-    uri: str
-
-    digest: str
-
-    path: str
-
-    retrieved_at: str
-
-
-@router.post("/v1/sources/cache", response_model=SourceCacheResponse)
-def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
-    """
-
-    Cache a legal source by URI using Law-as-Data cache; return digest and path.
-
-    """
-
-    from services.law_as_data.cache import cache_from_uri
-
-    cs = cache_from_uri(req.uri)
-
-    return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
-
-
+# moved to be directly above the implementation (see bottom of file)
 # ---------------------------------------------------------------------
 
 # /v1/analyze
@@ -280,3 +269,23 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
         "snapshot_timestamp": snap_ts,
         "_certeus": {"snapshot_timestamp_utc": snap_ts},
     }
+
+
+@router.post("/v1/sources/cache", response_model=SourceCacheResponse)
+def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
+    """
+
+    Cache a legal source by URI using Law-as-Data cache; return digest and path.
+
+    """
+
+    from services.law_as_data.cache import cache_from_uri
+
+    cs = cache_from_uri(req.uri)
+
+    return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

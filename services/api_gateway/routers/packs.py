@@ -20,15 +20,8 @@ PL: Router FastAPI dla obszaru Domain Packs / capabilities.
 
 EN: FastAPI router for Domain Packs / capabilities.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from typing import Any
@@ -39,6 +32,24 @@ from pydantic import BaseModel
 from packs_core.loader import discover, load as load_pack
 from services.api_gateway.limits import enforce_limits
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+
+# === MODELE / MODELS ===
+class HandleRequest(BaseModel):
+    pack: str
+
+    kind: str
+
+    payload: dict[str, Any] | None = None
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
 router = APIRouter(prefix="/v1/packs", tags=["packs"])
 
 
@@ -47,14 +58,6 @@ async def list_packs() -> list[dict[str, Any]]:
     infos = discover()
 
     return [{"name": i.name, "abi": i.abi, "capabilities": i.caps} for i in infos]
-
-
-class HandleRequest(BaseModel):
-    pack: str
-
-    kind: str
-
-    payload: dict[str, Any] | None = None
 
 
 @router.post("/handle", summary="Handle a request using a pack")
@@ -70,3 +73,8 @@ async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
 
     except Exception as e:  # nosec - błąd pakietu mapujemy na 400
         raise HTTPException(status_code=400, detail=f"pack handle error: {e}") from e
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

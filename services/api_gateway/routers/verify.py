@@ -23,9 +23,9 @@ EN: Public endpoint to verify SMT-LIB2 formulas via the Truth Engine.
 
 """
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-# === IMPORTY / IMPORTS ======================================== #
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -34,16 +34,10 @@ from pydantic import BaseModel
 from kernel.mismatch_protocol import MismatchError
 from kernel.truth_engine import DualCoreVerifier
 
-# === ROUTER / ROUTER ========================================== #
-
-router = APIRouter(prefix="/v1", tags=["Truth Engine"])
-
-_verifier = DualCoreVerifier()
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-# === DTO / MODELE DANYCH ====================================== #
-
-
+# === MODELE / MODELS ===
 class VerificationRequest(BaseModel):
     """
 
@@ -58,10 +52,18 @@ class VerificationRequest(BaseModel):
     lang: str = "smt2"
 
 
-# === ENDPOINTY / ENDPOINTS ==================================== #
+# === LOGIKA / LOGIC ===
 
 
+router = APIRouter(prefix="/v1", tags=["Truth Engine"])
+
+_verifier = DualCoreVerifier()
+
+
+# === I/O / ENDPOINTS ===
 @router.post("/verify")
+
+# === I/O / ENDPOINTS ===
 def verify_formula(req: VerificationRequest) -> dict[str, Any]:
     """
 
@@ -89,4 +91,4 @@ def verify_formula(req: VerificationRequest) -> dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {e}") from e
 
 
-# === KONIEC / END ============================================= #
+# === TESTY / TESTS ===

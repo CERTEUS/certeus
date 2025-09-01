@@ -7,6 +7,12 @@
 # | ROLA: Skrypt PowerShell.                                     |
 # +-------------------------------------------------------------+
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 param()
 $ErrorActionPreference = "Stop"
 New-Item -ItemType Directory -Force -Path .devkeys | Out-Null

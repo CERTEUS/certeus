@@ -7,6 +7,12 @@
 # | ROLA: Skrypt PowerShell.                                     |
 # +-------------------------------------------------------------+
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 param([string]$FilePath = ".env")
 if (!(Test-Path $FilePath)) { return }
 $pairs = Get-Content $FilePath | Where-Object { $_ -and ($_ -notmatch '^\s*#') }

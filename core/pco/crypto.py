@@ -20,18 +20,10 @@ PL: Krypto-pomocniki: sha256 (kanoniczne), b64url, Ed25519 (podpis/weryfikacja).
 
 EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
-# ----Bloki----- IMPORTY
 import base64
 import hashlib
 import json
@@ -42,6 +34,19 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
     Ed25519PublicKey,
 )
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+# ----Bloki----- IMPORTY
+
 
 # ----Bloki----- B64URL
 
@@ -242,3 +247,8 @@ def load_pubkey_bytes_from_env() -> bytes:
         "Set PCO_JWKS_B64URL+PCO_ACTIVE_KID or ED25519_PUBKEY_HEX or "
         "ED25519_PUBKEY_B64URL."
     )
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

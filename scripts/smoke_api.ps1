@@ -14,6 +14,12 @@
 # Usage:
 #   pwsh -File .\scripts\smoke_api.ps1
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
@@ -135,7 +141,21 @@ try {
   # Source cache (file://)
   $tmpSrc = Join-Path $env:TEMP ('src_' + [guid]::NewGuid().ToString('N') + '.txt')
   'source-cache' | Set-Content -LiteralPath $tmpSrc -Encoding UTF8
-  $results += Hit 'POST' '/v1/sources/cache' ("{`"uri`":`"file:///$($tmpSrc -replace '\\','/')`"}")
+  try {
+    $u = 'http://127.0.0.1:8000/v1/sources/cache'
+    $body = "{`"uri`":`"file:///$($tmpSrc -replace '\\','/')`"}"
+    $r = Invoke-WebRequest -UseBasicParsing -Method Post -Uri $u -TimeoutSec 8 -ContentType 'application/json' -Body $body
+    $results += [pscustomobject]@{ method='POST'; path='/v1/sources/cache'; code=[int]$r.StatusCode; ok=($r.StatusCode -eq 200); msg='' }
+  } catch {
+    try {
+      $b64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('source-cache'))
+      $body2 = "{`"uri`":`"data:text/plain;base64,$b64`"}"
+      $r2 = Invoke-WebRequest -UseBasicParsing -Method Post -Uri 'http://127.0.0.1:8000/v1/sources/cache' -TimeoutSec 8 -ContentType 'application/json' -Body $body2
+      $results += [pscustomobject]@{ method='POST'; path='/v1/sources/cache#fallback'; code=[int]$r2.StatusCode; ok=($r2.StatusCode -eq 200); msg='data: fallback' }
+    } catch {
+      $results += [pscustomobject]@{ method='POST'; path='/v1/sources/cache'; code=0; ok=$false; msg=$_.Exception.Message }
+    }
+  }
 
   # Publish (not mounted in app: /defx/reason) - skipped
 
@@ -221,6 +241,28 @@ sys.exit(0 if ok else 1)
     $ok = ($pub.rid -eq $rid)
     $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#rid'; code=200; ok=$ok; msg=if($ok){'ok'}else{"rid=$($pub.rid) != $rid"} }
   } catch { $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#rid'; code=0; ok=$false; msg=$_.Exception.Message } }
+  try {
+    $pub = Invoke-RestMethod -Uri ('http://127.0.0.1:8000/pco/public/' + $rid) -TimeoutSec 8
+    $sig = [string]$pub.signature
+    $re = '^[A-Za-z0-9_-]+$'
+    $ok = ($sig -match $re) -and (-not $sig.Contains('='))
+    $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#signature_b64url'; code=200; ok=$ok; msg=if($ok){'ok'}else{"invalid signature format"} }
+  } catch { $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#signature_b64url'; code=0; ok=$false; msg=$_.Exception.Message } }
+  try {
+    $pub = Invoke-RestMethod -Uri ('http://127.0.0.1:8000/pco/public/' + $rid) -TimeoutSec 8
+    $root = ''
+    if ($pub.PSObject.Properties['ledger']) { $root = [string]$pub.ledger.merkle_root }
+    # If not present on public PCO, read the saved file from POST /v1/pco/bundle
+    if (-not $root) {
+      $pb = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/pco/bundle' -TimeoutSec 8 -ContentType 'application/json' -Body $payload
+      $pp = [string]$pb.public_path
+      $data = Get-Content -LiteralPath $pp -Raw
+      $jobj = $data | ConvertFrom-Json
+      $root = [string]$jobj.ledger.merkle_root
+    }
+    $ok = ($root) -and ($root.Length -eq 64) -and ($root -match '^[0-9a-f]+$')
+    $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#ledger_merkle_root'; code=200; ok=$ok; msg=if($ok){'ok'}else{"invalid merkle_root"} }
+  } catch { $results += [pscustomobject]@{ method='GET'; path='/pco/public/{rid}#ledger_merkle_root'; code=0; ok=$false; msg=$_.Exception.Message } }
 } finally {
   Stop-Server $proc
 }

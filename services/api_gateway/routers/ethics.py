@@ -4,11 +4,44 @@ PL: Router FastAPI dla obszaru Equity Meter / HHE.
 
 EN: FastAPI router for Equity Meter / HHE.
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from fastapi import APIRouter, Request
+from pydantic import BaseModel
+
 # === KONFIGURACJA / CONFIGURATION ===
+
+
 # === MODELE / MODELS ===
+class EquityMeterRequest(BaseModel):
+    distribution_a: list[float]
+
+    distribution_b: list[float]
+
+
+class EquityMeterResponse(BaseModel):
+    score: float
+
+    deltas: list[float]
+
+
+class DoubleVerdictRequest(BaseModel):
+    W_litera: str
+
+    T_telos: str
+
+    rationale: str | None = None
+
+
+class DoubleVerdictResponse(BaseModel):
+    verdicts: dict
+
+    rationale: str | None = None
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 #!/usr/bin/env python3
@@ -26,24 +59,8 @@ EN: FastAPI router for Equity Meter / HHE.
 
 # +=====================================================================+
 
-from __future__ import annotations
-
-from fastapi import APIRouter, Request
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/v1/ethics", tags=["ethics"])
-
-
-class EquityMeterRequest(BaseModel):
-    distribution_a: list[float]
-
-    distribution_b: list[float]
-
-
-class EquityMeterResponse(BaseModel):
-    score: float
-
-    deltas: list[float]
 
 
 @router.post("/equity_meter", response_model=EquityMeterResponse)
@@ -69,20 +86,6 @@ async def equity_meter(req: EquityMeterRequest, request: Request) -> EquityMeter
     return EquityMeterResponse(score=round(score, 6), deltas=[round(d, 6) for d in deltas])
 
 
-class DoubleVerdictRequest(BaseModel):
-    W_litera: str
-
-    T_telos: str
-
-    rationale: str | None = None
-
-
-class DoubleVerdictResponse(BaseModel):
-    verdicts: dict
-
-    rationale: str | None = None
-
-
 @router.post("/double_verdict", response_model=DoubleVerdictResponse)
 async def double_verdict(req: DoubleVerdictRequest, request: Request) -> DoubleVerdictResponse:
     from services.api_gateway.limits import enforce_limits
@@ -90,3 +93,8 @@ async def double_verdict(req: DoubleVerdictRequest, request: Request) -> DoubleV
     enforce_limits(request, cost_units=1)
 
     return DoubleVerdictResponse(verdicts={"W": req.W_litera, "T": req.T_telos}, rationale=req.rationale)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -7,6 +7,12 @@
 # | OPIS / DESC: Presence & signature; optional cvc5/lfsc-checker       |
 # |             if SMT2 exists.                                         |
 # +=====================================================================+
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 set -Eeuo pipefail
 
 ART_DIR="${ART_DIR:-proof_artifacts}"

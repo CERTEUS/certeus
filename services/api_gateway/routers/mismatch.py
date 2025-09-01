@@ -23,15 +23,8 @@ PL: Router FastAPI dla usług CERTEUS.
 EN: FastAPI router for CERTEUS services.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from typing import Any
@@ -42,9 +35,10 @@ from pydantic import BaseModel, Field
 from services.mismatch_service.models import TicketPriority
 from services.mismatch_service.service import mismatch_service
 
-router = APIRouter(prefix="/mismatch", tags=["mismatch"])
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class EngineResult(BaseModel):
     status: str
 
@@ -69,7 +63,28 @@ class MismatchCreateRequest(BaseModel):
     priority: TicketPriority | None = Field(default=None)
 
 
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+router = APIRouter(prefix="/mismatch", tags=["mismatch"])
+
+
+def get_ticket(ticket_id: str) -> dict[str, Any]:
+    t = mismatch_service.get_ticket(ticket_id)
+
+    if not t:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    return t.model_dump()
+
+
+# === I/O / ENDPOINTS ===
 @router.post("/tickets")
+@router.get("/tickets/{ticket_id}")
+# === I/O / ENDPOINTS ===
 def create_ticket(req: MismatchCreateRequest) -> dict[str, Any]:
     t = mismatch_service.create_ticket(
         case_id=req.case_id,
@@ -82,11 +97,4 @@ def create_ticket(req: MismatchCreateRequest) -> dict[str, Any]:
     return t.model_dump()
 
 
-@router.get("/tickets/{ticket_id}")
-def get_ticket(ticket_id: str) -> dict[str, Any]:
-    t = mismatch_service.get_ticket(ticket_id)
-
-    if not t:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-
-    return t.model_dump()
+# === TESTY / TESTS ===

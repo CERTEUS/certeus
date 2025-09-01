@@ -4,11 +4,40 @@ PL: Router FastAPI dla obszaru FINENITH (quantum alpha).
 
 EN: FastAPI router for FINENITH (quantum alpha).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from fastapi import APIRouter, Request
+from pydantic import BaseModel
+
 # === KONFIGURACJA / CONFIGURATION ===
+
+
 # === MODELE / MODELS ===
+class MeasureRequest(BaseModel):
+    signals: dict[str, float] | None = None
+
+
+class MeasureResponse(BaseModel):
+    outcome: str
+
+    p: float
+
+    pco: dict | None = None
+
+
+class UncertaintyResponse(BaseModel):
+    lower_bound: float
+
+
+class EntanglementsResponse(BaseModel):
+    pairs: list[tuple[str, str]]
+
+    mi: float
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 #!/usr/bin/env python3
@@ -26,24 +55,8 @@ EN: FastAPI router for FINENITH (quantum alpha).
 
 # +=====================================================================+
 
-from __future__ import annotations
-
-from fastapi import APIRouter, Request
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/v1/fin/alpha", tags=["finance"])
-
-
-class MeasureRequest(BaseModel):
-    signals: dict[str, float] | None = None
-
-
-class MeasureResponse(BaseModel):
-    outcome: str
-
-    p: float
-
-    pco: dict | None = None
 
 
 @router.post("/measure", response_model=MeasureResponse)
@@ -67,10 +80,6 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
     return MeasureResponse(outcome=outcome, p=round(p, 6), pco=None)
 
 
-class UncertaintyResponse(BaseModel):
-    lower_bound: float
-
-
 @router.get("/uncertainty", response_model=UncertaintyResponse)
 async def uncertainty(request: Request) -> UncertaintyResponse:
     from services.api_gateway.limits import enforce_limits
@@ -78,12 +87,6 @@ async def uncertainty(request: Request) -> UncertaintyResponse:
     enforce_limits(request, cost_units=1)
 
     return UncertaintyResponse(lower_bound=0.1)
-
-
-class EntanglementsResponse(BaseModel):
-    pairs: list[tuple[str, str]]
-
-    mi: float
 
 
 @router.get("/entanglements", response_model=EntanglementsResponse)
@@ -95,3 +98,8 @@ async def entanglements(request: Request) -> EntanglementsResponse:
     pairs = [("RISK", "SENTIMENT")]
 
     return EntanglementsResponse(pairs=pairs, mi=0.12)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

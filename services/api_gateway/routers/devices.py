@@ -4,11 +4,74 @@ PL: Router FastAPI dla obszaru urządzenia HDE/Q-Oracle/Entangle/Chronosync.
 
 EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from typing import Any
+
+from fastapi import APIRouter, Request
+from pydantic import BaseModel, Field
+
 # === KONFIGURACJA / CONFIGURATION ===
+
+
 # === MODELE / MODELS ===
+class HDEPlanRequest(BaseModel):
+    case: str | None = None
+
+    target_horizon: float | None = Field(default=0.2, description="Desired horizon mass threshold")
+
+
+class HDEPlanResponse(BaseModel):
+    evidence_plan: list[dict[str, Any]]
+
+    cost: int
+
+    expected_kappa: float
+
+
+class QOracleRequest(BaseModel):
+    objective: str
+
+    constraints: dict[str, Any] | None = None
+
+
+class QOracleResponse(BaseModel):
+    optimum: dict[str, Any]
+
+    payoff: float
+
+    distribution: list[dict[str, Any]]
+
+
+class EntangleRequest(BaseModel):
+    variables: list[str]
+
+    target_negativity: float = 0.1
+
+
+class EntangleResponse(BaseModel):
+    certificate: str
+
+    achieved_negativity: float
+
+
+class ChronoSyncRequest(BaseModel):
+    coords: dict[str, Any]
+
+    pc_delta: dict[str, Any] | None = None
+
+    treaty_clause_skeleton: dict[str, Any] | None = None
+
+
+class ChronoSyncResponse(BaseModel):
+    reconciled: bool
+
+    sketch: dict[str, Any]
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 #!/usr/bin/env python3
@@ -26,31 +89,11 @@ EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 
 # +=====================================================================+
 
-from __future__ import annotations
-
-from typing import Any
-
-from fastapi import APIRouter, Request
-from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/v1/devices", tags=["devices"])
 
 
 # Horizon Drive Engine (HDE)
-
-
-class HDEPlanRequest(BaseModel):
-    case: str | None = None
-
-    target_horizon: float | None = Field(default=0.2, description="Desired horizon mass threshold")
-
-
-class HDEPlanResponse(BaseModel):
-    evidence_plan: list[dict[str, Any]]
-
-    cost: int
-
-    expected_kappa: float
 
 
 @router.post("/horizon_drive/plan", response_model=HDEPlanResponse)
@@ -70,20 +113,6 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
 # Quantum Oracle (QOC)
 
 
-class QOracleRequest(BaseModel):
-    objective: str
-
-    constraints: dict[str, Any] | None = None
-
-
-class QOracleResponse(BaseModel):
-    optimum: dict[str, Any]
-
-    payoff: float
-
-    distribution: list[dict[str, Any]]
-
-
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
 async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleResponse:
     from services.api_gateway.limits import enforce_limits
@@ -98,18 +127,6 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
 # Entanglement Inducer (EI)
 
 
-class EntangleRequest(BaseModel):
-    variables: list[str]
-
-    target_negativity: float = 0.1
-
-
-class EntangleResponse(BaseModel):
-    certificate: str
-
-    achieved_negativity: float
-
-
 @router.post("/entangle", response_model=EntangleResponse)
 async def entangle(req: EntangleRequest, request: Request) -> EntangleResponse:
     from services.api_gateway.limits import enforce_limits
@@ -120,20 +137,6 @@ async def entangle(req: EntangleRequest, request: Request) -> EntangleResponse:
 
 
 # Chronosync (LCSI)
-
-
-class ChronoSyncRequest(BaseModel):
-    coords: dict[str, Any]
-
-    pc_delta: dict[str, Any] | None = None
-
-    treaty_clause_skeleton: dict[str, Any] | None = None
-
-
-class ChronoSyncResponse(BaseModel):
-    reconciled: bool
-
-    sketch: dict[str, Any]
 
 
 @router.post("/chronosync/reconcile", response_model=ChronoSyncResponse)
@@ -149,3 +152,8 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> Chro
     }
 
     return ChronoSyncResponse(reconciled=True, sketch=sketch)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

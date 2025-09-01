@@ -20,22 +20,25 @@ PL: Merkle-DAG: konstrukcja i weryfikacja (root/leaf/ścieżki dowodu).
 
 EN: Merkle DAG: build and verify (root/leaf/proof paths).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from dataclasses import dataclass
+import hashlib
+from typing import Any, Literal
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 #!/usr/bin/env python3
 
-from __future__ import annotations
-
-from dataclasses import dataclass
 
 # ----Bloki----- IMPORTY
-import hashlib
-from typing import Any, Literal
 
 # ----Bloki----- TYPY
 
@@ -117,3 +120,8 @@ def apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
             cur = _h(cur + sib)
 
     return cur.hex()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

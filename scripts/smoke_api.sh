@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # CERTEUS — Simple API smoke test (Linux/macOS)
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 set -euo pipefail
 
 if [[ -f ./scripts/dev_env.sh ]]; then
@@ -116,8 +122,8 @@ P95_MS=$(metrics_p95)
 
 # --- OpenAPI validation & lightweight schema checks ---
 mkdir -p reports
-curl -s -f http://127.0.0.1:8000/openapi.json -o reports/openapi.json
-./.venv/bin/python - << 'PY'
+if curl -s -f http://127.0.0.1:8000/openapi.json -o reports/openapi.json; then
+  if ./.venv/bin/python - << 'PY'
 import json, sys
 spec=json.load(open('reports/openapi.json','r',encoding='utf-8'))
 ok=('openapi' in spec and 'paths' in spec)
@@ -136,26 +142,33 @@ except Exception:
   ok=False
 sys.exit(0 if ok else 1)
 PY
-if [[ $? -eq 0 ]]; then echo "[GET] /openapi.json#schema => 200"; PASSES=$((PASSES+1)); else echo "[GET] /openapi.json#schema => FAIL"; FAILS=$((FAILS+1)); fi
+  then
+    echo "[GET] /openapi.json#schema => 200"; PASSES=$((PASSES+1))
+  else
+    echo "[GET] /openapi.json#schema => FAIL"; FAILS=$((FAILS+1))
+  fi
+else
+  echo "[GET] /openapi.json#schema => FAIL"; FAILS=$((FAILS+1))
+fi
 
 # Health payload shape
-curl -s -f http://127.0.0.1:8000/health | ./.venv/bin/python - << 'PY'
+if curl -s http://127.0.0.1:8000/health | ./.venv/bin/python - << 'PY'
 import sys,json
 j=json.load(sys.stdin)
 assert j.get('status')=='ok' and isinstance(j.get('version'),str) and j['version']
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
 # JWKS payload shape
-curl -s -f http://127.0.0.1:8000/.well-known/jwks.json | ./.venv/bin/python - << 'PY'
+if curl -s http://127.0.0.1:8000/.well-known/jwks.json | ./.venv/bin/python - << 'PY'
 import sys,json
 j=json.load(sys.stdin)
 ks=j.get('keys') or []
 assert ks and ks[0].get('kty')=='OKP' and ks[0].get('crv')=='Ed25519' and isinstance(ks[0].get('x'),str)
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
 # FIN measure payload shape
 curl -s -f -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' http://127.0.0.1:8000/v1/fin/alpha/measure | ./.venv/bin/python - << 'PY'
@@ -198,6 +211,19 @@ curl -s -f http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - <
 import sys,json
 j=json.load(sys.stdin)
 assert j.get('rid')=='RID-SMOKE-1'
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+# PCO signature b64url and ledger merkle_root hex
+curl -s -f http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
+import sys,json,re
+j=json.load(sys.stdin)
+sig=j.get('signature') or ''
+ok=re.match(r'^[A-Za-z0-9_-]+$', sig) and ('=' not in sig)
+root=((j.get('ledger') or {}).get('merkle_root') or '')
+ok = ok and (len(root)==64 and re.match(r'^[0-9a-f]+$', root))
+assert ok
 print('ok')
 PY
 [[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))

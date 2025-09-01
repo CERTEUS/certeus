@@ -7,6 +7,12 @@
 # | ROLA: Skrypt PowerShell.                                     |
 # +-------------------------------------------------------------+
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 param([string]$RepoPath = ".")
 $ErrorActionPreference = "Stop"
 

@@ -4,6 +4,12 @@
 # Usage:
 #   source ./scripts/dev_env.sh
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 set -euo pipefail
 
 # Allow all origins in dev (adjust as needed)

@@ -20,18 +20,10 @@ PL: Public payload PCO: ekstrakcja i walidacja (bez PII).
 
 EN: PCO public payload: extraction and validation (no PII).
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
-# ----Bloki----- IMPORTY
 from dataclasses import asdict, dataclass
 from typing import Any
 
@@ -44,8 +36,7 @@ from .crypto import (
 )
 from .merkle import MerkleStep, apply_merkle_path, parse_merkle_proof
 
-# ----Bloki----- KONSTANTY
-
+# === KONFIGURACJA / CONFIGURATION ===
 FORBIDDEN_KEYS: set[str] = {
     "name",
     "first_name",
@@ -63,6 +54,19 @@ FORBIDDEN_KEYS: set[str] = {
     "session_id",
     "headers",
 }
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+# ----Bloki----- IMPORTY
+
+
+# ----Bloki----- KONSTANTY
 
 
 # ----Bloki----- MODEL
@@ -152,3 +156,8 @@ class PublicPCO:
         )
 
         ed25519_verify_b64u(ed25519_public_bytes, self.signature, digest)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

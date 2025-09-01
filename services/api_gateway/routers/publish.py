@@ -1,9 +1,20 @@
 """PL: Mapuje wynik rdzenia na kontrakt publikacji. EN: Map core to publication contract."""
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from typing import Any
+
+from fastapi import APIRouter, Header
+
+from core.truthops.engine import post_solve, pre_solve
+from runtime.proof_queue import PROOF_QUEUE
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 # +=====================================================================+
@@ -15,19 +26,13 @@
 # |  EN: Public publication endpoint (Publication V1 contract).         |
 # +=====================================================================+
 
-from __future__ import annotations
-
-from typing import Any
-
-from fastapi import APIRouter, Header
-
-from core.truthops.engine import post_solve, pre_solve
-from runtime.proof_queue import PROOF_QUEUE
 
 router = APIRouter()
 
 
+# === I/O / ENDPOINTS ===
 @router.post("/defx/reason")
+# === I/O / ENDPOINTS ===
 def reason(
     body: dict[str, Any],
     x_norm_pack_id: str = Header(..., alias="X-Norm-Pack-ID"),
@@ -58,3 +63,6 @@ def reason(
     else:
         resp["pco.plan"] = meta.get("plan", {})
     return resp
+
+
+# === TESTY / TESTS ===

@@ -5,21 +5,8 @@ PL: Stub API dla QTMP (pomiar). Zawiera wymagane pola: sequence[],
 EN: QTMP (measurement) stub API. Includes required fields: sequence[],
     uncertainty_bound.*, optional decoherence and entanglement.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-# +=====================================================================+
-# |                              CERTEUS                                |
-# +=====================================================================+
-# | FILE: services/api_gateway/routers/qtm.py                           |
-# | ROLE: QTMP API stubs: init_case, measure, commutator, entanglement  |
-# +=====================================================================+
-
 from __future__ import annotations
 
 from time import perf_counter
@@ -28,9 +15,10 @@ from typing import Any
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
-router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class InitCaseRequest(BaseModel):
     state_uri: str | None = None
     basis: list[str] | None = Field(default=None, description="Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']")
@@ -39,18 +27,6 @@ class InitCaseRequest(BaseModel):
 class InitCaseResponse(BaseModel):
     ok: bool
     predistribution: list[dict[str, Any]]
-
-
-@router.post("/init_case", response_model=InitCaseResponse)
-async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
-    from services.api_gateway.limits import enforce_limits
-
-    enforce_limits(request, cost_units=1)
-    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
-    # Simple uniform predistribution stub
-    p = 1.0 / max(1, len(basis))
-    predistribution = [{"state": b, "p": round(p, 6)} for b in basis]
-    return InitCaseResponse(ok=True, predistribution=predistribution)
 
 
 class MeasureRequest(BaseModel):
@@ -70,6 +46,52 @@ class MeasureResponse(BaseModel):
     collapse_log: CollapseLog
     uncertainty_bound: dict[str, float]
     latency_ms: float
+
+
+class CommutatorRequest(BaseModel):
+    A: str
+    B: str
+
+
+class CommutatorResponse(BaseModel):
+    value: float
+
+
+class FindEntanglementRequest(BaseModel):
+    variables: list[str]
+
+
+class FindEntanglementResponse(BaseModel):
+    pairs: list[tuple[str, str]]
+    mi: float = 0.0
+    negativity: float = 0.0
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: services/api_gateway/routers/qtm.py                           |
+# | ROLE: QTMP API stubs: init_case, measure, commutator, entanglement  |
+# +=====================================================================+
+
+
+router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
+
+
+@router.post("/init_case", response_model=InitCaseResponse)
+async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
+    # Simple uniform predistribution stub
+    p = 1.0 / max(1, len(basis))
+    predistribution = [{"state": b, "p": round(p, 6)} for b in basis]
+    return InitCaseResponse(ok=True, predistribution=predistribution)
 
 
 @router.post("/measure", response_model=MeasureResponse)
@@ -97,15 +119,6 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
     return MeasureResponse(verdict=verdict, p=p, collapse_log=collapse_log, uncertainty_bound=ub, latency_ms=latency_ms)
 
 
-class CommutatorRequest(BaseModel):
-    A: str
-    B: str
-
-
-class CommutatorResponse(BaseModel):
-    value: float
-
-
 @router.post("/commutator", response_model=CommutatorResponse)
 async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResponse:
     from services.api_gateway.limits import enforce_limits
@@ -114,16 +127,6 @@ async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResp
     # Stub: non-commuting if names differ, return simple normalized score
     value = 1.0 if req.A != req.B else 0.0
     return CommutatorResponse(value=value)
-
-
-class FindEntanglementRequest(BaseModel):
-    variables: list[str]
-
-
-class FindEntanglementResponse(BaseModel):
-    pairs: list[tuple[str, str]]
-    mi: float = 0.0
-    negativity: float = 0.0
 
 
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)
@@ -138,3 +141,8 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
         pairs.append((vars_[i], vars_[i + 1]))
     # Provide low MI/negativity placeholders
     return FindEntanglementResponse(pairs=pairs, mi=0.05 if pairs else 0.0, negativity=0.03 if pairs else 0.0)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

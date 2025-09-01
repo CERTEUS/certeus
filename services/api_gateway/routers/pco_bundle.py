@@ -20,15 +20,8 @@ PL: Router FastAPI dla obszaru pakiety PCO.
 
 EN: FastAPI router for PCO bundles.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import base64
@@ -54,9 +47,10 @@ from services.api_gateway.limits import enforce_limits
 from services.proof_verifier import verify_drat, verify_lfsc
 from services.proofgate.app import PublishRequest, PublishResponse, publish
 
-router = APIRouter(prefix="/v1/pco", tags=["pco"])
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class MerkleStep(BaseModel):
     sibling: str
 
@@ -82,6 +76,15 @@ class PublicBundleIn(BaseModel):
         int(v, 16)
 
         return v.lower()
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
 
 def _bundle_dir() -> Path:
@@ -288,7 +291,9 @@ def _build_proofbundle(
     return pb
 
 
+# === I/O / ENDPOINTS ===
 @router.post("/bundle")
+# === I/O / ENDPOINTS ===
 def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     enforce_limits(request, cost_units=3)
 
@@ -429,3 +434,6 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
         "signature": signature_b64u,
         "public_path": str(out_path),
     }
+
+
+# === TESTY / TESTS ===

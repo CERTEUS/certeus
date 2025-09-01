@@ -4,11 +4,52 @@ PL: Router FastAPI dla obszaru rejestr UPN.
 
 EN: FastAPI router for UPN registry.
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+import time
+from typing import Any
+
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, Field
+
 # === KONFIGURACJA / CONFIGURATION ===
+_REGISTRY: dict[str, dict[str, Any]] = {}
+
+_COUNTER = 1
+
+
 # === MODELE / MODELS ===
+class RegisterRequest(BaseModel):
+    subject: dict[str, Any]
+
+    claims: list[dict[str, Any]] | None = None
+
+
+class RegisterResponse(BaseModel):
+    upn: str
+
+    ts: int
+
+    ledger_ref: str | None = None
+
+
+class RevokeRequest(BaseModel):
+    upn: str = Field(description="Identifier returned by /register")
+
+    reason: str | None = None
+
+
+class RevokeResponse(BaseModel):
+    upn: str
+
+    revoked: bool
+
+    merkle_proof: dict[str, Any]
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 #!/usr/bin/env python3
@@ -26,34 +67,8 @@ EN: FastAPI router for UPN registry.
 
 # +=====================================================================+
 
-from __future__ import annotations
-
-import time
-from typing import Any
-
-from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/v1/upn", tags=["UPN"])
-
-
-class RegisterRequest(BaseModel):
-    subject: dict[str, Any]
-
-    claims: list[dict[str, Any]] | None = None
-
-
-class RegisterResponse(BaseModel):
-    upn: str
-
-    ts: int
-
-    ledger_ref: str | None = None
-
-
-_REGISTRY: dict[str, dict[str, Any]] = {}
-
-_COUNTER = 1
 
 
 @router.post("/register", response_model=RegisterResponse)
@@ -75,20 +90,6 @@ async def register(req: RegisterRequest, request: Request) -> RegisterResponse:
     return RegisterResponse(upn=upn, ts=ts, ledger_ref=None)
 
 
-class RevokeRequest(BaseModel):
-    upn: str = Field(description="Identifier returned by /register")
-
-    reason: str | None = None
-
-
-class RevokeResponse(BaseModel):
-    upn: str
-
-    revoked: bool
-
-    merkle_proof: dict[str, Any]
-
-
 @router.post("/revoke", response_model=RevokeResponse)
 async def revoke(req: RevokeRequest, request: Request) -> RevokeResponse:
     from services.api_gateway.limits import enforce_limits
@@ -107,3 +108,8 @@ async def revoke(req: RevokeRequest, request: Request) -> RevokeResponse:
     proof = {"path": [], "root": "0" * 64}
 
     return RevokeResponse(upn=req.upn, revoked=True, merkle_proof=proof)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -15,6 +15,12 @@
 # |  PL: Oblicza SHA256 plików DRAT/LFSC w proof_artifacts.               |
 # |  EN: Compute SHA256 for DRAT/LFSC files in proof_artifacts.           |
 # +======================================================================+
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 Param(
     [string]$Dir = "proof_artifacts"
 )

@@ -13,6 +13,12 @@
 #   . .\scripts\dev_env.ps1    # dot-source to set env in current session
 #   $env:ED25519_PUBKEY_HEX     # should be set (32 bytes, hex)
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 

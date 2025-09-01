@@ -16,12 +16,8 @@
 
 
 """PL: Router podglądu plików. EN: Preview router."""
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from pathlib import Path
@@ -32,10 +28,16 @@ import uuid
 from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse
 
+# === KONFIGURACJA / CONFIGURATION ===
+STATIC_PREV = Path("static/previews")
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
 router = APIRouter()
 
-
-STATIC_PREV = Path("static/previews")
 
 STATIC_PREV.mkdir(parents=True, exist_ok=True)
 
@@ -66,3 +68,8 @@ async def preview(file: Annotated[UploadFile, File(...)]) -> JSONResponse:
         await file.close()
 
     return JSONResponse({"url": f"/static/previews/{safe_name}"})
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

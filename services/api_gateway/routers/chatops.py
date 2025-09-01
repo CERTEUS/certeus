@@ -4,11 +4,26 @@ PL: Router FastAPI dla obszaru interfejs ChatOps.
 
 EN: FastAPI router for ChatOps interface.
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
+
 # === KONFIGURACJA / CONFIGURATION ===
+
+
 # === MODELE / MODELS ===
+class CommandRequest(BaseModel):
+    cmd: str
+
+    args: dict | None = None
+
+    text_context: str | None = None
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
 
 
 #!/usr/bin/env python3
@@ -26,20 +41,8 @@ EN: FastAPI router for ChatOps interface.
 
 # +=====================================================================+
 
-from __future__ import annotations
-
-from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/v1/chatops", tags=["ChatOps"])
-
-
-class CommandRequest(BaseModel):
-    cmd: str
-
-    args: dict | None = None
-
-    text_context: str | None = None
 
 
 @router.post("/command")
@@ -62,3 +65,8 @@ async def command(req: CommandRequest, request: Request) -> dict:
         return {"dispatched": req.cmd, "result": {"p_tunnel": 0.7, "min_energy_to_cross": 0.8}}
 
     raise HTTPException(status_code=400, detail="Unknown or unsupported command")
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

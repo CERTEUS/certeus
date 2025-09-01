@@ -4,36 +4,17 @@ PL: Router FastAPI dla obszaru MailOps ingest/headers.
 
 EN: FastAPI router for MailOps ingest/headers.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | FILE: services/api_gateway/routers/mailops.py                       |
-
-# | ROLE: MailOps ingest + normalize                                    |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
-router = APIRouter(prefix="/v1/mailops", tags=["MailOps"])
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class Attachment(BaseModel):
     filename: str
 
@@ -70,6 +51,28 @@ class IngestEmailResponse(BaseModel):
     io: dict
 
 
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+# +=====================================================================+
+
+# |                              CERTEUS                                |
+
+# +=====================================================================+
+
+# | FILE: services/api_gateway/routers/mailops.py                       |
+
+# | ROLE: MailOps ingest + normalize                                    |
+
+# +=====================================================================+
+
+
+router = APIRouter(prefix="/v1/mailops", tags=["MailOps"])
+
+
 @router.post("/ingest", response_model=IngestEmailResponse)
 async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmailResponse:
     from services.api_gateway.limits import enforce_limits
@@ -88,3 +91,8 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
     }
 
     return IngestEmailResponse(ok=True, io=io_email)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

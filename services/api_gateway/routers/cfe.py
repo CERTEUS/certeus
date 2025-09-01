@@ -10,21 +10,8 @@ Endpoints:
 
 Zwracane wartości są placeholderami niezależnymi od środowiska produkcyjnego.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-# +=====================================================================+
-# |                              CERTEUS                                |
-# +=====================================================================+
-# | FILE: services/api_gateway/routers/cfe.py                           |
-# | ROLE: CFE API stubs: /curvature, /geodesic, /horizon, /lensing      |
-# +=====================================================================+
-
 from __future__ import annotations
 
 from typing import Any
@@ -32,9 +19,10 @@ from typing import Any
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
 
-router = APIRouter(prefix="/v1/cfe", tags=["CFE"])
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class GeodesicRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
     facts: dict[str, Any] | None = None
@@ -59,6 +47,21 @@ class HorizonResponse(BaseModel):
 class LensingResponse(BaseModel):
     lensing_map: dict[str, float]
     critical_precedents: list[str]
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: services/api_gateway/routers/cfe.py                           |
+# | ROLE: CFE API stubs: /curvature, /geodesic, /horizon, /lensing      |
+# +=====================================================================+
+
+
+router = APIRouter(prefix="/v1/cfe", tags=["CFE"])
 
 
 @router.post("/geodesic", response_model=GeodesicResponse)
@@ -88,3 +91,8 @@ async def lensing() -> LensingResponse:
         lensing_map={"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
         critical_precedents=["precedent:K_2001"],
     )
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

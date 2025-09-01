@@ -20,27 +20,35 @@ PL: Router FastAPI dla obszaru metryki Prometheus.
 
 EN: FastAPI router for Prometheus metrics.
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from fastapi import APIRouter, Response
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
 router = APIRouter(prefix="", tags=["metrics"])
 
 
+# === I/O / ENDPOINTS ===
 @router.get("/metrics")
+# === I/O / ENDPOINTS ===
 def metrics() -> Response:
     # Use the default global registry
 
     data = generate_latest()  # type: ignore[arg-type]
 
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
+
+
+# === TESTY / TESTS ===

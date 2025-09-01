@@ -12,6 +12,12 @@
 # |                 Smoke test for /v1/ingest                   |
 # +-------------------------------------------------------------+
 
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 

@@ -20,33 +20,9 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
-
-__all__ = [
-    "b64u_encode",
-    "b64u_decode",
-    "sha256_hex",
-    "canonical_bundle_hash_hex",
-    "compute_leaf_hex",
-    "canonical_digest_hex",
-    "ed25519_sign_b64u",
-    "ed25519_verify_b64u",
-    "load_pubkey_bytes_from_env",
-    "MerkleStep",
-    "parse_merkle_proof",
-    "apply_merkle_path",
-    "PublicPCO",
-]
-
 
 from .crypto import (  # noqa: E402
     b64u_decode,
@@ -65,3 +41,34 @@ from .merkle import (  # noqa: E402
     parse_merkle_proof,
 )
 from .public_payload import PublicPCO  # noqa: E402
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+__all__ = [
+    "b64u_encode",
+    "b64u_decode",
+    "sha256_hex",
+    "canonical_bundle_hash_hex",
+    "compute_leaf_hex",
+    "canonical_digest_hex",
+    "ed25519_sign_b64u",
+    "ed25519_verify_b64u",
+    "load_pubkey_bytes_from_env",
+    "MerkleStep",
+    "parse_merkle_proof",
+    "apply_merkle_path",
+    "PublicPCO",
+]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
