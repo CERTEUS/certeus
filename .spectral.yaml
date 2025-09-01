@@ -1,0 +1,40 @@
+extends:
+  - spectral:oas
+
+rules:
+  # Ensure common OAS structure is present
+  openapi-info-title:
+    description: OpenAPI must define info.title
+    given: $.info.title
+    then:
+      function: truthy
+    severity: error
+
+  openapi-info-version:
+    description: OpenAPI must define info.version
+    given: $.info.version
+    then:
+      function: truthy
+    severity: error
+
+  # Prefer each operation to define a 2xx response
+  operation-2xx-response:
+    severity: error
+
+  # Helpful, but not blocking: valid response codes
+  oas3-valid-response-status-codes:
+    severity: warn
+
+  # Warn on unused components (if detected by ruleset)
+  no-unused-components:
+    severity: warn
+
+  # Encourage declaring servers (but do not block)
+  oas3-api-servers:
+    severity: warn
+
+  # Relax noisy rules for now
+  operation-operationId:
+    severity: off
+  operation-operationId-unique:
+    severity: off

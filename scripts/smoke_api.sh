@@ -17,6 +17,37 @@ fi
 PY=.venv/bin/python
 [[ -x "$PY" ]] || { echo "Python venv not found: $PY"; exit 1; }
 
+# Generate ephemeral Ed25519 keypair for PCO bundle signing (Linux CI)
+if [[ -z "${ED25519_PRIVKEY_PEM:-}" ]]; then
+  mkdir -p .devkeys
+  "$PY" - << 'PY'
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives import serialization
+from pathlib import Path
+import base64
+
+p = Path('.devkeys'); p.mkdir(exist_ok=True)
+k = Ed25519PrivateKey.generate()
+pem = k.private_bytes(
+    encoding=serialization.Encoding.PEM,
+    format=serialization.PrivateFormat.PKCS8,
+    encryption_algorithm=serialization.NoEncryption(),
+)
+(p / 'ed25519_priv.pem').write_bytes(pem)
+pub = k.public_key().public_bytes(
+    encoding=serialization.Encoding.Raw,
+    format=serialization.PublicFormat.Raw,
+)
+(p / 'ed25519_pub.hex').write_text(pub.hex(), encoding='utf-8')
+(p / 'ed25519_pub.b64u').write_text(base64.urlsafe_b64encode(pub).rstrip(b'=').decode('ascii'), encoding='utf-8')
+PY
+  export ED25519_PRIVKEY_PEM="$(cat .devkeys/ed25519_priv.pem)"
+  export ED25519_PUBKEY_HEX="$(cat .devkeys/ed25519_pub.hex)"
+  export ED25519_PUBKEY_B64URL="$(cat .devkeys/ed25519_pub.b64u)"
+  export PROOF_BUNDLE_DIR="${PROOF_BUNDLE_DIR:-data/public_pco}"
+  mkdir -p "${PROOF_BUNDLE_DIR}"
+fi
+
 function start_server() {
   $PY -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000 &
   SVR_PID=$!
@@ -117,6 +148,18 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 # Publish
 # Publish not mounted in app; skipping
 
+# Create a minimal PCO bundle for public checks (uses generated keys)
+rid="RID-SMOKE-1"
+payload=$(cat <<JSON
+{"rid":"$rid","smt2_hash":"$(python - <<'PY'
+from hashlib import sha256
+print(sha256(b'(set-logic ALL)\n(check-sat)\n').hexdigest())
+PY
+)","lfsc":"(lfsc proof)","drat":"p drat","merkle_proof":[]}
+JSON
+)
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d "$payload" http://127.0.0.1:8000/v1/pco/bundle); echo "[POST] /v1/pco/bundle => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+
 # Compute p95 from /metrics
 P95_MS=$(metrics_p95)
 
@@ -171,16 +214,16 @@ PY
 then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
 # FIN measure payload shape
-curl -s -f -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' http://127.0.0.1:8000/v1/fin/alpha/measure | ./.venv/bin/python - << 'PY'
+if curl -s -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' http://127.0.0.1:8000/v1/fin/alpha/measure | ./.venv/bin/python - << 'PY'
 import sys,json
 j=json.load(sys.stdin)
 assert isinstance(j.get('outcome'),str) and isinstance(j.get('p'),(int,float))
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
 # QTMP regressions
-curl -s -f -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case | ./.venv/bin/python - << 'PY'
+if curl -s -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case | ./.venv/bin/python - << 'PY'
 import sys,json,math
 j=json.load(sys.stdin)
 pd=j.get('predistribution') or []
@@ -188,35 +231,35 @@ s=sum(float(it.get('p',0)) for it in pd)
 assert len(pd)==3 and abs(s-1.0)<=1e-3
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
-curl -s -f -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure | ./.venv/bin/python - << 'PY'
+if curl -s -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure | ./.venv/bin/python - << 'PY'
 import sys,json
 j=json.load(sys.stdin)
 assert j.get('verdict') in ['ALLOW','DENY','ABSTAIN']
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
-curl -s -f -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator | ./.venv/bin/python - << 'PY'
+if curl -s -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator | ./.venv/bin/python - << 'PY'
 import sys,json
 j=json.load(sys.stdin)
 assert float(j.get('value',-1))==1.0
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
 # PCO public rid equals requested rid
-curl -s -f http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
+if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
 import sys,json
 j=json.load(sys.stdin)
 assert j.get('rid')=='RID-SMOKE-1'
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 
 # PCO signature b64url and ledger merkle_root hex
-curl -s -f http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
+if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
 import sys,json,re
 j=json.load(sys.stdin)
 sig=j.get('signature') or ''
@@ -226,7 +269,7 @@ ok = ok and (len(root)==64 and re.match(r'^[0-9a-f]+$', root))
 assert ok
 print('ok')
 PY
-[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+then PASSES=$((PASSES+1)); else FAILS=$((FAILS+1)); fi
 THRESH="${SLO_MAX_P95_MS:-}"
 if [[ -n "$THRESH" && "$P95_MS" != "n/a" ]]; then
   awk -v p95="$P95_MS" -v thr="$THRESH" 'BEGIN { if (p95+0 > thr+0) { exit 1 } else { exit 0 } }'

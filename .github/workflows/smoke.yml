@@ -80,7 +80,7 @@ jobs:
 
       - name: 🔎 Spectral lint OpenAPI spec
         run: |
-          npx -y @stoplight/spectral-cli lint reports/openapi.json
+          npx -y @stoplight/spectral-cli lint -r .spectral.yaml reports/openapi.json
 
       - name: 📤 Upload smoke summary
         if: always()
@@ -149,3 +149,4 @@ jobs:
               issue_number: context.issue.number,
               body,
             });
+
