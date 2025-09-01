@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/ISSUE_TEMPLATE/config.yml                    |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/ISSUE_TEMPLATE/config.yml                    |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 blank_issues_enabled: false
 contact_links:
   - name: Security issues
