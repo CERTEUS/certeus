@@ -51,27 +51,45 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git fetch origin ci-status || true
-          if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
-            git checkout -B ci-status origin/ci-status
-          else
-            git checkout --orphan ci-status
-            git rm -rf . || true
+          
+          attempt=0
+          max_attempts=5
+          until [ $attempt -ge $max_attempts ]; do
+            attempt=$((attempt+1))
+            echo "[ci-status] Attempt $attempt/$max_attempts"
+            # Always refetch latest remote tip
+            git fetch origin ci-status || true
+            if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
+              git checkout -B ci-status origin/ci-status
+            else
+              git checkout --orphan ci-status
+              git rm -rf . || true
+            fi
+            mkdir -p ci
+            cat > ci/status.json <<'JSON'
+            {
+              "repo": "${{ github.repository }}",
+              "workflow": "${{ github.workflow }}",
+              "run_id": "${{ github.run_id }}",
+              "run_number": "${{ github.run_number }}",
+              "event": "${{ github.event_name }}",
+              "branch": "${{ github.ref_name }}",
+              "sha": "${{ github.sha }}",
+              "status": "${{ job.status }}",
+              "updated_at": "$(date -u +%FT%TZ)"
+            }
+            JSON
+            git add ci/status.json
+            git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
+            if git push origin ci-status; then
+              echo "[ci-status] Push OK"
+              break
+            else
+              echo "[ci-status] Push failed (likely race). Retrying..."
+              sleep 2
+            fi
+          done
+          if [ $attempt -ge $max_attempts ]; then
+            echo "[ci-status] Failed to push after $max_attempts attempts"
+            exit 1
           fi
-          mkdir -p ci
-          cat > ci/status.json <<'JSON'
-          {
-            "repo": "${{ github.repository }}",
-            "workflow": "${{ github.workflow }}",
-            "run_id": "${{ github.run_id }}",
-            "run_number": "${{ github.run_number }}",
-            "event": "${{ github.event_name }}",
-            "branch": "${{ github.ref_name }}",
-            "sha": "${{ github.sha }}",
-            "status": "${{ job.status }}",
-            "updated_at": "$(date -u +%FT%TZ)"
-          }
-          JSON
-          git add ci/status.json
-          git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
-          git push origin ci-status
