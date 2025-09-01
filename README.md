@@ -87,7 +87,8 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 - Linux/macOS
 ```
 python -m venv .venv && source .venv/bin/activate
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+source ./scripts/dev_env.sh
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # in another terminal
 curl -s http://127.0.0.1:8000/health
@@ -108,7 +109,8 @@ curl.exe -s http://127.0.0.1:8000/health
 - Linux/macOS
 ```
 python -m venv .venv && source .venv/bin/activate
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+source ./scripts/dev_env.sh
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # w drugim oknie
 curl -s http://127.0.0.1:8000/health
@@ -137,7 +139,8 @@ export CER_BASE="http://localhost:8000"
 ```bash
 # Linux/macOS (Python 3.11)
 python -m venv .venv && source .venv/bin/activate
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+source ./scripts/dev_env.sh
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 python -m ruff check . --fix && python -m ruff format .
 python -m pytest -q
 
@@ -528,6 +531,7 @@ Pełny przewodnik PL (bez artefaktów kodowania): `docs/README_PL.md`
 ## Licencja
 
 MIT © 2025 CERTEUS Contributors
+
 
 
 
