@@ -29,11 +29,13 @@ from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse
 
 # === KONFIGURACJA / CONFIGURATION ===
-STATIC_PREV = Path("static/previews")
 
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
+
+STATIC_PREV = Path("static/previews")
 
 
 router = APIRouter()

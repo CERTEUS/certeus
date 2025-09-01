@@ -22,13 +22,8 @@ PL: Smoke-test Jądra Prawdy: wczytuje flags JSON i sprawdza spełnialność.
 EN: Truth Engine smoke test: loads flags JSON and checks satisfiability.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import argparse
@@ -40,18 +35,23 @@ from services.lexlog_parser.evaluator import evaluate_rule
 from services.lexlog_parser.mapping import load_mapping
 from services.lexlog_parser.parser import parse_lexlog
 
+# === KONFIGURACJA / CONFIGURATION ===
 RULE_ID = "R_286_OSZUSTWO"
-
-RULES_PATH = Path("packs/jurisdictions/PL/rules/kk.lex")
-
-MAP_PATH = Path("packs/jurisdictions/PL/rules/kk.mapping.json")
-
 
 DEFAULT_FLAGS: Mapping[str, bool] = {
     "intent_financial_gain": True,
     "act_deception": True,
     "detrimental_property_disposal": True,
 }
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+RULES_PATH = Path("packs/jurisdictions/PL/rules/kk.lex")
+
+MAP_PATH = Path("packs/jurisdictions/PL/rules/kk.mapping.json")
 
 
 def main() -> None:
@@ -107,3 +107,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

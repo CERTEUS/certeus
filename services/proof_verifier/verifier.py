@@ -19,13 +19,8 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -36,8 +31,10 @@ import re
 import subprocess
 from typing import Any
 
+# === KONFIGURACJA / CONFIGURATION ===
 
-@dataclass
+
+# === MODELE / MODELS ===
 class VerificationResult:
     ok: bool
 
@@ -46,11 +43,15 @@ class VerificationResult:
     details: dict[str, Any]
 
 
+# === LOGIKA / LOGIC ===
+
+
 _LFSC_HEADER_RE = re.compile(r"\(\s*lfsc\b", re.IGNORECASE)
 
 _DRAT_HINT_RE = re.compile(r"^(p\s+drat|d\s+|\s*c\s*)", re.IGNORECASE | re.MULTILINE)
 
 
+@dataclass
 def _sha256_hex(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -164,3 +165,8 @@ def verify_drat(text: str) -> VerificationResult:
     ok = bool(text.strip()) and bool(_DRAT_HINT_RE.search(text))
 
     return VerificationResult(ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:drat-check"})
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

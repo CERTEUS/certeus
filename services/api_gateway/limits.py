@@ -3,11 +3,25 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from threading import Lock
+
+from fastapi import HTTPException, Request
+
 # === KONFIGURACJA / CONFIGURATION ===
+_DEFAULT_BUDGET = 10_000  # domyślny dzienny budżet jednostek
+
+_TOKEN_BUDGETS: dict[str, int] = {}
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
+
+
+_LOCK = Lock()
 
 
 # +=====================================================================+
@@ -34,22 +48,11 @@ EN: CERTEUS project module (generic description).
 
 # +=====================================================================+
 
-from __future__ import annotations
-
-from threading import Lock
-
-from fastapi import HTTPException, Request
 
 __all__ = ["enforce_limits", "set_tenant_quota", "get_tenant_id"]
 
 
 # In-memory MVP (można później podmienić na Redis/TokenBank)
-
-_DEFAULT_BUDGET = 10_000  # domyślny dzienny budżet jednostek
-
-_TOKEN_BUDGETS: dict[str, int] = {}
-
-_LOCK = Lock()
 
 
 def get_tenant_id(req: Request) -> str:
@@ -106,3 +109,8 @@ def enforce_limits(req: Request, *, cost_units: int = 1) -> None:
 
     if not ok:
         raise HTTPException(status_code=429, detail="Rate/Budget limits exceeded")
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

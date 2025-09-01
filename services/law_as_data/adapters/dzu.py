@@ -19,13 +19,8 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -33,8 +28,10 @@ import re
 
 from ..cache import FileCache, cache_from_uri
 
+# === KONFIGURACJA / CONFIGURATION ===
 
-@dataclass
+
+# === MODELE / MODELS ===
 class DzULawDocument:
     uri: str
 
@@ -45,9 +42,13 @@ class DzULawDocument:
     title: str | None = None
 
 
+# === LOGIKA / LOGIC ===
+
+
 _TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 
 
+@dataclass
 def extract_title(html_bytes: bytes) -> str | None:
     try:
         m = _TITLE_RE.search(html_bytes.decode("utf-8", errors="ignore"))
@@ -70,3 +71,8 @@ def fetch_and_cache_dzu(uri: str, cache: FileCache | None = None) -> DzULawDocum
         title = None
 
     return DzULawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

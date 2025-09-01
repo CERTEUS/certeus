@@ -3,12 +3,19 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +=====================================================================+
@@ -25,11 +32,6 @@ EN: CERTEUS project module (generic description).
 
 # ----Bloki----- IMPORTY
 
-from __future__ import annotations
-
-import json
-import os
-from pathlib import Path
 
 # ----Bloki----- MAIN
 
@@ -47,3 +49,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

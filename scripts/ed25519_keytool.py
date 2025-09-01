@@ -4,12 +4,22 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from argparse import ArgumentParser
+import base64
+from pathlib import Path
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 #!/usr/bin/env python3
@@ -26,15 +36,6 @@ EN: CERTEUS project module (generic description).
 # | ROLE: Generate Ed25519 keypair and export public key (Base64URL).   |
 
 # +=====================================================================+
-
-from __future__ import annotations
-
-from argparse import ArgumentParser
-import base64
-from pathlib import Path
-
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
 def main() -> None:
@@ -99,3 +100,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

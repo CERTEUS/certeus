@@ -23,16 +23,8 @@ PL: Adapter dla Z3 i zależności SMT.
 EN: Adapter for Z3 and SMT.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import logging
@@ -45,32 +37,10 @@ from kernel.smt_translator import (
     validate_ast,
 )  # <- wszystkie importy nad kodem
 
-_Z3 = cast(Any, z3)
-
-logger = logging.getLogger(__name__)
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
-    """
-
-    PL: Kompiluje AST do formuły Z3 bez eval().
-
-    EN: Compile AST to Z3 formula without eval().
-
-    Zwraca ExprRef (BoolRef dziedziczy po ExprRef w naszych stubach).
-
-    """
-
-    if validate:
-        validate_ast(cast(Any, ast_root))
-
-    expr, symbols = compile_bool_ast(cast(Any, ast_root), declare_on_use=True, validate=False)
-
-    logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
-
-    return expr
-
-
+# === MODELE / MODELS ===
 class Z3Adapter:
     """
 
@@ -110,3 +80,41 @@ class Z3Adapter:
             result["error"] = f"model_error: {e}"
 
         return result
+
+
+# === LOGIKA / LOGIC ===
+
+
+_Z3 = cast(Any, z3)
+
+
+#!/usr/bin/env python3
+
+
+logger = logging.getLogger(__name__)
+
+
+def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
+    """
+
+    PL: Kompiluje AST do formuły Z3 bez eval().
+
+    EN: Compile AST to Z3 formula without eval().
+
+    Zwraca ExprRef (BoolRef dziedziczy po ExprRef w naszych stubach).
+
+    """
+
+    if validate:
+        validate_ast(cast(Any, ast_root))
+
+    expr, symbols = compile_bool_ast(cast(Any, ast_root), declare_on_use=True, validate=False)
+
+    logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
+
+    return expr
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

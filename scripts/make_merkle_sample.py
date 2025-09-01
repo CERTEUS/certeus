@@ -51,16 +51,8 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from argparse import ArgumentParser
@@ -76,18 +68,29 @@ from typing import Any, TypedDict
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 
-# ----Bloki----- TYPY
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class MerkleStep(TypedDict):
     sibling: str  # hex
 
     dir: str  # 'L' | 'R'
 
 
-# ----Bloki----- POMOCNICZE
+# === LOGIKA / LOGIC ===
+
 
 DEFAULT_DIR = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
+
+
+#!/usr/bin/env python3
+
+
+# ----Bloki----- TYPY
+
+
+# ----Bloki----- POMOCNICZE
 
 
 def _hx_text(s: str) -> str:
@@ -324,3 +327,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

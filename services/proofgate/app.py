@@ -19,13 +19,8 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -43,14 +38,10 @@ from services.ledger_service.ledger import (
     ledger_service,
 )
 
-app = FastAPI(title="ProofGate", version=__version__)
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-@app.get("/healthz")
-def healthz() -> dict[str, Any]:
-    return {"ok": True, "service": "proofgate-stub"}
-
-
+# === MODELE / MODELS ===
 class PublishRequest(BaseModel):
     pco: dict[str, Any] | None = Field(default=None, description="Proof-Carrying Object")
 
@@ -65,6 +56,17 @@ class PublishResponse(BaseModel):
     pco: dict[str, Any] | None = None
 
     ledger_ref: str | None = None
+
+
+# === LOGIKA / LOGIC ===
+
+
+app = FastAPI(title="ProofGate", version=__version__)
+
+
+@app.get("/healthz")
+def healthz() -> dict[str, Any]:
+    return {"ok": True, "service": "proofgate-stub"}
 
 
 def _repo_root() -> Path:
@@ -264,3 +266,8 @@ def publish(req: PublishRequest) -> PublishResponse:
         pass
 
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

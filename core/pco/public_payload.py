@@ -25,6 +25,7 @@ EN: PCO public payload: extraction and validation (no PII).
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+
 from typing import Any
 
 from .crypto import (
@@ -34,6 +35,7 @@ from .crypto import (
     ed25519_sign_b64u,
     ed25519_verify_b64u,
 )
+
 from .merkle import MerkleStep, apply_merkle_path, parse_merkle_proof
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -56,23 +58,6 @@ FORBIDDEN_KEYS: set[str] = {
 }
 
 # === MODELE / MODELS ===
-
-# === LOGIKA / LOGIC ===
-
-
-#!/usr/bin/env python3
-
-
-# ----Bloki----- IMPORTY
-
-
-# ----Bloki----- KONSTANTY
-
-
-# ----Bloki----- MODEL
-
-
-@dataclass(slots=True)
 class PublicPCO:
     rid: str
 
@@ -157,7 +142,32 @@ class PublicPCO:
 
         ed25519_verify_b64u(ed25519_public_bytes, self.signature, digest)
 
+# === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+
+#!/usr/bin/env python3
+
+
+# ----Bloki----- IMPORTY
+
+
+# ----Bloki----- KONSTANTY
+
+
+# ----Bloki----- MODEL
+
+
+@dataclass(slots=True)
+
+
 
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

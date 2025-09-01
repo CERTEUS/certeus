@@ -94,7 +94,7 @@ metrics_p95() {
     print p95;
   }'
 }
-trap 'stop_server; echo "SMOKE SUMMARY: total=$((PASSES+FAILS)) passes=$PASSES fails=$FAILS p95_ms=$P95_MS max_fails=$MAX_FAILS"; [[ $FAILS -le ${MAX_FAILS} ]]' EXIT
+trap 'stop_server; echo "SMOKE SUMMARY: total=$((PASSES+FAILS)) passes=$PASSES fails=$FAILS p95_ms=$P95_MS max_fails=$MAX_FAILS"' EXIT
 start_server
 
 hit GET /health && PASSES+=1 || FAILS+=1
@@ -292,4 +292,9 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "- p95_ms: $P95_MS"
     echo "- threshold_ms: ${THRESH}"
   } >> "$GITHUB_STEP_SUMMARY"
+fi
+
+# Final gate: fail if too many failures
+if [[ ${FAILS} -gt ${MAX_FAILS} ]]; then
+  exit 1
 fi

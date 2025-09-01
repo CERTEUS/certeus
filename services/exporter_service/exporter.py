@@ -23,16 +23,8 @@ PL: Eksport raportów i artefaktów procesu.
 EN: Report/artefact exporter.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -40,9 +32,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-# (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
-
-
+# === KONFIGURACJA / CONFIGURATION ===
 TEMPL_REPORT = """# CERTEUS Report
 
 Case: {case_id}
@@ -54,6 +44,7 @@ Model: {model}
 """
 
 
+# === MODELE / MODELS ===
 class ExporterService:
     def __init__(self, template_dir: str, output_dir: str) -> None:
         self.template_dir = Path(template_dir)
@@ -74,6 +65,15 @@ class ExporterService:
         out.write_text(content, encoding="utf-8")
 
         return out
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+# (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
 
 
 def export_answer_to_txt(answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False) -> str:
@@ -121,3 +121,8 @@ def export_answer(answer: Mapping[str, Any], *, fmt: str, output_dir: Path | Non
         return p
 
     raise ValueError(f"Unsupported fmt: {fmt}")
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

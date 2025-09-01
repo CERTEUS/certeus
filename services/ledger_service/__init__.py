@@ -22,16 +22,23 @@ PL: Udostępnia interfejs publiczny: Ledger i LedgerRecord.
 EN: Exposes public API: Ledger and LedgerRecord.
 
 """
+
 # === IMPORTY / IMPORTS ===
+from .ledger import Ledger, LedgerRecord
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # [BLOCK: PUBLIC EXPORTS]
 
-from .ledger import Ledger, LedgerRecord
 
 __all__ = ["Ledger", "LedgerRecord"]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

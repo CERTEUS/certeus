@@ -75,19 +75,8 @@ Weryfikacja:
   curl http://127.0.0.1:8000/pco/public/<rid>
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
-
-# --- blok --- Importy ----------------------------------------------------------
-
 from __future__ import annotations
 
 import argparse
@@ -97,10 +86,23 @@ import os
 from pathlib import Path
 from typing import Final
 
-# --- blok --- Stałe ------------------------------------------------------------
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 DEFAULT_DIR: Final[str] = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
+
+
+#!/usr/bin/env python3
+
+
+# --- blok --- Importy ----------------------------------------------------------
+
+
+# --- blok --- Stałe ------------------------------------------------------------
 
 
 # --- blok --- Hash utils -------------------------------------------------------
@@ -313,3 +315,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

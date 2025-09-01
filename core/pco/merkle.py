@@ -30,7 +30,13 @@ from typing import Any, Literal
 
 # === KONFIGURACJA / CONFIGURATION ===
 
+
 # === MODELE / MODELS ===
+class MerkleStep:
+    sibling: str  # hex
+
+    dir: Dir  # "L" | "R"
+
 
 # === LOGIKA / LOGIC ===
 
@@ -46,11 +52,6 @@ Dir = Literal["L", "R"]
 
 
 @dataclass(frozen=True, slots=True)
-class MerkleStep:
-    sibling: str  # hex
-
-    dir: Dir  # "L" | "R"
-
 
 # ----Bloki----- HASH
 

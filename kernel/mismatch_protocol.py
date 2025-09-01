@@ -17,25 +17,26 @@
 
 
 """Protokół uruchamiany przy rozbieżności solverów — tworzy bilet."""
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from typing import Any
 
 from services.mismatch_service.service import mismatch_service
 
+# === KONFIGURACJA / CONFIGURATION ===
 
+
+# === MODELE / MODELS ===
 class MismatchError(RuntimeError):
     """Rzucane gdy wykryto niezgodność wyników solverów."""
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
 
 
 def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> None:
@@ -47,3 +48,8 @@ def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> 
     )
 
     raise MismatchError(f"Solver results are inconsistent. See ticket {ticket.ticket_id}.")
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

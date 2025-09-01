@@ -32,9 +32,16 @@ PL: Pakiet adapterów (Preview/OCR/Drive/LLM).
 EN: Adapters package (Preview/OCR/Drive/LLM).
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===

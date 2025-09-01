@@ -13,11 +13,13 @@ EN: Inserts section markers after module docstring to make file structure
 consistent with Section 21.1. Idempotent.
 """
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
+# === KONFIGURACJA / CONFIGURATION ===
 TARGET_DIRS = [
     "architectus",
     "cje",
@@ -40,6 +42,10 @@ MARKERS = [
     "# === I/O / ENDPOINTS ===\n",
     "# === TESTY / TESTS ===\n",
 ]
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def has_any_marker(text: str) -> bool:
@@ -104,3 +110,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

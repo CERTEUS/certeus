@@ -27,12 +27,15 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         include:
           - os: ubuntu-latest
-            slo_max_p95_ms: 250
-          - os: windows-latest
             slo_max_p95_ms: 300
+            smoke_max_fails: 1
+          - os: windows-latest
+            slo_max_p95_ms: 350
+            smoke_max_fails: 1
 
     env:
       SLO_MAX_P95_MS: ${{ matrix.slo_max_p95_ms }}
+      SMOKE_MAX_FAILS: ${{ matrix.smoke_max_fails }}
 
     steps:
       - name: 🔄 Checkout

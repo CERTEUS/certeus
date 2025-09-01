@@ -20,16 +20,8 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from hashlib import sha256
@@ -41,7 +33,17 @@ import time
 
 import requests
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
 BASE = os.getenv("CER_BASE", "http://127.0.0.1:8000").rstrip("/")
+
+
+#!/usr/bin/env python3
 
 
 def _wait(url: str, timeout: float = 30.0) -> None:
@@ -144,3 +146,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -32,13 +32,8 @@ EN: Ensures all data contracts (schemas) comply with JSON Schema Draft 7
     required/properties consistency).
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import json
@@ -46,6 +41,13 @@ from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft7Validator  # Only what we truly use
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
 
 SCHEMA_DIR = Path("schemas")
 
@@ -157,3 +159,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

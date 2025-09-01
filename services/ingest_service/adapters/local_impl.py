@@ -66,13 +66,8 @@ PL: Lokalne implementacje stubów adapterów (bez chmury).
 EN: Local stub implementations of adapters (no cloud).
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
@@ -98,30 +93,10 @@ from .contracts import (
     infer_extension,
 )
 
-# ------------------------------ Helpers -------------------------------------
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-def _stable_hexdigest(*parts: str | bytes) -> str:
-    """PL/EN: Deterministic short sha256 hex."""
-
-    h = hashlib.sha256()
-
-    for p in parts:
-        if isinstance(p, str):
-            p = p.encode("utf-8", "ignore")
-
-        h.update(p)
-
-    return h.hexdigest()[:24]
-
-
-def _ensure_dir(path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-
-# --------------------------- LocalDriveAdapter ------------------------------
-
-
+# === MODELE / MODELS ===
 class LocalDriveAdapter(DriveAdapter):
     """
 
@@ -190,9 +165,6 @@ class LocalDriveAdapter(DriveAdapter):
         rel = Path(file_id)
 
         return f"{self.base_url_prefix}/{rel.as_posix()}"
-
-
-# --------------------------- StubPreviewAdapter -----------------------------
 
 
 class StubPreviewAdapter(PreviewAdapter):
@@ -272,9 +244,6 @@ class StubPreviewAdapter(PreviewAdapter):
             raise PreviewError("StubPreviewAdapter.generate failed") from e
 
 
-# ----------------------------- StubOCRAdapter -------------------------------
-
-
 class StubOCRAdapter(OCRAdapter):
     """
 
@@ -296,9 +265,6 @@ class StubOCRAdapter(OCRAdapter):
 
         except Exception as e:
             raise OCRError("StubOCRAdapter.extract failed") from e
-
-
-# ----------------------------- StubLLMAdapter -------------------------------
 
 
 class StubLLMAdapter(LLMAdapter):
@@ -349,3 +315,44 @@ class StubLLMAdapter(LLMAdapter):
 
         except Exception as e:
             raise DriveError("StubLLMAdapter.analyze failed") from e
+
+
+# === LOGIKA / LOGIC ===
+
+
+# ------------------------------ Helpers -------------------------------------
+
+
+def _stable_hexdigest(*parts: str | bytes) -> str:
+    """PL/EN: Deterministic short sha256 hex."""
+
+    h = hashlib.sha256()
+
+    for p in parts:
+        if isinstance(p, str):
+            p = p.encode("utf-8", "ignore")
+
+        h.update(p)
+
+    return h.hexdigest()[:24]
+
+
+def _ensure_dir(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+
+# --------------------------- LocalDriveAdapter ------------------------------
+
+
+# --------------------------- StubPreviewAdapter -----------------------------
+
+
+# ----------------------------- StubOCRAdapter -------------------------------
+
+
+# ----------------------------- StubLLMAdapter -------------------------------
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

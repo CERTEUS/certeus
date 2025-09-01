@@ -19,17 +19,24 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from .cache import FileCache, cache_from_uri, compute_digest
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
 
 __all__ = [
     "FileCache",
     "cache_from_uri",
     "compute_digest",
 ]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

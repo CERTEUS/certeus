@@ -10,14 +10,20 @@ w sposób zachowujący semantykę:
 Zakres domyślny: core/pco/** oraz services/api_gateway/routers/**.
 """
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
+# === KONFIGURACJA / CONFIGURATION ===
 ROOTS = [
-    ("core/pco", True),
-    ("services/api_gateway/routers", True),
+    ("core", True),
+    ("services", True),
+    ("kernel", True),
+    ("plugins", True),
+    ("clients", True),
+    ("scripts", True),
 ]
 
 MARKERS = [
@@ -28,6 +34,10 @@ MARKERS = [
     "# === I/O / ENDPOINTS ===\n",
     "# === TESTY / TESTS ===\n",
 ]
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def get_span(node: ast.AST) -> tuple[int, int]:
@@ -40,24 +50,48 @@ def get_span(node: ast.AST) -> tuple[int, int]:
     return (start_lineno - 1, end_lineno - 1)
 
 
-def is_model_class(node: ast.ClassDef) -> bool:
+def is_enum_class(node: ast.ClassDef) -> bool:
+    enum_bases = {"Enum", "IntEnum", "StrEnum"}
     for b in node.bases:
-        if isinstance(b, ast.Name) and b.id == "BaseModel":
+        if isinstance(b, ast.Name) and b.id in enum_bases:
             return True
-        if isinstance(b, ast.Attribute) and b.attr == "BaseModel":
+        if isinstance(b, ast.Attribute) and b.attr in enum_bases:
             return True
     return False
 
 
+def is_model_class(node: ast.ClassDef) -> bool:
+    # Traktuj wszystkie klasy jako modele (deklaracje) by były przed logiką/konfiguracją
+    return True
+
+
+def _is_simple_literal(value: ast.AST) -> bool:
+    """Return True for literals/containers only (no Calls/Names), safe for CONFIG."""
+    if isinstance(value, (ast.Constant)):
+        return True
+    if isinstance(value, (ast.Dict, ast.List, ast.Tuple, ast.Set)):
+        # ensure children are simple as well
+        for child in ast.walk(value):
+            if isinstance(child, (ast.Call, ast.Lambda, ast.Name, ast.Attribute)):
+                return False
+        return True
+    return False
+
+
 def is_upper_name_target(node: ast.AST) -> bool:
-    targets = []
+    targets: list[str] = []
     if isinstance(node, ast.Assign):
         for t in node.targets:
             if isinstance(t, ast.Name):
                 targets.append(t.id)
+        value = node.value
     elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
         targets.append(node.target.id)
-    return any(name.isupper() for name in targets)
+        value = node.value
+    else:
+        return False
+    # Must be UPPER_CASE and simple literal (avoid moving initializations depending on classes)
+    return any(name.isupper() for name in targets) and _is_simple_literal(value)
 
 
 def is_endpoint_func(node: ast.FunctionDef) -> bool:
@@ -113,7 +147,7 @@ def rebuild(text: str, rel: str) -> str | None:
     covered: set[int] = set()
     imports_spans: list[tuple[int, int]] = []
     config_spans: list[tuple[int, int]] = []
-    model_spans: list[tuple[int, int]] = []
+    model_spans: list[tuple[int, int, int]] = []  # (priority, start, end)
     endpoint_spans: list[tuple[int, int]] = []
 
     for node in mod.body:
@@ -123,7 +157,8 @@ def rebuild(text: str, rel: str) -> str | None:
         elif (isinstance(node, ast.Assign) or isinstance(node, ast.AnnAssign)) and is_upper_name_target(node):
             config_spans.append((s, e))
         elif isinstance(node, ast.ClassDef) and is_model_class(node):
-            model_spans.append((s, e))
+            prio = 0 if is_enum_class(node) else 1
+            model_spans.append((prio, s, e))
         elif isinstance(node, ast.FunctionDef) and is_endpoint_func(node):
             endpoint_spans.append((s, e))
 
@@ -144,7 +179,10 @@ def rebuild(text: str, rel: str) -> str | None:
 
     imports_block = pick_blocks(imports_spans)
     config_block = pick_blocks(config_spans)
-    models_block = pick_blocks(model_spans)
+    # models: sort by (priority, source order)
+    models_block = []
+    for _, s, e in sorted(model_spans, key=lambda x: (x[0], x[1])):
+        models_block.extend(pick_blocks([(s, e)]))
     endpoints_block = pick_blocks(endpoint_spans)
 
     # Remaining logic: lines after header not covered and not marker lines
@@ -203,3 +241,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

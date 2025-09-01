@@ -17,16 +17,8 @@
 
 
 """Modele Pydantic v2 dla biletów niezgodności SMT."""
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -35,7 +27,10 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
+# === KONFIGURACJA / CONFIGURATION ===
 
+
+# === MODELE / MODELS ===
 class TicketStatus(str, Enum):
     OPEN = "open"
 
@@ -214,3 +209,14 @@ class TicketStatistics(BaseModel):
     by_resolution_type: dict[str, int] = Field(default_factory=dict)
 
     by_solver: dict[str, int] = Field(default_factory=dict)
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

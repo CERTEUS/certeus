@@ -40,37 +40,29 @@ Key Components:
 Polish/English bilingual documentation maintained throughout.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-# ┌─────────────────────────────────────────────────────────────────────┐
-# │                           IMPORTS BLOCK                             │
-# └─────────────────────────────────────────────────────────────────────┘
 from dataclasses import dataclass, field
 import logging
 import re
 from re import Match
 from typing import Any
 
-# Configure module logger
+# === KONFIGURACJA / CONFIGURATION ===
+_CANONICAL_ID_MAP: dict[str, str] = {
+    # Long form → Short form (as expected by tests)
+    "P_CEL_OSIAGNIECIA_KORZYSCI": "P_CEL",
+    "P_WPROWADZENIE_W_BLAD": "P_WPROWADZENIE",
+    "P_NIEKORZYSTNE_ROZPORZADZENIE": "P_ROZPORZADZENIE",
+    # Additional mappings for robustness
+    "P_CEL_OSIAGNIECIA_KORZYSCI_MAJATKOWEJ": "P_CEL",
+    "P_NIEKORZYSTNE_ROZPORZADZENIE_MIENIEM": "P_ROZPORZADZENIE",
+}
 
-logger = logging.getLogger(__name__)
 
-
-# ┌─────────────────────────────────────────────────────────────────────┐
-
-# │                      AST DATA STRUCTURES                            │
-
-# └─────────────────────────────────────────────────────────────────────┘
-
-
-@dataclass(frozen=True)
+# === MODELE / MODELS ===
 class Define:
     """
 
@@ -97,7 +89,6 @@ class Define:
     type: str | None = None
 
 
-@dataclass(frozen=True)
 class Premise:
     """
 
@@ -124,7 +115,6 @@ class Premise:
     title: str | None = None
 
 
-@dataclass(frozen=True)
 class RuleDecl:
     """
 
@@ -155,7 +145,6 @@ class RuleDecl:
     conclusion: str | None = None
 
 
-@dataclass(frozen=True)
 class Conclusion:
     """
 
@@ -186,7 +175,6 @@ class Conclusion:
     assert_expr: str | None = None  # CRITICAL: Required by tests!
 
 
-@dataclass(frozen=True)
 class LexAst:
     """
 
@@ -209,6 +197,155 @@ class LexAst:
     conclusions: list[Conclusion] = field(default_factory=list)  # type: ignore[arg-type]
 
 
+class LexlogParser:
+    """
+
+    Legacy parser stub for Day 9 E2E compatibility.
+
+
+
+    Provides dictionary-based interface for kernel integration
+
+    while maintaining backward compatibility with existing tests.
+
+
+
+    PL: Stub parsera dla kompatybilności z Dniem 9 (E2E).
+
+    EN: Parser stub for Day 9 E2E compatibility.
+
+    """
+
+    def parse(self, lexlog_content: str) -> dict[str, Any]:
+        """
+
+        Parse LEXLOG content into legacy dictionary format.
+
+
+
+        Args:
+
+            lexlog_content: Raw LEXLOG file content
+
+
+
+        Returns:
+
+            Dictionary with rule_id, premises, conclusion, smt_assertion
+
+
+
+        PL: Parsuje LEXLOG do starego formatu słownikowego.
+
+        EN: Parses LEXLOG into legacy dictionary format.
+
+        """
+
+        # Quick check for known rule patterns
+
+        if "R_286_OSZUSTWO" in lexlog_content or "RULE R_286_OSZUSTWO" in lexlog_content:
+            return {
+                "rule_id": "R_286_OSZUSTWO",
+                "conclusion": "K_OSZUSTWO_STWIERDZONE",
+                "premises": ["P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"],
+                "smt_assertion": (
+                    "z3.And(cel_korzysci_majatkowej, wprowadzenie_w_blad, niekorzystne_rozporzadzenie_mieniem)"
+                ),
+            }
+
+        # For other content, attempt full parse
+
+        try:
+            ast = parse_lexlog(lexlog_content)
+
+            if ast.rules:
+                rule = ast.rules[0]  # Take first rule as primary
+
+                return {
+                    "rule_id": rule.id,
+                    "conclusion": rule.conclusion,
+                    "premises": rule.premises,
+                    "smt_assertion": self._build_smt_assertion(ast, rule),
+                }
+
+        except Exception as e:
+            logger.warning(f"Failed to parse LEXLOG: {e}")
+
+        return {}
+
+    def _build_smt_assertion(self, ast: LexAst, rule: RuleDecl) -> str:
+        """
+
+        Build SMT assertion from AST and rule.
+
+
+
+        PL: Buduje asercję SMT z AST i reguły.
+
+        EN: Builds SMT assertion from AST and rule.
+
+        """
+
+        # Find conclusion with matching ID
+
+        for concl in ast.conclusions:
+            if concl.id == rule.conclusion and concl.assert_expr:
+                return concl.assert_expr
+
+        # Fallback: build from defines
+
+        define_names = [d.name for d in ast.defines]
+
+        if define_names:
+            return f"z3.And({', '.join(define_names)})"
+
+        return "True"
+
+
+# === LOGIKA / LOGIC ===
+
+
+_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
+
+_PATTERN_PREMISE: re.Pattern[str] = re.compile(
+    r'^\s*PREMISE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*$', re.MULTILINE
+)
+
+_PATTERN_RULE: re.Pattern[str] = re.compile(
+    r"^\s*RULE\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*?)\)\s*->\s*([A-Za-z_][A-Za-z0-9_]*)\s*$",
+    re.MULTILINE,
+)
+
+_PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
+    r'^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*(?:ASSERT\s*\((.*?)\))?\s*$',
+    re.MULTILINE | re.DOTALL,
+)
+
+_PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
+
+
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │                           IMPORTS BLOCK                             │
+# └─────────────────────────────────────────────────────────────────────┘
+
+# Configure module logger
+
+logger = logging.getLogger(__name__)
+
+
+# ┌─────────────────────────────────────────────────────────────────────┐
+
+# │                      AST DATA STRUCTURES                            │
+
+# └─────────────────────────────────────────────────────────────────────┘
+
+
+@dataclass(frozen=True)
+@dataclass(frozen=True)
+@dataclass(frozen=True)
+@dataclass(frozen=True)
+@dataclass(frozen=True)
+
 # ┌─────────────────────────────────────────────────────────────────────┐
 
 # │                    CANONICAL ID NORMALIZATION                       │
@@ -217,16 +354,6 @@ class LexAst:
 
 
 # Mapping from verbose IDs to canonical short forms
-
-_CANONICAL_ID_MAP: dict[str, str] = {
-    # Long form → Short form (as expected by tests)
-    "P_CEL_OSIAGNIECIA_KORZYSCI": "P_CEL",
-    "P_WPROWADZENIE_W_BLAD": "P_WPROWADZENIE",
-    "P_NIEKORZYSTNE_ROZPORZADZENIE": "P_ROZPORZADZENIE",
-    # Additional mappings for robustness
-    "P_CEL_OSIAGNIECIA_KORZYSCI_MAJATKOWEJ": "P_CEL",
-    "P_NIEKORZYSTNE_ROZPORZADZENIE_MIENIEM": "P_ROZPORZADZENIE",
-}
 
 
 def _canonicalize_id(identifier: str) -> str:
@@ -268,35 +395,17 @@ def _canonicalize_id(identifier: str) -> str:
 
 # Pattern for DEFINE statements
 
-_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
-
 
 # Pattern for PREMISE declarations
-
-_PATTERN_PREMISE: re.Pattern[str] = re.compile(
-    r'^\s*PREMISE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*$', re.MULTILINE
-)
 
 
 # Pattern for RULE declarations
 
-_PATTERN_RULE: re.Pattern[str] = re.compile(
-    r"^\s*RULE\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*?)\)\s*->\s*([A-Za-z_][A-Za-z0-9_]*)\s*$",
-    re.MULTILINE,
-)
-
 
 # Pattern for CONCLUSION declarations (with optional ASSERT)
 
-_PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
-    r'^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*(?:ASSERT\s*\((.*?)\))?\s*$',
-    re.MULTILINE | re.DOTALL,
-)
-
 
 # Alternative pattern for ASSERT on separate line
-
-_PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
 
 
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -487,111 +596,6 @@ def parse_lexlog(text: str) -> LexAst:
 # └─────────────────────────────────────────────────────────────────────┘
 
 
-class LexlogParser:
-    """
-
-    Legacy parser stub for Day 9 E2E compatibility.
-
-
-
-    Provides dictionary-based interface for kernel integration
-
-    while maintaining backward compatibility with existing tests.
-
-
-
-    PL: Stub parsera dla kompatybilności z Dniem 9 (E2E).
-
-    EN: Parser stub for Day 9 E2E compatibility.
-
-    """
-
-    def parse(self, lexlog_content: str) -> dict[str, Any]:
-        """
-
-        Parse LEXLOG content into legacy dictionary format.
-
-
-
-        Args:
-
-            lexlog_content: Raw LEXLOG file content
-
-
-
-        Returns:
-
-            Dictionary with rule_id, premises, conclusion, smt_assertion
-
-
-
-        PL: Parsuje LEXLOG do starego formatu słownikowego.
-
-        EN: Parses LEXLOG into legacy dictionary format.
-
-        """
-
-        # Quick check for known rule patterns
-
-        if "R_286_OSZUSTWO" in lexlog_content or "RULE R_286_OSZUSTWO" in lexlog_content:
-            return {
-                "rule_id": "R_286_OSZUSTWO",
-                "conclusion": "K_OSZUSTWO_STWIERDZONE",
-                "premises": ["P_CEL", "P_WPROWADZENIE", "P_ROZPORZADZENIE"],
-                "smt_assertion": (
-                    "z3.And(cel_korzysci_majatkowej, wprowadzenie_w_blad, niekorzystne_rozporzadzenie_mieniem)"
-                ),
-            }
-
-        # For other content, attempt full parse
-
-        try:
-            ast = parse_lexlog(lexlog_content)
-
-            if ast.rules:
-                rule = ast.rules[0]  # Take first rule as primary
-
-                return {
-                    "rule_id": rule.id,
-                    "conclusion": rule.conclusion,
-                    "premises": rule.premises,
-                    "smt_assertion": self._build_smt_assertion(ast, rule),
-                }
-
-        except Exception as e:
-            logger.warning(f"Failed to parse LEXLOG: {e}")
-
-        return {}
-
-    def _build_smt_assertion(self, ast: LexAst, rule: RuleDecl) -> str:
-        """
-
-        Build SMT assertion from AST and rule.
-
-
-
-        PL: Buduje asercję SMT z AST i reguły.
-
-        EN: Builds SMT assertion from AST and rule.
-
-        """
-
-        # Find conclusion with matching ID
-
-        for concl in ast.conclusions:
-            if concl.id == rule.conclusion and concl.assert_expr:
-                return concl.assert_expr
-
-        # Fallback: build from defines
-
-        define_names = [d.name for d in ast.defines]
-
-        if define_names:
-            return f"z3.And({', '.join(define_names)})"
-
-        return "True"
-
-
 # ┌─────────────────────────────────────────────────────────────────────┐
 
 # │                         MODULE EXPORTS                              │
@@ -615,3 +619,8 @@ __all__ = [
 # END OF FILE: services/lexlog_parser/parser.py
 
 # ═══════════════════════════════════════════════════════════════════════
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

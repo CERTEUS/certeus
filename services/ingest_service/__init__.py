@@ -26,16 +26,23 @@ EN: Ingestion service package. This module marks the Python package and
     exposes a public interface (exports) of the most commonly used types.
 
 """
+
 # === IMPORTY / IMPORTS ===
+from .models import Fact, FactRole
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # [BLOCK: PUBLIC API EXPORTS / EKSPORT INTERFEJSU PUBLICZNEGO]
 
-from .models import Fact, FactRole
 
 __all__ = ["Fact", "FactRole"]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

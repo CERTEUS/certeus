@@ -32,16 +32,8 @@ EN: This module transforms raw OCR output into a list of `Fact` objects.
     fixed values. The production version will use NLP/NLU.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-# [BLOCK: IMPORTS / IMPORTY]
-
 from __future__ import annotations
 
 from datetime import date
@@ -51,24 +43,10 @@ import uuid
 
 from .models import Fact, FactRole
 
-# [BLOCK: HELPERS / POMOCNICZE]
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-def _sha256_hex(data: bytes) -> str:
-    """PL/EN: Returns sha256:... digest for given bytes."""
-
-    return "sha256:" + hashlib.sha256(data).hexdigest()
-
-
-def _pages_by_num(ocr_output: dict[str, Any]) -> dict[int, str]:
-    """PL/EN: Maps page_num -> text."""
-
-    return {p.get("page_num"): p.get("text", "") for p in ocr_output.get("pages", [])}
-
-
-# [BLOCK: MAPPER / MAPOWANIE]
-
-
+# === MODELE / MODELS ===
 class FactlogMapper:
     """
 
@@ -134,3 +112,32 @@ class FactlogMapper:
             )
 
         return facts
+
+
+# === LOGIKA / LOGIC ===
+
+
+# [BLOCK: IMPORTS / IMPORTY]
+
+
+# [BLOCK: HELPERS / POMOCNICZE]
+
+
+def _sha256_hex(data: bytes) -> str:
+    """PL/EN: Returns sha256:... digest for given bytes."""
+
+    return "sha256:" + hashlib.sha256(data).hexdigest()
+
+
+def _pages_by_num(ocr_output: dict[str, Any]) -> dict[int, str]:
+    """PL/EN: Maps page_num -> text."""
+
+    return {p.get("page_num"): p.get("text", "") for p in ocr_output.get("pages", [])}
+
+
+# [BLOCK: MAPPER / MAPOWANIE]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -2,12 +2,26 @@
 POST: ATT/MTV (kontrtesty i spójność) → PUBLISH/CONDITIONAL/ABSTAIN.
 EN:  PRE: GoP/EUQ/TTDE (HOT/WARM/COLD + plan). POST: ATT/MTV → verdict.
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Literal
+
 # === KONFIGURACJA / CONFIGURATION ===
+
+
 # === MODELE / MODELS ===
+class PreSolveResult:
+    """PL: Wynik fazy PRE. EN: PRE phase result."""
+
+    heat: Heat
+    reasons: dict[str, Any]
+    plan: dict[str, Any]  # initial plan-of-evidence for non-PUBLISH
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +=====================================================================+
@@ -20,24 +34,12 @@ EN:  PRE: GoP/EUQ/TTDE (HOT/WARM/COLD + plan). POST: ATT/MTV → verdict.
 # |  EN: Two-phase TruthOps engine (pre/post) for publication decisions.|
 # +=====================================================================+
 
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any, Literal
 
 Decision = Literal["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
 Heat = Literal["HOT", "WARM", "COLD"]
 
 
 @dataclass(frozen=True)
-class PreSolveResult:
-    """PL: Wynik fazy PRE. EN: PRE phase result."""
-
-    heat: Heat
-    reasons: dict[str, Any]
-    plan: dict[str, Any]  # initial plan-of-evidence for non-PUBLISH
-
-
 def evaluate_gop(ctx: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     """PL: Ocena GoP. EN: GoP evaluation."""
     return {"ok": True, "sources": ctx.get("sources_count", 0)}
@@ -115,3 +117,8 @@ def post_solve(
 
     plan = {"summary": "Need additional tests/evidence", "steps": att.get("missing_tests", [])}
     return "CONDITIONAL", {"plan": plan, "att": att, "mtv": mtv}
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

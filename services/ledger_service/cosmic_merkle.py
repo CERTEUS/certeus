@@ -25,50 +25,18 @@ PL: Minimalna, deterministyczna implementacja Merkle z blokadą RLock. Brak PII 
 EN: Minimal deterministic Merkle with RLock. No PII — operates on hex hashes.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
-
-# --- blok --- Importy ----------------------------------------------------------
-
 from __future__ import annotations
 
 from dataclasses import dataclass
 from hashlib import sha256
 from threading import RLock
 
-# --- blok --- Pomocnicze funkcje hashujące ------------------------------------
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-def _h(x: str, y: str) -> str:
-    """Hash two hex nodes (order-independent canonicalization)."""
-
-    a = bytes.fromhex(x)
-
-    b = bytes.fromhex(y)
-
-    left, right = (a, b) if a <= b else (b, a)
-
-    return sha256(left + right).hexdigest()
-
-
-def _hh(x: bytes) -> str:
-    """Hash raw bytes to hex."""
-
-    return sha256(x).hexdigest()
-
-
-# --- blok --- Struktury danych -------------------------------------------------
-
-
-@dataclass(frozen=True)
+# === MODELE / MODELS ===
 class MerklePathElem:
     """One step in a Merkle proof path."""
 
@@ -77,7 +45,6 @@ class MerklePathElem:
     position: str  # "L" or "R" (informative; verification uses canonical order)
 
 
-@dataclass(frozen=True)
 class MerkleReceipt:
     """Proof that a leaf is included under a Merkle root."""
 
@@ -86,9 +53,6 @@ class MerkleReceipt:
     path: list[MerklePathElem]
 
     leaf: str  # leaf = H(rid_hash || bundle_hash) as hex
-
-
-# --- blok --- Rdzeń drzewa Merkle ----------------------------------------------
 
 
 class CosmicMerkle:
@@ -227,10 +191,49 @@ class CosmicMerkle:
         return cur == receipt.root
 
 
-# --- blok --- Facade (poziom modułu) -------------------------------------------
+# === LOGIKA / LOGIC ===
 
 
 _LEDGER = CosmicMerkle()
+
+
+#!/usr/bin/env python3
+
+
+# --- blok --- Importy ----------------------------------------------------------
+
+
+# --- blok --- Pomocnicze funkcje hashujące ------------------------------------
+
+
+def _h(x: str, y: str) -> str:
+    """Hash two hex nodes (order-independent canonicalization)."""
+
+    a = bytes.fromhex(x)
+
+    b = bytes.fromhex(y)
+
+    left, right = (a, b) if a <= b else (b, a)
+
+    return sha256(left + right).hexdigest()
+
+
+def _hh(x: bytes) -> str:
+    """Hash raw bytes to hex."""
+
+    return sha256(x).hexdigest()
+
+
+# --- blok --- Struktury danych -------------------------------------------------
+
+
+@dataclass(frozen=True)
+@dataclass(frozen=True)
+
+# --- blok --- Rdzeń drzewa Merkle ----------------------------------------------
+
+
+# --- blok --- Facade (poziom modułu) -------------------------------------------
 
 
 def anchor_bundle(rid_hash: str, bundle_hash: str) -> MerkleReceipt:
@@ -243,3 +246,8 @@ def get_bundle_proof(rid_hash: str, bundle_hash: str) -> MerkleReceipt | None:
 
 def verify_proof(receipt: MerkleReceipt) -> bool:
     return CosmicMerkle.verify_proof(receipt)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

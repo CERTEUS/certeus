@@ -3,12 +3,21 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +=====================================================================+
@@ -28,14 +37,6 @@ EN: CERTEUS project module (generic description).
 # |  EN: Computes Truth Gates AFV/ASE/ATC from CI metrics and writes JSON|
 
 # +=====================================================================+
-
-from __future__ import annotations
-
-import argparse
-import json
-import os
-from pathlib import Path
-import xml.etree.ElementTree as ET
 
 
 def _read_json(p: Path):
@@ -167,3 +168,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

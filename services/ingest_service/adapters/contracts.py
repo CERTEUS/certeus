@@ -82,23 +82,18 @@ PL: Kontrakty adapterów i lekkie DTO (Preview/OCR/Drive/LLM) używane przez API
 EN: Adapter contracts and lightweight DTOs (Preview/OCR/Drive/LLM) used by the API.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Literal, Protocol
 
-# ----------------------------- Common DTOs ----------------------------------
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-@dataclass(slots=True)
+# === MODELE / MODELS ===
 class Blob:
     """
 
@@ -115,7 +110,6 @@ class Blob:
     data: bytes
 
 
-@dataclass(slots=True)
 class PreviewRequest:
     """
 
@@ -134,7 +128,6 @@ class PreviewRequest:
     deterministic: bool = True
 
 
-@dataclass(slots=True)
 class PreviewResult:
     """
 
@@ -155,7 +148,6 @@ class PreviewResult:
     meta: Mapping[str, Any] = field(default_factory=dict)
 
 
-@dataclass(slots=True)
 class OCRPage:
     """
 
@@ -176,7 +168,6 @@ class OCRPage:
     meta: Mapping[str, Any] = field(default_factory=dict)
 
 
-@dataclass(slots=True)
 class OCRRequest:
     """
 
@@ -197,7 +188,6 @@ class OCRRequest:
     case_id: str | None = None
 
 
-@dataclass(slots=True)
 class DriveSaveResult:
     """
 
@@ -218,7 +208,6 @@ class DriveSaveResult:
     meta: Mapping[str, Any] = field(default_factory=dict)
 
 
-@dataclass(slots=True)
 class Attachment:
     """
 
@@ -237,7 +226,6 @@ class Attachment:
     content_type: str | None = None
 
 
-@dataclass(slots=True)
 class LLMRequest:
     """
 
@@ -260,7 +248,6 @@ class LLMRequest:
     max_tokens: int | None = None
 
 
-@dataclass(slots=True)
 class LLMResponse:
     """
 
@@ -283,9 +270,6 @@ class LLMResponse:
     error: str | None = None
 
 
-# ------------------------------- Errors -------------------------------------
-
-
 class AdapterError(RuntimeError):
     """PL: Błąd ogólny adapterów. EN: Generic adapters error."""
 
@@ -304,9 +288,6 @@ class DriveError(AdapterError):
 
 class LLMError(AdapterError):
     """PL/EN: LLM adapter error."""
-
-
-# ------------------------------ Interfaces ----------------------------------
 
 
 class PreviewAdapter(Protocol):
@@ -463,6 +444,28 @@ class LLMAdapter(Protocol):
         ...
 
 
+# === LOGIKA / LOGIC ===
+
+
+# ----------------------------- Common DTOs ----------------------------------
+
+
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+@dataclass(slots=True)
+
+# ------------------------------- Errors -------------------------------------
+
+
+# ------------------------------ Interfaces ----------------------------------
+
+
 # ----------------------------- Helper Contracts -----------------------------
 
 
@@ -508,3 +511,8 @@ __all__ = [
     "LLMAdapter",
     "infer_extension",
 ]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

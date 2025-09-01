@@ -42,13 +42,8 @@ PL: Rejestr adapterów (lazy singletons) — bez efektów ubocznych.
 EN: Adapters registry (lazy singletons) — side-effect free.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from pathlib import Path
@@ -67,9 +62,7 @@ from .local_impl import (
     StubPreviewAdapter,
 )
 
-# ----------------------------- Globals (private) -----------------------------
-
-
+# === KONFIGURACJA / CONFIGURATION ===
 _DRIVE: DriveAdapter | None = None
 
 _PREVIEW: PreviewAdapter | None = None
@@ -77,6 +70,13 @@ _PREVIEW: PreviewAdapter | None = None
 _OCR: OCRAdapter | None = None
 
 _LLM: LLMAdapter | None = None
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+# ----------------------------- Globals (private) -----------------------------
 
 
 # ------------------------------- Factories ----------------------------------
@@ -177,3 +177,8 @@ def get_llm() -> LLMAdapter:
         _LLM = _make_llm()
 
     return _LLM
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

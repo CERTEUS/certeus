@@ -5,18 +5,14 @@ shebang/encoding → baner CERTEUS → module docstring (PL/EN) → reszta.
 EN: Normalize Python file headers: shebang/encoding → CERTEUS banner →
 module docstring (PL/EN) → rest of the code.
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
+# === KONFIGURACJA / CONFIGURATION ===
 ROOTS = [
     "cje",
     "clients",
@@ -27,6 +23,10 @@ ROOTS = [
     "services",
     "tests",
 ]
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def detect_shebang_and_encoding(lines: list[str]) -> tuple[int, int]:
@@ -193,3 +193,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

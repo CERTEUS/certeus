@@ -20,12 +20,15 @@ PL: Wejście wtyczki tpl_diff_pl (Domain Pack).
 
 EN: tpl_diff_pl plugin entry (Domain Pack).
 """
+
 # === IMPORTY / IMPORTS ===
+from datetime import datetime
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+
@@ -51,8 +54,6 @@ EN: tpl_diff_pl plugin entry (Domain Pack).
 
 # +-------------------------------------------------------------+
 
-from datetime import datetime
-
 
 def _mock_diff(act_id: str, v_from: str, v_to: str):
     # Placeholder: returns a deterministic "diff" shape
@@ -75,3 +76,8 @@ def register(api):
     # Register as an adapter-like callable; convention: 'tpl.diff.pl'
 
     api.register_adapter("tpl.diff.pl", _mock_diff)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

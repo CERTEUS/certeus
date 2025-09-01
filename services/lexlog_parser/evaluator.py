@@ -26,13 +26,8 @@ EN: LEXLOG evaluator (MVP). Checks if AST rules hold based on engine
     boolean flags dictionary.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -42,7 +37,10 @@ from pydantic import BaseModel, Field
 
 from services.lexlog_parser.parser import LexAst
 
+# === KONFIGURACJA / CONFIGURATION ===
 
+
+# === MODELE / MODELS ===
 class EvalContext(BaseModel):
     """Mapping context LEXLOG -> engine flags."""
 
@@ -61,6 +59,9 @@ class RuleEvalResult(BaseModel):
     missing_premises: list[str] = Field(default_factory=list)
 
     failing_excludes: list[str] = Field(default_factory=list)
+
+
+# === LOGIKA / LOGIC ===
 
 
 def _flag(flags: Mapping[str, bool], name: str) -> bool:
@@ -107,3 +108,8 @@ def choose_article_for_kk(ast: LexAst, flags: Mapping[str, bool], ctx: EvalConte
     res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
 
     return "art286" if res.satisfied else None
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -32,34 +32,17 @@ EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
     Built-ins: logging and input size guard (safety).
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-# [BLOCK: IMPORTS / IMPORTY]
-
 from __future__ import annotations
 
 import logging
 from typing import Any
 
-# [BLOCK: LOGGER / LOGOWANIE]
-
-logger = logging.getLogger(__name__)
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-# [BLOCK: CONSTANTS / STAŁE]
-
-DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
-
-
-# [BLOCK: PIPELINE / POTOK]
-
-
+# === MODELE / MODELS ===
 class OcrPipeline:
     """
 
@@ -127,3 +110,28 @@ class OcrPipeline:
                 },
             ],
         }
+
+
+# === LOGIKA / LOGIC ===
+
+
+DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
+
+
+# [BLOCK: IMPORTS / IMPORTY]
+
+
+# [BLOCK: LOGGER / LOGOWANIE]
+
+logger = logging.getLogger(__name__)
+
+
+# [BLOCK: CONSTANTS / STAŁE]
+
+
+# [BLOCK: PIPELINE / POTOK]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

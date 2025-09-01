@@ -26,13 +26,8 @@ EN: ISAP adapter stub. MVP version: returns a constant snapshot
     for a given act_id with proper SHA256 and UTC timestamp.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
@@ -40,21 +35,10 @@ import hashlib
 
 from .models import LegalActSnapshot
 
-
-def _ascii_info(msg: str) -> None:
-    try:
-        from utils.console import info as _info  # type: ignore
-
-        s = msg.encode("ascii", "ignore").decode("ascii")
-
-        _info(s)
-
-    except Exception:
-        s = msg.encode("ascii", "ignore").decode("ascii")
-
-        print(f"[INFO] {s}")
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class IsapAdapter:
     """
 
@@ -98,3 +82,25 @@ class IsapAdapter:
         )
 
         return snapshot
+
+
+# === LOGIKA / LOGIC ===
+
+
+def _ascii_info(msg: str) -> None:
+    try:
+        from utils.console import info as _info  # type: ignore
+
+        s = msg.encode("ascii", "ignore").decode("ascii")
+
+        _info(s)
+
+    except Exception:
+        s = msg.encode("ascii", "ignore").decode("ascii")
+
+        print(f"[INFO] {s}")
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

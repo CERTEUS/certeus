@@ -23,27 +23,14 @@ PL: Główna aplikacja FastAPI dla CERTEUS: statyki, routery, CORS (DEV), health
 EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
-
-# --- blok --- Importy ----------------------------------------------------------
-
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-
-# stdlib
 import os
 from pathlib import Path
 
-# third-party
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -51,8 +38,6 @@ from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
-
-# local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
 import services.api_gateway.routers.devices as devices
@@ -66,12 +51,6 @@ import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
-
-# pco_bundle is optional in CI: import lazily and guard include
-try:  # pragma: no cover - best-effort import for optional router
-    import services.api_gateway.routers.pco_bundle as pco_bundle  # type: ignore
-except Exception as _e:  # ModuleNotFoundError or dependency errors
-    pco_bundle = None  # type: ignore[assignment]
 import services.api_gateway.routers.pco_public as pco_public
 import services.api_gateway.routers.preview as preview
 import services.api_gateway.routers.qtm as qtm
@@ -83,7 +62,12 @@ from services.api_gateway.security import attach_proof_only_middleware
 from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.registry import get_llm, get_preview
 
-# --- blok --- Ścieżki i katalogi ----------------------------------------------
+# === KONFIGURACJA / CONFIGURATION ===
+APP_TITLE = "CERTEUS API Gateway"
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -95,14 +79,42 @@ STATIC_PREVIEWS = STATIC_DIR / "previews"
 CLIENTS_WEB = ROOT / "clients" / "web"  # expects /app/proof_visualizer/index.html
 
 
+APP_VERSION = __version__
+
+ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS", "*")
+
+DEV_ORIGINS: list[str] = (
+    [o.strip() for o in ALLOW_ORIGINS_ENV.split(",") if o.strip()]
+    if ALLOW_ORIGINS_ENV and ALLOW_ORIGINS_ENV != "*"
+    else ["*"]
+)
+
+
+#!/usr/bin/env python3
+
+
+# --- blok --- Importy ----------------------------------------------------------
+
+
+# stdlib
+
+# third-party
+
+
+# local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
+
+# pco_bundle is optional in CI: import lazily and guard include
+try:  # pragma: no cover - best-effort import for optional router
+    import services.api_gateway.routers.pco_bundle as pco_bundle  # type: ignore
+except Exception as _e:  # ModuleNotFoundError or dependency errors
+    pco_bundle = None  # type: ignore[assignment]
+
+# --- blok --- Ścieżki i katalogi ----------------------------------------------
+
+
 STATIC_PREVIEWS.mkdir(parents=True, exist_ok=True)
 
 CLIENTS_WEB.mkdir(parents=True, exist_ok=True)
-
-
-APP_TITLE = "CERTEUS API Gateway"
-
-APP_VERSION = __version__
 
 
 # --- blok --- Lifespan (inicjalizacja adapterów) -------------------------------
@@ -150,13 +162,6 @@ app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
 
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
 
-ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS", "*")
-
-DEV_ORIGINS: list[str] = (
-    [o.strip() for o in ALLOW_ORIGINS_ENV.split(",") if o.strip()]
-    if ALLOW_ORIGINS_ENV and ALLOW_ORIGINS_ENV != "*"
-    else ["*"]
-)
 
 app.add_middleware(
     CORSMiddleware,
@@ -282,3 +287,8 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
         pass
 
     return response
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -3,12 +3,33 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from argparse import ArgumentParser
+import base64
+from collections.abc import Iterable
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+from typing import Any, TypedDict, cast
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
 # === KONFIGURACJA / CONFIGURATION ===
+
+
 # === MODELE / MODELS ===
+class MerkleStep(TypedDict):
+    sibling: str  # hex
+
+    dir: str  # 'L' | 'R'
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +=====================================================================+
@@ -65,27 +86,8 @@ EN: CERTEUS project module (generic description).
 
 # ----Bloki----- IMPORTY
 
-from __future__ import annotations
-
-from argparse import ArgumentParser
-import base64
-from collections.abc import Iterable
-import hashlib
-import json
-import os
-from pathlib import Path
-import sys
-from typing import Any, TypedDict, cast
-
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 # ----Bloki----- TYPY
-
-
-class MerkleStep(TypedDict):
-    sibling: str  # hex
-
-    dir: str  # 'L' | 'R'
 
 
 # ----Bloki----- POMOCNICZE
@@ -232,3 +234,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

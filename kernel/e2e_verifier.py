@@ -23,16 +23,8 @@ PL: Weryfikator E2E przepływów CERTEUS.
 EN: E2E verifier for CERTEUS flows.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import logging
@@ -42,53 +34,10 @@ import z3  # type: ignore[reportMissingTypeStubs]
 
 from .smt_translator import compile_bool_ast, validate_ast
 
-logger = logging.getLogger(__name__)
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-# -----------------------------------------------------------------------------
-
-# Adapter selection (no type redefinition conflicts for Pylance)
-
-# -----------------------------------------------------------------------------
-
-try:
-    # Prefer project adapter; name kept distinct to avoid redefinition issues.
-
-    from .dual_core.z3_adapter import Z3Adapter as _AdapterClass  # type: ignore[assignment]
-
-except Exception:  # pragma: no cover - emergency fallback
-
-    class _AdapterClass:  # type: ignore[no-redef]
-        """Fallback adapter: solve a list of Z3 assertions with z3.Solver()."""
-
-        def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
-            s = z3.Solver()
-
-            for a in assertions:
-                s.add(a)
-
-            status = s.check()
-
-            result: dict[str, Any] = {
-                "status": str(status).lower(),
-                "time_ms": None,
-                "model": None,
-                "error": None,
-                "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
-            }
-
-            if status == z3.sat:
-                try:
-                    m = s.model()
-
-                    result["model"] = {d.name(): str(m[d]) for d in m.decls()}
-
-                except Exception as e:  # best-effort
-                    result["error"] = f"model_error: {e}"
-
-            return result
-
-
+# === MODELE / MODELS ===
 class E2EVerifier:
     """
 
@@ -167,3 +116,61 @@ class E2EVerifier:
         assertions = self._parse_smt2_assertions(smt2)
 
         return self.z3.solve(assertions)
+
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+logger = logging.getLogger(__name__)
+
+
+# -----------------------------------------------------------------------------
+
+# Adapter selection (no type redefinition conflicts for Pylance)
+
+# -----------------------------------------------------------------------------
+
+try:
+    # Prefer project adapter; name kept distinct to avoid redefinition issues.
+
+    from .dual_core.z3_adapter import Z3Adapter as _AdapterClass  # type: ignore[assignment]
+
+except Exception:  # pragma: no cover - emergency fallback
+
+    class _AdapterClass:  # type: ignore[no-redef]
+        """Fallback adapter: solve a list of Z3 assertions with z3.Solver()."""
+
+        def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
+            s = z3.Solver()
+
+            for a in assertions:
+                s.add(a)
+
+            status = s.check()
+
+            result: dict[str, Any] = {
+                "status": str(status).lower(),
+                "time_ms": None,
+                "model": None,
+                "error": None,
+                "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
+            }
+
+            if status == z3.sat:
+                try:
+                    m = s.model()
+
+                    result["model"] = {d.name(): str(m[d]) for d in m.decls()}
+
+                except Exception as e:  # best-effort
+                    result["error"] = f"model_error: {e}"
+
+            return result
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

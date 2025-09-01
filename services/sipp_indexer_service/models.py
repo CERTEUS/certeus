@@ -22,20 +22,18 @@ PL: Modele danych Pydantic v2 dla SIPP Indexer.
 EN: Pydantic v2 data models for the SIPP Indexer.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
+# === KONFIGURACJA / CONFIGURATION ===
 
+
+# === MODELE / MODELS ===
 class LegalActSnapshot(BaseModel):
     """
 
@@ -74,3 +72,11 @@ class LegalActSnapshot(BaseModel):
         ...,
         description="PL: Znacznik czasu wykonania migawki. EN: Timestamp of snapshot creation.",
     )
+
+
+# === LOGIKA / LOGIC ===
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

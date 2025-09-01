@@ -20,19 +20,10 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
-# stdlib
 import argparse
 import json
 import os
@@ -42,22 +33,12 @@ import sys
 from typing import Any
 
 from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validator
-
-# third-party
 import yaml  # type: ignore
 
-# ----Bloki----- STAŁE
-
-DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")
-
-DEFAULT_PACK = Path("policies/pco/policy_pack.v0.1.yaml")
-
+# === KONFIGURACJA / CONFIGURATION ===
 ENV_SCHEMA = "PCO_POLICY_PACK_SCHEMA"
 
 ENV_PACK = "PCO_POLICY_PACK_PATH"
-
-
-# Denylista PII (klucze)
 
 PII_FIELD_NAMES: set[str] = {
     "name",
@@ -74,9 +55,6 @@ PII_FIELD_NAMES: set[str] = {
     "user_id",
 }
 
-
-# Dozwolone klucze w publicznym payload
-
 ALLOWED_PUBLIC_FIELDS: set[str] = {
     "rid",
     "smt2_hash",
@@ -86,9 +64,6 @@ ALLOWED_PUBLIC_FIELDS: set[str] = {
     "signature",
 }
 
-
-# Minimalny zestaw wymaganych pól
-
 REQUIRED_PUBLIC_FIELDS: set[str] = {
     "rid",
     "smt2_hash",
@@ -97,8 +72,37 @@ REQUIRED_PUBLIC_FIELDS: set[str] = {
     "signature",
 }
 
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")
+
+DEFAULT_PACK = Path("policies/pco/policy_pack.v0.1.yaml")
+
 
 ENDPOINT_PATTERN = re.compile(r"^/pco/public/\{case_id\}$")
+
+
+#!/usr/bin/env python3
+
+
+# stdlib
+
+
+# third-party
+
+# ----Bloki----- STAŁE
+
+
+# Denylista PII (klucze)
+
+
+# Dozwolone klucze w publicznym payload
+
+
+# Minimalny zestaw wymaganych pól
 
 
 # ----Bloki----- I/O
@@ -369,3 +373,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

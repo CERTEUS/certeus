@@ -23,45 +23,25 @@ PL: Księga pochodzenia (ledger) – logika.
 EN: Provenance ledger – logic.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from collections.abc import Mapping
+
 from dataclasses import dataclass
+
 from datetime import UTC, datetime
+
 from hashlib import sha256
+
 import json
+
 from typing import Any
 
+# === KONFIGURACJA / CONFIGURATION ===
 
-def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
-    if not include_timestamp and "timestamp" in data:
-        work = {k: v for k, v in data.items() if k != "timestamp"}
-
-    else:
-        work = dict(data)
-
-    return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
-
-
-def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
-    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
-
-
-def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
-    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
-
-
-@dataclass(frozen=True)
+# === MODELE / MODELS ===
 class LedgerRecord:
     event_id: int
 
@@ -76,7 +56,6 @@ class LedgerRecord:
     chain_prev: str | None
 
     chain_self: str
-
 
 class Ledger:
     def __init__(self) -> None:
@@ -161,6 +140,39 @@ class Ledger:
             "chain_valid": True,
         }
 
+# === LOGIKA / LOGIC ===
+
+
+
+
+
+
+
+#!/usr/bin/env python3
+
+
+def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
+    if not include_timestamp and "timestamp" in data:
+        work = {k: v for k, v in data.items() if k != "timestamp"}
+
+    else:
+        work = dict(data)
+
+    return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
+    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
+
+
+def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
+    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
+
+
+@dataclass(frozen=True)
+
+
+
 
 # singleton (opcjonalny)
 
@@ -174,3 +186,9 @@ __all__ = [
     "compute_provenance_hash",
     "verify_provenance_hash",
 ]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
+

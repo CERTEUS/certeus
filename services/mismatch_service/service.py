@@ -17,16 +17,8 @@
 
 
 """Serwis do zarządzania biletami niezgodności między solverami SMT."""
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from collections import defaultdict
@@ -47,14 +39,11 @@ from .models import (
     TicketStatus,
 )
 
-logger = logging.getLogger(__name__)
-
-
+# === KONFIGURACJA / CONFIGURATION ===
 STORAGE_MODE = "memory"  # "file" w razie potrzeby
 
-STORAGE_PATH = Path("data/mismatch_tickets")
 
-
+# === MODELE / MODELS ===
 class MismatchService:
     def __init__(self, storage_mode: str = STORAGE_MODE) -> None:
         self.storage_mode = storage_mode
@@ -316,6 +305,23 @@ class MismatchService:
         )
 
 
+# === LOGIKA / LOGIC ===
+
+
+STORAGE_PATH = Path("data/mismatch_tickets")
+
+
+#!/usr/bin/env python3
+
+
+logger = logging.getLogger(__name__)
+
+
 # Singleton
 
 mismatch_service = MismatchService()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

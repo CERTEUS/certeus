@@ -20,12 +20,110 @@ PL: Wejście wtyczki lexlog_rules_pl (Domain Pack).
 
 EN: lexlog_rules_pl plugin entry (Domain Pack).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from collections.abc import MutableMapping
+from typing import Any, Final
+
 # === KONFIGURACJA / CONFIGURATION ===
+PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
+
+
 # === MODELE / MODELS ===
+class Plugin:
+    """
+
+
+
+
+
+
+
+    PL: Minimalna implementacja pluginu. W realnym wdrożeniu trzyma tu
+
+
+
+
+
+
+
+        kompilowane reguły LEXLOG, walidatory itd.
+
+
+
+
+
+
+
+    EN: Minimal plugin implementation. In production, keep compiled
+
+
+
+
+
+
+
+        LEXLOG rules, validators, etc.
+
+
+
+
+
+
+
+    """
+
+    def __init__(self) -> None:
+        self.ruleset_version: str = "pl.lexlog/1.0.0"
+
+    def setup(self) -> None:
+        # PL: Tu mógłbyś załadować reguły z packs/jurisdictions/PL/rules/
+
+        # EN: Load rules here from packs/jurisdictions/PL/rules/
+
+        pass
+
+    def run(self, **kwargs: Any) -> dict[str, Any]:
+        return {
+            "status": "ok",
+            "plugin": PLUGIN_NAME,
+            "rules": self.ruleset_version,
+            "kwargs": kwargs,
+        }
+
+    def register(self, api: Any) -> None:
+        """
+
+
+
+
+
+
+
+        PL: Rejestracja w rdzeniu – odporna na różne kształty API.
+
+
+
+
+
+
+
+        EN: Core registration – resilient to various API shapes.
+
+
+
+
+
+
+
+        """
+
+        _safe_register(api, self, PLUGIN_NAME)
+
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+
@@ -47,13 +145,6 @@ EN: lexlog_rules_pl plugin entry (Domain Pack).
 
 
 # +-------------------------------------------------------------+
-
-from __future__ import annotations
-
-from collections.abc import MutableMapping
-from typing import Any, Final
-
-PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
 
 
 def _safe_register(api: Any, plugin: Any, name: str) -> None:
@@ -241,97 +332,6 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
     raise RuntimeError("No compatible registration hook or registry mapping found on Plugin API")
 
 
-class Plugin:
-    """
-
-
-
-
-
-
-
-    PL: Minimalna implementacja pluginu. W realnym wdrożeniu trzyma tu
-
-
-
-
-
-
-
-        kompilowane reguły LEXLOG, walidatory itd.
-
-
-
-
-
-
-
-    EN: Minimal plugin implementation. In production, keep compiled
-
-
-
-
-
-
-
-        LEXLOG rules, validators, etc.
-
-
-
-
-
-
-
-    """
-
-    def __init__(self) -> None:
-        self.ruleset_version: str = "pl.lexlog/1.0.0"
-
-    def setup(self) -> None:
-        # PL: Tu mógłbyś załadować reguły z packs/jurisdictions/PL/rules/
-
-        # EN: Load rules here from packs/jurisdictions/PL/rules/
-
-        pass
-
-    def run(self, **kwargs: Any) -> dict[str, Any]:
-        return {
-            "status": "ok",
-            "plugin": PLUGIN_NAME,
-            "rules": self.ruleset_version,
-            "kwargs": kwargs,
-        }
-
-    def register(self, api: Any) -> None:
-        """
-
-
-
-
-
-
-
-        PL: Rejestracja w rdzeniu – odporna na różne kształty API.
-
-
-
-
-
-
-
-        EN: Core registration – resilient to various API shapes.
-
-
-
-
-
-
-
-        """
-
-        _safe_register(api, self, PLUGIN_NAME)
-
-
 def register(api: Any, name: str | None = None) -> None:
     """
 
@@ -364,3 +364,8 @@ def register(api: Any, name: str | None = None) -> None:
     plugin.setup()
 
     _safe_register(api, plugin, name or PLUGIN_NAME)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

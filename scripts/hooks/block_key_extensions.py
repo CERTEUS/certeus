@@ -4,12 +4,19 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from pathlib import Path
+import sys
+
 # === KONFIGURACJA / CONFIGURATION ===
+FORBIDDEN_EXT = {".pem", ".key", ".der", ".pfx", ".p12"}
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 #!/usr/bin/env python3
@@ -30,13 +37,6 @@ EN: CERTEUS project module (generic description).
 # |       matches forbidden extensions (pem,key,der,pfx,p12).   |
 
 # +=============================================================+
-
-from __future__ import annotations
-
-from pathlib import Path
-import sys
-
-FORBIDDEN_EXT = {".pem", ".key", ".der", ".pfx", ".p12"}
 
 
 def main(argv: list[str]) -> int:
@@ -63,3 +63,8 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

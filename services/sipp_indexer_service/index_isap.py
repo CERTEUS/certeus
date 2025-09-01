@@ -27,16 +27,8 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
     `snapshot_timestamp` and `_certeus.snapshot_timestamp_utc` fields.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -46,8 +38,10 @@ import json
 from pathlib import Path
 from typing import Any
 
+# === KONFIGURACJA / CONFIGURATION ===
 
-@dataclass
+
+# === MODELE / MODELS ===
 class ActSnapshot:
     act_id: str
 
@@ -68,6 +62,13 @@ class ActSnapshot:
     _certeus: dict[str, Any] = field(default_factory=dict)
 
 
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
+
+@dataclass
 def _snapshot_for(act_id: str) -> ActSnapshot:
     text = (
         "Art. 286 k.k.: Kto, w celu osiągnięcia korzyści majątkowej, "
@@ -106,3 +107,8 @@ def index_act(act_id: str, out_dir: Path | None = None) -> Path:
     path.write_text(json.dumps(asdict(snap), ensure_ascii=False, indent=2), encoding="utf-8")
 
     return path
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

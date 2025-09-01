@@ -62,8 +62,6 @@ FORBIDDEN_KEYS = {
     "headers",
 }
 
-DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
-
 
 # === MODELE / MODELS ===
 class MerkleStep(BaseModel):
@@ -94,6 +92,9 @@ class PublicPCO(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
+
+
+DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
 
 
 #!/usr/bin/env python3

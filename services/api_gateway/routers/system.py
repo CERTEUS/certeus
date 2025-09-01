@@ -271,6 +271,7 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
     }
 
 
+# === I/O / ENDPOINTS ===
 @router.post("/v1/sources/cache", response_model=SourceCacheResponse)
 def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
     """
@@ -285,7 +286,5 @@ def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
 
     return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
 
-
-# === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

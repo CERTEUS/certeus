@@ -28,22 +28,24 @@ EN: Checks presence of {z3.drat,cvc5.lfsc} and their *.sha256 files,
     compares computed SHA256 with recorded ones. Returns code 0/1.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-# [BLOCK: IMPORTS / IMPORTY]
-
 from __future__ import annotations
 
 import argparse
 import hashlib
 from pathlib import Path
 import sys
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+# [BLOCK: IMPORTS / IMPORTY]
+
 
 # [BLOCK: CLI]
 
@@ -93,3 +95,8 @@ ok2 = verify(d / "cvc5.lfsc", d / "cvc5.lfsc.sha256")
 
 
 sys.exit(0 if (ok1 and ok2) else 1)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

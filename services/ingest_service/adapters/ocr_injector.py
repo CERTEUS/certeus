@@ -48,19 +48,20 @@ PL: Helper do wstrzykiwania skrótu OCR (pierwsza strona) do metadanych.
 EN: Helper to inject OCR snippet (first page) into metadata.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from typing import Any
 
 from services.ingest_service.adapters.contracts import Blob, OCRRequest
 from services.ingest_service.adapters.registry import get_ocr
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 async def build_ocr_preview(
@@ -129,3 +130,8 @@ def merge_meta(original: dict[str, Any] | None, extra: dict[str, Any]) -> dict[s
             base[k] = v
 
     return base
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

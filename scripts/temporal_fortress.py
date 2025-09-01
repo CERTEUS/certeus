@@ -1,12 +1,18 @@
 """PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
 EN: Re-proof scheduler (law=365, med=90, fin=7).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from datetime import UTC, datetime, timedelta
+
 # === KONFIGURACJA / CONFIGURATION ===
+TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +=====================================================================+
@@ -17,12 +23,6 @@ EN: Re-proof scheduler (law=365, med=90, fin=7).
 # |  PL: Re-proof po TTL (TTDE) per domena.                             |
 # |  EN: TTDE re-proof per domain TTL.                                  |
 # +=====================================================================+
-
-from __future__ import annotations
-
-from datetime import UTC, datetime, timedelta
-
-TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
 
 
 def due(domain: str, last_proof_at: datetime) -> bool:
@@ -36,3 +36,8 @@ def run() -> None:
     # Integracja z magazynem kapsuł (do uzupełnienia zgodnie z repo).
     # Keeping architecture unchanged.
     return
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

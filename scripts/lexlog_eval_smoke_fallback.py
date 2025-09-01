@@ -28,16 +28,18 @@ EN: Auxiliary script that builds the flags file (from mapping) and
     runs the LEXLOG smoke evaluation (Art. 286).
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 import os
 import subprocess
 import sys
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
 
 FLAGS_PATH = os.path.join("packs", "jurisdictions", "PL", "flags", "lexenith_results_latest.json")
 
@@ -65,3 +67,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

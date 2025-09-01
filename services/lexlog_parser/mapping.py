@@ -22,13 +22,8 @@ PL: Loader mapowania LEXLOG -> engine flags. JSON w repo trzymamy w packs/... .
 EN: Loader of LEXLOG -> engine flags mapping. JSON lives in packs/... .
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import json
@@ -38,11 +33,17 @@ from pydantic import BaseModel, Field
 
 from services.lexlog_parser.evaluator import EvalContext
 
+# === KONFIGURACJA / CONFIGURATION ===
 
+
+# === MODELE / MODELS ===
 class _MappingModel(BaseModel):
     premise_to_flag: dict[str, str | None] = Field(default_factory=dict)
 
     conclusion_excludes: dict[str, list[str]] = Field(default_factory=dict)
+
+
+# === LOGIKA / LOGIC ===
 
 
 def load_mapping(path: Path) -> EvalContext:
@@ -61,3 +62,8 @@ def load_mapping(path: Path) -> EvalContext:
     cleaned: dict[str, str] = {k: v for k, v in model.premise_to_flag.items() if v}
 
     return EvalContext(premise_to_flag=cleaned, conclusion_excludes=model.conclusion_excludes)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

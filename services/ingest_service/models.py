@@ -56,16 +56,8 @@ Style compliance:
 - ASCII header, PL/EN docs, labeled blocks.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-# [BLOCK: IMPORTS / IMPORTY]
-
 from __future__ import annotations
 
 from datetime import date
@@ -74,9 +66,10 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-# [BLOCK: ENUMS / ENUMERACJE]
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class FactRole(str, Enum):
     """
 
@@ -93,9 +86,6 @@ class FactRole(str, Enum):
     # PL: dowód wpłaty / EN: proof of payment
 
     evidence_payment = "evidence_payment"
-
-
-# [BLOCK: MODELS / MODELE]
 
 
 class Fact(BaseModel):
@@ -192,3 +182,20 @@ class Fact(BaseModel):
         le=1.0,
         description=("PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0]."),
     )
+
+
+# === LOGIKA / LOGIC ===
+
+
+# [BLOCK: IMPORTS / IMPORTY]
+
+
+# [BLOCK: ENUMS / ENUMERACJE]
+
+
+# [BLOCK: MODELS / MODELE]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

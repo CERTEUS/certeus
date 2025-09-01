@@ -6,18 +6,14 @@ na podstawie ścieżki pliku.
 EN: Automatically refine PL/EN module docstrings in Python files by
 replacing the generic placeholder with a path-aware description.
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
+# === KONFIGURACJA / CONFIGURATION ===
 ROOTS = [
     "core",
     "services",
@@ -32,6 +28,10 @@ PLACEHOLDER_TOKENS = (
     "Moduł CERTEUS - uzupełnij",
     "Modu42 CERTEUS - uzupe",  # tolerant for CP-1250 rendering
 )
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def _contains_placeholder(doc: str | None) -> bool:
@@ -216,3 +216,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

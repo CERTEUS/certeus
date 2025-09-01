@@ -1,0 +1,29 @@
+name: ci-gates
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tools
+        run: |
+          python -m pip install -U pip wheel setuptools
+          python -m pip install ruff pytest
+      - name: Premium Style Gate (sec.21)
+        run: |
+          python scripts/check_premium_style.py
+      - name: Ruff Lint (no fix)
+        run: |
+          python -m ruff check .
+      - name: Tests
+        run: |
+          python -m pytest -q
+

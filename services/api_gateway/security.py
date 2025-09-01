@@ -35,15 +35,8 @@ EN: Security middleware:
     - Simple per-IP rate limiting (RATE_LIMIT_PER_MIN=N)
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -51,6 +44,16 @@ import os
 import time
 
 from fastapi import FastAPI, Request, Response
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+#!/usr/bin/env python3
+
 
 __all__ = ["attach_proof_only_middleware"]
 
@@ -126,3 +129,8 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
                 pass
 
             return await call_next(request)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

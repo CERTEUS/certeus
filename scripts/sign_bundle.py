@@ -3,12 +3,26 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 
 EN: CERTEUS project module (generic description).
 """
+
 # === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from argparse import ArgumentParser
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+from typing import Any, cast
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
 
 # +=====================================================================+
@@ -25,18 +39,6 @@ EN: CERTEUS project module (generic description).
 
 # ----Bloki----- IMPORTY
 
-from __future__ import annotations
-
-from argparse import ArgumentParser
-import base64
-import hashlib
-import json
-import os
-from pathlib import Path
-from typing import Any, cast
-
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 # ----Bloki----- FUNKCJE
 
@@ -123,3 +125,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

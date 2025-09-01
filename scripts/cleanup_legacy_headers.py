@@ -8,17 +8,13 @@ block while keeping the new standard banner (which uses dashes).
 
 PL: Usuwa stary baner CERTEUS (z linią '='). Nowy standard ma linie z '-'.
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from pathlib import Path
 
+# === KONFIGURACJA / CONFIGURATION ===
 ROOTS = [
     "cje",
     "clients",
@@ -29,6 +25,10 @@ ROOTS = [
     "services",
     "tests",
 ]
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def strip_legacy_block(text: str) -> tuple[str, bool]:
@@ -78,3 +78,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

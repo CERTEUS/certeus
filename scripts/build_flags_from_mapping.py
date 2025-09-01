@@ -26,13 +26,8 @@ EN: Builds flags JSON from mapping of premises→engine flags. Fills missing
     premises via P_* → ZNAMIE_* mapping (MVP).
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import argparse
@@ -49,6 +44,12 @@ from typing import (
 from services.lexlog_parser.evaluator import evaluate_rule
 from services.lexlog_parser.mapping import load_mapping
 from services.lexlog_parser.parser import parse_lexlog
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def _to_set(xs: object | None) -> set[str]:
@@ -259,3 +260,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

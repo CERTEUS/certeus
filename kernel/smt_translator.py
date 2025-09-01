@@ -23,16 +23,8 @@ PL: Translator SMT i powiązana logika.
 EN: SMT translator and related logic.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -40,16 +32,10 @@ from typing import Any, Literal, TypedDict, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
 
-_Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
+# === KONFIGURACJA / CONFIGURATION ===
 
 
-# ──────────────────────────────────────────────────────────────────────
-
-# AST (TypedDict)
-
-# ──────────────────────────────────────────────────────────────────────
-
-
+# === MODELE / MODELS ===
 class VarNode(TypedDict):
     kind: Literal["var"]
 
@@ -80,6 +66,22 @@ class NaryNode(TypedDict):
     op: Literal["AND", "OR", "XOR"]
 
     args: list[Any]
+
+
+# === LOGIKA / LOGIC ===
+
+
+_Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
+
+
+#!/usr/bin/env python3
+
+
+# ──────────────────────────────────────────────────────────────────────
+
+# AST (TypedDict)
+
+# ──────────────────────────────────────────────────────────────────────
 
 
 ASTNode = VarNode | UnaryNode | BinaryNode | NaryNode
@@ -237,3 +239,8 @@ __all__ = [
     "validate_ast",
     "compile_bool_ast",
 ]
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

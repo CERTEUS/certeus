@@ -23,16 +23,8 @@ PL: Moduł systemu CERTEUS.
 EN: CERTEUS system module.
 
 """
+
 # === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
-
-
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import time
@@ -42,55 +34,12 @@ import z3  # type: ignore[reportMissingTypeStubs]
 
 from .mismatch_protocol import handle_mismatch  # ✅ import at top to avoid E402
 
-_Z3 = cast(Any, z3)
+# === KONFIGURACJA / CONFIGURATION ===
 
 
+# === MODELE / MODELS ===
 class _Z3AdapterProto(Protocol):
     def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]: ...
-
-
-# Import adapter class if dostępny; w przeciwnym razie fallback.
-
-try:
-    from .dual_core.z3_adapter import Z3Adapter as _AdapterClass  # type: ignore[assignment]
-
-except Exception:
-
-    class _AdapterClass:  # type: ignore[no-redef]
-        """Fallback adapter: solves a list of Z3 assertions with Z3.Solver()."""
-
-        def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
-            start = time.perf_counter()
-
-            s = z3.Solver()
-
-            for a in assertions:
-                s.add(a)
-
-            status = s.check()
-
-            elapsed = (time.perf_counter() - start) * 1000.0
-
-            result: dict[str, Any] = {
-                "status": str(status).lower(),  # "sat" / "unsat" / "unknown"
-                "time_ms": round(elapsed, 3),
-                "model": None,
-                "error": None,
-                "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
-            }
-
-            if status == z3.sat:
-                m = s.model()
-
-                try:
-                    model_bindings = {d.name(): str(m[d]) for d in m.decls()}
-
-                except Exception:
-                    model_bindings = {}
-
-                result["model"] = model_bindings
-
-            return result
 
 
 class DualCoreVerifier:
@@ -157,3 +106,61 @@ class DualCoreVerifier:
             )
 
         return result_z3
+
+
+# === LOGIKA / LOGIC ===
+
+
+_Z3 = cast(Any, z3)
+
+
+#!/usr/bin/env python3
+
+
+# Import adapter class if dostępny; w przeciwnym razie fallback.
+
+try:
+    from .dual_core.z3_adapter import Z3Adapter as _AdapterClass  # type: ignore[assignment]
+
+except Exception:
+
+    class _AdapterClass:  # type: ignore[no-redef]
+        """Fallback adapter: solves a list of Z3 assertions with Z3.Solver()."""
+
+        def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]:
+            start = time.perf_counter()
+
+            s = z3.Solver()
+
+            for a in assertions:
+                s.add(a)
+
+            status = s.check()
+
+            elapsed = (time.perf_counter() - start) * 1000.0
+
+            result: dict[str, Any] = {
+                "status": str(status).lower(),  # "sat" / "unsat" / "unknown"
+                "time_ms": round(elapsed, 3),
+                "model": None,
+                "error": None,
+                "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
+            }
+
+            if status == z3.sat:
+                m = s.model()
+
+                try:
+                    model_bindings = {d.name(): str(m[d]) for d in m.decls()}
+
+                except Exception:
+                    model_bindings = {}
+
+                result["model"] = model_bindings
+
+            return result
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
