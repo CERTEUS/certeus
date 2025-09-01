@@ -31,10 +31,11 @@ class TokenBank:
 
     def balance(self, tenant: str) -> int:
         return self._bal.get(tenant, 0)
+
+
 # === IMPORTY / IMPORTS ===
 # === KONFIGURACJA / CONFIGURATION ===
 # === MODELE / MODELS ===
 # === LOGIKA / LOGIC ===
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
-

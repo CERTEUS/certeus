@@ -110,6 +110,43 @@ def check_python() -> list[str]:
         if not has_sections_head(t):
             errs.append(f"[PY][SECTIONS] {f.relative_to(REPO)}")
 
+        # Detect decorators that are not immediately followed (skipping blank/comment
+        # lines) by another decorator, a class or a function definition. This guards
+        # against accidental insertion of section markers between a decorator and
+        # its target (class/def), which breaks Python syntax.
+        lines = t.splitlines()
+        n = len(lines)
+        orphan_found = False
+        for i in range(n):
+            s = lines[i].lstrip()
+            if not s.startswith("@"):  # decorator candidate
+                continue
+            j = i + 1
+            while j < n and (lines[j].strip() == "" or lines[j].lstrip().startswith("#")):
+                # If we hit a section header between decorator and target → orphan
+                if lines[j].lstrip().startswith("# === "):
+                    orphan_found = True
+                    break
+                j += 1
+            if orphan_found:
+                break
+            if j >= n:
+                orphan_found = True
+                break
+            nxt = lines[j].lstrip()
+            if not (
+                nxt.startswith("@")
+                or nxt.startswith("def ")
+                or nxt.startswith("async def ")
+                or nxt.startswith("class ")
+            ):
+                orphan_found = True
+                break
+        if orphan_found:
+            rel = f.relative_to(REPO).as_posix()
+            if not rel.startswith("tests/"):
+                errs.append(f"[PY][DECORATOR_ORDER] {rel}")
+
     return errs
 
 

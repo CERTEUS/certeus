@@ -97,9 +97,6 @@ class PublicPCO(BaseModel):
 DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
 
 
-#!/usr/bin/env python3
-
-
 # stdlib
 
 # third-party
@@ -298,7 +295,6 @@ def _assert_no_pii(bundle: dict[str, Any]) -> None:
 
 # === I/O / ENDPOINTS ===
 @router.get("/{rid}", response_model=PublicPCO)
-# === I/O / ENDPOINTS ===
 def get_public_pco(rid: str, request: Request) -> PublicPCO:
     """
 

@@ -88,9 +88,6 @@ class Z3Adapter:
 _Z3 = cast(Any, z3)
 
 
-#!/usr/bin/env python3
-
-
 logger = logging.getLogger(__name__)
 
 

@@ -43,9 +43,6 @@ import requests
 BASE = os.getenv("CER_BASE", "http://127.0.0.1:8000").rstrip("/")
 
 
-#!/usr/bin/env python3
-
-
 def _wait(url: str, timeout: float = 30.0) -> None:
     t0 = time.time()
 

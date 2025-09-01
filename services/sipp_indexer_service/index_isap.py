@@ -42,6 +42,7 @@ from typing import Any
 
 
 # === MODELE / MODELS ===
+@dataclass(slots=True)
 class ActSnapshot:
     act_id: str
 
@@ -65,7 +66,6 @@ class ActSnapshot:
 # === LOGIKA / LOGIC ===
 
 
-@dataclass
 def _snapshot_for(act_id: str) -> ActSnapshot:
     text = (
         "Art. 286 k.k.: Kto, w celu osiągnięcia korzyści majątkowej, "

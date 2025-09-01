@@ -88,7 +88,6 @@ def _kid_from_key(pub: bytes) -> str:
 
 # === I/O / ENDPOINTS ===
 @router.get("/.well-known/jwks.json")
-# === I/O / ENDPOINTS ===
 def jwks():
     try:
         pub = _load_pubkey_bytes()

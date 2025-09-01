@@ -94,9 +94,6 @@ DEV_ORIGINS: list[str] = (
 )
 
 
-#!/usr/bin/env python3
-
-
 # --- blok --- Importy ----------------------------------------------------------
 
 

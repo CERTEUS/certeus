@@ -86,8 +86,6 @@ class LensingResponse(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
-
 # +=====================================================================+
 
 # |                              CERTEUS                                |

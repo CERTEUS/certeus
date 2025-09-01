@@ -52,9 +52,6 @@ from fastapi import FastAPI, Request, Response
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
-
-
 __all__ = ["attach_proof_only_middleware"]
 
 

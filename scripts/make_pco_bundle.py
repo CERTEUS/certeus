@@ -96,9 +96,6 @@ from typing import Final
 DEFAULT_DIR: Final[str] = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
 
 
-#!/usr/bin/env python3
-
-
 # --- blok --- Importy ----------------------------------------------------------
 
 

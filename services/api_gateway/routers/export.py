@@ -32,8 +32,6 @@ EN: Export endpoint. Accepts `case_id` and `analysis_result`, writes a text
 
 """
 
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 from collections.abc import Mapping

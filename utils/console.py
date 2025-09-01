@@ -62,7 +62,6 @@ log markers on text streams.
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 import sys

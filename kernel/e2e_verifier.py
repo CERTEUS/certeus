@@ -121,9 +121,6 @@ class E2EVerifier:
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
-
-
 logger = logging.getLogger(__name__)
 
 

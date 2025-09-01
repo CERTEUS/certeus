@@ -84,9 +84,6 @@ class MerkleStep(TypedDict):
 DEFAULT_DIR = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
 
 
-#!/usr/bin/env python3
-
-
 # ----Bloki----- TYPY
 
 

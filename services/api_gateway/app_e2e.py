@@ -69,9 +69,6 @@ class SolveResponse(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
-
-
 __all__ = ["app"]
 
 
