@@ -25,6 +25,7 @@ dependencies = [
   "python-multipart>=0.0.20,<0.0.21",
   "cryptography>=45,<46",
   "requests>=2.32.0",
+  "prometheus_client>=0.22.0",
 ]
 
 [tool.setuptools]
