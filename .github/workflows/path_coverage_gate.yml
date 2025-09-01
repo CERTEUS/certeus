@@ -28,3 +28,20 @@ jobs:
           python scripts/gates/compute_lexqft_coverage.py --out out/lexqft_coverage.json || true
           python scripts/gates/path_coverage_gate.py --min-gamma 0.90 --max-uncaptured 0.05 --input out/lexqft_coverage.json
 
+  pr-summary:
+    if: github.event_name == 'pull_request' && always()
+    needs: [path-coverage]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR with Path-Coverage result
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ needs["path-coverage"].result }}';
+            const body = `✔ Path-Coverage-Gate: ${result}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
