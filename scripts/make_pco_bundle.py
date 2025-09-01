@@ -17,33 +17,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: scripts/make_pco_bundle.py                          |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: Create a minimal public PCO bundle JSON under PROOF_BUNDLE_DIR |
-
-# |      (0 PII). Lets you choose RID (seed/hex), LFSC/SMT2 sources and |
-
-# |      signature.                                                     |
-
-# |  PL: Tworzy minimalny publiczny bundle PCO (0 PII) w PROOF_BUNDLE_DIR|
-
-# |      z możliwością wyboru RID (seed/hex), źródeł LFSC/SMT2 i podpisu.|
-
-# +=====================================================================+
-
-
 r"""
 
 Użycie / Usage (PowerShell):

@@ -25,25 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: core/pco/merkle.py                                  |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | EN: Merkle step type, proof parsing (MVP / legacy), and root apply. |
-
-# | PL: Typ kroku Merkle, parser dowodu (MVP/legacy) i obliczanie korza.|
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 from dataclasses import dataclass

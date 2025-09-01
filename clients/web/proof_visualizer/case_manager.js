@@ -1,3 +1,14 @@
+/*
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/proof_visualizer/case_manager.js        |
+| ROLE: Web client script.                                     |
+| PLIK: clients/web/proof_visualizer/case_manager.js        |
+| ROLA: Skrypt klienta web.                                    |
++-------------------------------------------------------------+
+*/
+
 /* ============================================================================
  *  CERTEUS — Case Manager (UI helper)
  *  PL: Prosty selektor spraw + pamięć ostatnich (localStorage).

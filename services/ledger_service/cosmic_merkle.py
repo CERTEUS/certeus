@@ -17,31 +17,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: services/ledger_service/cosmic_merkle.py            |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: In-memory Merkle ledger with append-only semantics and         |
-
-# |      thread safety. Public PCO uses this to anchor bundles.         |
-
-# |  PL: Pamięciowy ledger Merkle (append-only) z bezpieczeństwem       |
-
-# |      wątkowym. Public PCO kotwiczy tu bundla.                       |
-
-# +=====================================================================+
-
-
 """
 
 PL: Minimalna, deterministyczna implementacja Merkle z blokadą RLock. Brak PII —

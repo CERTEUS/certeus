@@ -23,27 +23,6 @@
 
 #!/usr/bin/env python3
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: tests/test_adapters_local_impl.py                   |
-
-# | DATE / DATA: 2025-08-17                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: Tests for stubbed adapters (Drive/Preview/OCR/LLM).            |
-
-# |  PL: Testy stubowych adapterów (Drive/Preview/OCR/LLM).             |
-
-# +=====================================================================+
-
-
 """
 
 PL: Testy minimalnych, lokalnych implementacji adapterów.

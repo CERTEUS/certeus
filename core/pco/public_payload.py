@@ -25,29 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: core/pco/public_payload.py                          |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | EN: Public PCO object: builds/verifies zero-PII payload with        |
-
-# |     canonical hashing, Merkle, and Ed25519 signature.               |
-
-# | PL: Obiekt publicznego PCO: budowa/weryfikacja payloadu 0 PII       |
-
-# |     (kanoniczne hashowanie, Merkle, podpis Ed25519).                |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 # ----Bloki----- IMPORTY

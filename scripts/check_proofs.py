@@ -15,42 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/scripts/check_proofs.py                 |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                        CERTEUS                              |
-
-# |            Proof-Gate: Artifact Integrity Checker           |
-
-# +-------------------------------------------------------------+
-
-# ── CERTEUS Project ─────────────────────────────────────────────────────────────
-
-# File: scripts/check_proofs.py
-
-# License: Apache-2.0
-
-# Description (PL): Weryfikacja SHA256 artefaktów DRAT/LFSC.
-
-# Description (EN): Verifies SHA256 of DRAT/LFSC artifacts.
-
-# Style Guide: PL/EN docs, labeled blocks. (See README)
-
-# ────────────────────────────────────────────────────────────────────────────────
-
-
 """
 
 PL: Sprawdza istnienie plików {z3.drat,cvc5.lfsc} i ich plików *.sha256,

@@ -17,31 +17,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: services/api_gateway/main.py                        |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: API Gateway bootstrap. Mounts static, registers routers,       |
-
-# |      enables DEV CORS, exposes health and root redirect.            |
-
-# |  PL: Bootstrap bramy API. Montuje statyczne zasoby, rejestruje      |
-
-# |      routery, włącza CORS (DEV), wystawia health i redirect root.   |
-
-# +=====================================================================+
-
-
 """
 
 PL: Główna aplikacja FastAPI dla CERTEUS: statyki, routery, CORS (DEV), health.

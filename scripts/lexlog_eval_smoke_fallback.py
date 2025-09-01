@@ -15,36 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/scripts/lexlog_eval_smoke_fallback.py   |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: scripts/lexlog_eval_smoke_fallback.py                 |
-
-# | ROLE: Fallback smoke runner for LEXLOG evaluation           |
-
-# | PLIK: scripts/lexlog_eval_smoke_fallback.py                 |
-
-# | ROLA: Skrypt awaryjny: buduje flagi i uruchamia smoke eval  |
-
-# +-------------------------------------------------------------+
-
-
 """
 
 CERTEUS — Lexlog Smoke Eval (Fallback)

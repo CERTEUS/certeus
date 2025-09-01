@@ -25,35 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: scripts/validate_policy_pack.py                     |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: Validate PCO Policy Pack (YAML) vs JSON Schema;                |
-
-# |      enforce invariants (no-PII, required fields, endpoint pattern, |
-
-# |      drat_required) and provide CLI/report.                         |
-
-# |  PL: Walidacja Policy Pack (YAML) względem Schema; egzekwowanie     |
-
-# |      inwariantów (brak PII, wymagane pola, wzorzec endpointu,       |
-
-# |      drat_required) + CLI/raport.                                   |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 # stdlib

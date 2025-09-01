@@ -25,29 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: tests/test_pco_core.py                               |
-
-# | DATE / DATA: 2025-08-19                                              |
-
-# +=====================================================================+
-
-# | EN: Core PCO tests: bundle hash, Merkle, Ed25519 sign/verify,        |
-
-# |     build-and-verify happy path.                                     |
-
-# | PL: Testy jądra PCO: hash bundla, Merkle, podpis/weryfikacja,        |
-
-# |     ścieżka pozytywna build-and-verify.                              |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 from hashlib import sha256

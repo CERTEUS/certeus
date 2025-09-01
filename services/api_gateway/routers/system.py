@@ -25,45 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  services/api_gateway/routers/system.py                     |
-
-# | DATE:    2025-08-21                                                 |
-
-# +=====================================================================+
-
-#
-
-# PL: Router narzędziowy (systemowy). Udostępnia:
-
-#     • /v1/ingest  – lekki stub OCR → FACTLOG (z nagłówkiem łańcucha, limitami, MIME),
-
-#     • /v1/analyze – minimalny stub analizy E2E (SAT),
-
-#     • /v1/sipp/snapshot/{act_id} – migawka aktu prawnego (z `_certeus`).
-
-#     • /v1/connectors/fhir/* – podpięty sub-router FHIR.
-
-#
-
-# EN: System/utility router exposing:
-
-#     • /v1/ingest  – light OCR → FACTLOG stub (with chain header, limits, MIME),
-
-#     • /v1/analyze – minimal E2E analysis stub (SAT),
-
-#     • /v1/sipp/snapshot/{act_id} – legal act snapshot (with `_certeus`).
-
-#     • /v1/connectors/fhir/* – mounted FHIR sub-router.
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 from datetime import UTC, datetime

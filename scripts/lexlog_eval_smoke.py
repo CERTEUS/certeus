@@ -15,57 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/scripts/lexlog_eval_smoke.py            |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |               CERTEUS - LEXLOG Smoke Evaluator              |
-
-# +-------------------------------------------------------------+
-
-# | PLIK: lexlog_eval_smoke.py                                  |
-
-# | ROLA: Szybki test spełnienia art. 286 k.k. na podstawie     |
-
-# |       reguł z kk.lex i mapowania kk.mapping.json.          |
-
-# +-------------------------------------------------------------+
-
-#
-
-# PL: Jeśli nie podasz pliku z flagami (--flags), skrypt użyje
-
-#     domyślnych trzech ról faktów, wymaganych przez art. 286:
-
-#       - intent_financial_gain
-
-#       - act_deception
-
-#       - detrimental_property_disposal
-
-#
-
-# EN: If you don’t pass a flags file (--flags), the script uses
-
-#     the default three fact roles required by Art. 286:
-
-#       - intent_financial_gain
-
-#       - act_deception
-
-#       - detrimental_property_disposal
-
 """
 
 PL: Smoke-test Jądra Prawdy: wczytuje flags JSON i sprawdza spełnialność.

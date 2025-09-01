@@ -1,3 +1,14 @@
+/*
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/proof_visualizer/file_list.js           |
+| ROLE: Web client script.                                     |
+| PLIK: clients/web/proof_visualizer/file_list.js           |
+| ROLA: Skrypt klienta web.                                    |
++-------------------------------------------------------------+
+*/
+
 /* ============================================================================
  *  CERTEUS — File List (mini viewer navigator)
  *  PL: Prosta lista plików (miniatura + tytuł), klikalna, z podświetleniem.

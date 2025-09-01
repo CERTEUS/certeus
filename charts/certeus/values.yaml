@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: charts/certeus/values.yaml                          |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: charts/certeus/values.yaml                          |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 api:
   image:
     repository: ghcr.io/OWNER/REPO-api

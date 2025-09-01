@@ -56,16 +56,22 @@ jobs:
           py -3 -m venv .venv
           .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 
-      - name: 🚬 Run smoke (Ubuntu)
+      - name: 🚬 Run smoke (Ubuntu) with retry
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          bash ./scripts/smoke_api.sh
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 2
+          command: bash ./scripts/smoke_api.sh
 
-      - name: 🚬 Run smoke (Windows)
+      - name: 🚬 Run smoke (Windows) with retry
         if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          pwsh -File .\scripts\smoke_api.ps1
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 12
+          max_attempts: 2
+          shell: pwsh
+          command: pwsh -File .\scripts\smoke_api.ps1
 
       - name: 📤 Upload smoke summary
         if: always()

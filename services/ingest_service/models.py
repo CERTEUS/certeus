@@ -23,29 +23,6 @@
 
 # +-------------------------------------------------------------+
 
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/ingest_service/models.py      |
-
-# | DATE:    2025-08-17                                                 |
-
-# +=====================================================================+
-
-# ── CERTEUS Project ────────────────────────────────────────────────────
-
-# File: services/ingest_service/models.py
-
-# License: Apache-2.0
-
-# Description (PL): Modele Pydantic dla serwisu ingestii – kluczowy model Fact.
-
-# Description (EN): Pydantic models for the ingestion service – the key Fact model.
-
-# Style Guide: ASCII header, PL/EN docs, and labeled code blocks. (See README)
-
-# ───────────────────────────────────────────────────────────────────────
-
-
 """
 
 PL: Ten moduł definiuje atomową jednostkę informacji w CERTEUS: **Fact**.

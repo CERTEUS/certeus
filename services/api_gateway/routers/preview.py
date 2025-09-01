@@ -15,23 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: services/api_gateway/routers/preview.py             |
-
-# | ROLE / ROLA:                                                         |
-
-# |  EN: Stub preview endpoint for uploaded files (PDF/DOCX/TXT/IMG).   |
-
-# |  PL: Endpoint podglądu wgranych plików (PDF/DOCX/TXT/IMG).          |
-
-# +=====================================================================+
-
-
 """PL: Router podglądu plików. EN: Preview router."""
 
 from __future__ import annotations

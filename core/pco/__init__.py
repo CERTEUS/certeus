@@ -25,29 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | PACKAGE / PAKIET: core/pco                                          |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | EN: Core PCO utilities: canonical hashing, Merkle operations, and   |
-
-# |     Ed25519 signing/verification for public, zero-PII evidence.     |
-
-# | PL: Jądro PCO: kanoniczne hashowanie, operacje Merkle oraz           |
-
-# |     podpis/weryfikacja Ed25519 dla publicznych dowodów 0 PII.       |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 __all__ = [

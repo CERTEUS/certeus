@@ -15,35 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/scripts/check_headers.py                |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: scripts/check_headers.py                              |
-
-# | ROLE: Pre-commit checker for CERTEUS header & module docstr |
-
-# | PLIK: scripts/check_headers.py                              |
-
-# | ROLA: Walidator nagłówka CERTEUS i docstringa modułu        |
-
-# +-------------------------------------------------------------+
-
 """
 
 PL: Skrypt uruchamiany przez pre-commit. Dla podanych plików .py

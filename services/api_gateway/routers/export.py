@@ -17,35 +17,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: services/api_gateway/routers/export.py              |
-
-# | DATE / DATA: 2025-08-17                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: /v1/export – validate payload and write a TXT report           |
-
-# |      named `raport_{case_id}.txt`. Enrich response with provenance  |
-
-# |      (sha256, timestamp_utc, artifacts).                            |
-
-# |  PL: /v1/export – walidacja ładunku i zapis raportu TXT             |
-
-# |      `raport_{case_id}.txt`. Odpowiedź wzbogacona o provenance      |
-
-# |      (sha256, timestamp_utc, artifacts).                            |
-
-# +=====================================================================+
-
-
 """
 
 PL: Endpoint eksportu. Przyjmuje `case_id` i `analysis_result`, zapisuje raport

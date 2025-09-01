@@ -15,42 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/ingest_service/factlog_mapper.py|
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                        CERTEUS                              |
-
-# |        Core Engine for Reliable & Unified Systems           |
-
-# +-------------------------------------------------------------+
-
-# ── CERTEUS Project ─────────────────────────────────────────────────────────────
-
-# File: services/ingest_service/factlog_mapper.py
-
-# License: Apache-2.0
-
-# Description (PL): Mapowanie wyniku OCR na listę faktów (FACTLOG).
-
-# Description (EN): Maps OCR output into a list of structured facts (FACTLOG).
-
-# Style Guide: ASCII header, PL/EN docs, labeled code blocks. (See README)
-
-# ────────────────────────────────────────────────────────────────────────────────
-
-
 """
 
 PL: Ten moduł przekształca surowy wynik OCR w listę faktów zgodnych z modelem

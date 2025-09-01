@@ -15,36 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/api_gateway/routers/ledger.py  |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: services/api_gateway/routers/ledger.py                |
-
-# | ROLE: Public API for the ledger (record/list/prove)         |
-
-# | PLIK: services/api_gateway/routers/ledger.py                |
-
-# | ROLA: Publiczne API dla księgi (record/list/prove)          |
-
-# +-------------------------------------------------------------+
-
-
 """
 
 PL: Router FastAPI dla księgi pochodzenia (ledger):

@@ -15,38 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/tests/services/test_ingest.py           |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# | Core Engine for Reliable & Unified Systems                  |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/services/test_ingest.py                         |
-
-# | ROLE: Integration tests for /v1/ingest endpoint.            |
-
-# | PLIK: tests/services/test_ingest.py                         |
-
-# | ROLA: Testy integracyjne endpointu /v1/ingest.              |
-
-# +-------------------------------------------------------------+
-
-
 """
 
 PL: Testy sprawdzają ścieżkę sukcesu (OCR stub → FACTLOG), nagłówek łańcucha

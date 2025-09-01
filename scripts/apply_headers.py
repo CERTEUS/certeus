@@ -15,39 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/scripts/apply_headers.py                |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: scripts/apply_headers.py                              |
-
-# | ROLE: Auto-add CERTEUS header block and module docstrings   |
-
-# |       to Python files that are missing them.                |
-
-# | PLIK: scripts/apply_headers.py                              |
-
-# | ROLA: Automatyczne dodanie nagłówków i docstringów modułów  |
-
-# |       do plików Python bez tych elementów.                  |
-
-# +-------------------------------------------------------------+
-
 """
 
 PL: Skrypt skanuje repozytorium, znajduje pliki .py i dodaje:

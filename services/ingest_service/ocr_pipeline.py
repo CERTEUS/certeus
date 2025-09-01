@@ -15,42 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/ingest_service/ocr_pipeline.py |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                        CERTEUS                              |
-
-# |        Core Engine for Reliable & Unified Systems           |
-
-# +-------------------------------------------------------------+
-
-# ── CERTEUS Project ─────────────────────────────────────────────────────────────
-
-# File: services/ingest_service/ocr_pipeline.py
-
-# License: Apache-2.0
-
-# Description (PL): Stub potoku OCR z logowaniem i kontrolą rozmiaru wejścia.
-
-# Description (EN): OCR pipeline stub with logging and input size guards.
-
-# Style Guide: ASCII header, PL/EN docs, labeled code blocks. (See README)
-
-# ────────────────────────────────────────────────────────────────────────────────
-
-
 """
 
 PL: Ten moduł dostarcza stub potoku OCR na potrzeby F0_D6 (Ingest → FACTLOG).

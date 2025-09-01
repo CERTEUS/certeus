@@ -15,42 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/ingest_service/__init__.py     |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                        CERTEUS                              |
-
-# |        Core Engine for Reliable & Unified Systems           |
-
-# +-------------------------------------------------------------+
-
-# ── CERTEUS Project ─────────────────────────────────────────────────────────────
-
-# File: services/ingest_service/__init__.py
-
-# License: Apache-2.0
-
-# Description (PL): Pakiet serwisu ingestii (FACTLOG): eksportuje główne typy.
-
-# Description (EN): Ingestion service package (FACTLOG): exports main types.
-
-# Style Guide: ASCII header, PL/EN docs, labeled code blocks. (See README)
-
-# ────────────────────────────────────────────────────────────────────────────────
-
-
 """
 
 PL: Pakiet serwisu ingestii. Ten moduł oznacza pakiet Pythona oraz

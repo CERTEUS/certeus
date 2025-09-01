@@ -25,27 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: services/api_gateway/routers/pco_public.py          |
-
-# | DATA: 2025-08-19                                                    |
-
-# +=====================================================================+
-
-# | ROLA:                                                               |
-
-# |  EN: Public PCO (zero PII). Verifies Merkle (MVP/real) + Ed25519.   |
-
-# |  PL: Publiczny PCO (0 PII). Weryfikuje Merkle (MVP/real) + Ed25519. |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 # stdlib

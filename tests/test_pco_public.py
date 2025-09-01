@@ -25,30 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: tests/test_pco_public.py                            |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA:                                                        |
-
-# |  EN: API test for /pco/public (happy path + validation).            |
-
-# |  PL: Test API publicznego PCO (ścieżka pozytywna + walidacja).      |
-
-# +=====================================================================+
-
-
-# ---Bloki----- IMPORTY
-
 from __future__ import annotations
 
 # stdlib

@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: charts/certeus/templates/deployment-proofgate.yaml  |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: charts/certeus/templates/deployment-proofgate.yaml  |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:

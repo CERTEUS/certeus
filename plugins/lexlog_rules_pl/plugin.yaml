@@ -1,4 +1,13 @@
 # +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/lexlog_rules_pl/plugin.yaml                 |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: plugins/lexlog_rules_pl/plugin.yaml                 |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+# +-------------------------------------------------------------+
 # |              CERTEUS - Plugin Manifest (plugin.yaml)        |
 # +-------------------------------------------------------------+
 name: lexlog_rules_pl

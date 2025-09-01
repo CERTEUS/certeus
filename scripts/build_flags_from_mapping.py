@@ -15,41 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/scripts/build_flags_from_mapping.py     |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |              CERTEUS - Build Flags From Mapping             |
-
-# +-------------------------------------------------------------+
-
-# | PLIK: build_flags_from_mapping.py                           |
-
-# | ROLA: Buduje zestaw flag (JSON) na podstawie reguł i mapy.  |
-
-# +-------------------------------------------------------------+
-
-#
-
-# PL: Skrypt iteracyjnie uruchamia evaluator LEXLOG i na podstawie
-
-#     brakujących przesłanek/wykluczników tworzy plik z flagami.
-
-# EN: Iteratively runs the LEXLOG evaluator and, using missing
-
-#     premises/excludes, produces a flags JSON for downstream tests.
-
 """
 
 PL: Buduje plik flags JSON na podstawie mapowania przesłanek→flagi silnika.

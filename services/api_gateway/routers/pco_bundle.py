@@ -25,23 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: services/api_gateway/routers/pco_bundle.py          |
-
-# | DATE / DATA: 2025-08-31                                             |
-
-# +=====================================================================+
-
-# | ROLE / ROLA: Minimalny endpoint /v1/pco/bundle (walidacja + zapis)  |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 import base64

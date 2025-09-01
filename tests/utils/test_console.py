@@ -15,35 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/tests/utils/test_console.py             |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/utils/test_console.py                           |
-
-# | ROLE: Tests for console utilities (ASCII-safe & colors).    |
-
-# | PLIK: tests/utils/test_console.py                           |
-
-# | ROLA: Testy narzędzi konsolowych (ASCII-safe i kolory).     |
-
-# +-------------------------------------------------------------+
-
 """
 
 PL: Testy funkcji utils.console: ascii_safe, print_safe, info/success/error i bezpieczeństwo ASCII.

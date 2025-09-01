@@ -15,35 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/tests/services/test_verify_mismatch.py  |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/services/test_verify_mismatch.py                |
-
-# | ROLE: Ensures mismatch maps to HTTP 409 requires_human.     |
-
-# | PLIK: tests/services/test_verify_mismatch.py                |
-
-# | ROLA: Gwarantuje mapowanie rozjazdu na HTTP 409.            |
-
-# +-------------------------------------------------------------+
-
 """
 
 PL: Test symuluje rozbieżność rdzeni i sprawdza odpowiedź 409.

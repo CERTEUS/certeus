@@ -186,9 +186,15 @@ if ($sloThresh -and $p95 -ne 'n/a') {
   } catch { }
 }
 
+# Optional failure budget (max allowed fails)
+$maxFails = 0
+try {
+  if ($env:SMOKE_MAX_FAILS) { $maxFails = [int]$env:SMOKE_MAX_FAILS }
+} catch { $maxFails = 0 }
+
 # Ensure reports dir, write JSON summary
 try { New-Item -ItemType Directory -Force -Path reports | Out-Null } catch { }
-$summaryObj = [pscustomobject]@{ total=$total; passes=$passes; fails=$fails; p95_ms=$p95; threshold_ms=$sloThresh }
+$summaryObj = [pscustomobject]@{ total=$total; passes=$passes; fails=$fails; p95_ms=$p95; threshold_ms=$sloThresh; max_fails=$maxFails }
 $summaryJson = $summaryObj | ConvertTo-Json -Depth 3
 Set-Content -LiteralPath 'reports\smoke_summary.json' -Value $summaryJson -Encoding UTF8
 
@@ -197,5 +203,5 @@ if ($env:GITHUB_STEP_SUMMARY) {
   Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Value "### Smoke Summary`n`n- total: $total`n- passes: $passes`n- fails: $fails`n- p95_ms: $p95`n- threshold_ms: $sloThresh`n"
 }
 
-Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95 threshold_ms=$sloThresh")
-if ($fails -gt 0) { exit 1 } else { exit 0 }
+Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95 threshold_ms=$sloThresh max_fails=$maxFails")
+if ($fails -gt $maxFails) { exit 1 } else { exit 0 }

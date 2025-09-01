@@ -15,25 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | FILE / PLIK: scripts/generate_proofs.py                             |
-
-# | ROLE / ROLA:                                                         |
-
-# |   EN: CLI to generate simulated/stub proof artifacts for Proof Gate |
-
-# |   PL: CLI do generowania symulowanych/stubowych artefaktów dowodów  |
-
-# | DATE: 2025-08-17                                                    |
-
-# +=====================================================================+
-
-
 """
 
 PL:

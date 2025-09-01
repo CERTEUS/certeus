@@ -25,25 +25,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
-# +=====================================================================+
-
-# |                              CERTEUS                                |
-
-# +=====================================================================+
-
-# | MODULE / MODUŁ: core/pco/crypto.py                                  |
-
-# | DATE / DATA: 2025-08-19                                             |
-
-# +=====================================================================+
-
-# | EN: Canonical hashing and Ed25519 signing/verification helpers.     |
-
-# | PL: Pomocnicze: kanoniczne hashowanie i podpis/weryfikacja Ed25519. |
-
-# +=====================================================================+
-
 from __future__ import annotations
 
 # ----Bloki----- IMPORTY

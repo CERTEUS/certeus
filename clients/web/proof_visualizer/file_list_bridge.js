@@ -1,3 +1,14 @@
+/*
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/proof_visualizer/file_list_bridge.js    |
+| ROLE: Web client script.                                     |
+| PLIK: clients/web/proof_visualizer/file_list_bridge.js    |
+| ROLA: Skrypt klienta web.                                    |
++-------------------------------------------------------------+
+*/
+
 /* ============================================================================
  *  CERTEUS — File List Bridge (uploads ↔ viewer)
  *  PL: Spina dropzone/uploady z mini listą i viewerem (+ prev/next).

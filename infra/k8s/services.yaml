@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/k8s/services.yaml                             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/k8s/services.yaml                             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 apiVersion: v1
 kind: Service
 metadata: { name: proofgate, namespace: certeus }

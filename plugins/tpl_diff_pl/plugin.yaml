@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/tpl_diff_pl/plugin.yaml                     |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: plugins/tpl_diff_pl/plugin.yaml                     |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 name: tpl_diff_pl
 version: 0.1.0
 module: plugins.tpl_diff_pl.src.main

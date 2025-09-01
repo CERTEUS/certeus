@@ -15,34 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/sipp_indexer_service/isap_adapter.py|
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                         CERTEUS                             |
-
-# |      Core Engine for Reliable & Unified Systems             |
-
-# +-------------------------------------------------------------+
-
-# | FILE: services/sipp_indexer_service/isap_adapter.py         |
-
-# | ROLE: Stub adapter for ISAP. Creates LegalActSnapshot.      |
-
-# +-------------------------------------------------------------+
-
-
 """
 
 PL: Stub adaptera do ISAP. Wersja MVP: zwraca stałą migawkę dla

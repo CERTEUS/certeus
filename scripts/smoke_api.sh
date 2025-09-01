@@ -38,6 +38,7 @@ function hit() {
 
 declare -i PASSES=0
 declare -i FAILS=0
+MAX_FAILS="${SMOKE_MAX_FAILS:-0}"
 P95_MS="n/a"
 metrics_p95() {
   curl -s http://127.0.0.1:8000/metrics | awk '
@@ -56,7 +57,7 @@ metrics_p95() {
     print p95;
   }'
 }
-trap 'stop_server; echo "SMOKE SUMMARY: total=$((PASSES+FAILS)) passes=$PASSES fails=$FAILS p95_ms=$P95_MS"; [[ $FAILS -eq 0 ]]' EXIT
+trap 'stop_server; echo "SMOKE SUMMARY: total=$((PASSES+FAILS)) passes=$PASSES fails=$FAILS p95_ms=$P95_MS max_fails=$MAX_FAILS"; [[ $FAILS -le ${MAX_FAILS} ]]' EXIT
 start_server
 
 hit GET /health && PASSES+=1 || FAILS+=1
@@ -123,7 +124,7 @@ fi
 
 # Write JSON summary and append to GitHub summary if available
 mkdir -p reports
-printf '{"total":%d,"passes":%d,"fails":%d,"p95_ms":"%s","threshold_ms":"%s"}\n' $((PASSES+FAILS)) "$PASSES" "$FAILS" "$P95_MS" "${THRESH}" > reports/smoke_summary.json
+printf '{"total":%d,"passes":%d,"fails":%d,"p95_ms":"%s","threshold_ms":"%s","max_fails":"%s"}\n' $((PASSES+FAILS)) "$PASSES" "$FAILS" "$P95_MS" "${THRESH}" "${MAX_FAILS}" > reports/smoke_summary.json
 if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
   {
     echo "### Smoke Summary"

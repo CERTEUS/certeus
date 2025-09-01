@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/k8s/core.yaml                                 |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/k8s/core.yaml                                 |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 apiVersion: v1
 kind: Namespace
 metadata: { name: certeus }

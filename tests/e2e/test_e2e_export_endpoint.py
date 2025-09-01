@@ -15,35 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/tests/e2e/test_e2e_export_endpoint.py   |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                CERTEUS - Export API E2E Test                |
-
-# +-------------------------------------------------------------+
-
-# | FILE: tests/e2e/test_e2e_export_endpoint.py                 |
-
-# | ROLE: Validates /v1/export endpoint end-to-end.             |
-
-# | PLIK: tests/e2e/test_e2e_export_endpoint.py                 |
-
-# | ROLA: Weryfikuje endpoint /v1/export E2E.                   |
-
-# +-------------------------------------------------------------+
-
 """
 
 PL: Test E2E endpointu /v1/export – oczekuje ścieżki do wygenerowanego raportu.

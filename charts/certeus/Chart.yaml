@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: charts/certeus/Chart.yaml                           |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: charts/certeus/Chart.yaml                           |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 apiVersion: v2
 name: certeus
 description: CERTEUS — API Gateway + ProofGate (Kubernetes chart)

@@ -15,35 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  F:/projekty/certeus/services/api_gateway/routers/verify.py  |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-
-# +-------------------------------------------------------------+
-
-# |                          CERTEUS                            |
-
-# +-------------------------------------------------------------+
-
-# | FILE: services/api_gateway/routers/verify.py                |
-
-# | ROLE: Expose /v1/verify endpoint (Truth Engine).            |
-
-# | PLIK: services/api_gateway/routers/verify.py                |
-
-# | ROLA: Udostępnia endpoint /v1/verify (Silnik Prawdy).       |
-
-# +-------------------------------------------------------------+
-
 """
 
 PL: Publiczny endpoint do weryfikacji formuł SMT-LIB2 przez Silnik Prawdy.

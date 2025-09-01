@@ -15,29 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-# +=====================================================================+
-
-# |                          CERTEUS                                    |
-
-# +=====================================================================+
-
-# | MODULE:  tests/services/test_preview.py                              |
-
-# | DATE:    2025-08-17                                                  |
-
-# +=====================================================================+
-
-# | FILE / PLIK: tests/services/test_preview.py                          |
-
-# | ROLE / ROLA:                                                         |
-
-# |  EN: Integration tests for /v1/preview endpoint (file → preview URL).|
-
-# |  PL: Testy integracyjne endpointu /v1/preview (plik → URL podglądu). |
-
-# +=====================================================================+
-
-
 """
 
 PL: Testy weryfikują, że endpoint /v1/preview przyjmuje plik (multipart/form-data)
