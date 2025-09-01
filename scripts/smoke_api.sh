@@ -116,12 +116,25 @@ P95_MS=$(metrics_p95)
 
 # --- OpenAPI validation & lightweight schema checks ---
 mkdir -p reports
-curl -s -f http://127.0.0.1:8000/openapi.json -o reports/openapi.json && \
-  ./.venv/bin/python - << 'PY'
-import json,sys
+curl -s -f http://127.0.0.1:8000/openapi.json -o reports/openapi.json
+./.venv/bin/python - << 'PY'
+import json, sys
 spec=json.load(open('reports/openapi.json','r',encoding='utf-8'))
-assert 'openapi' in spec and 'paths' in spec
-print('openapi schema ok')
+ok=('openapi' in spec and 'paths' in spec)
+try:
+  try:
+    from openapi_spec_validator import validate_spec as _validate
+  except Exception:
+    try:
+      from openapi_spec_validator.validators import validate as _validate
+    except Exception:
+      _validate=None
+  if _validate:
+    _validate(spec)
+    ok=True
+except Exception:
+  ok=False
+sys.exit(0 if ok else 1)
 PY
 if [[ $? -eq 0 ]]; then echo "[GET] /openapi.json#schema => 200"; PASSES=$((PASSES+1)); else echo "[GET] /openapi.json#schema => FAIL"; FAILS=$((FAILS+1)); fi
 
@@ -149,6 +162,42 @@ curl -s -f -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"senti
 import sys,json
 j=json.load(sys.stdin)
 assert isinstance(j.get('outcome'),str) and isinstance(j.get('p'),(int,float))
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+# QTMP regressions
+curl -s -f -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case | ./.venv/bin/python - << 'PY'
+import sys,json,math
+j=json.load(sys.stdin)
+pd=j.get('predistribution') or []
+s=sum(float(it.get('p',0)) for it in pd)
+assert len(pd)==3 and abs(s-1.0)<=1e-3
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+curl -s -f -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure | ./.venv/bin/python - << 'PY'
+import sys,json
+j=json.load(sys.stdin)
+assert j.get('verdict') in ['ALLOW','DENY','ABSTAIN']
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+curl -s -f -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator | ./.venv/bin/python - << 'PY'
+import sys,json
+j=json.load(sys.stdin)
+assert float(j.get('value',-1))==1.0
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+# PCO public rid equals requested rid
+curl -s -f http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python - << 'PY'
+import sys,json
+j=json.load(sys.stdin)
+assert j.get('rid')=='RID-SMOKE-1'
 print('ok')
 PY
 [[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
