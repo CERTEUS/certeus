@@ -57,4 +57,10 @@ if ($lines -notmatch 'ED25519_PUBKEY_B64URL=') {
   $pubb64u = Get-Content .devkeys\ed25519_pub.b64u -Raw -ErrorAction SilentlyContinue
   if ($pubb64u) { Add-Content .env ("ED25519_PUBKEY_B64URL=" + ($pubb64u.Trim())) }
 }
+# Użycie / Usage:
+#   pwsh -File .\scripts\keys_dev.ps1
+# Efekt:
+#   - .devkeys/ed25519_priv.pem (klucz prywatny Ed25519)
+#   - .devkeys/ed25519_pub.hex, .devkeys/ed25519_pub.b64u (klucz publiczny)
+#   - dopisane do .env: PROOF_BUNDLE_DIR, ED25519_* (jeśli brakowało)
 Write-Host "OK: wygenerowano .devkeys\ed25519_priv.pem i zaktualizowano .env"
