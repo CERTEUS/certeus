@@ -1,17 +1,10 @@
 # +-------------------------------------------------------------+
-
 # |                          CERTEUS                            |
-
 # +-------------------------------------------------------------+
-
 # | FILE: services/ingest_service/ocr_pipeline.py             |
-
 # | ROLE: Project module.                                       |
-
 # | PLIK: services/ingest_service/ocr_pipeline.py             |
-
 # | ROLA: Moduł projektu.                                       |
-
 # +-------------------------------------------------------------+
 
 
@@ -40,6 +33,8 @@ import logging
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
+DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
+logger = logging.getLogger(__name__)
 
 
 # === MODELE / MODELS ===
@@ -113,24 +108,6 @@ class OcrPipeline:
 
 
 # === LOGIKA / LOGIC ===
-
-
-DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
-
-
-# [BLOCK: IMPORTS / IMPORTY]
-
-
-# [BLOCK: LOGGER / LOGOWANIE]
-
-logger = logging.getLogger(__name__)
-
-
-# [BLOCK: CONSTANTS / STAŁE]
-
-
-# [BLOCK: PIPELINE / POTOK]
-
 
 # === I/O / ENDPOINTS ===
 

@@ -48,6 +48,7 @@ from services.proof_verifier import verify_drat, verify_lfsc
 from services.proofgate.app import PublishRequest, PublishResponse, publish
 
 # === KONFIGURACJA / CONFIGURATION ===
+router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
 
 # === MODELE / MODELS ===
@@ -79,14 +80,6 @@ class PublicBundleIn(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
-
-
-#!/usr/bin/env python3
-
-
-router = APIRouter(prefix="/v1/pco", tags=["pco"])
-
-
 def _bundle_dir() -> Path:
     return Path(os.getenv("PROOF_BUNDLE_DIR") or "./data/public_pco")
 
@@ -293,7 +286,6 @@ def _build_proofbundle(
 
 # === I/O / ENDPOINTS ===
 @router.post("/bundle")
-# === I/O / ENDPOINTS ===
 def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     enforce_limits(request, cost_units=3)
 

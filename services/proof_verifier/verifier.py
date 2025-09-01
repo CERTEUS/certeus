@@ -35,6 +35,7 @@ from typing import Any
 
 
 # === MODELE / MODELS ===
+@dataclass
 class VerificationResult:
     ok: bool
 
@@ -51,7 +52,6 @@ _LFSC_HEADER_RE = re.compile(r"\(\s*lfsc\b", re.IGNORECASE)
 _DRAT_HINT_RE = re.compile(r"^(p\s+drat|d\s+|\s*c\s*)", re.IGNORECASE | re.MULTILINE)
 
 
-@dataclass
 def _sha256_hex(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
