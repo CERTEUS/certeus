@@ -24,12 +24,12 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from dataclasses import dataclass
-
 import re
 
 from ..cache import FileCache, cache_from_uri
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class DzULawDocument:
@@ -41,22 +41,8 @@ class DzULawDocument:
 
     title: str | None = None
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 _TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
@@ -87,10 +73,6 @@ def fetch_and_cache_dzu(uri: str, cache: FileCache | None = None) -> DzULawDocum
     return DzULawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

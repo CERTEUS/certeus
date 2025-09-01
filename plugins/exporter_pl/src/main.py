@@ -31,14 +31,6 @@ from services.exporter_service.exporter import export_answer
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
 # +-------------------------------------------------------------+
 
 
@@ -71,10 +63,6 @@ def register(api):
     api.register_exporter("pl.exporter.docx_pdf", export_answer)
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

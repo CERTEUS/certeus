@@ -55,9 +55,7 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 import argparse
-
 import base64
-
 from pathlib import Path
 
 from cryptography.hazmat.primitives import serialization
@@ -67,20 +65,6 @@ from cryptography.hazmat.primitives import serialization
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ----Bloki----- MAIN
@@ -111,10 +95,6 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

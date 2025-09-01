@@ -30,14 +30,6 @@ EN: CERTEUS project module (generic description).
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
 # +-------------------------------------------------------------+
 
 
@@ -66,10 +58,6 @@ def prove(data):
     return b"zkp"
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

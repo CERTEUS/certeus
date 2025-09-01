@@ -25,17 +25,12 @@ EN: FastAPI router for public PCO and JWKS.
 from __future__ import annotations
 
 import hashlib
-
 import json
-
 import os
-
 from pathlib import Path
-
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
-
 from pydantic import BaseModel, Field, field_validator
 
 from core.pco.crypto import (
@@ -67,11 +62,13 @@ FORBIDDEN_KEYS = {
     "headers",
 }
 
+
 # === MODELE / MODELS ===
 class MerkleStep(BaseModel):
     sibling: str  # hex
 
     dir: str  # "L" or "R"
+
 
 class PublicPCO(BaseModel):
     rid: str = Field(..., min_length=3)
@@ -93,31 +90,8 @@ class PublicPCO(BaseModel):
 
         return v.lower()
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
@@ -322,10 +296,6 @@ def _assert_no_pii(bundle: dict[str, Any]) -> None:
 # ENTRYPOINT
 
 
-
-
-
-
 # === I/O / ENDPOINTS ===
 @router.get("/{rid}", response_model=PublicPCO)
 # === I/O / ENDPOINTS ===
@@ -376,5 +346,5 @@ def get_public_pco(rid: str, request: Request) -> PublicPCO:
 
     return PublicPCO(**{**pub, "merkle_proof": path})
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

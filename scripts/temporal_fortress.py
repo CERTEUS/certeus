@@ -15,7 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-
 """PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
 
 EN: Re-proof scheduler (law=365, med=90, fin=7).
@@ -35,31 +34,6 @@ TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # +=====================================================================+
 
 # |                          CERTEUS — HEART                            |
@@ -77,11 +51,7 @@ TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
 # +=====================================================================+
 
 
-
-
-
 def due(domain: str, last_proof_at: datetime) -> bool:
-
     """PL: Czy wygasło TTL? EN: TTL expired?"""
 
     days = TTL_DAYS.get(domain, 365)
@@ -89,11 +59,7 @@ def due(domain: str, last_proof_at: datetime) -> bool:
     return datetime.now(UTC) - last_proof_at > timedelta(days=days)
 
 
-
-
-
 def run() -> None:
-
     """PL: Znajdź kapsuły do re-proof i zleć zadania. EN: Enqueue due re-proofs."""
 
     # Integracja z magazynem kapsuł (do uzupełnienia zgodnie z repo).
@@ -103,16 +69,6 @@ def run() -> None:
     return
 
 
-
-
-
-
-
-
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

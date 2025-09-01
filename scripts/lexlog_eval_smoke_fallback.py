@@ -31,9 +31,7 @@ EN: Auxiliary script that builds the flags file (from mapping) and
 
 # === IMPORTY / IMPORTS ===
 import os
-
 import subprocess
-
 import sys
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -41,16 +39,6 @@ import sys
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
 
 
 FLAGS_PATH = os.path.join("packs", "jurisdictions", "PL", "flags", "lexenith_results_latest.json")
@@ -81,10 +69,6 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

@@ -17,7 +17,6 @@
 # +-------------------------------------------------------------+
 
 
-
 """
 
 PL: Stub API dla QTMP (pomiar). Zawiera wymagane pola: sequence[],
@@ -34,44 +33,42 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 from __future__ import annotations
 
 from time import perf_counter
-
 from typing import Any
 
 from fastapi import APIRouter, Request
-
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
+
 # === MODELE / MODELS ===
 class InitCaseRequest(BaseModel):
-
     state_uri: str | None = None
 
     basis: list[str] | None = Field(default=None, description="Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']")
 
-class InitCaseResponse(BaseModel):
 
+class InitCaseResponse(BaseModel):
     ok: bool
 
     predistribution: list[dict[str, Any]]
 
-class MeasureRequest(BaseModel):
 
+class MeasureRequest(BaseModel):
     operator: str = Field(description="One of W/I/C/L/T (domain-dependent)")
 
     source: str | None = Field(default="ui", description="ui | chatops:<cmd> | mail:<id>")
 
     basis: list[str] | None = None
 
-class CollapseLog(BaseModel):
 
+class CollapseLog(BaseModel):
     sequence: list[dict[str, Any]]
 
     decoherence: dict[str, Any] | None = None
 
-class MeasureResponse(BaseModel):
 
+class MeasureResponse(BaseModel):
     verdict: str
 
     p: float
@@ -82,114 +79,30 @@ class MeasureResponse(BaseModel):
 
     latency_ms: float
 
-class CommutatorRequest(BaseModel):
 
+class CommutatorRequest(BaseModel):
     A: str
 
     B: str
 
-class CommutatorResponse(BaseModel):
 
+class CommutatorResponse(BaseModel):
     value: float
 
-class FindEntanglementRequest(BaseModel):
 
+class FindEntanglementRequest(BaseModel):
     variables: list[str]
 
-class FindEntanglementResponse(BaseModel):
 
+class FindEntanglementResponse(BaseModel):
     pairs: list[tuple[str, str]]
 
     mi: float = 0.0
 
     negativity: float = 0.0
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #!/usr/bin/env python3
@@ -207,22 +120,12 @@ class FindEntanglementResponse(BaseModel):
 # +=====================================================================+
 
 
-
-
-
 router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 
 
-
-
-
 @router.post("/init_case", response_model=InitCaseResponse)
-
 async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
-
     from services.api_gateway.limits import enforce_limits
-
-
 
     enforce_limits(request, cost_units=1)
 
@@ -237,16 +140,9 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
     return InitCaseResponse(ok=True, predistribution=predistribution)
 
 
-
-
-
 @router.post("/measure", response_model=MeasureResponse)
-
 async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
-
     from services.api_gateway.limits import enforce_limits
-
-
 
     enforce_limits(request, cost_units=2)
 
@@ -265,17 +161,11 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
     p = round(0.55 + (idx * 0.1) % 0.4, 6)
 
     sequence = [
-
         {
-
             "operator": req.operator,
-
             "timestamp": "now",
-
             "source": req.source or "ui",
-
         }
-
     ]
 
     collapse_log = CollapseLog(sequence=sequence, decoherence={"channel": "dephasing"})
@@ -287,16 +177,9 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
     return MeasureResponse(verdict=verdict, p=p, collapse_log=collapse_log, uncertainty_bound=ub, latency_ms=latency_ms)
 
 
-
-
-
 @router.post("/commutator", response_model=CommutatorResponse)
-
 async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResponse:
-
     from services.api_gateway.limits import enforce_limits
-
-
 
     enforce_limits(request, cost_units=1)
 
@@ -307,16 +190,9 @@ async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResp
     return CommutatorResponse(value=value)
 
 
-
-
-
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)
-
 async def find_entanglement(req: FindEntanglementRequest, request: Request) -> FindEntanglementResponse:
-
     from services.api_gateway.limits import enforce_limits
-
-
 
     enforce_limits(request, cost_units=2)
 
@@ -327,7 +203,6 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
     # Pair consecutive variables as a stub
 
     for i in range(0, len(vars_) - 1, 2):
-
         pairs.append((vars_[i], vars_[i + 1]))
 
     # Provide low MI/negativity placeholders
@@ -335,16 +210,6 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
     return FindEntanglementResponse(pairs=pairs, mi=0.05 if pairs else 0.0, negativity=0.03 if pairs else 0.0)
 
 
-
-
-
-
-
-
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

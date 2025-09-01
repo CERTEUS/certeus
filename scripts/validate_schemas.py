@@ -37,9 +37,7 @@ EN: Ensures all data contracts (schemas) comply with JSON Schema Draft 7
 from __future__ import annotations
 
 import json
-
 from pathlib import Path
-
 from typing import Any
 
 from jsonschema import Draft7Validator  # Only what we truly use
@@ -49,20 +47,6 @@ from jsonschema import Draft7Validator  # Only what we truly use
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 SCHEMA_DIR = Path("schemas")
@@ -177,10 +161,6 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

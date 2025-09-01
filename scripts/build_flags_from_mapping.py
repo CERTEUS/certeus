@@ -31,26 +31,18 @@ EN: Builds flags JSON from mapping of premises→engine flags. Fills missing
 from __future__ import annotations
 
 import argparse
-
 from collections.abc import Iterable as AbcIterable, Mapping, MutableMapping, Sequence
-
 from inspect import Signature, signature
-
 import json
-
 from pathlib import Path
-
 import re
-
 from typing import (
     Any,
     cast,
 )
 
 from services.lexlog_parser.evaluator import evaluate_rule
-
 from services.lexlog_parser.mapping import load_mapping
-
 from services.lexlog_parser.parser import parse_lexlog
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -58,26 +50,6 @@ from services.lexlog_parser.parser import parse_lexlog
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def _to_set(xs: object | None) -> set[str]:
@@ -290,10 +262,6 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

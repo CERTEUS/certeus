@@ -25,49 +25,37 @@ EN: FastAPI router for PCO bundles.
 from __future__ import annotations
 
 import base64
-
 import hashlib
-
 import json
-
 import os
-
 from pathlib import Path
-
 import time
-
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization
-
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-
 from fastapi import APIRouter, HTTPException, Request
-
 from jsonschema import Draft202012Validator
-
 from pydantic import BaseModel, Field, field_validator
 
 from core.pco.crypto import canonical_bundle_hash_hex, canonical_digest_hex, compute_leaf_hex
-
 from monitoring.metrics_slo import (
     certeus_compile_duration_ms,
     certeus_proof_verification_failed_total,
 )
-
 from services.api_gateway.limits import enforce_limits
-
 from services.proof_verifier import verify_drat, verify_lfsc
-
 from services.proofgate.app import PublishRequest, PublishResponse, publish
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class MerkleStep(BaseModel):
     sibling: str
 
     dir: str  # "L" | "R"
+
 
 class PublicBundleIn(BaseModel):
     rid: str = Field(..., min_length=1)
@@ -89,39 +77,11 @@ class PublicBundleIn(BaseModel):
 
         return v.lower()
 
+
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
-
-
-
-
 
 
 def _bundle_dir() -> Path:
@@ -328,10 +288,6 @@ def _build_proofbundle(
     return pb
 
 
-
-
-
-
 # === I/O / ENDPOINTS ===
 @router.post("/bundle")
 def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
@@ -475,5 +431,5 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
         "public_path": str(out_path),
     }
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

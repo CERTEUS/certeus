@@ -27,7 +27,6 @@ EN: Loader of LEXLOG -> engine flags mapping. JSON lives in packs/... .
 from __future__ import annotations
 
 import json
-
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -36,30 +35,15 @@ from services.lexlog_parser.evaluator import EvalContext
 
 # === KONFIGURACJA / CONFIGURATION ===
 
+
 # === MODELE / MODELS ===
 class _MappingModel(BaseModel):
     premise_to_flag: dict[str, str | None] = Field(default_factory=dict)
 
     conclusion_excludes: dict[str, list[str]] = Field(default_factory=dict)
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def load_mapping(path: Path) -> EvalContext:
@@ -80,10 +64,6 @@ def load_mapping(path: Path) -> EvalContext:
     return EvalContext(premise_to_flag=cleaned, conclusion_excludes=model.conclusion_excludes)
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

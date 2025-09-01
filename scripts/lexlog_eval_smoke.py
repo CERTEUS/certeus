@@ -27,17 +27,12 @@ EN: Truth Engine smoke test: loads flags JSON and checks satisfiability.
 from __future__ import annotations
 
 import argparse
-
 from collections.abc import Mapping
-
 import json
-
 from pathlib import Path
 
 from services.lexlog_parser.evaluator import evaluate_rule
-
 from services.lexlog_parser.mapping import load_mapping
-
 from services.lexlog_parser.parser import parse_lexlog
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -52,25 +47,6 @@ DEFAULT_FLAGS: Mapping[str, bool] = {
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 RULES_PATH = Path("packs/jurisdictions/PL/rules/kk.lex")
@@ -133,10 +109,6 @@ if __name__ == "__main__":
     main()
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

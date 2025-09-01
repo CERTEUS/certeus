@@ -26,3 +26,11 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 `git commit -m "chore: lint+tests via Codex" --no-verify`
 `git push -u origin HEAD:main`
 
+## Premium Code Style (Sekcja 21 — rdzeń agenta)
+
+- Standard: Każdy plik musi mieć baner CERTEUS na górze oraz docstring modułu PL/EN (patrz: `docs/manifest.md` — 21) Standard Kodowania).
+- Sekcje w kodzie: agent utrzymuje znaczniki struktury pliku w Pythonie i skryptach: `# === IMPORTY / IMPORTS ===`, `# === KONFIGURACJA / CONFIGURATION ===`, `# === MODELE / MODELS ===`, `# === LOGIKA / LOGIC ===`, `# === I/O / ENDPOINTS ===`, `# === TESTY / TESTS ===`.
+- Proof‑native: wejście PNIP i publikowalne wyjścia PCO są first‑class; nie logujemy sekretów; OTel w API (zob. 21.3–21.5).
+- Linty/testy: ruff/pytest są bramką jakości; agent uruchamia `ruff check . --fix`, `ruff format .`, `pytest` przed push.
+- Automatyzacja: w CI działa gate `scripts/check_premium_style.py` (wymusza banery/docstringi/sekcje). Workflow: `.github/workflows/ci-gates.yml`.
+- Idempotencja: skrypty pomocnicze (apply_headers/apply_*_headers) mogą być uruchamiane wielokrotnie; nie duplikują nagłówków.

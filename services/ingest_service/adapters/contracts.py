@@ -83,297 +83,111 @@ EN: Adapter contracts and lightweight DTOs (Preview/OCR/Drive/LLM) used by the A
 
 """
 
-# === IMPORTY / IMPORTS ===
-from __future__ import annotations
+# === IMPORTY / IMPORTS ===`nfrom __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-
 from dataclasses import dataclass, field
+from typing import Any, Protocol
 
-from typing import Any, Literal, Protocol
-
-# === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
+@dataclass(slots=True)
 class Blob:
-    """
-
-    PL: Surowe dane pliku.
-
-    EN: Raw file payload.
-
-    """
+    """PL/EN: Surowe dane pliku (nazwa, MIME, bajty)."""
 
     filename: str
-
     content_type: str
-
     data: bytes
 
+
+@dataclass(slots=True)
 class PreviewRequest:
-    """
-
-    PL: Wejście do adaptera preview. 'target_format' np. 'application/pdf'.
-
-    EN: Input for preview adapter. 'target_format' e.g. 'application/pdf'.
-
-    """
+    """PL/EN: Wejście do adaptera preview (blob, case_id, format docelowy)."""
 
     blob: Blob
-
     case_id: str
-
     target_format: str = "application/pdf"
-
     deterministic: bool = True
 
+
+@dataclass(slots=True)
 class PreviewResult:
-    """
-
-    PL: Wynik generowania podglądu. 'url' wskazuje zasób serwowany przez API.
-
-    EN: Preview generation result. 'url' points to API-served resource.
-
-    """
-
-    url: str
-
-    content_type: str
-
-    pages: int | None = None
-
-    size_bytes: int | None = None
-
-    meta: Mapping[str, Any] = field(default_factory=dict)
-
-class OCRPage:
-    """
-
-    PL: Tekst i proste metadane strony po OCR.
-
-    EN: OCR'ed page text and basic metadata.
-
-    """
-
-    index: int
-
-    text: str
-
-    width_px: int | None = None
-
-    height_px: int | None = None
-
-    meta: Mapping[str, Any] = field(default_factory=dict)
-
-class OCRRequest:
-    """
-
-    PL: Wejście do OCR; jeśli PDF → stronicowanie wewnątrz adaptera.
-
-    EN: OCR input; if PDF → paging handled inside the adapter.
-
-    """
-
-    blob: Blob
-
-    lang_hint: str = "pl+en"
-
-    dpi: int = 300
-
-    max_pages: int | None = None
-
-    case_id: str | None = None
-
-class DriveSaveResult:
-    """
-
-    PL: Wynik zapisu do storage (lokalny/chmura).
-
-    EN: Storage save result (local/cloud).
-
-    """
-
     file_id: str
+    url: str | None
+    size_bytes: int
+    content_type: str
+    meta: dict[str, Any] = field(default_factory=dict)
 
-    url: str | None = None
 
-    size_bytes: int | None = None
+@dataclass(slots=True)
+class OCRPage:
+    index: int
+    text: str
+    meta: dict[str, Any] = field(default_factory=dict)
 
-    content_type: str | None = None
 
-    meta: Mapping[str, Any] = field(default_factory=dict)
-
-class Attachment:
-    """
-
-    PL: Załącznik do analizy LLM (np. tekst OCR).
-
-    EN: Attachment for LLM analysis (e.g., OCR text).
-
-    """
-
-    name: str
-
-    kind: Literal["text", "preview_url", "binary"]
-
-    content: str | bytes
-
-    content_type: str | None = None
-
-class LLMRequest:
-    """
-
-    PL: Wejście do adaptera LLM.
-
-    EN: Input for LLM adapter.
-
-    """
-
-    prompt: str
-
-    attachments: Sequence[Attachment] = ()
-
+@dataclass(slots=True)
+class OCRRequest:
+    blob: Blob
     case_id: str | None = None
+    lang_hint: str | None = None
 
-    model_hint: str | None = None
 
-    temperature: float = 0.0
+@dataclass(slots=True)
+class DriveSaveResult:
+    file_id: str
+    url: str | None
+    size_bytes: int
+    content_type: str
+    meta: dict[str, Any] = field(default_factory=dict)
 
-    max_tokens: int | None = None
 
+@dataclass(slots=True)
+class LLMRequest:
+    prompt: str
+    attachments: Sequence[Blob] | None = None
+    params: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass(slots=True)
 class LLMResponse:
-    """
-
-    PL: Zunifikowany wynik LLM do /v1/analyze (stub ALI).
-
-    EN: Unified LLM result for /v1/analyze (ALI stub).
-
-    """
-
-    status: Literal["ok", "error"]
-
     model: str
+    answer: str
+    trace: list[str] = field(default_factory=list)
+    metrics: dict[str, Any] = field(default_factory=dict)
 
-    answer: Mapping[str, Any]
 
-    trace: Sequence[str] = ()
+# === WYJĄTKI / ERRORS ===
+class AdapterError(Exception):
+    """Base class for adapter errors."""
 
-    provenance: Mapping[str, Any] = field(default_factory=dict)
-
-    error: str | None = None
-
-class AdapterError(RuntimeError):
-    """PL: Błąd ogólny adapterów. EN: Generic adapters error."""
 
 class PreviewError(AdapterError):
-    """PL/EN: Preview adapter error."""
+    pass
+
 
 class OCRError(AdapterError):
-    """PL/EN: OCR adapter error."""
+    pass
+
 
 class DriveError(AdapterError):
-    """PL/EN: Drive/storage adapter error."""
+    pass
+
 
 class LLMError(AdapterError):
-    """PL/EN: LLM adapter error."""
+    pass
 
+
+# === INTERFEJSY / PROTOCOLS ===
 class PreviewAdapter(Protocol):
-    """
+    async def generate(self, request: PreviewRequest) -> PreviewResult: ...
 
-    PL:
-
-      Interfejs generowania podglądu (np. DOCX→PDF).
-
-      Kontrakt:
-
-        - Wejście: PreviewRequest
-
-        - Wyjście: PreviewResult (URL serwowany przez API, np. /static/previews/..)
-
-        - Determinizm: dla tych samych danych i case_id ścieżka może być stała.
-
-    EN:
-
-      Preview generation interface (e.g., DOCX→PDF).
-
-      Contract:
-
-        - Input: PreviewRequest
-
-        - Output: PreviewResult (API-served URL, e.g., /static/previews/..)
-
-        - Determinism: stable path for same input + case_id (optional).
-
-    """
-
-    async def generate(self, request: PreviewRequest) -> PreviewResult:
-        """PL/EN: Produce preview for given blob."""
-
-        ...
 
 class OCRAdapter(Protocol):
-    """
+    async def extract(self, request: OCRRequest) -> Iterable[OCRPage]: ...
 
-    PL:
-
-      Interfejs OCR dla PDF/obrazów.
-
-      Kontrakt:
-
-        - Wejście: OCRRequest
-
-        - Wyjście: Iterable[OCRPage] (kolejność stron gwarantowana)
-
-        - Minimalna gwarancja stubu: zwróć 1 stronę z prostym 'text' (echo/heurystyka)
-
-    EN:
-
-      OCR interface for PDF/images.
-
-      Contract:
-
-        - Input: OCRRequest
-
-        - Output: Iterable[OCRPage] (page order guaranteed)
-
-        - Stub minimum guarantee: return 1 page with basic 'text' (echo/heuristic)
-
-    """
-
-    async def extract(self, request: OCRRequest) -> Iterable[OCRPage]:
-        """PL/EN: Extract text pages from the blob (PDF/image)."""
-
-        ...
 
 class DriveAdapter(Protocol):
-    """
-
-    PL:
-
-      Abstrakcja storage (lokalny katalog /static, S3, GDrive, itd.).
-
-      Kontrakt:
-
-        - save_bytes: zapisuje dane i zwraca logiczne ID oraz (opcjonalnie) URL
-
-        - read_bytes: pobiera blob po file_id
-
-        - url_for: zwraca publiczny URL jeśli dostępny
-
-    EN:
-
-      Storage abstraction (local /static, S3, GDrive, etc.).
-
-      Contract:
-
-        - save_bytes: persists payload and returns logical ID and optional URL
-
-        - read_bytes: fetches payload by file_id
-
-        - url_for: returns public URL if available
-
-    """
-
     async def save_bytes(
         self,
         data: bytes,
@@ -382,80 +196,15 @@ class DriveAdapter(Protocol):
         content_type: str,
         case_id: str | None = None,
         deterministic: bool = True,
-    ) -> DriveSaveResult:
-        """PL/EN: Persist a payload and return its handle."""
+    ) -> DriveSaveResult: ...
 
-        ...
+    async def read_bytes(self, file_id: str) -> bytes: ...
 
-    async def read_bytes(self, file_id: str) -> bytes:
-        """PL/EN: Retrieve raw bytes by logical file id."""
+    async def url_for(self, file_id: str) -> str | None: ...
 
-        ...
-
-    async def url_for(self, file_id: str) -> str | None:
-        """PL/EN: Optional public URL for given file id."""
-
-        ...
 
 class LLMAdapter(Protocol):
-    """
-
-    PL:
-
-      Interfejs do warstwy analitycznej LLM (stub ALI).
-
-      Kontrakt:
-
-        - analyze: zwraca LLMResponse zgodny z oczekiwaniem /v1/analyze
-
-        - Implementacja stub: deterministyczny 'model', krótki 'trace', 'answer'
-
-    EN:
-
-      Interface to LLM analytical layer (ALI stub).
-
-      Contract:
-
-        - analyze: returns LLMResponse aligned with /v1/analyze expectations
-
-        - Stub impl: deterministic 'model', short 'trace', 'answer'
-
-    """
-
-    async def analyze(self, request: LLMRequest) -> LLMResponse:
-        """PL/EN: Perform analysis over prompt + attachments."""
-
-        ...
-
-# === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ----------------------------- Common DTOs ----------------------------------
+    async def analyze(self, request: LLMRequest) -> LLMResponse: ...`n# ----------------------------- Common DTOs ----------------------------------`n# ----------------------------- Common DTOs ----------------------------------
 
 
 @dataclass(slots=True)
@@ -555,4 +304,5 @@ __all__ = [
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+
 

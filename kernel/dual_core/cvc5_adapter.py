@@ -30,14 +30,6 @@ EN: SMT solver adapter (proofs/translation).
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
 # +-------------------------------------------------------------+
 
 
@@ -72,10 +64,6 @@ def solve(assumptions):
     }
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

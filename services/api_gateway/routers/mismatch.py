@@ -30,14 +30,13 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
-
 from pydantic import BaseModel, Field
 
 from services.mismatch_service.models import TicketPriority
-
 from services.mismatch_service.service import mismatch_service
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class EngineResult(BaseModel):
@@ -51,6 +50,7 @@ class EngineResult(BaseModel):
 
     version: str | None = None
 
+
 class MismatchCreateRequest(BaseModel):
     case_id: str
 
@@ -62,41 +62,14 @@ class MismatchCreateRequest(BaseModel):
 
     priority: TicketPriority | None = Field(default=None)
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #!/usr/bin/env python3
 
 
 router = APIRouter(prefix="/mismatch", tags=["mismatch"])
-
-
-
-
-
-
-
 
 
 # === I/O / ENDPOINTS ===
@@ -113,6 +86,7 @@ def create_ticket(req: MismatchCreateRequest) -> dict[str, Any]:
 
     return t.model_dump()
 
+
 @router.get("/tickets/{ticket_id}")
 def get_ticket(ticket_id: str) -> dict[str, Any]:
     """PL: Pobiera ticket po jego ID. EN: Retrieves a ticket by its ID."""
@@ -123,5 +97,5 @@ def get_ticket(ticket_id: str) -> dict[str, Any]:
 
     return t.model_dump()
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

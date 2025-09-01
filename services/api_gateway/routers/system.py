@@ -25,24 +25,19 @@ EN: FastAPI router for diagnostics/system info.
 from __future__ import annotations
 
 from datetime import UTC, datetime
-
 from hashlib import sha256
-
 import json
-
 from typing import Annotated, Any
 
 from fastapi import APIRouter, File, HTTPException, Request, Response, UploadFile
-
 from pydantic import BaseModel, Field
 
 from services.connectors.fhir.router import router as fhir_router  # NEW: FHIR
-
 from services.ingest_service.adapters.contracts import Blob
-
 from services.ingest_service.adapters.ocr_injector import build_ocr_preview
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class IngestResult(BaseModel):
@@ -56,8 +51,10 @@ class IngestResult(BaseModel):
 
     fact_id: str
 
+
 class SourceCacheRequest(BaseModel):
     uri: str
+
 
 class SourceCacheResponse(BaseModel):
     uri: str
@@ -68,35 +65,8 @@ class SourceCacheResponse(BaseModel):
 
     retrieved_at: str
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #!/usr/bin/env python3
@@ -301,12 +271,12 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
     }
 
 
-
-
-
-
 # === I/O / ENDPOINTS ===
 @router.post("/v1/sources/cache", response_model=SourceCacheResponse)
+def post_source_cache(req: SourceCacheRequest) -> SourceCacheResponse:
+    return cache_source(req)
+
+
 def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
     """
 
@@ -320,5 +290,5 @@ def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
 
     return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

@@ -32,6 +32,7 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
+
 # === MODELE / MODELS ===
 class LegalActSnapshot(BaseModel):
     """
@@ -72,27 +73,10 @@ class LegalActSnapshot(BaseModel):
         description="PL: Znacznik czasu wykonania migawki. EN: Timestamp of snapshot creation.",
     )
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

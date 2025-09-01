@@ -25,12 +25,11 @@ EN: Merkle DAG: build and verify (root/leaf/proof paths).
 from __future__ import annotations
 
 from dataclasses import dataclass
-
 import hashlib
-
 from typing import Any, Literal
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class MerkleStep:
@@ -38,18 +37,11 @@ class MerkleStep:
 
     dir: Dir  # "L" | "R"
 
+
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
 #!/usr/bin/env python3
-
 
 
 # ----Bloki----- IMPORTY
@@ -60,7 +52,6 @@ Dir = Literal["L", "R"]
 
 
 @dataclass(frozen=True, slots=True)
-
 
 # ----Bloki----- HASH
 
@@ -132,8 +123,6 @@ def apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
     return cur.hex()
 
 
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-
