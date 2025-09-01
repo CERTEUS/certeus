@@ -73,6 +73,15 @@ jobs:
           shell: pwsh
           command: pwsh -File .\scripts\smoke_api.ps1
 
+      - name: 🔧 Setup Node for Spectral
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 🔎 Spectral lint OpenAPI spec
+        run: |
+          npx -y @stoplight/spectral-cli lint reports/openapi.json
+
       - name: 📤 Upload smoke summary
         if: always()
         uses: actions/upload-artifact@v4
