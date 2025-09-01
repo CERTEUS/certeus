@@ -17,6 +17,7 @@ This guide explains how Proof verification hooks work and how to enable external
 - Optional timeout for both: `PROOF_VERIFY_TIMEOUT_SECS` (default 10 seconds).
 
 When these are set, the service will:
+
 - Pipe LFSC/DRAT text to the given command via stdin
 - Consider exit code 0 as success; non‑zero as failure
 - Record a best‑effort detail in the verification result (including `rc` or error info)
@@ -28,6 +29,7 @@ Debug logging (optional): set `PROOF_VERIFY_DEBUG=1` to emit short logs with ver
 ## Mocks (DEV/Tests)
 
 To simulate outcomes without external tools, use `PROOF_VERIFIER_MOCK`:
+
 - `lfsc_ok` or `lfsc_fail` — force LFSC result
 - `drat_ok` or `drat_fail` — force DRAT result
 
@@ -44,6 +46,7 @@ This is useful for CI or local dev where installing verifiers is not practical.
 ## Configuration Examples
 
 - Shell (Linux/macOS):
+
 ```
 export CVC5_CMD="cvc5 --proof-check --input-language=lfsc -"
 export DRAT_CHECK_CMD="drat-trim -q -"
@@ -51,6 +54,7 @@ export PROOF_VERIFY_TIMEOUT_SECS=15
 ```
 
 - PowerShell (Windows):
+
 ```
 $env:CVC5_CMD = "cvc5 --proof-check --input-language=lfsc -"
 $env:DRAT_CHECK_CMD = "drat-trim -q -"
@@ -58,6 +62,7 @@ $env:PROOF_VERIFY_TIMEOUT_SECS = "15"
 ```
 
 - Docker Compose (dev‑stack): add to `infra/docker-compose.dev-stack.yml` under the `api` service:
+
 ```
     environment:
       CVC5_CMD: "cvc5 --proof-check --input-language=lfsc -"

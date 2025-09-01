@@ -37,97 +37,109 @@ function Hit($method, $path, $bodyJson) {
       $res = Invoke-WebRequest -UseBasicParsing -Method Post -Uri $url -TimeoutSec 8 -ContentType 'application/json' -Body $bodyJson
     }
     $snippet = if ($res.Content.Length -gt 200) { $res.Content.Substring(0,200) + '...' } else { $res.Content }
-    "[$method] $path => $($res.StatusCode) len=$($res.Content.Length) body=$snippet"
+    [pscustomobject]@{ method=$method; path=$path; code=[int]$res.StatusCode; ok=([int]$res.StatusCode -ge 200 -and [int]$res.StatusCode -lt 300); msg="len=$($res.Content.Length) body=$snippet" }
   } catch {
-    "[$method] $path => ERROR: $($_.Exception.Message)"
+    [pscustomobject]@{ method=$method; path=$path; code=0; ok=$false; msg="ERROR: $($_.Exception.Message)" }
   }
 }
 
+$results = @()
 $proc = $null
 try {
   $proc = Start-Server
-  Hit 'GET' '/health' $null | Write-Host
-  Hit 'GET' '/' $null | Write-Host
-  Hit 'GET' '/metrics' $null | Write-Host
-  Hit 'GET' '/.well-known/jwks.json' $null | Write-Host
-  Hit 'GET' '/v1/packs/' $null | Write-Host
+  $results += Hit 'GET' '/health' $null
+  $results += Hit 'GET' '/' $null
+  $results += Hit 'GET' '/metrics' $null
+  $results += Hit 'GET' '/.well-known/jwks.json' $null
+  $results += Hit 'GET' '/v1/packs/' $null
 
   # CFE
-  Hit 'POST' '/v1/cfe/geodesic' '{"case":"CER-SMOKE","facts":{},"norms":{}}' | Write-Host
-  Hit 'POST' '/v1/cfe/horizon' '{}' | Write-Host
-  Hit 'GET' '/v1/cfe/lensing' $null | Write-Host
+  $results += Hit 'POST' '/v1/cfe/geodesic' '{"case":"CER-SMOKE","facts":{},"norms":{}}'
+  $results += Hit 'POST' '/v1/cfe/horizon' '{}'
+  $results += Hit 'GET' '/v1/cfe/lensing' $null
 
   # QTMP
-  Hit 'POST' '/v1/qtm/init_case' '{"basis":["ALLOW","DENY","ABSTAIN"]}' | Write-Host
-  Hit 'POST' '/v1/qtm/measure' '{"operator":"W","source":"ui"}' | Write-Host
-  Hit 'POST' '/v1/qtm/commutator' '{"A":"X","B":"Y"}' | Write-Host
-  Hit 'POST' '/v1/qtm/find_entanglement' '{"variables":["A","B"]}' | Write-Host
+  $results += Hit 'POST' '/v1/qtm/init_case' '{"basis":["ALLOW","DENY","ABSTAIN"]}'
+  $results += Hit 'POST' '/v1/qtm/measure' '{"operator":"W","source":"ui"}'
+  $results += Hit 'POST' '/v1/qtm/commutator' '{"A":"X","B":"Y"}'
+  $results += Hit 'POST' '/v1/qtm/find_entanglement' '{"variables":["A","B"]}'
 
   # Devices
-  Hit 'POST' '/v1/devices/horizon_drive/plan' '{}' | Write-Host
-  Hit 'POST' '/v1/devices/qoracle/expectation' '{"objective":"maximize fairness","constraints":{}}' | Write-Host
-  Hit 'POST' '/v1/devices/entangle' '{"variables":["RISK","SENTIMENT"],"target_negativity":0.1}' | Write-Host
-  Hit 'POST' '/v1/devices/chronosync/reconcile' '{"coords":{"t":0},"pc_delta":{}}' | Write-Host
+  $results += Hit 'POST' '/v1/devices/horizon_drive/plan' '{}'
+  $results += Hit 'POST' '/v1/devices/qoracle/expectation' '{"objective":"maximize fairness","constraints":{}}'
+  $results += Hit 'POST' '/v1/devices/entangle' '{"variables":["RISK","SENTIMENT"],"target_negativity":0.1}'
+  $results += Hit 'POST' '/v1/devices/chronosync/reconcile' '{"coords":{"t":0},"pc_delta":{}}'
 
   # Ethics
-  Hit 'POST' '/v1/ethics/equity_meter' '{"distribution_a":[0.2,0.8],"distribution_b":[0.5,0.5]}' | Write-Host
-  Hit 'POST' '/v1/ethics/double_verdict' '{"W_litera":"ALLOW","T_telos":"TRUTH","rationale":"smoke"}' | Write-Host
+  $results += Hit 'POST' '/v1/ethics/equity_meter' '{"distribution_a":[0.2,0.8],"distribution_b":[0.5,0.5]}'
+  $results += Hit 'POST' '/v1/ethics/double_verdict' '{"W_litera":"ALLOW","T_telos":"TRUTH","rationale":"smoke"}'
 
   # DR
-  Hit 'POST' '/v1/dr/replay' '{"case":"CER-1","timestamp":"2023-10-01T00:00:00Z"}' | Write-Host
-  Hit 'POST' '/v1/dr/recall' '{"upn":"UPN-TEST"}' | Write-Host
+  $results += Hit 'POST' '/v1/dr/replay' '{"case":"CER-1","timestamp":"2023-10-01T00:00:00Z"}'
+  $results += Hit 'POST' '/v1/dr/recall' '{"upn":"UPN-TEST"}'
 
   # Export
-  Hit 'POST' '/v1/export' '{"case_id":"CER-1","analysis_result":{"ok":true}}' | Write-Host
+  $results += Hit 'POST' '/v1/export' '{"case_id":"CER-1","analysis_result":{"ok":true}}'
 
   # ChatOps
-  Hit 'POST' '/v1/chatops/command' '{"cmd":"cfe.geodesic","args":{}}' | Write-Host
+  $results += Hit 'POST' '/v1/chatops/command' '{"cmd":"cfe.geodesic","args":{}}'
 
   # Ledger
   $rand = -join ((65..70 + 48..57) | Get-Random -Count 64 | ForEach-Object {[char]$_})
-  Hit 'POST' '/v1/ledger/record-input' ("{`"case_id`":`"CER-1`",`"document_hash`":`"sha256:" + $rand + "`"}") | Write-Host
-  Hit 'GET' '/v1/ledger/CER-1/records' $null | Write-Host
-  Hit 'GET' '/v1/ledger/CER-1/prove' $null | Write-Host
+  $results += Hit 'POST' '/v1/ledger/record-input' ("{`"case_id`":`"CER-1`",`"document_hash`":`"sha256:" + $rand + "`"}")
+  $results += Hit 'GET' '/v1/ledger/CER-1/records' $null
+  $results += Hit 'GET' '/v1/ledger/CER-1/prove' $null
 
   # FHIR connector
-  Hit 'POST' '/v1/connectors/fhir/reason' '{"reason":"test"}' | Write-Host
+  $results += Hit 'POST' '/v1/connectors/fhir/reason' '{"reason":"test"}'
 
   # Verify (Truth Engine)
   $smt = "(set-logic QF_UF) (declare-fun x () Bool) (assert x) (check-sat)"
-  Hit 'POST' '/v1/verify' ("{`"formula`":`"$smt`",`"lang`":`"smt2`"}") | Write-Host
+  $results += Hit 'POST' '/v1/verify' ("{`"formula`":`"$smt`",`"lang`":`"smt2`"}")
 
   # PCO bundle + public verify
   $rid = 'RID-SMOKE-1'
   $payload = '{"rid":"' + $rid + '","smt2_hash":"' + ('0'*64) + '","lfsc":"(lfsc proof)","drat":"p drat","merkle_proof":[]}'
-  Hit 'POST' '/v1/pco/bundle' $payload | Write-Host
-  Hit 'GET' ('/pco/public/' + $rid) $null | Write-Host
+  $results += Hit 'POST' '/v1/pco/bundle' $payload
+  $results += Hit 'GET' ('/pco/public/' + $rid) $null
 
   # Preview upload (multipart via curl.exe)
   $tmpTxt = Join-Path $env:TEMP ('preview_' + [guid]::NewGuid().ToString('N') + '.txt')
   'hello world' | Set-Content -LiteralPath $tmpTxt -Encoding UTF8
   try {
     $code = & curl.exe -s -o NUL -w "%{http_code}" -F ("file=@" + $tmpTxt + ";type=text/plain") http://127.0.0.1:8000/v1/preview
-    Write-Host "[POST] /v1/preview => $code"
-  } catch { Write-Host "[POST] /v1/preview => ERROR: $($_.Exception.Message)" }
+    $results += [pscustomobject]@{ method='POST'; path='/v1/preview'; code=[int]$code; ok=([int]$code -ge 200 -and [int]$code -lt 300); msg='' }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/preview'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # System ingest/analyze (multipart PDF + query)
   $tmpPdf = Join-Path $env:TEMP ('doc_' + [guid]::NewGuid().ToString('N') + '.pdf')
   '%PDF-1.4`n% Smoke`n1 0 obj<</Type/Catalog>>endobj`ntrailer<<>>`n%%EOF' | Set-Content -LiteralPath $tmpPdf -Encoding ASCII
   try {
     $code = & curl.exe -s -o NUL -w "%{http_code}" -F ("file=@" + $tmpPdf + ";type=application/pdf") http://127.0.0.1:8000/v1/ingest
-    Write-Host "[POST] /v1/ingest => $code"
-  } catch { Write-Host "[POST] /v1/ingest => ERROR: $($_.Exception.Message)" }
+    $results += [pscustomobject]@{ method='POST'; path='/v1/ingest'; code=[int]$code; ok=([int]$code -ge 200 -and [int]$code -lt 300); msg='' }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/ingest'; code=0; ok=$false; msg=$_.Exception.Message } }
   try {
     $code = & curl.exe -s -o NUL -w "%{http_code}" -F ("file=@" + $tmpPdf + ";type=application/pdf") "http://127.0.0.1:8000/v1/analyze?case_id=CER-1"
-    Write-Host "[POST] /v1/analyze => $code"
-  } catch { Write-Host "[POST] /v1/analyze => ERROR: $($_.Exception.Message)" }
+    $results += [pscustomobject]@{ method='POST'; path='/v1/analyze'; code=[int]$code; ok=([int]$code -ge 200 -and [int]$code -lt 300); msg='' }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/analyze'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # Source cache (file://)
   $tmpSrc = Join-Path $env:TEMP ('src_' + [guid]::NewGuid().ToString('N') + '.txt')
   'source-cache' | Set-Content -LiteralPath $tmpSrc -Encoding UTF8
-  Hit 'POST' '/v1/sources/cache' ("{`"uri`":`"file:///$($tmpSrc -replace '\\','/')`"}") | Write-Host
+  $results += Hit 'POST' '/v1/sources/cache' ("{`"uri`":`"file:///$($tmpSrc -replace '\\','/')`"}")
 
   # Publish (not mounted in app: /defx/reason) — skipped
 } finally {
   Stop-Server $proc
 }
+
+# Print details and summary
+foreach ($r in $results) {
+  $status = if ($r.ok) { 'OK ' } else { 'ERR' }
+  Write-Host ("[$($r.method)] $($r.path) => $status ($($r.code)) $($r.msg)")
+}
+$total = $results.Count
+$passes = ($results | Where-Object { $_.ok }).Count
+$fails = $total - $passes
+Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails")
+if ($fails -gt 0) { exit 1 } else { exit 0 }
