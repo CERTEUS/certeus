@@ -16,29 +16,9 @@
 
 
 """
+PL: Ładowanie wtyczek (Domain Packs) i rejestracja zdolności.
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: Plugin loader (Domain Packs) and capability registry.
 """
 
 

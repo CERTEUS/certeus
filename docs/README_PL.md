@@ -1,4 +1,8 @@
-# CERTEUS — Przewodnik Szybkiego Startu (PL)
+# CERTEUS - Przewodnik Szybkiego Startu (PL)
+
+[![Tests](https://github.com/CERTEUS/certeus/actions/workflows/tests.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/tests.yml)
+[![Smoke](https://github.com/CERTEUS/certeus/actions/workflows/smoke.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/smoke.yml)
+[![Smoke Summary](https://img.shields.io/badge/smoke-summary-blue?logo=github)](https://github.com/CERTEUS/certeus/actions/workflows/smoke.yml)
 
 Ten dokument zawiera w pełni poprawną, zwięzłą i praktyczną wersję instrukcji uruchomienia, testów i obserwowalności w języku polskim.
 
@@ -89,3 +93,4 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
   - Weryfikatory proofów: ustaw `PROOF_VERIFY_DEBUG=1`; do szybkiej diagnostyki możesz użyć `PROOF_VERIFIER_MOCK=lfsc_ok` lub `drat_ok`.
   - P95: powtórz smoke lokalnie i sprawdź `/metrics`; problemy zwykle wynikają z zimnego startu albo konfliktów portów.
   - Multipart: w Windows używamy `curl.exe -F ...` (Invoke-RestMethod bywa wrażliwy na boundary i typy MIME).
+  - Tolerancja błędów: można ustawić `SMOKE_MAX_FAILS` (domyślnie 0) do tymczasowej tolerancji w DEV/CI.

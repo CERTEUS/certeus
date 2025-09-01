@@ -16,29 +16,9 @@
 
 
 """
+PL: Wejście wtyczki tpl_diff_pl (Domain Pack).
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: tpl_diff_pl plugin entry (Domain Pack).
 """
 
 

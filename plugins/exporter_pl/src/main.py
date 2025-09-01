@@ -16,29 +16,9 @@
 
 
 """
+PL: Wejście wtyczki exporter_pl (Domain Pack).
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: exporter_pl plugin entry (Domain Pack).
 """
 
 

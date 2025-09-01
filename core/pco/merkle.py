@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """
+PL: Merkle-DAG: konstrukcja i weryfikacja (root/leaf/ścieżki dowodu).
 
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
+EN: Merkle DAG: build and verify (root/leaf/proof paths).
 """
 
 

@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/dev_env.ps1                                 |
+# | ROLE: PowerShell script.                                    |
+# | PLIK: scripts/dev_env.ps1                                 |
+# | ROLA: Skrypt PowerShell.                                     |
+# +-------------------------------------------------------------+
+
 # CERTEUS — Developer environment bootstrap (PowerShell)
 #
 # Usage:

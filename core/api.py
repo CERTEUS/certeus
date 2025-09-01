@@ -16,29 +16,9 @@
 
 
 """
+PL: API rdzenia CERTEUS: interfejsy wysokiego poziomu.
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: CERTEUS core API: high-level interfaces.
 """
 
 

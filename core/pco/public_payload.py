@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """
+PL: Public payload PCO: ekstrakcja i walidacja (bez PII).
 
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
+EN: PCO public payload: extraction and validation (no PII).
 """
 
 

@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/smoke_api.ps1                               |
+# | ROLE: PowerShell script.                                    |
+# | PLIK: scripts/smoke_api.ps1                               |
+# | ROLA: Skrypt PowerShell.                                     |
+# +-------------------------------------------------------------+
+
 # CERTEUS — Simple API smoke test (PowerShell)
 #
 # Starts the dev server, probes key endpoints, then stops the server.

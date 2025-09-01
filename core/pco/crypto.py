@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """
+PL: Krypto-pomocniki: sha256 (kanoniczne), b64url, Ed25519 (podpis/weryfikacja).
 
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
+EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
 """
 
 

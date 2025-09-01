@@ -1,6 +1,8 @@
 name: Enforce Branch Protection (Smoke Required)
 
 on:
+  push:
+    branches: [main, master]
   workflow_dispatch:
     inputs:
       branch:
@@ -15,21 +17,25 @@ jobs:
   protect:
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure ADMIN_TOKEN is available
+      - name: Check ADMIN_TOKEN availability
+        id: check
         run: |
-          if [ -z "${{ secrets.ADMIN_TOKEN }}" ]; then
-            echo "ADMIN_TOKEN secret not set. Please create a classic PAT with 'repo' scope and add as repo secret ADMIN_TOKEN." >&2
-            exit 1
+          if [ -n "${{ secrets.ADMIN_TOKEN }}" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Set required status checks for Smoke (per OS)
+        if: steps.check.outputs.has_token == 'true'
         env:
           GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
           owner='${{ github.repository_owner }}'
-          repo='${{ github.event.repository.name || github.event.repository }}'
-          branch='${{ inputs.branch }}'
+          repo_name='${{ github.event.repository.name || github.repository }}'
+          # Determine branch: input if manual, else current ref name
+          if [ -n "${{ inputs.branch }}" ]; then branch='${{ inputs.branch }}'; else branch='${{ github.ref_name }}'; fi
           contexts='["Smoke (ubuntu-latest)","Smoke (windows-latest)"]'
-          gh api -X PUT repos/$owner/${{ github.event.repository.name }}/branches/$branch/protection \
+          gh api -X PUT repos/$owner/$repo_name/branches/$branch/protection \
             -H 'Accept: application/vnd.github+json' \
             -f required_status_checks.strict=true \
             -f required_status_checks.contexts:=$contexts \
@@ -39,3 +45,7 @@ jobs:
             -f restrictions= \
             -F allow_force_pushes=false \
             -F allow_deletions=false
+      - name: Skip note (no ADMIN_TOKEN)
+        if: steps.check.outputs.has_token != 'true'
+        run: |
+          echo "ADMIN_TOKEN not set; skipping branch protection update (safe no-op)."

@@ -16,29 +16,9 @@
 
 
 """
+PL: Wejście wtyczki lexlog_rules_pl (Domain Pack).
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: lexlog_rules_pl plugin entry (Domain Pack).
 """
 
 

@@ -16,29 +16,9 @@
 
 
 """
+PL: Wejście wtyczki isap_adapter_pl (Domain Pack).
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: isap_adapter_pl plugin entry (Domain Pack).
 """
 
 

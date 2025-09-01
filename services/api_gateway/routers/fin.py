@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """
+PL: Router FastAPI dla obszaru FINENITH (quantum alpha).
 
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
+EN: FastAPI router for FINENITH (quantum alpha).
 """
 
 

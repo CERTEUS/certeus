@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/keys_dev.ps1                                |
+# | ROLE: PowerShell script.                                    |
+# | PLIK: scripts/keys_dev.ps1                                |
+# | ROLA: Skrypt PowerShell.                                     |
+# +-------------------------------------------------------------+
+
 param()
 $ErrorActionPreference = "Stop"
 New-Item -ItemType Directory -Force -Path .devkeys | Out-Null

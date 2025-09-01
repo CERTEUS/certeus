@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/auto_windows.ps1                            |
+# | ROLE: PowerShell script.                                    |
+# | PLIK: scripts/auto_windows.ps1                            |
+# | ROLA: Skrypt PowerShell.                                     |
+# +-------------------------------------------------------------+
+
 param([string]$RepoPath = ".")
 $ErrorActionPreference = "Stop"
 

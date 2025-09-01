@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """
+PL: Router FastAPI dla obszaru lexqft / geometria sensu.
 
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
+EN: FastAPI router for lexqft / geometry of meaning.
 """
 
 

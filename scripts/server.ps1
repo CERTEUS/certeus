@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/server.ps1                                  |
+# | ROLE: PowerShell script.                                    |
+# | PLIK: scripts/server.ps1                                  |
+# | ROLA: Skrypt PowerShell.                                     |
+# +-------------------------------------------------------------+
+
 param()
 $ErrorActionPreference = "Stop"
 & "$PSScriptRoot/env_load.ps1"

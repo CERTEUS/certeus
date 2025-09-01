@@ -16,29 +16,9 @@
 
 
 """
+PL: Adapter solvera SMT (dowody/konwersja).
 
-
-
-
-
-
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-
-
-
-
-
-
-EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
-
+EN: SMT solver adapter (proofs/translation).
 """
 
 

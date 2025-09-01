@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/env_load.ps1                                |
+# | ROLE: PowerShell script.                                    |
+# | PLIK: scripts/env_load.ps1                                |
+# | ROLA: Skrypt PowerShell.                                     |
+# +-------------------------------------------------------------+
+
 param([string]$FilePath = ".env")
 if (!(Test-Path $FilePath)) { return }
 $pairs = Get-Content $FilePath | Where-Object { $_ -and ($_ -notmatch '^\s*#') }
