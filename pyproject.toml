@@ -24,6 +24,7 @@ dependencies = [
   "jsonschema>=4.25.0",
   "python-multipart>=0.0.20,<0.0.21",
   "cryptography>=45,<46",
+  "requests>=2.32.0",
 ]
 
 [tool.setuptools]
