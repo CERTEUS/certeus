@@ -9,6 +9,7 @@
 [![Gauge-Gate](https://github.com/CERTEUS/certeus/actions/workflows/gauge_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/gauge_gate.yml)
 [![Path-Coverage-Gate](https://github.com/CERTEUS/certeus/actions/workflows/path_coverage_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/path_coverage_gate.yml)
 [![Boundary-Rebuild-Gate](https://github.com/CERTEUS/certeus/actions/workflows/boundary_rebuild_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/boundary_rebuild_gate.yml)
+[![Security Policy](https://img.shields.io/badge/security-policy-blue)](https://github.com/CERTEUS/certeus/security/policy)
 [![SemVer](https://img.shields.io/badge/semver-1.x-blue)](#versioning-deprecation-support)
 [![SLSA](https://img.shields.io/badge/slsa-3%2B-8A2BE2)](https://slsa.dev)
 [![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
@@ -561,5 +562,4 @@ MIT © 2025 CERTEUS Contributors
 
 - Source of truth: `docs/openapi/certeus.v1.yaml` (used by Pages workflow to publish JSON).
 - To inspect runtime JSON locally: `curl -s http://127.0.0.1:8000/openapi.json -o out/openapi.json`.
-
 
