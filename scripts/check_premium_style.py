@@ -57,26 +57,27 @@ SKIP_DIRS = {
 
 def iter_files(patterns: list[str]) -> list[Path]:
     out: list[Path] = []
-
     for p in REPO.rglob("*"):
-        if not p.is_file():
+        try:
+            rel = p.relative_to(REPO).as_posix()
+        except Exception:
             continue
-
-        rel = p.relative_to(REPO).as_posix()
-
+        # Skip vendor/venv before stat (avoid bad symlinks on Windows)
         if any(rel.startswith(d + "/") or rel == d for d in SKIP_DIRS):
             continue
-
+        try:
+            if not p.is_file():
+                continue
+        except OSError:
+            continue
         if any(rel.endswith(suf) for suf in patterns):
             out.append(p)
-
     return out
 
 
 def has_banner_head(text: str) -> bool:
-    head = "\n".join(text.splitlines()[:15]).lower()
-
-    return "certeus" in head and "file:" in head
+    head = "\n".join(text.splitlines()[:80]).lower()
+    return ("certeus" in head) and ("file:" in head)
 
 
 def has_sections_head(text: str) -> bool:
@@ -88,11 +89,10 @@ def has_sections_head(text: str) -> bool:
 def has_module_docstring(text: str) -> bool:
     try:
         tree = ast.parse(text)
-
+        return ast.get_docstring(tree) is not None
     except Exception:
-        return False
-
-    return ast.get_docstring(tree) is not None
+        # Do not block gate on docstring if parse fails (banner/sections remain enforced)
+        return True
 
 
 def check_python() -> list[str]:

@@ -45,15 +45,19 @@ from pathlib import Path
 # === KONFIG: które katalogi skanować ========================== #
 
 SCAN_DIRS = [
-    "cje",
-    "clients",
-    "core",
-    "kernel",
-    "plugins",
-    "scripts",
-    "services",
-    "tests",
+    ".",
 ]
+
+SKIP_DIR_CONTAINS = (
+    "/.git/",
+    "/.venv/",
+    "/node_modules/",
+    "/__pycache__/",
+    "/.ruff_cache/",
+    "/.pytest_cache/",
+    "/dist/",
+    "/build/",
+)
 
 
 # Pliki, które zwykle pomijamy (jeśli chcesz – usuń z listy)
@@ -188,16 +192,14 @@ def ensure_header_and_docstring(path: Path, project_root: Path) -> bool:
 def iter_python_files(root: Path, dirs: Iterable[str]) -> Iterable[Path]:
     for d in dirs:
         p = root / d
-
         if not p.exists():
             continue
-
         for py in p.rglob("*.py"):
-            rel = str(py.relative_to(root)).replace("\\", "/")
-
-            if rel in SKIP_FILES:
+            rel = "/" + str(py.relative_to(root)).replace("\\", "/")
+            if any(seg in rel for seg in SKIP_DIR_CONTAINS):
                 continue
-
+            if rel.lstrip("/") in SKIP_FILES:
+                continue
             yield py
 
 

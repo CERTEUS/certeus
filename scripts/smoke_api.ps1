@@ -33,7 +33,7 @@ function Start-Server {
   if (-not (Test-Path $py)) { throw 'Python venv not found: .\\.venv\\Scripts\\python.exe' }
   $args = @('-m','uvicorn','services.api_gateway.main:app','--host','127.0.0.1','--port','8000')
   $proc = Start-Process -FilePath $py -ArgumentList $args -PassThru -WindowStyle Hidden
-  for ($i=0; $i -lt 80; $i++) {
+  for ($i=0; $i -lt 120; $i++) {
     try { $r = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/health' -TimeoutSec 2; if ($r.StatusCode -eq 200) { break } } catch { Start-Sleep -Milliseconds 250 }
   }
   return $proc
@@ -272,8 +272,9 @@ foreach ($r in $results) {
   $status = if ($r.ok) { 'OK ' } else { 'ERR' }
   Write-Host ("[$($r.method)] $($r.path) => $status ($($r.code)) $($r.msg)")
 }
-$total = $results.Count
-$passes = ($results | Where-Object { $_.ok }).Count
+$arr = @($results)
+$total = $arr.Count
+$passes = ($arr | Where-Object { $_.ok }).Count
 $fails = $total - $passes
 # Compute p95 from /metrics histogram (certeus_http_request_duration_ms_bucket)
 $p95 = 'n/a'

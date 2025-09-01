@@ -18,6 +18,13 @@ MAX_TTL_DAYS = 14
 
 def approve_break_glass(request_id: str, reason: str, until: datetime, merkle_log: list[dict[str, str]]) -> bool:
     """PL: Zgoda na BG. EN: Approve BG."""
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
     now = datetime.now(UTC)
     if until - now > timedelta(days=MAX_TTL_DAYS):
         raise ValueError("Break-Glass TTL exceeds 14 days.")

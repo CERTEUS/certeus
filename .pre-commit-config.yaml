@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .pre-commit-config.yaml                             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .pre-commit-config.yaml                             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 # .pre-commit-config.yaml
 # Stabilny, poprawny składniowo config dla Twojego repo
 

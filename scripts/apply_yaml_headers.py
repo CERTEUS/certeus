@@ -32,12 +32,19 @@ from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
 ROOTS = [
-    "infra",
-    "charts",
-    "policies",
-    "plugins",
-    "docs",
+    ".",
 ]
+
+SKIP_DIR_CONTAINS = (
+    "/.git/",
+    "/.venv/",
+    "/node_modules/",
+    "/__pycache__/",
+    "/.ruff_cache/",
+    "/.pytest_cache/",
+    "/dist/",
+    "/build/",
+)
 
 # === MODELE / MODELS ===
 
@@ -70,25 +77,20 @@ def main() -> None:
 
     for d in ROOTS:
         p = root / d
-
         if not p.exists():
             continue
-
         for f in p.rglob("*.y*ml"):
+            rel = "/" + str(f.relative_to(root)).replace("\\", "/")
+            if any(seg in rel for seg in SKIP_DIR_CONTAINS):
+                continue
             text = f.read_text(encoding="utf-8", errors="ignore")
-
             if has_header(text):
                 continue
-
-            rel = str(f.relative_to(root)).replace("\\", "/")
-
-            new_text = build_header(rel) + "\n" + text
-
+            rel_print = rel.lstrip("/")
+            new_text = build_header(rel_print) + "\n" + text
             f.write_text(new_text, encoding="utf-8")
-
             total += 1
-
-            print(f"[UPDATED] {rel}")
+            print(f"[UPDATED] {rel_print}")
 
     print(f"Done. YAML files updated: {total}")
 

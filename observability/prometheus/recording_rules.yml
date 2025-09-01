@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: observability/prometheus/recording_rules.yml        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: observability/prometheus/recording_rules.yml        |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 groups:
   - name: certeus_dashboard_records
     interval: 30s
