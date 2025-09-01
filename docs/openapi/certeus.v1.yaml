@@ -100,6 +100,7 @@ paths:
   /v1/pco/bundle:
     post:
       summary: Create and publish ProofBundle (v0.2)
+      tags: [PCO]
       requestBody:
         required: true
         content:
@@ -318,3 +319,4 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
+
