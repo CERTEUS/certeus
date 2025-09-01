@@ -50,10 +50,15 @@ jobs:
       - name: 🔄 Checkout
         uses: actions/checkout@v4
 
-      - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }}
+      - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }} (with pip cache)
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            constraints/**
 
       - name: 📦 Create venv and install (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
