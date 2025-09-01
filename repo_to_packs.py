@@ -36,7 +36,6 @@ ADD: Generates a complete repository inventory for machines (MANIFEST.json)
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 import argparse

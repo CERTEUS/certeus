@@ -44,7 +44,6 @@ EN: Bulk injector for CERTEUS banners and module docstrings (idempotent).
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 import datetime

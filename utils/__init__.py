@@ -58,7 +58,6 @@ EN: Package initializer for utilities; exports commonly used helpers.
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from .console import ascii_safe, error, info, print_safe, success  # noqa: F401
 
 __all__ = ["ascii_safe", "print_safe", "info", "success", "error"]

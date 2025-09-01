@@ -19,12 +19,12 @@ truth_contradiction_rate = Counter("truth_contradiction_rate", "Contradictions d
 
 def observe_novel_case() -> None:
     """PL: Zgłoś nowy przypadek. EN: Report novel case."""
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
+    # === IMPORTY / IMPORTS ===
+    # === KONFIGURACJA / CONFIGURATION ===
+    # === MODELE / MODELS ===
+    # === LOGIKA / LOGIC ===
+    # === I/O / ENDPOINTS ===
+    # === TESTY / TESTS ===
 
     truth_novel_case_rate.inc()
 

@@ -18,12 +18,12 @@ Heat = Literal["HOT", "WARM", "COLD"]
 
 def estimate_heat(ctx: dict[str, object]) -> Heat:
     """PL: Wyznacz klasę HEAT. EN: Derive HEAT class."""
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
+    # === IMPORTY / IMPORTS ===
+    # === KONFIGURACJA / CONFIGURATION ===
+    # === MODELE / MODELS ===
+    # === LOGIKA / LOGIC ===
+    # === I/O / ENDPOINTS ===
+    # === TESTY / TESTS ===
 
     score = float(ctx.get("complexity_score", 0.5) or 0.5)
     if score < 0.3:

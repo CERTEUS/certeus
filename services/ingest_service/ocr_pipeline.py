@@ -30,11 +30,11 @@ EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
-DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 
-from typing import Any
+DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 
 # === KONFIGURACJA / CONFIGURATION ===
 

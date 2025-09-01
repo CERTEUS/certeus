@@ -17,7 +17,6 @@ EN: Returns proof_task_id & eta_hint; exposes queue depth metric.
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

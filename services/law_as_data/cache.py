@@ -20,7 +20,6 @@ PL: Moduł projektu CERTEUS (uogólniony opis).
 EN: CERTEUS project module (generic description).
 """
 
-# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -33,10 +32,12 @@ import urllib.request
 
 from monitoring.metrics_slo import certeus_source_fetch_errors_total
 
-# === KONFIGURACJA / CONFIGURATION ===
+
+def compute_digest(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
 
 
-# === MODELE / MODELS ===
+@dataclass
 class CachedSource:
     uri: str
 
@@ -102,14 +103,6 @@ class FileCache:
         )
 
 
-# === LOGIKA / LOGIC ===
-
-
-@dataclass
-def compute_digest(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
 def _fetch_uri(uri: str) -> bytes:
     try:
         with urllib.request.urlopen(uri) as resp:  # nosec - trusted adapter path only
@@ -131,8 +124,3 @@ def cache_from_uri(uri: str, cache: FileCache | None = None) -> CachedSource:
     data = _fetch_uri(uri)
 
     return c.put(uri, data)
-
-
-# === I/O / ENDPOINTS ===
-
-# === TESTY / TESTS ===

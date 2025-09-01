@@ -66,7 +66,6 @@ EN: CERTEUS header & module docstring normalizer.
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 import argparse
