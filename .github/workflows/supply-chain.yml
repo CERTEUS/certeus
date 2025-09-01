@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/supply-chain.yml                  |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/supply-chain.yml                  |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 name: supply-chain
 
 on:

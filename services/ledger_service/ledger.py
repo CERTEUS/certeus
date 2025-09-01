@@ -31,7 +31,6 @@ EN: Provenance ledger – logic.
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
 
-
 from __future__ import annotations
 
 from collections.abc import Mapping

@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/asset-guard.yml                   |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/asset-guard.yml                   |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 name: asset-guard
 on: [push, pull_request]
 jobs:

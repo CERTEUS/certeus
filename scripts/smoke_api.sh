@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/smoke_api.sh                                |
+# | ROLE: Shell script.                                         |
+# | PLIK: scripts/smoke_api.sh                                |
+# | ROLA: Skrypt powłoki.                                       |
+# +-------------------------------------------------------------+
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 # CERTEUS — Simple API smoke test (Linux/macOS)
 
 # === IMPORTY / IMPORTS ===

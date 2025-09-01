@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/openapi-diff.yml                  |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/openapi-diff.yml                  |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 name: openapi-diff
 
 on:

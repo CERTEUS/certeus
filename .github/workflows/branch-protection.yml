@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/branch-protection.yml             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/branch-protection.yml             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 name: Enforce Branch Protection (Smoke Required)
 
 on:

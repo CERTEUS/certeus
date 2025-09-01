@@ -113,17 +113,21 @@ def find_docstring_span(text: str) -> tuple[int, int] | None:
 def ensure_markers(text: str, rel: str) -> str | None:
     if has_any_marker(text):
         return None
-
-    span = find_docstring_span(text)
-
-    if not span:
-        return None
-
-    start, end = span
-
     lines = text.splitlines(keepends=True)
-
-    insert_at = end + 1
+    # Prefer after docstring if present
+    span = find_docstring_span(text)
+    if span:
+        _, end = span
+        insert_at = end + 1
+    else:
+        # Fallback: after banner if present, else at BOF
+        insert_at = 0
+        # skip shebang
+        if lines and lines[0].startswith("#!"):
+            insert_at = 1
+        # skip banner comment block
+        while insert_at < len(lines) and (lines[insert_at].lstrip().startswith("#") or lines[insert_at].strip() == ""):
+            insert_at += 1
 
     block = []
 

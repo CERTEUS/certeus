@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/smoke.yml                         |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/smoke.yml                         |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
 name: Smoke
 
 on:
@@ -139,6 +148,10 @@ jobs:
     needs: smoke
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
     steps:
       - name: 🔄 Download smoke artifacts
         uses: actions/download-artifact@v4
@@ -148,6 +161,8 @@ jobs:
           merge-multiple: true
 
       - name: 📝 Comment PR with p95 summary
+        # Skip when PR is from a fork to avoid 403
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v7
         with:
           script: |
@@ -187,9 +202,13 @@ jobs:
             for (const r of rows) {
               body += `| ${r.os} | ${r.total} | ${r.passes} | ${r.fails} | ${r.p95_ms} | ${r.threshold_ms || ''} |\n`;
             }
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            } catch (err) {
+              core.warning(`Could not create PR comment: ${err?.message || err}`);
+            }

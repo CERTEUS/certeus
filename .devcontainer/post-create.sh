@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .devcontainer/post-create.sh                        |
+# | ROLE: Shell script.                                         |
+# | PLIK: .devcontainer/post-create.sh                        |
+# | ROLA: Skrypt powłoki.                                       |
+# +-------------------------------------------------------------+
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 set -euo pipefail
 python -m venv .venv
 . .venv/bin/activate

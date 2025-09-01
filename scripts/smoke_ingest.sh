@@ -1,6 +1,11 @@
+#!/usr/bin/env bash
 # +-------------------------------------------------------------+
-# |                         CERTEUS                             |
-# |                 Smoke test for /v1/ingest                   |
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/smoke_ingest.sh                             |
+# | ROLE: Shell script.                                         |
+# | PLIK: scripts/smoke_ingest.sh                             |
+# | ROLA: Skrypt powłoki.                                       |
 # +-------------------------------------------------------------+
 
 # === IMPORTY / IMPORTS ===

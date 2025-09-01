@@ -29,6 +29,13 @@ EN: Text-pack generator for chat models. Uses `git ls-files` to fetch
 ADD: Generates a complete repository inventory for machines (MANIFEST.json)
      and a human-readable full tree (REPO_TREE.md).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 from __future__ import annotations
 

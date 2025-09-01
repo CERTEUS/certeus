@@ -18,6 +18,13 @@ import time
 
 def time_bucket(now: float, seconds: int = 21600) -> str:
     """PL: Wiadro czasowe 6h. EN: 6-hour time bucket."""
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
     return str(int(math.floor(now / seconds)))
 
 

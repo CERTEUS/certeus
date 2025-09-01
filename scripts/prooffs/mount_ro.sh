@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 # +-------------------------------------------------------------+
-# | CERTEUS - ProofFS mount (read-only)                         |
+# |                          CERTEUS                            |
 # +-------------------------------------------------------------+
+# | FILE: scripts/prooffs/mount_ro.sh                         |
+# | ROLE: Shell script.                                         |
+# | PLIK: scripts/prooffs/mount_ro.sh                         |
+# | ROLA: Skrypt powłoki.                                       |
+# +-------------------------------------------------------------+
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 # === IMPORTY / IMPORTS ===
 # === KONFIGURACJA / CONFIGURATION ===
 # === LOGIKA / LOGIC ===
