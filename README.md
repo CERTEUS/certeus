@@ -97,7 +97,8 @@ curl -s http://127.0.0.1:8000/health
 ```
 py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
 $py = ".\\.venv\\Scripts\\python.exe"
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+. .\\scripts\\dev_env.ps1
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 & $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # in another terminal
 curl.exe -s http://127.0.0.1:8000/health
@@ -117,7 +118,8 @@ curl -s http://127.0.0.1:8000/health
 ```
 py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
 $py = ".\\.venv\\Scripts\\python.exe"
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+. .\\scripts\\dev_env.ps1
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 & $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
 # w drugim oknie
 curl.exe -s http://127.0.0.1:8000/health
@@ -150,7 +152,8 @@ python -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 # Windows PowerShell (Python 3.11)
 py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
 $py = ".\.venv\Scripts\python.exe"
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
+. .\\scripts\\dev_env.ps1
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn -c constraints/requirements-constraints.txt
 & $py -m ruff check . --fix; & $py -m ruff format .
 & $py -m pytest -q --junitxml="reports\junit.xml"
 
