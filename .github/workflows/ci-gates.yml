@@ -16,6 +16,8 @@ on:
 jobs:
   gates:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -41,3 +43,35 @@ jobs:
       - name: Tests
         run: |
           python -m pytest -q
+
+      - name: Publish CI status to branch
+        if: always()
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch origin ci-status || true
+          if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
+            git checkout -B ci-status origin/ci-status
+          else
+            git checkout --orphan ci-status
+            git rm -rf . || true
+          fi
+          mkdir -p ci
+          cat > ci/status.json <<'JSON'
+          {
+            "repo": "${{ github.repository }}",
+            "workflow": "${{ github.workflow }}",
+            "run_id": "${{ github.run_id }}",
+            "run_number": "${{ github.run_number }}",
+            "event": "${{ github.event_name }}",
+            "branch": "${{ github.ref_name }}",
+            "sha": "${{ github.sha }}",
+            "status": "${{ job.status }}",
+            "updated_at": "$(date -u +%FT%TZ)"
+          }
+          JSON
+          git add ci/status.json
+          git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
+          git push origin ci-status
