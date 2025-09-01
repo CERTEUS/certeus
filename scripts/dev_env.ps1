@@ -12,7 +12,10 @@ function Set-IfEmpty {
     [Parameter(Mandatory=$true)][string]$Name,
     [Parameter(Mandatory=$true)][string]$Value
   )
-  if (-not $env:$Name) { $env:$Name = $Value }
+  $current = [System.Environment]::GetEnvironmentVariable($Name, 'Process')
+  if ([string]::IsNullOrEmpty($current)) {
+    [System.Environment]::SetEnvironmentVariable($Name, $Value, 'Process')
+  }
 }
 
 # Allow all origins in dev (adjust as needed)
@@ -28,4 +31,3 @@ Write-Host 'DEV ENV:'
 Write-Host '  ALLOW_ORIGINS=' $env:ALLOW_ORIGINS
 Write-Host '  ED25519_PUBKEY_B64URL set? ' ([bool]$env:ED25519_PUBKEY_B64URL)
 Write-Host '  ED25519_PUBKEY_HEX    set? ' ([bool]$env:ED25519_PUBKEY_HEX)
-
