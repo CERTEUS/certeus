@@ -49,7 +49,6 @@ from .public_payload import PublicPCO  # noqa: E402
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
 
 
 __all__ = [

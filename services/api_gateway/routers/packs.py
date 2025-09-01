@@ -47,7 +47,6 @@ class HandleRequest(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
 
 
 router = APIRouter(prefix="/v1/packs", tags=["packs"])

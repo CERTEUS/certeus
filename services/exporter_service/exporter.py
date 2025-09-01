@@ -70,7 +70,6 @@ class ExporterService:
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
 
 
 # (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)

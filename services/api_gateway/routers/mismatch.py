@@ -66,7 +66,6 @@ class MismatchCreateRequest(BaseModel):
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
 
 
 router = APIRouter(prefix="/mismatch", tags=["mismatch"])

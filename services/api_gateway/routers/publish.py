@@ -57,7 +57,6 @@ router = APIRouter()
 # === I/O / ENDPOINTS ===
 @router.post("/defx/reason")
 
-# === I/O / ENDPOINTS ===
 
 def reason(
     body: dict[str, Any],

@@ -74,7 +74,6 @@ class NaryNode(TypedDict):
 _Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
 
 
-#!/usr/bin/env python3
 
 
 # ──────────────────────────────────────────────────────────────────────

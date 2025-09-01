@@ -30,7 +30,6 @@ EN: CERTEUS module – please complete the functional description.
 # === TESTY / TESTS ===
 
 
-#!/usr/bin/env python3
 
 from __future__ import annotations
 

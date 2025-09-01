@@ -34,7 +34,6 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
 
 
 router = APIRouter(prefix="", tags=["metrics"])
@@ -42,7 +41,6 @@ router = APIRouter(prefix="", tags=["metrics"])
 
 # === I/O / ENDPOINTS ===
 @router.get("/metrics")
-# === I/O / ENDPOINTS ===
 def metrics() -> Response:
     # Use the default global registry
 

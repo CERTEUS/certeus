@@ -31,7 +31,6 @@ EN: Ledger tests – verification of hash chain and headers.
 # === TESTY / TESTS ===
 
 
-#!/usr/bin/env python3
 
 from __future__ import annotations
 

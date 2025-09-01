@@ -114,7 +114,6 @@ class DualCoreVerifier:
 _Z3 = cast(Any, z3)
 
 
-#!/usr/bin/env python3
 
 
 # Import adapter class if dostępny; w przeciwnym razie fallback.

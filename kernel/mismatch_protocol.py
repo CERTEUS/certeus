@@ -36,7 +36,6 @@ class MismatchError(RuntimeError):
 # === LOGIKA / LOGIC ===
 
 
-#!/usr/bin/env python3
 
 
 def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> None:
