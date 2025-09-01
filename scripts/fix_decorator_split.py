@@ -15,11 +15,14 @@ pojawiające się w środku plików.
 
 EN: Fix cases where a section marker was inserted between a decorator and its
 target (class/def). Also removes stray mid-file shebang lines.
+
+--check mode: report-only (exit 0), no modifications.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIR_CONTAINS = (
@@ -34,7 +37,7 @@ SKIP_DIR_CONTAINS = (
 )
 
 
-def fix_file(p: Path) -> bool:
+def fix_file(p: Path, *, check_only: bool = False) -> bool:
     text = p.read_text(encoding="utf-8", errors="ignore")
     lines = text.splitlines(keepends=True)
     n = len(lines)
@@ -63,21 +66,33 @@ def fix_file(p: Path) -> bool:
                 continue
         out.append(line)
 
-    if changed:
+    if changed and not check_only:
         p.write_text("".join(out), encoding="utf-8")
     return changed
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Fix decorator splits and stray shebangs")
+    parser.add_argument("--check", action="store_true", help="Report-only; do not modify files")
+    args = parser.parse_args()
+
     touched = 0
+    reported = 0
     for p in ROOT.rglob("*.py"):
         rel = "/" + str(p.relative_to(ROOT)).replace("\\", "/")
         if any(seg in rel for seg in SKIP_DIR_CONTAINS):
             continue
-        if fix_file(p):
-            touched += 1
-            print(f"[FIXED] {rel.lstrip('/')}")
-    print(f"Done. Files fixed: {touched}")
+        if fix_file(p, check_only=args.check):
+            if args.check:
+                print(f"[WOULD-FIX] {rel.lstrip('/')}")
+                reported += 1
+            else:
+                touched += 1
+                print(f"[FIXED] {rel.lstrip('/')}")
+    if args.check:
+        print(f"Done. Would fix: {reported}")
+    else:
+        print(f"Done. Files fixed: {touched}")
 
 
 if __name__ == "__main__":

@@ -26,6 +26,9 @@ jobs:
         run: |
           python -m pip install -U pip wheel setuptools
           python -m pip install ruff pytest
+      - name: Decorator split scan (report-only)
+        run: |
+          python scripts/fix_decorator_split.py --check || true
       - name: Premium Style Gate (sec.21)
         run: |
           python scripts/check_premium_style.py
