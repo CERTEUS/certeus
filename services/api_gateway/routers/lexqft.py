@@ -65,6 +65,9 @@ class TunnelResponse(BaseModel):
 # +=====================================================================+
 
 
+router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
+
+
 # | FILE: services/api_gateway/routers/lexqft.py                        |
 
 
@@ -74,7 +77,14 @@ class TunnelResponse(BaseModel):
 # +=====================================================================+
 
 
-router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
+class CoverageResponse(BaseModel):
+    coverage_gamma: float
+
+
+@router.get("/coverage", response_model=CoverageResponse)
+async def coverage() -> CoverageResponse:
+    """PL/EN: Telemetria lexqft (stub) – gamma pokrycia."""
+    return CoverageResponse(coverage_gamma=0.953)
 
 
 @router.post("/tunnel", response_model=TunnelResponse)

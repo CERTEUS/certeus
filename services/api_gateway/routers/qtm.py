@@ -172,7 +172,19 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
 
     latency_ms = round((perf_counter() - t0) * 1000.0, 3)
 
-    return MeasureResponse(verdict=verdict, p=p, collapse_log=collapse_log, uncertainty_bound=ub, latency_ms=latency_ms)
+    resp = MeasureResponse(verdict=verdict, p=p, collapse_log=collapse_log, uncertainty_bound=ub, latency_ms=latency_ms)
+
+    # Record qtm.sequence into Ledger as provenance input (hash of sequence)
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        seq_hash = "sha256:" + compute_provenance_hash({"qtm.sequence": sequence}, include_timestamp=False)
+        case_id = (req.source or "qtm-case").replace(":", "-")
+        ledger_service.record_input(case_id=case_id, document_hash=seq_hash)
+    except Exception:
+        pass
+
+    return resp
 
 
 @router.post("/commutator", response_model=CommutatorResponse)

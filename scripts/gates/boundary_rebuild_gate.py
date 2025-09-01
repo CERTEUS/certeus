@@ -9,9 +9,11 @@
 
 """
 
-PL: Bramka Boundary – wymaga `delta_bits == 0` (rekonstrukcja bez różnic).
+PL: Bramka Boundary – wymaga `delta_bits == 0` oraz (jeśli dostępna) mapa
+    różnic per-shard `bits_delta_map` z samymi zerami.
 
-EN: Boundary gate – requires `delta_bits == 0` (rebuild with no differences).
+EN: Boundary gate – requires `delta_bits == 0` and (if present) per-shard
+    `bits_delta_map` all zeros.
 
 """
 
@@ -30,18 +32,40 @@ def main() -> int:
     ap.add_argument("--must-zero", action="store_true", help="Wymagaj delta_bits==0 (alias)")
     args = ap.parse_args()
 
-    # Jeżeli nie podano raportu – przyjmij delta_bits=0
+    # Defaults if no report provided
     delta_bits = 0
+    bits_map: dict[str, int] | None = None
+    report_path: Path | None = None
     if args.report:
-        p = Path(args.report)
-        data = json.loads(p.read_text(encoding="utf-8"))
-        delta_bits = int((data.get("boundary") or {}).get("delta_bits", 0))
+        report_path = Path(args.report)
+    else:
+        # Spróbuj domyślnej ścieżki z compute: out/boundary_report.json
+        cand = Path("out") / "boundary_report.json"
+        if cand.exists():
+            report_path = cand
+
+    if report_path and report_path.exists():
+        data = json.loads(report_path.read_text(encoding="utf-8"))
+        bnd = data.get("boundary") or {}
+        delta_bits = int(bnd.get("delta_bits", 0))
+        bm = bnd.get("bits_delta_map")
+        if isinstance(bm, dict):
+            try:
+                bits_map = {str(k): int(v) for k, v in bm.items()}
+            except Exception:
+                bits_map = None
 
     strict_env = os.getenv("STRICT_BOUNDARY_REBUILD", "0").strip()
     strict = args.must_zero or (strict_env not in {"", "0", "false", "False"})
 
-    ok = (delta_bits == 0) if strict else (delta_bits <= 0)
-    print(f"Boundary delta_bits={delta_bits} strict={strict} -> {'OK' if ok else 'FAIL'}")
+    # Per-shard check (if available)
+    if bits_map is not None and bits_map:
+        per_shard_ok = all((v == 0) for v in bits_map.values()) if strict else all((v <= 0) for v in bits_map.values())
+    else:
+        per_shard_ok = True
+
+    ok = ((delta_bits == 0) and per_shard_ok) if strict else ((delta_bits <= 0) and per_shard_ok)
+    print(f"Boundary delta_bits={delta_bits} per_shard_ok={per_shard_ok} strict={strict} -> {'OK' if ok else 'FAIL'}")
     return 0 if ok else 1
 
 

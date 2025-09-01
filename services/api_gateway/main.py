@@ -38,6 +38,7 @@ from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
+import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
 import services.api_gateway.routers.devices as devices
@@ -191,6 +192,8 @@ app.include_router(export.router)
 app.include_router(ledger.router)
 
 app.include_router(mismatch.router)
+
+app.include_router(boundary.router)
 
 app.include_router(verify.router)
 

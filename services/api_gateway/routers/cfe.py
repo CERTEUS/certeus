@@ -102,6 +102,17 @@ class LensingResponse(BaseModel):
 router = APIRouter(prefix="/v1/cfe", tags=["CFE"])
 
 
+class CurvatureResponse(BaseModel):
+    kappa_max: float
+
+
+@router.get("/curvature", response_model=CurvatureResponse)
+async def curvature() -> CurvatureResponse:
+    """PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max)."""
+    # Stub: stała wartość, wykorzystywana przez gate'y/telemetrię
+    return CurvatureResponse(kappa_max=0.012)
+
+
 @router.post("/geodesic", response_model=GeodesicResponse)
 async def geodesic(req: GeodesicRequest, request: Request) -> GeodesicResponse:
     from services.api_gateway.limits import enforce_limits

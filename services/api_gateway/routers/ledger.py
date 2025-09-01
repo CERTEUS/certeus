@@ -42,7 +42,7 @@ import os
 from pathlib import Path
 from typing import Any, Protocol, cast
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 # Import the module, then obtain a working singleton/instance.
@@ -156,7 +156,7 @@ class RecordInputResponse(BaseModel):
 
 
 @router.post("/record-input", response_model=RecordInputResponse, tags=["Ledger"])
-def record_input(payload: RecordInputRequest) -> RecordInputResponse:
+def record_input(payload: RecordInputRequest, request: Request) -> RecordInputResponse:
     """
 
     PL: Rejestruje nowy dokument w księdze (INPUT_INGESTION).
@@ -164,6 +164,19 @@ def record_input(payload: RecordInputRequest) -> RecordInputResponse:
     EN: Records a new document in the ledger (INPUT_INGESTION).
 
     """
+
+    # PNIP validation (strict mode optional)
+    try:
+        from services.api_gateway.pnip import validate_pnip_request
+
+        strict = (os.getenv("STRICT_PNIP") or "0").strip() in {"1", "true", "True"}
+        _ = validate_pnip_request(request, body=payload.model_dump(), strict=strict)
+    except HTTPException as e:
+        # Re-raise PNIP errors as-is (400 with PCO error)
+        raise e
+    except Exception:
+        # Soft-fail PNIP in non-strict mode
+        pass
 
     result = ledger_service.record_input(case_id=payload.case_id, document_hash=payload.document_hash)
 

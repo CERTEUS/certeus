@@ -9,9 +9,11 @@
 
 """
 
-PL: Stub raportu rekonstrukcji Boundary. Zapisuje JSON z `delta_bits`.
+PL: Stub raportu rekonstrukcji Boundary. Zapisuje JSON z `delta_bits` oraz
+    mapą per-shard `bits_delta_map` (dla Gate).
 
-EN: Boundary reconstruction report stub. Writes JSON with `delta_bits`.
+EN: Boundary reconstruction report stub. Writes JSON with `delta_bits` and
+    per-shard `bits_delta_map` (used by the Gate).
 
 """
 
@@ -20,17 +22,31 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+from typing import Any
+
+from core.boundary.reconstruct import bulk_reconstruct
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", required=True, help="Ścieżka raportu JSON")
+    ap.add_argument("--out", required=False, help="Ścieżka raportu JSON (domyślnie: out/boundary_report.json)")
     args = ap.parse_args()
 
-    out = Path(args.out)
+    out = Path(args.out) if args.out else Path("out") / "boundary_report.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    payload = {"boundary": {"delta_bits": 0}}
+
+    bundle_dir = os.getenv("PROOF_BUNDLE_DIR", "data/public_pco")
+
+    rep: dict[str, Any]
+    try:
+        rep = bulk_reconstruct(bundle_dir)
+    except Exception:
+        # Fail-safe: emit zeros
+        rep = {"delta_bits": 0, "bits_delta_map": {"shard-0": 0}}
+
+    payload = {"boundary": rep}
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
 

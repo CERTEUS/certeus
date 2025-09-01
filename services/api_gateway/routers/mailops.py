@@ -113,6 +113,15 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
         "io.email.dmarc": req.dmarc,
         "attachments": [a.model_dump() for a in req.attachments],
     }
+    # Record to Ledger as an input (io.email.* hash)
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        doc_hash = "sha256:" + compute_provenance_hash(io_email, include_timestamp=False)
+        case_id = req.thread_id or req.mail_id
+        ledger_service.record_input(case_id=case_id or "mail-case", document_hash=doc_hash)
+    except Exception:
+        pass
 
     return IngestEmailResponse(ok=True, io=io_email)
 
