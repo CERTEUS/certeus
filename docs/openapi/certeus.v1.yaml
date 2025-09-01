@@ -19,51 +19,83 @@ externalDocs:
 paths:
   /v1/cfe/geodesic:
     post:
+      summary: Compute legal geodesic (CFE)
+      tags: [CFE]
       responses: { "200": { description: ok } }
   /v1/cfe/horizon:
     post:
+      summary: Compute legal horizon (CFE)
+      tags: [CFE]
       responses: { "200": { description: ok } }
   /v1/cfe/lensing:
     get:
+      summary: Lensing map (CFE)
+      tags: [CFE]
       responses: { "200": { description: ok } }
   /v1/qtm/init_case:
     post:
+      summary: Initialize QTMP case predistribution
+      tags: [QTMP]
       responses: { "200": { description: ok } }
   /v1/qtm/measure:
     post:
+      summary: Perform QTMP measurement
+      tags: [QTMP]
       responses: { "200": { description: ok } }
   /v1/qtm/commutator:
     post:
+      summary: Compute commutator (QTMP)
+      tags: [QTMP]
       responses: { "200": { description: ok } }
   /v1/qtm/find_entanglement:
     post:
+      summary: Find variable entanglement
+      tags: [QTMP]
       responses: { "200": { description: ok } }
   /v1/devices/horizon_drive/plan:
     post:
+      summary: Plan evidence horizon (HDE)
+      tags: [Devices]
       responses: { "200": { description: ok } }
   /v1/devices/qoracle/expectation:
     post:
+      summary: Optimize expectation via qOracle
+      tags: [Devices]
       responses: { "200": { description: ok } }
   /v1/devices/entangle:
     post:
+      summary: Create entanglement certificate
+      tags: [Devices]
       responses: { "200": { description: ok } }
   /v1/devices/chronosync/reconcile:
     post:
+      summary: Reconcile chronosync coordinates
+      tags: [Devices]
       responses: { "200": { description: ok } }
   /v1/upn/register:
     post:
+      summary: Register UPN
+      tags: [UPN]
       responses: { "200": { description: ok } }
   /v1/upn/revoke:
     post:
+      summary: Revoke UPN
+      tags: [UPN]
       responses: { "200": { description: ok } }
   /v1/dr/replay:
     post:
+      summary: Decision Replay
+      tags: [DR]
       responses: { "200": { description: ok } }
   /v1/dr/recall:
     post:
+      summary: Decision Recall
+      tags: [DR]
       responses: { "200": { description: ok } }
   /v1/proofgate/publish:
     post:
+      summary: Publication decision (ProofGate)
+      tags: [ProofGate]
       responses: { "200": { description: ok } }
   /v1/pco/bundle:
     post:
@@ -139,10 +171,12 @@ paths:
   /.well-known/jwks.json:
     get:
       summary: JWKS
+      tags: [System]
       responses: { "200": { description: ok } }
   /metrics:
     get:
       summary: Prometheus metrics
+      tags: [System]
       responses:
         "200": { description: ok }
   /v1/sources/cache:
@@ -195,12 +229,18 @@ paths:
                   ledger_ref: { type: string }
   /v1/packs:
     get:
+      summary: List packs
+      tags: [Packs]
       responses: { "200": { description: ok } }
   /v1/packs/handle:
     post:
+      summary: Handle pack action
+      tags: [Packs]
       responses: { "200": { description: ok } }
   /v1/ledger/{case_id}:
     get:
+      summary: Ledger head for case
+      tags: [Ledger]
       parameters:
         - name: case_id
           in: path
@@ -209,6 +249,8 @@ paths:
       responses: { "200": { description: ok } }
   /v1/boundary/reconstruct:
     post:
+      summary: Reconstruct boundary state
+      tags: [Boundary]
       responses: { "200": { description: ok } }
 components:
   schemas:

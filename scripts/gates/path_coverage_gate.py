@@ -58,9 +58,8 @@ def main() -> int:
     unc = float(cov.get("uncaptured_mass", 1.0))
 
     ok = (gamma >= float(min_gamma)) and (unc <= float(max_unc))
-    print(
-        f"Path coverage: gamma={gamma} (min={min_gamma}), uncaptured={unc} (max={max_unc}) -> {'OK' if ok else 'FAIL'}"
-    )
+    status = "OK" if ok else "FAIL"
+    print(f"Path coverage: gamma={gamma} (min={min_gamma}), uncaptured={unc} (max={max_unc}) -> {status}")
     return 0 if ok else 1
 
 
