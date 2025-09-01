@@ -173,5 +173,29 @@ try {
   }
 } catch { }
 
-Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95")
+# Optional SLO threshold enforcement
+$sloThresh = $env:SLO_MAX_P95_MS
+if ($sloThresh -and $p95 -ne 'n/a') {
+  try {
+    $p95num = [double]::Parse($p95, [Globalization.CultureInfo]::InvariantCulture)
+    $thrnum = [double]::Parse($sloThresh, [Globalization.CultureInfo]::InvariantCulture)
+    if ($p95num -gt $thrnum) {
+      Write-Host ("SLO VIOLATION: p95_ms=$p95num > threshold_ms=$thrnum") -ForegroundColor Red
+      $fails += 1
+    }
+  } catch { }
+}
+
+# Ensure reports dir, write JSON summary
+try { New-Item -ItemType Directory -Force -Path reports | Out-Null } catch { }
+$summaryObj = [pscustomobject]@{ total=$total; passes=$passes; fails=$fails; p95_ms=$p95; threshold_ms=$sloThresh }
+$summaryJson = $summaryObj | ConvertTo-Json -Depth 3
+Set-Content -LiteralPath 'reports\smoke_summary.json' -Value $summaryJson -Encoding UTF8
+
+# Append GitHub step summary if available
+if ($env:GITHUB_STEP_SUMMARY) {
+  Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY -Value "### Smoke Summary`n`n- total: $total`n- passes: $passes`n- fails: $fails`n- p95_ms: $p95`n- threshold_ms: $sloThresh`n"
+}
+
+Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95 threshold_ms=$sloThresh")
 if ($fails -gt 0) { exit 1 } else { exit 0 }

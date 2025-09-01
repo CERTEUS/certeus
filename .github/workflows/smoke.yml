@@ -15,6 +15,7 @@ concurrency:
 
 env:
   PYTHON_VERSION: "3.11"
+  SLO_MAX_P95_MS: "250"
 
 jobs:
   smoke:
@@ -58,3 +59,11 @@ jobs:
         shell: pwsh
         run: |
           pwsh -File .\scripts\smoke_api.ps1
+
+      - name: 📤 Upload smoke summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-summary-${{ matrix.os }}-${{ github.sha }}
+          path: reports/smoke_summary.json
+          if-no-files-found: warn

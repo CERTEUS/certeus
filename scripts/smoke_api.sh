@@ -112,3 +112,26 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 
 # Compute p95 from /metrics
 P95_MS=$(metrics_p95)
+THRESH="${SLO_MAX_P95_MS:-}"
+if [[ -n "$THRESH" && "$P95_MS" != "n/a" ]]; then
+  awk -v p95="$P95_MS" -v thr="$THRESH" 'BEGIN { if (p95+0 > thr+0) { exit 1 } else { exit 0 } }'
+  if [[ $? -ne 0 ]]; then
+    echo "SLO VIOLATION: p95_ms=$P95_MS > threshold_ms=$THRESH"
+    FAILS=$((FAILS+1))
+  fi
+fi
+
+# Write JSON summary and append to GitHub summary if available
+mkdir -p reports
+printf '{"total":%d,"passes":%d,"fails":%d,"p95_ms":"%s","threshold_ms":"%s"}\n' $((PASSES+FAILS)) "$PASSES" "$FAILS" "$P95_MS" "${THRESH}" > reports/smoke_summary.json
+if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+  {
+    echo "### Smoke Summary"
+    echo
+    echo "- total: $((PASSES+FAILS))"
+    echo "- passes: $PASSES"
+    echo "- fails: $FAILS"
+    echo "- p95_ms: $P95_MS"
+    echo "- threshold_ms: ${THRESH}"
+  } >> "$GITHUB_STEP_SUMMARY"
+fi
