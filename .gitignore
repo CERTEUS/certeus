@@ -30,3 +30,6 @@ node_modules/
 .pytest_cache/
 .coverage*
 htmlcov/
+data/law_cache/
+exports/
+static/previews/

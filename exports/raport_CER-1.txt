@@ -1,7 +1,0 @@
-# CERTEUS – Raport analityczny / Analytical Report
-Case: CER-1
-
-=== ANALIZA / ANALYSIS ===
-{
-  "ok": true
-}
