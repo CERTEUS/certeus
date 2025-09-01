@@ -20,9 +20,10 @@
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+import os
 from typing import Any
 
-from fastapi import APIRouter, Header
+from fastapi import APIRouter, Header, HTTPException, Request
 
 from core.truthops.engine import post_solve, pre_solve
 from runtime.proof_queue import PROOF_QUEUE
@@ -60,8 +61,21 @@ def reason(
     body: dict[str, Any],
     x_norm_pack_id: str = Header(..., alias="X-Norm-Pack-ID"),
     x_jurisdiction: str = Header(..., alias="X-Jurisdiction"),
+    request: Request | None = None,
 ) -> dict[str, Any]:
     """PL: Zwraca status + PCO/plan/eta_hint. EN: Returns status + PCO/plan/eta_hint."""
+
+    # PNIP validation (strict optional)
+    try:
+        from services.api_gateway.pnip import validate_pnip_request
+
+        strict = (os.getenv("STRICT_PNIP") or "0").strip() in {"1", "true", "True"}
+        if request is not None:
+            _ = validate_pnip_request(request, body=body, strict=strict)
+    except HTTPException as e:
+        raise e
+    except Exception:
+        pass
 
     pre = pre_solve(body, policy_profile="default")
 

@@ -140,7 +140,7 @@ jobs:
           COSIGN_EXPECT_ISSUER: https://token.actions.githubusercontent.com
           COSIGN_EXPECT_URI_CONTAINS: ${{ github.server_url }}/${{ github.repository }}
         run: |
-          uv run python scripts/supply_chain/verify_cosign_artifacts.py || true
+          uv run python scripts/supply_chain/verify_cosign_artifacts.py --require sbom.json.sig sbom.json.cert out/provenance.sig out/provenance.cert
 
       - name: Upload supply-chain artifacts
         if: always()

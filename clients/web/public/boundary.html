@@ -1,0 +1,88 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/boundary.html                     |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/boundary.html                     |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Boundary</title>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background:#111315; color:#f2f2f3; }
+      .container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+      .card { background:#181b20; border:1px solid #2a2d33; border-radius: 12px; padding: 16px; }
+      h1 { margin: 0 0 10px; font-size: 22px; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 8px 10px; border-bottom: 1px solid #2a2d33; text-align: left; }
+      .muted { color:#9aa0a6; }
+      .row { display:flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+      .btn { background:#1a1c20; border:1px solid #2a2d33; color:#f2f2f3; padding:8px 12px; border-radius:10px; cursor:pointer; }
+      .btn:hover { background:#20242a; }
+      a { color:#9aa0a6; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Boundary • Shards</h1>
+        <p class="muted">Delta bits and per-shard map. Link to ledger and time anchors.</p>
+        <div class="row" style="margin-bottom:10px;">
+          <button class="btn" id="reconstruct">Reconstruct now</button>
+          <span class="muted" id="observed"></span>
+        </div>
+        <div id="summary" class="muted"></div>
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>Shard</th>
+              <th>Δbits</th>
+              <th>Files</th>
+              <th>Bytes</th>
+              <th>GZip Ratio</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="muted">Ledger: <a href="/docs#/%5BLedger%5D" target="_blank">/v1/ledger</a></p>
+      </div>
+    </div>
+    <script>
+      async function fetchStatus() {
+        const r = await fetch('/v1/boundary/status');
+        const body = await r.json();
+        render(body);
+      }
+      async function reconstruct() {
+        const r = await fetch('/v1/boundary/reconstruct', {method:'POST'});
+        const body = await r.json();
+        render(body);
+      }
+      function render(body) {
+        const tbd = document.querySelector('#tbl tbody');
+        tbd.innerHTML='';
+        const bitsMap = body.bits_delta_map || {};
+        const stats = body.stats || {};
+        let rows='';
+        for (const shard of Object.keys(bitsMap).sort()) {
+          const st = stats[shard] || {};
+          rows += `<tr><td>${shard}</td><td>${bitsMap[shard]}</td><td>${st.files||0}</td><td>${st.bytes||0}</td><td>${(st.gzip_ratio||1).toFixed(2)}</td></tr>`
+        }
+        tbd.innerHTML = rows;
+        document.getElementById('summary').textContent = `delta_bits=${body.delta_bits}`;
+        const obs = (body.anchors && body.anchors.observed_at) ? `observed_at=${body.anchors.observed_at}` : '';
+        document.getElementById('observed').textContent = obs;
+      }
+      document.getElementById('reconstruct').addEventListener('click', reconstruct);
+      fetchStatus();
+    </script>
+  </body>
+  </html>
+

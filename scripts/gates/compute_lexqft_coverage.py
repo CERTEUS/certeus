@@ -20,7 +20,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import json as _json
+import os
 from pathlib import Path
+import urllib.request
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -38,12 +41,16 @@ def main() -> int:
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    payload = {
-        "coverage": {
-            "coverage_gamma": 0.95,
-            "uncaptured_mass": 0.02,
-        }
-    }
+    payload = {"coverage": {"coverage_gamma": 0.95, "uncaptured_mass": 0.02}}
+    base = os.getenv("CER_BASE")
+    if base:
+        try:
+            with urllib.request.urlopen(base.rstrip("/") + "/v1/lexqft/coverage", timeout=3) as resp:
+                data = _json.loads(resp.read().decode("utf-8"))
+                gamma = float(data.get("coverage_gamma", 0.0))
+                payload["coverage"]["coverage_gamma"] = gamma
+        except Exception:
+            pass
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
 
