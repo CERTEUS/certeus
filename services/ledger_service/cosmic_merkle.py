@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -26,6 +25,8 @@ PL: Minimalna, deterministyczna implementacja Merkle z blokadą RLock. Brak PII 
 EN: Minimal deterministic Merkle with RLock. No PII — operates on hex hashes.
 
 """
+
+#!/usr/bin/env python3
 
 
 # --- blok --- Importy ----------------------------------------------------------

@@ -1,12 +1,3 @@
-"""
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -39,6 +30,14 @@ EN: CERTEUS module – please complete the functional description.
 # |  PL: Testy jednostkowe szyfrowania kopertowego PCO (AES-GCM).       |
 
 # +=====================================================================+
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
 
 from __future__ import annotations
 

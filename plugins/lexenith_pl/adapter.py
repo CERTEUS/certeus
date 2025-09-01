@@ -1,3 +1,7 @@
+"""PL: Zwraca jurysdykcję/pack i przekształca wejście na FACTLOG + DSL.
+EN: Returns jurisdiction/pack and builds FACTLOG + DSL.
+"""
+
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |
 # +=====================================================================+
@@ -6,10 +10,6 @@
 # |  PL: Adapter domenowy PL (LEXENITH) – kontrakt IDomainPlugin.       |
 # |  EN: PL domain adapter (LEXENITH) – IDomainPlugin contract.         |
 # +=====================================================================+
-
-"""PL: Zwraca jurysdykcję/pack i przekształca wejście na FACTLOG + DSL.
-EN: Returns jurisdiction/pack and builds FACTLOG + DSL.
-"""
 
 from __future__ import annotations
 

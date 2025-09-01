@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Router FastAPI dla obszaru pakiety PCO.
-
-EN: FastAPI router for PCO bundles.
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: FastAPI router for PCO bundles.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Router FastAPI dla obszaru pakiety PCO.
+
+EN: FastAPI router for PCO bundles.
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

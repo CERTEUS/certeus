@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru FINENITH (quantum alpha).
 
 EN: FastAPI router for FINENITH (quantum alpha).
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+

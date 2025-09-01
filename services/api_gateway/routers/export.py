@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -32,6 +31,8 @@ EN: Export endpoint. Accepts `case_id` and `analysis_result`, writes a text
     report file's SHA-256, UTC timestamp, and artifacts list.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

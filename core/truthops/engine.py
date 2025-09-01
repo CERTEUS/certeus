@@ -1,3 +1,8 @@
+"""PL: Faza PRE: GoP/EUQ/TTDE (klasyfikacja HOT/WARM/COLD + plan).
+POST: ATT/MTV (kontrtesty i spójność) → PUBLISH/CONDITIONAL/ABSTAIN.
+EN:  PRE: GoP/EUQ/TTDE (HOT/WARM/COLD + plan). POST: ATT/MTV → verdict.
+"""
+
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |
 # +=====================================================================+
@@ -7,11 +12,6 @@
 # |      publikacji.                                                    |
 # |  EN: Two-phase TruthOps engine (pre/post) for publication decisions.|
 # +=====================================================================+
-
-"""PL: Faza PRE: GoP/EUQ/TTDE (klasyfikacja HOT/WARM/COLD + plan).
-POST: ATT/MTV (kontrtesty i spójność) → PUBLISH/CONDITIONAL/ABSTAIN.
-EN:  PRE: GoP/EUQ/TTDE (HOT/WARM/COLD + plan). POST: ATT/MTV → verdict.
-"""
 
 from __future__ import annotations
 

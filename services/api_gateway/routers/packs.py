@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Router FastAPI dla obszaru Domain Packs / capabilities.
-
-EN: FastAPI router for Domain Packs / capabilities.
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: FastAPI router for Domain Packs / capabilities.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Router FastAPI dla obszaru Domain Packs / capabilities.
+
+EN: FastAPI router for Domain Packs / capabilities.
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

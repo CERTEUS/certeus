@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Router FastAPI dla obszaru publiczne PCO i JWKS.
-
-EN: FastAPI router for public PCO and JWKS.
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: FastAPI router for public PCO and JWKS.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Router FastAPI dla obszaru publiczne PCO i JWKS.
+
+EN: FastAPI router for public PCO and JWKS.
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

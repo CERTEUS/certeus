@@ -1,14 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +14,16 @@ EN: CERTEUS module – please complete the functional description.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

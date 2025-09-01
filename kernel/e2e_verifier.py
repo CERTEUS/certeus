@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Weryfikator E2E przepływów CERTEUS.
 EN: E2E verifier for CERTEUS flows.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

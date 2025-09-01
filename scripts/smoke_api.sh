@@ -113,6 +113,45 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 
 # Compute p95 from /metrics
 P95_MS=$(metrics_p95)
+
+# --- OpenAPI validation & lightweight schema checks ---
+mkdir -p reports
+curl -s -f http://127.0.0.1:8000/openapi.json -o reports/openapi.json && \
+  ./.venv/bin/python - << 'PY'
+import json,sys
+spec=json.load(open('reports/openapi.json','r',encoding='utf-8'))
+assert 'openapi' in spec and 'paths' in spec
+print('openapi schema ok')
+PY
+if [[ $? -eq 0 ]]; then echo "[GET] /openapi.json#schema => 200"; PASSES=$((PASSES+1)); else echo "[GET] /openapi.json#schema => FAIL"; FAILS=$((FAILS+1)); fi
+
+# Health payload shape
+curl -s -f http://127.0.0.1:8000/health | ./.venv/bin/python - << 'PY'
+import sys,json
+j=json.load(sys.stdin)
+assert j.get('status')=='ok' and isinstance(j.get('version'),str) and j['version']
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+# JWKS payload shape
+curl -s -f http://127.0.0.1:8000/.well-known/jwks.json | ./.venv/bin/python - << 'PY'
+import sys,json
+j=json.load(sys.stdin)
+ks=j.get('keys') or []
+assert ks and ks[0].get('kty')=='OKP' and ks[0].get('crv')=='Ed25519' and isinstance(ks[0].get('x'),str)
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
+
+# FIN measure payload shape
+curl -s -f -H 'Content-Type: application/json' -d '{"signals":{"risk":0.1,"sentiment":0.6}}' http://127.0.0.1:8000/v1/fin/alpha/measure | ./.venv/bin/python - << 'PY'
+import sys,json
+j=json.load(sys.stdin)
+assert isinstance(j.get('outcome'),str) and isinstance(j.get('p'),(int,float))
+print('ok')
+PY
+[[ $? -eq 0 ]] && PASSES=$((PASSES+1)) || FAILS=$((FAILS+1))
 THRESH="${SLO_MAX_P95_MS:-}"
 if [[ -n "$THRESH" && "$P95_MS" != "n/a" ]]; then
   awk -v p95="$P95_MS" -v thr="$THRESH" 'BEGIN { if (p95+0 > thr+0) { exit 1 } else { exit 0 } }'

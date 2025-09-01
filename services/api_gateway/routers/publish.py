@@ -1,3 +1,5 @@
+"""PL: Mapuje wynik rdzenia na kontrakt publikacji. EN: Map core to publication contract."""
+
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |
 # +=====================================================================+
@@ -6,8 +8,6 @@
 # |  PL: Publiczny endpoint publikacji (kontrakt Publication V1).       |
 # |  EN: Public publication endpoint (Publication V1 contract).         |
 # +=====================================================================+
-
-"""PL: Mapuje wynik rdzenia na kontrakt publikacji. EN: Map core to publication contract."""
 
 from __future__ import annotations
 

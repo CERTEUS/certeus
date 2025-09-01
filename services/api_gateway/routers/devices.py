@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru urządzenia HDE/Q-Oracle/Entangle/Chronosync.
 
 EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+

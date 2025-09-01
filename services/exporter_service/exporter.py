@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Eksport raportów i artefaktów procesu.
 EN: Report/artefact exporter.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

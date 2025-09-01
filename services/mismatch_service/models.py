@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -18,6 +17,8 @@
 
 
 """Modele Pydantic v2 dla biletów niezgodności SMT."""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

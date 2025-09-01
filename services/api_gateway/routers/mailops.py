@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru MailOps ingest/headers.
 
 EN: FastAPI router for MailOps ingest/headers.
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+

@@ -1,10 +1,3 @@
-"""
-PL: Moduł projektu CERTEUS (uogólniony opis).
-
-EN: CERTEUS project module (generic description).
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -51,6 +44,12 @@ EN: CERTEUS project module (generic description).
 #   - Python 3.11+, cryptography
 
 # ----Bloki----- IMPORTY
+
+"""
+PL: Moduł projektu CERTEUS (uogólniony opis).
+
+EN: CERTEUS project module (generic description).
+"""
 
 from __future__ import annotations
 

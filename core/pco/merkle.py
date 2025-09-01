@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Merkle-DAG: konstrukcja i weryfikacja (root/leaf/ścieżki dowodu).
-
-EN: Merkle DAG: build and verify (root/leaf/proof paths).
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: Merkle DAG: build and verify (root/leaf/proof paths).
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Merkle-DAG: konstrukcja i weryfikacja (root/leaf/ścieżki dowodu).
+
+EN: Merkle DAG: build and verify (root/leaf/proof paths).
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

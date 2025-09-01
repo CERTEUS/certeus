@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru Disaster Recovery: replay/revoke.
 
 EN: FastAPI router for DR: replay/revoke.
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+

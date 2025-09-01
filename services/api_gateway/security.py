@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -36,6 +35,8 @@ EN: Security middleware:
     - Simple per-IP rate limiting (RATE_LIMIT_PER_MIN=N)
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

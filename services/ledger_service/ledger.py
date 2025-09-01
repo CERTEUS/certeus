@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Księga pochodzenia (ledger) – logika.
 EN: Provenance ledger – logic.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

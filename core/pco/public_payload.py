@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Public payload PCO: ekstrakcja i walidacja (bez PII).
-
-EN: PCO public payload: extraction and validation (no PII).
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: PCO public payload: extraction and validation (no PII).
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Public payload PCO: ekstrakcja i walidacja (bez PII).
+
+EN: PCO public payload: extraction and validation (no PII).
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

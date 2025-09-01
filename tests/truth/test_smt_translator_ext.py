@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Testy jednostkowe / integracyjne modułu.
 EN: Module test suite (unit/integration).
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

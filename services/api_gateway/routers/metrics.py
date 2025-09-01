@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Router FastAPI dla obszaru metryki Prometheus.
-
-EN: FastAPI router for Prometheus metrics.
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: FastAPI router for Prometheus metrics.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Router FastAPI dla obszaru metryki Prometheus.
+
+EN: FastAPI router for Prometheus metrics.
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

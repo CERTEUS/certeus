@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-# +=====================================================================+
-# |                              CERTEUS                                |
-# +=====================================================================+
-# | FILE: services/api_gateway/routers/qtm.py                           |
-# | ROLE: QTMP API stubs: init_case, measure, commutator, entanglement  |
-# +=====================================================================+
-
 """
 PL: Stub API dla QTMP (pomiar). Zawiera wymagane pola: sequence[],
     uncertainty_bound.*, opcjonalnie decoherence i entanglement.
 EN: QTMP (measurement) stub API. Includes required fields: sequence[],
     uncertainty_bound.*, optional decoherence and entanglement.
 """
+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: services/api_gateway/routers/qtm.py                           |
+# | ROLE: QTMP API stubs: init_case, measure, commutator, entanglement  |
+# +=====================================================================+
 
 from __future__ import annotations
 

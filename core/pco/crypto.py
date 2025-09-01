@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Krypto-pomocniki: sha256 (kanoniczne), b64url, Ed25519 (podpis/weryfikacja).
-
-EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Krypto-pomocniki: sha256 (kanoniczne), b64url, Ed25519 (podpis/weryfikacja).
+
+EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

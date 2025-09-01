@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -28,6 +27,8 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
     `snapshot_timestamp` and `_certeus.snapshot_timestamp_utc` fields.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

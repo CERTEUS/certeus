@@ -137,7 +137,42 @@ try {
   'source-cache' | Set-Content -LiteralPath $tmpSrc -Encoding UTF8
   $results += Hit 'POST' '/v1/sources/cache' ("{`"uri`":`"file:///$($tmpSrc -replace '\\','/')`"}")
 
-  # Publish (not mounted in app: /defx/reason) — skipped
+  # Publish (not mounted in app: /defx/reason) - skipped
+
+  # --- OpenAPI validation & lightweight schema checks ---
+  try {
+    New-Item -ItemType Directory -Force -Path reports | Out-Null
+    $open = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/openapi.json' -TimeoutSec 8
+    if ($open.StatusCode -eq 200) { Set-Content -LiteralPath 'reports\openapi.json' -Value $open.Content -Encoding UTF8 }
+    $ok = $false
+    try {
+      $spec = $open.Content | ConvertFrom-Json
+      if ($spec.openapi -and $spec.paths) { $ok = $true }
+    } catch { $ok = $false }
+    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'missing openapi/paths'} }
+  } catch { $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # Health payload shape
+  try {
+    $hj = Invoke-RestMethod -Uri 'http://127.0.0.1:8000/health' -TimeoutSec 5
+    $ok = ($hj.status -eq 'ok' -and ($hj.version -is [string]) -and $hj.version.Length -gt 0)
+    $results += [pscustomobject]@{ method='GET'; path='/health#schema'; code=200; ok=$ok; msg=if($ok){'ok'}else{'status!=ok or version missing'} }
+  } catch { $results += [pscustomobject]@{ method='GET'; path='/health#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # JWKS payload shape
+  try {
+    $jw = Invoke-RestMethod -Uri 'http://127.0.0.1:8000/.well-known/jwks.json' -TimeoutSec 5
+    $k = $jw.keys[0]
+    $ok = ($jw.keys.Count -ge 1 -and $k.kty -eq 'OKP' -and $k.crv -eq 'Ed25519' -and ($k.x -is [string]))
+    $results += [pscustomobject]@{ method='GET'; path='/.well-known/jwks.json#schema'; code=200; ok=$ok; msg=if($ok){'ok'}else{'invalid jwks'} }
+  } catch { $results += [pscustomobject]@{ method='GET'; path='/.well-known/jwks.json#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # FIN measure payload shape
+  try {
+    $fm = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/fin/alpha/measure' -TimeoutSec 8 -ContentType 'application/json' -Body '{"signals":{"risk":0.1,"sentiment":0.6}}'
+    $ok = (($fm.outcome -is [string]) -and ($fm.p -is [double] -or $fm.p -is [decimal] -or $fm.p -is [int]))
+    $results += [pscustomobject]@{ method='POST'; path='/v1/fin/alpha/measure#schema'; code=200; ok=$ok; msg=if($ok){'ok'}else{'missing outcome/p'} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/fin/alpha/measure#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
 } finally {
   Stop-Server $proc
 }

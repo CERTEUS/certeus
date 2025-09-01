@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Moduł projektu CERTEUS (uogólniony opis).
-
-EN: CERTEUS project module (generic description).
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -53,6 +45,14 @@ EN: CERTEUS project module (generic description).
 # ----Bloki----- IMPORTY (PEP 8/PEP 585)
 
 #   - max 120 znaków/linia
+
+"""
+PL: Moduł projektu CERTEUS (uogólniony opis).
+
+EN: CERTEUS project module (generic description).
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

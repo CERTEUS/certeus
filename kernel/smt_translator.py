@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Translator SMT i powiązana logika.
 EN: SMT translator and related logic.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

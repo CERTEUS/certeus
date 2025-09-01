@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Główna aplikacja FastAPI dla CERTEUS: statyki, routery, CORS (DEV), health
 EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 
 """
+
+#!/usr/bin/env python3
 
 
 # --- blok --- Importy ----------------------------------------------------------

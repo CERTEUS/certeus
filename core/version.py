@@ -1,10 +1,3 @@
-"""
-PL: Moduł projektu CERTEUS (uogólniony opis).
-
-EN: CERTEUS project module (generic description).
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -20,6 +13,12 @@ EN: CERTEUS project module (generic description).
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Moduł projektu CERTEUS (uogólniony opis).
+
+EN: CERTEUS project module (generic description).
+"""
 
 __all__ = ["__version__"]
 

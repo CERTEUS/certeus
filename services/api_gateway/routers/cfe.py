@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-# +=====================================================================+
-# |                              CERTEUS                                |
-# +=====================================================================+
-# | FILE: services/api_gateway/routers/cfe.py                           |
-# | ROLE: CFE API stubs: /curvature, /geodesic, /horizon, /lensing      |
-# +=====================================================================+
-
 """
 PL: Stub API dla CFE (geometria sensu) zgodnie z manifestem.
 EN: Stub API for CFE (geometry of meaning) per the manifest.
@@ -17,6 +10,14 @@ Endpoints:
 
 Zwracane wartości są placeholderami niezależnymi od środowiska produkcyjnego.
 """
+
+#!/usr/bin/env python3
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: services/api_gateway/routers/cfe.py                           |
+# | ROLE: CFE API stubs: /curvature, /geodesic, /horizon, /lensing      |
+# +=====================================================================+
 
 from __future__ import annotations
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru interfejs ChatOps.
 
 EN: FastAPI router for ChatOps interface.
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+

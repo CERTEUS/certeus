@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru lexqft / geometria sensu.
 
 EN: FastAPI router for lexqft / geometry of meaning.
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+

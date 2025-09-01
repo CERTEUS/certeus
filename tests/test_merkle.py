@@ -1,12 +1,3 @@
-"""
-
-PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
-
-EN: CERTEUS module – please complete the functional description.
-
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +13,14 @@ EN: CERTEUS module – please complete the functional description.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
 
 from __future__ import annotations
 

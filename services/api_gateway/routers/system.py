@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-
-"""
-PL: Router FastAPI dla obszaru diagnostyka/system info.
-
-EN: FastAPI router for diagnostics/system info.
-"""
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -22,6 +14,14 @@ EN: FastAPI router for diagnostics/system info.
 # | ROLA: Moduł projektu.                                       |
 
 # +-------------------------------------------------------------+
+
+"""
+PL: Router FastAPI dla obszaru diagnostyka/system info.
+
+EN: FastAPI router for diagnostics/system info.
+"""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

@@ -1,3 +1,7 @@
+"""PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
+EN: Re-proof scheduler (law=365, med=90, fin=7).
+"""
+
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |
 # +=====================================================================+
@@ -6,10 +10,6 @@
 # |  PL: Re-proof po TTL (TTDE) per domena.                             |
 # |  EN: TTDE re-proof per domain TTL.                                  |
 # +=====================================================================+
-
-"""PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
-EN: Re-proof scheduler (law=365, med=90, fin=7).
-"""
 
 from __future__ import annotations
 

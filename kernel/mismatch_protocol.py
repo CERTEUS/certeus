@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -18,6 +17,8 @@
 
 
 """Protokół uruchamiany przy rozbieżności solverów — tworzy bilet."""
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

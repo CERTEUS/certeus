@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Testy Ledger – sprawdzanie łańcucha skrótów i nagłówków.
 EN: Ledger tests – verification of hash chain and headers.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

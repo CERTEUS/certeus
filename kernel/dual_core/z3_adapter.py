@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -24,6 +23,8 @@ PL: Adapter dla Z3 i zależności SMT.
 EN: Adapter for Z3 and SMT.
 
 """
+
+#!/usr/bin/env python3
 
 from __future__ import annotations
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-
 """
 PL: Router FastAPI dla obszaru rejestr UPN.
 
 EN: FastAPI router for UPN registry.
 """
+
+#!/usr/bin/env python3
 
 
 # +=====================================================================+
