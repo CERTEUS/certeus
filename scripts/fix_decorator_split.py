@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIR_CONTAINS = (
