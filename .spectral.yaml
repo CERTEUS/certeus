@@ -26,10 +26,6 @@ rules:
       function: truthy
     severity: error
 
-  # Prefer each operation to define a 2xx response
-  operation-2xx-response:
-    severity: error
-
   # Require a short summary for each operation
   operation-summary-required:
     description: Each operation SHOULD define a short summary
@@ -48,20 +44,4 @@ rules:
       function: truthy
     severity: error
 
-  # Helpful, but not blocking: valid response codes
-  oas3-valid-response-status-codes:
-    severity: warn
-
-  # Warn on unused components (if detected by ruleset)
-  no-unused-components:
-    severity: warn
-
-  # Encourage declaring servers (but do not block)
-  oas3-api-servers:
-    severity: warn
-
-  # Relax noisy rules for now
-  operation-operationId:
-    severity: off
-  operation-operationId-unique:
-    severity: off
+  # (Note) Built-in rule severities are left at defaults to avoid ruleset alias issues on CI.
