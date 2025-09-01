@@ -558,3 +558,5 @@ MIT © 2025 CERTEUS Contributors
 
 - Source of truth: `docs/openapi/certeus.v1.yaml` (used by Pages workflow to publish JSON).
 - To inspect runtime JSON locally: `curl -s http://127.0.0.1:8000/openapi.json -o out/openapi.json`.
+
+
