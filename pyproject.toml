@@ -23,7 +23,7 @@ dependencies = [
   "pyyaml",
   "jsonschema>=4.25.0",
   "python-multipart>=0.0.20,<0.0.21",
-  "cryptography==42.*",
+  "cryptography>=45,<46",
 ]
 
 [tool.setuptools]
