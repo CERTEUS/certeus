@@ -1,11 +1,3 @@
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/plugins/test_plugins_registry.py  |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -23,7 +15,48 @@
 # +-------------------------------------------------------------+
 
 
+# +=====================================================================+
+
+# |                          CERTEUS                                    |
+
+# +=====================================================================+
+
+# | MODULE:  F:/projekty/certeus/tests/plugins/test_plugins_registry.py  |
+
+# | DATE:    2025-08-17                                                  |
+
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+
+# |                          CERTEUS                            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | FILE: tests/plugins/test_plugins_registry.py              |
+
+
+# | ROLE: Project module.                                       |
+
+
+# | PLIK: tests/plugins/test_plugins_registry.py              |
+
+
+# | ROLA: Moduł projektu.                                       |
+
+
+# +-------------------------------------------------------------+
+
+
 """
+
+
+
+
 
 
 
@@ -31,7 +64,15 @@ PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 
 
 
+
+
+
+
 EN: CERTEUS module – please complete the functional description.
+
+
+
+
 
 
 
@@ -113,11 +154,23 @@ class PluginAPI:
 
 
 
+
+
+
+
     PL: Prosty rejestr pluginów i entrypointów funkcjonalnych.
 
 
 
+
+
+
+
         - register(plugin) lub register(name, plugin)
+
+
+
+
 
 
 
@@ -129,7 +182,19 @@ class PluginAPI:
 
 
 
+
+
+
+
+
+
+
+
     EN: Simple registry for plugins and functional entrypoints.
+
+
+
+
 
 
 
@@ -137,7 +202,15 @@ class PluginAPI:
 
 
 
+
+
+
+
         - adapters/exporters as dicts of callables/objects
+
+
+
+
 
 
 
@@ -159,7 +232,15 @@ class PluginAPI:
 
 
 
+
+
+
+
         PL: Obsługuje dwie sygnatury:
+
+
+
+
 
 
 
@@ -167,7 +248,19 @@ class PluginAPI:
 
 
 
+
+
+
+
             • register(name, plugin)
+
+
+
+
+
+
+
+
 
 
 
@@ -179,11 +272,23 @@ class PluginAPI:
 
 
 
+
+
+
+
             • register(plugin)
 
 
 
+
+
+
+
             • register(name, plugin)
+
+
+
+
 
 
 
@@ -223,11 +328,23 @@ class PluginAPI:
 
 
 
+
+
+
+
         PL: Zwróć widok kluczy (dict_keys), zgodnie z oczekiwaniem testów.
 
 
 
+
+
+
+
         EN: Return keys view (dict_keys), as tests expect.
+
+
+
+
 
 
 

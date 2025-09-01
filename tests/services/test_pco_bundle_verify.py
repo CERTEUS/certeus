@@ -1,4 +1,30 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_pco_bundle_verify.py            |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_pco_bundle_verify.py            |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
 from __future__ import annotations
 
 import json
@@ -27,7 +53,9 @@ def _pem(sk: Ed25519PrivateKey) -> str:
 
 def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
+
     sk = Ed25519PrivateKey.generate()
+
     monkeypatch.setenv("ED25519_PRIVKEY_PEM", _pem(sk))
 
     body = {
@@ -38,16 +66,23 @@ def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatc
         "merkle_proof": [],
         "smt2": "(set-logic ALL)\n(assert true)\n(check-sat)\n",
     }
+
     r = client.post("/v1/pco/bundle", json=body)
+
     assert r.status_code == 200, r.text
+
     saved = json.loads((tmp_path / "case-ok-1.json").read_text(encoding="utf-8"))
+
     # With stricter ProofGate checks, missing counsel/signatures may yield ABSTAIN
+
     assert saved.get("status") in {"PENDING", "CONDITIONAL", "PUBLISH", "ABSTAIN"}
 
 
 def test_pco_bundle_verification_failure_sets_abstain(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
+
     sk = Ed25519PrivateKey.generate()
+
     monkeypatch.setenv("ED25519_PRIVKEY_PEM", _pem(sk))
 
     body = {
@@ -57,7 +92,11 @@ def test_pco_bundle_verification_failure_sets_abstain(tmp_path: Path, monkeypatc
         "merkle_proof": [],
         "smt2": "INVALID SMT2",
     }
+
     r = client.post("/v1/pco/bundle", json=body)
+
     assert r.status_code == 200, r.text
+
     saved = json.loads((tmp_path / "case-bad-1.json").read_text(encoding="utf-8"))
+
     assert saved.get("status") == "ABSTAIN"

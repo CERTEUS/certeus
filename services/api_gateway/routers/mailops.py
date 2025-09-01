@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
 # +=====================================================================+
+
 # |                              CERTEUS                                |
+
 # +=====================================================================+
+
 # | FILE: services/api_gateway/routers/mailops.py                       |
+
 # | ROLE: MailOps ingest + normalize                                    |
+
 # +=====================================================================+
 
 from __future__ import annotations
@@ -16,25 +31,37 @@ router = APIRouter(prefix="/v1/mailops", tags=["MailOps"])
 
 class Attachment(BaseModel):
     filename: str
+
     content_type: str | None = None
+
     size: int = 0
 
 
 class IngestEmailRequest(BaseModel):
     mail_id: str
+
     thread_id: str | None = None
+
     from_addr: str
+
     to: list[str]
+
     subject: str | None = None
+
     body_text: str | None = None
+
     spf: str | None = None
+
     dkim: str | None = None
+
     dmarc: str | None = None
+
     attachments: list[Attachment] = Field(default_factory=list)
 
 
 class IngestEmailResponse(BaseModel):
     ok: bool
+
     io: dict
 
 
@@ -43,7 +70,9 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
+
     # Normalize into io.email.* fields
+
     io_email = {
         "io.email.mail_id": req.mail_id,
         "io.email.thread_id": req.thread_id,
@@ -52,4 +81,5 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
         "io.email.dmarc": req.dmarc,
         "attachments": [a.model_dump() for a in req.attachments],
     }
+
     return IngestEmailResponse(ok=True, io=io_email)

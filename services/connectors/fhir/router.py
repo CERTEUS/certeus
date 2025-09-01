@@ -1,9 +1,24 @@
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
 # +=====================================================================+
+
 # |                              CERTEUS                                |
+
 # +=====================================================================+
+
 # | FILE: services/connectors/fhir/router.py                            |
+
 # | ROLE: FHIR connector (reason endpoint) — stub.                      |
+
 # +=====================================================================+
+
 from __future__ import annotations
 
 from fastapi import APIRouter

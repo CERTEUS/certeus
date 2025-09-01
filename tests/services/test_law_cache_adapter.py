@@ -1,4 +1,30 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_law_cache_adapter.py            |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_law_cache_adapter.py            |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -39,11 +65,19 @@ def dummy_urlopen(monkeypatch: pytest.MonkeyPatch) -> Callable[[bytes], None]:
 
 def test_cache_from_uri_writes_blob_and_index(tmp_path: Path, dummy_urlopen) -> None:
     dummy_urlopen(b"USTAWA: TEST")
+
     c = FileCache(tmp_path)
+
     cs = cache_from_uri("https://example.test/law/1", c)
+
     assert cs.digest
+
     assert cs.path.exists()
+
     idx = tmp_path / "index" / f"{cs.digest}.json"
+
     assert idx.exists()
+
     meta = json.loads(idx.read_text(encoding="utf-8"))
+
     assert meta["uri"].startswith("https://example.test/")

@@ -1,11 +1,3 @@
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/core/plugin_loader.py                   |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -23,7 +15,48 @@
 # +-------------------------------------------------------------+
 
 
+# +=====================================================================+
+
+# |                          CERTEUS                                    |
+
+# +=====================================================================+
+
+# | MODULE:  F:/projekty/certeus/core/plugin_loader.py                   |
+
+# | DATE:    2025-08-17                                                  |
+
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+
+# |                          CERTEUS                            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | FILE: core/plugin_loader.py                               |
+
+
+# | ROLE: Project module.                                       |
+
+
+# | PLIK: core/plugin_loader.py                               |
+
+
+# | ROLA: Moduł projektu.                                       |
+
+
+# +-------------------------------------------------------------+
+
+
 """
+
+
+
+
 
 
 
@@ -31,7 +64,15 @@ PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 
 
 
+
+
+
+
 EN: CERTEUS module – please complete the functional description.
+
+
+
+
 
 
 
@@ -199,7 +240,15 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
 
 
 
+
+
+
+
     PL: Próbuje wywołać rejestrację; wspiera:
+
+
+
+
 
 
 
@@ -207,7 +256,15 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
 
 
 
+
+
+
+
         - klasę Plugin z metodą register(api)
+
+
+
+
 
 
 
@@ -215,7 +272,15 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
 
 
 
+
+
+
+
     EN: Perform registration via module function or Plugin class.
+
+
+
+
 
 
 
@@ -271,11 +336,23 @@ def load_all_plugins(api: Any) -> list[str]:
 
 
 
+
+
+
+
     PL: Ładuje wszystkie pluginy i rejestruje je w przekazanym API.
 
 
 
+
+
+
+
     EN: Loads all plugins and registers them into the provided API.
+
+
+
+
 
 
 
@@ -317,7 +394,15 @@ def has_register(candidate: Any) -> bool:
 
 
 
+
+
+
+
     PL: Sprawdza, czy obiekt/moduł udostępnia punkt rejestracji pluginu.
+
+
+
+
 
 
 
@@ -325,7 +410,15 @@ def has_register(candidate: Any) -> bool:
 
 
 
+
+
+
+
           1) Funkcja modułowa:    register(api)
+
+
+
+
 
 
 
@@ -333,7 +426,15 @@ def has_register(candidate: Any) -> bool:
 
 
 
+
+
+
+
     EN: Checks whether the given object/module exposes a plugin registration entrypoint.
+
+
+
+
 
 
 
@@ -341,11 +442,23 @@ def has_register(candidate: Any) -> bool:
 
 
 
+
+
+
+
           1) Module-level function: register(api)
 
 
 
+
+
+
+
           2) Plugin class:          class Plugin: def register(self, api) -> None
+
+
+
+
 
 
 

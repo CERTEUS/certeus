@@ -1,4 +1,30 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_sources_cache.py                |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_sources_cache.py                |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
 from __future__ import annotations
 
 import json
@@ -41,15 +67,27 @@ def test_sources_cache_writes_and_returns_digest(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, dummy_urlopen
 ) -> None:
     # Use a dedicated cache dir
+
     monkeypatch.setenv("LAW_CACHE_DIR", str(tmp_path))
+
     dummy_urlopen("USTAWA — TEST DZU".encode())
+
     client = TestClient(app)
+
     r = client.post("/v1/sources/cache", json={"uri": "https://isap.sejm.gov.pl/some-act"})
+
     assert r.status_code == 200
+
     body = r.json()
+
     assert body["digest"]
+
     # index file exists
+
     idx = Path(tmp_path) / "index" / f"{body['digest']}.json"
+
     assert idx.exists()
+
     meta = json.loads(idx.read_text(encoding="utf-8"))
+
     assert meta["uri"].startswith("https://")

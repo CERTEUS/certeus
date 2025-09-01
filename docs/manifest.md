@@ -191,13 +191,31 @@ Micro-Court, CLDF/LEX-FONTARIUS (cytaty z hash), generatory pism, orzecznictwo, 
 
 ---
 
-## 13) **CI/SLO-Gate — progi twarde**
+## 13) **CI/SLO-Gate - progi twarde**
 
 - **Testy/Lint/Typy/Security/Secrets** — zielone (pytest/coverage; ruff/black/mypy/yamllint; bandit/secret-scan).
 - **Policy/PCO Gate** — zgodność schematów i statusów.
 - **Gauge-Gate:** `gauge.holonomy_drift ≤ ε` (np. 1e-3).
 - **Path-Coverage Gate (lexqft):** `coverage_gamma ≥ 0.9`, `uncaptured_mass ≤ 0.05`.
 - **Boundary-Rebuild:** `boundary.delta_bits == 0`; raport `bits_delta_map` per shard.
+
+---
+
+## 14) Smoke & E2E
+
+**Cel:** Każda zmiana w repo przechodzi szybki, przekrojowy test działania API (smoke) oraz e2e w pytest, z twardym raportowaniem błędów i SLO (p95).
+
+- Lokalne uruchomienie:
+  - Windows: `pwsh -File .\scripts\smoke_api.ps1`
+  - Linux/macOS: `bash ./scripts/smoke_api.sh`
+- CI (GitHub Actions):
+  - Workflow `Smoke` (`.github/workflows/smoke.yml`) uruchamiany na Ubuntu i Windows; tworzy `.venv`, instaluje zależności z `constraints/requirements-constraints.txt`, odpala skrypty smoke, a wyniki (JSON) publikuje jako artefakt.
+  - Na PR generowany jest komentarz z tabelą p95 (per OS) oraz progiem `SLO_MAX_P95_MS` (macierz np. Linux 250 ms, Windows 300 ms).
+- Zakres smoke: health/root/metrics/JWKS, CFE, QTMP, Devices, Ethics, DR, Export, ChatOps, Ledger, Verify, PCO bundle + public verify, Preview (multipart), Ingest/Analyze (PDF), Source cache.
+- Raportowanie (MUST):
+  - Skrypty smoke drukują listę wyników [OK/ERR] oraz podsumowanie: `total`, `passes`, `fails`, `p95_ms`.
+  - `p95_ms` liczony na podstawie histogramu Prometheus `certeus_http_request_duration_ms_bucket` z `/metrics` (sumarycznie dla całego smoke).
+  - Jeżeli ustawiono `SLO_MAX_P95_MS`, skrypt egzekwuje próg (naruszenie => `fails += 1` oraz exit code ≠ 0).
 - **Supply-chain:** SBOM + in-toto + cosign wymagane (deny-by-default).
 - **SLO:** p95 latencja API, error-budget, alerty **multi-burn-rate** (SEV-1/2/3).
 

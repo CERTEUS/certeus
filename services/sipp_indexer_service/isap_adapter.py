@@ -1,24 +1,58 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: services/sipp_indexer_service/isap_adapter.py       |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: services/sipp_indexer_service/isap_adapter.py       |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                          CERTEUS                                    |
+
 # +=====================================================================+
+
 # | MODULE:  F:/projekty/certeus/services/sipp_indexer_service/isap_adapter.py|
+
 # | DATE:    2025-08-17                                                  |
+
 # +=====================================================================+
 
 
 # +-------------------------------------------------------------+
+
 # |                         CERTEUS                             |
+
 # |      Core Engine for Reliable & Unified Systems             |
+
 # +-------------------------------------------------------------+
+
 # | FILE: services/sipp_indexer_service/isap_adapter.py         |
+
 # | ROLE: Stub adapter for ISAP. Creates LegalActSnapshot.      |
+
 # +-------------------------------------------------------------+
+
 
 """
+
 PL: Stub adaptera do ISAP. Wersja MVP: zwraca stałą migawkę dla
+
     podanego act_id, z poprawnym SHA256 i timestampem UTC.
+
 EN: ISAP adapter stub. MVP version: returns a constant snapshot
+
     for a given act_id with proper SHA256 and UTC timestamp.
+
 """
 
 from __future__ import annotations
@@ -34,25 +68,37 @@ def _ascii_info(msg: str) -> None:
         from utils.console import info as _info  # type: ignore
 
         s = msg.encode("ascii", "ignore").decode("ascii")
+
         _info(s)
+
     except Exception:
         s = msg.encode("ascii", "ignore").decode("ascii")
+
         print(f"[INFO] {s}")
 
 
 class IsapAdapter:
     """
+
     PL: Symuluje pobranie aktu prawnego i tworzy migawkę.
+
     EN: Simulates fetching a legal act and creating its snapshot.
+
     """
 
     def fetch_act_snapshot(self, act_id: str, at: date | None = None) -> LegalActSnapshot:
         """
+
         PL: Zwraca LegalActSnapshot dla zadanego act_id. Parametr 'at' to
+
             data, na ktora prosimy o stan prawa (stub ignoruje).
+
         EN: Returns LegalActSnapshot for given act_id. 'at' asks for state
+
             at given date (ignored by stub).
+
         """
+
         _ascii_info(f"ISAP Stub fetching act_id={act_id} at={at}")
 
         mock_text = (
@@ -61,6 +107,7 @@ class IsapAdapter:
             "jej w blad albo wyzyskania bledu lub niezdolnosci do nalezytego pojmowania "
             "przedsiewzietego dzialania, podlega karze pozbawienia wolnosci od 6 miesiecy do lat 8."
         )
+
         text_hash = f"sha256:{hashlib.sha256(mock_text.encode('utf-8')).hexdigest()}"
 
         snapshot = LegalActSnapshot(
@@ -71,4 +118,5 @@ class IsapAdapter:
             valid_from=date(2023, 10, 1),
             snapshot_timestamp=datetime.now(UTC),
         )
+
         return snapshot

@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
 # +=====================================================================+
+
 # |                              CERTEUS                                |
+
 # +=====================================================================+
+
 # | FILE: services/api_gateway/routers/dr.py                            |
+
 # | ROLE: DR-Replay / DR-Recall (stubs)                                 |
+
 # +=====================================================================+
 
 from __future__ import annotations
@@ -16,11 +31,13 @@ router = APIRouter(prefix="/v1/dr", tags=["DR"])
 
 class ReplayRequest(BaseModel):
     case: str
+
     timestamp: str
 
 
 class ReplayResponse(BaseModel):
     ok: bool
+
     state_uri: str
 
 
@@ -29,6 +46,7 @@ async def replay(req: ReplayRequest, request: Request) -> ReplayResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
+
     return ReplayResponse(ok=True, state_uri=f"boundary://snapshot/{req.case}/{req.timestamp}")
 
 
@@ -38,6 +56,7 @@ class RecallRequest(BaseModel):
 
 class RecallResponse(BaseModel):
     ok: bool
+
     link: str
 
 
@@ -46,4 +65,5 @@ async def recall(req: RecallRequest, request: Request) -> RecallResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
+
     return RecallResponse(ok=True, link=f"ledger://revocations/{req.upn}")

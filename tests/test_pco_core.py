@@ -1,14 +1,51 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/test_pco_core.py                              |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/test_pco_core.py                              |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                              CERTEUS                                |
+
 # +=====================================================================+
+
 # | MODULE / MODUŁ: tests/test_pco_core.py                               |
+
 # | DATE / DATA: 2025-08-19                                              |
+
 # +=====================================================================+
+
 # | EN: Core PCO tests: bundle hash, Merkle, Ed25519 sign/verify,        |
+
 # |     build-and-verify happy path.                                     |
+
 # | PL: Testy jądra PCO: hash bundla, Merkle, podpis/weryfikacja,        |
+
 # |     ścieżka pozytywna build-and-verify.                              |
+
 # +=====================================================================+
 
 from __future__ import annotations
@@ -39,36 +76,57 @@ def _hex(s: str) -> str:
 
 def test_kernel_bundle_hash_and_leaf() -> None:
     smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
+
     lfsc = "(lfsc proof)"
+
     bundle_hash = canonical_bundle_hash_hex(smt2_hash, lfsc, None)
+
     leaf = compute_leaf_hex("demo-001", bundle_hash)
+
     # sanity: długości
+
     assert len(bundle_hash) == 64
+
     assert len(leaf) == 64
 
 
 def test_kernel_canonical_digest_and_sig() -> None:
     sk = Ed25519PrivateKey.generate()
+
     pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+
     smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
+
     lfsc = "(lfsc proof)"
+
     drat = None
+
     bundle_hash = canonical_bundle_hash_hex(smt2_hash, lfsc, drat)
+
     root = apply_merkle_path(compute_leaf_hex("demo-001", bundle_hash), [])  # MVP: []
+
     digest = canonical_digest_hex(
         rid="demo-001", smt2_hash_hex=smt2_hash, lfsc_text=lfsc, drat_text=drat, merkle_root_hex=root
     )
+
     sig = sk.sign(bytes.fromhex(digest))
+
     ed25519_verify_b64u(pk, __import__("base64").urlsafe_b64encode(sig).rstrip(b"=").decode(), digest)
 
 
 def test_kernel_build_and_verify() -> None:
     sk = Ed25519PrivateKey.generate()
+
     pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+
     rid = "demo-001"
+
     smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
+
     lfsc = "(lfsc proof)"
+
     # MVP: merkle_proof=[]
+
     pco = PublicPCO.build_and_sign(
         rid=rid,
         smt2_hash=smt2_hash,
@@ -81,10 +139,13 @@ def test_kernel_build_and_verify() -> None:
         ),  # raw bytes
         issued_at=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     )
+
     # verify
+
     pco.verify(ed25519_public_bytes=pk)
 
     # negatyw: zła sygnatura
+
     bad = PublicPCO(
         rid=rid,
         smt2_hash=smt2_hash,
@@ -93,8 +154,10 @@ def test_kernel_build_and_verify() -> None:
         signature="A" * 40,
         issued_at=None,
     )
+
     with pytest.raises(InvalidSignature):
         # verify should raise when signature invalid
+
         ed25519_verify_b64u(
             pk,
             bad.signature,

@@ -1,3 +1,28 @@
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/test_merkle.py                                |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/test_merkle.py                                |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
 from __future__ import annotations
 
 from hashlib import sha256
@@ -11,11 +36,17 @@ def _hx(s: str) -> str:
 
 def test_anchor_and_verify_roundtrip() -> None:
     rid = _hx("rid-1")
+
     bundle = _hx("bundle-1")
 
     receipt = anchor_bundle(rid, bundle)
+
     again = get_bundle_proof(rid, bundle)
+
     assert again is not None
+
     assert receipt.root == again.root
+
     assert verify_proof(receipt)
+
     assert verify_proof(again)

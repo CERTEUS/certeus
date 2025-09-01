@@ -1,3 +1,28 @@
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: services/law_as_data/__init__.py                    |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: services/law_as_data/__init__.py                    |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
 from .cache import FileCache, cache_from_uri, compute_digest
 
 __all__ = [

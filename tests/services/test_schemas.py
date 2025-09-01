@@ -1,11 +1,3 @@
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/tests/services/test_schemas.py          |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -23,7 +15,48 @@
 # +-------------------------------------------------------------+
 
 
+# +=====================================================================+
+
+# |                          CERTEUS                                    |
+
+# +=====================================================================+
+
+# | MODULE:  F:/projekty/certeus/tests/services/test_schemas.py          |
+
+# | DATE:    2025-08-17                                                  |
+
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+
+# |                          CERTEUS                            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | FILE: tests/services/test_schemas.py                      |
+
+
+# | ROLE: Project module.                                       |
+
+
+# | PLIK: tests/services/test_schemas.py                      |
+
+
+# | ROLA: Moduł projektu.                                       |
+
+
+# +-------------------------------------------------------------+
+
+
 """
+
+
+
+
 
 
 
@@ -31,7 +64,15 @@ PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 
 
 
+
+
+
+
 EN: CERTEUS module – please complete the functional description.
+
+
+
+
 
 
 
@@ -95,11 +136,23 @@ class _ValidatorProtocol(Protocol):
 
 
 
+
+
+
+
     PL: Minimalny interfejs wymagany od walidatora.
 
 
 
+
+
+
+
     EN: Minimal interface required from a validator.
+
+
+
+
 
 
 
@@ -113,11 +166,23 @@ def load_schema(name: str) -> Schema:
 
 
 
+
+
+
+
     PL: Ładuje i syntaktycznie weryfikuje schemat JSON (Draft7).
 
 
 
+
+
+
+
     EN: Loads and syntactically checks a JSON schema (Draft7).
+
+
+
+
 
 
 
@@ -138,11 +203,23 @@ def assert_valid(instance: JSONObj, schema: Schema) -> None:
 
 
 
+
+
+
+
     PL: Waliduje instancję względem danego schematu (z FormatCheckerem).
 
 
 
+
+
+
+
     EN: Validates the instance against the given schema (with FormatChecker).
+
+
+
+
 
 
 
@@ -158,11 +235,23 @@ def assert_invalid(instance: JSONObj, schema: Schema) -> None:
 
 
 
+
+
+
+
     PL: Oczekuje błędu walidacji.
 
 
 
+
+
+
+
     EN: Expects validation error.
+
+
+
+
 
 
 

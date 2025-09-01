@@ -1,14 +1,51 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: core/pco/__init__.py                                |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: core/pco/__init__.py                                |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                              CERTEUS                                |
+
 # +=====================================================================+
+
 # | PACKAGE / PAKIET: core/pco                                          |
+
 # | DATE / DATA: 2025-08-19                                             |
+
 # +=====================================================================+
+
 # | EN: Core PCO utilities: canonical hashing, Merkle operations, and   |
+
 # |     Ed25519 signing/verification for public, zero-PII evidence.     |
+
 # | PL: Jądro PCO: kanoniczne hashowanie, operacje Merkle oraz           |
+
 # |     podpis/weryfikacja Ed25519 dla publicznych dowodów 0 PII.       |
+
 # +=====================================================================+
 
 from __future__ import annotations
@@ -28,6 +65,7 @@ __all__ = [
     "apply_merkle_path",
     "PublicPCO",
 ]
+
 
 from .crypto import (  # noqa: E402
     b64u_decode,

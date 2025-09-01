@@ -1,11 +1,3 @@
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/plugins/lexlog_rules_pl/src/main.py     |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
 # +-------------------------------------------------------------+
 
 # |                          CERTEUS                            |
@@ -23,7 +15,48 @@
 # +-------------------------------------------------------------+
 
 
+# +=====================================================================+
+
+# |                          CERTEUS                                    |
+
+# +=====================================================================+
+
+# | MODULE:  F:/projekty/certeus/plugins/lexlog_rules_pl/src/main.py     |
+
+# | DATE:    2025-08-17                                                  |
+
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+
+# |                          CERTEUS                            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | FILE: plugins/lexlog_rules_pl/src/main.py                 |
+
+
+# | ROLE: Project module.                                       |
+
+
+# | PLIK: plugins/lexlog_rules_pl/src/main.py                 |
+
+
+# | ROLA: Moduł projektu.                                       |
+
+
+# +-------------------------------------------------------------+
+
+
 """
+
+
+
+
 
 
 
@@ -31,7 +64,15 @@ PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 
 
 
+
+
+
+
 EN: CERTEUS module – please complete the functional description.
+
+
+
+
 
 
 
@@ -71,7 +112,15 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
     PL: Rejestracja odporna na różne interfejsy API.
+
+
+
+
 
 
 
@@ -79,7 +128,15 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
           • register_plugin(name, plugin)
+
+
+
+
 
 
 
@@ -87,7 +144,15 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
           • register(plugin) / register(name, plugin)
+
+
+
+
 
 
 
@@ -95,7 +160,15 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
           • attach(plugin)   / attach(name, plugin)
+
+
+
+
 
 
 
@@ -107,7 +180,19 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
+
+
+
+
     EN: Registration resilient to various API shapes.
+
+
+
+
 
 
 
@@ -115,7 +200,15 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
           • register_plugin(name, plugin)
+
+
+
+
 
 
 
@@ -123,7 +216,15 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
           • register(plugin) / register(name, plugin)
+
+
+
+
 
 
 
@@ -131,11 +232,23 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
 
 
+
+
+
+
           • attach(plugin)   / attach(name, plugin)
 
 
 
+
+
+
+
         Fallback: dict-like registries api.plugins / api.registry / api.plugin_registry.
+
+
+
+
 
 
 
@@ -184,7 +297,15 @@ class Plugin:
 
 
 
+
+
+
+
     PL: Minimalna implementacja pluginu. W realnym wdrożeniu trzyma tu
+
+
+
+
 
 
 
@@ -192,11 +313,23 @@ class Plugin:
 
 
 
+
+
+
+
     EN: Minimal plugin implementation. In production, keep compiled
 
 
 
+
+
+
+
         LEXLOG rules, validators, etc.
+
+
+
+
 
 
 
@@ -225,11 +358,23 @@ class Plugin:
 
 
 
+
+
+
+
         PL: Rejestracja w rdzeniu – odporna na różne kształty API.
 
 
 
+
+
+
+
         EN: Core registration – resilient to various API shapes.
+
+
+
+
 
 
 
@@ -243,11 +388,23 @@ def register(api: Any, name: str | None = None) -> None:
 
 
 
+
+
+
+
     PL: Styl modułowy (używany przez loader, jeśli w plugin.yaml podasz 'register: register').
 
 
 
+
+
+
+
     EN: Module-level style (used by loader when 'register: register' is present in plugin.yaml).
+
+
+
+
 
 
 

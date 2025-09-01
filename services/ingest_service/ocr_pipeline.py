@@ -1,77 +1,146 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: services/ingest_service/ocr_pipeline.py             |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: services/ingest_service/ocr_pipeline.py             |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                          CERTEUS                                    |
+
 # +=====================================================================+
+
 # | MODULE:  F:/projekty/certeus/services/ingest_service/ocr_pipeline.py |
+
 # | DATE:    2025-08-17                                                  |
+
 # +=====================================================================+
 
 
 # +-------------------------------------------------------------+
+
 # |                        CERTEUS                              |
+
 # |        Core Engine for Reliable & Unified Systems           |
+
 # +-------------------------------------------------------------+
+
 # ── CERTEUS Project ─────────────────────────────────────────────────────────────
+
 # File: services/ingest_service/ocr_pipeline.py
+
 # License: Apache-2.0
+
 # Description (PL): Stub potoku OCR z logowaniem i kontrolą rozmiaru wejścia.
+
 # Description (EN): OCR pipeline stub with logging and input size guards.
+
 # Style Guide: ASCII header, PL/EN docs, labeled code blocks. (See README)
+
 # ────────────────────────────────────────────────────────────────────────────────
 
+
 """
+
 PL: Ten moduł dostarcza stub potoku OCR na potrzeby F0_D6 (Ingest → FACTLOG).
+
     Nie wykonuje realnego OCR – zwraca deterministyczne, przewidywalne dane
+
     testowe. Ma wbudowane: logowanie i limit rozmiaru wejścia (bezpieczeństwo).
 
+
+
 EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
+
     It does NOT run real OCR – it returns deterministic, predictable mock data.
+
     Built-ins: logging and input size guard (safety).
+
 """
 
+
 # [BLOCK: IMPORTS / IMPORTY]
+
 from __future__ import annotations
 
 import logging
 from typing import Any
 
 # [BLOCK: LOGGER / LOGOWANIE]
+
 logger = logging.getLogger(__name__)
 
+
 # [BLOCK: CONSTANTS / STAŁE]
+
 DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 
 
 # [BLOCK: PIPELINE / POTOK]
+
+
 class OcrPipeline:
     """
+
     PL: Stub klasy potoku OCR. Wersja produkcyjna zostanie zastąpiona modułem
+
         POLON-OCR. Metoda `process_document` przyjmuje bajty pliku oraz
+
         opcjonalny limit rozmiaru i zwraca ustrukturyzowany wynik.
 
+
+
     EN: Stub OCR pipeline class. The production version will be replaced by
+
         POLON-OCR. The `process_document` method accepts file bytes and an
+
         optional size limit, returning a structured result.
+
     """
 
     def process_document(self, file_bytes: bytes, *, max_bytes: int = DEFAULT_MAX_BYTES) -> dict[str, Any]:
         """
+
         PL:
+
         - Waliduje rozmiar wejścia (domyślnie 10 MB).
+
         - Zwraca przewidywalny wynik OCR (2 strony, język 'pl').
 
+
+
         EN:
+
         - Validates input size (10 MB by default).
+
         - Returns a predictable OCR result (2 pages, language 'pl').
+
         """
+
         size = len(file_bytes or b"")
+
         if size > max_bytes:
             logger.warning("OCR Stub: input too large (%d bytes > %d)", size, max_bytes)
+
             raise ValueError(f"OCR input too large: {size} > {max_bytes} bytes")
 
         logger.info("OCR Stub: processing document (%d bytes)…", size)
 
         # Deterministyczny wynik „OCR”
+
         # Deterministic mock OCR output
+
         return {
             "metadata": {
                 "page_count": 2,

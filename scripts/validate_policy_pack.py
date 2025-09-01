@@ -1,18 +1,59 @@
 #!/usr/bin/env python3
+
+"""
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+EN: CERTEUS module – please complete the functional description.
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: scripts/validate_policy_pack.py                     |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: scripts/validate_policy_pack.py                     |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                              CERTEUS                                |
+
 # +=====================================================================+
+
 # | MODULE / MODUŁ: scripts/validate_policy_pack.py                     |
+
 # | DATE / DATA: 2025-08-19                                             |
+
 # +=====================================================================+
+
 # | ROLE / ROLA:                                                        |
+
 # |  EN: Validate PCO Policy Pack (YAML) vs JSON Schema;                |
+
 # |      enforce invariants (no-PII, required fields, endpoint pattern, |
+
 # |      drat_required) and provide CLI/report.                         |
+
 # |  PL: Walidacja Policy Pack (YAML) względem Schema; egzekwowanie     |
+
 # |      inwariantów (brak PII, wymagane pola, wzorzec endpointu,       |
+
 # |      drat_required) + CLI/raport.                                   |
+
 # +=====================================================================+
+
 from __future__ import annotations
 
 # stdlib
@@ -30,12 +71,18 @@ from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validat
 import yaml  # type: ignore
 
 # ----Bloki----- STAŁE
+
 DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")
+
 DEFAULT_PACK = Path("policies/pco/policy_pack.v0.1.yaml")
+
 ENV_SCHEMA = "PCO_POLICY_PACK_SCHEMA"
+
 ENV_PACK = "PCO_POLICY_PACK_PATH"
 
+
 # Denylista PII (klucze)
+
 PII_FIELD_NAMES: set[str] = {
     "name",
     "first_name",
@@ -51,7 +98,9 @@ PII_FIELD_NAMES: set[str] = {
     "user_id",
 }
 
+
 # Dozwolone klucze w publicznym payload
+
 ALLOWED_PUBLIC_FIELDS: set[str] = {
     "rid",
     "smt2_hash",
@@ -61,7 +110,9 @@ ALLOWED_PUBLIC_FIELDS: set[str] = {
     "signature",
 }
 
+
 # Minimalny zestaw wymaganych pól
+
 REQUIRED_PUBLIC_FIELDS: set[str] = {
     "rid",
     "smt2_hash",
@@ -70,35 +121,49 @@ REQUIRED_PUBLIC_FIELDS: set[str] = {
     "signature",
 }
 
+
 ENDPOINT_PATTERN = re.compile(r"^/pco/public/\{case_id\}$")
 
 
 # ----Bloki----- I/O
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _read_yaml(path: Path) -> dict[str, Any]:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
+
     if not isinstance(data, dict):
         raise TypeError("YAML must decode to an object (mapping)")
+
     return data
 
 
 # ----Bloki----- Dobór walidatora
+
+
 def _pick_validator(schema: dict[str, Any]):
     ident = str(schema.get("$schema", "")).lower()
+
     if "draft-07" in ident:
         return Draft7Validator
+
     if "2019-09" in ident:
         return Draft201909Validator
+
     return Draft202012Validator
 
 
 # ----Bloki----- Inwarianty
+
+
 def _ensure_no_pii(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
     lowered = {f.replace("?", "").lower() for f in fields}
+
     forbidden = sorted(lowered.intersection(PII_FIELD_NAMES))
+
     if forbidden:
         messages.append(
             {
@@ -112,7 +177,9 @@ def _ensure_no_pii(fields: list[str], ctx: str, messages: list[dict[str, Any]]) 
 
 def _check_required_fields(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
     s = set(x.replace("?", "") for x in fields)
+
     missing = sorted(REQUIRED_PUBLIC_FIELDS - s)
+
     if missing:
         messages.append(
             {
@@ -126,7 +193,9 @@ def _check_required_fields(fields: list[str], ctx: str, messages: list[dict[str,
 
 def _check_unknown_fields(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
     s = set(x.replace("?", "") for x in fields)
+
     unknown = sorted(s - ALLOWED_PUBLIC_FIELDS)
+
     if unknown:
         messages.append(
             {
@@ -154,8 +223,10 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
     msgs: list[dict[str, Any]] = []
 
     use_cases = pack.get("use_cases", {})
+
     if not isinstance(use_cases, dict):
         msgs.append({"level": "error", "code": "USE_CASES_TYPE", "where": "use_cases", "detail": "must be object"})
+
         return msgs
 
     for uc_name, uc in use_cases.items():
@@ -163,9 +234,11 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
             msgs.append(
                 {"level": "error", "code": "UC_TYPE", "where": f"use_cases.{uc_name}", "detail": "must be object"}
             )
+
             continue
 
         publish = uc.get("publish", {})
+
         if not isinstance(publish, dict):
             msgs.append(
                 {
@@ -175,12 +248,15 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
                     "detail": "must be object",
                 }
             )
+
             continue
 
         endpoint = str(publish.get("endpoint", ""))
+
         _check_endpoint_pattern(endpoint, f"use_cases.{uc_name}.publish.endpoint", msgs)
 
         fields = publish.get("fields", [])
+
         if not isinstance(fields, list) or not all(isinstance(x, str) for x in fields):
             msgs.append(
                 {
@@ -190,14 +266,19 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
                     "detail": "must be array of strings",
                 }
             )
+
             continue
 
         _ensure_no_pii(fields, f"use_cases.{uc_name}.publish.fields", msgs)
+
         _check_required_fields(fields, f"use_cases.{uc_name}.publish.fields", msgs)
+
         _check_unknown_fields(fields, f"use_cases.{uc_name}.publish.fields", msgs)
 
         # NEW: drat_required => wymagamy 'drat' w polach publikacji
+
         drat_required = bool(uc.get("drat_required", False))
+
         if drat_required and "drat" not in {f.replace("?", "") for f in fields}:
             msgs.append(
                 {
@@ -212,47 +293,68 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 # ----Bloki----- CLI
+
+
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         prog="validate_policy_pack",
         description="Validate PCO Policy Pack (schema + invariants).",
     )
+
     p.add_argument("--schema", type=Path, default=Path(os.getenv(ENV_SCHEMA) or DEFAULT_SCHEMA))
+
     p.add_argument("--pack", type=Path, default=Path(os.getenv(ENV_PACK) or DEFAULT_PACK))
+
     p.add_argument("--format", choices=["text", "json"], default="text")
+
     p.add_argument("--strict", action="store_true")
+
     p.add_argument("--list-use-cases", action="store_true")
+
     return p.parse_args()
 
 
 def _emit_text(schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]) -> None:
     if use_cases:
         print("[use_cases] " + ", ".join(use_cases))
+
     for e in schema_errors:
         print(f"[SCHEMA] {e}", file=sys.stderr)
+
     for m in messages:
         lvl = str(m.get("level", "info")).upper()
+
         code = str(m.get("code", "MSG"))
+
         where = str(m.get("where", "-"))
+
         detail = str(m.get("detail", ""))
+
         print(f"[{lvl}] {code} @ {where}: {detail}")
 
 
 def _emit_json(schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]) -> None:
     out = {"use_cases": use_cases, "schema_errors": schema_errors, "messages": messages}
+
     print(json.dumps(out, ensure_ascii=False, indent=2))
 
 
 # ----Bloki----- MAIN
+
+
 def main() -> int:
     args = _parse_args()
+
     try:
         schema = _read_json(args.schema)
+
         pack = _read_yaml(args.pack)
+
     except Exception:
         return 4
 
     Validator = _pick_validator(schema)
+
     schema_errs = [
         f"{'/'.join(map(str, e.path))}: {e.message}"
         for e in sorted(Validator(schema).iter_errors(pack), key=lambda e: e.path)
@@ -261,24 +363,31 @@ def main() -> int:
     messages = run_invariants(pack)
 
     uc_names: list[str] = []
+
     if args.list_use_cases and isinstance(pack.get("use_cases"), dict):
         uc_names = list(pack["use_cases"].keys())  # type: ignore[index]
 
     if args.format == "json":
         _emit_json(schema_errs, messages, uc_names)
+
     else:
         _emit_text(schema_errs, messages, uc_names)
 
     has_schema_errors = bool(schema_errs)
+
     has_errors = has_schema_errors or any(m.get("level") == "error" for m in messages)
+
     has_warnings = any(m.get("level") == "warning" for m in messages)
 
     if has_errors:
         return 2
+
     if has_warnings and args.strict:
         return 2
+
     if has_warnings:
         return 1
+
     return 0
 
 

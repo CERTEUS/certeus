@@ -1,19 +1,48 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_exporter_provenance.py          |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_exporter_provenance.py          |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                          CERTEUS                                    |
+
 # +=====================================================================+
+
 # | MODULE:  F:/projekty/certeus/tests/services/test_exporter_provenance.py|
+
 # | DATE:    2025-08-17                                                  |
+
 # +=====================================================================+
 
 
 """
+
 PL: Testy jednostkowe / integracyjne modułu.
+
 EN: Module test suite (unit/integration).
+
 """
 
+
 # +-------------------------------------------------------------+
+
 # | CERTEUS - Tests: Exporter & Ledger                          |
+
 # +-------------------------------------------------------------+
+
 from pathlib import Path
 
 from services.exporter_service import export_answer_to_txt
@@ -32,9 +61,13 @@ def test_export_and_hash(tmp_path: Path):
         "status": "ok",
         "confidence": 0.9,
     }
+
     out = tmp_path / "out.txt"
+
     path = export_answer_to_txt(answer, out_path=str(out), create_ledger_entry=False)
+
     assert Path(path).exists()
 
     h = compute_provenance_hash(answer, include_timestamp=False)
+
     assert verify_provenance_hash(answer, h)

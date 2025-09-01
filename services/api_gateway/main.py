@@ -1,23 +1,58 @@
 #!/usr/bin/env python3
-# +=====================================================================+
-# |                              CERTEUS                                |
-# +=====================================================================+
-# | MODULE / MODUŁ: services/api_gateway/main.py                        |
-# | DATE / DATA: 2025-08-19                                             |
-# +=====================================================================+
-# | ROLE / ROLA:                                                        |
-# |  EN: API Gateway bootstrap. Mounts static, registers routers,       |
-# |      enables DEV CORS, exposes health and root redirect.            |
-# |  PL: Bootstrap bramy API. Montuje statyczne zasoby, rejestruje      |
-# |      routery, włącza CORS (DEV), wystawia health i redirect root.   |
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: services/api_gateway/main.py                        |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: services/api_gateway/main.py                        |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
 
+# |                              CERTEUS                                |
+
+# +=====================================================================+
+
+# | MODULE / MODUŁ: services/api_gateway/main.py                        |
+
+# | DATE / DATA: 2025-08-19                                             |
+
+# +=====================================================================+
+
+# | ROLE / ROLA:                                                        |
+
+# |  EN: API Gateway bootstrap. Mounts static, registers routers,       |
+
+# |      enables DEV CORS, exposes health and root redirect.            |
+
+# |  PL: Bootstrap bramy API. Montuje statyczne zasoby, rejestruje      |
+
+# |      routery, włącza CORS (DEV), wystawia health i redirect root.   |
+
+# +=====================================================================+
+
+
 """
+
 PL: Główna aplikacja FastAPI dla CERTEUS: statyki, routery, CORS (DEV), health.
+
 EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
+
 """
+
 
 # --- blok --- Importy ----------------------------------------------------------
+
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
@@ -63,16 +98,25 @@ from services.ingest_service.adapters.registry import get_llm, get_preview
 
 # --- blok --- Ścieżki i katalogi ----------------------------------------------
 
+
 ROOT = Path(__file__).resolve().parents[2]
+
 STATIC_DIR = ROOT / "static"
+
 STATIC_PREVIEWS = STATIC_DIR / "previews"
+
 CLIENTS_WEB = ROOT / "clients" / "web"  # expects /app/proof_visualizer/index.html
 
+
 STATIC_PREVIEWS.mkdir(parents=True, exist_ok=True)
+
 CLIENTS_WEB.mkdir(parents=True, exist_ok=True)
 
+
 APP_TITLE = "CERTEUS API Gateway"
+
 APP_VERSION = __version__
+
 
 # --- blok --- Lifespan (inicjalizacja adapterów) -------------------------------
 
@@ -80,14 +124,20 @@ APP_VERSION = __version__
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
+
     PL: Leniwe utworzenie singletonów adapterów przy starcie.
+
     EN: Lazily create adapter singletons on startup.
+
     """
+
     _ = (get_preview(), get_llm())
+
     yield
 
 
 # --- blok --- Aplikacja i middleware -------------------------------------------
+
 
 app = FastAPI(
     title=APP_TITLE,
@@ -98,21 +148,29 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
 # Attach Proof-Only I/O middleware early (safe no-op unless STRICT_PROOF_ONLY=1)
+
 attach_proof_only_middleware(app)
 
 
 # statyki
+
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
 app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
 
+
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
+
 ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS", "*")
+
 DEV_ORIGINS: list[str] = (
     [o.strip() for o in ALLOW_ORIGINS_ENV.split(",") if o.strip()]
     if ALLOW_ORIGINS_ENV and ALLOW_ORIGINS_ENV != "*"
     else ["*"]
 )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=DEV_ORIGINS,
@@ -121,29 +179,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # --- blok --- Rejestr routerów -------------------------------------------------
 
+
 app.include_router(system.router)
+
 app.include_router(preview.router)
+
 app.include_router(pco_public.router)
+
 app.include_router(pco_bundle.router)
+
 app.include_router(export.router)
+
 app.include_router(ledger.router)
+
 app.include_router(mismatch.router)
+
 app.include_router(verify.router)
+
 app.include_router(cfe.router)
+
 app.include_router(qtm.router)
+
 app.include_router(devices.router)
+
 app.include_router(dr.router)
+
 app.include_router(upn.router)
+
 app.include_router(lexqft.router)
+
 app.include_router(chatops.router)
+
 app.include_router(mailops.router)
+
 app.include_router(ethics.router)
+
 app.include_router(fin.router)
+
 app.include_router(packs.router)
+
 app.include_router(jwks_router)
+
 app.include_router(metrics.router)
+
 
 # --- blok --- Health i root redirect -------------------------------------------
 
@@ -151,15 +232,20 @@ app.include_router(metrics.router)
 @app.get("/health")
 def health() -> dict[str, object]:
     """PL: Liveness; EN: Liveness."""
+
     return {"status": "ok", "version": APP_VERSION}
 
 
 @app.get("/")
 def root_redirect() -> RedirectResponse:
     """
+
     PL: W DEV kierujemy na UI wizualizatora.
+
     EN: In DEV, redirect to the proof visualizer UI.
+
     """
+
     return RedirectResponse(url="/app/proof_visualizer/index.html", status_code=307)
 
 
@@ -168,9 +254,13 @@ def root_redirect() -> RedirectResponse:
 
 def _make_blob(upload: UploadFile, data: bytes) -> Blob:
     """
+
     PL: Buduje Blob z UploadFile.
+
     EN: Build Blob from UploadFile.
+
     """
+
     return Blob(
         filename=upload.filename or "file",
         content_type=upload.content_type or "application/octet-stream",
@@ -186,14 +276,21 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
     import time as _t
 
     start = _t.perf_counter()
+
     response = await call_next(request)
+
     try:
         route = request.scope.get("route")
+
         path_tmpl = getattr(route, "path", request.url.path)
+
         status = getattr(response, "status_code", 0)
+
         certeus_http_request_duration_ms.labels(path=path_tmpl, method=request.method, status=str(status)).observe(
             (_t.perf_counter() - start) * 1000.0
         )
+
     except Exception:
         pass
+
     return response

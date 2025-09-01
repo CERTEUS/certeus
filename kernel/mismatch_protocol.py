@@ -1,9 +1,32 @@
 #!/usr/bin/env python3
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: kernel/mismatch_protocol.py                         |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: kernel/mismatch_protocol.py                         |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
 # +=====================================================================+
+
 # |                          CERTEUS                                    |
+
 # +=====================================================================+
+
 # | MODULE:  F:/projekty/certeus/kernel/mismatch_protocol.py             |
+
 # | DATE:    2025-08-17                                                  |
+
 # +=====================================================================+
 
 
@@ -27,4 +50,5 @@ def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> 
         results=results,
         formula_ast=None,
     )
+
     raise MismatchError(f"Solver results are inconsistent. See ticket {ticket.ticket_id}.")

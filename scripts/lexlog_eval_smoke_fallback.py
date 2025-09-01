@@ -1,26 +1,62 @@
-# +=====================================================================+
-# |                          CERTEUS                                    |
-# +=====================================================================+
-# | MODULE:  F:/projekty/certeus/scripts/lexlog_eval_smoke_fallback.py   |
-# | DATE:    2025-08-17                                                  |
-# +=====================================================================+
-
-
 # +-------------------------------------------------------------+
+
 # |                          CERTEUS                            |
+
 # +-------------------------------------------------------------+
+
+# | FILE: scripts/lexlog_eval_smoke_fallback.py               |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: scripts/lexlog_eval_smoke_fallback.py               |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+# +=====================================================================+
+
+# |                          CERTEUS                                    |
+
+# +=====================================================================+
+
+# | MODULE:  F:/projekty/certeus/scripts/lexlog_eval_smoke_fallback.py   |
+
+# | DATE:    2025-08-17                                                  |
+
+# +=====================================================================+
+
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
 # | FILE: scripts/lexlog_eval_smoke_fallback.py                 |
+
 # | ROLE: Fallback smoke runner for LEXLOG evaluation           |
+
 # | PLIK: scripts/lexlog_eval_smoke_fallback.py                 |
+
 # | ROLA: Skrypt awaryjny: buduje flagi i uruchamia smoke eval  |
+
 # +-------------------------------------------------------------+
+
 
 """
+
 CERTEUS — Lexlog Smoke Eval (Fallback)
+
 PL: Skrypt pomocniczy budujący plik flag (na podstawie mappingu) i
+
     uruchamiający test dymny oceny LEXLOG (art. 286 k.k.).
+
 EN: Auxiliary script that builds the flags file (from mapping) and
+
     runs the LEXLOG smoke evaluation (Art. 286).
+
 """
 
 import os
@@ -32,6 +68,7 @@ FLAGS_PATH = os.path.join("packs", "jurisdictions", "PL", "flags", "lexenith_res
 
 def main():
     print("[INFO] Building flags from mapping for R_286_OSZUSTWO...")
+
     subprocess.run(
         [
             sys.executable,
@@ -41,7 +78,9 @@ def main():
         ],
         check=True,
     )
+
     print("[INFO] Running smoke with generated flags...")
+
     subprocess.run(
         [sys.executable, "scripts/lexlog_eval_smoke.py", "--flags", FLAGS_PATH],
         check=True,

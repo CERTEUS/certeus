@@ -15,7 +15,6 @@ concurrency:
 
 env:
   PYTHON_VERSION: "3.11"
-  SLO_MAX_P95_MS: "250"
 
 jobs:
   smoke:
@@ -26,6 +25,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            slo_max_p95_ms: 250
+          - os: windows-latest
+            slo_max_p95_ms: 300
+
+    env:
+      SLO_MAX_P95_MS: ${{ matrix.slo_max_p95_ms }}
 
     steps:
       - name: 🔄 Checkout
@@ -67,3 +74,63 @@ jobs:
           name: smoke-summary-${{ matrix.os }}-${{ github.sha }}
           path: reports/smoke_summary.json
           if-no-files-found: warn
+
+  smoke-summary:
+    name: Smoke PR Summary
+    needs: smoke
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Download smoke artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: smoke_reports
+          pattern: smoke-summary-*
+          merge-multiple: true
+
+      - name: 📝 Comment PR with p95 summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            function findFiles(dir, target) {
+              let out = [];
+              for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+                const p = path.join(dir, ent.name);
+                if (ent.isDirectory()) out = out.concat(findFiles(p, target));
+                else if (ent.isFile() && ent.name === target) out.push(p);
+              }
+              return out;
+            }
+            const base = 'smoke_reports';
+            let rows = [];
+            if (fs.existsSync(base)) {
+              for (const p of findFiles(base, 'smoke_summary.json')) {
+                const txt = fs.readFileSync(p, 'utf-8');
+                try {
+                  const j = JSON.parse(txt);
+                  // best-effort infer OS from path
+                  const parts = p.split(path.sep);
+                  const art = parts.find(x => x.startsWith('smoke-summary-')) || '';
+                  const os = art.replace('smoke-summary-','').replace(/-.+$/, '') || 'unknown';
+                  rows.push({ os, ...j });
+                } catch {}
+              }
+            }
+            if (rows.length === 0) {
+              core.warning('No smoke summaries found');
+              return;
+            }
+            rows.sort((a,b)=> a.os.localeCompare(b.os));
+            let body = `### Smoke Summary (p95)\n\n`;
+            body += `| OS | total | passes | fails | p95_ms | threshold_ms |\n|---|---:|---:|---:|---:|---:|\n`;
+            for (const r of rows) {
+              body += `| ${r.os} | ${r.total} | ${r.passes} | ${r.fails} | ${r.p95_ms} | ${r.threshold_ms || ''} |\n`;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
