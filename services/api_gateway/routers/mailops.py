@@ -136,6 +136,14 @@ class IngestEmailResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -209,6 +217,8 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
 
 
     return IngestEmailResponse(ok=True, io=io_email)
+
+
 
 
 

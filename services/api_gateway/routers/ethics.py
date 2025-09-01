@@ -117,6 +117,15 @@ class DoubleVerdictResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -214,6 +223,8 @@ async def double_verdict(req: DoubleVerdictRequest, request: Request) -> DoubleV
 
 
     return DoubleVerdictResponse(verdicts={"W": req.W_litera, "T": req.T_telos}, rationale=req.rationale)
+
+
 
 
 

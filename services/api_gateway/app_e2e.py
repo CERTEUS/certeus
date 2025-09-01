@@ -80,6 +80,17 @@ class SolveResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -150,6 +161,8 @@ def e2e_solve(payload: SimpleFact) -> SolveResponse:
         report_path=report_path,
         version=result.get("version"),
     )
+
+
 
 
 

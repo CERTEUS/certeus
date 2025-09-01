@@ -94,6 +94,13 @@ class IsapAdapter:
 
 
 
+
+
+
+
+
+
+
 def _ascii_info(msg: str) -> None:
     try:
         from utils.console import info as _info  # type: ignore
@@ -106,6 +113,8 @@ def _ascii_info(msg: str) -> None:
         s = msg.encode("ascii", "ignore").decode("ascii")
 
         print(f"[INFO] {s}")
+
+
 
 
 

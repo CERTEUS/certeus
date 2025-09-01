@@ -47,6 +47,14 @@ from fastapi import APIRouter, HTTPException
 
 
 
+
+
+
+
+
+
+
+
 # ----Bloki----- IMPORTY
 
 
@@ -92,6 +100,8 @@ def _kid_from_key(pub: bytes) -> str:
 
 
 # ----Bloki----- ENTRYPOINT
+
+
 
 
 

@@ -112,6 +112,19 @@ class FileCache:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 @dataclass
 
 
@@ -144,6 +157,8 @@ def cache_from_uri(uri: str, cache: FileCache | None = None) -> CachedSource:
     data = _fetch_uri(uri)
 
     return c.put(uri, data)
+
+
 
 
 

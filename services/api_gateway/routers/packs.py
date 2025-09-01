@@ -56,6 +56,15 @@ class HandleRequest(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -82,6 +91,8 @@ async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
 
     except Exception as e:  # nosec - błąd pakietu mapujemy na 400
         raise HTTPException(status_code=400, detail=f"pack handle error: {e}") from e
+
+
 
 
 

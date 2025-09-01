@@ -95,6 +95,28 @@ class PublicBundleIn(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
 
@@ -304,6 +326,8 @@ def _build_proofbundle(
     Draft202012Validator(schema).validate(pb)
 
     return pb
+
+
 
 
 

@@ -107,6 +107,13 @@ MARKERS = [
 
 
 
+
+
+
+
+
+
+
 def get_span(node: ast.AST) -> tuple[int, int]:
 
     # Include decorators for FunctionDef so we don't leave orphan decorator lines
@@ -508,6 +515,8 @@ def main() -> None:
 if __name__ == "__main__":
 
     main()
+
+
 
 
 

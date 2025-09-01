@@ -126,6 +126,15 @@ class FactlogMapper:
 
 
 
+
+
+
+
+
+
+
+
+
 # [BLOCK: IMPORTS / IMPORTY]
 
 
@@ -145,6 +154,8 @@ def _pages_by_num(ocr_output: dict[str, Any]) -> dict[int, str]:
 
 
 # [BLOCK: MAPPER / MAPOWANIE]
+
+
 
 
 

@@ -42,6 +42,12 @@ class MismatchError(RuntimeError):
 
 
 
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -54,6 +60,8 @@ def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> 
     )
 
     raise MismatchError(f"Solver results are inconsistent. See ticket {ticket.ticket_id}.")
+
+
 
 
 

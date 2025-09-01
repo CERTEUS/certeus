@@ -136,6 +136,18 @@ class RevokeResponse(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -247,6 +259,8 @@ async def revoke(req: RevokeRequest, request: Request) -> RevokeResponse:
 
 
     return RevokeResponse(upn=req.upn, revoked=True, merkle_proof=proof)
+
+
 
 
 

@@ -96,6 +96,21 @@ class MerkleStep(TypedDict):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 DEFAULT_DIR = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
 
 
@@ -342,6 +357,8 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
 
 
 

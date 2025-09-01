@@ -75,6 +75,14 @@ from cryptography.hazmat.primitives import serialization
 
 
 
+
+
+
+
+
+
+
+
 # ----Bloki----- MAIN
 
 
@@ -101,6 +109,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
 
 
 

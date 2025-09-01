@@ -78,6 +78,12 @@ class CommandRequest(BaseModel):
 
 
 
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -155,6 +161,8 @@ async def command(req: CommandRequest, request: Request) -> dict:
 
 
     raise HTTPException(status_code=400, detail="Unknown or unsupported command")
+
+
 
 
 

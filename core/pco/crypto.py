@@ -52,6 +52,16 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 
 
 
+
+
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -257,6 +267,8 @@ def load_pubkey_bytes_from_env() -> bytes:
         "Set PCO_JWKS_B64URL+PCO_ACTIVE_KID or ED25519_PUBKEY_HEX or "
         "ED25519_PUBKEY_B64URL."
     )
+
+
 
 
 

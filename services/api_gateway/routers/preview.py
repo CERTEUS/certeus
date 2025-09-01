@@ -45,6 +45,16 @@ from fastapi.responses import JSONResponse
 
 
 
+
+
+
+
+
+
+
+
+
+
 STATIC_PREV = Path("static/previews")
 
 
@@ -80,6 +90,8 @@ async def preview(file: Annotated[UploadFile, File(...)]) -> JSONResponse:
         await file.close()
 
     return JSONResponse({"url": f"/static/previews/{safe_name}"})
+
+
 
 
 

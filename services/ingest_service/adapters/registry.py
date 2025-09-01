@@ -87,6 +87,17 @@ _LLM: LLMAdapter | None = None
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 # ----------------------------- Globals (private) -----------------------------
 
 
@@ -188,6 +199,8 @@ def get_llm() -> LLMAdapter:
         _LLM = _make_llm()
 
     return _LLM
+
+
 
 
 

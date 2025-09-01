@@ -129,6 +129,14 @@ class E2EVerifier:
 
 
 
+
+
+
+
+
+
+
+
 #!/usr/bin/env python3
 
 
@@ -177,6 +185,8 @@ except Exception:  # pragma: no cover - emergency fallback
                     result["error"] = f"model_error: {e}"
 
             return result
+
+
 
 
 

@@ -73,6 +73,15 @@ class RuleEvalResult(BaseModel):
 
 
 
+
+
+
+
+
+
+
+
+
 def _flag(flags: Mapping[str, bool], name: str) -> bool:
     """Safe flag read (missing -> False)."""
 
@@ -117,6 +126,8 @@ def choose_article_for_kk(ast: LexAst, flags: Mapping[str, bool], ctx: EvalConte
     res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
 
     return "art286" if res.satisfied else None
+
+
 
 
 
