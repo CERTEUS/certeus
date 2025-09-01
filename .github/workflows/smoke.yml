@@ -59,18 +59,7 @@ jobs:
           py -3 -m venv .venv
           .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { .\.venv\Scripts\python.exe -m pip install -U prometheus-client openapi-spec-validator }
 
-      - name: 🚀 Run server (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          ./.venv/bin/uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000 &
-          sleep 5
-
-      - name: 🚀 Run server (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          Start-Process .\.venv\Scripts\uvicorn.exe -ArgumentList "services.api_gateway.main:app --host 127.0.0.1 --port 8000"
-          Start-Sleep -s 5
+      # Server is started and managed inside smoke scripts (sets keys/env)
 
       - name: 🚬 Run smoke (Ubuntu) with retry
         if: matrix.os == 'ubuntu-latest'
