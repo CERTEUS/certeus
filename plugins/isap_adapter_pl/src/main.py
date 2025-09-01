@@ -20,6 +20,12 @@ PL: Wejście wtyczki isap_adapter_pl (Domain Pack).
 
 EN: isap_adapter_pl plugin entry (Domain Pack).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+

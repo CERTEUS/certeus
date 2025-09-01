@@ -28,6 +28,12 @@ EN: Auxiliary script that builds the flags file (from mapping) and
     runs the LEXLOG smoke evaluation (Art. 286).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 import os
 import subprocess

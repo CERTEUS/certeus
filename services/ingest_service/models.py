@@ -56,6 +56,12 @@ Style compliance:
 - ASCII header, PL/EN docs, labeled blocks.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: IMPORTS / IMPORTY]

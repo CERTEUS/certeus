@@ -22,6 +22,12 @@ PL: Smoke-test Jądra Prawdy: wczytuje flags JSON i sprawdza spełnialność.
 EN: Truth Engine smoke test: loads flags JSON and checks satisfiability.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

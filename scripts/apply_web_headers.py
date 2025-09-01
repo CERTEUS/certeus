@@ -3,6 +3,12 @@ Add CERTEUS headers to HTML and JS files under clients/.
 
 PL: Dodaje nagłówek CERTEUS do plików HTML/JS w clients/.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

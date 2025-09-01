@@ -28,6 +28,12 @@ EN: Checks presence of {z3.drat,cvc5.lfsc} and their *.sha256 files,
     compares computed SHA256 with recorded ones. Returns code 0/1.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: IMPORTS / IMPORTY]

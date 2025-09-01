@@ -6,6 +6,12 @@ na podstawie ścieżki pliku.
 EN: Automatically refine PL/EN module docstrings in Python files by
 replacing the generic placeholder with a path-aware description.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

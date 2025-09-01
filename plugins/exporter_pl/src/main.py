@@ -20,6 +20,12 @@ PL: Wejście wtyczki exporter_pl (Domain Pack).
 
 EN: exporter_pl plugin entry (Domain Pack).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+

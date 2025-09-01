@@ -27,6 +27,13 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
     `snapshot_timestamp` and `_certeus.snapshot_timestamp_utc` fields.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 #!/usr/bin/env python3
 

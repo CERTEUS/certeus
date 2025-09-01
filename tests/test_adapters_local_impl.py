@@ -30,6 +30,12 @@ PL: Testy minimalnych, lokalnych implementacji adapterów.
 EN: Tests for minimal, local adapter implementations.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

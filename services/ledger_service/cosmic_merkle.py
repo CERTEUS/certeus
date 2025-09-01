@@ -25,6 +25,13 @@ PL: Minimalna, deterministyczna implementacja Merkle z blokadą RLock. Brak PII 
 EN: Minimal deterministic Merkle with RLock. No PII — operates on hex hashes.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 #!/usr/bin/env python3
 

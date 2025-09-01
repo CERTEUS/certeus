@@ -82,6 +82,12 @@ PL: Kontrakty adapterów i lekkie DTO (Preview/OCR/Drive/LLM) używane przez API
 EN: Adapter contracts and lightweight DTOs (Preview/OCR/Drive/LLM) used by the API.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

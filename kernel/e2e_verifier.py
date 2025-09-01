@@ -23,6 +23,13 @@ PL: Weryfikator E2E przepływów CERTEUS.
 EN: E2E verifier for CERTEUS flows.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 #!/usr/bin/env python3
 

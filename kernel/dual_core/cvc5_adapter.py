@@ -20,6 +20,12 @@ PL: Adapter solvera SMT (dowody/konwersja).
 
 EN: SMT solver adapter (proofs/translation).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+

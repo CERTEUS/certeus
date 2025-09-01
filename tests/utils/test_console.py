@@ -22,6 +22,12 @@ PL: Testy funkcji utils.console: ascii_safe, print_safe, info/success/error i be
 EN: Tests for utils.console functions: ascii_safe, print_safe, info/success/error and ASCII safety.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

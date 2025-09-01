@@ -19,8 +19,17 @@ import ast
 from pathlib import Path
 
 TARGET_DIRS = [
-    "core/pco",
-    "services/api_gateway",
+    "architectus",
+    "cje",
+    "clients",
+    "core",
+    "kernel",
+    "plugins",
+    "policies",
+    "security",
+    "services",
+    "scripts",
+    "tests",
 ]
 
 MARKERS = [
@@ -29,6 +38,7 @@ MARKERS = [
     "# === MODELE / MODELS ===\n",
     "# === LOGIKA / LOGIC ===\n",
     "# === I/O / ENDPOINTS ===\n",
+    "# === TESTY / TESTS ===\n",
 ]
 
 

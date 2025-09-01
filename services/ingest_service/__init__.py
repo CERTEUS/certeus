@@ -26,6 +26,12 @@ EN: Ingestion service package. This module marks the Python package and
     exposes a public interface (exports) of the most commonly used types.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: PUBLIC API EXPORTS / EKSPORT INTERFEJSU PUBLICZNEGO]

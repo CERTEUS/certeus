@@ -48,6 +48,12 @@ PL: Helper do wstrzykiwania skrótu OCR (pierwsza strona) do metadanych.
 EN: Helper to inject OCR snippet (first page) into metadata.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

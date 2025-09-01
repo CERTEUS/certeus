@@ -26,6 +26,12 @@ EN: ISAP adapter stub. MVP version: returns a constant snapshot
     for a given act_id with proper SHA256 and UTC timestamp.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

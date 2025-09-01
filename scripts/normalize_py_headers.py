@@ -5,6 +5,12 @@ shebang/encoding → baner CERTEUS → module docstring (PL/EN) → reszta.
 EN: Normalize Python file headers: shebang/encoding → CERTEUS banner →
 module docstring (PL/EN) → rest of the code.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

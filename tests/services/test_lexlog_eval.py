@@ -22,6 +22,12 @@ PL: Testy ewaluatora LEXLOG (MVP) dla art. 286 k.k., z loaderem mapowania.
 EN: LEXLOG evaluator tests (MVP) for art. 286 PC, with mapping loader.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

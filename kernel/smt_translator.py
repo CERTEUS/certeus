@@ -23,6 +23,13 @@ PL: Translator SMT i powiązana logika.
 EN: SMT translator and related logic.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 #!/usr/bin/env python3
 

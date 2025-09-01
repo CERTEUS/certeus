@@ -3,6 +3,12 @@ Add a lightweight CERTEUS header to YAML files that miss one.
 
 PL: Dodaje lekki nagłówek (komentarze) na górze plików YAML.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

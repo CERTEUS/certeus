@@ -22,6 +22,12 @@ PL: Udostępnia interfejs publiczny: Ledger i LedgerRecord.
 EN: Exposes public API: Ledger and LedgerRecord.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: PUBLIC EXPORTS]

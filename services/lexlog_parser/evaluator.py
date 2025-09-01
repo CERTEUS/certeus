@@ -26,6 +26,12 @@ EN: LEXLOG evaluator (MVP). Checks if AST rules hold based on engine
     boolean flags dictionary.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

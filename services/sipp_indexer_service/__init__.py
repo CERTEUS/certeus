@@ -22,3 +22,9 @@ PL: Pakiet serwisu indeksującego akty prawne (SIPP Indexer).
 EN: Package for the legal acts indexing service (SIPP Indexer).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===

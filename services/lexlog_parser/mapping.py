@@ -22,6 +22,12 @@ PL: Loader mapowania LEXLOG -> engine flags. JSON w repo trzymamy w packs/... .
 EN: Loader of LEXLOG -> engine flags mapping. JSON lives in packs/... .
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

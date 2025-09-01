@@ -2,6 +2,13 @@
 POST: ATT/MTV (kontrtesty i spójność) → PUBLISH/CONDITIONAL/ABSTAIN.
 EN:  PRE: GoP/EUQ/TTDE (HOT/WARM/COLD + plan). POST: ATT/MTV → verdict.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |

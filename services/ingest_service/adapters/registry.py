@@ -42,6 +42,12 @@ PL: Rejestr adapterów (lazy singletons) — bez efektów ubocznych.
 EN: Adapters registry (lazy singletons) — side-effect free.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

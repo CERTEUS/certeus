@@ -32,6 +32,12 @@ EN: This module contains tests for the proof generator:
     - Optional CLI test: run the script via subprocess if `uv` is available.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

@@ -24,6 +24,12 @@ Helper runner to execute scripts.apply_headers.main() reliably on Windows.
 PL: Pomocniczy skrypt do uruchomienia scripts.apply_headers.main().
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

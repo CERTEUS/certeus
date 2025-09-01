@@ -20,6 +20,12 @@ PL: Wejście wtyczki tpl_diff_pl (Domain Pack).
 
 EN: tpl_diff_pl plugin entry (Domain Pack).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+

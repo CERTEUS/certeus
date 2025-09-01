@@ -22,6 +22,12 @@ PL: Testuje minimalny parser LEXLOG na pliku kk.lex.
 EN: Tests the minimal LEXLOG parser on kk.lex file.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

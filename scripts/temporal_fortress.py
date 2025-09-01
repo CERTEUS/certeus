@@ -1,6 +1,13 @@
 """PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
 EN: Re-proof scheduler (law=365, med=90, fin=7).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |

@@ -32,6 +32,12 @@ EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
     Built-ins: logging and input size guard (safety).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: IMPORTS / IMPORTY]

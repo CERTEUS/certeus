@@ -23,6 +23,13 @@ PL: Adapter dla Z3 i zależności SMT.
 EN: Adapter for Z3 and SMT.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 #!/usr/bin/env python3
 

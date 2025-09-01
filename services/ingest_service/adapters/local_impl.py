@@ -66,6 +66,12 @@ PL: Lokalne implementacje stubów adapterów (bez chmury).
 EN: Local stub implementations of adapters (no cloud).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

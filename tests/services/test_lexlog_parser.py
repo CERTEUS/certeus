@@ -28,6 +28,12 @@ EN: Tests for parsing of DEFINE/PREMISE/RULE/CONCLUSION, canonical ID
     normalization, and legacy stub compatibility.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from pathlib import Path
 

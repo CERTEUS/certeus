@@ -8,6 +8,12 @@ block while keeping the new standard banner (which uses dashes).
 
 PL: Usuwa stary baner CERTEUS (z linią '='). Nowy standard ma linie z '-'.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

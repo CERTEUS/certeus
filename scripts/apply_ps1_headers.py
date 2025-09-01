@@ -3,6 +3,12 @@ Dodaje baner CERTEUS do plików PowerShell (.ps1), jeśli brakuje.
 
 EN: Add CERTEUS banner to PowerShell scripts when missing.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

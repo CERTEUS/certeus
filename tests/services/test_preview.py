@@ -28,6 +28,12 @@ EN: Tests verify that /v1/preview accepts a file (multipart/form-data) and retur
     JSON with a `url` pointing to a preview path under `/static/previews/...`.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

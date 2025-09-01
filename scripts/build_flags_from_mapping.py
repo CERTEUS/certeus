@@ -26,6 +26,12 @@ EN: Builds flags JSON from mapping of premises→engine flags. Fills missing
     premises via P_* → ZNAMIE_* mapping (MVP).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

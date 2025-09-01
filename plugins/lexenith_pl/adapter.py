@@ -1,6 +1,13 @@
 """PL: Zwraca jurysdykcję/pack i przekształca wejście na FACTLOG + DSL.
 EN: Returns jurisdiction/pack and builds FACTLOG + DSL.
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
 
 # +=====================================================================+
 # |                          CERTEUS — HEART                            |

@@ -20,6 +20,12 @@ PL: Wejście wtyczki lexlog_rules_pl (Domain Pack).
 
 EN: lexlog_rules_pl plugin entry (Domain Pack).
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # +-------------------------------------------------------------+

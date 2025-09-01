@@ -32,6 +32,12 @@ EN: This module transforms raw OCR output into a list of `Fact` objects.
     fixed values. The production version will use NLP/NLU.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: IMPORTS / IMPORTY]

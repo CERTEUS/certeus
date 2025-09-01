@@ -32,6 +32,12 @@ EN: Ensures all data contracts (schemas) comply with JSON Schema Draft 7
     required/properties consistency).
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 from __future__ import annotations
 

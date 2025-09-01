@@ -26,6 +26,12 @@ EN: Tests cover the success path (OCR stub → FACTLOG), the Ledger chain header
     and MIME/size validations.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 
 # [BLOCK: IMPORTS]

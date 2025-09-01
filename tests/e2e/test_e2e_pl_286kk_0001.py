@@ -24,6 +24,12 @@ PL: Test end-to-end kanonicznego przypadku oszustwa dla /v1/analyze.
 EN: End-to-end test of canonical fraud case via /v1/analyze.
 
 """
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
 
 import io
 
