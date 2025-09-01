@@ -24,27 +24,22 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from collections.abc import Mapping
-
 from pathlib import Path
-
 from typing import Any
 
 from fastapi import FastAPI
-
 from pydantic import BaseModel, Field
-
 import yaml
 
 from core.version import __version__
-
 from monitoring.metrics_slo import observe_decision
-
 from services.ledger_service.ledger import (
     compute_provenance_hash,
     ledger_service,
 )
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class PublishRequest(BaseModel):
@@ -54,6 +49,7 @@ class PublishRequest(BaseModel):
 
     budget_tokens: int | None = None
 
+
 class PublishResponse(BaseModel):
     status: str
 
@@ -61,32 +57,8 @@ class PublishResponse(BaseModel):
 
     ledger_ref: str | None = None
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 app = FastAPI(title="ProofGate", version=__version__)
@@ -296,10 +268,6 @@ def publish(req: PublishRequest) -> PublishResponse:
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

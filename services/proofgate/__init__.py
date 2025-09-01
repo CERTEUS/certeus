@@ -29,18 +29,6 @@ EN: CERTEUS project module (generic description).
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

@@ -28,7 +28,6 @@ EN: E2E verifier for CERTEUS flows.
 from __future__ import annotations
 
 import logging
-
 from typing import Any, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
@@ -36,6 +35,7 @@ import z3  # type: ignore[reportMissingTypeStubs]
 from .smt_translator import compile_bool_ast, validate_ast
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class E2EVerifier:
@@ -117,24 +117,8 @@ class E2EVerifier:
 
         return self.z3.solve(assertions)
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #!/usr/bin/env python3
@@ -187,10 +171,6 @@ except Exception:  # pragma: no cover - emergency fallback
             return result
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

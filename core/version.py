@@ -28,24 +28,12 @@ EN: CERTEUS project module (generic description).
 
 # === LOGIKA / LOGIC ===
 
-
-
-
-
-
-
-
-
 __all__ = ["__version__"]
 
 
 __version__ = "1.0.0-rc.1"
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

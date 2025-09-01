@@ -71,11 +71,8 @@ EN: Local stub implementations of adapters (no cloud).
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-
 from dataclasses import asdict
-
 import hashlib
-
 from pathlib import Path
 
 from .contracts import (
@@ -97,6 +94,7 @@ from .contracts import (
 )
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class LocalDriveAdapter(DriveAdapter):
@@ -167,6 +165,7 @@ class LocalDriveAdapter(DriveAdapter):
         rel = Path(file_id)
 
         return f"{self.base_url_prefix}/{rel.as_posix()}"
+
 
 class StubPreviewAdapter(PreviewAdapter):
     """
@@ -244,6 +243,7 @@ class StubPreviewAdapter(PreviewAdapter):
         except Exception as e:
             raise PreviewError("StubPreviewAdapter.generate failed") from e
 
+
 class StubOCRAdapter(OCRAdapter):
     """
 
@@ -265,6 +265,7 @@ class StubOCRAdapter(OCRAdapter):
 
         except Exception as e:
             raise OCRError("StubOCRAdapter.extract failed") from e
+
 
 class StubLLMAdapter(LLMAdapter):
     """
@@ -315,33 +316,8 @@ class StubLLMAdapter(LLMAdapter):
         except Exception as e:
             raise DriveError("StubLLMAdapter.analyze failed") from e
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ------------------------------ Helpers -------------------------------------
@@ -377,10 +353,6 @@ def _ensure_dir(path: Path) -> None:
 # ----------------------------- StubLLMAdapter -------------------------------
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

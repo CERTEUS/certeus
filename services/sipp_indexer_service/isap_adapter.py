@@ -31,12 +31,12 @@ EN: ISAP adapter stub. MVP version: returns a constant snapshot
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
-
 import hashlib
 
 from .models import LegalActSnapshot
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class IsapAdapter:
@@ -83,22 +83,8 @@ class IsapAdapter:
 
         return snapshot
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def _ascii_info(msg: str) -> None:
@@ -115,10 +101,6 @@ def _ascii_info(msg: str) -> None:
         print(f"[INFO] {s}")
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

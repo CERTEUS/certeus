@@ -24,22 +24,17 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from dataclasses import dataclass
-
 import hashlib
-
 import json
-
 import os
-
 from pathlib import Path
-
 import time
-
 import urllib.request
 
 from monitoring.metrics_slo import certeus_source_fetch_errors_total
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class CachedSource:
@@ -50,6 +45,7 @@ class CachedSource:
     path: Path
 
     retrieved_at: str
+
 
 class FileCache:
     """
@@ -105,33 +101,11 @@ class FileCache:
             uri=raw["uri"], digest=raw["digest"], path=Path(raw["path"]), retrieved_at=raw["retrieved_at"]
         )
 
+
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @dataclass
-
-
-
-
-
-
 def compute_digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -159,10 +133,6 @@ def cache_from_uri(uri: str, cache: FileCache | None = None) -> CachedSource:
     return c.put(uri, data)
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

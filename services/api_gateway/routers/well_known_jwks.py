@@ -27,9 +27,7 @@ EN: Endpoint exposing Ed25519 public key via JWKS (/.well-known/jwks.json).
 from __future__ import annotations
 
 import base64
-
 import hashlib
-
 import os
 
 from fastapi import APIRouter, HTTPException
@@ -39,20 +37,6 @@ from fastapi import APIRouter, HTTPException
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ----Bloki----- IMPORTY
@@ -102,10 +86,6 @@ def _kid_from_key(pub: bytes) -> str:
 # ----Bloki----- ENTRYPOINT
 
 
-
-
-
-
 # === I/O / ENDPOINTS ===
 @router.get("/.well-known/jwks.json")
 # === I/O / ENDPOINTS ===
@@ -129,5 +109,5 @@ def jwks():
 
     return {"keys": [jwk]}
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

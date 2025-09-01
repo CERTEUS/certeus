@@ -15,7 +15,6 @@
 # +-------------------------------------------------------------+
 
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
@@ -38,77 +37,31 @@ from fastapi import APIRouter
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # +=====================================================================+
-
 
 
 # |                              CERTEUS                                |
 
 
-
 # +=====================================================================+
-
 
 
 # | FILE: services/connectors/fhir/router.py                            |
 
 
-
 # | ROLE: FHIR connector (reason endpoint) — stub.                      |
-
 
 
 # +=====================================================================+
 
 
-
-
-
 router = APIRouter(prefix="/v1/connectors/fhir")
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # === I/O / ENDPOINTS ===
 @router.post("/reason")
-
 def reason(payload: dict) -> dict:
-
     return {"status": "PENDING", "plan": {"sources": ["FHIR"], "eta_s": 5}}
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

@@ -25,11 +25,11 @@ EN: lexlog_rules_pl plugin entry (Domain Pack).
 from __future__ import annotations
 
 from collections.abc import MutableMapping
-
 from typing import Any, Final
 
 # === KONFIGURACJA / CONFIGURATION ===
 PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
+
 
 # === MODELE / MODELS ===
 class Plugin:
@@ -122,20 +122,8 @@ class Plugin:
 
         _safe_register(api, self, PLUGIN_NAME)
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # +-------------------------------------------------------------+
@@ -378,10 +366,6 @@ def register(api: Any, name: str | None = None) -> None:
     _safe_register(api, plugin, name or PLUGIN_NAME)
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

@@ -28,11 +28,8 @@ EN: Report/artefact exporter.
 from __future__ import annotations
 
 from collections.abc import Mapping
-
 import json
-
 from pathlib import Path
-
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -45,6 +42,7 @@ Status: {status}
 Model: {model}
 
 """
+
 
 # === MODELE / MODELS ===
 class ExporterService:
@@ -68,22 +66,8 @@ class ExporterService:
 
         return out
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #!/usr/bin/env python3
@@ -139,10 +123,6 @@ def export_answer(answer: Mapping[str, Any], *, fmt: str, output_dir: Path | Non
     raise ValueError(f"Unsupported fmt: {fmt}")
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

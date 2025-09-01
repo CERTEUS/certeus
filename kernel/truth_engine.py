@@ -28,7 +28,6 @@ EN: CERTEUS system module.
 from __future__ import annotations
 
 import time
-
 from typing import Any, Protocol, cast
 
 import z3  # type: ignore[reportMissingTypeStubs]
@@ -37,9 +36,11 @@ from .mismatch_protocol import handle_mismatch  # ✅ import at top to avoid E40
 
 # === KONFIGURACJA / CONFIGURATION ===
 
+
 # === MODELE / MODELS ===
 class _Z3AdapterProto(Protocol):
     def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]: ...
+
 
 class DualCoreVerifier:
     """Dual-Core verifier: Core-1(Z3) + Core-2(stub)."""
@@ -106,27 +107,8 @@ class DualCoreVerifier:
 
         return result_z3
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 _Z3 = cast(Any, z3)
@@ -179,10 +161,6 @@ except Exception:
             return result
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

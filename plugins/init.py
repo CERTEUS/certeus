@@ -31,21 +31,9 @@ EN: The “plugins” package – directory with plugin modules (each has plugin
 
 # === LOGIKA / LOGIC ===
 
-
-
-
-
-
-
-
-
 __all__: list[str] = []
-
-
-
 
 
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

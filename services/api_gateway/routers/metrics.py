@@ -25,7 +25,6 @@ EN: FastAPI router for Prometheus metrics.
 from __future__ import annotations
 
 from fastapi import APIRouter, Response
-
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -35,25 +34,10 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 # === LOGIKA / LOGIC ===
 
 
-
-
-
-
-
-
-
-
-
-
-
 #!/usr/bin/env python3
 
 
 router = APIRouter(prefix="", tags=["metrics"])
-
-
-
-
 
 
 # === I/O / ENDPOINTS ===
@@ -66,5 +50,5 @@ def metrics() -> Response:
 
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
 
-# === TESTY / TESTS ===
 
+# === TESTY / TESTS ===

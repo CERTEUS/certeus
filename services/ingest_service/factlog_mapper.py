@@ -37,16 +37,14 @@ EN: This module transforms raw OCR output into a list of `Fact` objects.
 from __future__ import annotations
 
 from datetime import date
-
 import hashlib
-
 from typing import Any
-
 import uuid
 
 from .models import Fact, FactRole
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class FactlogMapper:
@@ -115,24 +113,8 @@ class FactlogMapper:
 
         return facts
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # [BLOCK: IMPORTS / IMPORTY]
@@ -156,10 +138,6 @@ def _pages_by_num(ocr_output: dict[str, Any]) -> dict[int, str]:
 # [BLOCK: MAPPER / MAPOWANIE]
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

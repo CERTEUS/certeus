@@ -55,7 +55,6 @@ from __future__ import annotations
 from typing import Any
 
 from services.ingest_service.adapters.contracts import Blob, OCRRequest
-
 from services.ingest_service.adapters.registry import get_ocr
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -63,19 +62,6 @@ from services.ingest_service.adapters.registry import get_ocr
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 async def build_ocr_preview(
@@ -146,10 +132,6 @@ def merge_meta(original: dict[str, Any] | None, extra: dict[str, Any]) -> dict[s
     return base
 
 
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

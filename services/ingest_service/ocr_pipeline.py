@@ -31,9 +31,13 @@ from __future__ import annotations
 
 import logging
 
+logger = logging.getLogger(__name__)
+DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
+
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 
 # === MODELE / MODELS ===
 class OcrPipeline:
@@ -104,27 +108,14 @@ class OcrPipeline:
             ],
         }
 
+
 # === LOGIKA / LOGIC ===
-
-
-
-
-
-
-
 
 
 DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 logger = logging.getLogger(__name__)
 
 
-
-
-
-
-
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-
