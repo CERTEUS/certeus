@@ -32,10 +32,11 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+from pathlib import Path
 from time import perf_counter
 from typing import Any
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -124,6 +125,7 @@ router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 # Prosty graf spraw (case-graph) i rejestr kanałów dekoherencji (stub in-memory)
 CASE_GRAPH: dict[str, dict[str, Any]] = {}
 DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
+_PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
 
 
 @router.post("/init_case", response_model=InitCaseResponse)
@@ -187,7 +189,16 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default") or {"channel": "dephasing"}
     collapse_log = CollapseLog(sequence=sequence, decoherence=deco)
 
-    ub = {"L_T": 0.25}
+    # Bridge CFE↔QTMP: use CFE curvature to influence uncertainty/priorities
+    try:
+        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
+
+        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
+    except Exception:
+        kappa = 0.012
+
+    # Simple correlation: higher curvature => slightly higher L_T bound
+    ub = {"L_T": round(0.2 + min(0.2, kappa * 10.0), 3)}
 
     latency_ms = round((perf_counter() - t0) * 1000.0, 3)
 
@@ -205,6 +216,25 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
             response.headers["X-CERTEUS-PCO-qtm.predistribution[]"] = _json.dumps(
                 cg["predistribution"], separators=(",", ":")
             )
+        # Operator priorities influenced by curvature
+        import json as _json
+
+        base_pri = {"W": 1.0, "I": 1.0, "C": 1.0, "L": 1.0, "T": 1.0}
+        boost = 1.0 + min(0.25, kappa * 10.0)
+        base_pri["L"] = round(base_pri["L"] * boost, 3)
+        base_pri["T"] = round(base_pri["T"] * boost, 3)
+        response.headers["X-CERTEUS-PCO-qtmp.priorities"] = _json.dumps(base_pri, separators=(",", ":"))
+        response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(round(kappa * 0.1, 6))
+    except Exception:
+        pass
+
+    # Export UB/priorities metrics to Prometheus
+    try:
+        from monitoring.metrics_slo import certeus_qtm_operator_priority, certeus_qtm_ub_lt
+
+        certeus_qtm_ub_lt.labels(source=case_id).set(float(ub.get("L_T", 0.0)))
+        for op_key, val in base_pri.items():
+            certeus_qtm_operator_priority.labels(operator=op_key).set(float(val))
     except Exception:
         pass
 
@@ -271,6 +301,63 @@ async def set_decoherence(req: DecoherenceRequest, request: Request) -> Decohere
         cfg["gamma"] = float(req.gamma)
     DECOHERENCE_REGISTRY[case_id] = cfg
     return DecoherenceResponse(ok=True, case=case_id, channel=ch, gamma=req.gamma)
+
+
+# === LOGIKA / LOGIC ===
+
+
+def _load_presets() -> dict[str, str]:
+    try:
+        if _PRESET_STORE_PATH.exists():
+            import json as _json
+
+            return _json.loads(_PRESET_STORE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return {}
+
+
+def _save_presets(d: dict[str, str]) -> None:
+    try:
+        import json as _json
+
+        _PRESET_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _PRESET_STORE_PATH.write_text(_json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+class PresetIn(BaseModel):
+    case: str = Field(..., min_length=1)
+    operator: str = Field(..., min_length=1, max_length=1)
+
+
+class PresetOut(BaseModel):
+    case: str
+    operator: str
+
+
+@router.post("/preset", response_model=PresetOut)
+async def save_preset(p: PresetIn) -> PresetOut:
+    presets = _load_presets()
+    presets[p.case] = p.operator
+    _save_presets(presets)
+    return PresetOut(case=p.case, operator=p.operator)
+
+
+@router.get("/preset/{case}", response_model=PresetOut)
+async def get_preset(case: str) -> PresetOut:
+    presets = _load_presets()
+    op = presets.get(case)
+    if not op:
+        raise HTTPException(status_code=404, detail="Preset not found")
+    return PresetOut(case=case, operator=op)
+
+
+@router.get("/presets")
+async def list_presets() -> list[PresetOut]:
+    presets = _load_presets()
+    return [PresetOut(case=k, operator=v) for k, v in presets.items()]
 
 
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)
