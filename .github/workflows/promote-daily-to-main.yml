@@ -12,11 +12,7 @@ name: Promote-Daily-To-Main
 on:
   workflow_run:
     workflows:
-      - Proof Gate
-      - asset-guard
-      - Gauge-Gate
-      - Path-Coverage-Gate
-      - Boundary-Rebuild-Gate
+      - ci-gates
     types: [completed]
 
 permissions:
@@ -44,7 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Checking gates for commit: $SHA"
-          required=( "Proof Gate" "asset-guard" "Gauge-Gate" "Path-Coverage-Gate" "Boundary-Rebuild-Gate" )
+          required=( "ci-gates" )
           ok=1
           for wf in "${required[@]}"; do
             # Get latest run for this commit and workflow
