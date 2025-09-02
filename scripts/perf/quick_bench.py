@@ -20,13 +20,19 @@ EN: Quick perf bench (TestClient) — times a few endpoints and reports p95.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 import statistics
+import sys
 import time
 from typing import Any
 
 from fastapi.testclient import TestClient
 
-from services.api_gateway.main import app
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from services.api_gateway.main import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
 ENDPOINTS = [
