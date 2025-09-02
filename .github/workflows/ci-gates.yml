@@ -32,7 +32,7 @@ jobs:
           # Install project runtime deps
           python -m pip install -e .
           # Install test/dev helpers explicitly used by the suite
-          python -m pip install ruff pytest pytest-asyncio httpx z3-solver
+          python -m pip install ruff pytest pytest-asyncio httpx z3-solver hypothesis
 
       - name: Load CI defaults (non-secrets)
         run: |
@@ -327,3 +327,4 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
+

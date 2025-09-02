@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\kernel\dual_core\z3_adapter.py
+# hypothesis_version: 6.138.13
+
+['error', 'get_version_string', 'model', 'status', 'time_ms', 'version']

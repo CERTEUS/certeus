@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\ingest_service\adapters\contracts.py
+# hypothesis_version: 6.138.13
+
+[0.0, 300, '.bin', '.docx', '.jpg', '.pdf', '.png', '.txt', 'AdapterError', 'Attachment', 'Blob', 'DriveAdapter', 'DriveError', 'DriveSaveResult', 'LLMAdapter', 'LLMError', 'LLMRequest', 'LLMResponse', 'OCRAdapter', 'OCRError', 'OCRPage', 'OCRRequest', 'PreviewAdapter', 'PreviewError', 'PreviewRequest', 'PreviewResult', 'application/pdf', 'binary', 'error', 'image/jpeg', 'image/jpg', 'image/png', 'infer_extension', 'ok', 'pl+en', 'preview_url', 'text', 'text/plain']

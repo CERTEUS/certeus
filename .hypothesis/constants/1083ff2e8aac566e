@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\proof_verifier\verifier.py
+# hypothesis_version: 6.138.13
+
+[200, '1', '10', 'CVC5_CMD', 'DRAT_CHECK_CMD', 'PROOF_VERIFIER_MOCK', 'PROOF_VERIFY_DEBUG', '\\(\\s*lfsc\\b', 'drat_fail', 'drat_ok', 'external:cvc5', 'external:drat', 'ignore', 'internal:drat-check', 'internal:lfsc-check', 'lfsc_fail', 'lfsc_ok', 'mock:drat-fail', 'mock:drat-ok', 'mock:lfsc-fail', 'mock:lfsc-ok', 'rc', 'utf-8', 'verifier']

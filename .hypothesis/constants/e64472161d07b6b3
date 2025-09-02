@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\mismatch.py
+# hypothesis_version: 6.138.13
+
+[404, '/mismatch', '/tickets', '/tickets/{ticket_id}', 'Ticket not found', 'mismatch']

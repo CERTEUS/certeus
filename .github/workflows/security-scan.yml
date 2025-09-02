@@ -79,3 +79,27 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-fs.sarif
+
+  bandit:
+    name: Bandit (informational)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install bandit
+        run: python -m pip install bandit
+      - name: Run bandit (non-blocking)
+        run: |
+          bandit -q -r . -x .venv,venv,clients/web,clients/cli,dist,build || true
+
+  gitleaks:
+    name: Gitleaks (informational)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run gitleaks
+        uses: zricethezav/gitleaks-action@v2.3.7
+        with:
+          args: detect --verbose --redact --no-banner --exit-code 0

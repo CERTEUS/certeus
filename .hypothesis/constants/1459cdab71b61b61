@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\exporter_service\exporter.py
+# hypothesis_version: 6.138.13
+
+['build/exports', 'case', 'case_id', 'docx', 'file', 'json', 'model', 'status', 'utf-8']

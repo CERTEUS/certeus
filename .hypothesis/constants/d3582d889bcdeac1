@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\law_as_data\cache.py
+# hypothesis_version: 6.138.13
+
+['%Y-%m-%dT%H:%M:%SZ', './data/law_cache', 'LAW_CACHE_DIR', 'digest', 'index', 'path', 'retrieved_at', 'uri', 'utf-8']
