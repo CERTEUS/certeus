@@ -23,11 +23,16 @@ import json
 import os
 from pathlib import Path
 import statistics
+import sys
 import time
 
 from fastapi.testclient import TestClient
 
-from services.api_gateway.main import app
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from services.api_gateway.main import app  # noqa: E402
 
 # === KONFIGURACJA / CONFIGURATION ===
 
