@@ -67,7 +67,7 @@ def main() -> int:
                     payload["gauge"]["holonomy_drift"] = kappa
         except Exception:
             pass
-          
+
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
 
