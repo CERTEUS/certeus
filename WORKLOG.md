@@ -30,3 +30,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - ProofGate: enforce union publish roles z Governance Pack
   - - Runbooks: security_bunker.md, roles_governance.md
   - - Validator: scripts/validate_governance_consistency.py (sets + behavior)
+- 2025-09-02 10:43:13Z [48793] (work/daily): CI: governance consistency + Premium Style fixes for tests
+  - - Proof Gate: add governance consistency step
+  - - Tests: added banners/docstrings/sections with ruff E402 compliance
