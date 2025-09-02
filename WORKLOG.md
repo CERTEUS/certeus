@@ -63,3 +63,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-02 11:41:35Z [48793] (work/daily): ProofGate smoke + OpenAPI cache; CI health check added
   - - ProofGate: cached openapi() for perf
   - - Smoke: in-proc /healthz step in Proof Gate workflow
+- 2025-09-02 11:49:22Z [48793] (work/daily): CI: Premium Style fix (module docstring order)
+  - - tests/services/test_proofgate_roles_enforcement.py: docstring moved before future import per PEP 257/236
