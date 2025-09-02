@@ -112,6 +112,9 @@ jobs:
       - name: OpenAPI smoke (/openapi.json)
         run: |
           python scripts/smokes/openapi_smoke.py
+      - name: QTMP smoke (in-proc)
+        run: |
+          python scripts/smokes/qtm_smoke.py
       - name: Mark OpenAPI smoke OK
         if: success()
         run: |

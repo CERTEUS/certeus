@@ -130,6 +130,23 @@ certeus_qtm_operator_priority = Gauge(
     labelnames=("operator",),
 )
 
+# QTMP: Collapses, expectation values, history length
+certeus_qtm_collapse_total = Counter(
+    "certeus_qtm_collapse_total",
+    "QTMP collapses total",
+    labelnames=("operator", "verdict"),
+)
+certeus_qtm_expectation_value = Gauge(
+    "certeus_qtm_expectation_value",
+    "QTMP expectation value",
+    labelnames=("case", "operator"),
+)
+certeus_qtm_history_len = Gauge(
+    "certeus_qtm_history_len",
+    "QTMP history length",
+    labelnames=("case",),
+)
+
 # LexQFT: Coverage (gamma, uncaptured)
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")

@@ -310,17 +310,30 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # Append to in-memory history for this case
     try:
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
-        hist.append({"operator": op_effective, "verdict": verdict, "p": p})
+        hist.append(
+            {"operator": op_effective, "verdict": verdict, "p": p, "ts": datetime.now(timezone.utc).isoformat()}
+        )
     except Exception:
         pass
 
-    # Export UB/priorities metrics to Prometheus
+    # Export UB/priorities metrics to Prometheus + collapse counters and history length
     try:
-        from monitoring.metrics_slo import certeus_qtm_operator_priority, certeus_qtm_ub_lt
+        from monitoring.metrics_slo import (
+            certeus_qtm_operator_priority,
+            certeus_qtm_ub_lt,
+            certeus_qtm_collapse_total,
+            certeus_qtm_history_len,
+        )
 
         certeus_qtm_ub_lt.labels(source=case_id).set(float(ub.get("L_T", 0.0)))
         for op_key, val in base_pri.items():
             certeus_qtm_operator_priority.labels(operator=op_key).set(float(val))
+        certeus_qtm_collapse_total.labels(operator=op_effective, verdict=verdict).inc()
+        try:
+            _hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
+            certeus_qtm_history_len.labels(case=case_id).set(_hist_len)
+        except Exception:
+            pass
     except Exception:
         pass
 
@@ -388,7 +401,19 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
     try:
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
         for s in steps:
-            hist.append(s.model_dump())
+            d = s.model_dump()
+            d["ts"] = datetime.now(timezone.utc).isoformat()
+            hist.append(d)
+    except Exception:
+        pass
+    # Metrics
+    try:
+        from monitoring.metrics_slo import certeus_qtm_collapse_total, certeus_qtm_history_len
+
+        hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
+        certeus_qtm_history_len.labels(case=case_id).set(hist_len)
+        for s in steps:
+            certeus_qtm_collapse_total.labels(operator=s.operator, verdict=s.verdict).inc()
     except Exception:
         pass
     return SequenceResponse(steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub)
@@ -423,15 +448,23 @@ class QtmHistoryEvent(BaseModel):
 class QtmHistoryOut(BaseModel):
     case: str
     history: list[QtmHistoryEvent]
+    total: int
+    offset: int
+    limit: int
 
 
 @router.get("/history/{case}", response_model=QtmHistoryOut)
-async def get_history(case: str) -> QtmHistoryOut:
+async def get_history(case: str, offset: int = 0, limit: int = 100) -> QtmHistoryOut:
     cg = CASE_GRAPH.get(case)
     if not cg or "history" not in cg:
         raise HTTPException(status_code=404, detail="History not found")
-    items = [QtmHistoryEvent(**e) for e in cg.get("history", [])]
-    return QtmHistoryOut(case=case, history=items)
+    raw = cg.get("history", [])
+    total = len(raw)
+    start = max(0, int(offset))
+    lmt = max(1, min(int(limit), 1000))
+    sliced = raw[start : start + lmt]
+    items = [QtmHistoryEvent(**e) for e in sliced]
+    return QtmHistoryOut(case=case, history=items, total=total, offset=start, limit=lmt)
 
 
 class OperatorsOut(BaseModel):
@@ -689,3 +722,34 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+class CommutatorExpRequest(BaseModel):
+    case: str
+    A: str
+    B: str
+
+
+@router.post("/commutator_expectation", response_model=CommutatorResponse)
+async def commutator_expectation(req: CommutatorExpRequest, request: Request) -> CommutatorResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    cg = CASE_GRAPH.get(req.case)
+    if not cg:
+        raise HTTPException(status_code=404, detail="Case not found")
+    basis: list[str] = list(cg.get("basis", [])) or ["ALLOW", "DENY", "ABSTAIN"]
+    probs0 = [float(x.get("p", 0.0)) for x in cg.get("predistribution", [])]
+    if len(probs0) != len(basis):
+        probs0 = _uniform_probs(basis)
+    probs = _apply_decoherence(probs0, req.case, basis)
+    eigs = _operator_eigs()
+    mA = eigs.get(req.A) or {}
+    mB = eigs.get(req.B) or {}
+    num = 0.0
+    den = 0.0
+    for b, p in zip(basis, probs, strict=False):
+        vA = float(mA.get(b, 0.0))
+        vB = float(mB.get(b, 0.0))
+        num += p * abs(vA - vB)
+        den += p * (abs(vA) + abs(vB))
+    val = 0.0 if den <= 0 else min(1.0, num / den)
+    return CommutatorResponse(value=round(val, 3))
