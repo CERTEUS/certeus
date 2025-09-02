@@ -80,7 +80,7 @@ jobs:
       - name: Perf Smoke (W11)
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
-      - name: Perf Regression Gate (<= +20% vs prev)
+      - name: Perf Regression Gate (<= +5% vs prev)
         run: |
           set -e
           # Try to fetch previous perf benchmark from ci-status branch
@@ -98,7 +98,7 @@ jobs:
             sys.exit(0)
           cur = json.loads(cur_p.read_text())
           worst = float(cur.get('worst_p95_ms', 0.0))
-          thr_pct = 0.10
+          thr_pct = 0.05
           if prev_p.exists():
             prev = json.loads(prev_p.read_text())
             base = float(prev.get('worst_p95_ms', 0.0)) or 1.0
@@ -122,7 +122,7 @@ jobs:
 
       - name: SLO Smoke (in-proc)
         env:
-          SLO_MAX_P95_MS: "300"
+          SLO_MAX_P95_MS: "200"
           SLO_MAX_ERROR_RATE: "0.01"
         run: |
           python scripts/slo_gate/measure_api.py
