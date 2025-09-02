@@ -1,9 +1,9 @@
-from __future__ import annotations
-
 """
 PL: Testy enforcementu ról w ProofGate na podstawie Governance Pack.
 EN: ProofGate role enforcement tests based on the Governance Pack.
 """
+
+from __future__ import annotations
 
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
@@ -13,7 +13,6 @@ EN: ProofGate role enforcement tests based on the Governance Pack.
 # | PLIK: tests/services/test_proofgate_roles_enforcement.py   |
 # | ROLA: Testy sprawdzeń ról w ProofGate wg Governance         |
 # +-------------------------------------------------------------+
-
 # === IMPORTY / IMPORTS ===
 import os  # noqa: E402
 
