@@ -34,6 +34,7 @@ import yaml
 
 from core.version import __version__
 from monitoring.metrics_slo import observe_decision
+from monitoring.otel_setup import set_span_attrs, setup_fastapi_otel
 from services.ledger_service.ledger import (
     compute_provenance_hash,
     ledger_service,
@@ -63,6 +64,7 @@ class PublishResponse(BaseModel):
 
 
 app = FastAPI(title="ProofGate", version=__version__)
+setup_fastapi_otel(app)
 
 
 @app.get("/healthz")
@@ -327,6 +329,17 @@ def publish(req: PublishRequest) -> PublishResponse:
     try:
         observe_decision(decision)
 
+    except Exception:
+        pass
+
+    # OTel: correlate trace with PCO (best-effort)
+    try:
+        attrs = {}
+        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "") if isinstance(req.pco, dict) else ""
+        if case_id:
+            attrs["pco.case_id"] = case_id
+        attrs["pco.decision"] = decision
+        set_span_attrs(attrs)
     except Exception:
         pass
 

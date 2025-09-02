@@ -1,0 +1,54 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: observability/prometheus/alert_rules_w10.yml         |
+# | ROLE: Prometheus alert rules (W10 SRE multi-burn)           |
+# | PLIK: observability/prometheus/alert_rules_w10.yml         |
+# | ROLA: Reguły alertów Prometheus (W10 SRE multi-burn)        |
+# +-------------------------------------------------------------+
+
+groups:
+  - name: certeus_w10_sre
+    rules:
+      # Error rate (5xx) multi-burn
+      - record: certeus_http_error_rate_5m
+        expr: |
+          sum(rate(certeus_http_request_duration_ms_count{status=~"5.."}[5m]))
+            /
+          sum(rate(certeus_http_request_duration_ms_count[5m]))
+
+      - record: certeus_http_error_rate_1h
+        expr: |
+          sum(rate(certeus_http_request_duration_ms_count{status=~"5.."}[1h]))
+            /
+          sum(rate(certeus_http_request_duration_ms_count[1h]))
+
+      - alert: HighErrorRateShort
+        expr: certeus_http_error_rate_5m > 0.02  # 4x budżet przy 0.5%
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "Short-burn error rate high (>2%)"
+
+      - alert: HighErrorRateLong
+        expr: certeus_http_error_rate_1h > 0.005  # 0.5% SLO
+        for: 1h
+        labels: { severity: warning }
+        annotations:
+          summary: "Long-burn error rate above SLO budget (>0.5%)"
+
+      # Latency quantiles
+      - record: certeus_http_p95_ms
+        expr: |
+          1000 * histogram_quantile(
+            0.95,
+            sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le)
+          )
+
+      - alert: HighLatencyP95
+        expr: certeus_http_p95_ms > 250
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "p95 latency above 250ms"
+

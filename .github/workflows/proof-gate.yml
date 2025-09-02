@@ -159,6 +159,13 @@ jobs:
         run: |
           uv run python scripts/slo_gate/check_slo.py
 
+      - name: DR Drill (Boundary RTO/RPO)
+        env:
+          MAX_RTO_SEC: "1800"
+          MAX_RPO_SEC: "300"
+        run: |
+          uv run python scripts/dr/drill_boundary_failure.py --max-rto-sec "$MAX_RTO_SEC" --max-rpo-sec "$MAX_RPO_SEC"
+
       - name: Install cosign
         uses: sigstore/cosign-installer@v3.7.0
 

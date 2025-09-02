@@ -1,0 +1,26 @@
+{
+  "title": "CERTEUS — SRE Dashboard",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "HTTP error rate 5m",
+      "targets": [{"expr": "certeus_http_error_rate_5m"}]
+    },
+    {
+      "type": "stat",
+      "title": "HTTP error rate 1h",
+      "targets": [{"expr": "certeus_http_error_rate_1h"}]
+    },
+    {
+      "type": "stat",
+      "title": "HTTP p95 latency (ms)",
+      "targets": [{"expr": "certeus_http_p95_ms"}]
+    },
+    {
+      "type": "graph",
+      "title": "p95 latency (ms)",
+      "targets": [{"expr": "certeus_http_p95_ms"}]
+    }
+  ],
+  "time": {"from": "now-6h", "to": "now"}
+}

@@ -38,6 +38,7 @@ from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
+from monitoring.otel_setup import setup_fastapi_otel
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -155,6 +156,9 @@ app = FastAPI(
 
 attach_proof_only_middleware(app)
 
+# Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
+setup_fastapi_otel(app)
+
 
 # statyki
 
@@ -173,6 +177,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Request duration metrics middleware (Prometheus)
+@app.middleware("http")
+async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
+    import time
+
+    start = time.perf_counter()
+    response = await call_next(request)
+    dur_ms = (time.perf_counter() - start) * 1000.0
+    try:
+        path = request.url.path
+        method = request.method
+        status = str(response.status_code)
+        certeus_http_request_duration_ms.labels(path=path, method=method, status=status).observe(dur_ms)
+    except Exception:
+        pass
+    return response
 
 
 # --- blok --- Rejestr routerów -------------------------------------------------
