@@ -25,3 +25,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Gate: security_bunker_gate.py z override ścieżek ENV
   - - Governance: policies/governance/governance_pack.v0.1.yaml
   - - Tests: gates (roles+bunker) 100% pass
+- 2025-09-02 10:31:29Z [48793] (work/daily): W9: governance-aware roles + runbooks + validator
+  - - Roles gate: ładowanie Governance Pack (lex/fin/sec)
+  - - ProofGate: enforce union publish roles z Governance Pack
+  - - Runbooks: security_bunker.md, roles_governance.md
+  - - Validator: scripts/validate_governance_consistency.py (sets + behavior)
