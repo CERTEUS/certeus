@@ -384,6 +384,19 @@ Zobacz `docs/diagrams.md` — Boundary snapshot/diff oraz pipeline Proof Gate (C
 - Role i polityki: OPA/Rego, role AFV/ASE/ATC/ATS/AVR; polityka deny-by-default dla zależności (Trivy FS CRITICAL/HIGH → fail).
 - Zobacz `SECURITY.md` po więcej szczegółów i zasady zgłaszania incydentów.
 
+### Feature flags (W9 — Security hardening)
+
+- `BUNKER`/`PROOFGATE_BUNKER`: włącza profil TEE/Bunkier w ProofGate i bramce CI.
+  - `BUNKER=1` wymaga atestacji (stub) — ustaw jeden z:
+    - `BUNKER_READY=1`,
+    - plik `security/bunker/attestation.json` (parsowalny JSON),
+    - lub marker `data/security/bunker.ready`.
+- `FINE_GRAINED_ROLES`: włącza fine‑grained role enforcement w ProofGate (AFV/ASE/ATC/ATS/AVR) — eksperymentalnie.
+- `PQCRYPTO_READY`: sygnalizacja gotowości PQ‑crypto w bramce CI (informacyjne; nie blokuje).
+
+CI integracja:
+- Proof Gate uruchamia kroki „Security Bunker Gate” i „Roles Policy Gate”. Repo‑variables `BUNKER`, `PROOFGATE_BUNKER`, `PQCRYPTO_READY` sterują zachowaniem.
+
 ---
 
 ## Pre-release Checklist
