@@ -32,10 +32,11 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+from pathlib import Path
 from time import perf_counter
 from typing import Any
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -124,6 +125,7 @@ router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 # Prosty graf spraw (case-graph) i rejestr kanałów dekoherencji (stub in-memory)
 CASE_GRAPH: dict[str, dict[str, Any]] = {}
 DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
+_PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
 
 
 @router.post("/init_case", response_model=InitCaseResponse)
@@ -226,6 +228,16 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         pass
 
+    # Export UB/priorities metrics to Prometheus
+    try:
+        from monitoring.metrics_slo import certeus_qtm_operator_priority, certeus_qtm_ub_lt
+
+        certeus_qtm_ub_lt.labels(source=case_id).set(float(ub.get("L_T", 0.0)))
+        for op_key, val in base_pri.items():
+            certeus_qtm_operator_priority.labels(operator=op_key).set(float(val))
+    except Exception:
+        pass
+
     # Record qtm.sequence into Ledger as provenance input (hash of sequence)
     try:
         from services.ledger_service.ledger import compute_provenance_hash, ledger_service
@@ -289,6 +301,63 @@ async def set_decoherence(req: DecoherenceRequest, request: Request) -> Decohere
         cfg["gamma"] = float(req.gamma)
     DECOHERENCE_REGISTRY[case_id] = cfg
     return DecoherenceResponse(ok=True, case=case_id, channel=ch, gamma=req.gamma)
+
+
+# === LOGIKA / LOGIC ===
+
+
+def _load_presets() -> dict[str, str]:
+    try:
+        if _PRESET_STORE_PATH.exists():
+            import json as _json
+
+            return _json.loads(_PRESET_STORE_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return {}
+
+
+def _save_presets(d: dict[str, str]) -> None:
+    try:
+        import json as _json
+
+        _PRESET_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        _PRESET_STORE_PATH.write_text(_json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+class PresetIn(BaseModel):
+    case: str = Field(..., min_length=1)
+    operator: str = Field(..., min_length=1, max_length=1)
+
+
+class PresetOut(BaseModel):
+    case: str
+    operator: str
+
+
+@router.post("/preset", response_model=PresetOut)
+async def save_preset(p: PresetIn) -> PresetOut:
+    presets = _load_presets()
+    presets[p.case] = p.operator
+    _save_presets(presets)
+    return PresetOut(case=p.case, operator=p.operator)
+
+
+@router.get("/preset/{case}", response_model=PresetOut)
+async def get_preset(case: str) -> PresetOut:
+    presets = _load_presets()
+    op = presets.get(case)
+    if not op:
+        raise HTTPException(status_code=404, detail="Preset not found")
+    return PresetOut(case=case, operator=op)
+
+
+@router.get("/presets")
+async def list_presets() -> list[PresetOut]:
+    presets = _load_presets()
+    return [PresetOut(case=k, operator=v) for k, v in presets.items()]
 
 
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)

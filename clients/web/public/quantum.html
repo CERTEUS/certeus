@@ -63,8 +63,8 @@
       async function updateCoverage(){ const r = await fetchJSON('/v1/lexqft/coverage'); if(r.ok){ document.getElementById('gamma').textContent = r.data.coverage_gamma; } }
       async function updateTunnel(){ const r = await fetchJSON('/v1/lexqft/tunnel',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({evidence_energy: 1.1})}); if(r.ok){ document.getElementById('ptun').textContent = r.data.p_tunnel; } }
       async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); } }
-      function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; localStorage.setItem(key, JSON.stringify({case:cs,op})) }
-      function loadPreset(){ try{ const p = JSON.parse(localStorage.getItem(key)||'{}'); if(p.case) document.getElementById('case').value = p.case; if(p.op) document.getElementById('op').value = p.op; }catch(e){} }
+      async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); }
+      async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
       document.getElementById('measure').addEventListener('click', doMeasure);
       document.getElementById('save').addEventListener('click', savePreset);
       document.getElementById('load').addEventListener('click', loadPreset);
@@ -72,4 +72,3 @@
     </script>
   </body>
   </html>
-

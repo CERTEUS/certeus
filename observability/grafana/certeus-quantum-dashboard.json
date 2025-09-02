@@ -1,0 +1,38 @@
+{
+  "title": "CERTEUS • Quantum (UB/Priorities/Latency)",
+  "editable": false,
+  "schemaVersion": 38,
+  "version": 1,
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Latency /v1/qtm/measure (p95)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket{path=\"/v1/qtm/measure\"}[5m])) by (le))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "QTMP UB L_T (by source)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "certeus_qtm_ub_lt", "legendFormat": "{{source}}" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Operator priorities (L/T focus)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "certeus_qtm_operator_priority{operator=\"L\"}", "legendFormat": "L" },
+        { "expr": "certeus_qtm_operator_priority{operator=\"T\"}", "legendFormat": "T" }
+      ]
+    }
+  ]
+}
+

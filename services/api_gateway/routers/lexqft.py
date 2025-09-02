@@ -77,13 +77,20 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 # +=====================================================================+
 
 
+_COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
+
+
 class CoverageResponse(BaseModel):
     coverage_gamma: float
 
 
 @router.get("/coverage", response_model=CoverageResponse)
 async def coverage() -> CoverageResponse:
-    """PL/EN: Telemetria lexqft (stub) – gamma pokrycia."""
+    """PL/EN: Telemetria lexqft – gamma pokrycia (agregowana)."""
+    if _COVERAGE_AGG:
+        tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
+        gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
+        return CoverageResponse(coverage_gamma=round(gamma, 6))
     return CoverageResponse(coverage_gamma=0.953)
 
 
@@ -124,6 +131,23 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         pass
 
     return resp
+
+
+class CoverageItem(BaseModel):
+    gamma: float
+    weight: float = 1.0
+    uncaptured: float = 0.0
+
+
+@router.post("/coverage/update")
+async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
+    """PL/EN: Ustaw (zastąp) wkłady ścieżek do pokrycia (gamma, wagi, uncaptured)."""
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    global _COVERAGE_AGG
+    _COVERAGE_AGG = [(float(it.gamma), float(it.weight), float(it.uncaptured)) for it in items]
+    return {"ok": True, "count": len(_COVERAGE_AGG)}
 
 
 # === I/O / ENDPOINTS ===

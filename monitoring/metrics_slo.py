@@ -120,3 +120,11 @@ certeus_http_request_duration_ms = Histogram(
     labelnames=("path", "method", "status"),
     buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
 )
+
+# QTMP: Uncertainty bound and operator priorities
+certeus_qtm_ub_lt = Gauge("certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",))
+certeus_qtm_operator_priority = Gauge(
+    "certeus_qtm_operator_priority",
+    "QTMP operator priority",
+    labelnames=("operator",),
+)
