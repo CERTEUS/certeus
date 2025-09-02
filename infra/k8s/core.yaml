@@ -1,0 +1,34 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/k8s/core.yaml                                 |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/k8s/core.yaml                                 |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: certeus
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proofgate
+  namespace: certeus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proofgate
+  template:
+    metadata:
+      labels:
+        app: proofgate
+    spec:
+      containers:
+        - name: proofgate
+          image: ghcr.io/org/repo/proofgate:latest
+          ports:
+            - containerPort: 8081

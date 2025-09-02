@@ -1,0 +1,47 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .spectral.yaml                                      |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .spectral.yaml                                      |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+extends:
+  - spectral:oas
+
+rules:
+  # Ensure common OAS structure is present
+  openapi-info-title:
+    description: OpenAPI must define info.title
+    given: $.info.title
+    then:
+      function: truthy
+    severity: error
+
+  openapi-info-version:
+    description: OpenAPI must define info.version
+    given: $.info.version
+    then:
+      function: truthy
+    severity: error
+
+  # Require a short summary for each operation
+  operation-summary-required:
+    description: Each operation SHOULD define a short summary
+    given: $.paths[*][*]
+    then:
+      field: summary
+      function: truthy
+    severity: error
+
+  # Require at least one tag per operation for grouping
+  operation-tags-required:
+    description: Each operation MUST have at least one tag
+    given: $.paths[*][*]
+    then:
+      field: tags
+      function: truthy
+    severity: error
+
+  # (Note) Built-in rule severities are left at defaults to avoid ruleset alias issues on CI.

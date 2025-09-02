@@ -1,0 +1,63 @@
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: policies/pco/policy_pack.v0.1.yaml                            |
+# | ROLE: PCO Policy Pack (proof levels, latency, caching, publish)     |
+# +=====================================================================+
+
+version: "0.1"
+
+defaults:
+  proof_levels: ["LFSC", "MUS"]
+  latency:
+    p95_ms: 250
+    floor_ms: 10
+  cache:
+    mode: "cautious"
+    ttl_s: 300
+  obligations:
+    - "no_pii_public_payload"
+    - "jwks_published"
+
+use_cases:
+  LEX.release:
+    drat_required: true
+    proof_levels: ["LFSC", "DRAT"]
+    latency: { p95_ms: 250, floor_ms: 10 }
+    cache: { mode: "strict", ttl_s: 0 }
+    publish:
+      endpoint: "/pco/public/{case_id}"
+      fields: ["rid", "smt2_hash", "lfsc", "drat", "merkle_proof", "signature"]
+
+  FHIR.model_update:
+    drat_required: true
+    proof_levels: ["LFSC", "DRAT"]
+    latency: { p95_ms: 300, floor_ms: 10 }
+    cache: { mode: "strict", ttl_s: 0 }
+    publish:
+      endpoint: "/pco/public/{case_id}"
+      fields: ["rid", "smt2_hash", "lfsc", "drat", "merkle_proof", "signature"]
+
+  IFC.schedule_change:
+    drat_required: true
+    proof_levels: ["LFSC", "DRAT"]
+    latency: { p95_ms: 200, floor_ms: 10 }
+    cache: { mode: "strict", ttl_s: 0 }
+    publish:
+      endpoint: "/pco/public/{case_id}"
+      fields: ["rid", "smt2_hash", "lfsc", "drat", "merkle_proof", "signature"]
+
+  LEX.advisory:
+    drat_required: false
+    proof_levels: ["LFSC", "MUS"]
+    latency: { p95_ms: 250, floor_ms: 10 }
+    cache: { mode: "cautious", ttl_s: 300 }
+    publish:
+      endpoint: "/pco/public/{case_id}"
+      fields: ["rid", "smt2_hash", "lfsc", "merkle_proof", "signature"] # bez 'drat'
+
+checks:
+  - name: "no_pii_in_fields"
+    rule: "publish.fields ∩ {name,pesel,email} = ∅"
+  - name: "endpoint_pattern"
+    rule: "publish.endpoint ~= ^/pco/public/{case_id}$"

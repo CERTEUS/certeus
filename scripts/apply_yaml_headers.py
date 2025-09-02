@@ -1,0 +1,104 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: scripts/apply_yaml_headers.py                       |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: scripts/apply_yaml_headers.py                       |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+"""
+
+Add a lightweight CERTEUS header to YAML files that miss one.
+
+
+
+PL: Dodaje lekki nagłówek (komentarze) na górze plików YAML.
+
+"""
+
+# === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from pathlib import Path
+
+# === KONFIGURACJA / CONFIGURATION ===
+ROOTS = [
+    ".",
+]
+
+SKIP_DIR_CONTAINS = (
+    "/.git/",
+    "/.venv/",
+    "/node_modules/",
+    "/__pycache__/",
+    "/.ruff_cache/",
+    "/.pytest_cache/",
+    "/dist/",
+    "/build/",
+)
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+def has_header(text: str) -> bool:
+    head = "\n".join(text.splitlines()[:10]).lower()
+
+    return "certeus" in head and "file:" in head
+
+
+def build_header(rel: str) -> str:
+    return (
+        "# +-------------------------------------------------------------+\n"
+        "# |                          CERTEUS                            |\n"
+        "# +-------------------------------------------------------------+\n"
+        f"# | FILE: {rel:<52}|\n"
+        "# | ROLE: Project YAML manifest.                                |\n"
+        f"# | PLIK: {rel:<52}|\n"
+        "# | ROLA: Manifest YAML projektu.                               |\n"
+        "# +-------------------------------------------------------------+\n"
+    )
+
+
+def main() -> None:
+    root = Path(__file__).resolve().parents[1]
+
+    total = 0
+
+    for d in ROOTS:
+        p = root / d
+        if not p.exists():
+            continue
+        for f in p.rglob("*.y*ml"):
+            rel = "/" + str(f.relative_to(root)).replace("\\", "/")
+            if any(seg in rel for seg in SKIP_DIR_CONTAINS):
+                continue
+            text = f.read_text(encoding="utf-8", errors="ignore")
+            if has_header(text):
+                continue
+            rel_print = rel.lstrip("/")
+            new_text = build_header(rel_print) + "\n" + text
+            f.write_text(new_text, encoding="utf-8")
+            total += 1
+            print(f"[UPDATED] {rel_print}")
+
+    print(f"Done. YAML files updated: {total}")
+
+
+if __name__ == "__main__":
+    main()
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

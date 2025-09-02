@@ -1,0 +1,78 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: services/law_as_data/adapters/dzu.py                |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: services/law_as_data/adapters/dzu.py                |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Moduł projektu CERTEUS (uogólniony opis).
+
+EN: CERTEUS project module (generic description).
+"""
+
+# === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from dataclasses import dataclass
+import re
+
+from ..cache import FileCache, cache_from_uri
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+
+# === MODELE / MODELS ===
+class DzULawDocument:
+    uri: str
+
+    digest: str
+
+    path: str
+
+    title: str | None = None
+
+
+# === LOGIKA / LOGIC ===
+
+
+_TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+
+
+@dataclass
+def extract_title(html_bytes: bytes) -> str | None:
+    try:
+        m = _TITLE_RE.search(html_bytes.decode("utf-8", errors="ignore"))
+
+        return m.group(1).strip() if m else None
+
+    except Exception:
+        return None
+
+
+def fetch_and_cache_dzu(uri: str, cache: FileCache | None = None) -> DzULawDocument:
+    cs = cache_from_uri(uri, cache)
+
+    title = None
+
+    try:
+        title = extract_title(cs.path.read_bytes())
+
+    except Exception:
+        title = None
+
+    return DzULawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

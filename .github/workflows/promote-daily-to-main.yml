@@ -1,0 +1,105 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/promote-daily-to-main.yml          |
+# | ROLE: Auto-promote work/daily to main (gated by CI)         |
+# | PLIK: .github/workflows/promote-daily-to-main.yml          |
+# | ROLA: Auto-promocja work/daily → main (po zielonym CI)      |
+# +-------------------------------------------------------------+
+
+name: Promote-Daily-To-Main
+
+on:
+  workflow_run:
+    workflows:
+      - ci-gates
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  promote:
+    if: ${{ github.event.workflow_run.head_branch == 'work/daily' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Verify all required gates are green for HEAD SHA
+        id: gates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          echo "Checking gates for commit: $SHA"
+          required=( "ci-gates" )
+          ok=1
+          for wf in "${required[@]}"; do
+            # Get latest run for this commit and workflow
+            concl=$(gh run list --branch work/daily --workflow "$wf" --json headSha,conclusion,headBranch,name | jq -r \
+              --arg sha "$SHA" '.[] | select(.headSha==$sha) | .conclusion' | head -n1)
+            if [ "${concl:-}" != "success" ]; then
+              echo "Gate not green: $wf (conclusion=${concl:-none})"
+              ok=0
+            else
+              echo "Gate OK: $wf"
+            fi
+          done
+          if [ "$ok" = "1" ]; then
+            echo "all_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "all_ok=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+      - name: Append WORKLOG on work/daily (pre-merge)
+        if: steps.gates.outputs.all_ok == 'true'
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          git checkout work/daily
+          SUMMARY="auto-promote: ${SHA} (gates green)"
+          DETAILS=$'Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate\nActor: '${ACTOR}
+          python scripts/worklog/update_worklog.py --summary "$SUMMARY" --details "$DETAILS"
+          git add WORKLOG.md
+          git commit -m "chore(worklog): ${SUMMARY}" || true
+          git push origin work/daily || true
+      - name: Fast-forward main to work/daily (if possible)
+        id: ff
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git fetch origin
+          # Ensure branches are up-to-date
+          git checkout main
+          git reset --hard origin/main
+          git merge --ff-only origin/work/daily && {
+            echo "ff=true" >> $GITHUB_OUTPUT
+            git push origin main
+            exit 0
+          } || echo "No fast-forward possible; will create/auto-merge PR."
+          echo "ff=false" >> $GITHUB_OUTPUT
+      - name: Create or auto-merge PR (work/daily -> main)
+        if: steps.ff.outputs.ff == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Find existing PR
+          PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number' || true)
+          if [ -z "$PR_NUM" ]; then
+            gh pr create -B main -H work/daily -t "Promote work/daily to main" -b "Auto-promotion after green CI."
+            PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number')
+          fi
+          # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
+          gh pr merge "$PR_NUM" --auto --squash || true

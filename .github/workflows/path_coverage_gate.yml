@@ -1,0 +1,52 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/path_coverage_gate.yml             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/path_coverage_gate.yml             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: Path-Coverage-Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  path-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tooling
+        run: |
+          python -m pip install -U pip wheel setuptools
+      - name: Check lexqft coverage
+        run: |
+          python scripts/gates/compute_lexqft_coverage.py --out out/lexqft_coverage.json || true
+          python scripts/gates/path_coverage_gate.py --min-gamma 0.90 --max-uncaptured 0.05 --input out/lexqft_coverage.json || true
+
+  pr-summary:
+    if: github.event_name == 'pull_request' && always()
+    needs: [path-coverage]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Comment PR with Path-Coverage result
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ needs["path-coverage"].result }}';
+            const body = `✔ Path-Coverage-Gate: ${result}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

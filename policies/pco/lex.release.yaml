@@ -1,0 +1,21 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: policies/pco/lex.release.yaml                                 |
+# | ROLE:                                                                |
+# |  PL: Pack „release” dla prawa PL (public fields, obligations).       |
+# |  EN: PL law 'release' pack (public fields, obligations).             |
+# +=====================================================================+
+
+name: "lex.release.pl.v1"
+jurisdictions: ["PL"]
+domains: ["law"]
+expires_at: "2026-12-31T23:59:59Z"
+min_truthops_profile: "default"
+breakglass_allowed: false
+public_payload_fields:
+  ["rid", "smt2_hash", "lfsc", "drat", "merkle_proof", "signature"]
+obligations:
+  endpoint_pattern: "^/pco/public/[a-f0-9]{64}$"
+  jwks_published: true
+  drat_required: true

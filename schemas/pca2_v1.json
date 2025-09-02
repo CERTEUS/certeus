@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://certeus/schemas/pca2_v1.json",
+  "title": "Certeus - PCA² v1 (Polityki, Ograniczenia, Założenia, Atestacje) / PCA² v1",
+  "description": "PL: Rejestr zgodności: polityki, ograniczenia, założenia i atestacje wyników. EN: Compliance ledger: policies, constraints, assumptions, and attestations.",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "description": "PL: Skrót SHA-256 w hex. EN: SHA-256 hex digest.",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "description": "PL: URI/URL do zasobu. EN: URI/URL to a resource."
+    },
+    "constraint": {
+      "type": "object",
+      "description": "PL: Ograniczenie (reguła) do weryfikacji. EN: Constraint (rule) to verify.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "PL: Nazwa ograniczenia. EN: Constraint name."
+        },
+        "expression": {
+          "type": "string",
+          "description": "PL: Wyrażenie/reguła. EN: Expression/rule."
+        },
+        "verdict": {
+          "type": "string",
+          "enum": ["pass", "fail", "skip"],
+          "description": "PL: Wynik weryfikacji. EN: Verification verdict."
+        },
+        "details": {
+          "type": "string",
+          "description": "PL: Szczegóły/uzasadnienie. EN: Details/justification."
+        },
+        "evidence_uri": {
+          "$ref": "#/$defs/uri",
+          "description": "PL: Dowód (URI). EN: Evidence (URI)."
+        }
+      },
+      "required": ["name", "verdict"]
+    },
+    "assumption": {
+      "type": "object",
+      "description": "PL: Przyjęte założenie. EN: Accepted assumption.",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "PL: Nazwa założenia. EN: Assumption name."
+        },
+        "value": {
+          "type": "string",
+          "description": "PL: Wartość/stan. EN: Value/state."
+        },
+        "justification": {
+          "type": "string",
+          "description": "PL: Uzasadnienie. EN: Justification."
+        },
+        "hash": {
+          "$ref": "#/$defs/sha256",
+          "description": "PL: Hash treści założenia. EN: Assumption content hash."
+        }
+      },
+      "required": ["name"]
+    },
+    "attestation": {
+      "type": "object",
+      "description": "PL: Atestacja zgodności. EN: Compliance attestation.",
+      "additionalProperties": false,
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "PL: Co atestujemy. EN: What is attested."
+        },
+        "by": {
+          "type": "string",
+          "description": "PL: Podmiot (moduł/osoba). EN: Actor (module/person)."
+        },
+        "result": {
+          "type": "string",
+          "enum": ["pass", "fail"],
+          "description": "PL: Wynik atestacji. EN: Attestation result."
+        },
+        "evidence_hash": {
+          "$ref": "#/$defs/sha256",
+          "description": "PL: Hash dowodu. EN: Evidence hash."
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "PL: Czas atestacji. EN: Attested at."
+        }
+      },
+      "required": ["subject", "by", "result"]
+    }
+  },
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "description": "PL: Identyfikator sprawy. EN: Case identifier."
+    },
+    "policy": {
+      "type": "array",
+      "description": "PL: Zastosowane polityki zgodności. EN: Applied compliance policies.",
+      "items": { "type": "string" },
+      "minItems": 0
+    },
+    "constraints": {
+      "type": "array",
+      "description": "PL: Ograniczenia do weryfikacji. EN: Constraints to verify.",
+      "items": { "$ref": "#/$defs/constraint" },
+      "minItems": 0
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "PL: Założenia użyte w rozumowaniu. EN: Assumptions used in reasoning.",
+      "items": { "$ref": "#/$defs/assumption" },
+      "minItems": 0
+    },
+    "attestations": {
+      "type": "array",
+      "description": "PL: Atestacje zgodności. EN: Compliance attestations.",
+      "items": { "$ref": "#/$defs/attestation" },
+      "minItems": 0
+    },
+    "audit_trail": {
+      "type": "array",
+      "description": "PL: Ślad audytowy kroków weryfikacji. EN: Audit trail of verification steps.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "PL: Typ zdarzenia. EN: Event type."
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "PL: Czas zdarzenia. EN: Event timestamp."
+          },
+          "actor": {
+            "type": "string",
+            "description": "PL: Sprawca/komponent. EN: Actor/component."
+          },
+          "message": {
+            "type": "string",
+            "description": "PL: Komunikat. EN: Message."
+          }
+        },
+        "required": ["type", "at"]
+      },
+      "minItems": 0
+    },
+    "overall_status": {
+      "type": "string",
+      "description": "PL: Status ogólny. EN: Overall status.",
+      "enum": ["pass", "fail", "mixed"]
+    },
+    "final_hash": {
+      "$ref": "#/$defs/sha256",
+      "description": "PL: Hash końcowy PCA². EN: Final PCA² hash."
+    }
+  },
+  "required": ["case_id", "overall_status"]
+}

@@ -1,0 +1,68 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .pre-commit-config.yaml                             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .pre-commit-config.yaml                             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+# .pre-commit-config.yaml
+# Stabilny, poprawny składniowo config dla Twojego repo
+
+minimum_pre_commit_version: "3.5.0"
+
+repos:
+  # --- Ruff: lint + format ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Możesz podbić tag, jeśli chcesz
+    rev: v0.5.6
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # --- Prettier (mirror) ---
+  # Używamy konkretnego commita mirrora i wymuszamy wersję Prettiera przez additional_dependencies.
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: f62a70a3a7114896b062de517d72829ea1c884b6
+    hooks:
+      - id: prettier
+        additional_dependencies: ["prettier@4.0.0-alpha.8"]
+        files: "\\.(js|jsx|ts|tsx|css|scss|html|json|md|yml|yaml)$"
+        exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/|\\.snap$|\\.min\\.(js|css)$)"
+
+  # --- Standardowe hooki (z v6, bez „deprecated stages”) ---
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: ["--maxkb=5120"]
+
+  # --- Lokalne hooki (system) ---
+  - repo: local
+    hooks:
+      # Blokowanie plików kluczy po rozszerzeniach
+      - id: forbid-key-extensions
+        name: "forbid: key files (*.pem|*.key|*.pfx|*.p12|*.der)"
+        entry: python scripts/hooks/block_key_extensions.py
+        language: system
+        pass_filenames: true
+        stages: [pre-commit]
+        files: "\\.(pem|key|pfx|p12|der)$"
+
+      # Szybkie testy (uruchamiaj tylko, gdy zmieniają się pliki Pythona)
+      - id: pytest
+        name: "pytest (fast)"
+        entry: uv run pytest -q
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-commit]
+        env:
+          UV_NO_SYNC: "1"
+        # Wykluczenia dla testów uruchamianych przez hooki
+        exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/)"

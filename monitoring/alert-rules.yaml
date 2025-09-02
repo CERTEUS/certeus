@@ -1,0 +1,44 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: monitoring/alert-rules.yaml                                   |
+# | ROLE:                                                                |
+# |  PL: Reguły SLO/Goodhart (Prometheus).                               |
+# |  EN: SLO/Goodhart alerting rules (Prometheus).                       |
+# +=====================================================================+
+
+groups:
+  - name: slo-gates
+    rules:
+      - alert: LatencyBudgetBreach
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~"/defx/reason"}[5m])) by (le)) > 0.150
+        for: 10m
+        labels: { severity: page }
+        annotations: { summary: "p95 latency > 150ms on HOT path" }
+
+      - alert: InstrumentationFloorViolation
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~"/defx/reason"}[5m])) by (le)) < 0.010
+        for: 15m
+        labels: { severity: warn }
+        annotations: { summary: "Suspiciously low p95 (instrumentation floor)" }
+
+      - alert: QueueDepthHigh
+        expr: sum(proof_queue_depth) > 1000
+        for: 10m
+        labels: { severity: warn }
+        annotations: { summary: "Proof queue depth high" }
+
+      - alert: ETAInaccuracy
+        expr: rate(eta_hint_mad[15m]) > 0.25
+        for: 30m
+        labels: { severity: warn }
+        annotations: { summary: "ETA MAD > 25%" }
+
+  - name: goodhart
+    rules:
+      - alert: GoodhartSentinel
+        expr: (rate(truth_contradiction_rate_total[24h]) > 0.15)
+          and on() (rate(ece_metric[24h]) < 0 or rate(brier_metric[24h]) < 0)
+        for: 1h
+        labels: { severity: warn }
+        annotations: { summary: "ECE/Brier↓ with contradictions↑ >15%/24h" }

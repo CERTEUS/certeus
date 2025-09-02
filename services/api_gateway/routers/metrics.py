@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: services/api_gateway/routers/metrics.py             |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: services/api_gateway/routers/metrics.py             |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Router FastAPI dla obszaru metryki Prometheus.
+
+EN: FastAPI router for Prometheus metrics.
+"""
+
+# === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from fastapi import APIRouter, Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+router = APIRouter(prefix="", tags=["metrics"])
+
+
+# === I/O / ENDPOINTS ===
+@router.get("/metrics")
+def metrics() -> Response:
+    # Use the default global registry
+
+    data = generate_latest()  # type: ignore[arg-type]
+
+    return Response(content=data, media_type=CONTENT_TYPE_LATEST, headers={"Cache-Control": "no-store"})
+
+
+# === TESTY / TESTS ===

@@ -1,0 +1,16 @@
+﻿# Git/venv
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+.cache
+.ruff_cache
+.pytest_cache
+
+# Assets i archiwa (niepotrzebne w obrazie backendu)
+docs/assets/brand/*
+clients/web/public/brand/*
+*.zip
+*.tar
+*.tar.gz

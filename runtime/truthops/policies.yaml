@@ -1,0 +1,26 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: runtime/truthops/policies.yaml                                |
+# | ROLE:                                                                |
+# |  PL: Progi TruthOps (GoP/EUQ/TTDE/ATT/MTV) per domena.              |
+# |  EN: TruthOps thresholds (GoP/EUQ/TTDE/ATT/MTV) per domain.         |
+# +=====================================================================+
+
+profiles:
+  default:
+    GoP:
+      min_sources: 3
+      min_pivot_level: P3
+      max_source_correlation: 0.85
+    EUQ:
+      lower_bound_publish: 0.75
+      conditional_band: [0.55, 0.75]
+    TTDE:
+      ttl_days: { prawo: 365, med: 90, fin: 7 }
+      auto_reverify: true
+    ATT:
+      tests_per_claim: { P0: 50, P1: 25, P2: 10, P3: 7, P4: 5 }
+    MTV:
+      reject_contradictions: true
+      reject_self_inconsistency: true

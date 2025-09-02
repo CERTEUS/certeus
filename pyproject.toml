@@ -1,0 +1,77 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: pyproject.toml                                                |
+# | ROLE:                                                               |
+# |  PL: Konfiguracja pakietu, ruff, dev-deps.                          |
+# |  EN: Package config, ruff, dev-deps.                                |
+# +=====================================================================+
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certeus"
+version = "0.0.1"
+description = "CERTEUS – Proof-Driven Autonomy (skeleton)"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "pyyaml",
+  "jsonschema>=4.25.0",
+  "python-multipart>=0.0.20,<0.0.21",
+  "cryptography>=45,<46",
+  "requests>=2.32.0",
+  "prometheus_client>=0.22.0",
+]
+
+[tool.setuptools]
+packages = [
+  "architectus",
+  "cje",
+  "clients",
+  "core",
+  "docs",
+  "kernel",
+  "ops",
+  "packs",
+  "plugins",
+  "schemas",
+  "scripts",
+  "security",
+  "services",
+  "templates",
+  "tests",
+]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.5",
+  "pytest>=8",
+  "pre-commit>=3.7",
+  "pytest-asyncio>=0.26",
+  "httpx>=0.28",
+  "z3-solver>=4.13",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["packs_core", "services", "core"]
+combine-as-imports = true
+force-sort-within-sections = true
+
+[tool.ruff.format]
+quote-style = "preserve"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"

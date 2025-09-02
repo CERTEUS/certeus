@@ -1,0 +1,1 @@
+Instalacja, uv/pip, uruchomienie.

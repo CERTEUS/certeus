@@ -1,0 +1,17 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/docker-compose.monitoring.yml                 |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/docker-compose.monitoring.yml                 |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+version: "3.9"
+services:
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+  prometheus:
+    image: prom/prometheus:latest
+    ports: ["9090:9090"]

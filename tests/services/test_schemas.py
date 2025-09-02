@@ -1,0 +1,359 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_schemas.py                      |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: tests/services/test_schemas.py                      |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+"""
+
+
+
+
+
+
+
+PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
+
+
+
+
+
+
+
+EN: CERTEUS module – please complete the functional description.
+
+
+
+
+
+
+
+"""
+
+
+# +-------------------------------------------------------------+
+
+
+# |                CERTEUS - Schema Contract Tests              |
+
+
+# +-------------------------------------------------------------+
+
+
+# | PLIK / FILE: tests/services/test_schemas.py                 |
+
+
+# | ROLA / ROLE: Sprawdza poprawność przykładowych danych        |
+
+
+# |             względem 'Świętej Trójcy' schematów.            |
+
+
+# +-------------------------------------------------------------+
+
+
+# | STYLE: PL-first, headers & notes dual-language (PL/EN).     |
+
+
+# +-------------------------------------------------------------+
+
+from __future__ import annotations
+
+# === IMPORTY / IMPORTS ===
+import json
+from pathlib import Path
+from typing import Any, Final, Protocol
+
+from jsonschema import Draft7Validator, FormatChecker
+from jsonschema.exceptions import ValidationError
+import pytest
+
+# === ALIASY TYPÓW / TYPE ALIASES ===
+
+
+Schema = dict[str, Any]
+
+
+JSONObj = dict[str, Any]
+
+
+SCHEMA_DIR: Final[Path] = Path("schemas")
+
+
+# === PROTOKÓŁ WALIDATORA / VALIDATOR PROTOCOL ===
+
+
+class _ValidatorProtocol(Protocol):
+    """
+
+
+
+
+
+
+
+    PL: Minimalny interfejs wymagany od walidatora.
+
+
+
+
+
+
+
+    EN: Minimal interface required from a validator.
+
+
+
+
+
+
+
+    """
+
+    def validate(self, instance: Any) -> None: ...
+
+
+def load_schema(name: str) -> Schema:
+    """
+
+
+
+
+
+
+
+    PL: Ładuje i syntaktycznie weryfikuje schemat JSON (Draft7).
+
+
+
+
+
+
+
+    EN: Loads and syntactically checks a JSON schema (Draft7).
+
+
+
+
+
+
+
+    """
+
+    path = SCHEMA_DIR / name
+
+    with path.open("r", encoding="utf-8") as f:
+        schema: Schema = json.load(f)
+
+    Draft7Validator.check_schema(schema)
+
+    return schema
+
+
+def assert_valid(instance: JSONObj, schema: Schema) -> None:
+    """
+
+
+
+
+
+
+
+    PL: Waliduje instancję względem danego schematu (z FormatCheckerem).
+
+
+
+
+
+
+
+    EN: Validates the instance against the given schema (with FormatChecker).
+
+
+
+
+
+
+
+    """
+
+    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
+
+    validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
+
+
+def assert_invalid(instance: JSONObj, schema: Schema) -> None:
+    """
+
+
+
+
+
+
+
+    PL: Oczekuje błędu walidacji.
+
+
+
+
+
+
+
+    EN: Expects validation error.
+
+
+
+
+
+
+
+    """
+
+    validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
+
+    with pytest.raises(ValidationError):
+        validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
+
+
+# === FIXTURE’Y / FIXTURES ===
+
+
+@pytest.fixture(scope="module")
+def S_PROVENANCE() -> Schema:
+    return load_schema("provenance_receipt_v1.json")
+
+
+@pytest.fixture(scope="module")
+def S_ANSWER() -> Schema:
+    return load_schema("answer_contract_v1.json")
+
+
+@pytest.fixture(scope="module")
+def S_PCA2() -> Schema:
+    return load_schema("pca2_v1.json")
+
+
+# === TESTY: PROVENANCE ===
+
+
+def test_provenance_valid(S_PROVENANCE: Schema) -> None:
+    ok: JSONObj = {
+        "case_id": "RS-DOM-vs-Stasikowski",
+        "receipt_id": "11111111-2222-3333-4444-555555555555",
+        "inputs": {
+            "lexlog_rule_version": "pl.lexlog/1.0.0",
+            "assumptions_hash": "f" * 64,
+            "question_hash": "a" * 64,
+        },
+        "solvers": {"z3": {"status": "ok", "runtime_ms": 12}, "cvc5": {"status": "ok"}},
+        "mismatch": False,
+        "final_hash": "0" * 64,
+        "timestamp": "2025-08-14T10:00:00Z",
+    }
+
+    assert_valid(ok, S_PROVENANCE)
+
+
+def test_provenance_invalid_missing_required(S_PROVENANCE: Schema) -> None:
+    bad: JSONObj = {
+        "inputs": {"lexlog_rule_version": "x", "assumptions_hash": "f" * 64},
+        "solvers": {},
+        "mismatch": True,
+        "final_hash": "0" * 64,
+        "timestamp": "2025-08-14T10:00:00Z",
+    }
+
+    assert_invalid(bad, S_PROVENANCE)
+
+
+# === TESTY: ANSWER CONTRACT ===
+
+
+def test_answer_valid(S_ANSWER: Schema) -> None:
+    ok: JSONObj = {
+        "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "case_id": "RS-DOM-vs-Stasikowski",
+        "question": {"text": "Czy §10 ust. 1 pkt 3 ma zastosowanie?", "lang": "pl"},
+        "answer": {"text": "Tak/Nie + uzasadnienie...", "lang": "pl", "hash": "1" * 64},
+        "citations": [
+            {
+                "type": "statute",
+                "label": "KC art. 647¹",
+                "ref": "Dz.U....",
+                "locator": "art. 647(1) §2",
+            }
+        ],
+        "metrics": {"confidence": 0.92, "latency_ms": 120},
+        "model": {
+            "provider": "LEXENITH",
+            "name": "GPT-5 Thinking",
+            "version": "2025.08",
+        },
+        "provenance": {"receipt_id": "11111111-2222-3333-4444-555555555555"},
+        "timestamps": {"created_at": "2025-08-14T10:01:00Z"},
+    }
+
+    assert_valid(ok, S_ANSWER)
+
+
+def test_answer_invalid_confidence_range(S_ANSWER: Schema) -> None:
+    bad: JSONObj = {
+        "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "case_id": "X",
+        "question": {"text": "foo"},
+        "answer": {"text": "bar"},
+        "timestamps": {"created_at": "2025-08-14T10:01:00Z"},
+        "model": {"provider": "LEXENITH", "name": "GPT-5 Thinking"},
+        "metrics": {"confidence": 1.5},
+    }
+
+    assert_invalid(bad, S_ANSWER)
+
+
+# === TESTY: PCA² ===
+
+
+def test_pca2_valid(S_PCA2: Schema) -> None:
+    ok: JSONObj = {
+        "case_id": "RS-DOM-vs-Stasikowski",
+        "policy": ["lexenith.secure.v1", "legal.pl.civil.kc"],
+        "constraints": [{"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}],
+        "assumptions": [{"name": "ryczalt", "value": "tak"}],
+        "attestations": [
+            {
+                "subject": "answer#aaaaaaaa",
+                "by": "auditor.bot",
+                "result": "pass",
+                "at": "2025-08-14T10:05:00Z",
+            }
+        ],
+        "audit_trail": [
+            {
+                "type": "constraint_eval",
+                "at": "2025-08-14T10:05:01Z",
+                "actor": "cerber",
+                "message": "OK",
+            }
+        ],
+        "overall_status": "pass",
+        "final_hash": "2" * 64,
+    }
+
+    assert_valid(ok, S_PCA2)
+
+
+def test_pca2_invalid_status(S_PCA2: Schema) -> None:
+    bad: JSONObj = {"case_id": "X", "overall_status": "unknown"}
+
+    assert_invalid(bad, S_PCA2)

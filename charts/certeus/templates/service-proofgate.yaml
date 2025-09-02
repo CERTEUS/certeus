@@ -1,0 +1,23 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: charts/certeus/templates/service-proofgate.yaml     |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: charts/certeus/templates/service-proofgate.yaml     |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "certeus.fullname" . }}-proofgate
+spec:
+  type: {{ .Values.proofgate.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "certeus.name" . }}
+    app.kubernetes.io/component: proofgate
+  ports:
+    - name: http
+      port: {{ .Values.proofgate.service.port }}
+      targetPort: http
+

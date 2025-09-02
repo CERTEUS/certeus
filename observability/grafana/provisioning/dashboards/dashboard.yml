@@ -1,0 +1,19 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: observability/grafana/provisioning/dashboards/dashboard.yml|
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: observability/grafana/provisioning/dashboards/dashboard.yml|
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: 1
+providers:
+  - name: 'CERTEUS Dashboards'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    options:
+      path: /var/lib/grafana/dashboards
+

@@ -1,0 +1,85 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/branch-protection.yml             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/branch-protection.yml             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: Enforce Branch Protection (Smoke Required)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to protect
+        default: main
+        required: true
+      approvals:
+        description: Required PR approvals (0 to self-merge)
+        default: '1'
+        required: false
+      disable:
+        description: Disable branch protection entirely (true/false)
+        default: 'false'
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  protect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check ADMIN_TOKEN availability
+        id: check
+        run: |
+          if [ -n "${{ secrets.ADMIN_TOKEN }}" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Set required status checks for Smoke (per OS)
+        if: steps.check.outputs.has_token == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          REPO='${{ github.repository }}' # format: owner/repo
+          owner="${REPO%%/*}"
+          repo="${REPO##*/}"
+          # Inputs (manual only)
+          branch='${{ inputs.branch }}'
+          approvals='${{ inputs.approvals }}'
+          disable='${{ inputs.disable }}'
+          if [ -z "$approvals" ]; then approvals='1'; fi
+          url="https://api.github.com/repos/${owner}/${repo}/branches/${branch}/protection"
+
+          if [ "$disable" = "true" ]; then
+            echo "Disabling branch protection for ${owner}/${repo}@${branch}"
+            code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X DELETE "$url" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json")
+            echo "HTTP $code (DELETE protection)"
+            if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+              echo "Response body:" && cat /tmp/resp.json
+              exit 1
+            fi
+            exit 0
+          fi
+
+          data="{\n            \"required_status_checks\": {\"strict\": true, \"contexts\": [\"Smoke (ubuntu-latest)\", \"Smoke (windows-latest)\"]},\n            \"enforce_admins\": false,\n            \"required_pull_request_reviews\": {\"dismiss_stale_reviews\": true, \"required_approving_review_count\": ${approvals}},\n            \"restrictions\": null,\n            \"allow_force_pushes\": true,\n            \"allow_deletions\": true\n          }"
+          code=$(curl -sS -o /tmp/resp.json -w "%{http_code}" -X PUT "$url" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -d "$data")
+          echo "HTTP $code for branch protection update on ${owner}/${repo}@${branch}"
+          if [ "$code" -lt 200 ] || [ "$code" -ge 300 ]; then
+            echo "Response body:" && cat /tmp/resp.json
+            exit 1
+          fi
+      - name: Skip note (no ADMIN_TOKEN)
+        if: steps.check.outputs.has_token != 'true'
+        run: |
+          echo "ADMIN_TOKEN not set; skipping branch protection update (safe no-op)."

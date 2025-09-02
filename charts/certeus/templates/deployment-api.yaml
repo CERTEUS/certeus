@@ -1,0 +1,55 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: charts/certeus/templates/deployment-api.yaml        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: charts/certeus/templates/deployment-api.yaml        |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "certeus.fullname" . }}-api
+  labels:
+    app.kubernetes.io/name: {{ include "certeus.name" . }}
+    app.kubernetes.io/component: api
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "certeus.name" . }}
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "certeus.name" . }}
+        app.kubernetes.io/component: api
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.api.service.port }}
+              name: http
+          env:
+            - name: ALLOW_ORIGINS
+              value: {{ .Values.api.env.ALLOW_ORIGINS | quote }}
+            - name: SEC_HEADERS
+              value: {{ .Values.api.env.SEC_HEADERS | quote }}
+            - name: RATE_LIMIT_PER_MIN
+              value: {{ .Values.api.env.RATE_LIMIT_PER_MIN | quote }}
+            - name: STRICT_PROOF_ONLY
+              value: {{ .Values.api.env.STRICT_PROOF_ONLY | quote }}
+            - name: PROOF_BUNDLE_DIR
+              value: {{ .Values.api.env.PROOF_BUNDLE_DIR | quote }}
+            - name: KEYS_BACKEND
+              value: {{ .Values.api.env.KEYS_BACKEND | quote }}
+          volumeMounts:
+            - name: data
+              mountPath: /data/public_pco
+      volumes:
+        - name: data
+          emptyDir: {}
+

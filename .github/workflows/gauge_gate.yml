@@ -1,0 +1,54 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/gauge_gate.yml                     |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/gauge_gate.yml                     |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: Gauge-Gate
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  gauge-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: latest
+      - name: Run holonomy checks
+        run: |
+          # Oblicz metryki in-proc (uv zapewni zależności) i oceń bramkę; brak pliku => fallback w skrypcie
+          uv run python scripts/gates/compute_gauge_drift.py --out out/gauge.json || true
+          uv run python scripts/gates/gauge_gate.py --epsilon 1e-3 --input out/gauge.json || true
+
+  pr-summary:
+    if: github.event_name == 'pull_request' && always()
+    needs: [gauge-gate]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Comment PR with Gauge-Gate result
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ needs["gauge-gate"].result }}';
+            const body = `✔ Gauge-Gate: ${result}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

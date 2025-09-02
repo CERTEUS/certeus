@@ -1,0 +1,23 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/k8s/ingress.yaml                              |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/k8s/ingress.yaml                              |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: certeus, namespace: certeus }
+spec:
+  rules:
+    - host: certeus.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: proofgate
+                port: { number: 8081 }

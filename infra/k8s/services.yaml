@@ -1,0 +1,15 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/k8s/services.yaml                             |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/k8s/services.yaml                             |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: v1
+kind: Service
+metadata: { name: proofgate, namespace: certeus }
+spec:
+  selector: { app: proofgate }
+  ports: [{ port: 8081, targetPort: 8081 }]

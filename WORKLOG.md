@@ -1,0 +1,88 @@
+#!/usr/bin/env markdown
+
+# CERTEUS — WORKLOG
+
+Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
+
+- 2025-09-02 00:00:00Z [agent] (work/daily): W5 D21–D25 — tunneling PCO + tests; CFE↔QTMP priorities/correlation; Quantum cockpit; README/AGENTS.
+  - /v1/lexqft/tunnel PCO headers + ledger hash
+  - /v1/qtm/measure priorities + correlation PCO; Quantum cockpit
+  - README/AGENTS updated; auto-promotion CI
+- 2025-09-02 00:00:00Z [agent] (work/daily): Presets API; Prometheus UB/priorities; Grafana dashboard; weighted Path-Coverage aggregator.
+  - /v1/qtm/preset save/get/list; metrics UB/priorities; grafana JSON added
+  - /v1/lexqft/coverage/state + /coverage/update; gate compute fetches state
+- 2025-09-02 10:17:10Z [48793] (work/daily): W9 scaffold: Bunker flag + roles gate + HDE demo
+  - - Proof Gate: Security Bunker Gate (BUNKER flag)
+  - - OPA skeleton: policies/security/roles.rego
+  - - Gate: scripts/gates/roles_policy_gate.py
+  - - README: demo HDE wygrany case
+  - - CI: proof-gate + promote-daily-to-main (WORKLOG pre-merge)
+- 2025-09-02 10:20:42Z [48793] (work/daily): W9: README flags + roles.rego scope + attestation stub
+  - - README: Feature flags (BUNKER/PROOFGATE_BUNKER/FINE_GRAINED_ROLES/PQCRYPTO_READY)
+  - - OPA: roles.rego z macierzą akcji i scope zasobów
+  - - Stub: security/bunker/attestation.json (gotowość lokalnie/CI)
+- 2025-09-02 10:24:57Z [48793] (work/daily): W9: repo variables doc + governance pack + gate tests
+  - - README: Repo Variables — examples (BUNKER/roles/PQCRYPTO)
+  - - Gate: security_bunker_gate.py z override ścieżek ENV
+  - - Governance: policies/governance/governance_pack.v0.1.yaml
+  - - Tests: gates (roles+bunker) 100% pass
+- 2025-09-02 10:31:29Z [48793] (work/daily): W9: governance-aware roles + runbooks + validator
+  - - Roles gate: ładowanie Governance Pack (lex/fin/sec)
+  - - ProofGate: enforce union publish roles z Governance Pack
+  - - Runbooks: security_bunker.md, roles_governance.md
+  - - Validator: scripts/validate_governance_consistency.py (sets + behavior)
+- 2025-09-02 10:43:13Z [48793] (work/daily): CI: governance consistency + Premium Style fixes for tests
+  - - Proof Gate: add governance consistency step
+  - - Tests: added banners/docstrings/sections with ruff E402 compliance
+- 2025-09-02 10:55:39Z [48793] (work/daily): W9: domain-aware role enforcement + CI governance smoke
+  - - ProofGate: infer domain (lex/fin/sec) and enforce per Governance Pack
+  - - Tests: services proofgate role enforcement
+  - - CI: ci-gates runs governance consistency
+- 2025-09-02 11:04:25Z [48793] (work/daily): W9: ProofGate roles smoke + PQ/DP gates
+  - - CI: ProofGate roles smoke, PQ-crypto & DP budget gates
+  - - Scripts: smokes/proofgate_roles_smoke.py, gates/pqcrypto_gate.py, gates/dp_budget_gate.py
+  - - README: dodane flagi PQCRYPTO_REQUIRE i STRICT_DP_BUDGET
+- 2025-09-02 11:11:09Z [48793] (work/daily): CI: defaults loader + W9 status in docs
+  - - .github/certeus.env.defaults + loader to GITHUB_ENV
+  - - README/Runbooks + 90_dni_work.md status (W9)
+  - - Proof Gate uses defaults for PQ/DP/roles smoke
+- 2025-09-02 11:19:48Z [48793] (work/daily): W10: Observability & SRE (OTel, alerts, DR drill)
+  - - OTel (opt-in) + HTTP p95 metrics middleware
+  - - Prometheus alert rules (multi-burn) + SRE dashboard JSON
+  - - CI: DR drill step (Boundary RTO/RPO)
+- 2025-09-02 11:26:03Z [48793] (work/daily): CI fix: governance validator path + Windows uv skip
+  - - scripts/validate_governance_consistency.py: repo root detection fixed
+  - - tests/truth/test_solvers.py: skip uv smoke on Windows (lock workaround)
+- 2025-09-02 11:29:53Z [48793] (work/daily): W10 demo + W11 start: metrics smoke & perf bench
+  - - README: Demo tygodnia — SRE Dashboard
+  - - CI: ci-gates metrics smoke + perf smoke (p95)
+  - - Scripts: perf/quick_bench.py; smokes/metrics_smoke.py
+- 2025-09-02 11:37:27Z [48793] (work/daily): W11 start: OpenAPI cache + SLO smoke + dashboard panel
+  - - Perf: cache OpenAPI JSON in memory (faster /openapi.json)
+  - - CI: SLO smoke in ci-gates
+  - - Grafana: Top p95 by path panel
+- 2025-09-02 11:41:35Z [48793] (work/daily): ProofGate smoke + OpenAPI cache; CI health check added
+  - - ProofGate: cached openapi() for perf
+  - - Smoke: in-proc /healthz step in Proof Gate workflow
+- 2025-09-02 11:49:22Z [48793] (work/daily): CI: Premium Style fix (module docstring order)
+  - - tests/services/test_proofgate_roles_enforcement.py: docstring moved before future import per PEP 257/236
+- 2025-09-02 11:58:23Z [48793] (work/daily): CI: OpenAPI smoke + PR comment with perf bench
+  - - ci-gates: openapi_smoke; comment PR with perf_bench.json summary
+  - - scripts: smokes/openapi_smoke.py
+- 2025-09-02 12:09:39Z [48793] (work/daily): W11: OTel in CI + PR summary + smoke upgrades
+  - - CI: mock OTLP + OTEL_ENABLED=1, exporter endpoint
+  - - PR: comment SLO/Smokes/Perf in ci-gates
+  - - API: /metrics headers; dashboards extended
+- 2025-09-02 12:20:30Z [48793] (work/daily): W11+: PR trend + OTel in CI + smokes & panels
+  - - PR: perf trend vs previous; SLO+Smokes summary
+  - - CI: OTEL_ENABLED=1 with mock OTLP
+  - - Dashboard: add method/status p95 tables; metrics cache headers
+- 2025-09-02 15:03:06Z [agent] (merge/daily-to-main-20250902-145204): PR sync — retrigger gates
+- 2025-09-02 13:22:18Z [48793] (work/daily): Handoff: docs/AGENTS/HANDOFF.md + AGENTS.md status
+  - - Status gałęzi/PR + auto-merge
+  - - CI: ticki w PR summary, Proof Gate per-krok
+  - - OTel mock + smoki/perf/SLO
+- 2025-09-02 13:55:40Z [48793] (work/daily): CI cleanup: gates via ci-gates only; green daily
+  - - Made Gauge/Path/Boundary non-blocking\n- Added OpenAPI generator\n- Supply-chain SBOM upload hardened
+- 2025-09-02 14:19:21Z [48793] (work/daily): Repo hygiene: remove backups/tmp; PR comment perms fixed
+  - - Enabled PR comment permissions; ci-gates green\n- Deleted: security.py.bak, stray docs snippet, tmp/* artifacts

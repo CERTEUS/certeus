@@ -1,0 +1,22 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: observability/prometheus/recording_rules.yml        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: observability/prometheus/recording_rules.yml        |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+groups:
+  - name: certeus_dashboard_records
+    interval: 30s
+    rules:
+      - record: job:certeus_compile_p95_ms
+        expr: histogram_quantile(0.95, sum(rate(certeus_compile_duration_ms_bucket[5m])) by (le))
+      - record: job:certeus_proof_verification_failed_rate
+        expr: rate(certeus_proof_verification_failed_total[5m])
+      - record: job:certeus_source_fetch_errors_rate
+        expr: rate(certeus_source_fetch_errors_total[1h])
+      - record: job:certeus_abstain_rate_gauge
+        expr: certeus_abstain_rate
+

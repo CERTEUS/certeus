@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: typings/z3/__init__.py                              |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: typings/z3/__init__.py                              |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+# +=====================================================================+
+
+# |                          CERTEUS                                    |
+
+# +=====================================================================+
+
+# | MODULE:  F:/projekty/certeus/typings/z3/__init__.py                  |
+
+# | DATE:    2025-08-17                                                  |
+
+# +=====================================================================+
+
+
+"""
+
+PL: Pakiet inicjalizacyjny modułu.
+
+EN: Package initializer.
+
+"""
+# === IMPORTY / IMPORTS ===
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===
+
+from typing import Any
+
+
+class ExprRef: ...
+
+
+class BoolRef(ExprRef): ...
+
+
+class CheckSatResult: ...
+
+
+class AstVector:
+    def __len__(self) -> int: ...
+
+    def __getitem__(self, i: int) -> ExprRef: ...
+
+
+class Solver:
+    def add(self, *args: Any) -> None: ...
+
+    def check(self, *assumptions: Any) -> CheckSatResult: ...
+
+    def model(self) -> Any: ...
+
+
+def Bool(name: str, ctx: Any | None = None) -> BoolRef: ...
+
+
+def BoolVal(val: Any, ctx: Any | None = None) -> BoolRef: ...
+
+
+def And(*args: Any) -> ExprRef: ...
+
+
+def Or(*args: Any) -> ExprRef: ...
+
+
+def Not(a: Any) -> ExprRef: ...
+
+
+def Implies(a: Any, b: Any) -> ExprRef: ...
+
+
+def Xor(*args: Any) -> ExprRef: ...
+
+
+def parse_smt2_string(s: str, decls: Any | None = None) -> AstVector: ...
+
+
+def get_version_string() -> str: ...
+
+
+sat: CheckSatResult
+
+unsat: CheckSatResult
+
+unknown: CheckSatResult

@@ -1,0 +1,17 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: observability/grafana/provisioning/datasources/datasource.yml|
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: observability/grafana/provisioning/datasources/datasource.yml|
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+

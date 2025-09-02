@@ -1,0 +1,22 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: infra/docker-compose.dev.yml                        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: infra/docker-compose.dev.yml                        |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+version: "3.9"
+services:
+  proofgate:
+    build:
+      context: ..
+      dockerfile: infra/services/proofgate/Dockerfile
+    ports: ["8081:8081"]
+
+  boundary:
+    build:
+      context: ..
+      dockerfile: infra/services/boundary_service/Dockerfile
+    ports: ["8082:8082"]

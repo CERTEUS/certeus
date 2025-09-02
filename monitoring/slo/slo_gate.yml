@@ -1,0 +1,43 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: monitoring/slo/slo_gate.yml                         |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: monitoring/slo/slo_gate.yml                         |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+prometheus_rules:
+  groups:
+    - name: certeus_slo
+      rules:
+        - alert: ProofVerificationFailures
+          expr: rate(certeus_proof_verification_failed_total[5m]) > 0
+          for: 10m
+          labels: { severity: "critical" }
+          annotations: { summary: "Proof verification failing" }
+        - alert: EvidenceLinkRot
+          expr: rate(certeus_source_fetch_errors_total[1h]) > 0.05
+          for: 2h
+          labels: { severity: "warning" }
+          annotations: { summary: "Source retrieval/digest mismatch" }
+        - alert: HighAbstainRate
+          expr: avg_over_time(certeus_abstain_rate[30m]) > 0.15
+          for: 30m
+          labels: { severity: "warning" }
+          annotations: { summary: "Abstain rate exceeded" }
+        - record: certeus_compile_p95_ms
+          expr: histogram_quantile(0.95, sum(rate(certeus_compile_duration_ms_bucket[5m])) by (le))
+
+gate_decision:
+  inputs:
+    - { metric: certeus_proof_verification_failed_total, op: "==", value: 0 }
+    - { metric: certeus_abstain_rate, op: "<=", value: 0.15 }
+    - { metric: certeus_ece, op: "<=", value: 0.02 }
+    - { metric: certeus_brier, op: "<=", value: 0.10 }
+    - { metric: certeus_sources_digest_missing, op: "==", value: 0 }
+  decision:
+    if_all_true: "PUBLISH"
+    else_if_any_alert_critical: "ABSTAIN"
+    else: "CONDITIONAL"
+

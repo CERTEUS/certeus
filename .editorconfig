@@ -1,0 +1,32 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: .editorconfig                                                 |
+# | ROLE:                                                               |
+# |  PL: Spójny format w edytorach (LF, UTF-8, spacje).                 |
+# |  EN: Consistent editor settings (LF, UTF-8, spaces).                |
+# +=====================================================================+
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.yml]
+indent_size = 2
+
+[*.yaml]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8

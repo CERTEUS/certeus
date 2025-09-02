@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/git_push.py                                  |
+# | ROLE: Project script.                                       |
+# | PLIK: scripts/git_push.py                                  |
+# | ROLA: Skrypt projektu.                                      |
+# +-------------------------------------------------------------+
+
+"""
+PL: Pomocnik push do GitHuba z użyciem tokenu z ENV (bez logowania sekretów).
+    Wspiera gałąź docelową przez argument `--to` (domyślnie work/daily).
+
+EN: Helper to push to GitHub using a token from ENV (no secret logging).
+    Supports target branch via `--to` (default work/daily).
+"""
+
+# === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import urllib.request
+
+
+def _run(cmd: list[str]) -> None:
+    subprocess.run(cmd, check=True)
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--to", default="work/daily", help="Target branch (default: work/daily)")
+    args = ap.parse_args()
+
+    # Prefer explicit user/token; support ADMIN_TOKEN fallback
+
+    user = os.getenv("GITHUB_USER") or os.getenv("GH_USER") or os.getenv("GIT_USER")
+    token = (
+        os.getenv("GITHUB_PUSH_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("ADMIN_TOKEN")
+    )
+    if not token:
+        # Fallback: try GitHub CLI token if available
+        try:
+            out = subprocess.run(["gh", "auth", "token"], check=True, capture_output=True, text=True)
+            cand = (out.stdout or "").strip()
+            if cand:
+                token = cand
+        except Exception:
+            pass
+    if not token:
+        # Fallback: read token from local files (ignored by Git)
+        for name in (".devkeys/admin_token.txt", ".devkeys/github_pat.txt", ".devkeys/token.txt"):
+            p = Path(name)
+            if p.exists():
+                token = p.read_text(encoding="utf-8").strip()
+                if token:
+                    break
+    if not token:
+        raise SystemExit("Missing push token: set ADMIN_TOKEN/GITHUB_PUSH_TOKEN or provide .devkeys/admin_token.txt")
+
+    # Resolve repo owner/name from origin
+    _proc = subprocess.run(["git", "remote", "get-url", "origin"], check=True, capture_output=True, text=True)
+    origin = (_proc.stdout or "").strip()
+    # Accept https://github.com/owner/repo(.git)
+    owner = "CERTEUS"
+    repo = "certeus"
+    try:
+        if origin.startswith("http"):
+            parts = origin.rstrip("/").split("/")
+            owner = parts[-2]
+            repo = parts[-1]
+            if repo.endswith(".git"):
+                repo = repo[:-4]
+    except Exception:
+        pass
+
+    # Determine username if not provided
+    if not user:
+        # 1) local file (.devkeys/github_user.txt)
+        p = Path(".devkeys/github_user.txt")
+        if p.exists():
+            try:
+                user = p.read_text(encoding="utf-8").strip()
+            except Exception:
+                user = None
+    if not user:
+        # 2) query GitHub API to get login owner of token
+        try:
+            req = urllib.request.Request("https://api.github.com/user", headers={"Authorization": f"token {token}"})
+            with urllib.request.urlopen(req, timeout=5) as resp:  # nosec B310
+                you = json.loads(resp.read().decode("utf-8"))
+                cand = you.get("login")
+                if isinstance(cand, str) and cand:
+                    user = cand
+        except Exception:
+            user = None
+    if not user:
+        # 3) fallback
+        user = "x-access-token"
+
+    # Optional: verify token has push permission
+    try:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{owner}/{repo}", headers={"Authorization": f"token {token}"}
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:  # nosec B310
+            meta = json.loads(resp.read().decode("utf-8"))
+            perms = meta.get("permissions") or {}
+            if not perms.get("push", False):
+                print("warning: token may lack push permission for repo; proceeding anyway")
+    except Exception:
+        pass
+
+    # Write credentials to .git-credentials for credential.helper=store
+    cred_file = Path(".git-credentials")
+    cred_file.write_text(f"https://{user}:{token}@github.com\n", encoding="utf-8")
+
+    # Configure helper locally (do not leak secrets in logs)
+    _run(["git", "config", "credential.helper", "store"])
+
+    # Push current HEAD to target branch
+    _run(["git", "push", "-u", "origin", f"HEAD:{args.to}"])
+
+    # Optionally cleanup volatile credentials
+    if (os.getenv("GITHUB_PUSH_TOKEN_VOLATILE") or "").strip() in {"1", "true", "True"}:
+        try:
+            cred_file.unlink(missing_ok=True)  # type: ignore[arg-type]
+        except Exception:
+            pass
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.git-credentials
+*.egg-info/
+
+# Env / secrets (local only)
+.env
+.env.local
+.devkeys/
+
+# Artefakty
+reports/
+data/public_pco/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build / frontend
+build/
+dist/
+node_modules/
+
+# Cache / coverage
+.cache/
+.ruff_cache/
+.pytest_cache/
+.coverage*
+htmlcov/
+data/law_cache/
+exports/
+static/previews/

@@ -1,0 +1,86 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/ui-smoke.yml                      |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: .github/workflows/ui-smoke.yml                      |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: UI Smoke
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-smoke:
+    name: Validate UI (HTML/CSS/links)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Smoke-check proof_visualizer
+        run: |
+          python - <<'PY'
+          import os, sys
+          from html.parser import HTMLParser
+          from urllib.parse import urlparse
+
+          INDEX = os.path.join("clients", "web", "proof_visualizer", "index.html")
+
+          # 1) Plik istnieje i wygląda na HTML
+          if not os.path.exists(INDEX):
+              print(f"ERROR: {INDEX} not found", file=sys.stderr)
+              sys.exit(1)
+          txt = open(INDEX, "r", encoding="utf-8", errors="ignore").read()
+          if "<html" not in txt.lower():
+              print("ERROR: index.html missing <html> tag", file=sys.stderr)
+              sys.exit(1)
+          if len(txt.strip()) < 100:
+              print("ERROR: index.html seems too small (<100 bytes)", file=sys.stderr)
+              sys.exit(1)
+
+          # 2) Zbierz href/src i sprawdź tylko linki względne (ostrzeżenie, nie fail)
+          class RefParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.refs = []
+              def handle_starttag(self, tag, attrs):
+                  for k, v in attrs:
+                      if k in ("href", "src") and v:
+                          self.refs.append(v)
+
+          parser = RefParser()
+          parser.feed(txt)
+
+          base = os.path.dirname(INDEX)
+          missing = []
+          for href in parser.refs:
+              u = urlparse(href)
+              if u.scheme or href.startswith("#") or href.startswith("/") or href.startswith("data:"):
+                  continue  # zewnętrzne/absolutne/anchory – pomijamy
+              path = os.path.normpath(os.path.join(base, href))
+              if not os.path.exists(path):
+                  missing.append(href)
+
+          if missing:
+              print("WARNING: Missing local assets referenced by index.html:")
+              for m in missing:
+                  print(" -", m)
+          else:
+              print("OK: all local asset references resolve.")
+
+          print("UI smoke OK: index.html present and syntactically plausible.")
+          PY

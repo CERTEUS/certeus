@@ -1,0 +1,19 @@
+# +=====================================================================+
+# |                          CERTEUS — HEART                            |
+# +=====================================================================+
+# | FILE: plugins/lexenith_pl/tests/gold_sets/example.yaml              |
+# | ROLE:                                                                |
+# |  PL: Przykładowy przypadek testowy kontraktu publikacji.             |
+# |  EN: Example publication contract test case.                         |
+# +=====================================================================+
+
+case_id: "pl_kk_286_example_001"
+input:
+  tenant: "demo"
+  sla: "pro"
+  text: "Stan faktyczny X, kwalifikacja Y..."
+expect:
+  status: "CONDITIONAL"
+  has_pco_plan: true
+  fields_present:
+    ["headers.X-Norm-Pack-ID", "headers.X-Jurisdiction", "pco.plan"]

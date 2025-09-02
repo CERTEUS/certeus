@@ -1,0 +1,19 @@
+# CERTEUS — runtime compatibility constraints
+#
+# Purpose:
+# - Pin core web stack to known‑good versions verified in CI on this repo.
+# - Use with pip’s `-c` flag to constrain resolution while installing.
+#
+# Usage examples:
+#   pip install -c constraints/requirements-constraints.txt fastapi uvicorn starlette pydantic cryptography
+#   pip install -c constraints/requirements-constraints.txt -r requirements.txt
+#
+# Notes:
+# - These versions reflect the current working environment where tests passed and
+#   a smoke test of the API succeeded. Adjust as needed with due diligence.
+
+fastapi==0.116.1
+starlette==0.46.2
+pydantic==2.11.7
+uvicorn==0.35.0
+cryptography==45.0.6

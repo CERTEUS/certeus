@@ -1,0 +1,74 @@
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: scripts/temporal_fortress.py                        |
+
+# | ROLE: Project module.                                       |
+
+# | PLIK: scripts/temporal_fortress.py                        |
+
+# | ROLA: Moduł projektu.                                       |
+
+# +-------------------------------------------------------------+
+
+
+"""PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
+
+EN: Re-proof scheduler (law=365, med=90, fin=7).
+
+"""
+
+# === IMPORTY / IMPORTS ===
+from __future__ import annotations
+
+from datetime import UTC, datetime, timedelta
+
+# === KONFIGURACJA / CONFIGURATION ===
+TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
+# +=====================================================================+
+
+# |                          CERTEUS — HEART                            |
+
+# +=====================================================================+
+
+# | FILE: scripts/temporal_fortress.py                                  |
+
+# | ROLE:                                                               |
+
+# |  PL: Re-proof po TTL (TTDE) per domena.                             |
+
+# |  EN: TTDE re-proof per domain TTL.                                  |
+
+# +=====================================================================+
+
+
+def due(domain: str, last_proof_at: datetime) -> bool:
+    """PL: Czy wygasło TTL? EN: TTL expired?"""
+
+    days = TTL_DAYS.get(domain, 365)
+
+    return datetime.now(UTC) - last_proof_at > timedelta(days=days)
+
+
+def run() -> None:
+    """PL: Znajdź kapsuły do re-proof i zleć zadania. EN: Enqueue due re-proofs."""
+
+    # Integracja z magazynem kapsuł (do uzupełnienia zgodnie z repo).
+
+    # Keeping architecture unchanged.
+
+    return
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

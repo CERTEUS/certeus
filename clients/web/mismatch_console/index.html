@@ -1,0 +1,955 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/mismatch_console/index.html             |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/mismatch_console/index.html             |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS — Konsola Niezgodności (HITL)</title>
+
+    <!--
+  +=====================================================================+
+  |                              CERTEUS                               |
+  |                     Mismatch Console (HITL)                        |
+  +=====================================================================+
+  | FILE: clients/web/mismatch_console/index.html                      |
+  | ROLE: Human-in-the-Loop console for solver mismatch tickets        |
+  | DESC: Lists tickets, shows stats, allows resolve/escalate actions. |
+  +=====================================================================+
+  -->
+
+    <style>
+      /* ──────────────────────────────────────────────────────────────── */
+      /* RESET & BASE                                                     */
+      /* ──────────────────────────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Ubuntu,
+          Cantarell,
+          Noto Sans,
+          Arial,
+          "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #1c1e21;
+      }
+
+      /* ──────────────────────────────────────────────────────────────── */
+      /* LAYOUT                                                           */
+      /* ──────────────────────────────────────────────────────────────── */
+      .container {
+        max-width: 1400px;
+        margin: 24px auto;
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+      }
+
+      .header {
+        background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+        color: #fff;
+        padding: 28px 32px;
+        position: relative;
+      }
+      .header h1 {
+        margin: 0 0 6px 0;
+        font-size: 2.1rem;
+        letter-spacing: 0.3px;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.25);
+      }
+      .header p {
+        margin: 0;
+        opacity: 0.95;
+      }
+      .alert-icon {
+        position: absolute;
+        right: 24px;
+        top: 18px;
+        font-size: 48px;
+        animation: pulse 1.8s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.12);
+        }
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        background: #fafafa;
+        border-bottom: 1px solid #e9e9e9;
+        padding: 16px 24px;
+      }
+      .stat {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 14px;
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+      .stat .value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #4267b2;
+      }
+      .stat .label {
+        margin-top: 4px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #666;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 24px;
+        background: #fff;
+        border-bottom: 1px solid #eee;
+      }
+      .filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .filters label {
+        font-size: 0.9rem;
+        color: #444;
+      }
+      select,
+      input[type="text"],
+      input[type="number"] {
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+      }
+      .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        cursor: pointer;
+        font-weight: 700;
+        background: #4267b2;
+        color: #fff;
+        transition:
+          transform 0.1s ease,
+          box-shadow 0.2s ease,
+          background 0.2s ease;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(66, 103, 178, 0.28);
+        background: #365899;
+      }
+      .btn.secondary {
+        background: #0084ff;
+      }
+      .btn.secondary:hover {
+        background: #006dda;
+      }
+      .btn.neutral {
+        background: #757575;
+      }
+      .btn.neutral:hover {
+        background: #616161;
+      }
+      .btn.warn {
+        background: #ef6c00;
+      }
+      .btn.warn:hover {
+        background: #e65100;
+      }
+
+      .table-wrap {
+        position: relative;
+        padding: 22px 24px;
+        background: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      }
+      thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+      }
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      tbody tr {
+        background: #fff;
+        transition: background 0.15s ease;
+      }
+      tbody tr:hover {
+        background: #f8f9fd;
+      }
+      .mono {
+        background: #263238;
+        color: #c3e88d;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", monospace;
+        font-size: 12.5px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        line-height: 1.25;
+        max-width: 460px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+      .priority-critical {
+        background: #ffebee;
+        color: #c62828;
+      }
+      .priority-high {
+        background: #fff3e0;
+        color: #e65100;
+      }
+      .priority-medium {
+        background: #fff8e1;
+        color: #f57c00;
+      }
+      .priority-low {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .status-open {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+      .status-under_review {
+        background: #fce4ec;
+        color: #c2185b;
+      }
+      .status-resolved {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .status-escalated {
+        background: #fff8e1;
+        color: #f57c00;
+      }
+      .status-closed {
+        background: #eceff1;
+        color: #455a64;
+      }
+
+      .loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+      .loading-overlay.active {
+        display: flex;
+      }
+      .spinner {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 4px solid #e0e0e0;
+        border-top-color: #4267b2;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* ──────────────────────────────────────────────────────────────── */
+      /* MODALS                                                          */
+      /* ──────────────────────────────────────────────────────────────── */
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        padding: 18px;
+      }
+      .modal.active {
+        display: flex;
+      }
+      .modal-card {
+        width: min(680px, 96vw);
+        max-height: 86vh;
+        overflow: auto;
+        background: #fff;
+        border-radius: 14px;
+        padding: 18px 18px 20px;
+        box-shadow: 0 24px 68px rgba(0, 0, 0, 0.35);
+        animation: slideIn 0.18s ease;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateY(-18px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .modal-header {
+        padding: 6px 6px 12px 6px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 16px;
+      }
+      .modal-header h2 {
+        margin: 0;
+      }
+      .form {
+        display: grid;
+        gap: 12px;
+      }
+      .form .row {
+        display: grid;
+        gap: 8px;
+      }
+      .form label {
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .form textarea,
+      .form select,
+      .form input[type="text"],
+      .form input[type="number"] {
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        resize: vertical;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 8px;
+      }
+      .hint {
+        color: #6b7280;
+        font-size: 0.85rem;
+      }
+
+      /* ──────────────────────────────────────────────────────────────── */
+      /* RESPONSIVE                                                      */
+      /* ──────────────────────────────────────────────────────────────── */
+      @media (max-width: 900px) {
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .mono {
+          max-width: 280px;
+        }
+      }
+      @media (max-width: 640px) {
+        .stats-bar {
+          grid-template-columns: 1fr;
+        }
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <!-- HEADER                                                        -->
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <div class="header">
+        <div class="alert-icon">🚨</div>
+        <h1>CERTEUS — Konsola Niezgodności</h1>
+        <p>Human-In-The-Loop (HITL) · Rozwiązywanie konfliktów solverów SMT</p>
+      </div>
+
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <!-- STATS BAR                                                     -->
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <div class="stats-bar">
+        <div class="stat">
+          <div class="value" id="stat-total">0</div>
+          <div class="label">Wszystkie bilety</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="stat-open">0</div>
+          <div class="label">Otwarte</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="stat-review">0</div>
+          <div class="label">W trakcie</div>
+        </div>
+        <div class="stat">
+          <div class="value" id="stat-resolved">0</div>
+          <div class="label">Rozwiązane</div>
+        </div>
+      </div>
+
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <!-- CONTROLS                                                      -->
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <div class="controls">
+        <div class="filters">
+          <label for="filter-status">Status:</label>
+          <select id="filter-status">
+            <option value="">Wszystkie</option>
+            <option value="open">Otwarte</option>
+            <option value="under_review">W trakcie</option>
+            <option value="resolved">Rozwiązane</option>
+            <option value="escalated">Eskalowane</option>
+            <option value="closed">Zamknięte</option>
+          </select>
+
+          <label for="filter-priority">Priorytet:</label>
+          <select id="filter-priority">
+            <option value="">Wszystkie</option>
+            <option value="critical">Krytyczny</option>
+            <option value="high">Wysoki</option>
+            <option value="medium">Średni</option>
+            <option value="low">Niski</option>
+          </select>
+        </div>
+
+        <div class="toolbar">
+          <button
+            class="btn secondary"
+            id="btn-refresh"
+            title="Odśwież (Alt+R)"
+          >
+            🔄 Odśwież
+          </button>
+        </div>
+      </div>
+
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <!-- TABLE                                                         -->
+      <!-- ────────────────────────────────────────────────────────────── -->
+      <div class="table-wrap">
+        <div class="loading-overlay" id="loading">
+          <div class="spinner"></div>
+        </div>
+        <table id="tickets">
+          <thead>
+            <tr>
+              <th>ID Biletu</th>
+              <th>ID Sprawy</th>
+              <th>Priorytet</th>
+              <th>Status</th>
+              <th>Formuła</th>
+              <th>Niezgodność (skrót)</th>
+              <th>Utworzono</th>
+              <th>Akcje</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr>
+              <td colspan="8" style="padding: 36px; text-align: center">
+                Ładowanie…
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <!-- RESOLVE MODAL                                                   -->
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <div class="modal" id="resolve-modal" aria-hidden="true">
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="resolve-title"
+      >
+        <div class="modal-header">
+          <h2 id="resolve-title">
+            Rozwiąż bilet: <span id="resolve-ticket-id"></span>
+          </h2>
+        </div>
+        <div class="form">
+          <div class="row">
+            <label for="resolution-type">Typ rozwiązania</label>
+            <select id="resolution-type">
+              <option value="human_override">Decyzja eksperta</option>
+              <option value="solver_update">Aktualizacja solvera</option>
+              <option value="formula_correction">Korekta formuły</option>
+              <option value="false_positive">Fałszywy alarm</option>
+              <option value="known_limitation">Znane ograniczenie</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="chosen-result">Wybór wyniku</label>
+            <select id="chosen-result">
+              <option value="sat">SAT (spełnialne)</option>
+              <option value="unsat">UNSAT (niespełnialne)</option>
+              <option value="unknown">UNKNOWN (nieznane)</option>
+            </select>
+          </div>
+          <div class="row">
+            <label for="resolution-notes">Uzasadnienie</label>
+            <textarea
+              id="resolution-notes"
+              placeholder="Opisz krótko motywy decyzji (min 10 znaków)…"
+              rows="4"
+            ></textarea>
+            <div class="hint">Wskazówka: wpis trafia do logów audytowych.</div>
+          </div>
+          <div class="row">
+            <label for="resolved-by">Rozwiązujący</label>
+            <input id="resolved-by" type="text" placeholder="Twoje imię / ID" />
+          </div>
+          <div class="row">
+            <label for="confidence">Pewność (0–1)</label>
+            <input
+              id="confidence"
+              type="number"
+              min="0"
+              max="1"
+              step="0.1"
+              value="0.8"
+            />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn neutral" id="btn-cancel-resolve">Anuluj</button>
+          <button class="btn" id="btn-submit-resolve">Rozwiąż bilet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <!-- ESCALATE MODAL                                                  -->
+    <!-- ──────────────────────────────────────────────────────────────── -->
+    <div class="modal" id="escalate-modal" aria-hidden="true">
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="escalate-title"
+      >
+        <div class="modal-header">
+          <h2 id="escalate-title">
+            Eskaluj bilet: <span id="escalate-ticket-id"></span>
+          </h2>
+        </div>
+        <div class="form">
+          <div class="row">
+            <label for="escalate-reason">Powód eskalacji</label>
+            <textarea
+              id="escalate-reason"
+              placeholder="Dlaczego eskalujesz?"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="row">
+            <label for="escalated-by">Eskalujący</label>
+            <input
+              id="escalated-by"
+              type="text"
+              placeholder="Twoje imię / ID"
+            />
+          </div>
+          <div class="hint">
+            Priorytet wzrośnie do „critical”, status → „escalated”.
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn neutral" id="btn-cancel-escalate">Anuluj</button>
+          <button class="btn warn" id="btn-submit-escalate">Eskaluj</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ────────────────────────────────────────────────────────────────
+      // CONFIG
+      // ────────────────────────────────────────────────────────────────
+      const API_BASE = "http://localhost:8000/v1/mismatch";
+
+      // State
+      let TICKETS = [];
+      let CURRENT_RESOLVE_ID = null;
+      let CURRENT_ESCALATE_ID = null;
+
+      // Elements
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+      const el = {
+        tbody: $("#tbody"),
+        loading: $("#loading"),
+        stat: {
+          total: $("#stat-total"),
+          open: $("#stat-open"),
+          review: $("#stat-review"),
+          resolved: $("#stat-resolved"),
+        },
+        filters: {
+          status: $("#filter-status"),
+          priority: $("#filter-priority"),
+        },
+        buttons: {
+          refresh: $("#btn-refresh"),
+        },
+        modals: {
+          resolve: $("#resolve-modal"),
+          escalate: $("#escalate-modal"),
+        },
+        resolve: {
+          id: $("#resolve-ticket-id"),
+          type: $("#resolution-type"),
+          chosen: $("#chosen-result"),
+          notes: $("#resolution-notes"),
+          by: $("#resolved-by"),
+          conf: $("#confidence"),
+          submit: $("#btn-submit-resolve"),
+          cancel: $("#btn-cancel-resolve"),
+        },
+        escalate: {
+          id: $("#escalate-ticket-id"),
+          reason: $("#escalate-reason"),
+          by: $("#escalated-by"),
+          submit: $("#btn-submit-escalate"),
+          cancel: $("#btn-cancel-escalate"),
+        },
+      };
+
+      // ────────────────────────────────────────────────────────────────
+      // HELPERS
+      // ────────────────────────────────────────────────────────────────
+      function showLoading(on) {
+        el.loading.classList.toggle("active", !!on);
+      }
+
+      function truncate(s, n = 72) {
+        if (!s) return "";
+        return s.length > n ? s.slice(0, n) + "…" : s;
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return "N/A";
+        const d = new Date(iso);
+        const now = new Date();
+        const diff = now - d;
+        if (diff < 60 * 60 * 1000)
+          return `${Math.max(1, Math.floor(diff / 60000))} min temu`;
+        if (diff < 24 * 60 * 60 * 1000)
+          return `${Math.floor(diff / 3600000)} godz. temu`;
+        return d.toLocaleString("pl-PL", {
+          hour: "2-digit",
+          minute: "2-digit",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+      }
+
+      function badgePriority(p) {
+        const cls = `badge priority-${p}`;
+        return `<span class="${cls}">${p}</span>`;
+      }
+      function badgeStatus(s) {
+        const cls = `badge status-${s}`;
+        const map = {
+          open: "Otwarty",
+          under_review: "W trakcie",
+          resolved: "Rozwiązany",
+          escalated: "Eskalowany",
+          closed: "Zamknięty",
+        };
+        return `<span class="${cls}">${map[s] || s}</span>`;
+      }
+
+      function mismatchSummary(results) {
+        if (!results || !results.length) return "N/A";
+        return results
+          .map((r) => `<strong>${r.solver_name}</strong>: ${r.status}`)
+          .join("<br>");
+      }
+
+      function renderRows(rows) {
+        if (!rows.length) {
+          el.tbody.innerHTML = `<tr><td colspan="8" style="padding:32px; text-align:center;">Brak biletów do wyświetlenia</td></tr>`;
+          return;
+        }
+        el.tbody.innerHTML = rows
+          .map(
+            (t) => `
+        <tr>
+          <td><strong>${t.ticket_id}</strong></td>
+          <td>${t.case_id}</td>
+          <td>${badgePriority(t.priority)}</td>
+          <td>${badgeStatus(t.status)}</td>
+          <td><div class="mono">${truncate(t.formula_str, 220)}</div></td>
+          <td><small>${mismatchSummary(t.results)}</small></td>
+          <td>${fmtDate(t.created_at)}</td>
+          <td>
+            ${
+              t.status === "resolved"
+                ? `<button class="btn" disabled>✓ Rozwiązany</button>`
+                : `
+                <div class="toolbar">
+                  <button class="btn" onclick="openResolve('${t.ticket_id}')">Rozwiąż</button>
+                  <button class="btn warn" onclick="openEscalate('${t.ticket_id}')">Eskaluj</button>
+                </div>
+              `
+            }
+          </td>
+        </tr>
+      `,
+          )
+          .join("");
+      }
+
+      function applyFilters() {
+        const status = el.filters.status.value;
+        const prio = el.filters.priority.value;
+        let rows = [...TICKETS];
+        if (status) rows = rows.filter((t) => t.status === status);
+        if (prio) rows = rows.filter((t) => t.priority === prio);
+        renderRows(rows);
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      // API
+      // ────────────────────────────────────────────────────────────────
+      async function api(path, options = {}) {
+        const res = await fetch(`${API_BASE}${path}`, {
+          headers: { "Content-Type": "application/json" },
+          ...options,
+        });
+        if (!res.ok) {
+          let msg = `HTTP ${res.status}`;
+          try {
+            const body = await res.json();
+            if (body?.detail) msg += `: ${body.detail}`;
+          } catch {}
+          throw new Error(msg);
+        }
+        const ct = res.headers.get("content-type") || "";
+        return ct.includes("application/json") ? res.json() : res.text();
+      }
+
+      async function loadStats() {
+        try {
+          const s = await api("/statistics");
+          el.stat.total.textContent = s.total_tickets ?? 0;
+          el.stat.open.textContent = s.open_tickets ?? 0;
+          el.stat.review.textContent = s.under_review_tickets ?? 0;
+          el.stat.resolved.textContent = s.resolved_tickets ?? 0;
+        } catch (e) {
+          console.warn("Statistics error:", e.message);
+        }
+      }
+
+      async function loadTickets() {
+        showLoading(true);
+        try {
+          TICKETS = await api("/tickets");
+          applyFilters();
+        } catch (e) {
+          el.tbody.innerHTML = `<tr><td colspan="8" style="padding:32px; text-align:center; color:#c62828;">❌ ${e.message}</td></tr>`;
+        } finally {
+          showLoading(false);
+        }
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      // MODALS: RESOLVE
+      // ────────────────────────────────────────────────────────────────
+      function openResolve(id) {
+        CURRENT_RESOLVE_ID = id;
+        el.resolve.id.textContent = id;
+        el.resolve.notes.value = "";
+        el.resolve.by.value = "";
+        el.resolve.conf.value = "0.8";
+        el.modals.resolve.classList.add("active");
+        el.modals.resolve.setAttribute("aria-hidden", "false");
+      }
+      function closeResolve() {
+        el.modals.resolve.classList.remove("active");
+        el.modals.resolve.setAttribute("aria-hidden", "true");
+        CURRENT_RESOLVE_ID = null;
+      }
+      async function submitResolve() {
+        if (!CURRENT_RESOLVE_ID) return;
+        const payload = {
+          resolution_type: el.resolve.type.value,
+          chosen_result: el.resolve.chosen.value,
+          notes: el.resolve.notes.value?.trim(),
+          resolved_by: el.resolve.by.value?.trim() || "Anonymous",
+          confidence: parseFloat(el.resolve.conf.value || "0.8"),
+        };
+        if (!payload.notes || payload.notes.length < 10) {
+          alert("Uzasadnienie musi mieć co najmniej 10 znaków.");
+          return;
+        }
+        try {
+          await api(`/tickets/${CURRENT_RESOLVE_ID}/resolve`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+          closeResolve();
+          await Promise.all([loadTickets(), loadStats()]);
+          alert("✅ Bilet rozwiązany.");
+        } catch (e) {
+          alert("❌ Błąd: " + e.message);
+        }
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      // MODALS: ESCALATE
+      // ────────────────────────────────────────────────────────────────
+      function openEscalate(id) {
+        CURRENT_ESCALATE_ID = id;
+        el.escalate.id.textContent = id;
+        el.escalate.reason.value = "";
+        el.escalate.by.value = "";
+        el.modals.escalate.classList.add("active");
+        el.modals.escalate.setAttribute("aria-hidden", "false");
+      }
+      function closeEscalate() {
+        el.modals.escalate.classList.remove("active");
+        el.modals.escalate.setAttribute("aria-hidden", "true");
+        CURRENT_ESCALATE_ID = null;
+      }
+      async function submitEscalate() {
+        if (!CURRENT_ESCALATE_ID) return;
+        const payload = {
+          reason: el.escalate.reason.value?.trim(),
+          escalated_by: el.escalate.by.value?.trim() || "Anonymous",
+        };
+        if (!payload.reason || payload.reason.length < 6) {
+          alert("Podaj krótki powód eskalacji (>= 6 znaków).");
+          return;
+        }
+        try {
+          await api(`/tickets/${CURRENT_ESCALATE_ID}/escalate`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+          closeEscalate();
+          await Promise.all([loadTickets(), loadStats()]);
+          alert("⚠️ Bilet eskalowany.");
+        } catch (e) {
+          alert("❌ Błąd: " + e.message);
+        }
+      }
+
+      // ────────────────────────────────────────────────────────────────
+      // INIT & EVENTS
+      // ────────────────────────────────────────────────────────────────
+      document.addEventListener("DOMContentLoaded", async () => {
+        // listeners
+        el.buttons.refresh.addEventListener("click", () => {
+          loadTickets();
+          loadStats();
+        });
+        el.filters.status.addEventListener("change", applyFilters);
+        el.filters.priority.addEventListener("change", applyFilters);
+
+        el.resolve.cancel.addEventListener("click", closeResolve);
+        el.resolve.submit.addEventListener("click", submitResolve);
+
+        el.escalate.cancel.addEventListener("click", closeEscalate);
+        el.escalate.submit.addEventListener("click", submitEscalate);
+
+        // keyboard shortcuts
+        document.addEventListener("keydown", (ev) => {
+          if (ev.altKey && (ev.key === "r" || ev.key === "R")) {
+            el.buttons.refresh.click();
+          }
+          if (ev.key === "Escape") {
+            closeResolve();
+            closeEscalate();
+          }
+        });
+
+        // initial load + auto-refresh
+        await Promise.all([loadTickets(), loadStats()]);
+        setInterval(() => {
+          loadTickets();
+          loadStats();
+        }, 30000);
+      });
+
+      // Expose for inline onclick
+      window.openResolve = openResolve;
+      window.openEscalate = openEscalate;
+    </script>
+  </body>
+</html>

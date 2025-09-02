@@ -1,0 +1,23 @@
+# +=====================================================================+
+# |                              CERTEUS                                |
+# +=====================================================================+
+# | FILE: observability/slo_gate/rules.yaml                             |
+# | ROLE: SLO recording rules (global; split by domain later if needed) |
+# +=====================================================================+
+
+groups:
+  - name: certeus-slo
+    interval: 30s
+    rules:
+      - record: slo:latency_p95_ok
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="api"}[5m])) by (le)) <= 0.25
+      - record: slo:error_rate_ok
+        expr: |
+          (sum(rate(http_requests_total{job="api",status=~"5.."}[5m])) /
+           sum(rate(http_requests_total{job="api"}[5m]))) <= 0.005
+      - record: slo:ece_ok
+        expr: |
+          avg_over_time(certeus_model_ece[5m]) <= 0.05
+      - record: slo:global_ok
+        expr: min(slo:latency_p95_ok, slo:error_rate_ok, slo:ece_ok)

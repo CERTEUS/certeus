@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+staged=$(git diff --name-only --cached)
+blocked=()
+for f in $staged; do
+  if [ "$f" = ".env" ] || [ "$f" = ".env.local" ] || [[ "$f" == .devkeys/* ]] || [[ "$f" == .devkeys\\* ]]; then
+    blocked+=("$f")
+  fi
+done
+
+if [ ${#blocked[@]} -gt 0 ]; then
+  echo "Zablokowano commit tajnych plików: ${blocked[*]}" >&2
+  exit 1
+fi
+
+exit 0
+
