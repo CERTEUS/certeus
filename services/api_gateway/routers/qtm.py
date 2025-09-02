@@ -32,6 +32,7 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -80,6 +81,24 @@ class MeasureResponse(BaseModel):
     uncertainty_bound: dict[str, float]
 
     latency_ms: float
+
+
+class SequenceRequest(BaseModel):
+    operators: list[str] = Field(..., min_items=1)
+    case: str | None = Field(default=None)
+    basis: list[str] | None = None
+
+
+class SequenceStep(BaseModel):
+    operator: str
+    verdict: str
+    p: float
+
+
+class SequenceResponse(BaseModel):
+    steps: list[SequenceStep]
+    final_latency_ms: float
+    uncertainty_bound: dict[str, float]
 
 
 class CommutatorRequest(BaseModel):
@@ -143,16 +162,38 @@ def _basis_probs_for_case(case_id: str, basis: list[str]) -> list[float]:
     return _uniform_probs(basis)
 
 
-def _apply_decoherence(probs: list[float], case_id: str) -> list[float]:
+def _apply_decoherence(probs: list[float], case_id: str, basis: list[str]) -> list[float]:
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default")
     if not deco:
         return probs
     gamma = float(deco.get("gamma", 0.0) or 0.0)
     if gamma <= 0.0:
         return probs
+    ch = str(deco.get("channel", "dephasing")).lower()
     n = len(probs)
+    if ch in {"dephasing", "depolarizing"}:
+        u = 1.0 / max(1, n)
+        return [round((1.0 - gamma) * p + gamma * u, 6) for p in probs]
+    if ch == "damping":
+        # Move gamma mass to a selected state (e.g. DENY) deterministically
+        try:
+            idx_target = basis.index("DENY")
+        except ValueError:
+            idx_target = 0
+        scaled = [(1.0 - gamma) * p for p in probs]
+        scaled[idx_target] += gamma
+        s = sum(scaled)
+        return [round(p / s, 6) for p in scaled]
+    # Fallback: uniform mix
     u = 1.0 / max(1, n)
     return [round((1.0 - gamma) * p + gamma * u, 6) for p in probs]
+
+
+def _stable_index(key: str, mod: int) -> int:
+    if mod <= 0:
+        return 0
+    h = int.from_bytes(sha256(key.encode("utf-8")).digest()[:4], "big")
+    return h % mod
 
 
 @router.post("/init_case", response_model=InitCaseResponse)
@@ -205,12 +246,12 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         op_effective = req.operator
 
-    idx = abs(hash(op_effective)) % len(basis)
+    idx = _stable_index(op_effective, len(basis))
     verdict = basis[idx]
 
     # Probability from predistribution (Born-like), smoothed by decoherence if configured
     probs0 = _basis_probs_for_case(case_id, basis)
-    probs = _apply_decoherence(probs0, case_id)
+    probs = _apply_decoherence(probs0, case_id, basis)
     p = float(probs[idx])
 
     sequence = [
@@ -303,6 +344,54 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         pass
 
     return resp
+
+
+@router.post("/measure_sequence", response_model=SequenceResponse)
+async def measure_sequence(req: SequenceRequest, request: Request, response: Response) -> SequenceResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=max(1, len(req.operators)))
+    t0 = perf_counter()
+    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
+    case_id = (req.case or "qtm-seq").replace(":", "-")
+    # Start with predistribution if present
+    probs = _basis_probs_for_case(case_id, basis)
+    steps: list[SequenceStep] = []
+    for op in req.operators:
+        idx = _stable_index(op, len(basis))
+        verdict = basis[idx]
+        probs = _apply_decoherence(probs, case_id, basis)
+        p = float(probs[idx])
+        steps.append(SequenceStep(operator=op, verdict=verdict, p=p))
+        # Collapse to one-hot on verdict
+        probs = [0.0 for _ in basis]
+        probs[idx] = 1.0
+    # UB as in measure()
+    try:
+        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
+
+        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
+    except Exception:
+        kappa = 0.012
+    ub = {"L_T": round(0.2 + min(0.2, kappa * 10.0), 3)}
+    latency_ms = round((perf_counter() - t0) * 1000.0, 3)
+    # Headers: record sequence PCO
+    try:
+        import json as _json
+
+        response.headers["X-CERTEUS-PCO-qtm.sequence"] = _json.dumps(
+            [s.model_dump() for s in steps], separators=(",", ":")
+        )
+    except Exception:
+        pass
+    # History append
+    try:
+        hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
+        for s in steps:
+            hist.append(s.model_dump())
+    except Exception:
+        pass
+    return SequenceResponse(steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub)
 
 
 class QtmStateOut(BaseModel):
@@ -427,7 +516,7 @@ async def expectation(req: ExpectationRequest) -> ExpectationOut:
     if len(probs0) != len(basis):
         probs0 = _uniform_probs(basis)
     # apply decoherence if configured
-    probs = _apply_decoherence(probs0, req.case)
+    probs = _apply_decoherence(probs0, req.case, basis)
     op_map = _operator_eigs().get(req.operator)
     if not op_map:
         raise HTTPException(status_code=400, detail="Unknown operator")

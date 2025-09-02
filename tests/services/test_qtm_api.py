@@ -111,6 +111,23 @@ def test_qtm_decoherence_gamma_uniformizes_probabilities() -> None:
     assert abs(p - (1.0 / 3.0)) < 1e-6
 
 
+def test_qtm_measure_sequence_runs_and_sets_pco_header() -> None:
+    case_id = "LEX-QTMP-SEQUENCE"
+    r = client.post(
+        "/v1/qtm/measure_sequence",
+        json={"operators": ["L", "T", "W"], "case": case_id},
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert len(body.get("steps", [])) == 3
+    # PCO sequence header should exist
+    assert "X-CERTEUS-PCO-qtm.sequence" in r.headers
+    # History endpoint should have at least 3 entries
+    r_hist = client.get(f"/v1/qtm/history/{case_id}")
+    assert r_hist.status_code == 200
+    assert len(r_hist.json().get("history", [])) >= 3
+
+
 def test_qtm_preset_delete_and_state_delete() -> None:
     case_id = "LEX-QTMP-DEL"
     client.post("/v1/qtm/preset", json={"case": case_id, "operator": "T"})
