@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.git-credentials
 *.egg-info/
 
 # Env / secrets (local only)

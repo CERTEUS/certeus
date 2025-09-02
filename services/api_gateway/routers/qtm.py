@@ -35,7 +35,7 @@ from __future__ import annotations
 from time import perf_counter
 from typing import Any
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -43,6 +43,7 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 class InitCaseRequest(BaseModel):
+    case: str | None = Field(default=None, description="Case identifier (optional)")
     state_uri: str | None = None
 
     basis: list[str] | None = Field(default=None, description="Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']")
@@ -120,6 +121,10 @@ class FindEntanglementResponse(BaseModel):
 
 router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 
+# Prosty graf spraw (case-graph) i rejestr kanałów dekoherencji (stub in-memory)
+CASE_GRAPH: dict[str, dict[str, Any]] = {}
+DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
+
 
 @router.post("/init_case", response_model=InitCaseResponse)
 async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
@@ -135,11 +140,22 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
 
     predistribution = [{"state": b, "p": round(p, 6)} for b in basis]
 
+    # Zapisz stan |Ψ⟩ w grafie spraw (stub)
+    try:
+        case_id = (req.case or "qtm-default").strip()
+        CASE_GRAPH[case_id] = {
+            "psi": req.state_uri or "psi://uniform",
+            "basis": basis,
+            "predistribution": predistribution,
+        }
+    except Exception:
+        pass
+
     return InitCaseResponse(ok=True, predistribution=predistribution)
 
 
 @router.post("/measure", response_model=MeasureResponse)
-async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
+async def measure(req: MeasureRequest, request: Request, response: Response) -> MeasureResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -166,7 +182,10 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
         }
     ]
 
-    collapse_log = CollapseLog(sequence=sequence, decoherence={"channel": "dephasing"})
+    # Decoherence: use registry if available for this case
+    case_id = (req.source or "qtm-case").replace(":", "-")
+    deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default") or {"channel": "dephasing"}
+    collapse_log = CollapseLog(sequence=sequence, decoherence=deco)
 
     ub = {"L_T": 0.25}
 
@@ -174,13 +193,37 @@ async def measure(req: MeasureRequest, request: Request) -> MeasureResponse:
 
     resp = MeasureResponse(verdict=verdict, p=p, collapse_log=collapse_log, uncertainty_bound=ub, latency_ms=latency_ms)
 
+    # PCO headers: collapse event and optional predistribution from case-graph
+    try:
+        response.headers["X-CERTEUS-PCO-qtm.collapse_event"] = (
+            f"{{\"operator\":\"{req.operator}\",\"verdict\":\"{verdict}\",\"channel\":\"{deco.get('channel', '')}\"}}"
+        )
+        cg = CASE_GRAPH.get(case_id)
+        if cg and "predistribution" in cg:
+            import json as _json
+
+            response.headers["X-CERTEUS-PCO-qtm.predistribution[]"] = _json.dumps(
+                cg["predistribution"], separators=(",", ":")
+            )
+    except Exception:
+        pass
+
     # Record qtm.sequence into Ledger as provenance input (hash of sequence)
     try:
         from services.ledger_service.ledger import compute_provenance_hash, ledger_service
 
         seq_hash = "sha256:" + compute_provenance_hash({"qtm.sequence": sequence}, include_timestamp=False)
-        case_id = (req.source or "qtm-case").replace(":", "-")
         ledger_service.record_input(case_id=case_id, document_hash=seq_hash)
+    except Exception:
+        pass
+
+    # Record collapse event into Ledger
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        collapse_event = {"qtm.collapse_event": {"operator": req.operator, "verdict": verdict, "decoherence": deco}}
+        ev_hash = "sha256:" + compute_provenance_hash(collapse_event, include_timestamp=False)
+        ledger_service.record_input(case_id=case_id, document_hash=ev_hash)
     except Exception:
         pass
 
@@ -198,6 +241,36 @@ async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResp
     value = 1.0 if req.A != req.B else 0.0
 
     return CommutatorResponse(value=value)
+
+
+class DecoherenceRequest(BaseModel):
+    case: str | None = Field(default=None, description="Case identifier or 'default'")
+    channel: str = Field(description="dephasing | depolarizing | damping")
+    gamma: float | None = Field(default=None, description="Channel parameter (optional)")
+
+
+class DecoherenceResponse(BaseModel):
+    ok: bool
+    case: str
+    channel: str
+    gamma: float | None = None
+
+
+@router.post("/decoherence", response_model=DecoherenceResponse)
+async def set_decoherence(req: DecoherenceRequest, request: Request) -> DecoherenceResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+
+    ch = req.channel.lower().strip()
+    if ch not in {"dephasing", "depolarizing", "damping"}:
+        ch = "dephasing"
+    case_id = (req.case or "default").strip()
+    cfg = {"channel": ch}
+    if req.gamma is not None:
+        cfg["gamma"] = float(req.gamma)
+    DECOHERENCE_REGISTRY[case_id] = cfg
+    return DecoherenceResponse(ok=True, case=case_id, channel=ch, gamma=req.gamma)
 
 
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)
