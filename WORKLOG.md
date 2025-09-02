@@ -88,3 +88,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Enabled PR comment permissions; ci-gates green\n- Deleted: security.py.bak, stray docs snippet, tmp/* artifacts
 - 2025-09-02 14:31:50Z [48793] (work/daily): History reset: single clean base commit on main+daily
   - - Archived old history: archive/old-main-*, archive/old-daily-*\n- Force-pushed clean root commit; CI green path preserved
+- 2025-09-02 14:43:15Z [48793] (work/daily): Branch Protection: require ci-gates + Smoke; docs updated
+  - - Updated AGENTS/HANDOFF with clean history + archives\n- Branch protection contexts: ci-gates, Smoke (ubuntu/windows)
