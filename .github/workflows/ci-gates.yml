@@ -115,6 +115,9 @@ jobs:
       - name: QTMP smoke (in-proc)
         run: |
           python scripts/smokes/qtm_smoke.py
+      - name: QTMP smoke (sequence + expectation)
+        run: |
+          python scripts/smokes/qtm_seq_expect_smoke.py
       - name: Mark OpenAPI smoke OK
         if: success()
         run: |

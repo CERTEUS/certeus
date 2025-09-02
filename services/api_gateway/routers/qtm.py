@@ -32,6 +32,7 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from hashlib import sha256
 from pathlib import Path
 from time import perf_counter
@@ -310,19 +311,17 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # Append to in-memory history for this case
     try:
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
-        hist.append(
-            {"operator": op_effective, "verdict": verdict, "p": p, "ts": datetime.now(timezone.utc).isoformat()}
-        )
+        hist.append({"operator": op_effective, "verdict": verdict, "p": p, "ts": datetime.now(UTC).isoformat()})
     except Exception:
         pass
 
     # Export UB/priorities metrics to Prometheus + collapse counters and history length
     try:
         from monitoring.metrics_slo import (
-            certeus_qtm_operator_priority,
-            certeus_qtm_ub_lt,
             certeus_qtm_collapse_total,
             certeus_qtm_history_len,
+            certeus_qtm_operator_priority,
+            certeus_qtm_ub_lt,
         )
 
         certeus_qtm_ub_lt.labels(source=case_id).set(float(ub.get("L_T", 0.0)))
@@ -402,7 +401,7 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
         for s in steps:
             d = s.model_dump()
-            d["ts"] = datetime.now(timezone.utc).isoformat()
+            d["ts"] = datetime.now(UTC).isoformat()
             hist.append(d)
     except Exception:
         pass
@@ -454,11 +453,28 @@ class QtmHistoryOut(BaseModel):
 
 
 @router.get("/history/{case}", response_model=QtmHistoryOut)
-async def get_history(case: str, offset: int = 0, limit: int = 100) -> QtmHistoryOut:
+async def get_history(
+    case: str,
+    offset: int = 0,
+    limit: int = 100,
+    operator: str | None = None,
+    verdict: str | None = None,
+    sort: str = "asc",
+) -> QtmHistoryOut:
     cg = CASE_GRAPH.get(case)
     if not cg or "history" not in cg:
         raise HTTPException(status_code=404, detail="History not found")
-    raw = cg.get("history", [])
+    raw = list(cg.get("history", []))
+    if operator:
+        raw = [e for e in raw if str(e.get("operator")) == operator]
+    if verdict:
+        raw = [e for e in raw if str(e.get("verdict")) == verdict]
+    if sort.lower() in {"asc", "desc"}:
+        rev = sort.lower() == "desc"
+        try:
+            raw.sort(key=lambda e: str(e.get("ts", "")), reverse=rev)
+        except Exception:
+            pass
     total = len(raw)
     start = max(0, int(offset))
     lmt = max(1, min(int(limit), 1000))
@@ -558,7 +574,15 @@ async def expectation(req: ExpectationRequest) -> ExpectationOut:
     for b, p in zip(basis, probs, strict=False):
         eig = float(op_map.get(b, 0.0))
         val += p * eig
-    return ExpectationOut(value=round(val, 6))
+    out = round(val, 6)
+    # Metrics
+    try:
+        from monitoring.metrics_slo import certeus_qtm_expectation_value
+
+        certeus_qtm_expectation_value.labels(case=req.case, operator=req.operator).set(out)
+    except Exception:
+        pass
+    return ExpectationOut(value=out)
 
 
 class DeleteResult(BaseModel):
@@ -720,6 +744,7 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
 
 
 # === I/O / ENDPOINTS ===
+
 
 # === TESTY / TESTS ===
 class CommutatorExpRequest(BaseModel):
