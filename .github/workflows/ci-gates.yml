@@ -157,7 +157,7 @@ jobs:
             git show origin/ci-status:ci/perf_bench.json > out/prev_perf_bench.json 2>/dev/null || true
           fi
           python - << 'PY'
-          import json, os, pathlib
+          import json, os, pathlib, urllib.request
           repo = pathlib.Path('.').resolve()
           lines = []
           # Perf current
@@ -196,14 +196,49 @@ jobs:
               max_p95 = float(os.getenv('SLO_MAX_P95_MS', '300'))
               max_er = float(os.getenv('SLO_MAX_ERROR_RATE', '0.01'))
               ok = (p95 <= max_p95) and (er <= max_er)
-              lines.append(f"SLO: p95={p95:.2f} ms (<= {max_p95}), error_rate={er:.4f} (<= {max_er}) => {'OK' if ok else 'FAIL'}")
+              lines.append(f"SLO: p95={p95:.2f} ms (<= {max_p95}), error_rate={er:.4f} (<= {max_er}) => {'✅' if ok else '❌'}")
           except Exception:
               lines.append('SLO: report not available')
           # Smokes
           metrics_ok = (repo/'out'/'metrics_ok.txt').exists()
           openapi_ok = (repo/'out'/'openapi_ok.txt').exists()
           gov_ok = (repo/'out'/'gov_ok.txt').exists()
-          lines.append(f"Smokes: metrics={'OK' if metrics_ok else 'FAIL'}, openapi={'OK' if openapi_ok else 'FAIL'}, governance={'OK' if gov_ok else 'FAIL'}")
+          lines.append(f"Smokes: metrics={'✅' if metrics_ok else '❌'} openapi={'✅' if openapi_ok else '❌'} governance={'✅' if gov_ok else '❌'}")
+          # Local gate ticks
+          def _tick(p: str) -> str:
+              return '✅' if (repo/'out'/p).exists() else '❌'
+          lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
+          # Proof Gate related workflow ticks via GitHub API
+          try:
+              token = os.getenv('GITHUB_TOKEN')
+              repo_slug = os.getenv('GITHUB_REPOSITORY')
+              sha = os.getenv('GITHUB_SHA')
+              req = urllib.request.Request(
+                  f"https://api.github.com/repos/{repo_slug}/actions/runs?head_sha={sha}",
+                  headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+              )
+              with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
+                  data = json.loads(resp.read().decode('utf-8'))
+                  runs = data.get('workflow_runs') or []
+                  want = {
+                      'Proof Gate': 'pg',
+                      'Gauge-Gate': 'gg',
+                      'Path-Coverage-Gate': 'pc',
+                      'Boundary-Rebuild-Gate': 'br',
+                      'asset-guard': 'ag',
+                  }
+                  status_map = {v: '❌' for v in want.values()}
+                  for r in runs:
+                      name = r.get('name')
+                      concl = r.get('conclusion')
+                      key = want.get(name)
+                      if key and concl:
+                          status_map[key] = '✅' if concl == 'success' else '❌'
+                  lines.append("Workflows: PG={} Gauge={} PathCov={} Boundary={} Assets={}".format(
+                      status_map['pg'], status_map['gg'], status_map['pc'], status_map['br'], status_map['ag']
+                  ))
+          except Exception:
+              lines.append('Workflows: (status not available)')
           (repo/'out'/'ci_pr_comment.md').write_text('\n'.join(lines), encoding='utf-8')
           PY
 
