@@ -325,6 +325,26 @@ async def get_state(case: str) -> QtmStateOut:
     )
 
 
+class QtmHistoryEvent(BaseModel):
+    operator: str
+    verdict: str
+    p: float
+
+
+class QtmHistoryOut(BaseModel):
+    case: str
+    history: list[QtmHistoryEvent]
+
+
+@router.get("/history/{case}", response_model=QtmHistoryOut)
+async def get_history(case: str) -> QtmHistoryOut:
+    cg = CASE_GRAPH.get(case)
+    if not cg or "history" not in cg:
+        raise HTTPException(status_code=404, detail="History not found")
+    items = [QtmHistoryEvent(**e) for e in cg.get("history", [])]
+    return QtmHistoryOut(case=case, history=items)
+
+
 class OperatorsOut(BaseModel):
     operators: dict[str, dict[str, float]]
 
@@ -441,17 +461,33 @@ async def delete_state(case: str) -> DeleteResult:
     return DeleteResult(ok=True)
 
 
+def _fractional_commutator(a: str, b: str) -> float:
+    if a == b:
+        return 0.0
+    eigs = _operator_eigs()
+    mA = eigs.get(a)
+    mB = eigs.get(b)
+    if not mA or not mB:
+        return 1.0
+    keys = set(mA.keys()) | set(mB.keys())
+    num = 0.0
+    den = 0.0
+    for k in keys:
+        vA = float(mA.get(k, 0.0))
+        vB = float(mB.get(k, 0.0))
+        num += abs(vA - vB)
+        den += abs(vA) + abs(vB)
+    if den <= 0.0:
+        return 0.0
+    return round(min(1.0, num / den), 3)
+
+
 @router.post("/commutator", response_model=CommutatorResponse)
 async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
-
-    # Stub: non-commuting if names differ, return simple normalized score
-
-    value = 1.0 if req.A != req.B else 0.0
-
-    return CommutatorResponse(value=value)
+    return CommutatorResponse(value=_fractional_commutator(req.A, req.B))
 
 
 class DecoherenceRequest(BaseModel):
