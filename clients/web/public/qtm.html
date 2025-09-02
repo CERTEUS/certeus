@@ -1,0 +1,199 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/qtm.html                          |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/qtm.html                          |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • QTMP</title>
+    <style>
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 2px;
+        margin-top: 8px;
+      }
+      .cell {
+        width: 18px;
+        height: 18px;
+        background: #20242a;
+        border-radius: 2px;
+        position: relative;
+      }
+      .cell.hot {
+        background: #f2c8cc;
+      }
+      .cell.cold {
+        background: #c8f2d2;
+      }
+      .cell:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: 20px;
+        top: -10px;
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        padding: 4px 6px;
+        border-radius: 6px;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+      a {
+        color: #9aa0a6;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>QTMP • Measurement cockpit</h1>
+        <div class="row">
+          <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
+          <button id="init" class="btn">Init case</button>
+          <button id="lt" class="btn">Measure L→T</button>
+          <button id="tl" class="btn">Measure T→L</button>
+          <button id="lockDeco" class="btn">Decoherence: dephasing</button>
+          <span id="status" class="muted"></span>
+        </div>
+        <p class="muted">
+          Uncertainty L_T: <span id="ub" class="pill">?</span>, collapse:
+          <span id="collapse" class="pill">-</span>
+        </p>
+        <div id="heat" class="grid"></div>
+        <p class="muted">
+          Case ledger: <a id="caseLink" href="#" target="_blank">open</a>
+        </p>
+      </div>
+    </div>
+    <script>
+      async function fetchJSON(url, opts) {
+        const r = await fetch(url, opts);
+        const j = await r.json();
+        return { ok: r.ok, data: j, headers: r.headers };
+      }
+      function paintHeat(v) {
+        const grid = document.getElementById("heat");
+        grid.innerHTML = "";
+        const n = 32;
+        for (let i = 0; i < n; i++) {
+          const d = document.createElement("div");
+          const h = v + (Math.random() - 0.5) * 0.1;
+          d.className = "cell " + (h > 0.5 ? "hot" : "cold");
+          d.dataset.tip = `commutator heat=${h.toFixed(2)}`;
+          grid.appendChild(d);
+        }
+      }
+      async function initCase() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const r = await fetchJSON("/v1/qtm/init_case", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            case: cs,
+            basis: ["ALLOW", "DENY", "ABSTAIN"],
+          }),
+        });
+        document.getElementById("status").textContent = r.ok
+          ? "initialized"
+          : "init failed";
+      }
+      async function measure(op) {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const r = await fetchJSON("/v1/qtm/measure", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ operator: op, source: cs }),
+        });
+        const ub = r.data?.uncertainty_bound?.L_T ?? "?";
+        const ce = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+        document.getElementById("ub").textContent = ub;
+        document.getElementById("collapse").textContent = ce;
+        document.getElementById("caseLink").href =
+          `/v1/ledger/${encodeURIComponent(cs)}/records`;
+        paintHeat(ub || 0.25);
+      }
+      async function setDeco() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        await fetchJSON("/v1/qtm/decoherence", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, channel: "dephasing" }),
+        });
+        document.getElementById("status").textContent =
+          "decoherence: dephasing";
+      }
+      document.getElementById("init").addEventListener("click", initCase);
+      document
+        .getElementById("lt")
+        .addEventListener("click", () => measure("LT"));
+      document
+        .getElementById("tl")
+        .addEventListener("click", () => measure("TL"));
+      document.getElementById("lockDeco").addEventListener("click", setDeco);
+    </script>
+  </body>
+</html>
