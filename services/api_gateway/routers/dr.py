@@ -30,8 +30,8 @@ EN: FastAPI router for DR: replay/revoke.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, Request, Response
+from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -57,6 +57,25 @@ class RecallResponse(BaseModel):
     ok: bool
 
     link: str
+
+
+class LockRequest(BaseModel):
+    case: str = Field(..., min_length=1)
+    reason: str | None = None
+
+
+class LockResponse(BaseModel):
+    ok: bool
+    lock_ref: str
+
+
+class RevokeRequest(BaseModel):
+    lock_ref: str = Field(..., min_length=3)
+
+
+class RevokeResponse(BaseModel):
+    ok: bool
+    revoked: bool
 
 
 # === LOGIKA / LOGIC ===
@@ -99,6 +118,31 @@ async def recall(req: RecallRequest, request: Request) -> RecallResponse:
     enforce_limits(request, cost_units=1)
 
     return RecallResponse(ok=True, link=f"ledger://revocations/{req.upn}")
+
+
+@router.post("/lock", response_model=LockResponse)
+async def lock(req: LockRequest, request: Request, response: Response) -> LockResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    lock_ref = f"lock://{req.case}/" + (req.reason or "hold")
+    try:
+        response.headers["X-CERTEUS-PCO-dr.lock"] = lock_ref
+    except Exception:
+        pass
+    return LockResponse(ok=True, lock_ref=lock_ref)
+
+
+@router.post("/revoke", response_model=RevokeResponse)
+async def revoke(req: RevokeRequest, request: Request, response: Response) -> RevokeResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    try:
+        response.headers["X-CERTEUS-PCO-dr.revoke"] = req.lock_ref
+    except Exception:
+        pass
+    return RevokeResponse(ok=True, revoked=True)
 
 
 # === I/O / ENDPOINTS ===

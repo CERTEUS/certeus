@@ -90,6 +90,12 @@ async def coverage() -> CoverageResponse:
     if _COVERAGE_AGG:
         tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
         gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
+        try:
+            from monitoring.metrics_slo import certeus_lexqft_coverage_gamma
+
+            certeus_lexqft_coverage_gamma.set(float(gamma))
+        except Exception:
+            pass
         return CoverageResponse(coverage_gamma=round(gamma, 6))
     return CoverageResponse(coverage_gamma=0.953)
 
@@ -166,5 +172,13 @@ async def coverage_state() -> CoverageState:
         tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
         gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
         unc = sum(u * w for _, w, u in _COVERAGE_AGG) / tot_w
+        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma, certeus_lexqft_uncaptured_mass
+
+        try:
+            certeus_lexqft_coverage_gamma.set(float(gamma))
+            certeus_lexqft_uncaptured_mass.set(float(unc))
+        except Exception:
+            pass
+          
         return CoverageState(coverage_gamma=round(gamma, 6), uncaptured_mass=round(unc, 6))
     return CoverageState(coverage_gamma=0.953, uncaptured_mass=0.02)

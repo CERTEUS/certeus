@@ -79,3 +79,18 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 - Linty/testy: ruff/pytest są bramką jakości; agent uruchamia `ruff check . --fix`, `ruff format .`, `pytest` przed push.
 - Automatyzacja: w CI działa gate `scripts/check_premium_style.py` (wymusza banery/docstringi/sekcje). Workflow: `.github/workflows/ci-gates.yml`.
 - Idempotencja: skrypty pomocnicze (apply_headers/apply_*_headers) mogą być uruchamiane wielokrotnie; nie duplikują nagłówków.
+
+
+## Plan 90 dni (Roadmapa)
+
+- Dokument źródłowy:  — zawiera pełną mapę tygodni (18×5 dni).
+- Zasady:
+  - Agent realizuje zadania tydzień po tygodniu, w kolejności i z DOD.
+  - Po każdym ukończonym zadaniu: update  (skrót + szczegóły), commit na  i monitorowanie gate’ów.
+  - Po „zielonych” gate’ach commit automatycznie ląduje na .
+  - Jeśli gate’y spadną: Gate‑Failure‑Notify otwiera Issue — agent naprawia i kontynuuje.
+- Minimalny SOP tygodnia:
+  - Przeczytaj zakres w  (np. Tydzień 7 — FINENITH v0.1),
+  - Dostarcz API/PCO/UI/gate’y z DOD,
+  - Uzupełnij README (demo tygodnia) i AGENTS/WORKLOG,
+  - Wypchnij na  i potwierdź zielony stan.

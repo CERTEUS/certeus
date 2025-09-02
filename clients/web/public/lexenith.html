@@ -1,0 +1,92 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/lexenith.html                     |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/lexenith.html                     |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • LEXENITH</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:980px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      textarea, input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
+      textarea{width:100%;height:100px}
+      pre{background:#20242a;border:1px solid #2a2d33;border-radius:8px;padding:8px;white-space:pre-wrap}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Motion Generator</h1>
+        <div class="row">
+          <label>Case <input id="case" value="LEX-001"/></label>
+          <label>Pattern <select id="pattern"><option>motion-dismiss</option><option>motion-summary</option></select></label>
+        </div>
+        <label>Citations (one per line)</label>
+        <textarea id="cites"></textarea>
+        <label>Facts (JSON)</label>
+        <textarea id="facts">{"key":"value"}</textarea>
+        <button id="gen" class="btn">Generate</button>
+        <pre id="motion"></pre>
+      </div>
+
+      <div class="card">
+        <h1>CLDF Renormalize</h1>
+        <label>Citations (JSON array of {text,weight})</label>
+        <textarea id="cldf">[{"text":"Art. 5 k.c.","weight":1.0},{"text":"III 2020","weight":0.5}]</textarea>
+        <button id="renorm" class="btn">Renormalize</button>
+        <pre id="cldf_out"></pre>
+      </div>
+
+      <div class="card">
+        <h1>Why‑Not Export</h1>
+        <label>Claim</label>
+        <input id="claim" value="Powództwo o zapłatę"/>
+        <label>Counter‑arguments (one per line)</label>
+        <textarea id="cargs">Brak legitymacji czynnej
+Nadmierne roszczenie</textarea>
+        <button id="export" class="btn">Export</button>
+        <pre id="wn_out"></pre>
+      </div>
+    </div>
+    <script>
+      async function gen(){
+        const caseId=document.getElementById('case').value; const pattern=document.getElementById('pattern').value;
+        const cites=document.getElementById('cites').value.split('
+').filter(Boolean);
+        let facts={}; try{facts=JSON.parse(document.getElementById('facts').value)}catch(e){}
+        const r = await fetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId,pattern_id:pattern,citations:cites,facts})});
+        document.getElementById('motion').textContent = JSON.stringify(await r.json(), null, 2);
+      }
+      async function renorm(){
+        let arr=[]; try{arr=JSON.parse(document.getElementById('cldf').value)}catch(e){}
+        const r = await fetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({citations:arr})});
+        document.getElementById('cldf_out').textContent = JSON.stringify(await r.json(), null, 2);
+      }
+      async function exportWN(){
+        const claim=document.getElementById('claim').value; const cargs=document.getElementById('cargs').value.split('
+').filter(Boolean);
+        const r = await fetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({claim:claim,counter_arguments:cargs})});
+        document.getElementById('wn_out').textContent = JSON.stringify(await r.json(), null, 2);
+      }
+      document.getElementById('gen').addEventListener('click', gen);
+      document.getElementById('renorm').addEventListener('click', renorm);
+      document.getElementById('export').addEventListener('click', exportWN);
+    </script>
+  </body>
+  </html>

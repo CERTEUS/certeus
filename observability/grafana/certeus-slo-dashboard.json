@@ -4,52 +4,98 @@
     {
       "type": "stat",
       "title": "Abstain Rate",
-      "targets": [ { "expr": "certeus_abstain_rate" } ]
+      "targets": [
+        {
+          "expr": "certeus_abstain_rate"
+        }
+      ]
     },
     {
       "type": "graph",
       "title": "Compile/Verification p95 (ms)",
-      "targets": [ { "expr": "histogram_quantile(0.95, sum(rate(certeus_compile_duration_ms_bucket[5m])) by (le))" } ]
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_compile_duration_ms_bucket[5m])) by (le))"
+        }
+      ]
     },
     {
       "type": "stat",
       "title": "Proof Verification Failures (rate)",
-      "targets": [ { "expr": "rate(certeus_proof_verification_failed_total[5m])" } ]
+      "targets": [
+        {
+          "expr": "rate(certeus_proof_verification_failed_total[5m])"
+        }
+      ]
     },
     {
       "type": "stat",
       "title": "Source Fetch Errors (rate)",
-      "targets": [ { "expr": "rate(certeus_source_fetch_errors_total[1h])" } ]
+      "targets": [
+        {
+          "expr": "rate(certeus_source_fetch_errors_total[1h])"
+        }
+      ]
     },
     {
       "type": "graph",
       "title": "HTTP p95 latency (ms) by path/method",
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, path, method))" }
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, path, method))"
+        }
       ],
-      "legend": { "show": true }
+      "legend": {
+        "show": true
+      }
     },
     {
       "type": "graph",
       "title": "HTTP p95 latency (ms) by status",
       "targets": [
-        { "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, status))" }
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, status))"
+        }
       ],
-      "legend": { "show": true }
+      "legend": {
+        "show": true
+      }
     },
     {
       "type": "graph",
       "title": "HTTP RPS by path/method/status",
       "targets": [
-        { "expr": "sum(rate(certeus_http_request_duration_ms_count[5m])) by (path, method, status)" }
+        {
+          "expr": "sum(rate(certeus_http_request_duration_ms_count[5m])) by (path, method, status)"
+        }
       ],
-      "legend": { "show": true }
+      "legend": {
+        "show": true
+      }
     },
     {
       "type": "stat",
       "title": "HTTP 5xx rate (req/s)",
       "targets": [
-        { "expr": "sum(rate(certeus_http_request_duration_ms_count{status=~\"5..\"}[5m]))" }
+        {
+          "expr": "sum(rate(certeus_http_request_duration_ms_count{status=~\"5..\"}[5m]))"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "FIN entanglement MI (by pair)",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "targets": [
+        {
+          "expr": "certeus_fin_entanglement_mi",
+          "legendFormat": "{{a}}-{{b}}"
+        }
       ]
     }
   ],

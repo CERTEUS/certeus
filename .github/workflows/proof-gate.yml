@@ -74,6 +74,10 @@ jobs:
         run: |
           uv run python scripts/gates/path_coverage_gate.py --min-gamma 0.90 --max-uncaptured 0.05
 
+      - name: FIN Risk Policies Gate (OPA proxy)
+        run: |
+          echo '{"signals": {"risk": 0.6, "sentiment": 0.7}, "dp_epsilon": 0.5}' | uv run python scripts/gates/fin_risk_policy_gate.py
+
       - name: Compute boundary report
         if: ${{ secrets.PCO_JWKS_B64URL != '' }}
         env:
