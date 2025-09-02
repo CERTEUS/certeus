@@ -128,3 +128,7 @@ certeus_qtm_operator_priority = Gauge(
     "QTMP operator priority",
     labelnames=("operator",),
 )
+
+# LexQFT: Coverage (gamma, uncaptured)
+certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
+certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")

@@ -46,6 +46,15 @@
           <a id="caseLink" href="#" target="_blank" class="muted">Open case</a>
         </div>
       </div>
+      <div class="card" style="margin-top:16px;">
+        <h1>LexQFT • Coverage Contributions</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button class="btn" id="cov-refresh">Refresh coverage</button>
+          <span class="muted">gamma:<span id="cov-gamma" class="pill">?</span></span>
+          <span class="muted">uncaptured:<span id="cov-unc" class="pill">?</span></span>
+        </div>
+        <table id="covtbl"><thead><tr><th>gamma</th><th>weight</th><th>uncaptured</th></tr></thead><tbody></tbody></table>
+      </div>
     </div>
     <script>
       async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
