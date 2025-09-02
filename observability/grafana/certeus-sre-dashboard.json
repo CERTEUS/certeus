@@ -29,6 +29,24 @@
           "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, path))"
         }
       ]
+    },
+    {
+      "type": "table",
+      "title": "p95 latency by method (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, method))"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "p95 latency by status (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, status))"
+        }
+      ]
     }
   ],
   "time": {"from": "now-6h", "to": "now"}

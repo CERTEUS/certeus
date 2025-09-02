@@ -129,26 +129,53 @@ jobs:
       - name: Build PR comment summary
         if: github.event_name == 'pull_request' && always()
         run: |
+          set -e
+          # Try to fetch previous perf benchmark from ci-status branch
+          git fetch origin ci-status || true
+          if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
+            git show origin/ci-status:ci/perf_bench.json > out/prev_perf_bench.json 2>/dev/null || true
+          fi
           python - << 'PY'
           import json, os, pathlib
           repo = pathlib.Path('.').resolve()
           lines = []
-          # Perf
+          # Perf current
+          perf = None
           try:
               perf = json.loads((repo/'out'/'perf_bench.json').read_text())
-              lines.append('### Perf Bench (p95)')
-              lines.append(f"Worst p95: {perf.get('worst_p95_ms',0):.2f} ms (threshold {perf.get('threshold_ms')})")
+          except Exception:
+              pass
+          # Perf previous
+          prev = None
+          try:
+              prev = json.loads((repo/'out'/'prev_perf_bench.json').read_text())
+          except Exception:
+              pass
+          lines.append('### Perf Bench (p95)')
+          if perf:
+              worst = float(perf.get('worst_p95_ms', 0.0))
+              thr = perf.get('threshold_ms')
+              lines.append(f"Worst p95: {worst:.2f} ms (threshold {thr} ms)")
+              if prev and 'worst_p95_ms' in prev:
+                  delta = worst - float(prev.get('worst_p95_ms', 0.0))
+                  sign = '+' if delta >= 0 else ''
+                  lines.append(f"Δ vs prev: {sign}{delta:.2f} ms")
               lines.append('')
               lines.append('Endpoints:')
               for e in perf.get('endpoints', []):
                   lines.append(f"- {e['method']} {e['path']}: p95={e['p95_ms']:.2f} ms (min={e['min_ms']:.2f}, max={e['max_ms']:.2f})")
               lines.append('')
-          except Exception:
+          else:
               lines.append('Perf bench: report not available')
-          # SLO
+          # SLO summary with pass/fail (defaults align with step env)
           try:
               slo = json.loads((repo/'out'/'slo.json').read_text())
-              lines.append(f"SLO: p95={slo.get('p95_ms',0):.2f} ms, error_rate={slo.get('error_rate',0):.4f}")
+              p95 = float(slo.get('p95_ms', 0.0))
+              er = float(slo.get('error_rate', 0.0))
+              max_p95 = float(os.getenv('SLO_MAX_P95_MS', '300'))
+              max_er = float(os.getenv('SLO_MAX_ERROR_RATE', '0.01'))
+              ok = (p95 <= max_p95) and (er <= max_er)
+              lines.append(f"SLO: p95={p95:.2f} ms (<= {max_p95}), error_rate={er:.4f} (<= {max_er}) => {'OK' if ok else 'FAIL'}")
           except Exception:
               lines.append('SLO: report not available')
           # Smokes
@@ -208,7 +235,12 @@ jobs:
               "  \"status\": \"${{ job.status }}\"," \
               "  \"updated_at\": \"${ts}\"" \
             '}' > ci/status.json
+            # Persist latest perf bench for trend comparisons
+            if [ -f out/perf_bench.json ]; then
+              cp -f out/perf_bench.json ci/perf_bench.json || true
+            fi
             git add ci/status.json
+            git add ci/perf_bench.json || true
             git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
             if git push origin ci-status; then
               echo "[ci-status] Push OK"
