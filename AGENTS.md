@@ -21,6 +21,17 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 `$py -m ruff check . --fix`
 `$py -m ruff format .`
 
+## Pre-commit (lokalna dyscyplina)
+
+- Instalacja: `$py -m pip install pre-commit`
+- Aktywacja w repo: `pre-commit install`
+- Ręczne uruchomienie na całym repo: `pre-commit run -a`
+- Włączone hooki:
+  - `ruff` (lint + format)
+  - `normalize: section spacing (python)` — porządkuje puste linie wokół sekcji (Sekcja 21)
+  - `prettier` (md/yaml/json/html/js/css)
+  - `pytest (fast)` — szybka weryfikacja na zmianach py
+
 ## Testy
 
 `mkdir -Force reports`

@@ -45,6 +45,14 @@ repos:
   # --- Lokalne hooki (system) ---
   - repo: local
     hooks:
+      - id: normalize-section-spacing
+        name: "normalize: section spacing (python)"
+        entry: python tools/normalize_section_spacing.py --write
+        language: system
+        pass_filenames: true
+        types: [python]
+        stages: [pre-commit]
+
       # Blokowanie plików kluczy po rozszerzeniach
       - id: forbid-key-extensions
         name: "forbid: key files (*.pem|*.key|*.pfx|*.p12|*.der)"
