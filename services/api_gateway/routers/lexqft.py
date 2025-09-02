@@ -152,4 +152,19 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
 
 # === I/O / ENDPOINTS ===
 
+
 # === TESTY / TESTS ===
+class CoverageState(BaseModel):
+    coverage_gamma: float
+    uncaptured_mass: float
+
+
+@router.get("/coverage/state", response_model=CoverageState)
+async def coverage_state() -> CoverageState:
+    """PL/EN: Zwraca stan agregatora: gamma i łączną uncaptured_mass (ważoną)."""
+    if _COVERAGE_AGG:
+        tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
+        gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
+        unc = sum(u * w for _, w, u in _COVERAGE_AGG) / tot_w
+        return CoverageState(coverage_gamma=round(gamma, 6), uncaptured_mass=round(unc, 6))
+    return CoverageState(coverage_gamma=0.953, uncaptured_mass=0.02)

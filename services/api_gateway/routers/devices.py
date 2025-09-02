@@ -32,7 +32,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -47,9 +47,8 @@ class HDEPlanRequest(BaseModel):
 
 class HDEPlanResponse(BaseModel):
     evidence_plan: list[dict[str, Any]]
-
-    cost: int
-
+    plan_of_evidence: list[dict[str, Any]]
+    cost_tokens: int
     expected_kappa: float
 
 
@@ -131,7 +130,7 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         {"action": "request_affidavit", "weight": 0.6},
     ]
 
-    return HDEPlanResponse(evidence_plan=plan, cost=42, expected_kappa=0.012)
+    return HDEPlanResponse(evidence_plan=plan, plan_of_evidence=plan, cost_tokens=42, expected_kappa=0.012)
 
 
 # Quantum Oracle (QOC)
@@ -152,12 +151,17 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
 
 
 @router.post("/entangle", response_model=EntangleResponse)
-async def entangle(req: EntangleRequest, request: Request) -> EntangleResponse:
+async def entangle(req: EntangleRequest, request: Request, response: Response) -> EntangleResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
 
-    return EntangleResponse(certificate="stub-certificate", achieved_negativity=min(0.12, req.target_negativity))
+    cert = "stub-certificate"
+    try:
+        response.headers["X-CERTEUS-PCO-entangler.certificate"] = cert
+    except Exception:
+        pass
+    return EntangleResponse(certificate=cert, achieved_negativity=min(0.12, req.target_negativity))
 
 
 # Chronosync (LCSI)

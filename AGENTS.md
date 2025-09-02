@@ -64,6 +64,13 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 3) CI uruchamia gate’y. Jeśli wszystkie zielone → auto‑promocja do `main`. Jeśli którekolwiek `failure` → automatyczne Issue; agent naprawia i ponawia push.
 4) Nigdy nie wklejamy tokenów do logów/PR; sekrety tylko w ENV lub w `.devkeys/*.txt` (ignorowane).
 
+### WORKLOG (dziennik prac)
+
+- Plik: `WORKLOG.md` (repo‑root). Zawiera krótkie wpisy z datą, gałęzią i skrótem zmian.
+- Aktualizacja (automatyczna/pół‑automatyczna) przy pomocy skryptu:
+  - `venv/bin/python scripts/worklog/update_worklog.py --summary "W5: Quantum cockpit + presets API" --details "- /v1/qtm/preset\n- Grafana dashboard"`
+- Każdy agent po wykonaniu zadań dopisuje wpis (maks. 1–2 linie + punkty szczegółów), aby inne sesje miały świeży kontekst.
+
 ## Premium Code Style (Sekcja 21 — rdzeń agenta)
 
 - Standard: Każdy plik musi mieć baner CERTEUS na górze oraz docstring modułu PL/EN (patrz: `docs/manifest.md` — 21) Standard Kodowania).
