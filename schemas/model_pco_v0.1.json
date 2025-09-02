@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Model PCO (MCO) v0.1",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "training": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "data_dpco": { "type": "array", "items": { "type": "object" } },
+        "sbom_uri": { "type": "string" },
+        "commit_sha": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
+      },
+      "required": ["data_dpco", "commit_sha"]
+    },
+    "eval": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "ece": { "type": "number", "minimum": 0 },
+        "brier": { "type": "number", "minimum": 0 },
+        "auroc": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["ece", "brier"]
+    },
+    "bias_report_uri": { "type": "string" }
+  },
+  "required": ["training", "eval"]
+}
+

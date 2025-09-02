@@ -87,3 +87,13 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: artifact.json
+
+  enforce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce supply-chain (optional)
+        env:
+          SUPPLY_CHAIN_ENFORCE: ${{ vars.SUPPLY_CHAIN_ENFORCE || '0' }}
+        run: |
+          python scripts/gates/supply_chain_enforce.py || true
