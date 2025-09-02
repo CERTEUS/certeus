@@ -49,3 +49,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - OTel (opt-in) + HTTP p95 metrics middleware
   - - Prometheus alert rules (multi-burn) + SRE dashboard JSON
   - - CI: DR drill step (Boundary RTO/RPO)
+- 2025-09-02 11:26:03Z [48793] (work/daily): CI fix: governance validator path + Windows uv skip
+  - - scripts/validate_governance_consistency.py: repo root detection fixed
+  - - tests/truth/test_solvers.py: skip uv smoke on Windows (lock workaround)
