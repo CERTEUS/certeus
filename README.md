@@ -368,6 +368,10 @@ docker compose -f infra/docker-compose.monitoring.yml up -d
 - FINENITH:
   - `POST /v1/fin/alpha/measure` (signals), `GET /v1/fin/alpha/uncertainty`, `GET /v1/fin/alpha/entanglements`.
 
+Runbooki:
+- Bunkier/TEE: `docs/runbooks/security_bunker.md`
+- Role/Governance: `docs/runbooks/roles_governance.md`
+
 ---
 
 ## Diagrams

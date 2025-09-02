@@ -92,6 +92,28 @@ def _load_governance_pack() -> dict[str, Any]:
         return {}
 
 
+def _infer_domain(pco: Mapping[str, Any]) -> str:
+    # Explicit field
+    d = pco.get("domain") if isinstance(pco, Mapping) else None
+    if isinstance(d, str) and d:
+        return d.lower().strip()
+    # Case prefix heuristic
+    case_id = str(pco.get("case_id") or pco.get("rid") or "")
+    if case_id.startswith("CER-LEX"):
+        return "lex"
+    if case_id.startswith("CER-FIN"):
+        return "fin"
+    if case_id.startswith("CER-SEC"):
+        return "sec"
+    # Payload keys heuristic
+    keys = set(pco.keys()) if isinstance(pco, Mapping) else set()
+    if {"signals", "dp_epsilon"} & keys:
+        return "fin"
+    if {"cldf", "why_not", "motion", "authority_score", "normalized"} & keys:
+        return "lex"
+    return "lex"
+
+
 def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
     cur: Any = d
 
@@ -278,19 +300,11 @@ def publish(req: PublishRequest) -> PublishResponse:
                 decision = "ABSTAIN"
             else:
                 gov = _load_governance_pack()
-                domains = list((gov.get("domains") or {}).keys()) or ["lex", "fin", "sec"]
-                # For publish on PCO, allow union of allowed roles across domains
-                allowed_union: set[str] = set()
-                for d in domains:
-                    try:
-                        allow_map = ((gov.get("domains") or {}).get(d) or {}).get("allow") or {}
-                        pub = allow_map.get("publish") or []
-                        allowed_union.update(map(str, pub))
-                    except Exception:
-                        continue
-                # Always accept 'counsel' signature as advisory role
-                allowed_union.update({"counsel"})
-                if not (roles_present & allowed_union):
+                dom = _infer_domain(req.pco)
+                allow_map = ((gov.get("domains") or {}).get(dom) or {}).get("allow") or {}
+                allowed = set(map(str, (allow_map.get("publish") or [])))
+                # 'counsel' sygnatura jest wymagana osobno wcześniej; nie nadaje uprawnień publish
+                if not (roles_present & allowed):
                     decision = "ABSTAIN"
         except Exception:
             decision = "ABSTAIN"

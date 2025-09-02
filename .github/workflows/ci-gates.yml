@@ -46,6 +46,10 @@ jobs:
         run: |
           python -m pytest -q
 
+      - name: Governance consistency (smoke)
+        run: |
+          python scripts/validate_governance_consistency.py
+
       - name: Publish CI status to branch
         if: always()
         run: |
