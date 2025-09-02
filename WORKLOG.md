@@ -33,3 +33,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-02 10:43:13Z [48793] (work/daily): CI: governance consistency + Premium Style fixes for tests
   - - Proof Gate: add governance consistency step
   - - Tests: added banners/docstrings/sections with ruff E402 compliance
+- 2025-09-02 10:55:39Z [48793] (work/daily): W9: domain-aware role enforcement + CI governance smoke
+  - - ProofGate: infer domain (lex/fin/sec) and enforce per Governance Pack
+  - - Tests: services proofgate role enforcement
+  - - CI: ci-gates runs governance consistency
