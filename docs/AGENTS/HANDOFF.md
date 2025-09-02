@@ -2,10 +2,9 @@
 
 ## Status gałęzi i PR
 
-- main: zielony (wymagane checki przechodzą).
-- work/daily: zielony.
-- PR (merge/daily-to-main-20250902-145204 → main): otwarty, auto‑merge włączony; scali się po komplecie zielonych bramek.
-  - Link: przejdź z widoku PR w GitHub.
+- main: zielony; `Smoke (ubuntu/windows)` + `ci-gates` jako required checks.
+- work/daily: zielony (agregat ci-gates + UI Smoke).
+- Historia zresetowana (2025‑09‑02) do single‑root; archiwa starej historii: `origin/archive/old-main-*`, `origin/archive/old-daily-*`.
 
 ## Co dostarczono w tej iteracji (W9–W11)
 
@@ -36,7 +35,7 @@
   - Smokes: metrics/openapi/governance ✅/❌.
   - Gates (lokalne kroki): style/lint/tests/perf/slo ✅/❌.
   - Workflows: Proof Gate / Gauge‑Gate / Path‑Coverage‑Gate / Boundary‑Rebuild‑Gate / asset‑guard (ticki przez API GitHub).
-- Proof Gate workflow: ticki per krok (Gauge/Path/FIN/Bunker/Roles/Gov/Boundary/SLO) — dopisywane jako pliki `out/pg_*_ok.txt` i komentowane w PR.
+- Proof Gate workflow: ticki per krok (Gauge/Path/FIN/Bunker/Roles/Gov/Boundary/SLO) — dopisywane jako pliki `out/pg_*_ok.txt` i komentowane w PR (tylko PR/main; push: main).
 - Supply‑chain: Trivy zapisuje SARIF, nie blokuje PR (exit-code=0).
 - Auto‑merge: w repo włączony `allow_auto_merge=true`; branch protection ustawione na approvals=0 — PR zmerguje się po zielonych checkach.
 
@@ -68,4 +67,3 @@
 
 - Jeśli czerwony check dotyczy braków importu w skryptach uruchamianych „jako plik” — wzorzec rozwiązania: dołączyć repo‑root do `sys.path` i dodać `# noqa: E402` przy importach aplikacji.
 - Legacy testy ProofGate oczekują statusów PUBLISH/CONDITIONAL dla scenariuszy bez enforcementu — dlatego `FINE_GRAINED_ROLES=0` w „Tests”.
-

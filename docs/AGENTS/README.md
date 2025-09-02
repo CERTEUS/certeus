@@ -13,8 +13,9 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 ## Gałęzie i automatyzacja
 
 - Gałąź robocza: `work/daily` (zielona) – zmiany agenta trafiają tutaj.
-- Automatyczna promocja do `main` po zielonych gate’ach (FF/PR auto‑merge):
-  - Workflowy bramkowe: Proof Gate, asset‑guard, Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate.
+- Automatyczna promocja do `main` po zielonych checkach (FF/PR auto‑merge):
+  - Wymagane checki (Branch Protection): `Smoke (ubuntu-latest)`, `Smoke (windows-latest)`, `ci-gates`.
+  - Gate’y informacyjne (PR‑only): Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate, asset‑guard; Proof Gate — push: main, PR: main.
   - PR summary (ci‑gates) publikuje ticki gate’ów/smoków/workflowów + trend perf.
 - OTel w CI: włączony mock OTLP (`scripts/otel/mock_otlp.py`), `OTEL_ENABLED=1`.
 
@@ -51,6 +52,12 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 
 - Skrypty odpalane „jako plik” wymagają repo‑root w `sys.path` — wzorzec: dopisać `Path(__file__).resolve().parents[2]` do `sys.path` i zignorować E402 (`# noqa`).
 - Legacy testy ProofGate (decyzje) oczekują wyłączonego enforcementu ról — w CI kroki „Tests” mają `FINE_GRAINED_ROLES=0`.
+
+## Historia (reset i archiwa)
+
+- 2025‑09‑02 wykonano reset historii do pojedynczego „root commit” (czytelna baza).
+- Poprzednia historia dostępna wyłącznie w archiwach: `origin/archive/old-main-*`, `origin/archive/old-daily-*`.
+- Na widoku `main`/`work/daily` widoczny jest tylko bieżący, uporządkowany stan.
 
 ## Onboarding (5 minut)
 
@@ -107,4 +114,3 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 - Commity: Conventional Commits (feat/fix/chore/docs/ci/perf…).
 - Gałęzie PR: `merge/daily-to-main-YYYYMMDD-HHMMSS` (automatyczne tworzenie do merge).
 - Tokeny: `.devkeys/admin_token.txt` (lokalnie; nie publikować), `GITHUB_TOKEN` w CI; nigdy nie wklejać do logów/PR.
-
