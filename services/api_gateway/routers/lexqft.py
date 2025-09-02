@@ -30,7 +30,7 @@ EN: FastAPI router for lexqft / geometry of meaning.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -88,7 +88,7 @@ async def coverage() -> CoverageResponse:
 
 
 @router.post("/tunnel", response_model=TunnelResponse)
-async def tunnel(req: TunnelRequest, request: Request) -> TunnelResponse:
+async def tunnel(req: TunnelRequest, request: Request, response: Response) -> TunnelResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -102,8 +102,28 @@ async def tunnel(req: TunnelRequest, request: Request) -> TunnelResponse:
     min_e = 0.8
 
     path = ["start", "barrier", "post-barrier"] if p > 0.5 else ["start", "reflect"]
+    resp = TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
 
-    return TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
+    # PCO headers: qlaw.tunneling.*
+    try:
+        response.headers["X-CERTEUS-PCO-qlaw.tunneling.p"] = str(resp.p_tunnel)
+        response.headers["X-CERTEUS-PCO-qlaw.tunneling.path"] = "/".join(path)
+        response.headers["X-CERTEUS-PCO-qlaw.tunneling.min_energy"] = str(min_e)
+    except Exception:
+        pass
+
+    # Record to Ledger (hash of tunneling outcome)
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        payload = {"qlaw.tunneling": {"p": resp.p_tunnel, "path": path, "min_energy": min_e}}
+        doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
+        case_id = req.state_uri or "lexqft-case"
+        ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
+    except Exception:
+        pass
+
+    return resp
 
 
 # === I/O / ENDPOINTS ===

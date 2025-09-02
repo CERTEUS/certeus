@@ -187,7 +187,16 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default") or {"channel": "dephasing"}
     collapse_log = CollapseLog(sequence=sequence, decoherence=deco)
 
-    ub = {"L_T": 0.25}
+    # Bridge CFE↔QTMP: use CFE curvature to influence uncertainty/priorities
+    try:
+        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
+
+        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
+    except Exception:
+        kappa = 0.012
+
+    # Simple correlation: higher curvature => slightly higher L_T bound
+    ub = {"L_T": round(0.2 + min(0.2, kappa * 10.0), 3)}
 
     latency_ms = round((perf_counter() - t0) * 1000.0, 3)
 
@@ -205,6 +214,15 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
             response.headers["X-CERTEUS-PCO-qtm.predistribution[]"] = _json.dumps(
                 cg["predistribution"], separators=(",", ":")
             )
+        # Operator priorities influenced by curvature
+        import json as _json
+
+        base_pri = {"W": 1.0, "I": 1.0, "C": 1.0, "L": 1.0, "T": 1.0}
+        boost = 1.0 + min(0.25, kappa * 10.0)
+        base_pri["L"] = round(base_pri["L"] * boost, 3)
+        base_pri["T"] = round(base_pri["T"] * boost, 3)
+        response.headers["X-CERTEUS-PCO-qtmp.priorities"] = _json.dumps(base_pri, separators=(",", ":"))
+        response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(round(kappa * 0.1, 6))
     except Exception:
         pass
 

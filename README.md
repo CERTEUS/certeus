@@ -286,6 +286,7 @@ POST /v1/cfe/geodesic               # geodezyjny dowód (CFE)
 POST /v1/cfe/horizon                # horyzont zdarzeń dowodowych (CFE)
 POST /v1/qtm/measure                # kolaps funkcji falowej (QTMP)
 POST /v1/lexqft/tunnel              # tunelowanie dowodowe
+GET  /v1/lexqft/coverage            # gamma pokrycia ścieżek + uncaptured mass
 POST /v1/mailops/ingest                # ingest e-maila → Evidence DAG/PFS
 POST /v1/chatops/command            # komenda tekstowa → wywołanie usług
 POST /v1/devices/horizon_drive/plan # plan dowodów do horyzontu (HDE)
@@ -562,4 +563,3 @@ MIT © 2025 CERTEUS Contributors
 
 - Source of truth: `docs/openapi/certeus.v1.yaml` (used by Pages workflow to publish JSON).
 - To inspect runtime JSON locally: `curl -s http://127.0.0.1:8000/openapi.json -o out/openapi.json`.
-

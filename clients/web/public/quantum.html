@@ -1,0 +1,75 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/quantum.html                      |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/quantum.html                      |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Quantum</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:1080px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
+      .grid{display:grid;grid-template-columns:repeat(10, 1fr);gap:2px;margin-top:8px}
+      .cell{width:18px;height:18px;background:#20242a;border-radius:2px}
+      .cell.hot{background:#f2c8cc}
+      .cell.cold{background:#c8f2d2}
+      input,select{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Quantum • Operator Composer</h1>
+        <div class="row">
+          <input id="case" placeholder="case id (LEX-001)" />
+          <select id="op">
+            <option value="W">W</option>
+            <option value="I">I</option>
+            <option value="C">C</option>
+            <option value="L" selected>L</option>
+            <option value="T">T</option>
+          </select>
+          <button id="measure" class="btn">Measure</button>
+          <button id="save" class="btn">Save preset</button>
+          <button id="load" class="btn">Load preset</button>
+          <span class="muted">UB L_T:<span id="ub" class="pill">?</span></span>
+          <span class="muted">Collapse:<span id="collapse" class="pill">-</span></span>
+          <span class="muted">Priorities:<span id="pri" class="pill">-</span></span>
+        </div>
+        <div id="heat" class="grid"></div>
+        <p class="muted">Coverage: <span id="gamma" class="pill">?</span> • Tunneling p: <span id="ptun" class="pill">?</span></p>
+      </div>
+    </div>
+    <script>
+      const key = 'certeus.quantum.preset';
+      function paintHeat(v){ const grid = document.getElementById('heat'); grid.innerHTML=''; for(let i=0;i<100;i++){ const d=document.createElement('div'); d.className = 'cell ' + ((Math.random()+v)>1.0?'hot':'cold'); grid.appendChild(d);} }
+      async function fetchJSON(url,opts){ const r = await fetch(url,opts); const j = await r.json(); return {ok:r.ok,data:j,headers:r.headers} }
+      async function updateCoverage(){ const r = await fetchJSON('/v1/lexqft/coverage'); if(r.ok){ document.getElementById('gamma').textContent = r.data.coverage_gamma; } }
+      async function updateTunnel(){ const r = await fetchJSON('/v1/lexqft/tunnel',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({evidence_energy: 1.1})}); if(r.ok){ document.getElementById('ptun').textContent = r.data.p_tunnel; } }
+      async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); } }
+      function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; localStorage.setItem(key, JSON.stringify({case:cs,op})) }
+      function loadPreset(){ try{ const p = JSON.parse(localStorage.getItem(key)||'{}'); if(p.case) document.getElementById('case').value = p.case; if(p.op) document.getElementById('op').value = p.op; }catch(e){} }
+      document.getElementById('measure').addEventListener('click', doMeasure);
+      document.getElementById('save').addEventListener('click', savePreset);
+      document.getElementById('load').addEventListener('click', loadPreset);
+      loadPreset(); updateCoverage(); updateTunnel();
+    </script>
+  </body>
+  </html>
+
