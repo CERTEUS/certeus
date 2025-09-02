@@ -90,3 +90,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Archived old history: archive/old-main-*, archive/old-daily-*\n- Force-pushed clean root commit; CI green path preserved
 - 2025-09-02 14:43:15Z [48793] (work/daily): Branch Protection: require ci-gates + Smoke; docs updated
   - - Updated AGENTS/HANDOFF with clean history + archives\n- Branch protection contexts: ci-gates, Smoke (ubuntu/windows)
+- 2025-09-02 15:13:38Z [48793] (work/daily): Pre-commit hooks: Conventional Commits + section spacing
+  - - commit-msg validation enforced\n- normalize section spacing on staged .py files
