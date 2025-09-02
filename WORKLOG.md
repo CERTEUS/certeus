@@ -68,3 +68,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-02 11:58:23Z [48793] (work/daily): CI: OpenAPI smoke + PR comment with perf bench
   - - ci-gates: openapi_smoke; comment PR with perf_bench.json summary
   - - scripts: smokes/openapi_smoke.py
+- 2025-09-02 12:09:39Z [48793] (work/daily): W11: OTel in CI + PR summary + smoke upgrades
+  - - CI: mock OTLP + OTEL_ENABLED=1, exporter endpoint
+  - - PR: comment SLO/Smokes/Perf in ci-gates
+  - - API: /metrics headers; dashboards extended
