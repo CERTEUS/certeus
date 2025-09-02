@@ -31,6 +31,10 @@ jobs:
           python -m pip install -e .
           # Install test/dev helpers explicitly used by the suite
           python -m pip install ruff pytest pytest-asyncio httpx z3-solver
+
+      - name: Load CI defaults (non-secrets)
+        run: |
+          python scripts/ci/load_env_defaults.py
       - name: Decorator split scan (report-only)
         run: |
           python scripts/fix_decorator_split.py --check || true

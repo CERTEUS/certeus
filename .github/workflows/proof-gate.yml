@@ -36,6 +36,10 @@ jobs:
         run: |
           uv sync --all-extras --dev
 
+      - name: Load CI defaults (non-secrets)
+        run: |
+          uv run python scripts/ci/load_env_defaults.py
+
       - name: Ruff (autofix)
         run: |
           uv run ruff check . --fix
@@ -109,7 +113,7 @@ jobs:
 
       - name: ProofGate Roles Smoke
         env:
-          FINE_GRAINED_ROLES: "1"
+          FINE_GRAINED_ROLES: ${{ vars.FINE_GRAINED_ROLES }}
         run: |
           uv run python scripts/smokes/proofgate_roles_smoke.py
 
