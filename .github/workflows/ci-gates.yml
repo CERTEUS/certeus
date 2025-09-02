@@ -57,6 +57,14 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/lint_ok.txt
+      - name: Bandit security scan
+        run: |
+          python -m pip install bandit
+          bandit -q -r . -x .venv,venv,clients/web,clients/cli,dist,build || exit 1
+      - name: Gitleaks (secrets scan)
+        uses: zricethezav/gitleaks-action@v2.3.7
+        with:
+          args: detect --verbose --redact --no-banner --exit-code 1
       - name: Tests
         env:
           PYTEST_ADDOPTS: "-k 'not test_generate_proofs_cli_smoke_test'"
@@ -69,7 +77,6 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/tests_ok.txt
-
       - name: Perf Smoke (W11)
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
@@ -91,7 +98,7 @@ jobs:
             sys.exit(0)
           cur = json.loads(cur_p.read_text())
           worst = float(cur.get('worst_p95_ms', 0.0))
-          thr_pct = 0.20
+          thr_pct = 0.10
           if prev_p.exists():
             prev = json.loads(prev_p.read_text())
             base = float(prev.get('worst_p95_ms', 0.0)) or 1.0
@@ -362,6 +369,8 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
+
+
 
 
 
