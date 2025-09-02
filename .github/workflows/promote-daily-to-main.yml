@@ -1,0 +1,66 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/promote-daily-to-main.yml          |
+# | ROLE: Auto-promote work/daily to main (gated by CI)         |
+# | PLIK: .github/workflows/promote-daily-to-main.yml          |
+# | ROLA: Auto-promocja work/daily → main (po zielonym CI)      |
+# +-------------------------------------------------------------+
+
+name: Promote-Daily-To-Main
+
+on:
+  workflow_run:
+    workflows:
+      - Proof Gate
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  promote:
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure git user
+        run: |
+          git config user.name "certeus-bot"
+          git config user.email "bot@users.noreply.github.com"
+      - name: Fast-forward main to work/daily (if possible)
+        id: ff
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git fetch origin
+          # Ensure branches are up-to-date
+          git checkout main
+          git reset --hard origin/main
+          git merge --ff-only origin/work/daily && {
+            echo "ff=true" >> $GITHUB_OUTPUT
+            git push origin main
+            exit 0
+          } || echo "No fast-forward possible; will create/auto-merge PR."
+          echo "ff=false" >> $GITHUB_OUTPUT
+      - name: Create or auto-merge PR (work/daily -> main)
+        if: steps.ff.outputs.ff == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Find existing PR
+          PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number' || true)
+          if [ -z "$PR_NUM" ]; then
+            gh pr create -B main -H work/daily -t "Promote work/daily to main" -b "Auto-promotion after green CI."
+            PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number')
+          fi
+          # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
+          gh pr merge "$PR_NUM" --auto --squash || true
+
