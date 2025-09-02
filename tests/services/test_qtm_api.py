@@ -58,6 +58,25 @@ def test_qtm_measure_headers_and_fields() -> None:
     assert "X-CERTEUS-PCO-qtmp.priorities" in hdrs
 
 
+def test_qtm_measure_uses_preset_operator_if_available() -> None:
+    case_id = "LEX-QTMP-PRESET-FALLBACK"
+    client.post("/v1/qtm/preset", json={"case": case_id, "operator": "T"})
+    r = client.post("/v1/qtm/measure", json={"operator": "W", "source": "ui", "case": case_id})
+    assert r.status_code == 200
+    hdr = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event", "{}")
+    # very small parser to avoid json import; string contains operator":"T"
+    assert '\"operator\":\"T\"' in hdr
+
+
+def test_qtm_state_endpoint_after_init() -> None:
+    case_id = "LEX-QTMP-STATE-1"
+    client.post("/v1/qtm/init_case", json={"case": case_id, "basis": ["ALLOW", "DENY"]})
+    r = client.get(f"/v1/qtm/state/{case_id}")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["case"] == case_id and body["basis"] == ["ALLOW", "DENY"]
+
+
 def test_qtm_commutator_simple_rule() -> None:
     r_eq = client.post("/v1/qtm/commutator", json={"A": "L", "B": "L"})
     r_ne = client.post("/v1/qtm/commutator", json={"A": "L", "B": "T"})
@@ -78,4 +97,3 @@ def test_qtm_find_entanglement_pairs() -> None:
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

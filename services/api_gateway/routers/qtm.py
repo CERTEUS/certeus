@@ -59,9 +59,8 @@ class InitCaseResponse(BaseModel):
 
 class MeasureRequest(BaseModel):
     operator: str = Field(description="One of W/I/C/L/T (domain-dependent)")
-
     source: str | None = Field(default="ui", description="ui | chatops:<cmd> | mail:<id>")
-
+    case: str | None = Field(default=None, description="Optional case identifier to bind decoherence/presets")
     basis: list[str] | None = None
 
 
@@ -167,8 +166,17 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
 
-    idx = abs(hash(req.operator)) % len(basis)
+    # Resolve case id for decoherence/presets
+    case_id = (req.case or req.source or "qtm-case").replace(":", "-")
 
+    # Preset override: if preset stored for this case, use it
+    try:
+        _presets = _load_presets()
+        op_effective = _presets.get(case_id, req.operator)
+    except Exception:
+        op_effective = req.operator
+
+    idx = abs(hash(op_effective)) % len(basis)
     verdict = basis[idx]
 
     # Probability stub
@@ -184,7 +192,6 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     ]
 
     # Decoherence: use registry if available for this case
-    case_id = (req.source or "qtm-case").replace(":", "-")
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default") or {"channel": "dephasing"}
     collapse_log = CollapseLog(sequence=sequence, decoherence=deco)
 
@@ -206,7 +213,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # PCO headers: collapse event and optional predistribution from case-graph
     try:
         response.headers["X-CERTEUS-PCO-qtm.collapse_event"] = (
-            f"{{\"operator\":\"{req.operator}\",\"verdict\":\"{verdict}\",\"channel\":\"{deco.get('channel', '')}\"}}"
+            f"{{\"operator\":\"{op_effective}\",\"verdict\":\"{verdict}\",\"channel\":\"{deco.get('channel', '')}\"}}"
         )
         cg = CASE_GRAPH.get(case_id)
         if cg and "predistribution" in cg:
@@ -257,6 +264,26 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         pass
 
     return resp
+
+
+class QtmStateOut(BaseModel):
+    case: str
+    psi: str
+    basis: list[str]
+    predistribution: list[dict[str, Any]]
+
+
+@router.get("/state/{case}", response_model=QtmStateOut)
+async def get_state(case: str) -> QtmStateOut:
+    cg = CASE_GRAPH.get(case)
+    if not cg:
+        raise HTTPException(status_code=404, detail="Case not found")
+    return QtmStateOut(
+        case=case,
+        psi=str(cg.get("psi", "psi://unknown")),
+        basis=list(cg.get("basis", [])),
+        predistribution=list(cg.get("predistribution", [])),
+    )
 
 
 @router.post("/commutator", response_model=CommutatorResponse)
