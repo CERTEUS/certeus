@@ -52,7 +52,14 @@ jobs:
 
       - name: Perf Smoke (W11)
         run: |
-          python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250
+          python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
+
+      - name: Upload perf report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-bench-${{ github.sha }}
+          path: out/perf_bench.json
 
       - name: SLO Smoke (in-proc)
         env:

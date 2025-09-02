@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import statistics
 import time
+from typing import Any
 
 from fastapi.testclient import TestClient
 
@@ -52,15 +53,36 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--iters", type=int, default=10)
     ap.add_argument("--p95-max-ms", type=float, default=250.0)
+    ap.add_argument("--out", default="out/perf_bench.json")
     args = ap.parse_args()
 
     client = TestClient(app)
     worst_p95 = 0.0
+    results: dict[str, Any] = {"endpoints": [], "iters": args.iters}
     for method, path in ENDPOINTS:
         durs = _time_endpoint(client, method, path, args.iters)
         p95 = statistics.quantiles(durs, n=100)[94]
         worst_p95 = max(worst_p95, p95)
+        results["endpoints"].append(
+            {
+                "method": method,
+                "path": path,
+                "p95_ms": p95,
+                "min_ms": min(durs),
+                "max_ms": max(durs),
+            }
+        )
         print(f"{method} {path}: p95={p95:.2f} ms over {args.iters} iters")
+
+    # write JSON report
+    import json
+    import os
+
+    os.makedirs(os.path.dirname(args.out), exist_ok=True)
+    results["worst_p95_ms"] = worst_p95
+    results["threshold_ms"] = args.p95_max_ms
+    with open(args.out, "w", encoding="utf-8") as fh:
+        json.dump(results, fh, indent=2)
 
     if worst_p95 > args.p95_max_ms:
         print(f"Perf bench: FAIL worst p95={worst_p95:.2f} ms > {args.p95_max_ms} ms")
