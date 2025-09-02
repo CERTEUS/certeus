@@ -29,3 +29,31 @@ $pubdir = [System.IO.Path]::Combine($PWD, ([Environment]::GetEnvironmentVariable
 New-Item -ItemType Directory -Force -Path $pubdir | Out-Null
 Write-Host "OK: załadowano .env i ustawiono zmienne środowiskowe."
 
+# --- GitHub git auth (permanent) ----------------------------------------------
+# Wykorzystaj .devkeys/{github_user.txt,admin_token.txt} do zapisania
+# poświadczeń w ~/.git-credentials oraz ustaw helper=store (idempotentnie),
+# aby nowe sesje nie wymagały ręcznej konfiguracji.
+try {
+  $userFile = Join-Path $PWD ".devkeys/github_user.txt"
+  $tokFile  = Join-Path $PWD ".devkeys/admin_token.txt"
+  if ((Test-Path $userFile) -and (Test-Path $tokFile)) {
+    $usr = (Get-Content $userFile -Raw).Trim()
+    $tok = (Get-Content $tokFile  -Raw).Trim()
+    $home = [Environment]::GetFolderPath('UserProfile')
+    $credPath = Join-Path $home ".git-credentials"
+    # Dopisz wpis host-level i repo-level (idempotentnie)
+    $hostLine = "https://$usr:$tok@github.com"
+    $repoLine = "https://$usr:$tok@github.com/CERTEUS/certeus.git"
+    if (Test-Path $credPath) {
+      $cur = Get-Content $credPath -Raw
+      if ($cur -notmatch [regex]::Escape($hostLine)) { Add-Content $credPath $hostLine }
+      if ($cur -notmatch [regex]::Escape($repoLine)) { Add-Content $credPath $repoLine }
+    } else {
+      Set-Content $credPath -Value ($hostLine + "`n" + $repoLine) -Encoding UTF8
+    }
+    git config --global credential.helper store | Out-Null
+    git config --global credential.useHttpPath true | Out-Null
+    Write-Host "OK: zaktualizowano ~/.git-credentials i helper=store (GitHub)."
+  }
+} catch { Write-Warning "GitHub git auth setup skipped: $($_.Exception.Message)" }
+
