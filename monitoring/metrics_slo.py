@@ -147,6 +147,19 @@ certeus_qtm_history_len = Gauge(
     labelnames=("case",),
 )
 
+# QTMP: Collapse probability histogram and CFE-QTMP correlation
+certeus_qtm_collapse_prob = Histogram(
+    "certeus_qtm_collapse_prob",
+    "QTMP collapse probability",
+    labelnames=("operator",),
+    buckets=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
+)
+certeus_qtm_cfe_correlation = Gauge(
+    "certeus_qtm_cfe_correlation",
+    "CFE-QTMP correlation",
+    labelnames=("case",),
+)
+
 # LexQFT: Coverage (gamma, uncaptured)
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")

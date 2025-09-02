@@ -330,6 +330,8 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # Export UB/priorities metrics to Prometheus + collapse counters and history length
     try:
         from monitoring.metrics_slo import (
+            certeus_qtm_cfe_correlation,
+            certeus_qtm_collapse_prob,
             certeus_qtm_collapse_total,
             certeus_qtm_history_len,
             certeus_qtm_operator_priority,
@@ -340,6 +342,15 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         for op_key, val in base_pri.items():
             certeus_qtm_operator_priority.labels(operator=op_key).set(float(val))
         certeus_qtm_collapse_total.labels(operator=op_effective, verdict=verdict).inc()
+        try:
+            certeus_qtm_collapse_prob.labels(operator=op_effective).observe(float(p))
+        except Exception:
+            pass
+        try:
+            corr = float(ub.get("L_T", 0.0))
+            certeus_qtm_cfe_correlation.labels(case=case_id).set(corr)
+        except Exception:
+            pass
         try:
             _hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
             certeus_qtm_history_len.labels(case=case_id).set(_hist_len)
@@ -421,12 +432,17 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
         pass
     # Metrics
     try:
-        from monitoring.metrics_slo import certeus_qtm_collapse_total, certeus_qtm_history_len
+        from monitoring.metrics_slo import (
+            certeus_qtm_collapse_prob,
+            certeus_qtm_collapse_total,
+            certeus_qtm_history_len,
+        )
 
         hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
         certeus_qtm_history_len.labels(case=case_id).set(hist_len)
         for s in steps:
             certeus_qtm_collapse_total.labels(operator=s.operator, verdict=s.verdict).inc()
+            certeus_qtm_collapse_prob.labels(operator=s.operator).observe(float(s.p))
     except Exception:
         pass
     return SequenceResponse(steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub)
