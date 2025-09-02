@@ -52,6 +52,22 @@ def main() -> int:
                 payload["gauge"]["holonomy_drift"] = kappa
         except Exception:
             pass
+    else:
+        # In-proc fallback: import FastAPI app and query via TestClient (requires fastapi installed)
+        try:
+            from fastapi.testclient import TestClient  # type: ignore
+
+            from services.api_gateway.main import app  # type: ignore
+
+            with TestClient(app) as client:  # type: ignore
+                r = client.get("/v1/cfe/curvature")
+                if r.status_code == 200:
+                    data = r.json()
+                    kappa = float(data.get("kappa_max", 0.0))
+                    payload["gauge"]["holonomy_drift"] = kappa
+        except Exception:
+            pass
+          
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
 

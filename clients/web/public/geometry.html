@@ -1,0 +1,80 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/geometry.html                     |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/geometry.html                     |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Geometry</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:980px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      .grid{display:grid;grid-template-columns:repeat(10, 1fr);gap:2px;margin-top:8px}
+      .cell{width:18px;height:18px;background:#20242a;border-radius:2px;position:relative}
+      .cell[data-v]{background: linear-gradient(180deg, #20242a, #2a2d33)}
+      .cell:hover::after{content:attr(data-tip);position:absolute;left:20px;top:-10px;background:#1a1c20;border:1px solid #2a2d33;padding:4px 6px;border-radius:6px;white-space:nowrap;font-size:12px}
+      a{color:#9aa0a6}
+      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Geometry • Ricci heatmap <span id="kappa" class="pill">kappa_max: ?</span></h1>
+        <div id="ricci" class="grid"></div>
+        <p class="muted">Lensing map (precedents): <span id="lensing"></span></p>
+        <div class="row">
+          <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
+          <button id="geodesic" class="btn">Compute geodesic</button>
+          <button id="lock" class="btn">Lock horizon</button>
+          <span id="status" class="muted"></span>
+          <a id="caseLink" href="#" target="_blank" class="muted">Open case</a>
+        </div>
+      </div>
+    </div>
+    <script>
+      async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
+      function paintRicci(kappa){ const grid = document.getElementById('ricci'); grid.innerHTML=''; for(let i=0;i<100;i++){ const v = Math.random()*kappa*100; const d=document.createElement('div'); d.className='cell'; d.dataset.tip = `Ricci[${i}]=${v.toFixed(2)}`; if(v>0.5) d.dataset.v = '1'; grid.appendChild(d);} }
+      async function init(){
+        const cur = await fetchJSON('/v1/cfe/curvature');
+        if(cur.ok){ document.getElementById('kappa').textContent = `kappa_max: ${cur.data.kappa_max}`; paintRicci(cur.data.kappa_max||0.01) }
+        const lm = await fetchJSON('/v1/cfe/lensing');
+        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', ') }
+      }
+      async function doGeodesic(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const r = await fetchJSON('/v1/cfe/geodesic', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, facts:{}, norms:{}})});
+        const act = r.headers.get('X-CERTEUS-PCO-cfe.geodesic_action');
+        document.getElementById('status').textContent = r.ok ? `geodesic_action=${act}` : 'error';
+        document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
+      async function doLock(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const r = await fetchJSON('/v1/cfe/horizon', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, lock: true})});
+        const locked = r.headers.get('X-CERTEUS-CFE-Locked');
+        const mass = r.headers.get('X-CERTEUS-PCO-cfe.horizon_mass');
+        document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
+        document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
+      document.getElementById('geodesic').addEventListener('click', doGeodesic);
+      document.getElementById('lock').addEventListener('click', doLock);
+      init();
+    </script>
+  </body>
+  </html>
+

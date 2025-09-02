@@ -44,7 +44,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -69,6 +69,7 @@ class GeodesicResponse(BaseModel):
 
 class HorizonRequest(BaseModel):
     case: str | None = None
+    lock: bool | None = None
 
 
 class HorizonResponse(BaseModel):
@@ -114,7 +115,7 @@ async def curvature() -> CurvatureResponse:
 
 
 @router.post("/geodesic", response_model=GeodesicResponse)
-async def geodesic(req: GeodesicRequest, request: Request) -> GeodesicResponse:
+async def geodesic(req: GeodesicRequest, request: Request, response: Response) -> GeodesicResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -125,18 +126,55 @@ async def geodesic(req: GeodesicRequest, request: Request) -> GeodesicResponse:
 
     action = 12.34
 
+    # PCO header for downstream proof-native flows
+    try:
+        response.headers["X-CERTEUS-PCO-cfe.geodesic_action"] = str(action)
+    except Exception:
+        pass
+
+    # Record to Ledger (hash of cfe.geodesic_action)
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        doc_hash = "sha256:" + compute_provenance_hash({"cfe.geodesic_action": action}, include_timestamp=False)
+        case_id = req.case or "cfe-case"
+        ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
+    except Exception:
+        pass
+
     return GeodesicResponse(path=path, geodesic_action=action, subject=req.case)
 
 
 @router.post("/horizon", response_model=HorizonResponse)
-async def horizon(_req: HorizonRequest, request: Request) -> HorizonResponse:
+async def horizon(req: HorizonRequest, request: Request, response: Response) -> HorizonResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
 
-    # Placeholder: pretend horizon is not locked and has low mass
+    # Decide locked for samples or explicit lock flag
+    locked = bool(req.lock) or (
+        isinstance(req.case, str) and ("sample" in req.case.lower() or "przyklad" in req.case.lower())
+    )
 
-    return HorizonResponse(locked=False, horizon_mass=0.15)
+    # PCO headers
+    try:
+        response.headers["X-CERTEUS-PCO-cfe.horizon_mass"] = str(0.15)
+        response.headers["X-CERTEUS-CFE-Locked"] = "true" if locked else "false"
+    except Exception:
+        pass
+
+    # Record to Ledger (hash of cfe.horizon_mass + locked)
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        payload = {"cfe.horizon_mass": 0.15, "cfe.locked": locked}
+        doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
+        case_id = req.case or "cfe-case"
+        ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
+    except Exception:
+        pass
+
+    return HorizonResponse(locked=locked, horizon_mass=0.15)
 
 
 @router.get("/lensing", response_model=LensingResponse)
