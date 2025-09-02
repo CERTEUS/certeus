@@ -179,5 +179,6 @@ async def coverage_state() -> CoverageState:
             certeus_lexqft_uncaptured_mass.set(float(unc))
         except Exception:
             pass
+          
         return CoverageState(coverage_gamma=round(gamma, 6), uncaptured_mass=round(unc, 6))
     return CoverageState(coverage_gamma=0.953, uncaptured_mass=0.02)
