@@ -33,6 +33,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -195,6 +196,25 @@ async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
     except Exception:
         pass
     return response
+
+
+# Cache OpenAPI JSON in-memory to reduce per-request overhead
+_openapi_schema_cache = None
+
+
+def _cached_openapi():  # type: ignore[override]
+    global _openapi_schema_cache
+    if _openapi_schema_cache:
+        return _openapi_schema_cache
+    _openapi_schema_cache = get_openapi(
+        title=APP_TITLE,
+        version=APP_VERSION,
+        routes=app.routes,
+    )
+    return _openapi_schema_cache
+
+
+app.openapi = _cached_openapi  # type: ignore[assignment]
 
 
 # --- blok --- Rejestr routerów -------------------------------------------------

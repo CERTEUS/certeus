@@ -20,6 +20,15 @@
       "type": "graph",
       "title": "p95 latency (ms)",
       "targets": [{"expr": "certeus_http_p95_ms"}]
+    },
+    {
+      "type": "table",
+      "title": "Top p95 latency by path (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, path))"
+        }
+      ]
     }
   ],
   "time": {"from": "now-6h", "to": "now"}

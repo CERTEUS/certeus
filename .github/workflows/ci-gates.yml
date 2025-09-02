@@ -54,6 +54,14 @@ jobs:
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250
 
+      - name: SLO Smoke (in-proc)
+        env:
+          SLO_MAX_P95_MS: "300"
+          SLO_MAX_ERROR_RATE: "0.01"
+        run: |
+          python scripts/slo_gate/measure_api.py
+          python scripts/slo_gate/check_slo.py
+
       - name: Governance consistency (smoke)
         run: |
           python scripts/validate_governance_consistency.py
