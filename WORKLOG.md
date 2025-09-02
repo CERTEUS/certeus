@@ -60,3 +60,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Perf: cache OpenAPI JSON in memory (faster /openapi.json)
   - - CI: SLO smoke in ci-gates
   - - Grafana: Top p95 by path panel
+- 2025-09-02 11:41:35Z [48793] (work/daily): ProofGate smoke + OpenAPI cache; CI health check added
+  - - ProofGate: cached openapi() for perf
+  - - Smoke: in-proc /healthz step in Proof Gate workflow
