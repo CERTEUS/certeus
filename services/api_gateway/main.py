@@ -57,6 +57,7 @@ try:  # optional: avoid hard fail if core/pco deps are unavailable
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
 except Exception:
     pco_public = None  # type: ignore[assignment]
+import services.api_gateway.routers.lexenith as lexenith
 import services.api_gateway.routers.preview as preview
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
@@ -200,6 +201,8 @@ app.include_router(verify.router)
 app.include_router(cfe.router)
 
 app.include_router(qtm.router)
+
+app.include_router(lexenith.router)
 
 app.include_router(devices.router)
 
