@@ -42,6 +42,7 @@ EN: This module contains tests for the proof generator:
 from __future__ import annotations
 
 from pathlib import Path
+import platform
 import shutil
 import subprocess
 import sys
@@ -103,7 +104,10 @@ def test_generate_proofs_function_creates_expected_artifacts(
                 assert size > 0, f"PL: Pusty plik: {p} | EN: Empty file: {p}"
 
 
-@pytest.mark.skipif(shutil.which("uv") is None, reason="uv not available on PATH")
+@pytest.mark.skipif(
+    shutil.which("uv") is None or platform.system().lower().startswith("win"),
+    reason="uv not available or Windows PATH lock",
+)
 def test_generate_proofs_cli_smoke_test() -> None:
     """
 

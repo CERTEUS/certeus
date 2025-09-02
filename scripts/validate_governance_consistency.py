@@ -36,7 +36,8 @@ import yaml  # type: ignore
 
 # === LOGIKA / LOGIC ===
 def _repo() -> Path:
-    return Path(__file__).resolve().parents[2]
+    # File is at repo_root/scripts/validate_governance_consistency.py → parents[1] == repo_root
+    return Path(__file__).resolve().parents[1]
 
 
 def _load_pack(p: Path) -> dict[str, Any]:
