@@ -16,3 +16,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Gate: scripts/gates/roles_policy_gate.py
   - - README: demo HDE wygrany case
   - - CI: proof-gate + promote-daily-to-main (WORKLOG pre-merge)
+- 2025-09-02 10:20:42Z [48793] (work/daily): W9: README flags + roles.rego scope + attestation stub
+  - - README: Feature flags (BUNKER/PROOFGATE_BUNKER/FINE_GRAINED_ROLES/PQCRYPTO_READY)
+  - - OPA: roles.rego z macierzą akcji i scope zasobów
+  - - Stub: security/bunker/attestation.json (gotowość lokalnie/CI)
