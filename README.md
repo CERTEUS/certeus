@@ -397,6 +397,8 @@ Zobacz `docs/diagrams.md` — Boundary snapshot/diff oraz pipeline Proof Gate (C
     - lub marker `data/security/bunker.ready`.
 - `FINE_GRAINED_ROLES`: włącza fine‑grained role enforcement w ProofGate (AFV/ASE/ATC/ATS/AVR) — eksperymentalnie.
 - `PQCRYPTO_READY`: sygnalizacja gotowości PQ‑crypto w bramce CI (informacyjne; nie blokuje).
+- `PQCRYPTO_REQUIRE`: wymusza zielony stan dla PQ‑crypto (gdy `1`, bramka `pqcrypto_gate.py` musi widzieć gotowość — `PQCRYPTO_READY=1`).
+- `STRICT_DP_BUDGET`: włącza egzekwowanie budżetów DP (ε) w bramce `dp_budget_gate.py`.
 
 CI integracja:
 - Proof Gate uruchamia kroki „Security Bunker Gate” i „Roles Policy Gate”. Repo‑variables `BUNKER`, `PROOFGATE_BUNKER`, `PQCRYPTO_READY` sterują zachowaniem.

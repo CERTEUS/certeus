@@ -94,6 +94,25 @@ jobs:
         run: |
           uv run python scripts/validate_governance_consistency.py
 
+      - name: PQ-crypto Gate (readiness)
+        env:
+          PQCRYPTO_REQUIRE: ${{ vars.PQCRYPTO_REQUIRE }}
+          PQCRYPTO_READY: ${{ vars.PQCRYPTO_READY }}
+        run: |
+          uv run python scripts/gates/pqcrypto_gate.py
+
+      - name: DP Budget Gate (stub)
+        env:
+          STRICT_DP_BUDGET: ${{ vars.STRICT_DP_BUDGET }}
+        run: |
+          echo '{"budgets":[{"name":"alpha","limit":1.0,"used":0.2}]}' | uv run python scripts/gates/dp_budget_gate.py
+
+      - name: ProofGate Roles Smoke
+        env:
+          FINE_GRAINED_ROLES: "1"
+        run: |
+          uv run python scripts/smokes/proofgate_roles_smoke.py
+
       - name: Compute boundary report
         if: ${{ secrets.PCO_JWKS_B64URL != '' }}
         env:
