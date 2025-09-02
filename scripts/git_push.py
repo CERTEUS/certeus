@@ -37,6 +37,7 @@ def main() -> int:
     args = ap.parse_args()
 
     # Prefer explicit user/token; support ADMIN_TOKEN fallback
+
     user = os.getenv("GITHUB_USER") or os.getenv("GH_USER") or os.getenv("GIT_USER")
     token = (
         os.getenv("GITHUB_PUSH_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("ADMIN_TOKEN")
