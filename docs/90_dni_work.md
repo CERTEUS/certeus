@@ -254,6 +254,7 @@
 
 Status: Gate PQ‑crypto (stub) dodany do Proof Gate (CI) z flagami `PQCRYPTO_REQUIRE`/`PQCRYPTO_READY`; domyślnie informacyjne, możliwość wymuszenia zielonego.
 
+
 **D42 (S6)** TEE profil (opcjonalny).
 
 * Attestation w ProofGate.
@@ -261,6 +262,7 @@ Status: Gate PQ‑crypto (stub) dodany do Proof Gate (CI) z flagami `PQCRYPTO_RE
 * DOD: „bunkier” on/off.
 
 Status: Bramki Bunkra (CI) + stub attestation + runbook. ProofGate wymaga `pco.tee.attested=true` przy aktywnym profilu.
+
 
 **D43 (S6)** OPA/Rego — fine‑grained.
 
@@ -270,6 +272,7 @@ Status: Bramki Bunkra (CI) + stub attestation + runbook. ProofGate wymaga `pco.t
 
 Status: roles.rego + bramka ról (OPA proxy), Governance Pack (lex/fin/sec), walidator spójności oraz enforcement w ProofGate (domena → rola publish); smoke E2E w Proof Gate.
 
+
 **D44 (S6)** Secret mgmt/DP/MPC.
 
 * Budżet ε w PCO; przepływy MPC.
@@ -277,6 +280,7 @@ Status: roles.rego + bramka ról (OPA proxy), Governance Pack (lex/fin/sec), wal
 * DOD: testy wycieku.
 
 Status: Bramki DP budget (stub, `STRICT_DP_BUDGET`) w Proof Gate; gotowe do rozszerzeń testów wycieku.
+
 
 **D45** Pentest tygodnia (wew.).
 
@@ -577,3 +581,4 @@ Status: Bramki DP budget (stub, `STRICT_DP_BUDGET`) w Proof Gate; gotowe do rozs
 * **Proof‑Only I/O** — publikacja bez PCO jest niemożliwa technicznie.
 
 * **QTMP** — kolaps i nieoznaczoność jako pierwszoklasowe obywatele API.
+
