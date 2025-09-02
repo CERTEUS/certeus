@@ -84,6 +84,14 @@ def _load_policy_pack() -> dict[str, Any]:
         return {}
 
 
+def _load_governance_pack() -> dict[str, Any]:
+    try:
+        p = _repo_root() / "policies" / "governance" / "governance_pack.v0.1.yaml"
+        return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+
+
 def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
     cur: Any = d
 
@@ -262,13 +270,28 @@ def publish(req: PublishRequest) -> PublishResponse:
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
-        # Allowed roles: AFV/ASE/ATC/ATS/AVR
+        # Governance‑aware enforcement: require at least one allowed role per governance pack
         try:
             sigs = req.pco.get("signatures") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
-            roles = {s.get("role") for s in sigs if isinstance(s, dict)} if isinstance(sigs, list) else set()
-            allowed = {"AFV", "ASE", "ATC", "ATS", "AVR", "counsel"}
-            if not roles or not roles.issubset(allowed):
+            roles_present = {s.get("role") for s in sigs if isinstance(s, dict)} if isinstance(sigs, list) else set()
+            if not roles_present:
                 decision = "ABSTAIN"
+            else:
+                gov = _load_governance_pack()
+                domains = list((gov.get("domains") or {}).keys()) or ["lex", "fin", "sec"]
+                # For publish on PCO, allow union of allowed roles across domains
+                allowed_union: set[str] = set()
+                for d in domains:
+                    try:
+                        allow_map = ((gov.get("domains") or {}).get(d) or {}).get("allow") or {}
+                        pub = allow_map.get("publish") or []
+                        allowed_union.update(map(str, pub))
+                    except Exception:
+                        continue
+                # Always accept 'counsel' signature as advisory role
+                allowed_union.update({"counsel"})
+                if not (roles_present & allowed_union):
+                    decision = "ABSTAIN"
         except Exception:
             decision = "ABSTAIN"
 
