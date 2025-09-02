@@ -22,6 +22,7 @@ EN: FastAPI router for diagnostics/system info.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -38,8 +39,9 @@ from services.ingest_service.adapters.ocr_injector import build_ocr_preview
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class IngestResult(BaseModel):
     kind: str = Field(default="fact")
 
@@ -68,14 +70,11 @@ class SourceCacheResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 router = APIRouter(tags=["system"])
-
 
 # Mount FHIR connector under the same aggregating router
 
 router.include_router(fhir_router)
-
 
 # ---------------------------------------------------------------------
 
@@ -202,7 +201,6 @@ async def ingest_document(
 
 # ---------------------------------------------------------------------
 
-
 # moved to be directly above the implementation (see bottom of file)
 # ---------------------------------------------------------------------
 
@@ -269,6 +267,8 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
 
 
 # === I/O / ENDPOINTS ===
+
+
 @router.post("/v1/sources/cache", response_model=SourceCacheResponse)
 def post_source_cache(req: SourceCacheRequest) -> SourceCacheResponse:
     return cache_source(req)

@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Middleware bezpieczeństwa:
@@ -37,6 +36,7 @@ EN: Security middleware:
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -53,7 +53,6 @@ from core.pco.crypto import b64u_decode, load_pubkey_bytes_from_env
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 __all__ = ["attach_proof_only_middleware"]
 

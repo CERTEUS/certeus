@@ -14,14 +14,11 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Dodaje standardowe znaczniki sekcji (sekcja 21.1) do krytycznych modułów
 
 Python: core/pco/** i services/api_gateway/**, jeśli jeszcze ich nie ma.
-
-
 
 Wstawiane nagłówki (po docstringu modułu):
 
@@ -35,8 +32,6 @@ Wstawiane nagłówki (po docstringu modułu):
 
 - # === I/O / ENDPOINTS ===
 
-
-
 EN: Inserts section markers after module docstring to make file structure
 
 consistent with Section 21.1. Idempotent.
@@ -44,12 +39,14 @@ consistent with Section 21.1. Idempotent.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 TARGET_DIRS = [
     "architectus",
     "cje",
@@ -173,7 +170,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

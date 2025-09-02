@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Pakiet inicjalizacyjny modułu.
@@ -30,7 +29,6 @@ EN: Package initializer.
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # === I/O / ENDPOINTS ===
 

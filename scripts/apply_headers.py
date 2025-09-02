@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Skrypt skanuje repozytorium, znajduje pliki .py i dodaje:
@@ -59,13 +58,11 @@ SKIP_DIR_CONTAINS = (
     "/build/",
 )
 
-
 # Pliki, które zwykle pomijamy (jeśli chcesz – usuń z listy)
 
 SKIP_FILES = {
     "plugins/__init__.py",  # często pusty
 }
-
 
 # === Generator nagłówka ======================================= #
 
@@ -99,7 +96,6 @@ DEFAULT_DOCSTRING = (
     "EN: CERTEUS module – please complete the functional description.\n"
     '"""\n'
 )
-
 
 # === Wykrywanie istniejącego nagłówka/docstringa ============== #
 

@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Adapter dla Z3 i zależności SMT.
@@ -25,6 +24,7 @@ EN: Adapter for Z3 and SMT.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import logging
@@ -39,8 +39,9 @@ from kernel.smt_translator import (
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class Z3Adapter:
     """
 
@@ -84,9 +85,7 @@ class Z3Adapter:
 
 # === LOGIKA / LOGIC ===
 
-
 _Z3 = cast(Any, z3)
-
 
 logger = logging.getLogger(__name__)
 

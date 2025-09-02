@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru lexqft / geometria sensu.
-
-
 
 EN: FastAPI router for lexqft / geometry of meaning.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request, Response
@@ -35,8 +33,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class TunnelRequest(BaseModel):
     state_uri: str | None = None
 
@@ -55,27 +54,19 @@ class TunnelResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 
-
 # | FILE: services/api_gateway/routers/lexqft.py                        |
-
 
 # | ROLE: lexqft endpoints (evidence tunneling)                         |
 
-
 # +=====================================================================+
-
 
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 
@@ -158,8 +149,9 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
 
 # === I/O / ENDPOINTS ===
 
-
 # === TESTY / TESTS ===
+
+
 class CoverageState(BaseModel):
     coverage_gamma: float
     uncaptured_mass: float

@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru Disaster Recovery: replay/revoke.
-
-
 
 EN: FastAPI router for DR: replay/revoke.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request, Response
@@ -35,8 +33,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class ReplayRequest(BaseModel):
     case: str
 
@@ -80,24 +79,17 @@ class RevokeResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/dr.py                            |
 
-
 # | ROLE: DR-Replay / DR-Recall (stubs)                                 |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/dr", tags=["DR"])
 

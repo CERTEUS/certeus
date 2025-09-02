@@ -18,6 +18,7 @@ EN: Boundary gate – requires `delta_bits == 0` and (if present) per-shard
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

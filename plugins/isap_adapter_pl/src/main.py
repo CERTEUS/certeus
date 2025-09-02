@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Wejście wtyczki isap_adapter_pl (Domain Pack).
 
@@ -22,6 +21,7 @@ EN: isap_adapter_pl plugin entry (Domain Pack).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from services.sipp_indexer_service.index_isap import snapshot_pl
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -30,27 +30,19 @@ from services.sipp_indexer_service.index_isap import snapshot_pl
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: plugins/isap_adapter_pl/src/main.py                 |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: plugins/isap_adapter_pl/src/main.py                 |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 

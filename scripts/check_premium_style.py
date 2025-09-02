@@ -14,20 +14,15 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 CI Gate: Premium Code Style (sec. 21)
-
-
 
 Sprawdza repo wg kluczowych punktów z sekcji 21:
 
 - Python: baner CERTEUS + module docstring (PL/EN) + obecność sekcji (# === ... ===)
 
 - YAML/HTML/JS/SH/PS1: nagłówek (baner) z FILE/PLIK i CERTEUS
-
-
 
 Zwraca kod 0 (OK) lub 1 (naruszenia). Wypisuje listę problemów.
 
@@ -40,7 +35,6 @@ from pathlib import Path
 import sys
 
 REPO = Path(__file__).resolve().parents[1]
-
 
 SKIP_DIRS = {
     ".git",

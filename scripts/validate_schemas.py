@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Ten moduł zapewnia, że wszystkie kontrakty danych (schematy) są
@@ -22,8 +21,6 @@ PL: Ten moduł zapewnia, że wszystkie kontrakty danych (schematy) są
     zgodne ze standardem JSON Schema Draft 7 oraz spełniają minimalne
 
     wymogi jakości (title/description, spójność required/properties).
-
-
 
 EN: Ensures all data contracts (schemas) comply with JSON Schema Draft 7
 
@@ -34,6 +31,7 @@ EN: Ensures all data contracts (schemas) comply with JSON Schema Draft 7
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -47,7 +45,6 @@ from jsonschema import Draft7Validator  # Only what we truly use
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 SCHEMA_DIR = Path("schemas")
 
@@ -159,7 +156,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

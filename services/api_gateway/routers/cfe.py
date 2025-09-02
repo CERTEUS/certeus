@@ -16,14 +16,11 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Stub API dla CFE (geometria sensu) zgodnie z manifestem.
 
 EN: Stub API for CFE (geometry of meaning) per the manifest.
-
-
 
 Endpoints:
 
@@ -33,13 +30,12 @@ Endpoints:
 
 - GET  /v1/cfe/lensing  -> { lensing_map, critical_precedents }
 
-
-
 Zwracane wartości są placeholderami niezależnymi od środowiska produkcyjnego.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
@@ -49,8 +45,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class GeodesicRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
 
@@ -86,7 +83,6 @@ class LensingResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
 
 # |                              CERTEUS                                |
@@ -98,7 +94,6 @@ class LensingResponse(BaseModel):
 # | ROLE: CFE API stubs: /curvature, /geodesic, /horizon, /lensing      |
 
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/cfe", tags=["CFE"])
 

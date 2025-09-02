@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Generator migawek ISAP. Buduje pojedynczy plik JSON `<act_id>.json`
@@ -29,6 +28,7 @@ EN: ISAP snapshot generator. Produces a single JSON `<act_id>.json` with
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -40,8 +40,9 @@ from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 @dataclass(slots=True)
 class ActSnapshot:
     act_id: str

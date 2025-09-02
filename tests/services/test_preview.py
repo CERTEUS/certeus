@@ -14,25 +14,28 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Testy weryfikują, że endpoint /v1/preview przyjmuje plik (multipart/form-data)
 
     i zwraca JSON z kluczem `url` wskazującym ścieżkę podglądu w `/static/previews/...`.
 
-
-
 EN: Tests verify that /v1/preview accepts a file (multipart/form-data) and returns
 
     JSON with a `url` pointing to a preview path under `/static/previews/...`.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

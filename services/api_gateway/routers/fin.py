@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru FINENITH (quantum alpha).
-
-
 
 EN: FastAPI router for FINENITH (quantum alpha).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request, Response
@@ -35,8 +33,9 @@ from pydantic import BaseModel
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class MeasureRequest(BaseModel):
     signals: dict[str, float] | None = None
 
@@ -61,24 +60,17 @@ class EntanglementsResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/fin.py                           |
 
-
 # | ROLE: FINENITH / "Quantum Alpha" endpoints                          |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/fin/alpha", tags=["finance"])
 

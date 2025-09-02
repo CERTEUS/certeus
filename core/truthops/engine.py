@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """PL: Faza PRE: GoP/EUQ/TTDE (klasyfikacja HOT/WARM/COLD + plan).
 
 POST: ATT/MTV (kontrtesty i spójność) → PUBLISH/CONDITIONAL/ABSTAIN.
@@ -24,6 +23,7 @@ EN:  PRE: GoP/EUQ/TTDE (HOT/WARM/COLD + plan). POST: ATT/MTV → verdict.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -31,8 +31,9 @@ from typing import Any, Literal
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class PreSolveResult:
     """PL: Wynik fazy PRE. EN: PRE phase result."""
 
@@ -44,7 +45,6 @@ class PreSolveResult:
 
 
 # === LOGIKA / LOGIC ===
-
 
 # +=====================================================================+
 
@@ -63,7 +63,6 @@ class PreSolveResult:
 # |  EN: Two-phase TruthOps engine (pre/post) for publication decisions.|
 
 # +=====================================================================+
-
 
 Decision = Literal["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
 

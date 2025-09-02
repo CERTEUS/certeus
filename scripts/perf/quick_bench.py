@@ -17,6 +17,7 @@ EN: Quick perf bench (TestClient) — times a few endpoints and reports p95.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -35,6 +36,7 @@ if str(_REPO_ROOT) not in sys.path:
 from services.api_gateway.main import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
+
 ENDPOINTS = [
     ("GET", "/health"),
     ("GET", "/openapi.json"),
@@ -98,5 +100,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

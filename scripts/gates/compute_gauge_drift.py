@@ -16,6 +16,7 @@ EN: Gauge holonomy stub computation. Writes out a JSON with metrics.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

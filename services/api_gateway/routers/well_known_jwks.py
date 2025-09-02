@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Endpoint publikujący klucz publiczny Ed25519 w formacie JWKS (/.well-known/jwks.json).
@@ -24,6 +23,7 @@ EN: Endpoint exposing Ed25519 public key via JWKS (/.well-known/jwks.json).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import base64
@@ -38,16 +38,13 @@ from fastapi import APIRouter, HTTPException
 
 # === LOGIKA / LOGIC ===
 
-
 # ----Bloki----- IMPORTY
-
 
 try:
     from security.key_manager import load_ed25519_public_bytes  # type: ignore
 
 except Exception:  # pragma: no cover
     load_ed25519_public_bytes = None  # type: ignore[assignment]
-
 
 # ----Bloki----- KONFIGURACJA
 
@@ -85,8 +82,9 @@ def _kid_from_key(pub: bytes) -> str:
 
 # ----Bloki----- ENTRYPOINT
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.get("/.well-known/jwks.json")
 def jwks():
     try:

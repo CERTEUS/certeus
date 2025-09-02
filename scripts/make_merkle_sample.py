@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +======================================================================+
 
 # |                               CERTEUS                                |
@@ -53,6 +52,7 @@ EN: CERTEUS project module (generic description).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from argparse import ArgumentParser
@@ -70,8 +70,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey,
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class MerkleStep(TypedDict):
     sibling: str  # hex
 
@@ -80,12 +81,9 @@ class MerkleStep(TypedDict):
 
 # === LOGIKA / LOGIC ===
 
-
 DEFAULT_DIR = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
 
-
 # ----Bloki----- TYPY
-
 
 # ----Bloki----- POMOCNICZE
 
@@ -324,7 +322,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 # === I/O / ENDPOINTS ===
 

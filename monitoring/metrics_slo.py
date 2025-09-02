@@ -5,13 +5,18 @@ PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 EN: CERTEUS module – please complete the functional description.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
 
 # +-------------------------------------------------------------+
 
@@ -41,7 +46,6 @@ certeus_brier = Gauge("certeus_brier", "Brier score")
 
 certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
 
-
 # Histogram for compile/verification durations (ms)
 
 certeus_compile_duration_ms = Histogram(
@@ -49,7 +53,6 @@ certeus_compile_duration_ms = Histogram(
     "Proof compile/verification duration (ms)",
     buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
 )
-
 
 # Counters
 
@@ -59,13 +62,11 @@ certeus_proof_verification_failed_total = Counter(
 
 certeus_source_fetch_errors_total = Counter("certeus_source_fetch_errors_total", "Source retrieval/digest errors")
 
-
 # Gauge for missing digests (alias for SLO Gate input). Kept at 0 unless
 
 # validation flows explicitly set it.
 
 certeus_sources_digest_missing = Gauge("certeus_sources_digest_missing", "Count of sources missing required digests")
-
 
 # Decision counters (ProofGate)
 

@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Moduł projektu CERTEUS (uogólniony opis).
 
@@ -29,27 +28,19 @@ EN: CERTEUS project module (generic description).
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: services/zkp_service/stub.py                        |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: services/zkp_service/stub.py                        |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 

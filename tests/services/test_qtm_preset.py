@@ -28,9 +28,7 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
-
 # === I/O / ENDPOINTS ===
-
 
 # === TESTY / TESTS ===
 

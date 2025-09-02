@@ -14,102 +14,67 @@
 
 # +-------------------------------------------------------------+
 
-
 """
-
-
-
-
-
-
 
 PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 
-
-
-
-
-
-
 EN: CERTEUS module – please complete the functional description.
 
-
-
-
-
-
-
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: tests/plugins/test_plugins_registry.py              |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: tests/plugins/test_plugins_registry.py              |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 
-
 # +------------------------------------------------+
-
 
 # |                  CERTEUS                       |
 
-
 # |                Core Plugin API                 |
-
 
 # +------------------------------------------------+
 
-
 #
-
 
 # PL: Minimalne API rdzenia do rejestracji pluginów oraz
 
-
 #     rejestrów funkcjonalnych (adapters/exporters).
 
-
 #
-
 
 # EN: Minimal core API for plugin registration and
 
-
 #     functional registries (adapters/exporters).
-
 
 #
 
-
 # Konwencje (README "Premium Code Style"):
 
-
 # - Logo, dwujęzyczne komentarze, sekcje, type hints.
-
 
 #
 
@@ -121,67 +86,17 @@ from typing import Any
 class PluginAPI:
     """
 
-
-
-
-
-
-
     PL: Prosty rejestr pluginów i entrypointów funkcjonalnych.
-
-
-
-
-
-
 
         - register(plugin) lub register(name, plugin)
 
-
-
-
-
-
-
         - adapters/exporters jako słowniki funkcji/obiektów
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     EN: Simple registry for plugins and functional entrypoints.
 
-
-
-
-
-
-
         - register(plugin) or register(name, plugin)
 
-
-
-
-
-
-
         - adapters/exporters as dicts of callables/objects
-
-
-
-
-
-
 
     """
 
@@ -199,67 +114,17 @@ class PluginAPI:
     def register(self, *args: Any) -> None:
         """
 
-
-
-
-
-
-
         PL: Obsługuje dwie sygnatury:
-
-
-
-
-
-
 
             • register(plugin)
 
-
-
-
-
-
-
             • register(name, plugin)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         EN: Supports two signatures:
 
-
-
-
-
-
-
             • register(plugin)
 
-
-
-
-
-
-
             • register(name, plugin)
-
-
-
-
-
-
 
         """
 
@@ -295,27 +160,9 @@ class PluginAPI:
     def list_plugins(self):
         """
 
-
-
-
-
-
-
         PL: Zwróć widok kluczy (dict_keys), zgodnie z oczekiwaniem testów.
 
-
-
-
-
-
-
         EN: Return keys view (dict_keys), as tests expect.
-
-
-
-
-
-
 
         """
 

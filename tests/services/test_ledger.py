@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Testy Ledger – sprawdzanie łańcucha skrótów i nagłówków.
@@ -23,11 +22,17 @@ PL: Testy Ledger – sprawdzanie łańcucha skrótów i nagłówków.
 EN: Ledger tests – verification of hash chain and headers.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations
@@ -208,7 +213,6 @@ class Ledger:
 # pojedyncza instancja do użycia przez routery
 
 ledger_service = Ledger()
-
 
 __all__ = [
     "Ledger",

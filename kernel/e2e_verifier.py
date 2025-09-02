@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Weryfikator E2E przepływów CERTEUS.
@@ -25,6 +24,7 @@ EN: E2E verifier for CERTEUS flows.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import logging
@@ -36,8 +36,9 @@ from .smt_translator import compile_bool_ast, validate_ast
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class E2EVerifier:
     """
 
@@ -120,9 +121,7 @@ class E2EVerifier:
 
 # === LOGIKA / LOGIC ===
 
-
 logger = logging.getLogger(__name__)
-
 
 # -----------------------------------------------------------------------------
 
@@ -166,7 +165,6 @@ except Exception:  # pragma: no cover - emergency fallback
                     result["error"] = f"model_error: {e}"
 
             return result
-
 
 # === I/O / ENDPOINTS ===
 

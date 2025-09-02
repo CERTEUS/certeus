@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 r"""
 
 Użycie / Usage (PowerShell):
@@ -23,8 +22,6 @@ Użycie / Usage (PowerShell):
   # 1) na podstawie "seed" (RID = sha256(seed))
 
   uv run python scripts/make_pco_bundle.py --seed rid-demo
-
-
 
   # 2) z własnym RID (64-hex), LFSC i SMT2 z plików
 
@@ -38,19 +35,13 @@ Użycie / Usage (PowerShell):
 
     --signature 0f0f...
 
-
-
   # 3) od razu pokaż URL GET dla API
 
   uv run python scripts/make_pco_bundle.py --seed case-42 --echo-url
 
-
-
 Domyślny katalog wyjściowy:
 
   PROOF_BUNDLE_DIR lub ./data/public_pco (utworzy się automatycznie)
-
-
 
 Zawartość bundla (minimal):
 
@@ -68,8 +59,6 @@ Zawartość bundla (minimal):
 
   }
 
-
-
 Weryfikacja:
 
   curl http://127.0.0.1:8000/pco/public/<rid>
@@ -77,6 +66,7 @@ Weryfikacja:
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -92,15 +82,11 @@ from typing import Final
 
 # === LOGIKA / LOGIC ===
 
-
 DEFAULT_DIR: Final[str] = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
-
 
 # --- blok --- Importy ----------------------------------------------------------
 
-
 # --- blok --- Stałe ------------------------------------------------------------
-
 
 # --- blok --- Hash utils -------------------------------------------------------
 
@@ -309,10 +295,8 @@ def main() -> int:
 
 # --- blok --- Entrypoint -------------------------------------------------------
 
-
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 # === I/O / ENDPOINTS ===
 

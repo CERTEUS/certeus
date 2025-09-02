@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Endpoint eksportu. Przyjmuje `case_id` i `analysis_result`, zapisuje raport
@@ -45,7 +44,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="", tags=["export"])
-
 
 # === MODELS / MODELE ===
 

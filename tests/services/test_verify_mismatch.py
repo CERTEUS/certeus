@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Test symuluje rozbieżność rdzeni i sprawdza odpowiedź 409.
@@ -22,7 +21,6 @@ PL: Test symuluje rozbieżność rdzeni i sprawdza odpowiedź 409.
 EN: Test simulates core mismatch and checks 409 response.
 
 """
-
 
 # === IMPORTY / IMPORTS ===
 

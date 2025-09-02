@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # =============================================================================
 
 #  CERTEUS — Local Adapters (stubs)
@@ -68,6 +67,7 @@ EN: Local stub implementations of adapters (no cloud).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
@@ -95,8 +95,9 @@ from .contracts import (
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class LocalDriveAdapter(DriveAdapter):
     """
 
@@ -319,7 +320,6 @@ class StubLLMAdapter(LLMAdapter):
 
 # === LOGIKA / LOGIC ===
 
-
 # ------------------------------ Helpers -------------------------------------
 
 
@@ -343,15 +343,11 @@ def _ensure_dir(path: Path) -> None:
 
 # --------------------------- LocalDriveAdapter ------------------------------
 
-
 # --------------------------- StubPreviewAdapter -----------------------------
-
 
 # ----------------------------- StubOCRAdapter -------------------------------
 
-
 # ----------------------------- StubLLMAdapter -------------------------------
-
 
 # === I/O / ENDPOINTS ===
 

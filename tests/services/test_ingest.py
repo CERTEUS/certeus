@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Testy sprawdzają ścieżkę sukcesu (OCR stub → FACTLOG), nagłówek łańcucha
@@ -26,13 +25,18 @@ EN: Tests cover the success path (OCR stub → FACTLOG), the Ledger chain header
     and MIME/size validations.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
 
 # [BLOCK: IMPORTS]
 
@@ -53,13 +57,11 @@ fastapi_app_typed: FastAPI = cast(FastAPI, api_main.app)  # type: ignore[attr-de
 
 client: TestClient = TestClient(fastapi_app_typed)
 
-
 # [BLOCK: TYPES]
 
 # (filename, fileobj, mimetype)
 
 FileTuple = tuple[str, IO[bytes], str]
-
 
 LEDGER_HEADER: Literal["X-CERTEUS-Ledger-Chain"] = "X-CERTEUS-Ledger-Chain"
 

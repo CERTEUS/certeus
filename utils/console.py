@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +=====================================================================+
 
 # |                          CERTEUS                                    |
@@ -26,7 +25,6 @@
 # | DATE:    2025-08-17                                                  |
 
 # +=====================================================================+
-
 
 # +-------------------------------------------------------------+
 
@@ -55,11 +53,17 @@ EN: Helpers for ASCII-safe printing and simple colored
 log markers on text streams.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

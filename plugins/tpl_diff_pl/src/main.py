@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Wejście wtyczki tpl_diff_pl (Domain Pack).
 
@@ -22,6 +21,7 @@ EN: tpl_diff_pl plugin entry (Domain Pack).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from datetime import datetime
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -30,27 +30,19 @@ from datetime import datetime
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: plugins/tpl_diff_pl/src/main.py                     |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: plugins/tpl_diff_pl/src/main.py                     |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 

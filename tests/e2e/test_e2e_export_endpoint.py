@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Test E2E endpointu /v1/export – oczekuje ścieżki do wygenerowanego raportu.
@@ -22,13 +21,18 @@ PL: Test E2E endpointu /v1/export – oczekuje ścieżki do wygenerowanego rapor
 EN: E2E test for /v1/export endpoint – expects path to generated report.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
 
 # [BLOCK: IMPORTS]
 
@@ -57,7 +61,6 @@ class ExportPayload(TypedDict):
 # [BLOCK: CLIENT]
 
 client = TestClient(app)
-
 
 # +-------------------------------------------------------------+
 

@@ -17,6 +17,7 @@ EN: ProofGate roles smoke: for domain lex expect PUBLISH, for sec expect
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -26,8 +27,9 @@ from fastapi.testclient import TestClient
 
 from services.proofgate.app import app
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _pco(domain: str, case_prefix: str, roles: list[str]) -> dict[str, Any]:
     return {
         "domain": domain,
@@ -63,5 +65,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

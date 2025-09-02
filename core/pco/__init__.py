@@ -22,6 +22,7 @@ EN: CERTEUS project module (generic description).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from .crypto import (  # noqa: E402
@@ -48,7 +49,6 @@ from .public_payload import PublicPCO  # noqa: E402
 
 # === LOGIKA / LOGIC ===
 
-
 __all__ = [
     "b64u_encode",
     "b64u_decode",
@@ -64,7 +64,6 @@ __all__ = [
     "apply_merkle_path",
     "PublicPCO",
 ]
-
 
 # === I/O / ENDPOINTS ===
 

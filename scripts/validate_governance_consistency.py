@@ -21,6 +21,7 @@ EN: Validates Governance Pack against the roles gate and rego skeleton.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -33,8 +34,9 @@ from typing import Any
 
 import yaml  # type: ignore
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _repo() -> Path:
     # File is at repo_root/scripts/validate_governance_consistency.py → parents[1] == repo_root
     return Path(__file__).resolve().parents[1]
@@ -120,4 +122,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===

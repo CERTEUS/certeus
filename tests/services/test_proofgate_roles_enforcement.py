@@ -20,8 +20,9 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from services.proofgate.app import app  # noqa: E402
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _minimal_ok_pco(domain: str, case_prefix: str) -> dict:
     case = f"CER-{case_prefix}-TEST"
     return {
@@ -36,6 +37,8 @@ def _minimal_ok_pco(domain: str, case_prefix: str) -> dict:
 
 
 # === TESTY / TESTS ===
+
+
 def test_publish_denied_for_sec_domain_even_with_afv() -> None:
     # Governance: sec.publish is [] (empty) → ABSTAIN
     os.environ["FINE_GRAINED_ROLES"] = "1"

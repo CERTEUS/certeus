@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Skrypt uruchamiany przez pre-commit. Dla podanych plików .py
@@ -24,8 +23,6 @@ PL: Skrypt uruchamiany przez pre-commit. Dla podanych plików .py
     Akceptuje kilka form nagłówka (baner z 'CERTEUS', lub linie
 
     zawierające 'FILE:'/'PLIK:'), żeby nie blokować developmentu.
-
-
 
 EN: Pre-commit script. For given .py files, validates that a
 
@@ -96,8 +93,6 @@ def _has_certeus_header(head_text: str) -> bool:
     - presence of 'FILE:' and/or 'PLIK:' markers, OR
 
     - SPDX license line if you decide to add one later.
-
-
 
     This matches the banner inserted by scripts/apply_headers.py.
 

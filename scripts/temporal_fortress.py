@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """PL: Harmonogram odświeżania dowodów (prawo=365, med=90, fin=7).
 
 EN: Re-proof scheduler (law=365, med=90, fin=7).
@@ -22,17 +21,18 @@ EN: Re-proof scheduler (law=365, med=90, fin=7).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
 
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # +=====================================================================+
 

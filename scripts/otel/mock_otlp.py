@@ -17,6 +17,7 @@ EN: Minimal OTLP HTTP receiver for tests/CI. Accepts POST /v1/traces
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from http.server import BaseHTTPRequestHandler, HTTPServer

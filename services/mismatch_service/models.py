@@ -15,10 +15,10 @@
 
 # +-------------------------------------------------------------+
 
-
 """Modele Pydantic v2 dla biletów niezgodności SMT."""
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -29,8 +29,9 @@ from pydantic import BaseModel, Field, field_validator
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class TicketStatus(str, Enum):
     OPEN = "open"
 
@@ -212,7 +213,6 @@ class TicketStatistics(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
-
 
 # === I/O / ENDPOINTS ===
 

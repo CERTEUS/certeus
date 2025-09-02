@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: API rdzenia CERTEUS: interfejsy wysokiego poziomu.
 
@@ -25,8 +24,9 @@ EN: CERTEUS core API: high-level interfaces.
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class PluginAPI:
     def __init__(self):
         self._plugins = {}
@@ -59,30 +59,21 @@ class PluginAPI:
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: core/api.py                                         |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: core/api.py                                         |
 
-
 # | ROLA: Moduł projektu.                                       |
 
-
 # +-------------------------------------------------------------+
-
 
 # === I/O / ENDPOINTS ===
 

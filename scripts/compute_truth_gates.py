@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
-
-
 
 EN: CERTEUS project module (generic description).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -40,30 +38,21 @@ import xml.etree.ElementTree as ET
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: scripts/compute_truth_gates.py                                 |
 
-
 # | ROLE:                                                                |
-
 
 # |  PL: Oblicza bramki prawdy AFV/ASE/ATC na bazie metryk CI i zapisuje |
 
-
 # |      JSON (reports/junit.xml, out/gates & SLO).                      |
 
-
 # |  EN: Computes Truth Gates AFV/ASE/ATC from CI metrics and writes JSON|
-
 
 # +=====================================================================+
 
@@ -197,7 +186,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 # === I/O / ENDPOINTS ===
 

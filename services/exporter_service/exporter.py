@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Eksport raportów i artefaktów procesu.
@@ -25,6 +24,7 @@ EN: Report/artefact exporter.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 TEMPL_REPORT = """# CERTEUS Report
 
 Case: {case_id}
@@ -43,8 +44,9 @@ Model: {model}
 
 """
 
-
 # === MODELE / MODELS ===
+
+
 class ExporterService:
     def __init__(self, template_dir: str, output_dir: str) -> None:
         self.template_dir = Path(template_dir)
@@ -68,7 +70,6 @@ class ExporterService:
 
 
 # === LOGIKA / LOGIC ===
-
 
 # (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
 

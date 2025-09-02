@@ -18,8 +18,9 @@ import subprocess  # noqa: E402
 
 # === IMPORTY / IMPORTS ===
 
-
 # === LOGIKA / LOGIC ===
+
+
 def run_gate(payload: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["python", "scripts/gates/roles_policy_gate.py"],
@@ -30,6 +31,8 @@ def run_gate(payload: str) -> subprocess.CompletedProcess[str]:
 
 
 # === TESTY / TESTS ===
+
+
 def test_roles_allow_publish_afv() -> None:
     payload = '{"user":{"role":"AFV"},"action":"publish","resource":{"kind":"pco","case_id":"CER-1"}}'
     res = run_gate(payload)

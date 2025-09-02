@@ -30,14 +30,16 @@ EN: Security gate W9.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
 import os
 from pathlib import Path
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _is_on(val: str | None) -> bool:
     return (val or "").strip().lower() in {"1", "true", "on", "yes"}
 
@@ -115,5 +117,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

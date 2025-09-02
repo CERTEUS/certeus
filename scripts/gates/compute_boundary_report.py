@@ -18,6 +18,7 @@ EN: Boundary reconstruction report stub. Writes JSON with `delta_bits` and
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

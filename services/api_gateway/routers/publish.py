@@ -14,10 +14,10 @@
 
 # +-------------------------------------------------------------+
 
-
 """PL: Mapuje wynik rdzenia na kontrakt publikacji. EN: Map core to publication contract."""
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -33,7 +33,6 @@ from runtime.proof_queue import PROOF_QUEUE
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # +=====================================================================+
 
@@ -51,11 +50,11 @@ from runtime.proof_queue import PROOF_QUEUE
 
 # +=====================================================================+
 
-
 router = APIRouter()
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.post("/defx/reason")
 def reason(
     body: dict[str, Any],

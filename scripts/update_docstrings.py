@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Automatyczna aktualizacja docstringów modułów (PL/EN) w plikach Python,
@@ -23,8 +22,6 @@ zastępująca placeholder z apply_headers bardziej precyzyjnym opisem
 
 na podstawie ścieżki pliku.
 
-
-
 EN: Automatically refine PL/EN module docstrings in Python files by
 
 replacing the generic placeholder with a path-aware description.
@@ -32,12 +29,14 @@ replacing the generic placeholder with a path-aware description.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ROOTS = [
     "core",
     "services",
@@ -290,7 +289,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

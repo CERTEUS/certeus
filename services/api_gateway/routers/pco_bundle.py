@@ -22,6 +22,7 @@ EN: FastAPI router for PCO bundles.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import base64
@@ -49,8 +50,9 @@ from services.proofgate.app import PublishRequest, PublishResponse, publish
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class MerkleStep(BaseModel):
     sibling: str
 
@@ -79,7 +81,6 @@ class PublicBundleIn(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
-
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
@@ -289,6 +290,8 @@ def _build_proofbundle(
 
 
 # === I/O / ENDPOINTS ===
+
+
 @router.post("/bundle")
 def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     enforce_limits(request, cost_units=3)

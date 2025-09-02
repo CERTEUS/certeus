@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru rejestr UPN.
-
-
 
 EN: FastAPI router for UPN registry.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import time
@@ -37,12 +35,14 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 _REGISTRY: dict[str, dict[str, Any]] = {}
 
 _COUNTER = 1
 
-
 # === MODELE / MODELS ===
+
+
 class RegisterRequest(BaseModel):
     subject: dict[str, Any]
 
@@ -73,24 +73,17 @@ class RevokeResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/upn.py                           |
 
-
 # | ROLE: UPN Registry & Revocation (stub)                              |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/upn", tags=["UPN"])
 

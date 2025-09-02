@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +-------------------------------------------------------------+
 
 # |                        CERTEUS                              |
@@ -33,8 +32,6 @@ PL: Ten moduł definiuje atomową jednostkę informacji w CERTEUS: **Fact**.
 
     (extra="forbid").
 
-
-
 EN: This module defines the atomic unit of information in CERTEUS: **Fact**.
 
     It is the “currency” passed into the Truth Engine. The model is strict,
@@ -43,13 +40,9 @@ EN: This module defines the atomic unit of information in CERTEUS: **Fact**.
 
     (extra="forbid").
 
-
-
 Zgodność stylistyczna:
 
 - nagłówek ASCII, opisy PL/EN, podpisane bloki.
-
-
 
 Style compliance:
 
@@ -58,6 +51,7 @@ Style compliance:
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import date
@@ -68,8 +62,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class FactRole(str, Enum):
     """
 
@@ -106,8 +101,6 @@ class Fact(BaseModel):
         • source_page – numer strony w źródle (≥ 1).
 
         • confidence_score – pewność ekstrakcji [0.0, 1.0].
-
-
 
     EN: Represents a single, structured fact extracted from a document.
 
@@ -186,15 +179,11 @@ class Fact(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # [BLOCK: IMPORTS / IMPORTY]
-
 
 # [BLOCK: ENUMS / ENUMERACJE]
 
-
 # [BLOCK: MODELS / MODELE]
-
 
 # === I/O / ENDPOINTS ===
 

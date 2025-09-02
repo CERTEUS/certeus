@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Pakiet parsera LEXLOG (MVP).
@@ -30,7 +29,6 @@ EN: Package for the LEXLOG parser (MVP).
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # === I/O / ENDPOINTS ===
 

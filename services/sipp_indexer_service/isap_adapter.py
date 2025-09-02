@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Stub adaptera do ISAP. Wersja MVP: zwraca stałą migawkę dla
@@ -28,6 +27,7 @@ EN: ISAP adapter stub. MVP version: returns a constant snapshot
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
@@ -37,8 +37,9 @@ from .models import LegalActSnapshot
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class IsapAdapter:
     """
 

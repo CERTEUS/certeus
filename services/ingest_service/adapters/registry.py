@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # =============================================================================
 
 #  CERTEUS — Adapters Registry (lazy singletons)
@@ -44,6 +43,7 @@ EN: Adapters registry (lazy singletons) — side-effect free.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -63,6 +63,7 @@ from .local_impl import (
 )
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 _DRIVE: DriveAdapter | None = None
 
 _PREVIEW: PreviewAdapter | None = None
@@ -75,9 +76,7 @@ _LLM: LLMAdapter | None = None
 
 # === LOGIKA / LOGIC ===
 
-
 # ----------------------------- Globals (private) -----------------------------
-
 
 # ------------------------------- Factories ----------------------------------
 

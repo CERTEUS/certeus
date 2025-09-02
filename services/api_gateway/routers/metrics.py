@@ -22,6 +22,7 @@ EN: FastAPI router for Prometheus metrics.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Response
@@ -33,11 +34,11 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 # === LOGIKA / LOGIC ===
 
-
 router = APIRouter(prefix="", tags=["metrics"])
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.get("/metrics")
 def metrics() -> Response:
     # Use the default global registry

@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
-
-
 
 EN: CERTEUS project module (generic description).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from argparse import ArgumentParser
@@ -45,27 +43,19 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: scripts/sign_bundle.py                                        |
 
-
 # | ROLE: Sign public PCO bundle (Ed25519 detached signature)           |
-
 
 # +=====================================================================+
 
-
 # ----Bloki----- IMPORTY
-
 
 # ----Bloki----- FUNKCJE
 
@@ -152,7 +142,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

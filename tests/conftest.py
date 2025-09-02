@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Zbiór współdzielonych fikstur i pomocników testowych dla całego pakietu testów.
@@ -22,11 +21,17 @@ PL: Zbiór współdzielonych fikstur i pomocników testowych dla całego pakietu
 EN: Shared pytest fixtures and helpers used across the test suite.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Ten moduł przekształca surowy wynik OCR w listę faktów zgodnych z modelem
@@ -22,8 +21,6 @@ PL: Ten moduł przekształca surowy wynik OCR w listę faktów zgodnych z modele
     `Fact`. Jest to stub reguł: wykrywa dwie proste przesłanki i przypisuje im
 
     stałe wartości. Wersja docelowa użyje NLP/NLU.
-
-
 
 EN: This module transforms raw OCR output into a list of `Fact` objects.
 
@@ -34,6 +31,7 @@ EN: This module transforms raw OCR output into a list of `Fact` objects.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import date
@@ -45,8 +43,9 @@ from .models import Fact, FactRole
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class FactlogMapper:
     """
 
@@ -64,8 +63,6 @@ class FactlogMapper:
         - Buduje hash dokumentu (chain-of-custody).
 
         - Na podstawie prostych reguł tworzy listę faktów.
-
-
 
         EN:
 
@@ -116,9 +113,7 @@ class FactlogMapper:
 
 # === LOGIKA / LOGIC ===
 
-
 # [BLOCK: IMPORTS / IMPORTY]
-
 
 # [BLOCK: HELPERS / POMOCNICZE]
 
@@ -136,7 +131,6 @@ def _pages_by_num(ocr_output: dict[str, Any]) -> dict[int, str]:
 
 
 # [BLOCK: MAPPER / MAPOWANIE]
-
 
 # === I/O / ENDPOINTS ===
 

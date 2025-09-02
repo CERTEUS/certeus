@@ -22,6 +22,7 @@ EN: CERTEUS project module (generic description).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -36,6 +37,7 @@ from jsonschema import Draft7Validator, Draft201909Validator, Draft202012Validat
 import yaml  # type: ignore
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ENV_SCHEMA = "PCO_POLICY_PACK_SCHEMA"
 
 ENV_PACK = "PCO_POLICY_PACK_PATH"
@@ -76,31 +78,23 @@ REQUIRED_PUBLIC_FIELDS: set[str] = {
 
 # === LOGIKA / LOGIC ===
 
-
 DEFAULT_SCHEMA = Path("policies/pco/policy_pack.schema.v0.1.json")
 
 DEFAULT_PACK = Path("policies/pco/policy_pack.v0.1.yaml")
 
-
 ENDPOINT_PATTERN = re.compile(r"^/pco/public/\{case_id\}$")
 
-
 # stdlib
-
 
 # third-party
 
 # ----Bloki----- STAŁE
 
-
 # Denylista PII (klucze)
-
 
 # Dozwolone klucze w publicznym payload
 
-
 # Minimalny zestaw wymaganych pól
-
 
 # ----Bloki----- I/O
 
@@ -370,7 +364,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 # === I/O / ENDPOINTS ===
 

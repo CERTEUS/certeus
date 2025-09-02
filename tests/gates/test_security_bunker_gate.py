@@ -20,8 +20,9 @@ import subprocess  # noqa: E402
 
 # === IMPORTY / IMPORTS ===
 
-
 # === LOGIKA / LOGIC ===
+
+
 def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     e = os.environ.copy()
     e.update(env)
@@ -34,6 +35,8 @@ def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
 
 
 # === TESTY / TESTS ===
+
+
 def test_bunker_off_ok() -> None:
     res = run_gate({"BUNKER": "0", "PROOFGATE_BUNKER": "0"})
     assert res.returncode == 0, res.stderr or res.stdout

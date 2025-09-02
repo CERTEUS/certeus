@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Adapter solvera SMT (dowody/konwersja).
 
@@ -29,27 +28,19 @@ EN: SMT solver adapter (proofs/translation).
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: kernel/dual_core/cvc5_adapter.py                    |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: kernel/dual_core/cvc5_adapter.py                    |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 

@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru urządzenia HDE/Q-Oracle/Entangle/Chronosync.
-
-
 
 EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
@@ -37,8 +35,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class HDEPlanRequest(BaseModel):
     case: str | None = None
 
@@ -94,27 +93,19 @@ class ChronoSyncResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/devices.py                       |
 
-
 # | ROLE: Devices stubs: HDE, Q-Oracle, Entangler, Chronosync           |
-
 
 # +=====================================================================+
 
-
 router = APIRouter(prefix="/v1/devices", tags=["devices"])
-
 
 # Horizon Drive Engine (HDE)
 

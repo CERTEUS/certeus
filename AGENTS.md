@@ -36,6 +36,8 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 `git commit -m "chore: lint+tests via Codex" --no-verify`
 `git push -u origin HEAD:work/daily`
 
+UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pełni ukończonego tygodnia pracy (wg 90‑dniowego planu). W trakcie tygodnia pracujemy lokalnie, uruchamiając `ruff` i `pytest` bez błędów.
+
 ## Auto‑push i auto‑promocja (operacje agenta)
 
 - Gałąź robocza: `work/daily` (agent wypycha zmiany tutaj).
@@ -58,6 +60,12 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
   - ustala właściciela repo z `origin`,
   - ustala login z ENV/pliku/API `/user`,
   - zapisuje poświadczenia do `.git-credentials` (ignorowane) i wykonuje `git push`.
+
+### Zasady oszczędzania minut (GH Actions)
+
+- Nie wypychamy drobnych commitów — łączymy pracę tygodnia w jeden push/PR.
+- Gate’y informacyjne są PR‑only; wymagane checki: `Smoke (ubuntu/windows)`, `ci-gates`.
+- W trakcie tygodnia testujemy lokalnie (`ruff check`, `ruff format`, `pytest -q`) i naprawiamy u siebie.
 
 ### Procedura pracy (każda sesja)
 

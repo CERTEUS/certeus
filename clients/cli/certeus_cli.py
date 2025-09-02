@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Moduł projektu CERTEUS (uogólniony opis).
 
@@ -29,27 +28,19 @@ EN: CERTEUS project module (generic description).
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: clients/cli/certeus_cli.py                          |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: clients/cli/certeus_cli.py                          |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 
@@ -60,7 +51,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

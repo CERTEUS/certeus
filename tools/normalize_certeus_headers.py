@@ -16,7 +16,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +=====================================================================+
 
 # |                          CERTEUS                                    |
@@ -28,7 +27,6 @@
 # | DATE:    2025-08-17                                                  |
 
 # +=====================================================================+
-
 
 """
 
@@ -44,8 +42,6 @@ PL: Normalizator nagłówków CERTEUS i docstringów modułów.
 
     - Domyślnie zachowuje datę z pierwszego znalezionego banera, można wymusić dzisiejszą.
 
-
-
 EN: CERTEUS header & module docstring normalizer.
 
     - Removes all existing CERTEUS banners and inserts a single canonical one
@@ -59,11 +55,17 @@ EN: CERTEUS header & module docstring normalizer.
     - Keeps the first banner's DATE by default; can force today's date.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations
@@ -82,9 +84,7 @@ MODULE_LABEL = "MODULE:"
 
 DATE_LABEL = "DATE:"
 
-
 CANONICAL_WIDTH = 60  # padding width inside "| ... |"
-
 
 EXCLUDE_DIRS = {
     ".git",
@@ -104,15 +104,11 @@ EXCLUDE_DIRS = {
     ".vscode",
 }
 
-
 PY_GLOB = "**/*.py"
-
 
 BANNER_RE = re.compile(rf"(?ms)^({re.escape(BORDER)}\n(?:# \|.*\n)+{re.escape(BORDER)}\n)")
 
-
 DATE_LINE_RE = re.compile(r"# \|\s*DATE:\s*(?P<date>.*?)\s*\|")
-
 
 TRIPLE_QUOTE_RE = re.compile(r'(?ms)^\s*(?P<q>"""|\'\'\')(?P<body>.*?)(?P=q)\s*')
 

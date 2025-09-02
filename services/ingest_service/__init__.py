@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Pakiet serwisu ingestii. Ten moduł oznacza pakiet Pythona oraz
@@ -28,6 +27,7 @@ EN: Ingestion service package. This module marks the Python package and
 """
 
 # === IMPORTY / IMPORTS ===
+
 from .models import Fact, FactRole
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -36,12 +36,9 @@ from .models import Fact, FactRole
 
 # === LOGIKA / LOGIC ===
 
-
 # [BLOCK: PUBLIC API EXPORTS / EKSPORT INTERFEJSU PUBLICZNEGO]
 
-
 __all__ = ["Fact", "FactRole"]
-
 
 # === I/O / ENDPOINTS ===
 

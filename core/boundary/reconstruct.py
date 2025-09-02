@@ -17,6 +17,7 @@ EN: Boundary bulk reconstruction based on public PCO bundles. Returns
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -30,8 +31,9 @@ from core.pco.crypto import canonical_bundle_hash_hex, compute_leaf_hex
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 @dataclass
 class MerkleStep:
     sibling: str

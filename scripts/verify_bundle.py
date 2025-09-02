@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
-
-
 
 EN: CERTEUS project module (generic description).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from argparse import ArgumentParser
@@ -42,8 +40,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class MerkleStep(TypedDict):
     sibling: str  # hex
 
@@ -52,90 +51,61 @@ class MerkleStep(TypedDict):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: scripts/verify_bundle.py                                      |
 
-
 # | ROLE: Verify public PCO bundle (Merkle + canonical digest + Ed25519)|
-
 
 # +=====================================================================+
 
-
 # Opis:
-
 
 # - Weryfikuje publiczny bundle PCO (0 PII): struktura, Merkle, podpis.
 
-
 # - Obsługa Merkle path: MVP [] oraz pełna ścieżka [{sibling, dir:'L'|'R'}].
-
 
 # - Kanoniczny digest: sha256( rid_hash || smt2_hash || lfsc_sha256 || [drat_sha256] || merkle_root ).
 
-
 # - Podpis: Ed25519 (Base64URL, bez "="); klucz publiczny z --pub-b64url lub ENV ED25519_PUBKEY_B64URL.
-
 
 # - Zwraca kod wyjścia: 0 OK, 2 błąd weryfikacji/IO.
 
-
 #
-
 
 # Użycie (CLI):
 
-
 #   python scripts/verify_bundle.py --rid demo-001 \
-
 
 #       --bundle-dir ./data/public_pco \
 
-
 #       --pub-b64url $env:ED25519_PUBKEY_B64URL
 
-
 #
-
 
 # Wymagania:
 
-
 #   - Python 3.11+, pakiet 'cryptography'
-
 
 #   - JSON bez BOM (lub czytany 'utf-8-sig')
 
-
 #
-
 
 # Konwencje:
 
-
 #   - future → stdlib (import, from) → third-party (import, from)
-
 
 #   - typy: dict[str, Any], list[str] itd. (PEP 585)
 
-
 #   - linia: max 120
-
 
 # ----Bloki----- IMPORTY
 
-
 # ----Bloki----- TYPY
-
 
 # ----Bloki----- POMOCNICZE
 
@@ -281,7 +251,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 # === I/O / ENDPOINTS ===
 

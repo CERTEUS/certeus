@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Wejście wtyczki exporter_pl (Domain Pack).
 
@@ -22,6 +21,7 @@ EN: exporter_pl plugin entry (Domain Pack).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from services.exporter_service.exporter import export_answer
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -30,27 +30,19 @@ from services.exporter_service.exporter import export_answer
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                          CERTEUS                            |
 
-
 # +-------------------------------------------------------------+
-
 
 # | FILE: plugins/exporter_pl/src/main.py                     |
 
-
 # | ROLE: Project module.                                       |
-
 
 # | PLIK: plugins/exporter_pl/src/main.py                     |
 
-
 # | ROLA: Moduł projektu.                                       |
-
 
 # +-------------------------------------------------------------+
 

@@ -18,6 +18,7 @@ EN: Fine-grained roles gate (OPA proxy skeleton): allows actions
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -32,14 +33,16 @@ except Exception:  # pragma: no cover
     yaml = None  # type: ignore
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ALLOWED_ROLES: set[str] = {"AFV", "ASE", "ATC", "ATS", "AVR"}
 DEFAULT_DOMAIN = os.getenv("GOV_DOMAIN") or "lex"
 DEFAULT_GOV_PACK = os.getenv("GOV_PACK") or str(
     Path(__file__).resolve().parents[2] / "policies" / "governance" / "governance_pack.v0.1.yaml"
 )
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _read_input() -> dict[str, Any]:
     try:
         raw = sys.stdin.read().strip()
@@ -123,5 +126,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

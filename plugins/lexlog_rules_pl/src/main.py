@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Wejście wtyczki lexlog_rules_pl (Domain Pack).
 
@@ -22,56 +21,29 @@ EN: lexlog_rules_pl plugin entry (Domain Pack).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import MutableMapping
 from typing import Any, Final
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
 
-
 # === MODELE / MODELS ===
+
+
 class Plugin:
     """
 
-
-
-
-
-
-
     PL: Minimalna implementacja pluginu. W realnym wdrożeniu trzyma tu
-
-
-
-
-
-
 
         kompilowane reguły LEXLOG, walidatory itd.
 
-
-
-
-
-
-
     EN: Minimal plugin implementation. In production, keep compiled
 
-
-
-
-
-
-
         LEXLOG rules, validators, etc.
-
-
-
-
-
-
 
     """
 
@@ -96,27 +68,9 @@ class Plugin:
     def register(self, api: Any) -> None:
         """
 
-
-
-
-
-
-
         PL: Rejestracja w rdzeniu – odporna na różne kształty API.
 
-
-
-
-
-
-
         EN: Core registration – resilient to various API shapes.
-
-
-
-
-
-
 
         """
 
@@ -125,24 +79,17 @@ class Plugin:
 
 # === LOGIKA / LOGIC ===
 
-
 # +-------------------------------------------------------------+
-
 
 # |                   CERTEUS - LEXLOG (PL) Plugin              |
 
-
 # +-------------------------------------------------------------+
-
 
 # | PLIK / FILE: plugins/lexlog_rules_pl/src/main.py            |
 
-
 # | ROLA / ROLE: Przykładowy plugin rejestrujący reguły LEXLOG. |
 
-
 # |              Sample plugin registering LEXLOG rules.        |
-
 
 # +-------------------------------------------------------------+
 
@@ -150,147 +97,37 @@ class Plugin:
 def _safe_register(api: Any, plugin: Any, name: str) -> None:
     """
 
-
-
-
-
-
-
     PL: Rejestracja odporna na różne interfejsy API.
-
-
-
-
-
-
 
         Obsługujemy kolejno:
 
-
-
-
-
-
-
           • register_plugin(name, plugin)
-
-
-
-
-
-
 
           • add_plugin(name, plugin)
 
-
-
-
-
-
-
           • register(plugin) / register(name, plugin)
-
-
-
-
-
-
 
           • add(plugin)      / add(name, plugin)
 
-
-
-
-
-
-
           • attach(plugin)   / attach(name, plugin)
-
-
-
-
-
-
 
         Fallback: mapy typu api.plugins / api.registry / api.plugin_registry.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     EN: Registration resilient to various API shapes.
-
-
-
-
-
-
 
         We support, in order:
 
-
-
-
-
-
-
           • register_plugin(name, plugin)
-
-
-
-
-
-
 
           • add_plugin(name, plugin)
 
-
-
-
-
-
-
           • register(plugin) / register(name, plugin)
-
-
-
-
-
-
 
           • add(plugin)      / add(name, plugin)
 
-
-
-
-
-
-
           • attach(plugin)   / attach(name, plugin)
 
-
-
-
-
-
-
         Fallback: dict-like registries api.plugins / api.registry / api.plugin_registry.
-
-
-
-
-
-
 
     """
 
@@ -335,27 +172,9 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 def register(api: Any, name: str | None = None) -> None:
     """
 
-
-
-
-
-
-
     PL: Styl modułowy (używany przez loader, jeśli w plugin.yaml podasz 'register: register').
 
-
-
-
-
-
-
     EN: Module-level style (used by loader when 'register: register' is present in plugin.yaml).
-
-
-
-
-
-
 
     """
 

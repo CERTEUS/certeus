@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +=====================================================================+
 
 # |                          CERTEUS                                    |
@@ -26,7 +25,6 @@
 # | DATE:    2025-08-17                                                  |
 
 # +=====================================================================+
-
 
 # +-------------------------------------------------------------+
 
@@ -51,11 +49,17 @@ PL: Inicjalizacja pakietu narzędziowego; eksportuje najczęściej używane help
 EN: Package initializer for utilities; exports commonly used helpers.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from .console import ascii_safe, error, info, print_safe, success  # noqa: F401

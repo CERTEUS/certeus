@@ -22,6 +22,7 @@ EN: Crypto helpers: canonical sha256, b64url, Ed25519 sign/verify.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import base64
@@ -41,9 +42,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 
 # === LOGIKA / LOGIC ===
 
-
 # ----Bloki----- IMPORTY
-
 
 # ----Bloki----- B64URL
 

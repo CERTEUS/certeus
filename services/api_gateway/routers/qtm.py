@@ -16,7 +16,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Stub API dla QTMP (pomiar). Zawiera wymagane pola: sequence[],
@@ -30,6 +29,7 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -41,8 +41,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class InitCaseRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
     state_uri: str | None = None
@@ -106,7 +107,6 @@ class FindEntanglementResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
 
 # |                              CERTEUS                                |
@@ -118,7 +118,6 @@ class FindEntanglementResponse(BaseModel):
 # | ROLE: QTMP API stubs: init_case, measure, commutator, entanglement  |
 
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 
