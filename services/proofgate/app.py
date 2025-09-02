@@ -24,15 +24,18 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from collections.abc import Mapping
+import os
 from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field
 import yaml
 
 from core.version import __version__
 from monitoring.metrics_slo import observe_decision
+from monitoring.otel_setup import set_span_attrs, setup_fastapi_otel
 from services.ledger_service.ledger import (
     compute_provenance_hash,
     ledger_service,
@@ -62,6 +65,7 @@ class PublishResponse(BaseModel):
 
 
 app = FastAPI(title="ProofGate", version=__version__)
+setup_fastapi_otel(app)
 
 
 @app.get("/healthz")
@@ -81,6 +85,36 @@ def _load_policy_pack() -> dict[str, Any]:
 
     except Exception:
         return {}
+
+
+def _load_governance_pack() -> dict[str, Any]:
+    try:
+        p = _repo_root() / "policies" / "governance" / "governance_pack.v0.1.yaml"
+        return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+
+
+def _infer_domain(pco: Mapping[str, Any]) -> str:
+    # Explicit field
+    d = pco.get("domain") if isinstance(pco, Mapping) else None
+    if isinstance(d, str) and d:
+        return d.lower().strip()
+    # Case prefix heuristic
+    case_id = str(pco.get("case_id") or pco.get("rid") or "")
+    if case_id.startswith("CER-LEX"):
+        return "lex"
+    if case_id.startswith("CER-FIN"):
+        return "fin"
+    if case_id.startswith("CER-SEC"):
+        return "sec"
+    # Payload keys heuristic
+    keys = set(pco.keys()) if isinstance(pco, Mapping) else set()
+    if {"signals", "dp_epsilon"} & keys:
+        return "fin"
+    if {"cldf", "why_not", "motion", "authority_score", "normalized"} & keys:
+        return "lex"
+    return "lex"
 
 
 def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
@@ -242,7 +276,41 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     policy = req.policy or _load_policy_pack()
 
+    # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
+    if bunker_on:
+        # Attestation header stub: X-TEE-Attestation must be present and non-empty
+        # Note: In this stubbed variant, we cannot access headers directly (no Request).
+        # Allow PUBLISH path but require that PCO carries a tee.attested flag.
+        try:
+            tee = req.pco.get("tee") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            if not (isinstance(tee, dict) and bool(tee.get("attested", False))):
+                return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+        except Exception:
+            return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+
+    # W9: Fine-grained role enforcement (optional)
+    enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
+
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
+
+    if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
+        # Governance‑aware enforcement: require at least one allowed role per governance pack
+        try:
+            sigs = req.pco.get("signatures") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            roles_present = {s.get("role") for s in sigs if isinstance(s, dict)} if isinstance(sigs, list) else set()
+            if not roles_present:
+                decision = "ABSTAIN"
+            else:
+                gov = _load_governance_pack()
+                dom = _infer_domain(req.pco)
+                allow_map = ((gov.get("domains") or {}).get(dom) or {}).get("allow") or {}
+                allowed = set(map(str, (allow_map.get("publish") or [])))
+                # 'counsel' sygnatura jest wymagana osobno wcześniej; nie nadaje uprawnień publish
+                if not (roles_present & allowed):
+                    decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
 
     ledger: str | None = None
 
@@ -265,9 +333,38 @@ def publish(req: PublishRequest) -> PublishResponse:
     except Exception:
         pass
 
+    # OTel: correlate trace with PCO (best-effort)
+    try:
+        attrs = {}
+        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "") if isinstance(req.pco, dict) else ""
+        if case_id:
+            attrs["pco.case_id"] = case_id
+        attrs["pco.decision"] = decision
+        set_span_attrs(attrs)
+    except Exception:
+        pass
+
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
 
 
 # === I/O / ENDPOINTS ===
+
+# Cache OpenAPI JSON in-memory to reduce overhead
+_openapi_schema_cache = None
+
+
+def _cached_openapi():  # type: ignore[override]
+    global _openapi_schema_cache
+    if _openapi_schema_cache:
+        return _openapi_schema_cache
+    _openapi_schema_cache = get_openapi(
+        title="ProofGate",
+        version=__version__,
+        routes=app.routes,
+    )
+    return _openapi_schema_cache
+
+
+app.openapi = _cached_openapi  # type: ignore[assignment]
 
 # === TESTY / TESTS ===

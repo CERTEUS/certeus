@@ -1,0 +1,62 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: policies/governance/governance_pack.v0.1.yaml        |
+# | ROLE: Governance Pack (skeleton)                           |
+# | PLIK: policies/governance/governance_pack.v0.1.yaml        |
+# | ROLA: Pakiet zarządzania (szkielet)                        |
+# +-------------------------------------------------------------+
+
+meta:
+  id: governance-pack
+  version: "0.1"
+  description: "Skeleton: role/action matrix per domain"
+
+roles:
+  - AFV  # auditor/verifier
+  - ASE  # security/engineering
+  - ATC  # change control
+  - ATS  # steering
+  - AVR  # reviewer
+
+actions:
+  - read
+  - publish
+  - approve
+  - revoke
+  - merge
+  - manage_policy
+  - manage_keys
+
+domains:
+  lex:
+    resources: [pco, policy, config]
+    allow:
+      read:    [AFV, ASE, ATC, ATS, AVR]
+      publish: [AFV, ATC]
+      approve: [AFV, AVR]
+      revoke:  [ATC]
+      merge:   [ATC, ASE]
+      manage_policy: [ASE]
+      manage_keys:   []
+  fin:
+    resources: [pco, policy, config]
+    allow:
+      read:    [AFV, ASE, ATC, ATS, AVR]
+      publish: [AFV, ATC]
+      approve: [AFV, AVR]
+      revoke:  [ATC]
+      merge:   [ATC, ASE]
+      manage_policy: [ASE]
+      manage_keys:   []
+  sec:
+    resources: [keys, policy, config]
+    allow:
+      read:    [AFV, ASE, ATC, ATS, AVR]
+      publish: []
+      approve: [ASE]
+      revoke:  [ATC]
+      merge:   [ATC, ASE]
+      manage_policy: [ASE]
+      manage_keys:   [ASE]
+

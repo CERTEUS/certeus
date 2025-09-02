@@ -368,6 +368,10 @@ docker compose -f infra/docker-compose.monitoring.yml up -d
 - FINENITH:
   - `POST /v1/fin/alpha/measure` (signals), `GET /v1/fin/alpha/uncertainty`, `GET /v1/fin/alpha/entanglements`.
 
+Runbooki:
+- Bunkier/TEE: `docs/runbooks/security_bunker.md`
+- Role/Governance: `docs/runbooks/roles_governance.md`
+
 ---
 
 ## Diagrams
@@ -383,6 +387,21 @@ Zobacz `docs/diagrams.md` — Boundary snapshot/diff oraz pipeline Proof Gate (C
 - Supply-chain: SBOM (CycloneDX) + provenance (in‑toto style) obowiązkowe; podpisy cosign (keyless) i weryfikacja w ATC.
 - Role i polityki: OPA/Rego, role AFV/ASE/ATC/ATS/AVR; polityka deny-by-default dla zależności (Trivy FS CRITICAL/HIGH → fail).
 - Zobacz `SECURITY.md` po więcej szczegółów i zasady zgłaszania incydentów.
+
+### Feature flags (W9 — Security hardening)
+
+- `BUNKER`/`PROOFGATE_BUNKER`: włącza profil TEE/Bunkier w ProofGate i bramce CI.
+  - `BUNKER=1` wymaga atestacji (stub) — ustaw jeden z:
+    - `BUNKER_READY=1`,
+    - plik `security/bunker/attestation.json` (parsowalny JSON),
+    - lub marker `data/security/bunker.ready`.
+- `FINE_GRAINED_ROLES`: włącza fine‑grained role enforcement w ProofGate (AFV/ASE/ATC/ATS/AVR) — eksperymentalnie.
+- `PQCRYPTO_READY`: sygnalizacja gotowości PQ‑crypto w bramce CI (informacyjne; nie blokuje).
+- `PQCRYPTO_REQUIRE`: wymusza zielony stan dla PQ‑crypto (gdy `1`, bramka `pqcrypto_gate.py` musi widzieć gotowość — `PQCRYPTO_READY=1`).
+- `STRICT_DP_BUDGET`: włącza egzekwowanie budżetów DP (ε) w bramce `dp_budget_gate.py`.
+
+CI integracja:
+- Proof Gate uruchamia kroki „Security Bunker Gate” i „Roles Policy Gate”. Repo‑variables `BUNKER`, `PROOFGATE_BUNKER`, `PQCRYPTO_READY` sterują zachowaniem.
 
 ---
 
@@ -562,6 +581,20 @@ MIT © 2025 CERTEUS Contributors
 
 ## OpenAPI Notes
 
+## Repo Variables — przykłady (Actions → Variables)
+
+Dodaj w repo (Settings → Secrets and variables → Actions → Variables):
+
+- `BUNKER=1` — włącza profil Bunkra (TEE) w ProofGate i kroku CI „Security Bunker Gate”.
+- `PROOFGATE_BUNKER=1` — alias zmiennej dla ProofGate (równoważne `BUNKER`).
+- `BUNKER_READY=1` — sygnalizuje gotowość atestacji (alternatywa dla pliku `security/bunker/attestation.json`).
+- `PQCRYPTO_READY=1` — informacyjnie (krok CI dopisze status do podsumowania).
+- `FINE_GRAINED_ROLES=1` — wymusza w ProofGate sprawdzanie ról (AFV/ASE/ATC/ATS/AVR) przy publish/conditional.
+
+Uwaga: krok CI „Security Bunker Gate” honoruje również ścieżki override (do testów/CI):
+- `BUNKER_ATTESTATION_PATH` — ścieżka do pliku JSON z atestem (jeśli ustawiona, tylko ona jest sprawdzana),
+- `BUNKER_MARKER_PATH` — alternatywny marker gotowości (dowolny istniejący plik).
+
 - Source of truth: `docs/openapi/certeus.v1.yaml` (used by Pages workflow to publish JSON).
 - To inspect runtime JSON locally: `curl -s http://127.0.0.1:8000/openapi.json -o out/openapi.json`.
 
@@ -571,3 +604,54 @@ MIT © 2025 CERTEUS Contributors
 2) Ustaw risk/sent i kliknij Measure — zobacz outcome/p, timeline aktualizuje się.
 3) PCO: nagłówek  (JSON parametry pomiaru/operatory/commutator).
 4) Dashboardy: SLO (latencja per path), panel „FIN entanglement MI (by pair)”.
+
+## Demo tygodnia — SRE Dashboard (W10)
+
+1) Uruchom stack lub lokalny Gateway i Prometheus/Grafanę.
+2) Wejdź na `/metrics` (Prometheus exposition) i sprawdź histogram `certeus_http_request_duration_ms`.
+3) Otwórz Grafanę i zaimportuj dashboard `observability/grafana/certeus-sre-dashboard.json`.
+4) Obserwuj p95 latencję i error‑rate (5m/1h). Alerty przykładowe w `observability/prometheus/alert_rules_w10.yml`.
+
+Uwaga (OTel): ustaw `OTEL_ENABLED=1` oraz `OTEL_EXPORTER_OTLP_ENDPOINT` (np. `http://localhost:4318`) by wysyłać ślady. Opcjonalnie `OTEL_SERVICE_NAME`.
+
+## Demo tygodnia — HDE wygrany case
+
+1) Zaplanuj HDE (plan dowodów):
+```
+curl -sX POST "$CER_BASE/v1/devices/horizon_drive/plan" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99","budget_tokens":120}' | jq
+```
+Oczekiwane: plan_of_evidence[] z kosztami i referencjami PFS.
+
+2) Zablokuj horyzont w sprawie (lock):
+```
+curl -sX POST "$CER_BASE/v1/dr/lock" -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99","reason":"publish motion"}' | jq -r
+```
+PCO: nagłówek `X-CERTEUS-PCO-dr.lock` (Proof‑Only). Zwraca `{ok, lock_ref}`.
+
+3) Wygeneruj pismo (LEXENITH Motion):
+```
+curl -sX POST "$CER_BASE/v1/lexenith/motion/generate" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99","pattern":"brief:standard"}' | jq
+```
+Oczekiwane: dwa wzorce pism, PCO z hash/URI cytatów.
+
+4) Opcjonalnie: eksport ścieżki Why‑Not:
+```
+curl -sX POST "$CER_BASE/v1/lexenith/why_not/export" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99"}' | jq -r '.why_not.trace_uri'
+```
+Zwraca `pfs://why-not/<hash>` do audytu kontr‑argumentów.
+
+5) Publikacja do Ledger (ProofGate):
+```
+curl -sX POST "$CER_BASE/v1/proofgate/publish" \
+  -H 'Content-Type: application/json' \
+  -d '{"pco": {"case_id":"CER-LEX-99","risk":{"ece":0.01,"brier":0.05,"abstain_rate":0.1},"tee":{"attested":false}}, "budget_tokens": 10 }' | jq
+```
+Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
+

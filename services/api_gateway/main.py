@@ -33,11 +33,13 @@ from pathlib import Path
 
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
+from monitoring.otel_setup import setup_fastapi_otel
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -155,6 +157,9 @@ app = FastAPI(
 
 attach_proof_only_middleware(app)
 
+# Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
+setup_fastapi_otel(app)
+
 
 # statyki
 
@@ -173,6 +178,43 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# Request duration metrics middleware (Prometheus)
+@app.middleware("http")
+async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
+    import time
+
+    start = time.perf_counter()
+    response = await call_next(request)
+    dur_ms = (time.perf_counter() - start) * 1000.0
+    try:
+        path = request.url.path
+        method = request.method
+        status = str(response.status_code)
+        certeus_http_request_duration_ms.labels(path=path, method=method, status=status).observe(dur_ms)
+    except Exception:
+        pass
+    return response
+
+
+# Cache OpenAPI JSON in-memory to reduce per-request overhead
+_openapi_schema_cache = None
+
+
+def _cached_openapi():  # type: ignore[override]
+    global _openapi_schema_cache
+    if _openapi_schema_cache:
+        return _openapi_schema_cache
+    _openapi_schema_cache = get_openapi(
+        title=APP_TITLE,
+        version=APP_VERSION,
+        routes=app.routes,
+    )
+    return _openapi_schema_cache
+
+
+app.openapi = _cached_openapi  # type: ignore[assignment]
 
 
 # --- blok --- Rejestr routerów -------------------------------------------------

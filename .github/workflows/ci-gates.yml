@@ -31,6 +31,13 @@ jobs:
           python -m pip install -e .
           # Install test/dev helpers explicitly used by the suite
           python -m pip install ruff pytest pytest-asyncio httpx z3-solver
+
+      - name: Load CI defaults (non-secrets)
+        run: |
+          python scripts/ci/load_env_defaults.py
+      - name: Start mock OTLP receiver (background)
+        run: |
+          nohup python scripts/otel/mock_otlp.py >/dev/null 2>&1 &
       - name: Decorator split scan (report-only)
         run: |
           python scripts/fix_decorator_split.py --check || true
@@ -43,8 +50,129 @@ jobs:
       - name: Tests
         env:
           PYTEST_ADDOPTS: "-k 'not test_generate_proofs_cli_smoke_test'"
+          OTEL_ENABLED: "1"
+          OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
         run: |
           python -m pytest -q
+
+      - name: Perf Smoke (W11)
+        run: |
+          python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
+
+      - name: Upload perf report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-bench-${{ github.sha }}
+          path: out/perf_bench.json
+
+      - name: SLO Smoke (in-proc)
+        env:
+          SLO_MAX_P95_MS: "300"
+          SLO_MAX_ERROR_RATE: "0.01"
+        run: |
+          python scripts/slo_gate/measure_api.py
+          python scripts/slo_gate/check_slo.py
+
+      - name: Governance consistency (smoke)
+        run: |
+          python scripts/validate_governance_consistency.py && echo ok > out/gov_ok.txt
+
+      - name: Metrics smoke (/metrics)
+        run: |
+          python scripts/smokes/metrics_smoke.py
+      - name: Mark metrics smoke OK
+        if: success()
+        run: |
+          echo ok > out/metrics_ok.txt
+
+      - name: OpenAPI smoke (/openapi.json)
+        run: |
+          python scripts/smokes/openapi_smoke.py
+      - name: Mark OpenAPI smoke OK
+        if: success()
+        run: |
+          echo ok > out/openapi_ok.txt
+
+      - name: OpenAPI smoke (/openapi.json)
+        run: |
+          python scripts/smokes/openapi_smoke.py
+
+      - name: Comment PR with perf bench
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '';
+            try {
+              const data = JSON.parse(fs.readFileSync('out/perf_bench.json', 'utf8'));
+              const lines = [];
+              lines.push(`### Perf Bench (p95)`);
+              lines.push(`Worst p95: ${data.worst_p95_ms.toFixed(2)} ms (threshold ${data.threshold_ms} ms)`);
+              lines.push('');
+              lines.push('Endpoints:');
+              for (const e of data.endpoints) {
+                lines.push(`- ${e.method} ${e.path}: p95=${e.p95_ms.toFixed(2)} ms (min=${e.min_ms.toFixed(2)}, max=${e.max_ms.toFixed(2)})`);
+              }
+              body = lines.join('\n');
+            } catch (e) {
+              body = 'Perf bench: report not available';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Build PR comment summary
+        if: github.event_name == 'pull_request' && always()
+        run: |
+          python - << 'PY'
+          import json, os, pathlib
+          repo = pathlib.Path('.').resolve()
+          lines = []
+          # Perf
+          try:
+              perf = json.loads((repo/'out'/'perf_bench.json').read_text())
+              lines.append('### Perf Bench (p95)')
+              lines.append(f"Worst p95: {perf.get('worst_p95_ms',0):.2f} ms (threshold {perf.get('threshold_ms')})")
+              lines.append('')
+              lines.append('Endpoints:')
+              for e in perf.get('endpoints', []):
+                  lines.append(f"- {e['method']} {e['path']}: p95={e['p95_ms']:.2f} ms (min={e['min_ms']:.2f}, max={e['max_ms']:.2f})")
+              lines.append('')
+          except Exception:
+              lines.append('Perf bench: report not available')
+          # SLO
+          try:
+              slo = json.loads((repo/'out'/'slo.json').read_text())
+              lines.append(f"SLO: p95={slo.get('p95_ms',0):.2f} ms, error_rate={slo.get('error_rate',0):.4f}")
+          except Exception:
+              lines.append('SLO: report not available')
+          # Smokes
+          metrics_ok = (repo/'out'/'metrics_ok.txt').exists()
+          openapi_ok = (repo/'out'/'openapi_ok.txt').exists()
+          gov_ok = (repo/'out'/'gov_ok.txt').exists()
+          lines.append(f"Smokes: metrics={'OK' if metrics_ok else 'FAIL'}, openapi={'OK' if openapi_ok else 'FAIL'}, governance={'OK' if gov_ok else 'FAIL'}")
+          (repo/'out'/'ci_pr_comment.md').write_text('\n'.join(lines), encoding='utf-8')
+          PY
+
+      - name: Comment PR with SLO/Smokes/Perf
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = 'CI Summary';
+            try { body = fs.readFileSync('out/ci_pr_comment.md','utf8'); } catch(e) {}
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
 
       - name: Publish CI status to branch
         if: always()
