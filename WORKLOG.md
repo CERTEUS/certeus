@@ -20,3 +20,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - README: Feature flags (BUNKER/PROOFGATE_BUNKER/FINE_GRAINED_ROLES/PQCRYPTO_READY)
   - - OPA: roles.rego z macierzą akcji i scope zasobów
   - - Stub: security/bunker/attestation.json (gotowość lokalnie/CI)
+- 2025-09-02 10:24:57Z [48793] (work/daily): W9: repo variables doc + governance pack + gate tests
+  - - README: Repo Variables — examples (BUNKER/roles/PQCRYPTO)
+  - - Gate: security_bunker_gate.py z override ścieżek ENV
+  - - Governance: policies/governance/governance_pack.v0.1.yaml
+  - - Tests: gates (roles+bunker) 100% pass
