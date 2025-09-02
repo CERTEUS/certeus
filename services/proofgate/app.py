@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field
 import yaml
 
@@ -347,5 +348,23 @@ def publish(req: PublishRequest) -> PublishResponse:
 
 
 # === I/O / ENDPOINTS ===
+
+# Cache OpenAPI JSON in-memory to reduce overhead
+_openapi_schema_cache = None
+
+
+def _cached_openapi():  # type: ignore[override]
+    global _openapi_schema_cache
+    if _openapi_schema_cache:
+        return _openapi_schema_cache
+    _openapi_schema_cache = get_openapi(
+        title="ProofGate",
+        version=__version__,
+        routes=app.routes,
+    )
+    return _openapi_schema_cache
+
+
+app.openapi = _cached_openapi  # type: ignore[assignment]
 
 # === TESTY / TESTS ===
