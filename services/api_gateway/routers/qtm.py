@@ -204,7 +204,14 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
 
     enforce_limits(request, cost_units=1)
 
-    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
+    # Pick basis: if not provided and operator known, default to operator eigen basis
+    if req.basis is None:
+        if (emap := _operator_eigs().get(req.operator)) is not None:
+            basis = list(emap.keys())
+        else:
+            basis = ["ALLOW", "DENY", "ABSTAIN"]
+    else:
+        basis = req.basis
 
     # Simple uniform predistribution stub
 
@@ -249,6 +256,8 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         op_effective = req.operator
     _validate_operator(op_effective)
+    if req.basis is not None:
+        _validate_basis_for_operator(op_effective, basis)
 
     idx = _stable_index(op_effective, len(basis))
     verdict = basis[idx]
@@ -528,6 +537,15 @@ def _operator_eigs() -> dict[str, dict[str, float]]:
 def _validate_operator(name: str) -> None:
     if name not in _operator_eigs().keys():
         raise HTTPException(status_code=400, detail=f"Unknown operator: {name}")
+
+
+def _validate_basis_for_operator(operator: str, basis: list[str]) -> None:
+    eigs = _operator_eigs().get(operator)
+    if not eigs:
+        return
+    keys = set(eigs.keys())
+    if any(b not in keys for b in basis):
+        raise HTTPException(status_code=400, detail=f"Basis not compatible with operator {operator}")
 
 
 class SetStateRequest(BaseModel):
