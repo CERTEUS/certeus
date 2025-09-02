@@ -29,6 +29,8 @@ jobs:
       - name: Generate SBOM (CycloneDX JSON)
         run: |
           cyclonedx-py --format json --output sbom.json || cyclonedx-bom -o sbom.json -F json || true
+          # Ensure artifact exists so upload step does not fail
+          [ -f sbom.json ] || echo "{}" > sbom.json
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:

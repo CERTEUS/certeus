@@ -1,5 +1,8 @@
 # CERTEUS — AGENTS.md (reguły dla agenta)
 
+Uwaga: Centralny hub dokumentacji agenta przeniesiony do:
+`docs/AGENTS/README.md` (zawiera skróty do WORKLOG/90_dni/manifestów, bramek i runbooków).
+
 ## Interpreter
 
 Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
