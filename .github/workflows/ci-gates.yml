@@ -77,6 +77,38 @@ jobs:
         run: |
           python scripts/smokes/metrics_smoke.py
 
+      - name: OpenAPI smoke (/openapi.json)
+        run: |
+          python scripts/smokes/openapi_smoke.py
+
+      - name: Comment PR with perf bench
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '';
+            try {
+              const data = JSON.parse(fs.readFileSync('out/perf_bench.json', 'utf8'));
+              const lines = [];
+              lines.push(`### Perf Bench (p95)`);
+              lines.push(`Worst p95: ${data.worst_p95_ms.toFixed(2)} ms (threshold ${data.threshold_ms} ms)`);
+              lines.push('');
+              lines.push('Endpoints:');
+              for (const e of data.endpoints) {
+                lines.push(`- ${e.method} ${e.path}: p95=${e.p95_ms.toFixed(2)} ms (min=${e.min_ms.toFixed(2)}, max=${e.max_ms.toFixed(2)})`);
+              }
+              body = lines.join('\n');
+            } catch (e) {
+              body = 'Perf bench: report not available';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
       - name: Publish CI status to branch
         if: always()
         run: |
