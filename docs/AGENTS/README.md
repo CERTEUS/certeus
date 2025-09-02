@@ -13,7 +13,8 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 ## Gałęzie i automatyzacja
 
 - Gałąź robocza: `work/daily` (zielona) – zmiany agenta trafiają tutaj.
-- Automatyczna promocja do `main` po zielonych checkach (FF/PR auto‑merge):
+ - Auto-promocja TYLKO tygodniowa: do `main` promujemy wyłącznie po zakończeniu tygodnia i zielonych checkach:
+  - commit na `work/daily` musi zawierać marker `[week-end]` lub trailer `weekly-promote: true`.
   - Wymagane checki (Branch Protection): `Smoke (ubuntu-latest)`, `Smoke (windows-latest)`, `ci-gates`.
   - Gate’y informacyjne (PR‑only): Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate, asset‑guard; Proof Gate — push: main, PR: main.
   - PR summary (ci‑gates) publikuje ticki gate’ów/smoków/workflowów + trend perf.
@@ -75,6 +76,8 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
    - Sprawdź ticki w komentarzu PR/ci‑gates. Jeśli czerwone — patrz „Troubleshooting”.
 
 ## Daily SOP (TL;DR)
+
+UWAGA: Auto‑promocja następuje wyłącznie po zakończeniu tygodnia — commit musi zawierać marker `[week-end]` lub trailer `weekly-promote: true`.
 
 - Przyjmij issue/task z Roadmapy (docs/90_dni_work.md).
 - Zrób zmianę minimalną, lint+test na lokalnym.
