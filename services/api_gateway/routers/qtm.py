@@ -88,6 +88,7 @@ class SequenceRequest(BaseModel):
     operators: list[str] = Field(..., min_items=1)
     case: str | None = Field(default=None)
     basis: list[str] | None = None
+    no_collapse: bool = Field(default=False, description="If true, do not collapse after each step")
 
 
 class SequenceStep(BaseModel):
@@ -234,6 +235,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     t0 = perf_counter()
 
     # Choose verdict based on operator hash; probabilities from case predistribution
+    _validate_operator(req.operator)
 
     basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
 
@@ -246,6 +248,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         op_effective = _presets.get(case_id, req.operator)
     except Exception:
         op_effective = req.operator
+    _validate_operator(op_effective)
 
     idx = _stable_index(op_effective, len(basis))
     verdict = basis[idx]
@@ -370,14 +373,16 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
     probs = _basis_probs_for_case(case_id, basis)
     steps: list[SequenceStep] = []
     for op in req.operators:
+        _validate_operator(op)
         idx = _stable_index(op, len(basis))
         verdict = basis[idx]
         probs = _apply_decoherence(probs, case_id, basis)
         p = float(probs[idx])
         steps.append(SequenceStep(operator=op, verdict=verdict, p=p))
         # Collapse to one-hot on verdict
-        probs = [0.0 for _ in basis]
-        probs[idx] = 1.0
+        if not req.no_collapse:
+            probs = [0.0 for _ in basis]
+            probs[idx] = 1.0
     # UB as in measure()
     try:
         from services.api_gateway.routers.cfe import curvature as _cfe_curvature
@@ -520,6 +525,11 @@ def _operator_eigs() -> dict[str, dict[str, float]]:
     }
 
 
+def _validate_operator(name: str) -> None:
+    if name not in _operator_eigs().keys():
+        raise HTTPException(status_code=400, detail=f"Unknown operator: {name}")
+
+
 class SetStateRequest(BaseModel):
     case: str = Field(..., min_length=1)
     psi: str | None = Field(default=None, description="State URI or descriptor")
@@ -560,6 +570,7 @@ async def expectation(req: ExpectationRequest) -> ExpectationOut:
     cg = CASE_GRAPH.get(req.case)
     if not cg:
         raise HTTPException(status_code=404, detail="Case not found")
+    _validate_operator(req.operator)
     basis: list[str] = list(cg.get("basis", [])) or ["ALLOW", "DENY", "ABSTAIN"]
     probs0 = [float(x.get("p", 0.0)) for x in cg.get("predistribution", [])]
     if len(probs0) != len(basis):
@@ -766,6 +777,8 @@ async def commutator_expectation(req: CommutatorExpRequest, request: Request) ->
     if len(probs0) != len(basis):
         probs0 = _uniform_probs(basis)
     probs = _apply_decoherence(probs0, req.case, basis)
+    _validate_operator(req.A)
+    _validate_operator(req.B)
     eigs = _operator_eigs()
     mA = eigs.get(req.A) or {}
     mB = eigs.get(req.B) or {}
