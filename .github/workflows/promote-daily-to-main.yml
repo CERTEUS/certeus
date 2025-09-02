@@ -13,6 +13,10 @@ on:
   workflow_run:
     workflows:
       - Proof Gate
+      - asset-guard
+      - Gauge-Gate
+      - Path-Coverage-Gate
+      - Boundary-Rebuild-Gate
     types: [completed]
 
 permissions:
@@ -21,14 +25,40 @@ permissions:
 
 jobs:
   promote:
-    if: >-
-      ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily' }}
+    if: ${{ github.event.workflow_run.head_branch == 'work/daily' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Verify all required gates are green for HEAD SHA
+        id: gates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          echo "Checking gates for commit: $SHA"
+          required=( "Proof Gate" "asset-guard" "Gauge-Gate" "Path-Coverage-Gate" "Boundary-Rebuild-Gate" )
+          ok=1
+          for wf in "${required[@]}"; do
+            # Get latest run for this commit and workflow
+            concl=$(gh run list --branch work/daily --workflow "$wf" --json headSha,conclusion,headBranch,name | jq -r \
+              --arg sha "$SHA" '.[] | select(.headSha==$sha) | .conclusion' | head -n1)
+            if [ "${concl:-}" != "success" ]; then
+              echo "Gate not green: $wf (conclusion=${concl:-none})"
+              ok=0
+            else
+              echo "Gate OK: $wf"
+            fi
+          done
+          if [ "$ok" = "1" ]; then
+            echo "all_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "all_ok=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
       - name: Configure git user
         run: |
           git config user.name "certeus-bot"
@@ -63,4 +93,3 @@ jobs:
           fi
           # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
           gh pr merge "$PR_NUM" --auto --squash || true
-

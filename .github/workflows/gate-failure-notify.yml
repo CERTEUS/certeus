@@ -1,0 +1,55 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/gate-failure-notify.yml            |
+# | ROLE: Notify on gate failures for work/daily                |
+# | PLIK: .github/workflows/gate-failure-notify.yml            |
+# | ROLA: Powiadom o porażce bramek dla work/daily              |
+# +-------------------------------------------------------------+
+
+name: Gate-Failure-Notify
+
+on:
+  workflow_run:
+    workflows:
+      - Proof Gate
+      - asset-guard
+      - Gauge-Gate
+      - Path-Coverage-Gate
+      - Boundary-Rebuild-Gate
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  notify:
+    if: ${{ github.event.workflow_run.conclusion != 'success' && github.event.workflow_run.head_branch == 'work/daily' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open or update issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          RUN_URL=${{ github.event.workflow_run.html_url }}
+          SHA=${{ github.event.workflow_run.head_sha }}
+          WF=${{ github.event.workflow_run.name }}
+          TITLE="Gate failure: $WF on work/daily ($SHA)"
+          BODY=$(cat << EOF
+          The gate "$WF" failed for commit $SHA on branch work/daily.
+
+          Run: $RUN_URL
+
+          Please investigate and fix until green; promotion to main is blocked.
+          EOF
+          )
+          # Find existing open issue with same title
+          NUM=$(gh issue list --state open --search "$TITLE" --json number,title | jq -r '.[0].number // empty')
+          if [ -z "$NUM" ]; then
+            gh issue create -t "$TITLE" -b "$BODY" || true
+          else
+            gh issue comment "$NUM" -b "$BODY" || true
+          fi
+
