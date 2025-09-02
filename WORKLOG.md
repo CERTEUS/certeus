@@ -82,3 +82,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Status gałęzi/PR + auto-merge
   - - CI: ticki w PR summary, Proof Gate per-krok
   - - OTel mock + smoki/perf/SLO
+- 2025-09-02 13:55:40Z [48793] (work/daily): CI cleanup: gates via ci-gates only; green daily
+  - - Made Gauge/Path/Boundary non-blocking\n- Added OpenAPI generator\n- Supply-chain SBOM upload hardened
