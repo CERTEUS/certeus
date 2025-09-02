@@ -20,9 +20,11 @@ EN: Helper to push to GitHub using a token from ENV (no secret logging).
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 import subprocess
+import urllib.request
 
 
 def _run(cmd: list[str]) -> None:
@@ -35,7 +37,7 @@ def main() -> int:
     args = ap.parse_args()
 
     # Prefer explicit user/token; support ADMIN_TOKEN fallback
-    user = os.getenv("GITHUB_USER") or os.getenv("GH_USER") or os.getenv("GIT_USER") or "x-access-token"
+    user = os.getenv("GITHUB_USER") or os.getenv("GH_USER") or os.getenv("GIT_USER")
     token = (
         os.getenv("GITHUB_PUSH_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("ADMIN_TOKEN")
     )
@@ -49,7 +51,68 @@ def main() -> int:
         except Exception:
             pass
     if not token:
-        raise SystemExit("Missing push token in env (set ADMIN_TOKEN/GITHUB_PUSH_TOKEN) or login via `gh auth login`")
+        # Fallback: read token from local files (ignored by Git)
+        for name in (".devkeys/admin_token.txt", ".devkeys/github_pat.txt", ".devkeys/token.txt"):
+            p = Path(name)
+            if p.exists():
+                token = p.read_text(encoding="utf-8").strip()
+                if token:
+                    break
+    if not token:
+        raise SystemExit("Missing push token: set ADMIN_TOKEN/GITHUB_PUSH_TOKEN or provide .devkeys/admin_token.txt")
+
+    # Resolve repo owner/name from origin
+    _proc = subprocess.run(["git", "remote", "get-url", "origin"], check=True, capture_output=True, text=True)
+    origin = (_proc.stdout or "").strip()
+    # Accept https://github.com/owner/repo(.git)
+    owner = "CERTEUS"
+    repo = "certeus"
+    try:
+        if origin.startswith("http"):
+            parts = origin.rstrip("/").split("/")
+            owner = parts[-2]
+            repo = parts[-1]
+            if repo.endswith(".git"):
+                repo = repo[:-4]
+    except Exception:
+        pass
+
+    # Determine username if not provided
+    if not user:
+        # 1) local file (.devkeys/github_user.txt)
+        p = Path(".devkeys/github_user.txt")
+        if p.exists():
+            try:
+                user = p.read_text(encoding="utf-8").strip()
+            except Exception:
+                user = None
+    if not user:
+        # 2) query GitHub API to get login owner of token
+        try:
+            req = urllib.request.Request("https://api.github.com/user", headers={"Authorization": f"token {token}"})
+            with urllib.request.urlopen(req, timeout=5) as resp:  # nosec B310
+                you = json.loads(resp.read().decode("utf-8"))
+                cand = you.get("login")
+                if isinstance(cand, str) and cand:
+                    user = cand
+        except Exception:
+            user = None
+    if not user:
+        # 3) fallback
+        user = "x-access-token"
+
+    # Optional: verify token has push permission
+    try:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{owner}/{repo}", headers={"Authorization": f"token {token}"}
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:  # nosec B310
+            meta = json.loads(resp.read().decode("utf-8"))
+            perms = meta.get("permissions") or {}
+            if not perms.get("push", False):
+                print("warning: token may lack push permission for repo; proceeding anyway")
+    except Exception:
+        pass
 
     # Write credentials to .git-credentials for credential.helper=store
     cred_file = Path(".git-credentials")
