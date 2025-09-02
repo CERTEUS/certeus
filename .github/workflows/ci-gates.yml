@@ -52,6 +52,7 @@ jobs:
           PYTEST_ADDOPTS: "-k 'not test_generate_proofs_cli_smoke_test'"
           OTEL_ENABLED: "1"
           OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
+          FINE_GRAINED_ROLES: "0"
         run: |
           python -m pytest -q
 
