@@ -1,4 +1,5 @@
 #!/usr/bin/env markdown
+
 # CERTEUS — WORKLOG
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
@@ -72,3 +73,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - CI: mock OTLP + OTEL_ENABLED=1, exporter endpoint
   - - PR: comment SLO/Smokes/Perf in ci-gates
   - - API: /metrics headers; dashboards extended
+- 2025-09-02 12:20:30Z [48793] (work/daily): W11+: PR trend + OTel in CI + smokes & panels
+  - - PR: perf trend vs previous; SLO+Smokes summary
+  - - CI: OTEL_ENABLED=1 with mock OTLP
+  - - Dashboard: add method/status p95 tables; metrics cache headers
