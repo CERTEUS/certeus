@@ -8,6 +8,7 @@ from __future__ import annotations
 import os  # noqa: E402
 from pathlib import Path  # noqa: E402
 import subprocess  # noqa: E402
+import sys  # noqa: E402
 
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
@@ -27,7 +28,7 @@ def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     e = os.environ.copy()
     e.update(env)
     return subprocess.run(
-        ["python", "scripts/gates/security_bunker_gate.py"],
+        [sys.executable, "scripts/gates/security_bunker_gate.py"],
         text=True,
         capture_output=True,
         env=e,

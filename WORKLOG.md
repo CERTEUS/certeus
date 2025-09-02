@@ -92,3 +92,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Updated AGENTS/HANDOFF with clean history + archives\n- Branch protection contexts: ci-gates, Smoke (ubuntu/windows)
 - 2025-09-02 15:13:38Z [48793] (work/daily): Pre-commit hooks: Conventional Commits + section spacing
   - - commit-msg validation enforced\n- normalize section spacing on staged .py files
+- 2025-09-02 18:42:38Z [root] (work/daily): Tests green; W1–W12 audit + fixes
+  - - Fix: subprocess uses sys.executable in gate tests\n- Pytests: 99 passed, 1 skipped locally (uv CLI)\n- Audit: mapped Weeks 1–12 vs code/gates; W12 partial (Compliance)

@@ -6,6 +6,7 @@ EN: Roles gate tests: positive (AFV publish) and negative (ATC manage_keys).
 from __future__ import annotations
 
 import subprocess  # noqa: E402
+import sys  # noqa: E402
 
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
@@ -23,7 +24,7 @@ import subprocess  # noqa: E402
 
 def run_gate(payload: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["python", "scripts/gates/roles_policy_gate.py"],
+        [sys.executable, "scripts/gates/roles_policy_gate.py"],
         input=payload,
         text=True,
         capture_output=True,
