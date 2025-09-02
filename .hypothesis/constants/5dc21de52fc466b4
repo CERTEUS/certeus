@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\monitoring\otel_setup.py
-# hypothesis_version: 6.138.13
-
-['1', 'OTEL_ENABLED', 'OTEL_SERVICE_NAME', 'True', 'certeus-api', 'true']

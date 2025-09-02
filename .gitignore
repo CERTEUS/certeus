@@ -37,3 +37,5 @@ htmlcov/
 data/law_cache/
 exports/
 static/previews/
+
+.hypothesis/

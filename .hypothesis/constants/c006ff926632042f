@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\utils\__init__.py
-# hypothesis_version: 6.138.13
-
-['ascii_safe', 'error', 'info', 'print_safe', 'success']

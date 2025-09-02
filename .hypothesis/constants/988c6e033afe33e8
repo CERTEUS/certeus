@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\verify.py
-# hypothesis_version: 6.138.13
-
-[400, 409, 500, '/v1', '/verify', 'Truth Engine', 'message', 'requires_human', 'smt2']

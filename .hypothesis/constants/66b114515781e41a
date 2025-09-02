@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\pco_public.py
-# hypothesis_version: 6.138.13
-
-[400, 404, 422, 500, './data/public_pco', '/pco/public', '/{rid}', 'Invalid signature', 'L', 'PCO bundle not found', 'PROOF_BUNDLE_DIR', 'R', 'address', 'dir', 'dob', 'drat', 'email', 'first_name', 'headers', 'ip', 'last_name', 'lfsc', 'merkle_proof', 'name', 'path', 'patient_id', 'pco', 'person_id', 'pesel', 'phone', 'position', 'rid', 'session_id', 'sibling', 'signature', 'smt2_hash', 'ssn', 'user_id', 'utf-8']

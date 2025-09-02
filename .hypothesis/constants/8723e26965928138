@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\metrics.py
-# hypothesis_version: 6.138.13
-
-['/metrics', 'Cache-Control', 'metrics', 'no-store']

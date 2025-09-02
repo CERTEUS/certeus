@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\lexlog_parser\parser.py
-# hypothesis_version: 6.138.13
-
-[',', 'CONCLUSION', 'Conclusion', 'Define', 'LexAst', 'LexlogParser', 'P_CEL', 'P_ROZPORZADZENIE', 'P_WPROWADZENIE', 'Premise', 'RULE R_286_OSZUSTWO', 'R_286_OSZUSTWO', 'RuleDecl', 'True', 'bool', 'conclusion', 'parse_lexlog', 'premises', 'rule_id', 'smt_assertion']
