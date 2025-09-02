@@ -37,3 +37,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - ProofGate: infer domain (lex/fin/sec) and enforce per Governance Pack
   - - Tests: services proofgate role enforcement
   - - CI: ci-gates runs governance consistency
+- 2025-09-02 11:04:25Z [48793] (work/daily): W9: ProofGate roles smoke + PQ/DP gates
+  - - CI: ProofGate roles smoke, PQ-crypto & DP budget gates
+  - - Scripts: smokes/proofgate_roles_smoke.py, gates/pqcrypto_gate.py, gates/dp_budget_gate.py
+  - - README: dodane flagi PQCRYPTO_REQUIRE i STRICT_DP_BUDGET
