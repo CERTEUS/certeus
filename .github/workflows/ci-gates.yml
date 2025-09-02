@@ -50,9 +50,17 @@ jobs:
         run: |
           python -m pytest -q
 
+      - name: Perf Smoke (W11)
+        run: |
+          python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250
+
       - name: Governance consistency (smoke)
         run: |
           python scripts/validate_governance_consistency.py
+
+      - name: Metrics smoke (/metrics)
+        run: |
+          python scripts/smokes/metrics_smoke.py
 
       - name: Publish CI status to branch
         if: always()

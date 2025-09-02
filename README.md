@@ -605,6 +605,15 @@ Uwaga: krok CI „Security Bunker Gate” honoruje również ścieżki override 
 3) PCO: nagłówek  (JSON parametry pomiaru/operatory/commutator).
 4) Dashboardy: SLO (latencja per path), panel „FIN entanglement MI (by pair)”.
 
+## Demo tygodnia — SRE Dashboard (W10)
+
+1) Uruchom stack lub lokalny Gateway i Prometheus/Grafanę.
+2) Wejdź na `/metrics` (Prometheus exposition) i sprawdź histogram `certeus_http_request_duration_ms`.
+3) Otwórz Grafanę i zaimportuj dashboard `observability/grafana/certeus-sre-dashboard.json`.
+4) Obserwuj p95 latencję i error‑rate (5m/1h). Alerty przykładowe w `observability/prometheus/alert_rules_w10.yml`.
+
+Uwaga (OTel): ustaw `OTEL_ENABLED=1` oraz `OTEL_EXPORTER_OTLP_ENDPOINT` (np. `http://localhost:4318`) by wysyłać ślady. Opcjonalnie `OTEL_SERVICE_NAME`.
+
 ## Demo tygodnia — HDE wygrany case
 
 1) Zaplanuj HDE (plan dowodów):
