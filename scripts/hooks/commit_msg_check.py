@@ -24,10 +24,9 @@ EN: Simple Conventional Commits validator for commit messages.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
-
 
 # === KONFIGURACJA / CONFIGURATION ===
 ALLOWED = {
@@ -57,10 +56,7 @@ def validate(message: str) -> tuple[bool, str | None]:
     header = lines[0].strip()
     m = HEADER_RE.match(header)
     if not m:
-        return False, (
-            "Invalid header. Expected 'type(scope)?: subject'. "
-            "Allowed types: " + ", ".join(sorted(ALLOWED))
-        )
+        return False, ("Invalid header. Expected 'type(scope)?: subject'. Allowed types: " + ", ".join(sorted(ALLOWED)))
     ctype = m.group("type")
     if ctype not in ALLOWED:
         return False, f"Invalid type '{ctype}'. Allowed: {', '.join(sorted(ALLOWED))}"
@@ -98,4 +94,3 @@ if __name__ == "__main__":
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

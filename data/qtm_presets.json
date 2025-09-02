@@ -1,3 +1,4 @@
 {
-  "LEX-TEST-PRESET": "T"
+  "LEX-TEST-PRESET": "T",
+  "LEX-QTMP-PRESET-FALLBACK": "T"
 }

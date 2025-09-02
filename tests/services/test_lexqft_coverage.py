@@ -22,7 +22,6 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
-
 client = TestClient(app)
 
 
@@ -47,4 +46,3 @@ def test_lexqft_coverage_default_and_update_roundtrip() -> None:
     assert 0.83 <= float(body["coverage_gamma"]) <= 0.84
     # weighted uncaptured: (0.05*2 + 0.15*1)/3 = 0.25/3 ~= 0.08333
     assert 0.08 <= float(body["uncaptured_mass"]) <= 0.09
-

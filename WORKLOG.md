@@ -58,6 +58,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - CI: ci-gates metrics smoke + perf smoke (p95)
   - - Scripts: perf/quick_bench.py; smokes/metrics_smoke.py
 - 2025-09-02 11:37:27Z [48793] (work/daily): W11 start: OpenAPI cache + SLO smoke + dashboard panel
+ - 2025-09-02 12:05:00Z [agent] (work/daily): Stabilize ci-gates perf, minor hygiene
+   - perf: warm-up in scripts/perf/quick_bench.py (flakiness fix on GH runners)
+   - qtm: add fallback preset key; misc whitespace/ruff cleanups
+   - gitignore: ignore out/ and lexqft coverage state
   - - Perf: cache OpenAPI JSON in memory (faster /openapi.json)
   - - CI: SLO smoke in ci-gates
   - - Grafana: Top p95 by path panel

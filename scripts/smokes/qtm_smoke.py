@@ -22,6 +22,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))  # noqa: E402
 
 from fastapi.testclient import TestClient  # noqa: E402
+
 from services.api_gateway.main import app  # noqa: E402
 
 
@@ -45,4 +46,3 @@ if __name__ == "__main__":
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

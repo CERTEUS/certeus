@@ -39,11 +39,12 @@ try {
   if ((Test-Path $userFile) -and (Test-Path $tokFile)) {
     $usr = (Get-Content $userFile -Raw).Trim()
     $tok = (Get-Content $tokFile  -Raw).Trim()
-    $home = [Environment]::GetFolderPath('UserProfile')
-    $credPath = Join-Path $home ".git-credentials"
+    $userProfile = [Environment]::GetFolderPath('UserProfile')
+    $credPath = Join-Path $userProfile ".git-credentials"
     # Dopisz wpis host-level i repo-level (idempotentnie)
-    $hostLine = "https://$usr:$tok@github.com"
-    $repoLine = "https://$usr:$tok@github.com/CERTEUS/certeus.git"
+    # Uwaga: unikamy interpolacji z ":" — składamy łańcuchy konkatenacją.
+    $hostLine = 'https://' + $usr + ':' + $tok + '@github.com'
+    $repoLine = 'https://' + $usr + ':' + $tok + '@github.com/CERTEUS/certeus.git'
     if (Test-Path $credPath) {
       $cur = Get-Content $credPath -Raw
       if ($cur -notmatch [regex]::Escape($hostLine)) { Add-Content $credPath $hostLine }
