@@ -45,3 +45,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - .github/certeus.env.defaults + loader to GITHUB_ENV
   - - README/Runbooks + 90_dni_work.md status (W9)
   - - Proof Gate uses defaults for PQ/DP/roles smoke
+- 2025-09-02 11:19:48Z [48793] (work/daily): W10: Observability & SRE (OTel, alerts, DR drill)
+  - - OTel (opt-in) + HTTP p95 metrics middleware
+  - - Prometheus alert rules (multi-burn) + SRE dashboard JSON
+  - - CI: DR drill step (Boundary RTO/RPO)
