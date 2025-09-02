@@ -132,3 +132,9 @@ certeus_qtm_operator_priority = Gauge(
 # LexQFT: Coverage (gamma, uncaptured)
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
+
+# FINENITH: entanglement MI and commutator
+certeus_fin_entanglement_mi = Gauge(
+    "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
+)
+certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
