@@ -77,6 +77,18 @@ def test_qtm_state_endpoint_after_init() -> None:
     assert body["case"] == case_id and body["basis"] == ["ALLOW", "DENY"]
 
 
+def test_qtm_operators_and_uncertainty_endpoints() -> None:
+    r_ops = client.get("/v1/qtm/operators")
+    assert r_ops.status_code == 200
+    ops = r_ops.json().get("operators", {})
+    assert set(["W", "L", "T"]).issubset(set(ops.keys()))
+
+    r_ub = client.get("/v1/qtm/uncertainty")
+    assert r_ub.status_code == 200
+    lb = float(r_ub.json().get("lower_bound", 0.0))
+    assert 0.0 < lb <= 1.0
+
+
 def test_qtm_commutator_simple_rule() -> None:
     r_eq = client.post("/v1/qtm/commutator", json={"A": "L", "B": "L"})
     r_ne = client.post("/v1/qtm/commutator", json={"A": "L", "B": "T"})

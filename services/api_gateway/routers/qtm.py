@@ -126,6 +126,35 @@ DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
 _PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
 
 
+def _uniform_probs(basis: list[str]) -> list[float]:
+    p = 1.0 / max(1, len(basis))
+    return [round(p, 6) for _ in basis]
+
+
+def _basis_probs_for_case(case_id: str, basis: list[str]) -> list[float]:
+    cg = CASE_GRAPH.get(case_id)
+    if cg and (pd := cg.get("predistribution")):
+        mv = {str(x.get("state")): float(x.get("p", 0.0)) for x in pd}
+        probs = [float(mv.get(b, 0.0)) for b in basis]
+        s = sum(probs)
+        if s > 0:
+            probs = [round(x / s, 6) for x in probs]
+            return probs
+    return _uniform_probs(basis)
+
+
+def _apply_decoherence(probs: list[float], case_id: str) -> list[float]:
+    deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default")
+    if not deco:
+        return probs
+    gamma = float(deco.get("gamma", 0.0) or 0.0)
+    if gamma <= 0.0:
+        return probs
+    n = len(probs)
+    u = 1.0 / max(1, n)
+    return [round((1.0 - gamma) * p + gamma * u, 6) for p in probs]
+
+
 @router.post("/init_case", response_model=InitCaseResponse)
 async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
     from services.api_gateway.limits import enforce_limits
@@ -162,7 +191,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     t0 = perf_counter()
 
-    # Stub: choose verdict based on operator hash
+    # Choose verdict based on operator hash; probabilities from case predistribution
 
     basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
 
@@ -179,9 +208,10 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     idx = abs(hash(op_effective)) % len(basis)
     verdict = basis[idx]
 
-    # Probability stub
-
-    p = round(0.55 + (idx * 0.1) % 0.4, 6)
+    # Probability from predistribution (Born-like), smoothed by decoherence if configured
+    probs0 = _basis_probs_for_case(case_id, basis)
+    probs = _apply_decoherence(probs0, case_id)
+    p = float(probs[idx])
 
     sequence = [
         {
@@ -231,6 +261,8 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         base_pri["T"] = round(base_pri["T"] * boost, 3)
         response.headers["X-CERTEUS-PCO-qtmp.priorities"] = _json.dumps(base_pri, separators=(",", ":"))
         response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(round(kappa * 0.1, 6))
+        response.headers["X-CERTEUS-PCO-qtm.collapse_prob"] = str(p)
+        response.headers["X-CERTEUS-PCO-qtm.collapse_latency_ms"] = str(latency_ms)
     except Exception:
         pass
 
@@ -284,6 +316,41 @@ async def get_state(case: str) -> QtmStateOut:
         basis=list(cg.get("basis", [])),
         predistribution=list(cg.get("predistribution", [])),
     )
+
+
+class OperatorsOut(BaseModel):
+    operators: dict[str, dict[str, float]]
+
+
+@router.get("/operators", response_model=OperatorsOut)
+async def list_operators() -> OperatorsOut:
+    # Example eigenvalue maps; can be made dynamic per domain
+    return OperatorsOut(
+        operators={
+            "W": {"ALLOW": 1.0, "DENY": -1.0, "ABSTAIN": 0.0},
+            "L": {"ALLOW": 0.9, "DENY": 0.1, "ABSTAIN": 0.5},
+            "T": {"ALLOW": 0.2, "DENY": 0.8, "ABSTAIN": 0.6},
+            "I": {"dolus directus": 1.0, "dolus eventualis": 0.5, "culpa": -0.2},
+            "C": {"ALLOW": 0.0, "DENY": 1.0, "ABSTAIN": 0.5},
+        }
+    )
+
+
+class UncertaintyOut(BaseModel):
+    lower_bound: float
+
+
+@router.get("/uncertainty", response_model=UncertaintyOut)
+async def uncertainty_bound() -> UncertaintyOut:
+    # Deterministic curvature-based bound to align with measure()
+    try:
+        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
+
+        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
+    except Exception:
+        kappa = 0.012
+    lb = round(0.2 + min(0.2, kappa * 10.0), 3)
+    return UncertaintyOut(lower_bound=lb)
 
 
 @router.post("/commutator", response_model=CommutatorResponse)
