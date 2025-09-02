@@ -100,3 +100,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Fix: subprocess uses sys.executable in gate tests\n- Pytests: 99 passed, 1 skipped locally (uv CLI)\n- Audit: mapped Weeks 1–12 vs code/gates; W12 partial (Compliance)
 - 2025-09-02 19:19:21Z [root] (work/daily): W1–W12: bramki+API uzupełnienia + fixy CI
   - - Testy: subprocess via sys.executable; lok. 99 OK\n- W12: bramka redakcji + hook w CI; opcjonalna redakcja w publish\n- W5: trwałość lexqft coverage (state.json)\n- W8: case lock/recall/revoke (CFE)\n- W12: DPCO/MCO pola w PCO (FIN)
+- 2025-09-02 21:17:58Z [48793] (work/daily): W12: domknięcie standardu 1000% [week-end]
+  - - ADR: Proof-Only/PNIP/Gates/Redaction; diagramy mermaid
+  - - Testy: property-based PNIP/QTMP; security headers+rate-limit; redaction; OpenAPI
+  - - CI: perf regression gate; OPA rego tests; supply-chain strict
