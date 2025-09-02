@@ -90,6 +90,10 @@ jobs:
         run: |
           echo '{"user": {"role": "AFV"}, "action": "publish"}' | uv run python scripts/gates/roles_policy_gate.py
 
+      - name: Validate Governance Consistency
+        run: |
+          uv run python scripts/validate_governance_consistency.py
+
       - name: Compute boundary report
         if: ${{ secrets.PCO_JWKS_B64URL != '' }}
         env:

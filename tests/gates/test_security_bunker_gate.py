@@ -1,10 +1,27 @@
+"""
+PL: Testy jednostkowe bramki Bunkra: tryb off, atest OK oraz brak atestu.
+EN: Unit tests for Bunker gate: off mode, attested OK and missing attestation.
+"""
+
 from __future__ import annotations
 
-import os
-from pathlib import Path
-import subprocess
+import os  # noqa: E402
+from pathlib import Path  # noqa: E402
+import subprocess  # noqa: E402
+
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/gates/test_security_bunker_gate.py             |
+# | ROLE: Tests for Security Bunker gate                        |
+# | PLIK: tests/gates/test_security_bunker_gate.py             |
+# | ROLA: Testy bramki Security Bunker                          |
+# +-------------------------------------------------------------+
+
+# === IMPORTY / IMPORTS ===
 
 
+# === LOGIKA / LOGIC ===
 def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     e = os.environ.copy()
     e.update(env)
@@ -16,6 +33,7 @@ def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     )
 
 
+# === TESTY / TESTS ===
 def test_bunker_off_ok() -> None:
     res = run_gate({"BUNKER": "0", "PROOFGATE_BUNKER": "0"})
     assert res.returncode == 0, res.stderr or res.stdout
