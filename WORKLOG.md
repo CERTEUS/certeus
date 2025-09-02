@@ -41,3 +41,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - CI: ProofGate roles smoke, PQ-crypto & DP budget gates
   - - Scripts: smokes/proofgate_roles_smoke.py, gates/pqcrypto_gate.py, gates/dp_budget_gate.py
   - - README: dodane flagi PQCRYPTO_REQUIRE i STRICT_DP_BUDGET
+- 2025-09-02 11:11:09Z [48793] (work/daily): CI: defaults loader + W9 status in docs
+  - - .github/certeus.env.defaults + loader to GITHUB_ENV
+  - - README/Runbooks + 90_dni_work.md status (W9)
+  - - Proof Gate uses defaults for PQ/DP/roles smoke
