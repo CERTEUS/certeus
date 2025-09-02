@@ -147,6 +147,17 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
     return {"ok": True, "count": len(_COVERAGE_AGG)}
 
 
+@router.post("/coverage/reset")
+async def coverage_reset(request: Request) -> dict:
+    """PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty)."""
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    global _COVERAGE_AGG
+    _COVERAGE_AGG = []
+    return {"ok": True}
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
