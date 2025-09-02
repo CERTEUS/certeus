@@ -76,6 +76,28 @@
           "legendFormat": "{{case}}"
         }
       ]
+    },
+    {
+      "type": "timeseries",
+      "title": "LexQFT Coverage Gamma",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
+      "targets": [
+        {
+          "expr": "certeus_lexqft_coverage_gamma",
+          "legendFormat": "gamma"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "LexQFT Uncaptured Mass",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
+      "targets": [
+        {
+          "expr": "certeus_lexqft_uncaptured_mass",
+          "legendFormat": "uncaptured"
+        }
+      ]
     }
   ]
 }

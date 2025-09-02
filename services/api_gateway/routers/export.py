@@ -40,7 +40,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="", tags=["export"])
@@ -53,7 +53,12 @@ class ExportPayload(BaseModel):
 
     analysis_result: Mapping[str, Any] = Field(default_factory=dict)
 
-    fmt: str = Field("report", description="Output format (tests use 'report').")
+    fmt: str = Field(
+        "report",
+        description="Output format: report|file|docx|json (default: report)",
+    )
+
+    write_ledger: bool = Field(default=False, description="If true, record provenance hash in Ledger")
 
 
 class ExportResponse(BaseModel):
@@ -123,7 +128,7 @@ def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Pat
 
 
 @router.post("/v1/export", response_model=ExportResponse)
-def export_endpoint(payload: ExportPayload) -> ExportResponse:
+def export_endpoint(payload: ExportPayload, response: Response) -> ExportResponse:
     """
 
     PL: Generuje raport i zwraca ścieżkę + provenance (hash, timestamp, artifacts).
@@ -139,20 +144,85 @@ def export_endpoint(payload: ExportPayload) -> ExportResponse:
 
     out_dir = Path("exports")
 
-    path = _write_report(case_id, payload.analysis_result, out_dir)
+    export_path: Path | None = None
+    if payload.fmt == "report":
+        export_path = _write_report(case_id, payload.analysis_result, out_dir)
+    elif payload.fmt == "file":
+        export_path = out_dir / f"{case_id}.json"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        export_path.write_text(
+            json.dumps(payload.analysis_result, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+    elif payload.fmt == "docx":
+        export_path = out_dir / f"{case_id}.docx"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        export_path.write_text(
+            json.dumps(payload.analysis_result, ensure_ascii=False, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+    elif payload.fmt == "json":
+        # No file on disk; we still compute provenance on JSON content
+        export_path = None
+    else:
+        raise HTTPException(status_code=400, detail=f"Unsupported fmt: {payload.fmt}")
 
     # Build provenance / Budowa provenance
 
+    timestamp = _now_iso_utc()
+    if export_path and export_path.exists():
+        h = _hash_file_sha256(export_path)
+        artifacts = {"report": str(export_path)} if payload.fmt == "report" else {"artifact": str(export_path)}
+    else:
+        # Hash JSON content when no file was created
+        try:
+            content = json.dumps(payload.analysis_result, ensure_ascii=False, sort_keys=True)
+        except Exception:
+            content = str(payload.analysis_result)
+        h = hashlib.sha256(content.encode("utf-8")).hexdigest()
+        artifacts = {}
+
     prov: dict[str, Any] = {
-        "hash_sha256": _hash_file_sha256(path),
-        "timestamp_utc": _now_iso_utc(),
-        "artifacts": {
-            "report": str(path),
-        },
+        "hash_sha256": h,
+        "timestamp_utc": timestamp,
+        "artifacts": artifacts,
     }
 
+    # Optional ledger record
+    if payload.write_ledger:
+        try:
+            from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+            # Ledger hash over analysis summary + export info
+            ledger_doc = {
+                "export": {
+                    "case": case_id,
+                    "fmt": payload.fmt,
+                    "hash": h,
+                    "timestamp": timestamp,
+                }
+            }
+            doc_hash = "sha256:" + compute_provenance_hash(ledger_doc, include_timestamp=False)
+            ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
+        except Exception:
+            # Non-fatal for export
+            pass
+
+    # PCO headers (export provenance)
+    try:
+        response.headers["X-CERTEUS-PCO-export.hash"] = h
+        response.headers["X-CERTEUS-PCO-export.timestamp"] = timestamp
+        if export_path:
+            response.headers["X-CERTEUS-PCO-export.path"] = str(export_path)
+    except Exception:
+        pass
+
     return ExportResponse(
-        path=str(path),
-        message=f"Report generated at {path}",
+        path=str(export_path) if export_path else "",
+        message=(
+            f"Report generated at {export_path}"
+            if payload.fmt == "report"
+            else (f"Artifact written to {export_path}" if export_path else "JSON returned")
+        ),
         provenance=prov,
     )
