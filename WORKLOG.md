@@ -52,3 +52,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-02 11:26:03Z [48793] (work/daily): CI fix: governance validator path + Windows uv skip
   - - scripts/validate_governance_consistency.py: repo root detection fixed
   - - tests/truth/test_solvers.py: skip uv smoke on Windows (lock workaround)
+- 2025-09-02 11:29:53Z [48793] (work/daily): W10 demo + W11 start: metrics smoke & perf bench
+  - - README: Demo tygodnia — SRE Dashboard
+  - - CI: ci-gates metrics smoke + perf smoke (p95)
+  - - Scripts: perf/quick_bench.py; smokes/metrics_smoke.py
