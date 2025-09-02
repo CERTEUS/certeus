@@ -185,3 +185,53 @@ async def lensing() -> LensingResponse:
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+_CASE_LOCKS: dict[str, bool] = {}
+
+
+class CaseActionIn(BaseModel):
+    case: str
+
+
+class CaseActionOut(BaseModel):
+    case: str
+    locked: bool
+    action: str
+
+
+@router.post("/case/lock", response_model=CaseActionOut)
+async def case_lock(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    _CASE_LOCKS[req.case] = True
+    try:
+        response.headers["X-CERTEUS-PCO-cfe.case.lock"] = req.case
+    except Exception:
+        pass
+    return CaseActionOut(case=req.case, locked=True, action="lock")
+
+
+@router.post("/case/recall", response_model=CaseActionOut)
+async def case_recall(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    _CASE_LOCKS[req.case] = True
+    try:
+        response.headers["X-CERTEUS-PCO-cfe.case.recall"] = req.case
+    except Exception:
+        pass
+    return CaseActionOut(case=req.case, locked=True, action="recall")
+
+
+@router.post("/case/revoke", response_model=CaseActionOut)
+async def case_revoke(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    _CASE_LOCKS[req.case] = False
+    try:
+        response.headers["X-CERTEUS-PCO-cfe.case.revoke"] = req.case
+    except Exception:
+        pass
+    return CaseActionOut(case=req.case, locked=False, action="revoke")

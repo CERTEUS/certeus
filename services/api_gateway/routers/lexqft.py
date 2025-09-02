@@ -28,6 +28,9 @@ EN: FastAPI router for lexqft / geometry of meaning.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
@@ -69,6 +72,7 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 # +=====================================================================+
 
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
+_COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
 
 
 class CoverageResponse(BaseModel):
@@ -78,6 +82,14 @@ class CoverageResponse(BaseModel):
 @router.get("/coverage", response_model=CoverageResponse)
 async def coverage() -> CoverageResponse:
     """PL/EN: Telemetria lexqft – gamma pokrycia (agregowana)."""
+    global _COVERAGE_AGG
+    # lazy-load persisted state if memory empty
+    if not _COVERAGE_AGG and _COVERAGE_STORE.exists():
+        try:
+            raw = json.loads(_COVERAGE_STORE.read_text(encoding="utf-8"))
+            _COVERAGE_AGG = [(float(x[0]), float(x[1]), float(x[2])) for x in raw]
+        except Exception:
+            _COVERAGE_AGG = []
     if _COVERAGE_AGG:
         tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
         gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
@@ -144,6 +156,12 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
     enforce_limits(request, cost_units=1)
     global _COVERAGE_AGG
     _COVERAGE_AGG = [(float(it.gamma), float(it.weight), float(it.uncaptured)) for it in items]
+    # persist state
+    try:
+        _COVERAGE_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
+    except Exception:
+        pass
     return {"ok": True, "count": len(_COVERAGE_AGG)}
 
 
@@ -155,6 +173,11 @@ async def coverage_reset(request: Request) -> dict:
     enforce_limits(request, cost_units=1)
     global _COVERAGE_AGG
     _COVERAGE_AGG = []
+    try:
+        if _COVERAGE_STORE.exists():
+            _COVERAGE_STORE.unlink()
+    except Exception:
+        pass
     return {"ok": True}
 
 

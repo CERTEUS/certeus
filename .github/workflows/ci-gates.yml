@@ -101,6 +101,12 @@ jobs:
         run: |
           python scripts/validate_governance_consistency.py && echo ok > out/gov_ok.txt
 
+      - name: Redaction Gate (informational)
+        env:
+          STRICT_REDACTION: "0"
+        run: |
+          echo '{"subject":{"name":"Jan KOWALSKI"}, "content":"Brak wrażliwych danych."}' | python scripts/gates/redaction_gate.py
+
       - name: Metrics smoke (/metrics)
         run: |
           python scripts/smokes/metrics_smoke.py
