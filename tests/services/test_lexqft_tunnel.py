@@ -22,11 +22,25 @@ Expect PCO headers qlaw.tunneling.* in both cases.
 
 from __future__ import annotations
 
+# === IMPORTY / IMPORTS ===
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+
 client = TestClient(app)
+
+
+# === I/O / ENDPOINTS ===
+
+
+# === TESTY / TESTS ===
 
 
 def test_tunnel_low_energy_has_pco_headers() -> None:
