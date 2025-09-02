@@ -78,3 +78,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - CI: OTEL_ENABLED=1 with mock OTLP
   - - Dashboard: add method/status p95 tables; metrics cache headers
 - 2025-09-02 15:03:06Z [agent] (merge/daily-to-main-20250902-145204): PR sync — retrigger gates
+- 2025-09-02 13:22:18Z [48793] (work/daily): Handoff: docs/AGENTS/HANDOFF.md + AGENTS.md status
+  - - Status gałęzi/PR + auto-merge
+  - - CI: ticki w PR summary, Proof Gate per-krok
+  - - OTel mock + smoki/perf/SLO

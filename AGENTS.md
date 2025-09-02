@@ -94,3 +94,14 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
   - Dostarcz API/PCO/UI/gate’y z DOD,
   - Uzupełnij README (demo tygodnia) i AGENTS/WORKLOG,
   - Wypchnij na  i potwierdź zielony stan.
+
+## Handoff / Stan prac (skrót)
+
+- Aktualny PR do main: `merge/daily-to-main-20250902-145204 → main` (PR #33). Auto‑merge włączony — scali po komplecie zielonych bramek.
+- Gałęzie: `main` = zielony; `work/daily` = zielony; PR‑branch = w toku gate’ów.
+- CI/PR podsumowanie: ci‑gates publikuje komentarz z tickami (style/lint/tests/perf/slo/smokes) + statusy workflowów (Proof Gate / Gauge / Path‑Coverage / Boundary / asset‑guard) oraz trendem perf p95.
+- OTel w CI: włączony mock OTLP (`scripts/otel/mock_otlp.py`) + `OTEL_ENABLED=1` — ślady są przyjmowane lokalnie.
+- Smoki in‑proc: `/metrics`, `/openapi.json`, ProofGate `/healthz`.
+- SLO/Perf: quick bench (p95) zapisuje `out/perf_bench.json` (artefakt), SLO smoke mierzy i weryfikuje progi.
+- Dashboards: `observability/grafana/certeus-sre-dashboard.json` (p95 by path/method/status, error‑rate, p95 staty).
+- Pełny opis i następne kroki: `docs/AGENTS/HANDOFF.md`.
