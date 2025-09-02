@@ -77,3 +77,4 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - PR: perf trend vs previous; SLO+Smokes summary
   - - CI: OTEL_ENABLED=1 with mock OTLP
   - - Dashboard: add method/status p95 tables; metrics cache headers
+- 2025-09-02 15:03:06Z [agent] (merge/daily-to-main-20250902-145204): PR sync — retrigger gates
