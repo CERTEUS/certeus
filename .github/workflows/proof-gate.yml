@@ -36,6 +36,10 @@ jobs:
         run: |
           uv sync --all-extras --dev
 
+      - name: Start mock OTLP receiver (background)
+        run: |
+          nohup uv run python scripts/otel/mock_otlp.py >/dev/null 2>&1 &
+
       - name: Load CI defaults (non-secrets)
         run: |
           uv run python scripts/ci/load_env_defaults.py
@@ -56,6 +60,8 @@ jobs:
         env:
           PYTHONWARNINGS: "error,default::DeprecationWarning"
           PYTEST_JUNIT_XML: reports/junit.xml
+          OTEL_ENABLED: "1"
+          OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
         run: |
           mkdir -p "$(dirname "$PYTEST_JUNIT_XML")"
           uv run pytest -q --junitxml="$PYTEST_JUNIT_XML"
