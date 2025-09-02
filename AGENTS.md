@@ -24,7 +24,38 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 ## Push
 `git add -A`
 `git commit -m "chore: lint+tests via Codex" --no-verify`
-`git push -u origin HEAD:main`
+`git push -u origin HEAD:work/daily`
+
+## Auto‑push i auto‑promocja (operacje agenta)
+
+- Gałąź robocza: `work/daily` (agent wypycha zmiany tutaj).
+- Auto‑promocja do `main` po zielonych bramkach:
+  - Workflows bramkowe: „Proof Gate”, „asset‑guard”, „Gauge‑Gate”, „Path‑Coverage‑Gate”, „Boundary‑Rebuild‑Gate”.
+  - Workflow `.github/workflows/promote-daily-to-main.yml` weryfikuje wszystkie bramki dla danego commitu na `work/daily`. Gdy są `success`:
+    - próbuje fast‑forward `main` → push,
+    - gdy FF niemożliwy – tworzy PR `work/daily → main` i włącza auto‑merge.
+- Powiadomienia o porażkach: `.github/workflows/gate-failure-notify.yml` otwiera/aktualizuje Issue z linkiem do błędnego gate’u i blokuje promocję do `main` do czasu naprawy.
+
+### Uwierzytelnianie push (agent)
+
+- Preferowane: `gh auth login` + `gh auth setup-git` w środowisku, w którym uruchamiany jest agent.
+- Alternatywy wspierane przez helpera `scripts/git_push.py`:
+  - ENV: `ADMIN_TOKEN` (PAT z prawem write) i opcjonalnie `GITHUB_USER`.
+  - Pliki lokalne (ignorowane w repo):
+    - `.devkeys/admin_token.txt` – jedna linia z PAT,
+    - `.devkeys/github_user.txt` – jedna linia z loginem GitHub.
+- Helper automatycznie:
+  - pobiera token z ENV → `gh auth token` → pliku `.devkeys/admin_token.txt`,
+  - ustala właściciela repo z `origin`,
+  - ustala login z ENV/pliku/API `/user`,
+  - zapisuje poświadczenia do `.git-credentials` (ignorowane) i wykonuje `git push`.
+
+### Procedura pracy (każda sesja)
+
+1) Lint + testy: `ruff check . --fix`, `ruff format .`, `pytest -q`.
+2) Push roboczy: `venv/bin/python scripts/git_push.py --to work/daily` (Windows: `.\.venv\Scripts\python.exe scripts\git_push.py --to work/daily`).
+3) CI uruchamia gate’y. Jeśli wszystkie zielone → auto‑promocja do `main`. Jeśli którekolwiek `failure` → automatyczne Issue; agent naprawia i ponawia push.
+4) Nigdy nie wklejamy tokenów do logów/PR; sekrety tylko w ENV lub w `.devkeys/*.txt` (ignorowane).
 
 ## Premium Code Style (Sekcja 21 — rdzeń agenta)
 
