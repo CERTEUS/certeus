@@ -73,6 +73,34 @@ jobs:
       - name: Perf Smoke (W11)
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
+      - name: Perf Regression Gate (<= +20% vs prev)
+        run: |
+          set -e
+          # Try to fetch previous perf benchmark from ci-status branch
+          git fetch origin ci-status || true
+          if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
+            git show origin/ci-status:ci/perf_bench.json > out/prev_perf_bench.json 2>/dev/null || true
+          fi
+          python - << 'PY'
+          import json, sys, pathlib
+          repo = pathlib.Path('.').resolve()
+          cur_p = repo/'out'/'perf_bench.json'
+          prev_p = repo/'out'/'prev_perf_bench.json'
+          if not cur_p.exists():
+            print('No current perf report found; skipping regression gate')
+            sys.exit(0)
+          cur = json.loads(cur_p.read_text())
+          worst = float(cur.get('worst_p95_ms', 0.0))
+          thr_pct = 0.20
+          if prev_p.exists():
+            prev = json.loads(prev_p.read_text())
+            base = float(prev.get('worst_p95_ms', 0.0)) or 1.0
+            allowed = base * (1.0 + thr_pct)
+            if worst > allowed:
+              print(f'Regression: worst p95 {worst:.2f} ms > allowed {allowed:.2f} ms (base {base:.2f} +20%)')
+              sys.exit(1)
+          print('Perf regression gate: OK')
+          PY
       - name: Mark Perf OK
         if: success()
         run: |
@@ -97,6 +125,13 @@ jobs:
         run: |
           mkdir -p out && echo ok > out/slo_ok.txt
 
+      - name: Setup OPA CLI
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+      - name: OPA policy tests (roles)
+        run: |
+          opa test policies/security -v
       - name: Governance consistency (smoke)
         run: |
           python scripts/validate_governance_consistency.py && echo ok > out/gov_ok.txt
@@ -327,4 +362,7 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
+
+
+
 

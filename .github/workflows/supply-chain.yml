@@ -89,11 +89,18 @@ jobs:
           subject-path: artifact.json
 
   enforce:
+    needs: [sbom, trivy, provenance]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Enforce supply-chain (optional)
+      - name: Download SBOM artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom.json
+          path: .
+        continue-on-error: true
+      - name: Enforce supply-chain (STRICT)
         env:
-          SUPPLY_CHAIN_ENFORCE: ${{ vars.SUPPLY_CHAIN_ENFORCE || '0' }}
+          SUPPLY_CHAIN_ENFORCE: '1'
         run: |
-          python scripts/gates/supply_chain_enforce.py || true
+          python scripts/gates/supply_chain_enforce.py
