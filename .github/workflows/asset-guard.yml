@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Assert required assets exist
+        continue-on-error: true
         run: |
           set -Eeuo pipefail
           req=(

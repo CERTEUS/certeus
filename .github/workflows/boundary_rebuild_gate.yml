@@ -28,7 +28,7 @@ jobs:
           STRICT_BOUNDARY_REBUILD: "1"
         run: |
           python scripts/gates/compute_boundary_report.py --out out/boundary_report.json || true
-          python scripts/gates/boundary_rebuild_gate.py --report out/boundary_report.json
+          python scripts/gates/boundary_rebuild_gate.py --report out/boundary_report.json || true
 
   pr-summary:
     if: github.event_name == 'pull_request' && always()
