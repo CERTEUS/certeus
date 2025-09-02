@@ -24,6 +24,7 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from collections.abc import Mapping
+import os
 from pathlib import Path
 from typing import Any
 
@@ -242,7 +243,34 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     policy = req.policy or _load_policy_pack()
 
+    # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
+    if bunker_on:
+        # Attestation header stub: X-TEE-Attestation must be present and non-empty
+        # Note: In this stubbed variant, we cannot access headers directly (no Request).
+        # Allow PUBLISH path but require that PCO carries a tee.attested flag.
+        try:
+            tee = req.pco.get("tee") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            if not (isinstance(tee, dict) and bool(tee.get("attested", False))):
+                return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+        except Exception:
+            return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+
+    # W9: Fine-grained role enforcement (optional)
+    enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
+
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
+
+    if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
+        # Allowed roles: AFV/ASE/ATC/ATS/AVR
+        try:
+            sigs = req.pco.get("signatures") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            roles = {s.get("role") for s in sigs if isinstance(s, dict)} if isinstance(sigs, list) else set()
+            allowed = {"AFV", "ASE", "ATC", "ATS", "AVR", "counsel"}
+            if not roles or not roles.issubset(allowed):
+                decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
 
     ledger: str | None = None
 

@@ -571,3 +571,44 @@ MIT © 2025 CERTEUS Contributors
 2) Ustaw risk/sent i kliknij Measure — zobacz outcome/p, timeline aktualizuje się.
 3) PCO: nagłówek  (JSON parametry pomiaru/operatory/commutator).
 4) Dashboardy: SLO (latencja per path), panel „FIN entanglement MI (by pair)”.
+
+## Demo tygodnia — HDE wygrany case
+
+1) Zaplanuj HDE (plan dowodów):
+```
+curl -sX POST "$CER_BASE/v1/devices/horizon_drive/plan" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99","budget_tokens":120}' | jq
+```
+Oczekiwane: plan_of_evidence[] z kosztami i referencjami PFS.
+
+2) Zablokuj horyzont w sprawie (lock):
+```
+curl -sX POST "$CER_BASE/v1/dr/lock" -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99","reason":"publish motion"}' | jq -r
+```
+PCO: nagłówek `X-CERTEUS-PCO-dr.lock` (Proof‑Only). Zwraca `{ok, lock_ref}`.
+
+3) Wygeneruj pismo (LEXENITH Motion):
+```
+curl -sX POST "$CER_BASE/v1/lexenith/motion/generate" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99","pattern":"brief:standard"}' | jq
+```
+Oczekiwane: dwa wzorce pism, PCO z hash/URI cytatów.
+
+4) Opcjonalnie: eksport ścieżki Why‑Not:
+```
+curl -sX POST "$CER_BASE/v1/lexenith/why_not/export" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"CER-LEX-99"}' | jq -r '.why_not.trace_uri'
+```
+Zwraca `pfs://why-not/<hash>` do audytu kontr‑argumentów.
+
+5) Publikacja do Ledger (ProofGate):
+```
+curl -sX POST "$CER_BASE/v1/proofgate/publish" \
+  -H 'Content-Type: application/json' \
+  -d '{"pco": {"case_id":"CER-LEX-99","risk":{"ece":0.01,"brier":0.05,"abstain_rate":0.1},"tee":{"attested":false}}, "budget_tokens": 10 }' | jq
+```
+Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
