@@ -44,9 +44,17 @@ jobs:
       - name: Premium Style Gate (sec.21)
         run: |
           python scripts/check_premium_style.py
+      - name: Mark Style OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/style_ok.txt
       - name: Ruff Lint (no fix)
         run: |
           python -m ruff check .
+      - name: Mark Lint OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/lint_ok.txt
       - name: Tests
         env:
           PYTEST_ADDOPTS: "-k 'not test_generate_proofs_cli_smoke_test'"
@@ -55,10 +63,18 @@ jobs:
           FINE_GRAINED_ROLES: "0"
         run: |
           python -m pytest -q
+      - name: Mark Tests OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/tests_ok.txt
 
       - name: Perf Smoke (W11)
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
+      - name: Mark Perf OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/perf_ok.txt
 
       - name: Upload perf report
         if: always()
@@ -74,6 +90,10 @@ jobs:
         run: |
           python scripts/slo_gate/measure_api.py
           python scripts/slo_gate/check_slo.py
+      - name: Mark SLO OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/slo_ok.txt
 
       - name: Governance consistency (smoke)
         run: |
