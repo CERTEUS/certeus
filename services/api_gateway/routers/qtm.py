@@ -215,7 +215,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     sequence = [
         {
-            "operator": req.operator,
+            "operator": op_effective,
             "timestamp": "now",
             "source": req.source or "ui",
         }
@@ -263,6 +263,13 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(round(kappa * 0.1, 6))
         response.headers["X-CERTEUS-PCO-qtm.collapse_prob"] = str(p)
         response.headers["X-CERTEUS-PCO-qtm.collapse_latency_ms"] = str(latency_ms)
+    except Exception:
+        pass
+
+    # Append to in-memory history for this case
+    try:
+        hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
+        hist.append({"operator": op_effective, "verdict": verdict, "p": p})
     except Exception:
         pass
 
@@ -325,15 +332,7 @@ class OperatorsOut(BaseModel):
 @router.get("/operators", response_model=OperatorsOut)
 async def list_operators() -> OperatorsOut:
     # Example eigenvalue maps; can be made dynamic per domain
-    return OperatorsOut(
-        operators={
-            "W": {"ALLOW": 1.0, "DENY": -1.0, "ABSTAIN": 0.0},
-            "L": {"ALLOW": 0.9, "DENY": 0.1, "ABSTAIN": 0.5},
-            "T": {"ALLOW": 0.2, "DENY": 0.8, "ABSTAIN": 0.6},
-            "I": {"dolus directus": 1.0, "dolus eventualis": 0.5, "culpa": -0.2},
-            "C": {"ALLOW": 0.0, "DENY": 1.0, "ABSTAIN": 0.5},
-        }
-    )
+    return OperatorsOut(operators=_operator_eigs())
 
 
 class UncertaintyOut(BaseModel):
@@ -351,6 +350,95 @@ async def uncertainty_bound() -> UncertaintyOut:
         kappa = 0.012
     lb = round(0.2 + min(0.2, kappa * 10.0), 3)
     return UncertaintyOut(lower_bound=lb)
+
+
+def _operator_eigs() -> dict[str, dict[str, float]]:
+    return {
+        "W": {"ALLOW": 1.0, "DENY": -1.0, "ABSTAIN": 0.0},
+        "L": {"ALLOW": 0.9, "DENY": 0.1, "ABSTAIN": 0.5},
+        "T": {"ALLOW": 0.2, "DENY": 0.8, "ABSTAIN": 0.6},
+        "I": {"dolus directus": 1.0, "dolus eventualis": 0.5, "culpa": -0.2},
+        "C": {"ALLOW": 0.0, "DENY": 1.0, "ABSTAIN": 0.5},
+    }
+
+
+class SetStateRequest(BaseModel):
+    case: str = Field(..., min_length=1)
+    psi: str | None = Field(default=None, description="State URI or descriptor")
+    basis: list[str]
+    probs: list[float] = Field(description="Probabilities aligned with basis; will be normalized")
+
+
+@router.post("/state", response_model=QtmStateOut)
+async def set_state(req: SetStateRequest) -> QtmStateOut:
+    if len(req.basis) != len(req.probs):
+        raise HTTPException(status_code=400, detail="basis/probs length mismatch")
+    s = float(sum(req.probs))
+    if s <= 0.0:
+        raise HTTPException(status_code=400, detail="sum(probs) must be > 0")
+    probs = [round(float(x) / s, 6) for x in req.probs]
+    predistribution = [{"state": b, "p": p} for b, p in zip(req.basis, probs, strict=False)]
+    CASE_GRAPH[req.case] = {
+        "psi": req.psi or "psi://custom",
+        "basis": list(req.basis),
+        "predistribution": predistribution,
+    }
+    return QtmStateOut(
+        case=req.case, psi=CASE_GRAPH[req.case]["psi"], basis=list(req.basis), predistribution=predistribution
+    )
+
+
+class ExpectationRequest(BaseModel):
+    case: str
+    operator: str
+
+
+class ExpectationOut(BaseModel):
+    value: float
+
+
+@router.post("/expectation", response_model=ExpectationOut)
+async def expectation(req: ExpectationRequest) -> ExpectationOut:
+    cg = CASE_GRAPH.get(req.case)
+    if not cg:
+        raise HTTPException(status_code=404, detail="Case not found")
+    basis: list[str] = list(cg.get("basis", [])) or ["ALLOW", "DENY", "ABSTAIN"]
+    probs0 = [float(x.get("p", 0.0)) for x in cg.get("predistribution", [])]
+    if len(probs0) != len(basis):
+        probs0 = _uniform_probs(basis)
+    # apply decoherence if configured
+    probs = _apply_decoherence(probs0, req.case)
+    op_map = _operator_eigs().get(req.operator)
+    if not op_map:
+        raise HTTPException(status_code=400, detail="Unknown operator")
+    # expectation: sum p_i * eig(state)
+    val = 0.0
+    for b, p in zip(basis, probs, strict=False):
+        eig = float(op_map.get(b, 0.0))
+        val += p * eig
+    return ExpectationOut(value=round(val, 6))
+
+
+class DeleteResult(BaseModel):
+    ok: bool
+
+
+@router.delete("/preset/{case}", response_model=DeleteResult)
+async def delete_preset(case: str) -> DeleteResult:
+    presets = _load_presets()
+    if case not in presets:
+        raise HTTPException(status_code=404, detail="Preset not found")
+    presets.pop(case, None)
+    _save_presets(presets)
+    return DeleteResult(ok=True)
+
+
+@router.delete("/state/{case}", response_model=DeleteResult)
+async def delete_state(case: str) -> DeleteResult:
+    if case not in CASE_GRAPH:
+        raise HTTPException(status_code=404, detail="Case not found")
+    CASE_GRAPH.pop(case, None)
+    return DeleteResult(ok=True)
 
 
 @router.post("/commutator", response_model=CommutatorResponse)

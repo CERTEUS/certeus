@@ -89,6 +89,50 @@ def test_qtm_operators_and_uncertainty_endpoints() -> None:
     assert 0.0 < lb <= 1.0
 
 
+def test_qtm_decoherence_gamma_uniformizes_probabilities() -> None:
+    case_id = "LEX-QTMP-GAMMA"
+    # Set a non-uniform predistribution
+    r_set = client.post(
+        "/v1/qtm/state",
+        json={
+            "case": case_id,
+            "basis": ["ALLOW", "DENY", "ABSTAIN"],
+            "probs": [0.7, 0.2, 0.1],
+        },
+    )
+    assert r_set.status_code == 200
+    # Strong decoherence -> uniform smoothing
+    client.post("/v1/qtm/decoherence", json={"case": case_id, "channel": "dephasing", "gamma": 1.0})
+    r = client.post("/v1/qtm/measure", json={"operator": "W", "source": "ui", "case": case_id})
+    assert r.status_code == 200
+    body = r.json()
+    p = float(body["p"])
+    # Expect close to 1/3
+    assert abs(p - (1.0 / 3.0)) < 1e-6
+
+
+def test_qtm_preset_delete_and_state_delete() -> None:
+    case_id = "LEX-QTMP-DEL"
+    client.post("/v1/qtm/preset", json={"case": case_id, "operator": "T"})
+    # Delete preset
+    r_del = client.delete(f"/v1/qtm/preset/{case_id}")
+    assert r_del.status_code == 200 and r_del.json()["ok"] is True
+    # Now measuring should not use preset 'T' but the provided operator
+    r = client.post("/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": case_id})
+    assert r.status_code == 200
+    hdr = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event", "{}")
+    assert '\"operator\":\"L\"' in hdr
+    # Delete state
+    client.post(
+        "/v1/qtm/state",
+        json={"case": case_id, "basis": ["ALLOW", "DENY"], "probs": [0.6, 0.4]},
+    )
+    r_del_state = client.delete(f"/v1/qtm/state/{case_id}")
+    assert r_del_state.status_code == 200 and r_del_state.json()["ok"] is True
+    r_state = client.get(f"/v1/qtm/state/{case_id}")
+    assert r_state.status_code == 404
+
+
 def test_qtm_commutator_simple_rule() -> None:
     r_eq = client.post("/v1/qtm/commutator", json={"A": "L", "B": "L"})
     r_ne = client.post("/v1/qtm/commutator", json={"A": "L", "B": "T"})
