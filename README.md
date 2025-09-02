@@ -575,6 +575,20 @@ MIT © 2025 CERTEUS Contributors
 
 ## OpenAPI Notes
 
+## Repo Variables — przykłady (Actions → Variables)
+
+Dodaj w repo (Settings → Secrets and variables → Actions → Variables):
+
+- `BUNKER=1` — włącza profil Bunkra (TEE) w ProofGate i kroku CI „Security Bunker Gate”.
+- `PROOFGATE_BUNKER=1` — alias zmiennej dla ProofGate (równoważne `BUNKER`).
+- `BUNKER_READY=1` — sygnalizuje gotowość atestacji (alternatywa dla pliku `security/bunker/attestation.json`).
+- `PQCRYPTO_READY=1` — informacyjnie (krok CI dopisze status do podsumowania).
+- `FINE_GRAINED_ROLES=1` — wymusza w ProofGate sprawdzanie ról (AFV/ASE/ATC/ATS/AVR) przy publish/conditional.
+
+Uwaga: krok CI „Security Bunker Gate” honoruje również ścieżki override (do testów/CI):
+- `BUNKER_ATTESTATION_PATH` — ścieżka do pliku JSON z atestem (jeśli ustawiona, tylko ona jest sprawdzana),
+- `BUNKER_MARKER_PATH` — alternatywny marker gotowości (dowolny istniejący plik).
+
 - Source of truth: `docs/openapi/certeus.v1.yaml` (used by Pages workflow to publish JSON).
 - To inspect runtime JSON locally: `curl -s http://127.0.0.1:8000/openapi.json -o out/openapi.json`.
 

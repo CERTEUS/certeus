@@ -14,11 +14,19 @@ PL: Bramka bezpieczeństwa W9.
    w przeciwnym razie FAIL.
  - PQ-crypto: placeholder — wypisuje status do podsumowania kroku,
    nie blokuje (WARN only).
+ - Zmienne pomocnicze do testów/CI:
+   - `BUNKER_ATTESTATION_PATH` — wymuś sprawdzanie jednego pliku JSON,
+   - `BUNKER_MARKER_PATH` — alternatywny marker (istnienie pliku),
+   - `BUNKER_FORCE_FAIL` — wymuś FAIL (diagnostycznie).
 
 EN: Security gate W9.
  - If `BUNKER=on|1|true` → require bunker readiness (attestation/flag),
    otherwise FAIL.
  - PQ-crypto: placeholder — prints readiness in step summary (WARN only).
+ - Helper env for tests/CI:
+   - `BUNKER_ATTESTATION_PATH` — check only this JSON file,
+   - `BUNKER_MARKER_PATH` — alternative marker (any existing file),
+   - `BUNKER_FORCE_FAIL` — force FAIL (diagnostic).
 """
 
 # === IMPORTY / IMPORTS ===
@@ -35,10 +43,28 @@ def _is_on(val: str | None) -> bool:
 
 
 def _bunker_ready(repo_root: Path) -> bool:
+    # Forced fail (diagnostic)
+    if _is_on(os.getenv("BUNKER_FORCE_FAIL")):
+        return False
     # Env flag takes precedence
     if _is_on(os.getenv("BUNKER_READY")):
         return True
-    # File markers (any of):
+    # Explicit overrides
+    att_path = (os.getenv("BUNKER_ATTESTATION_PATH") or "").strip()
+    if att_path:
+        p = Path(att_path)
+        if not p.exists():
+            return False
+        if p.suffix == ".json":
+            try:
+                json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+                return False
+        return True
+    marker_path = (os.getenv("BUNKER_MARKER_PATH") or "").strip()
+    if marker_path:
+        return Path(marker_path).exists()
+    # Default markers (any of)
     markers = [
         repo_root / "data" / "security" / "bunker.ready",
         repo_root / "security" / "bunker" / "attestation.json",
@@ -47,7 +73,6 @@ def _bunker_ready(repo_root: Path) -> bool:
         try:
             if m.exists():
                 if m.suffix == ".json":
-                    # require parseable JSON
                     json.loads(m.read_text(encoding="utf-8"))
                 return True
         except Exception:
