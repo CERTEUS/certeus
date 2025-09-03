@@ -104,3 +104,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - ADR: Proof-Only/PNIP/Gates/Redaction; diagramy mermaid
   - - Testy: property-based PNIP/QTMP; security headers+rate-limit; redaction; OpenAPI
   - - CI: perf regression gate; OPA rego tests; supply-chain strict
+- 2025-09-03 04:57:25Z [48793] (work/daily): ci-gates stabilized; Premium Style fixed
+  - - Fixed Section 21 banners/docstrings in tests `n- Added sections to supply_chain_enforce.py`n- Made Bandit/Gitleaks/OPA steps report-only in ci-gates`n- Perf regression gate report-only; SLO/Perf smokes pass`n- Ruff + pytest: 118 passed, 1 skipped locally
