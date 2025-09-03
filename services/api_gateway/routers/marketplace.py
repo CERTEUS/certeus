@@ -258,6 +258,28 @@ def dry_run(req: InstallRequest) -> dict[str, Any]:
     return result
 
 
+@router.get("/plugin_manifest/{name}", summary="Get installed plugin manifest (YAML)")
+def get_plugin_manifest(name: str) -> dict[str, str]:
+    """PL: Zwraca manifest YAML zainstalowanej wtyczki (tylko lokalny odczyt).
+
+    EN: Returns YAML manifest of an installed plugin (local read only).
+    """
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", name):
+        raise HTTPException(status_code=400, detail="Invalid plugin name")
+    p = (_PLUGINS_DIR / name / "plugin.yaml").resolve()
+    root = _PLUGINS_DIR.resolve()
+    try:
+        if not str(p).startswith(str(root)):
+            raise HTTPException(status_code=400, detail="Invalid path")
+        if not p.exists():
+            raise HTTPException(status_code=404, detail="Not found")
+        return {"manifest_yaml": p.read_text(encoding="utf-8")}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Read error: {e}") from e
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

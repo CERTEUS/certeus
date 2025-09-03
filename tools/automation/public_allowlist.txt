@@ -14,8 +14,10 @@ docs/.well-known/security.txt
 .github/workflows/policy-scan.yml
 .github/workflows/mirror_freshness.yml
 .github/workflows/mirror_pages_health.yml
+.github/workflows/prevent-tags.yml
 .github/workflows/asset-health.yml
 tools/automation/public_allowlist.txt
 PROVENANCE.md
 PROVENANCE_HISTORY.md
+docs/404.md
 docs/robots.txt
