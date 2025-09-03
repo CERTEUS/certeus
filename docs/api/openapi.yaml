@@ -1,20 +1,322 @@
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
-# | FILE: docs/api/openapi.yaml                                 |
-# | ROLE: OpenAPI placeholder for docs                          |
-# | PLIK: docs/api/openapi.yaml                                 |
-# | ROLA: Placeholder OpenAPI do renderowania                    |
+# | FILE: docs/openapi/certeus.v1.yaml                        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: docs/openapi/certeus.v1.yaml                        |
+# | ROLA: Manifest YAML projektu.                               |
 # +-------------------------------------------------------------+
 
 openapi: 3.0.3
 info:
-  title: CERTEUS API (placeholder)
-  version: 0.0.1
+  title: CERTEUS API
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8081
+externalDocs:
+  description: Additional resources (endpoints, cURL, runbooks)
+  url: https://github.com/CERTEUS/certeus/tree/main/docs
 paths:
-  /health:
+  /v1/cfe/geodesic:
+    post:
+      summary: Compute legal geodesic (CFE)
+      tags: [CFE]
+      responses: { "200": { description: ok } }
+  /v1/cfe/horizon:
+    post:
+      summary: Compute legal horizon (CFE)
+      tags: [CFE]
+      responses: { "200": { description: ok } }
+  /v1/cfe/lensing:
     get:
-      summary: Healthcheck
+      summary: Lensing map (CFE)
+      tags: [CFE]
+      responses: { "200": { description: ok } }
+  /v1/qtm/init_case:
+    post:
+      summary: Initialize QTMP case predistribution
+      tags: [QTMP]
+      responses: { "200": { description: ok } }
+  /v1/qtm/measure:
+    post:
+      summary: Perform QTMP measurement
+      tags: [QTMP]
+      responses: { "200": { description: ok } }
+  /v1/qtm/commutator:
+    post:
+      summary: Compute commutator (QTMP)
+      tags: [QTMP]
+      responses: { "200": { description: ok } }
+  /v1/qtm/find_entanglement:
+    post:
+      summary: Find variable entanglement
+      tags: [QTMP]
+      responses: { "200": { description: ok } }
+  /v1/devices/horizon_drive/plan:
+    post:
+      summary: Plan evidence horizon (HDE)
+      tags: [Devices]
+      responses: { "200": { description: ok } }
+  /v1/devices/qoracle/expectation:
+    post:
+      summary: Optimize expectation via qOracle
+      tags: [Devices]
+      responses: { "200": { description: ok } }
+  /v1/devices/entangle:
+    post:
+      summary: Create entanglement certificate
+      tags: [Devices]
+      responses: { "200": { description: ok } }
+  /v1/devices/chronosync/reconcile:
+    post:
+      summary: Reconcile chronosync coordinates
+      tags: [Devices]
+      responses: { "200": { description: ok } }
+  /v1/upn/register:
+    post:
+      summary: Register UPN
+      tags: [UPN]
+      responses: { "200": { description: ok } }
+  /v1/upn/revoke:
+    post:
+      summary: Revoke UPN
+      tags: [UPN]
+      responses: { "200": { description: ok } }
+  /v1/dr/replay:
+    post:
+      summary: Decision Replay
+      tags: [DR]
+      responses: { "200": { description: ok } }
+  /v1/dr/recall:
+    post:
+      summary: Decision Recall
+      tags: [DR]
+      responses: { "200": { description: ok } }
+  /v1/proofgate/publish:
+    post:
+      summary: Publication decision (ProofGate)
+      tags: [ProofGate]
+      responses: { "200": { description: ok } }
+  /v1/pco/bundle:
+    post:
+      summary: Create and publish ProofBundle (v0.2)
+      tags: [PCO]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rid, smt2_hash, lfsc]
+              properties:
+                rid: { type: string }
+                smt2_hash: { type: string, minLength: 64, maxLength: 64 }
+                lfsc: { type: string }
+                drat: { type: string, nullable: true }
+                merkle_proof:
+                  type: array
+                  items:
+                    type: object
+                    properties: { sibling: { type: string }, dir: { type: string, enum: [L, R] } }
+            examples:
+              minimal:
+                summary: Minimal request
+                value:
+                  rid: "case-001"
+                  smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                  lfsc: "(lfsc proof)"
+                  merkle_proof: []
       responses:
-        '200':
-          description: OK
+        "200":
+          description: ProofBundle published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofBundleV0_2'
+              examples:
+                example:
+                  summary: Minimal ProofBundle response (truncated)
+                  value:
+                    version: "0.2"
+                    case_id: "case-001"
+                    rid: "case-001"
+                    smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    lfsc: "(lfsc proof)"
+                    merkle_proof: []
+                    signatures: [{ role: producer, alg: ed25519, key_id: "kid123", signature: "b64u..." }]
+                    risk: { ece: 0, brier: 0, p95_latency_ms: 0, abstain_rate: 0 }
+                    status: "PENDING"
+  /pco/public/{case_id}:
+    get:
+      summary: Public payload of ProofBundle (zero PII)
+      parameters:
+        - in: path
+          name: case_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Public PCO
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicPCO'
+              examples:
+                example:
+                  value:
+                    rid: "case-001"
+                    smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                    lfsc: "(lfsc proof)"
+                    merkle_proof: []
+                    signature: "b64u..."
+  /.well-known/jwks.json:
+    get:
+      summary: JWKS
+      tags: [System]
+      responses: { "200": { description: ok } }
+  /metrics:
+    get:
+      summary: Prometheus metrics
+      tags: [System]
+      responses:
+        "200": { description: ok }
+  /v1/sources/cache:
+    post:
+      summary: Cache a legal source by URI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [uri]
+              properties:
+                uri: { type: string }
+      responses:
+        "200":
+          description: Cached source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri: { type: string }
+                  digest: { type: string }
+                  path: { type: string }
+                  retrieved_at: { type: string }
+  /v1/proofgate/publish:
+    post:
+      summary: Publication decision (ProofGate)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pco: { $ref: '#/components/schemas/ProofBundleV0_2' }
+                policy: { type: object }
+                budget_tokens: { type: integer }
+      responses:
+        "200":
+          description: Decision
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [PUBLISH, CONDITIONAL, PENDING, ABSTAIN] }
+                  pco: { type: object }
+                  ledger_ref: { type: string }
+  /v1/packs:
+    get:
+      summary: List packs
+      tags: [Packs]
+      responses: { "200": { description: ok } }
+  /v1/packs/handle:
+    post:
+      summary: Handle pack action
+      tags: [Packs]
+      responses: { "200": { description: ok } }
+  /v1/ledger/{case_id}:
+    get:
+      summary: Ledger head for case
+      tags: [Ledger]
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses: { "200": { description: ok } }
+  /v1/boundary/reconstruct:
+    post:
+      summary: Reconstruct boundary state
+      tags: [Boundary]
+      responses: { "200": { description: ok } }
+components:
+  schemas:
+    ProofBundleV0_2:
+      description: Schema aligned with services/api_gateway/schemas/proofbundle_v0.2.json
+      type: object
+      required: [version, case_id, created_at, jurisdiction, claims, sources, risk, signatures, reproducibility, status]
+      properties:
+        version: { type: string, enum: ["0.2"] }
+        case_id: { type: string }
+        created_at: { type: string, format: date-time }
+        jurisdiction:
+          type: object
+          properties:
+            country: { type: string }
+            domain: { type: string }
+        claims:
+          type: array
+          items:
+            type: object
+        sources:
+          type: array
+          items:
+            type: object
+        derivations:
+          type: array
+          items:
+            type: object
+        computations:
+          type: array
+          items:
+            type: object
+        risk:
+          type: object
+          properties:
+            ece: { type: number }
+            brier: { type: number }
+            p95_latency_ms: { type: number }
+            abstain_rate: { type: number }
+        ledger:
+          type: object
+        signatures:
+          type: array
+          items:
+            type: object
+        reproducibility:
+          type: object
+        attachments:
+          type: array
+          items:
+            type: object
+        status:
+          type: string
+          enum: [PUBLISH, CONDITIONAL, PENDING, ABSTAIN]
+    PublicPCO:
+      type: object
+      properties:
+        rid: { type: string }
+        smt2_hash: { type: string }
+        lfsc: { type: string }
+        drat: { type: string }
+        merkle_proof:
+          type: array
+          items:
+            type: object
+            properties: { sibling: { type: string }, dir: { type: string } }
+        signature: { type: string }
+
