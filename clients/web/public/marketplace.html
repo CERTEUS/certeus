@@ -57,6 +57,10 @@ module: plugins.demo_alpha.src.main
 version: '0.1.0'"></textarea>
           </div>
           <div class="row">
+            <label>Wgraj plik manifestu (opcjonalnie)</label>
+            <input type="file" id="verify-file" accept=".yaml,.yml,text/yaml,text/plain" />
+          </div>
+          <div class="row">
             <label for="verify-sig">Podpis (base64url, Ed25519)</label>
             <input type="text" id="verify-sig" placeholder="b64u..." />
           </div>
@@ -74,6 +78,10 @@ version: '0.1.0'"></textarea>
           <div class="row">
             <label for="install-man">Manifest YAML (bez linii signature:)</label>
             <textarea id="install-man" rows="8"></textarea>
+          </div>
+          <div class="row">
+            <label>Wgraj plik manifestu (opcjonalnie)</label>
+            <input type="file" id="install-file" accept=".yaml,.yml,text/yaml,text/plain" />
           </div>
           <div class="row">
             <label for="install-sig">Podpis (base64url, Ed25519)</label>
@@ -112,12 +120,25 @@ version: '0.1.0'"></textarea>
           el.textContent = res.ed25519_pubkey_b64url || 'brak/nieustawiony (ENV ED25519_PUBKEY_B64URL)';
         } catch (e) { el.textContent = 'błąd: '+(e.message||e); }
       }
+      document.getElementById('verify-file').addEventListener('change', (ev) => {
+        const f = ev.target.files && ev.target.files[0]; if (!f) return;
+        f.text().then(t => { document.getElementById('verify-man').value = t; });
+      });
+      document.getElementById('install-file').addEventListener('change', (ev) => {
+        const f = ev.target.files && ev.target.files[0]; if (!f) return;
+        f.text().then(t => { document.getElementById('install-man').value = t; });
+      });
+      function basicYamlCheck(txt){
+        // bardzo prosta walidacja: musi mieć co najmniej 'module:'
+        return /\bmodule\s*:\s*[^\n]+/.test(txt);
+      }
       document.getElementById('btn-verify').addEventListener('click', async () => {
         const man = document.getElementById('verify-man').value;
         const sig = document.getElementById('verify-sig').value.trim();
         const out = document.getElementById('verify-out');
         out.textContent = 'Pracuję...';
         try {
+          if (!basicYamlCheck(man)) throw new Error('Manifest: brak pola module:');
           const res = await api('/v1/marketplace/verify_manifest', { method: 'POST', body: JSON.stringify({ manifest_yaml: man, signature_b64u: sig }) });
           out.textContent = res.ok ? 'OK: podpis poprawny' : 'BŁĄD: podpis nieprawidłowy';
           out.className = res.ok ? 'ok' : 'bad';
@@ -133,6 +154,7 @@ version: '0.1.0'"></textarea>
         const out = document.getElementById('install-out');
         out.textContent = 'Pracuję...';
         try {
+          if (!basicYamlCheck(man)) throw new Error('Manifest: brak pola module:');
           const res = await api('/v1/marketplace/install', { method: 'POST', body: JSON.stringify({ name, manifest_yaml: man, signature_b64u: sig }) });
           out.textContent = 'OK: ' + JSON.stringify(res);
           out.className = 'ok';

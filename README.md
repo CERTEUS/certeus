@@ -452,6 +452,7 @@ CI integracja:
   - Go: `clients/go/certeus` (zob. `docs/sdk/go.md`).
 
 - DevEx w UI Cockpitu: zakładka „DevEx” w `clients/web/proof_visualizer/index.html` (Copy code: curl/py/ts/go + 1‑klik „Playground” dla GET/POST wybranych endpointów).
+  - Autouzupełnianie listy endpointów na bazie runtime `/openapi.json` (best‑effort: zdrowie, PCO public, bundle, analyze).
 
 ### Publikacja SDK (opcjonalnie)
 

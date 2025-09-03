@@ -130,6 +130,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: dodany krok `scripts/validate_openapi_contract.py` (contract parity)
   - DevEx: POST /v1/pco/bundle i POST /v1/analyze (curl, py, ts; 1‑klik run)
   - SDK publish: skrypty `scripts/sdk/*` (py build/publish, ts publish)
+- 2025-09-03 18:40:00Z [agent] (work/daily): W15: DevEx auto z OpenAPI + SDK TS/Go rozszerzone
+  - UI: DevEx pobiera `/openapi.json` i uzupełnia listę endpointów
+  - SDK TS: `publishPCOBundle()` i `analyze()` (FormData)
+  - SDK Go: `PublishPCOBundle()` i `Analyze()` (multipart)
+  - Testy: 129 passed, 1 skipped (zielone)
 - 2025-09-03 14:21:04Z [agent] (work/daily): W16: Piloty — per‑tenant SLO + FIN/LEX endpoints
   - Observability: metryki per‑tenant (histogram + licznik) + panele Grafana
   - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)
@@ -154,7 +159,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Smokes: `scripts/smokes/marketplace_smoke.py`, `scripts/smokes/billing_smoke.py` → reports/smoke_*.json
   - Mismatch Console: przełącznik języka (PL/EN) i i18n etykiet modali (resolve/escalate)
   - Marketplace API: hardening nazw folderów i path traversal + endpoint `sign_manifest` (DEV)
-  - Lint/test: 128 passed, 1 skipped; demo+smokes uruchomione lokalnie
+  - Visualizer: klawiaturowa nawigacja po zakładkach + aria-selected
+  - Marketplace UI: drag&drop/wgraj plik + heurystyczna walidacja YAML
+  - Lint/test: 129 passed, 1 skipped; demo+smokes uruchomione lokalnie
 - 2025-09-03 14:39:26Z [root] (work/daily): W18: Launch — kontrakt OpenAPI domknięty + zielone testy
   - - Alias /v1/proofgate/publish w API Gateway
   - - Alias /pco/public/{case_id} → /pco/public/{rid}

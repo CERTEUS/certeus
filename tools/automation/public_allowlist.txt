@@ -15,4 +15,5 @@ docs/assets/**
 .github/workflows/mirror_pages_health.yml
 tools/automation/public_allowlist.txt
 PROVENANCE.md
+PROVENANCE_HISTORY.md
 docs/robots.txt

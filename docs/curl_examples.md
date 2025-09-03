@@ -141,6 +141,16 @@ curl -s -X POST http://127.0.0.1:8000/v1/billing/estimate \
   -H 'X-Tenant-ID: acme' -H 'Content-Type: application/json' \
   -d '{"action":"qtm.measure"}' | jq .
 ```
+
+- Admin (DEV) — ustawienie tieru i reload (wymaga `BILLING_ADMIN=1`):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/billing/admin/set_tier \
+  -H 'Content-Type: application/json' \
+  -d '{"tenant":"demo","tier":"pro","persist":true}' | jq .
+
+curl -s -X POST http://127.0.0.1:8000/v1/billing/admin/reload | jq .
+```
 ```
 
 ## FINENITH — Q‑Alpha (W16)
