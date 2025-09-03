@@ -1,3 +1,13 @@
+#!/usr/bin/env pwsh
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/github/seed_labels.ps1                       |
+# | ROLE: Project script.                                        |
+# | PLIK: scripts/github/seed_labels.ps1                       |
+# | ROLA: Skrypt projektu.                                       |
+# +-------------------------------------------------------------+
+
 Param()
 
 $ErrorActionPreference = 'Continue'

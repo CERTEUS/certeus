@@ -10,9 +10,11 @@
 package certeus
 
 import (
+    "bytes"
     "encoding/json"
     "fmt"
     "io"
+    "mime/multipart"
     "net/http"
     "time"
 )
@@ -79,3 +81,33 @@ func (c *Client) GetPublicPCO(caseID string) (map[string]any, error) {
     return data, err
 }
 
+// PublishPCOBundle posts a minimal ProofBundle creation request.
+func (c *Client) PublishPCOBundle(rid, smt2Hash, lfsc string) (map[string]any, error) {
+    body := map[string]any{
+        "rid":       rid,
+        "smt2_hash": smt2Hash,
+        "lfsc":      lfsc,
+    }
+    b, _ := json.Marshal(body)
+    req, _ := http.NewRequest(http.MethodPost, c.url("/v1/pco/bundle"), bytes.NewReader(b))
+    req.Header.Set("Content-Type", "application/json")
+    var data map[string]any
+    err := c.doJSON(req, &data)
+    return data, err
+}
+
+// Analyze uploads a file (multipart) and returns analysis JSON.
+func (c *Client) Analyze(caseID string, filename string, r io.Reader) (map[string]any, error) {
+    var buf bytes.Buffer
+    mw := multipart.NewWriter(&buf)
+    fw, err := mw.CreateFormFile("file", filename)
+    if err != nil { return nil, err }
+    if _, err := io.Copy(fw, r); err != nil { return nil, err }
+    _ = mw.Close()
+    req, _ := http.NewRequest(http.MethodPost, c.url("/v1/analyze?case_id="+caseID), &buf)
+    req.Header.Set("Content-Type", mw.FormDataContentType())
+    var data map[string]any
+    if c.TenantID != "" { req.Header.Set("X-Tenant-ID", c.TenantID) }
+    err = c.doJSON(req, &data)
+    return data, err
+}

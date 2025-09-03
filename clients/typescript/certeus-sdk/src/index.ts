@@ -55,7 +55,35 @@ export class CerteusClient {
     if (!r.ok) throw new Error(`/pco/public => ${r.status}`);
     return (await r.json()) as Json;
   }
+
+  async publishPCOBundle(payload: {
+    rid: string;
+    smt2_hash: string;
+    lfsc: string;
+    drat?: string | null;
+    merkle_proof?: Array<{ sibling: string; dir: 'L' | 'R' }> | { path: Array<{ sibling: string; dir: 'L' | 'R' }> } | null;
+    smt2?: string | null;
+  }): Promise<Json> {
+    const r = await fetch(this.url(`/v1/pco/bundle`), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(this.tenantId ? { 'X-Tenant-ID': this.tenantId } : {}) },
+      body: JSON.stringify(payload),
+    });
+    if (!r.ok) throw new Error(`/v1/pco/bundle => ${r.status}`);
+    return (await r.json()) as Json;
+  }
+
+  async analyze(caseId: string, file: Blob, filename = 'document.pdf'): Promise<Json> {
+    const fd = new FormData();
+    fd.append('file', file, filename);
+    const r = await fetch(this.url(`/v1/analyze?case_id=${encodeURIComponent(caseId)}`), {
+      method: 'POST',
+      body: fd,
+      headers: this.tenantId ? { 'X-Tenant-ID': this.tenantId } : undefined,
+    });
+    if (!r.ok) throw new Error(`/v1/analyze => ${r.status}`);
+    return (await r.json()) as Json;
+  }
 }
 
 export default CerteusClient;
-

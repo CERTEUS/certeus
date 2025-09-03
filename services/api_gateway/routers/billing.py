@@ -99,6 +99,7 @@ class AdminSetTierRequest(BaseModel):
 @router.post("/admin/set_tier", summary="[DEV] Map tenant to tier")
 def admin_set_tier(req: AdminSetTierRequest) -> dict[str, object]:
     import os
+
     from fastapi import HTTPException
 
     if (os.getenv("BILLING_ADMIN") or "").strip() not in {"1", "true", "True"}:
@@ -109,6 +110,7 @@ def admin_set_tier(req: AdminSetTierRequest) -> dict[str, object]:
 @router.post("/admin/reload", summary="[DEV] Reload billing policies from file")
 def admin_reload() -> dict[str, object]:
     import os
+
     from fastapi import HTTPException
 
     if (os.getenv("BILLING_ADMIN") or "").strip() not in {"1", "true", "True"}:

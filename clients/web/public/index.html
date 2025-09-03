@@ -33,6 +33,43 @@
 
       <div class="grid">
         <div class="card">
+          <h2>Quick checks</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <input id="tenant" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="X-Tenant-ID (np. acme)">
+            <button id="checkTier" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">Check tier</button>
+            <button id="checkBal" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">Check balance</button>
+            <span id="tInfo" style="color:#9aa0a6"></span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+            <select id="act" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb">
+              <option value="qtm.measure">qtm.measure</option>
+              <option value="qtm.decoherence">qtm.decoherence</option>
+              <option value="system.analyze">system.analyze</option>
+              <option value="ingest.upload">ingest.upload</option>
+              <option value="lexqft.tunnel">lexqft.tunnel</option>
+              <option value="proofgate.publish">proofgate.publish</option>
+            </select>
+            <button id="estimate" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">Estimate cost</button>
+            <span id="est" style="color:#9aa0a6"></span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+            <input id="rid" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="RID / case_id (np. CER-LEX-001)">
+            <a id="openPCO" href="#" target="_blank" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb;text-decoration:none">Open Public PCO</a>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+            <input id="admTenant" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="[DEV] tenant (e.g., demo)">
+            <select id="admTier" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb">
+              <option>free</option>
+              <option>pro</option>
+              <option>enterprise</option>
+            </select>
+            <label style="color:#9aa0a6"><input type="checkbox" id="admPersist"> persist</label>
+            <button id="admSet" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">[DEV] Set tier</button>
+            <button id="admReload" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">[DEV] Reload policies</button>
+            <span id="admInfo" style="color:#9aa0a6"></span>
+          </div>
+        </div>
+        <div class="card">
           <h2>Marketplace</h2>
           <p>Instalacja podpisanych wtyczek, lista zainstalowanych, klucz publiczny.</p>
           <p><a href="/app/public/marketplace.html">Otwórz Marketplace</a></p>
@@ -43,7 +80,22 @@
           <p><a href="/app/proof_visualizer/index.html">Otwórz Wizualizator</a></p>
         </div>
       </div>
+      <script>
+        async function jfetch(url, opts){ const r = await fetch(url, opts||{}); const t = await r.text(); try{ return {ok:r.ok, data: JSON.parse(t)} }catch{ return {ok:r.ok, data:t} } }
+        async function checkTier(){ const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/tenant_tier',{headers:{'X-Tenant-ID':tid}}); document.getElementById('tInfo').textContent = r.ok?`tenant=${r.data.tenant} tier=${r.data.tier}`:'error'; }
+        async function checkBal(){ const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/balance',{headers:{'X-Tenant-ID':tid}}); document.getElementById('tInfo').textContent = r.ok?`tenant=${tid} balance=${r.data.balance}`:'error'; }
+        async function doEstimate(){ const act=(document.getElementById('act').value||'qtm.measure'); const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/estimate',{method:'POST', headers:{'content-type':'application/json','X-Tenant-ID':tid}, body: JSON.stringify({action:act})}); document.getElementById('est').textContent = r.ok?`${act}: ~${r.data.estimated_units} units (tier=${r.data.tier})`:'error'; }
+        function updPCOLink(){ const rid=(document.getElementById('rid').value||'CER-LEX-001').trim(); const a=document.getElementById('openPCO'); a.href = `/pco/public/${encodeURIComponent(rid)}`; }
+        async function admSetTier(){ const t=(document.getElementById('admTenant').value||'').trim(); const tier=document.getElementById('admTier').value||'free'; const persist=document.getElementById('admPersist').checked; if(!t){ document.getElementById('admInfo').textContent='tenant required'; return; } const r=await jfetch('/v1/billing/admin/set_tier',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({tenant:t,tier, persist})}); document.getElementById('admInfo').textContent = r.ok?`set ${t}→${tier} (persist=${persist})`:'admin disabled (set BILLING_ADMIN=1)'; }
+        async function admReload(){ const r=await jfetch('/v1/billing/admin/reload',{method:'POST'}); document.getElementById('admInfo').textContent = r.ok?'policies reloaded':'admin disabled (set BILLING_ADMIN=1)'; }
+        document.getElementById('checkTier').addEventListener('click', checkTier);
+        document.getElementById('checkBal').addEventListener('click', checkBal);
+        document.getElementById('estimate').addEventListener('click', doEstimate);
+        document.getElementById('admSet').addEventListener('click', admSetTier);
+        document.getElementById('admReload').addEventListener('click', admReload);
+        document.getElementById('rid').addEventListener('input', updPCOLink);
+        updPCOLink();
+      </script>
     </div>
   </body>
   </html>
-

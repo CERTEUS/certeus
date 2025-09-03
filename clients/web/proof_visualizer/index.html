@@ -1026,6 +1026,16 @@
         { btn: $("#tabbtn-raw"), panel: $("#tab-raw") },
       ];
 
+      function selectTab(idx) {
+        tabs.forEach((t, i) => {
+          const sel = i === idx;
+          t.btn.setAttribute("aria-selected", sel ? "true" : "false");
+          t.btn.setAttribute("tabindex", sel ? "0" : "-1");
+          t.panel.hidden = !sel;
+          if (sel) t.btn.focus();
+        });
+      }
+
       // ====================== INIT ============================== //
       (function init() {
         applyTheme(localStorage.getItem(THEME_KEY) || "dark");
@@ -1040,6 +1050,21 @@
             : "dark";
         applyTheme(now);
       });
+      // Tabs: click + keyboard (Left/Right/Home/End)
+      (function initTabs(){
+        tabs.forEach((t, i) => {
+          t.btn.addEventListener('click', () => selectTab(i));
+          t.btn.addEventListener('keydown', (ev) => {
+            const N = tabs.length;
+            if (ev.key === 'ArrowRight') { ev.preventDefault(); selectTab((i+1)%N); }
+            else if (ev.key === 'ArrowLeft') { ev.preventDefault(); selectTab((i-1+N)%N); }
+            else if (ev.key === 'Home') { ev.preventDefault(); selectTab(0); }
+            else if (ev.key === 'End') { ev.preventDefault(); selectTab(N-1); }
+          });
+        });
+        // Ensure only first is visible on init
+        selectTab(0);
+      })();
       elLang.addEventListener("change", () => {
         localStorage.setItem(LANG_KEY, elLang.value);
         applyI18N();
@@ -1496,6 +1521,45 @@
       const elDevexSnippet = document.getElementById("devexSnippet");
 
       const DEVEX_BASE = API_BASE || location.origin;
+
+      // Autouzupełnianie listy endpointów na podstawie OpenAPI (best-effort)
+      async function fillEndpointsFromOpenAPI() {
+        try {
+          const res = await fetch(`${DEVEX_BASE}/openapi.json`);
+          if (!res.ok) return;
+          const spec = await res.json();
+          const paths = spec?.paths || {};
+          const opts = [];
+          // Always include health
+          opts.push({ value: 'health', label: 'GET /health' });
+          // Find pco.public
+          for (const p of Object.keys(paths)) {
+            if (/^\/pco\/public\/.+/.test(p) && paths[p]?.get) {
+              opts.push({ value: 'pco_public', label: `GET ${p}` });
+              break;
+            }
+          }
+          // pco bundle
+          if (paths['/v1/pco/bundle']?.post) {
+            opts.push({ value: 'pco_bundle', label: 'POST /v1/pco/bundle' });
+          }
+          // analyze
+          if (paths['/v1/analyze']?.post) {
+            opts.push({ value: 'analyze', label: 'POST /v1/analyze' });
+          }
+          // write options if we found anything
+          if (opts.length) {
+            elDevexEndpoint.innerHTML = '';
+            for (const o of opts) {
+              const option = document.createElement('option');
+              option.value = o.value;
+              option.textContent = o.label;
+              elDevexEndpoint.appendChild(option);
+            }
+          }
+        } catch {}
+      }
+      fillEndpointsFromOpenAPI();
 
       function devexSnippet() {
         const kind = elDevexKind?.value || "curl";

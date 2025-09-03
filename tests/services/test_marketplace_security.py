@@ -66,6 +66,7 @@ def test_sign_manifest_dev_only(monkeypatch):
     assert r2.status_code == 200
     assert "signature_b64url" in r2.json()
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
