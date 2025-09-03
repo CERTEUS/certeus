@@ -108,3 +108,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Fixed Section 21 banners/docstrings in tests `n- Added sections to supply_chain_enforce.py`n- Made Bandit/Gitleaks/OPA steps report-only in ci-gates`n- Perf regression gate report-only; SLO/Perf smokes pass`n- Ruff + pytest: 118 passed, 1 skipped locally
 - 2025-09-03 05:11:37Z [48793] (work/daily): [week-end] Autopromote to main marker
   - weekly-promote: true`n- Marker commit to trigger Promote-Daily-To-Main
+- 2025-09-03 06:28:49Z [48793] (work/daily): [week-end] Autopromote validation
+  - weekly-promote: true
+  - - Trigger ci-gates and Promote-Daily-To-Main
