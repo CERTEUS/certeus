@@ -199,3 +199,4 @@ histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_tenant_bucket
 sum(rate(certeus_http_requests_total{status=~"5.."}[5m])) by (tenant)
 / sum(rate(certeus_http_requests_total[5m])) by (tenant)
 ```
+

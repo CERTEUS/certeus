@@ -224,12 +224,19 @@ def dry_run(req: InstallRequest) -> dict[str, Any]:
     """
     result: dict[str, Any] = {"ok": False, "errors": []}
     # Name & path
-    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.name):
+    safe_name = bool(re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.name))
+    if not safe_name:
         result.setdefault("errors", []).append("invalid_name")
-    pdir = (_PLUGINS_DIR / req.name).resolve()
-    plugins_root = _PLUGINS_DIR.resolve()
-    if not str(pdir).startswith(str(plugins_root)):
-        result.setdefault("errors", []).append("invalid_path")
+    pdir_str = str(_PLUGINS_DIR / req.name)
+    if safe_name:
+        try:
+            pdir = (_PLUGINS_DIR / req.name).resolve()
+            plugins_root = _PLUGINS_DIR.resolve()
+            if not str(pdir).startswith(str(plugins_root)):
+                result.setdefault("errors", []).append("invalid_path")
+            pdir_str = str(pdir)
+        except Exception:
+            result.setdefault("errors", []).append("invalid_path")
     # Signature
     if not _verify_manifest(req.manifest_yaml, req.signature_b64u):
         result.setdefault("errors", []).append("invalid_signature")
@@ -246,7 +253,7 @@ def dry_run(req: InstallRequest) -> dict[str, Any]:
         result["version"] = ver
     except Exception:
         result.setdefault("errors", []).append("invalid_yaml")
-    result["would_write_path"] = str(pdir)
+    result["would_write_path"] = pdir_str
     result["ok"] = not result.get("errors")
     return result
 

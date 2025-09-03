@@ -75,6 +75,11 @@
           <p><a href="/app/public/marketplace.html">Otwórz Marketplace</a></p>
         </div>
         <div class="card">
+          <h2>Case Studio</h2>
+          <p>Upload → Analyze → Publish (PUBLISH/ledger_ref) z jednym PDF‑em.</p>
+          <p><a href="/app/public/case_studio.html">Otwórz Case Studio</a></p>
+        </div>
+        <div class="card">
           <h2>Proof Visualizer</h2>
           <p>Wizualizator wyników analizy (ALI/PCO) z i18n i dostępnością.</p>
           <p><a href="/app/proof_visualizer/index.html">Otwórz Wizualizator</a></p>
@@ -95,8 +100,24 @@
           <p><a href="/app/public/pco_explorer.html">Otwórz PCO Explorer</a></p>
         </div>
       </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Live Metrics (summary)</h2>
+        <p class="muted">Top paths by average latency and by request count (in‑proc summary).</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <h3 style="font-size:14px;color:#9aa0a6">Top avg ms</h3>
+            <table id="topavg"><thead><tr><th>path</th><th>method</th><th>avg ms</th><th>count</th></tr></thead><tbody></tbody></table>
+          </div>
+          <div>
+            <h3 style="font-size:14px;color:#9aa0a6">Top count</h3>
+            <table id="topcnt"><thead><tr><th>path</th><th>method</th><th>avg ms</th><th>count</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
       <script>
         async function jfetch(url, opts){ const r = await fetch(url, opts||{}); const t = await r.text(); try{ return {ok:r.ok, data: JSON.parse(t)} }catch{ return {ok:r.ok, data:t} } }
+        function fillTable(id, rows){ const tb=document.getElementById(id).querySelector('tbody'); tb.innerHTML=''; (rows||[]).forEach(it=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.path}</td><td>${it.method}</td><td>${(it.avg_ms||0).toFixed(1)}</td><td>${it.count}</td>`; tb.appendChild(tr); }); }
+        async function refreshMetrics(){ const r=await jfetch('/v1/metrics/summary'); if(r.ok){ fillTable('topavg', r.data.top_avg_ms); fillTable('topcnt', r.data.top_count);} }
         async function checkTier(){ const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/tenant_tier',{headers:{'X-Tenant-ID':tid}}); document.getElementById('tInfo').textContent = r.ok?`tenant=${r.data.tenant} tier=${r.data.tier}`:'error'; }
         async function checkBal(){ const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/balance',{headers:{'X-Tenant-ID':tid}}); document.getElementById('tInfo').textContent = r.ok?`tenant=${tid} balance=${r.data.balance}`:'error'; }
         async function doEstimate(){ const act=(document.getElementById('act').value||'qtm.measure'); const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/estimate',{method:'POST', headers:{'content-type':'application/json','X-Tenant-ID':tid}, body: JSON.stringify({action:act})}); document.getElementById('est').textContent = r.ok?`${act}: ~${r.data.estimated_units} units (tier=${r.data.tier})`:'error'; }
@@ -110,6 +131,7 @@
         document.getElementById('admReload').addEventListener('click', admReload);
         document.getElementById('rid').addEventListener('input', updPCOLink);
         updPCOLink();
+        refreshMetrics(); setInterval(refreshMetrics, 5000);
       </script>
     </div>
   </body>

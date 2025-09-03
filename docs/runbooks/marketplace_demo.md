@@ -33,6 +33,12 @@ curl -s -X POST http://127.0.0.1:8000/v1/marketplace/verify_manifest \
 
 ```
 UNSIGNED=$(sed '/^signature:/d' plugins/demo_alpha/plugin.yaml)
+# (opcjonalnie) dry‑run walidacja:
+curl -s -X POST http://127.0.0.1:8000/v1/marketplace/dry_run \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"demo_alpha","manifest_yaml":'"$UNSIGNED"',"signature_b64u":"'"$SIG"'"}' | jq .
+
+# Instalacja:
 curl -s -X POST http://127.0.0.1:8000/v1/marketplace/install \
   -H 'Content-Type: application/json' \
   -d '{"name":"demo_alpha","manifest_yaml":'"$UNSIGNED"',"signature_b64u":"'"$SIG"'"}' | jq .

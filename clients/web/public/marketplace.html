@@ -88,8 +88,13 @@ version: '0.1.0'"></textarea>
             <input type="text" id="install-sig" />
           </div>
           <div class="row">
-            <button id="btn-install">Zainstaluj</button>
-            <div id="install-out" class="muted"></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button id="btn-dryrun" class="neutral">Dry‑Run</button>
+              <button id="btn-install">Zainstaluj</button>
+              <span id="install-out" class="muted"></span>
+            </div>
+            <div id="dryrun-report" class="muted" style="white-space:pre-wrap"></div>
+            <div id="diff" class="muted"></div>
           </div>
         </div>
       </div>
@@ -107,6 +112,7 @@ version: '0.1.0'"></textarea>
         const tb = document.getElementById('tbody');
         try {
           const data = await api('/v1/marketplace/plugins');
+          window.__PLUGS = data || [];
           if (!data || !data.length) { tb.innerHTML = '<tr><td colspan="5" class="muted">Brak wtyczek</td></tr>'; return; }
           tb.innerHTML = data.map(p => `<tr><td>${p.name}</td><td>${p.module||''}</td><td>${p.version||''}</td><td>${p.signed?'<span class=ok>TAK</span>':'<span class=bad>NIE</span>'}</td><td>${(p.capabilities||p.caps||[]).join(', ')}</td></tr>`).join('');
         } catch (e) {
@@ -163,6 +169,44 @@ version: '0.1.0'"></textarea>
           out.textContent = 'BŁĄD: ' + (e.message||e);
           out.className = 'bad';
         }
+      });
+      document.getElementById('btn-dryrun').addEventListener('click', async () => {
+        const name = document.getElementById('install-name').value.trim();
+        const man = document.getElementById('install-man').value;
+        const sig = document.getElementById('install-sig').value.trim();
+        const rep = document.getElementById('dryrun-report');
+        const diff = document.getElementById('diff');
+        rep.textContent = 'Analiza...'; diff.textContent='';
+        try {
+          if (!basicYamlCheck(man)) throw new Error('Manifest: brak pola module:');
+          const res = await api('/v1/marketplace/dry_run', { method: 'POST', body: JSON.stringify({ name, manifest_yaml: man, signature_b64u: sig }) });
+          const errs = res.errors || [];
+          rep.textContent = (res.ok? 'OK' : 'BŁĘDY: ' + errs.join(', ')) + '\nmodule: '+(res.module||'-')+'\nversion: '+(res.version||'-')+'\npath: '+res.would_write_path;
+          rep.className = res.ok ? 'ok' : 'bad';
+          // Pokaż diff wersji vs zainstalowany
+          const existing = (window.__PLUGS||[]).find(p=>p.name===name);
+          if (existing) {
+            const from = existing.version || '(brak)'; const to = res.version || '(brak)';
+            const modFrom = existing.module || '(?)'; const modTo = res.module || '(?)';
+            diff.innerHTML = `<div>Aktualizacja: <strong>${name}</strong><br>module: <code>${modFrom}</code> → <code>${modTo}</code><br>version: <code>${from}</code> → <code>${to}</code></div>`;
+          } else {
+            diff.textContent = '';
+          }
+          // Zablokuj instalację jeśli błędy
+          document.getElementById('btn-install').disabled = !res.ok;
+        } catch (e) {
+          rep.textContent = 'BŁĄD: ' + (e.message||e);
+          rep.className = 'bad';
+        }
+      });
+      // Drag&drop do textarea (install)
+      ;['install-man','verify-man'].forEach(id=>{
+        const ta = document.getElementById(id);
+        ta.addEventListener('dragover', ev=>{ ev.preventDefault(); ta.style.outline='2px dashed #60a5fa'; });
+        ta.addEventListener('dragleave', ()=>{ ta.style.outline=''; });
+        ta.addEventListener('drop', ev=>{
+          ev.preventDefault(); ta.style.outline=''; const f=ev.dataTransfer.files && ev.dataTransfer.files[0]; if(!f) return; f.text().then(t=>ta.value=t);
+        });
       });
       loadPlugins();
       loadPubkey();

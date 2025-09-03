@@ -833,6 +833,10 @@
                 <input id="devexParamInput" class="input" type="text" placeholder="wartość parametru" style="max-width:260px" />
               </div>
               <div class="json" id="devexSnippet">—</div>
+              <div id="devexBodyRow" style="margin-top:8px; display:none">
+                <label for="devexBody" class="muted" style="display:block; margin-bottom:4px">Body (JSON)</label>
+                <textarea id="devexBody" class="input" style="width:100%; height:120px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace;"></textarea>
+              </div>
             </div>
           </div>
         </section>
@@ -1523,6 +1527,8 @@
       const elDevexKind = document.getElementById("devexKind");
       const elDevexEndpoint = document.getElementById("devexEndpoint");
       const elDevexSnippet = document.getElementById("devexSnippet");
+      const elDevexBodyRow = document.getElementById("devexBodyRow");
+      const elDevexBody = document.getElementById("devexBody");
 
       const DEVEX_BASE = API_BASE || location.origin;
 
@@ -1609,6 +1615,23 @@
         return {};
       }
 
+      function buildBundleBodyDefault() {
+        try {
+          const spec = (window).__DEVEX_SPEC__ || {};
+          const sch = spec?.paths?.['/v1/pco/bundle']?.post?.requestBody?.content?.['application/json']?.schema;
+          const caseId = document.getElementById('caseId').value || 'case-001';
+          let body = buildBodyFromSchema(sch, spec);
+          if (!body || Object.keys(body).length === 0) {
+            body = { rid: caseId, smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' };
+          } else {
+            if (body.rid == null) body.rid = caseId;
+            if (!body.smt2_hash) body.smt2_hash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+            if (!body.lfsc) body.lfsc = '(lfsc proof)';
+          }
+          return body;
+        } catch { return { rid: 'case-001', smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' }; }
+      }
+
       function devexSnippet() {
         const kind = elDevexKind?.value || "curl";
         const ep = elDevexEndpoint?.value || "health";
@@ -1674,6 +1697,17 @@
         } else {
           row.style.display = 'none';
         }
+        // Body editor visible for JSON POST endpoints (currently: pco_bundle)
+        const ep = elDevexEndpoint?.value || 'health';
+        if (ep === 'pco_bundle') {
+          elDevexBodyRow.style.display = '';
+          if (!(elDevexBody?.value || '').trim()) {
+            elDevexBody.value = JSON.stringify(buildBundleBodyDefault(), null, 2);
+          }
+        } else {
+          elDevexBodyRow.style.display = 'none';
+          elDevexBody.value = '';
+        }
         refreshDevex();
       });
       document.getElementById('devexParamInput')?.addEventListener('input', refreshDevex);
@@ -1695,7 +1729,9 @@
             res = await fetch(`${DEVEX_BASE}/pco/public/${encodeURIComponent(caseId)}`);
           }
           if (ep === "pco_bundle") {
-            const body = { rid: (document.getElementById("caseId").value || "case-001"), smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", lfsc: "(lfsc proof)" };
+            let body = null;
+            try { const txt = (document.getElementById('devexBody')?.value || '').trim(); if (txt) body = JSON.parse(txt); } catch {}
+            if (!body) { body = { rid: (document.getElementById('caseId').value || 'case-001'), smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' }; }
             res = await fetch(`${DEVEX_BASE}/v1/pco/bundle`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
           }
           if (ep === "analyze") {
