@@ -18,10 +18,11 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 jobs:
   promote:
-    if: ${{ github.event.workflow_run.head_branch == 'work/daily' }}
+    if: ${{ github.event.workflow_run.head_branch == 'work/daily' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -49,36 +50,9 @@ jobs:
           else
             echo "promote=false" >> $GITHUB_OUTPUT
           fi
-      - name: Verify all required gates are green for HEAD SHA
-        id: gates
-        if: steps.marker.outputs.promote == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          echo "Checking gates for commit: $SHA"
-          required=( "ci-gates" )
-          ok=1
-          for wf in "${required[@]}"; do
-            # Get latest run for this commit and workflow
-            concl=$(gh run list --branch work/daily --workflow "$wf" --json headSha,conclusion,headBranch,name | jq -r \
-              --arg sha "$SHA" '.[] | select(.headSha==$sha) | .conclusion' | head -n1)
-            if [ "${concl:-}" != "success" ]; then
-              echo "Gate not green: $wf (conclusion=${concl:-none})"
-              ok=0
-            else
-              echo "Gate OK: $wf"
-            fi
-          done
-          if [ "$ok" = "1" ]; then
-            echo "all_ok=true" >> $GITHUB_OUTPUT
-          else
-            echo "all_ok=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+      # ci-gates conclusion is already 'success' by job condition above
       - name: Append WORKLOG on work/daily (pre-merge)
-        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true'
+        if: steps.marker.outputs.promote == 'true'
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           ACTOR: ${{ github.actor }}
@@ -92,7 +66,7 @@ jobs:
           git commit -m "chore(worklog): ${SUMMARY}" || true
           git push origin work/daily || true
       - name: Fast-forward main to work/daily (if possible)
-        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true'
+        if: steps.marker.outputs.promote == 'true'
         id: ff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -109,7 +83,7 @@ jobs:
           } || echo "No fast-forward possible; will create/auto-merge PR."
           echo "ff=false" >> $GITHUB_OUTPUT
       - name: Create or auto-merge PR (work/daily -> main)
-        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true' && steps.ff.outputs.ff == 'false'
+        if: steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
