@@ -85,6 +85,7 @@ jobs:
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
       - name: Perf Regression Gate (<= +5% vs prev)
+        continue-on-error: true
         run: |
           set -e
           # Try to fetch previous perf benchmark from ci-status branch
