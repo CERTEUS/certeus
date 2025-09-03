@@ -59,6 +59,12 @@
         <h2>Response (<span id="status">-</span>)</h2>
         <pre id="resp"></pre>
         <h2>Code samples</h2>
+        <div class="row" style="margin-bottom:6px">
+          <button id="copyCurl" class="btn">Copy curl</button>
+          <button id="copyPy" class="btn">Copy Python</button>
+          <button id="copyTs" class="btn">Copy TS</button>
+          <span id="cpyInfo" class="pill">ready</span>
+        </div>
         <pre id="code"></pre>
       </div>
     </div>
@@ -95,6 +101,7 @@
         }catch{}
         updateCode();
       }
+      let _lastSnippets={curl:'',py:'',ts:''};
       function updateCode(){
         const base = $("base").value || location.origin;
         const path = $("path").value || '/';
@@ -107,8 +114,10 @@
         ].join('\n');
         const py = `import requests\nprint(requests.${method.toLowerCase()}('${base}${path}', headers={'X-Tenant-ID':'${tenant}','Content-Type':'${ct}'}, ${body?`json=${body}`:'timeout=30'}).json())`;
         const ts = `fetch('${base}${path}', { method: '${method}', headers: {'X-Tenant-ID':'${tenant}','Content-Type':'${ct}'}, ${body?`body: JSON.stringify(${body}),`:''}}).then(r=>r.json()).then(console.log)`;
+        _lastSnippets={curl,py,ts};
         $("code").textContent = `# curl\n${curl}\n\n# python\n${py}\n\n// typescript\n${ts}`;
       }
+      async function copyText(t){ try{ if(navigator.clipboard){ await navigator.clipboard.writeText(t);} else { const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);} $("cpyInfo").textContent='copied'; setTimeout(()=>$("cpyInfo").textContent='ready', 1500);}catch{ $("cpyInfo").textContent='copy failed'; setTimeout(()=>$("cpyInfo").textContent='ready', 2000);} }
       async function send(){
         const base = $("base").value || location.origin;
         const path = $("path").value || '/';
@@ -127,9 +136,11 @@
       }
       $("search").addEventListener('input', renderList);
       $("send").addEventListener('click', ()=>{ updateCode(); send(); });
+      $("copyCurl").addEventListener('click', ()=> copyText(_lastSnippets.curl));
+      $("copyPy").addEventListener('click', ()=> copyText(_lastSnippets.py));
+      $("copyTs").addEventListener('click', ()=> copyText(_lastSnippets.ts));
       ["path","method","ctype","body","tenant","base"].forEach(id=> $(id).addEventListener('input', updateCode));
       init();
     </script>
   </body>
   </html>
-

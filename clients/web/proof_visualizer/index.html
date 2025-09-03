@@ -825,6 +825,7 @@
                   <option value="pco_bundle">POST /v1/pco/bundle</option>
                   <option value="analyze">POST /v1/analyze</option>
                 </select>
+                <input id="devexTenantId" class="input" type="text" placeholder="X-Tenant-ID (opcjonalnie)" style="max-width:220px" />
                 <button class="btn" id="devexCopy">Kopiuj</button>
                 <button class="btn secondary" id="devexRun">Playground</button>
               </div>
@@ -836,6 +837,7 @@
               <div id="devexBodyRow" style="margin-top:8px; display:none">
                 <label for="devexBody" class="muted" style="display:block; margin-bottom:4px">Body (JSON)</label>
                 <textarea id="devexBody" class="input" style="width:100%; height:120px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace;"></textarea>
+                <div id="devexBodyError" class="muted" style="color:#f88; display:none; margin-top:6px">Invalid JSON</div>
               </div>
             </div>
           </div>
@@ -1529,6 +1531,8 @@
       const elDevexSnippet = document.getElementById("devexSnippet");
       const elDevexBodyRow = document.getElementById("devexBodyRow");
       const elDevexBody = document.getElementById("devexBody");
+      const elDevexTenant = document.getElementById("devexTenantId");
+      const elDevexBodyError = document.getElementById("devexBodyError");
 
       const DEVEX_BASE = API_BASE || location.origin;
 
@@ -1556,6 +1560,13 @@
           // analyze
           if (paths['/v1/analyze']?.post) {
             opts.push({ value: 'analyze', label: 'POST /v1/analyze', path: '/v1/analyze' });
+          }
+          // billing endpoints (optional)
+          if (paths['/v1/billing/balance']?.get) {
+            opts.push({ value: 'billing_balance', label: 'GET /v1/billing/balance', path: '/v1/billing/balance' });
+          }
+          if (paths['/v1/billing/allocate']?.post) {
+            opts.push({ value: 'billing_allocate', label: 'POST /v1/billing/allocate', path: '/v1/billing/allocate' });
           }
           // write options if we found anything
           if (opts.length) {
@@ -1632,6 +1643,30 @@
         } catch { return { rid: 'case-001', smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' }; }
       }
 
+      function buildBillingAllocateDefault() {
+        return { units: 10 };
+      }
+
+      function updateDevexBodyValidation() {
+        const txt = (elDevexBody?.value || '').trim();
+        let ok = true; let msg = '';
+        if (elDevexBodyRow.style.display !== 'none' && txt) {
+          try { JSON.parse(txt); } catch (e) { ok = false; msg = String(e).split('\n')[0]; }
+        }
+        if (!ok) {
+          elDevexBody.style.borderColor = '#c33';
+          elDevexBodyError.style.display = '';
+          elDevexBodyError.textContent = msg || 'Invalid JSON';
+          document.getElementById('devexCopy').disabled = true;
+          document.getElementById('devexRun').disabled = true;
+        } else {
+          elDevexBody.style.borderColor = '';
+          elDevexBodyError.style.display = 'none';
+          document.getElementById('devexCopy').disabled = false;
+          document.getElementById('devexRun').disabled = false;
+        }
+      }
+
       function devexSnippet() {
         const kind = elDevexKind?.value || "curl";
         const ep = elDevexEndpoint?.value || "health";
@@ -1704,6 +1739,13 @@
           if (!(elDevexBody?.value || '').trim()) {
             elDevexBody.value = JSON.stringify(buildBundleBodyDefault(), null, 2);
           }
+          updateDevexBodyValidation();
+        } else if (ep === 'billing_allocate') {
+          elDevexBodyRow.style.display = '';
+          if (!(elDevexBody?.value || '').trim()) {
+            elDevexBody.value = JSON.stringify(buildBillingAllocateDefault(), null, 2);
+          }
+          updateDevexBodyValidation();
         } else {
           elDevexBodyRow.style.display = 'none';
           elDevexBody.value = '';
@@ -1711,6 +1753,7 @@
         refreshDevex();
       });
       document.getElementById('devexParamInput')?.addEventListener('input', refreshDevex);
+      elDevexBody?.addEventListener('input', updateDevexBodyValidation);
       refreshDevex();
 
       document.getElementById("devexCopy")?.addEventListener("click", () => {

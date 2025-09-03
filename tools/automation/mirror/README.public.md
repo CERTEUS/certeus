@@ -30,6 +30,11 @@
 - **Dyskusje / Propozycje:** https://github.com/CERTEUS/certeus-public/discussions
 - **E-mail:** kontakt@certeus.pl
 
+## Jak zacząć dyskusję (Start here)
+- Wejdź w zakładkę **Discussions** i wybierz kategorię: General, Proposal lub Q&A.
+- Opisz krótko temat i cel, dodaj link do fragmentu README, którego dotyczy.
+- Sprawy bezpieczeństwa zgłaszaj prywatnie (security.txt): `.well-known/security.txt`.
+
 ## Polityka publikacji (LITE)
 - Publicznie pokazujemy wyłącznie landing, assets, `Overview API` i pliki polityk.
 - Nie publikujemy: kodu core, testów, pełnych kontraktów API, infra, coverage.

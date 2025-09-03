@@ -39,9 +39,11 @@
           <label>Tenant: <input id="tenant" value="anonymous"/></label>
           <label>Action: <select id="act"><option>qtm.measure</option><option>qtm.decoherence</option><option>system.analyze</option><option>ingest.upload</option><option>lexqft.tunnel</option><option>proofgate.publish</option></select></label>
           <label>Times per month: <input id="count" type="number" value="1000"/></label>
+          <label>Days: <input id="days" type="number" value="30"/></label>
           <button id="calc" class="btn">Calculate</button>
         </div>
         <p id="out" class="muted"></p>
+        <div id="rec" class="muted"></div>
       </div>
       <div class="card">
         <h2>Docs</h2>
@@ -64,13 +66,15 @@
         const tenant=$("tenant").value||'anonymous';
         const act=$("act").value||'qtm.measure';
         const n=parseInt($("count").value||'0',10)||0;
+        const days=parseInt($("days").value||'30',10)||30;
         const r = await j('/v1/billing/estimate',{method:'POST', headers:{'content-type':'application/json','X-Tenant-ID':tenant}, body: JSON.stringify({action:act})});
         if(!r.ok){ $("out").textContent='error'; return; }
-        const units=r.data.estimated_units; const daily = units; const monthly = units * n; $("out").textContent = `${act}: ${units} units per request ⇒ ~${monthly} units / month (for ${n} calls, tenant=${tenant}, tier=${r.data.tier})`;
+        const units=r.data.estimated_units; const monthly = units * n; $("out").textContent = `${act}: ${units} units per request ⇒ ~${monthly} units / month (for ${n} calls, tenant=${tenant}, tier=${r.data.tier})`;
+        const rr = await j(`/v1/billing/recommendation?action=${encodeURIComponent(act)}&monthly=${encodeURIComponent(n)}&days=${encodeURIComponent(days)}`);
+        if(rr.ok){ const x=rr.data; $("rec").textContent = `Recommendation: ${x.recommended_tier} (current=${x.tier_current}, required_daily_units≈${x.required_daily_units}, upgrade=${x.upgrade_needed})`; }
       }
       async function init(){ const pol = await j('/v1/billing/policies'); if(pol.ok) renderTiers(pol.data); }
       $("calc").addEventListener('click', calc); init();
     </script>
   </body>
   </html>
-

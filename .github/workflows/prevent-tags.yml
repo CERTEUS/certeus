@@ -1,0 +1,16 @@
+name: Prevent tags & releases (mirror)
+
+on:
+  push:
+    tags: ['*']
+  release:
+    types: [published, created, edited]
+
+jobs:
+  forbid:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Releases/tags not allowed in LITE mirror." >&2
+          exit 1
+

@@ -114,7 +114,7 @@ def recommendation(
         for name, cfg in tiers.items():
             if isinstance(cfg, dict):
                 dq = cfg.get("daily_quota")
-                if isinstance(dq, (int, float)):
+                if isinstance(dq, int | float):
                     ranked.append((str(name), int(dq)))
     ranked.sort(key=lambda x: x[1])
     rec: str | None = None
