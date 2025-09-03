@@ -11,4 +11,8 @@ drafts/**
 **/*.key
 **/id_rsa*
 **/id_ed25519*
-
+tools/agents/**
+agents/**
+*.agent.json
+*.codex.json
+context_snapshots/**
