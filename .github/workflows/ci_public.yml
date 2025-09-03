@@ -24,6 +24,7 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -40,6 +41,8 @@ jobs:
       - name: Ruff
         run: |
           python -m ruff check .
+      - name: Lint OpenAPI (Spectral)
+        run: npx -y @stoplight/spectral-cli lint docs/api/openapi.yaml || exit 1
       - name: Tests (with coverage)
         run: |
           python -m pytest -q --cov=. --cov-report=xml:coverage.xml
@@ -49,6 +52,18 @@ jobs:
           name: coverage-${{ github.sha }}
           path: coverage.xml
           retention-days: 1
+      - name: Generate coverage badge
+        if: success()
+        run: |
+          python -m pip install coverage-badge
+          mkdir -p docs/badges
+          coverage-badge -o docs/badges/coverage.svg -f
+      - name: Upload coverage badge
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-badge-${{ github.sha }}
+          path: docs/badges/coverage.svg
       - name: Agent hygiene scan (keywords on allowlist only)
         run: |
           set -euo pipefail
