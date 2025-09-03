@@ -7,10 +7,11 @@
 
 name: Policies-Report
 
-on:
-  workflow_dispatch:
 
-permissions:
+on:
+  schedule:
+    - cron: "19 3 * * 1"
+  workflow_dispatch:permissions:
   contents: read
 
 jobs:
@@ -30,4 +31,5 @@ jobs:
         with:
           name: policies-report-${{ github.sha }}
           path: policies.md
+
 

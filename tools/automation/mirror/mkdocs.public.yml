@@ -23,6 +23,7 @@ theme:
 plugins:
   - search
   - sitemap
+use_directory_urls: true
 extra:
   social:
     - icon: fontawesome/brands/github
