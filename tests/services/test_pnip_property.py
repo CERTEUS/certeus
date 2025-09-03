@@ -1,3 +1,27 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_pnip_property.py                 |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/services/test_pnip_property.py                 |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy własnościowe dla PNIP — walidacja poprawności SHA256 i polityk.
+
+EN: Property-based tests for PNIP — SHA256 validity and policy checks.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import string

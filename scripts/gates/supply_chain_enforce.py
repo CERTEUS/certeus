@@ -23,6 +23,14 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
 
 def main() -> int:
     enforce = (os.getenv("SUPPLY_CHAIN_ENFORCE") or "0").strip() in {"1", "true", "True"}

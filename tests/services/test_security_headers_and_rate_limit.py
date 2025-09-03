@@ -1,9 +1,35 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_security_headers_and_rate_limit.py |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/services/test_security_headers_and_rate_limit.py |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy nagłówków bezpieczeństwa oraz proste limitowanie żądań.
+
+EN: Security headers and simple rate limiting tests.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import importlib
 import sys
 
 from fastapi.testclient import TestClient
+
+# === TESTY / TESTS ===
 
 
 def test_security_headers_present(monkeypatch) -> None:

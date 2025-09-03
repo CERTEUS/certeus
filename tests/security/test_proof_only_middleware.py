@@ -1,9 +1,35 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/security/test_proof_only_middleware.py         |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/security/test_proof_only_middleware.py         |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Test zapewniający, że Proof-Only middleware wymaga tokenu PCO.
+
+EN: Ensures Proof-Only middleware requires a PCO token.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import importlib
 import sys
 
 from fastapi.testclient import TestClient
+
+# === TESTY / TESTS ===
 
 
 def test_protected_post_requires_pco_token(monkeypatch) -> None:

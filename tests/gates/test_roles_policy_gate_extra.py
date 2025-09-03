@@ -1,9 +1,35 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/gates/test_roles_policy_gate_extra.py          |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/gates/test_roles_policy_gate_extra.py          |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Dodatkowe testy gate'u polityk ról w governance pack'u.
+
+EN: Extra tests for roles policy gate using the governance pack.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import json
 from pathlib import Path
 import subprocess
 import sys
+
+# === TESTY / TESTS ===
 
 
 def _repo() -> Path:

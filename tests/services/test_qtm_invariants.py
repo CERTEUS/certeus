@@ -1,6 +1,32 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_qtm_invariants.py                |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/services/test_qtm_invariants.py                |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy inwariantów QTM — zakresy UB i wartości oczekiwań.
+
+EN: QTM invariants tests — UB ranges and expectation values.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
+
+# === TESTY / TESTS ===
 
 
 def test_qtm_sequence_uncertainty_and_probs_bounds() -> None:

@@ -1,3 +1,27 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/gates/test_redaction_gate_cli.py               |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/gates/test_redaction_gate_cli.py               |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy CLI gate'u redakcji (PII) — wykrywanie i polityka STRICT.
+
+EN: Tests for redaction gate CLI (PII) — detection and STRICT policy.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import json
@@ -5,6 +29,8 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+
+# === TESTY / TESTS ===
 
 
 def _repo() -> Path:

@@ -1,6 +1,32 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_devices_v02.py                   |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/services/test_devices_v02.py                   |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy usług urządzeń (v0.2): planowanie, oczekiwania i metryki.
+
+EN: Device services (v0.2) tests: planning, expectations and metrics.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
+
+# === TESTY / TESTS ===
 
 
 def test_hde_plan_alternatives_and_best() -> None:

@@ -1,3 +1,27 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_qtm_property.py                  |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/services/test_qtm_property.py                  |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Własnościowe testy sekwencji QTM — normalizacja i UB.
+
+EN: Property-based tests of QTM sequences — normalization and UB bounds.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

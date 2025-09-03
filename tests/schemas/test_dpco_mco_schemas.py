@@ -1,9 +1,35 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/schemas/test_dpco_mco_schemas.py               |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/schemas/test_dpco_mco_schemas.py               |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Testy walidacji przykładowych obiektów wg schematów DPCO/MCO.
+
+EN: Schema validation tests for example DPCO/MCO objects.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 from jsonschema import Draft7Validator
+
+# === TESTY / TESTS ===
 
 
 def _repo() -> Path:

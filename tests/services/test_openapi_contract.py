@@ -1,6 +1,32 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+
+# |                          CERTEUS                            |
+
+# +-------------------------------------------------------------+
+
+# | FILE: tests/services/test_openapi_contract.py              |
+
+# | ROLE: Test module.                                          |
+
+# | PLIK: tests/services/test_openapi_contract.py              |
+
+# | ROLA: Moduł testów.                                         |
+
+# +-------------------------------------------------------------+
+
+"""
+PL: Minimalny kontrakt OpenAPI — obecność kluczowych endpointów.
+
+EN: Minimal OpenAPI contract — presence of key endpoints.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
+
+# === TESTY / TESTS ===
 
 
 def test_openapi_contains_key_endpoints() -> None:
