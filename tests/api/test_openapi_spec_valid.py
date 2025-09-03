@@ -10,3 +10,4 @@ def test_openapi_spec_is_valid() -> None:
     # Will raise on invalid spec
     validate_spec(spec)  # type: ignore[arg-type]
 
+
