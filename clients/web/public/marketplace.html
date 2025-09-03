@@ -32,7 +32,16 @@
       @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
       .diffgrid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
       .diffgrid pre { background: #0f1319; border: 1px solid #2a2f3a; border-radius: 8px; padding: 8px; overflow: auto; }
+      .dl { display: block; white-space: pre; }
+      .dl.add { color: #22c55e; background: #22c55e1a; }
+      .dl.rem { color: #ef4444; background: #ef44441a; }
+      .dl.eq { color: #e5e7eb; opacity: 0.8; }
       mark { background: #ef44441a; color: #ef4444; padding: 0 2px; border-radius: 3px; }
+      .legend { display:flex; gap:10px; align-items:center; font-size: 12px; color:#9aa0a6; }
+      .legend .sw { display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:middle; margin-right:4px; }
+      .legend .sw.add { background:#22c55e; }
+      .legend .sw.rem { background:#ef4444; }
+      .legend .sw.mod { background:#ef4444; opacity: 0.6; }
     </style>
   </head>
   <body>
@@ -54,52 +63,66 @@
         <div class="card">
           <h2>Weryfikacja podpisu</h2>
           <div class="row">
-            <label for="verify-man">Manifest YAML (bez linii signature:)</label>
+            <label for="verify-man" title="Wklej manifest YAML bez linii 'signature:'">Manifest YAML (bez linii signature:)</label>
             <textarea id="verify-man" rows="8" placeholder="name: demo_alpha
 module: plugins.demo_alpha.src.main
 version: '0.1.0'"></textarea>
           </div>
           <div class="row">
-            <label>Wgraj plik manifestu (opcjonalnie)</label>
+            <label title="Załaduj plik YAML manifestu">Wgraj plik manifestu (opcjonalnie)</label>
             <input type="file" id="verify-file" accept=".yaml,.yml,text/yaml,text/plain" />
           </div>
           <div class="row">
-            <label for="verify-sig">Podpis (base64url, Ed25519)</label>
+            <label for="verify-sig" title="Podpis Ed25519 w base64url (bez '=')">Podpis (base64url, Ed25519)</label>
             <input type="text" id="verify-sig" placeholder="b64u..." />
           </div>
           <div class="row">
-            <button id="btn-verify">Zweryfikuj</button>
-            <div id="verify-out" class="muted"></div>
+            <button id="btn-verify" title="Ręczne sprawdzenie podpisu">Zweryfikuj</button>
+            <div id="verify-out" class="muted" aria-live="polite" aria-atomic="true"></div>
           </div>
         </div>
         <div class="card">
           <h2>Instalacja/upgrade</h2>
           <div class="row">
-            <label for="install-name">Nazwa pakietu (folder w plugins/)</label>
+            <label for="install-name" title="Nazwa folderu w plugins/ (A‑Z, a‑z, 0‑9, '-', '_')">Nazwa pakietu (folder w plugins/)</label>
             <input type="text" id="install-name" placeholder="demo_alpha" />
           </div>
           <div class="row">
-            <label for="install-man">Manifest YAML (bez linii signature:)</label>
+            <label for="install-man" title="Wklej manifest YAML bez 'signature:'">Manifest YAML (bez linii signature:)</label>
             <textarea id="install-man" rows="8"></textarea>
           </div>
           <div class="row">
-            <label>Wgraj plik manifestu (opcjonalnie)</label>
+            <label title="Załaduj plik YAML manifestu">Wgraj plik manifestu (opcjonalnie)</label>
             <input type="file" id="install-file" accept=".yaml,.yml,text/yaml,text/plain" />
           </div>
           <div class="row">
-            <label for="install-sig">Podpis (base64url, Ed25519)</label>
+            <label for="install-sig" title="Podpis Ed25519 w base64url (bez '=')">Podpis (base64url, Ed25519)</label>
             <input type="text" id="install-sig" />
           </div>
           <div class="row">
             <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-              <button id="btn-dryrun" class="neutral">Dry‑Run</button>
-              <button id="btn-fetch-installed" class="neutral">Pobierz zainstalowany manifest</button>
-              <button id="btn-install">Zainstaluj</button>
+              <button id="btn-dryrun" class="neutral" title="Sprawdź nazwę/podpis bez instalacji">Dry‑Run</button>
+              <button id="btn-fetch-installed" class="neutral" title="Porównaj z aktualnie zainstalowanym manifestem">Pobierz zainstalowany manifest</button>
+              <button id="btn-install" title="Zainstaluj manifest po udanym dry‑run">Zainstaluj</button>
               <span id="install-out" class="muted"></span>
             </div>
             <div id="dryrun-report" class="muted" style="white-space:pre-wrap"></div>
             <div id="diff" class="muted"></div>
             <div id="diff-yaml" class="diffgrid"></div>
+            <div id="diff-legend" class="legend">
+              <span><span class="sw add" aria-hidden="true"></span>Dodano</span>
+              <span><span class="sw rem" aria-hidden="true"></span>Usunięto</span>
+              <span><span class="sw mod" aria-hidden="true"></span>Zmiana (podświetlenie)</span>
+            </div>
+            <div class="row">
+              <label for="dryrun-history">Historia dry‑run (localStorage)</label>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; width:100%">
+                <select id="dryrun-history" style="flex:1 1 260px" title="Wybierz poprzedni dry‑run"></select>
+                <button id="btn-load-dryrun" title="Załaduj do formularza">Załaduj</button>
+                <button id="btn-install-from-hist" title="1‑klik instalacja wybranego" disabled>Zainstaluj z historii</button>
+                <span id="dryrun-hint" class="muted"></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

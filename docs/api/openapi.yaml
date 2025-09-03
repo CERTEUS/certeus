@@ -258,6 +258,11 @@ paths:
       summary: Install/upgrade plugin (signed)
       tags: [Marketplace]
       responses: { "200": { description: ok } }
+  /v1/marketplace/dry_run:
+    post:
+      summary: Validate plugin manifest without install
+      tags: [Marketplace]
+      responses: { "200": { description: ok } }
   /v1/billing/quota:
     post:
       summary: Set tenant quota (cost tokens)
@@ -278,6 +283,16 @@ paths:
       summary: Allocate units to current tenant (PENDING → allocate)
       tags: [Billing]
       responses: { "200": { description: ok } }
+  /v1/billing/estimate:
+    post:
+      summary: Estimate cost units for an action
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/recommendation:
+    get:
+      summary: Recommend tier based on action and monthly volume
+      tags: [Billing]
+      responses: { "200": { description: ok } }
   /v1/ledger/{case_id}/records:
     get:
       summary: Ledger records for case
@@ -292,6 +307,31 @@ paths:
     post:
       summary: Reconstruct boundary state
       tags: [Boundary]
+      responses: { "200": { description: ok } }
+  /v1/fin/alpha/measure:
+    post:
+      summary: FINENITH measure alpha
+      tags: [Finance]
+      responses: { "200": { description: ok } }
+  /v1/fin/alpha/simulate:
+    post:
+      summary: FINENITH simulate strategy
+      tags: [Finance]
+      responses: { "200": { description: ok } }
+  /v1/fin/alpha/pnl:
+    get:
+      summary: FINENITH recent PnL
+      tags: [Finance]
+      responses: { "200": { description: ok } }
+  /v1/lexenith/pilot/cases:
+    get:
+      summary: LEXENITH pilot cases
+      tags: [LEXENITH]
+      responses: { "200": { description: ok } }
+  /v1/lexenith/pilot/feedback:
+    post:
+      summary: LEXENITH pilot feedback
+      tags: [LEXENITH]
       responses: { "200": { description: ok } }
 components:
   schemas:

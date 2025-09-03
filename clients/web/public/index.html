@@ -102,7 +102,10 @@
       </div>
       <div class="card" style="margin-top:16px">
         <h2>Live Metrics (summary)</h2>
-        <p class="muted">Top paths by average latency and by request count (in‑proc summary).</p>
+        <p class="muted">Top paths by average latency and by request count (in‑proc summary). Filter by substring.</p>
+        <div class="row" style="margin-bottom:8px">
+          <input id="mFilter" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="filter (e.g., /v1/qtm)"/>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div>
             <h3 style="font-size:14px;color:#9aa0a6">Top avg ms</h3>
@@ -120,7 +123,7 @@
       </div>
       <script>
         async function jfetch(url, opts){ const r = await fetch(url, opts||{}); const t = await r.text(); try{ return {ok:r.ok, data: JSON.parse(t)} }catch{ return {ok:r.ok, data:t} } }
-        function fillTable(id, rows){ const tb=document.getElementById(id).querySelector('tbody'); tb.innerHTML=''; (rows||[]).forEach(it=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.path}</td><td>${it.method}</td><td>${(it.avg_ms||0).toFixed(1)}</td><td>${it.count}</td>`; tb.appendChild(tr); }); }
+        function fillTable(id, rows){ const tb=document.getElementById(id).querySelector('tbody'); tb.innerHTML=''; const f=(document.getElementById('mFilter').value||'').toLowerCase(); (rows||[]).filter(it=>!f || (`${it.method} ${it.path}`.toLowerCase().includes(f))).forEach(it=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.path}</td><td>${it.method}</td><td>${(it.avg_ms||0).toFixed(1)}</td><td>${it.count}</td>`; tb.appendChild(tr); }); }
         async function refreshMetrics(){ const r=await jfetch('/v1/metrics/summary'); if(r.ok){ fillTable('topavg', r.data.top_avg_ms); fillTable('topcnt', r.data.top_count);} }
         function drawSparkline(canvas, pts){ const ctx=canvas.getContext('2d'); const w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); if(!pts||!pts.length){ return;} const max=Math.max(...pts); const min=Math.min(...pts); const scaleX = w/Math.max(pts.length-1,1); const scaleY = max>min ? (h-4)/(max-min):1; ctx.strokeStyle='#60a5fa'; ctx.beginPath(); for(let i=0;i<pts.length;i++){ const x=i*scaleX; const y=h-2-(pts[i]-min)*scaleY; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke(); }
         async function refreshSeries(){ const r=await jfetch('/v1/metrics/series?top=5'); if(!r.ok){ return;} const cont=document.getElementById('sparks'); cont.innerHTML=''; (r.data.series||[]).forEach(s=>{ const wrap=document.createElement('div'); wrap.style.border='1px solid #232832'; wrap.style.borderRadius='8px'; wrap.style.padding='6px'; wrap.style.background='#151922'; const title=document.createElement('div'); title.textContent=`${s.method} ${s.path} (p95=${(s.p95||0).toFixed(1)}ms)`; title.style.fontSize='12px'; title.style.color='#9aa0a6'; const canvas=document.createElement('canvas'); canvas.width=160; canvas.height=40; wrap.appendChild(title); wrap.appendChild(canvas); cont.appendChild(wrap); drawSparkline(canvas, s.points||[]); }); }
@@ -138,6 +141,7 @@
         document.getElementById('rid').addEventListener('input', updPCOLink);
         updPCOLink();
         refreshMetrics(); setInterval(refreshMetrics, 5000); refreshSeries(); setInterval(refreshSeries, 5000);
+        document.getElementById('mFilter').addEventListener('input', ()=>{ refreshMetrics(); refreshSeries(); });
       </script>
     </div>
   </body>

@@ -59,6 +59,7 @@
             </select>
           </label>
           <button id="hRender" class="btn">Render</button>
+          <button id="hExport" class="btn">Export CSV</button>
         </div>
         <div id="heat" style="overflow:auto"></div>
       </div>
@@ -97,8 +98,10 @@
         const vol = parseInt($("hVol").value||'10000',10)||10000;
         const days = parseInt($("hDays").value||'30',10)||30;
         const tbl=[]; tbl.push('<table><thead><tr><th>action \\ tier</th>'+tiers.map(t=>`<th>${t}</th>`).join('')+"</tr></thead><tbody>");
+        const csv=[["action",...tiers]];
         actions.forEach(a=>{
           tbl.push(`<tr><td>${a}</td>`);
+          const row=[a];
           tiers.forEach(t=>{
             const dq = (pol.tiers[t]||{}).daily_quota||0;
             const req = Math.ceil(costs[a] * (vol/days));
@@ -107,11 +110,17 @@
             let bg = ok ? '#173e2a' : '#3e171b';
             if(ok && margin < 0.1) bg = '#3a3517';
             tbl.push(`<td style="background:${bg};padding:4px" title="required=${req}/day vs quota=${dq}">${ok?'OK':'NO'}</td>`);
+            row.push(ok?"OK":"NO");
           });
           tbl.push('</tr>');
+          csv.push(row);
         });
         tbl.push('</tbody></table>');
         $("heat").innerHTML = tbl.join('');
+        $("hExport").onclick = ()=>{
+          const s = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv.map(r=>r.join(',')).join('\n'));
+          const a=document.createElement('a'); a.href=s; a.download='pricing_heatmap.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        };
       }
       async function init(){ const pol = await j('/v1/billing/policies'); if(pol.ok){ renderTiers(pol.data); buildHeatmap(pol.data);} }
       $("calc").addEventListener('click', calc);

@@ -140,6 +140,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Endpointy billing: `GET /v1/billing/balance`, `POST /v1/billing/allocate` (autobody `{units:10}`)
   - X-Tenant-ID: pole w DevEx, dołączane do snippetów i Playground
   - Testy: 133 passed, 1 skipped (zielone)
+- 2025-09-03 19:40:00Z [agent] (work/daily): SDK Python billing + README instrukcje
+  - Python SDK: metody `get_balance/allocate/refund/set_quota`
+  - README: sekcja „SDK — skrót użycia” (py/ts/go)
 - 2025-09-03 14:21:04Z [agent] (work/daily): W16: Piloty — per‑tenant SLO + FIN/LEX endpoints
   - Observability: metryki per‑tenant (histogram + licznik) + panele Grafana
   - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)

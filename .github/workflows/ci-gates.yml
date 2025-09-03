@@ -184,6 +184,13 @@ jobs:
       - name: QTMP smoke (sequence + expectation)
         run: |
           python scripts/smokes/qtm_seq_expect_smoke.py
+      - name: PQ-Crypto Gate (informational)
+        continue-on-error: true
+        env:
+          PQCRYPTO_REQUIRE: ${{ vars.PQCRYPTO_REQUIRE || '0' }}
+          PQCRYPTO_READY: ${{ vars.PQCRYPTO_READY || '0' }}
+        run: |
+          python scripts/gates/pqcrypto_gate.py || true
       - name: LexQFT coverage smoke
         run: |
           python scripts/smokes/lexqft_smoke.py
@@ -285,6 +292,12 @@ jobs:
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
+          # PQ-crypto gate (informational)
+          try:
+              pq = (repo/'out'/'pqcrypto.txt').read_text().strip()
+              lines.append(f"PQ-crypto: {pq}")
+          except Exception:
+              lines.append('PQ-crypto: n/a')
           # Proof Gate related workflow ticks via GitHub API
           try:
               token = os.getenv('GITHUB_TOKEN')
@@ -387,4 +400,3 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
