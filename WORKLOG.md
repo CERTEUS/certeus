@@ -129,3 +129,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-03 06:45:57Z [48793] (work/daily): [week-end] Autopromote final validation (rebased)
   - weekly-promote: true
   - - Expect FF to main post-sync
+- 2025-09-03 06:47:10Z [CERTEUS] (main): auto-promote: cb624780d40f22f41b168ece7a5286cd731099fc (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
