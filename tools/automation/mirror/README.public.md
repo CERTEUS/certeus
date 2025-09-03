@@ -1,34 +1,33 @@
-# CERTEUS — Public Mirror
+# CERTEUS — Verifiable Cognitive Intelligence  
 
-Welcome to the public, sanitized mirror of the CERTEUS core.
+> Dowód, nie opinia.  
+> Platforma, która uczy się, weryfikuje i publikuje tylko to, co można udowodnić.
 
-This repository contains an allowlisted subset of the original project suitable for public browsing, evaluation, and discussion. Sensitive assets and proprietary materials are excluded by design.
+[![Docs-Site](https://github.com/CERTEUS/certeus-public/actions/workflows/docs-site.yml/badge.svg?branch=main)](https://github.com/CERTEUS/certeus-public/actions/workflows/docs-site.yml)
+[![CI-Public-Light](https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public_light.yml/badge.svg?branch=main)](https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public_light.yml)
+[![Policy-Scan](https://github.com/CERTEUS/certeus-public/actions/workflows/policy-scan.yml/badge.svg?branch=main)](https://github.com/CERTEUS/certeus-public/actions/workflows/policy-scan.yml)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 
-## Status & Badges
+## Po co?
+- Prawda z podpisem. Każde twierdzenie może mieć ślady dowodowe i politykę publikacji.  
+- Odpowiedzialna automatyzacja. Zanim wyjdzie na świat, przechodzi gate’y jakości.  
+- Publiczny front jest lekki i przejrzysty; cała orkiestra gra prywatnie.
 
-- Docs: ![Docs-Site](https://github.com/CERTEUS/certeus-public/actions/workflows/docs-site.yml/badge.svg?branch=main)
-- CI (Light): ![CI-Public-Light](https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public_light.yml/badge.svg?branch=main)
-- Policy Scan: ![Policy-Scan](https://github.com/CERTEUS/certeus-public/actions/workflows/policy-scan.yml/badge.svg?branch=main)
-- License: AGPL-3.0
+## Jak to działa (wysoki poziom)
+1. CORE (prywatny): ciężkie CI/CD, testy, kontrakt API, release.  
+2. MIRROR (ten repo): tylko to, co marketingowo potrzebne (landing, assets, overview).  
+3. Co tydzień: promocja → publikacja z allowlistą → squash z autorem „Radosław Skarżycki”.
 
-## Quickstart (60s)
+> Ślad audytowy publikacji: PROVENANCE.md (źródłowy commit i data).
 
-1) Clone: `git clone https://github.com/CERTEUS/certeus-public.git`
-2) Python: `python -m pip install -U pip` then `pip install -e .` (dev: `-e .[dev]`)
-3) Run API: `python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000`
-4) Open Docs: https://certeus.github.io/certeus-public
+## Zobacz stronę
+👉 https://certeus.github.io/certeus-public
 
-## Architecture
+## Roadmap (zarys)
+- Etap I: stabilny landing + polityki/health  
+- Etap II: demo SDK (syntetyczne) + sample workflows  
+- Etap III: partnerstwa, public benchmarki
 
-- C4 overview and diagrams live in `docs/` and on Pages.
-- Observability dashboards: see `observability/` and Docs.
-
-## Links
-
-- Docs: https://certeus.github.io/certeus-public
-- API (OpenAPI): `docs/api/openapi.yaml`
-- Releases: https://github.com/CERTEUS/certeus-public/releases
-- Roadmap: see README in main repo and project boards.
-
----
-Note: This mirror is auto-published from a private upstream via an allowlist and automated checks (secret scan, policy gates).
+## Kontakt
+Dyskusje/Propozycje: Discussions → Proposal.  
+E-mail: kontakt@certeus.pl

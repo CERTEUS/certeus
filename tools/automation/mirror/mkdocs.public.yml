@@ -1,14 +1,23 @@
-# Minimal mkdocs for public mirror
-site_name: CERTEUS Public
-site_url: https://CERTEUS.github.io/certeus-public
+site_name: CERTEUS
+site_description: Verifiable Cognitive Intelligence — Dowód, nie opinia.
+site_url: https://certeus.github.io/certeus-public
+repo_url: https://github.com/CERTEUS/certeus-public
 theme:
   name: material
-  language: en
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+  palette:
+    - scheme: default
+plugins:
+  - search
+  - sitemap
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CERTEUS
+  generator: false
 nav:
   - Home: index.md
   - API Overview: api/overview.md
-plugins:
-  - search
-markdown_extensions:
-  - admonition
-  - toc

@@ -1,14 +1,11 @@
-# API Overview (Public)
+# API – Overview
 
-Ten mirror zawiera wyłącznie ogólny zarys API.
+Filozofia: publikujemy interfejsy tylko tam, gdzie możemy zagwarantować dowód i politykę.  
+Public: omówienie kierunków — pełne kontrakty/schemy działają w prywatnym core.
 
-- Pełna specyfikacja OpenAPI jest utrzymywana w repozytorium prywatnym.
-- Zmiany kontraktu API są egzekwowane w prywatnym CI (Spectral, Tests, Changelog).
-- W tym mirrorze publikujemy wyłącznie opis i linki do dokumentacji.
+## Kierunki
+- /verify – walidacja ładunków i podpisów (core).  
+- /publish – polityki: `PUBLISH | CONDITIONAL | ABSTAIN` (core).  
+- /.well-known/ – JWKS, metadane (core).
 
-Zakres:
-- Health /metrics – dostępność i podstawowe metryki
-- OpenAPI (link do strony): strona „API” w nawigacji Docs
-
-Kontakt: issues/proposals w GitHub Discussions (mirror publiczny).
-
+> Wersje/SLA/SDK – zarządzane prywatnie; gdy udostępnimy publiczne SDK/demo, pojawi się tutaj.

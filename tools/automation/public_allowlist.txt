@@ -13,3 +13,4 @@ docs/assets/**
 .github/workflows/policy-scan.yml
 tools/automation/public_allowlist.txt
 PROVENANCE.md
+docs/robots.txt

@@ -3,6 +3,10 @@
 Uwaga: Centralny hub dokumentacji agenta przeniesiony do:
 `docs/AGENTS/README.md` (zawiera skróty do WORKLOG/90_dni/manifestów, bramek i runbooków).
 
+Zasada niezmienna (TL;DR):
+
+Publikujemy wyłącznie to, co jest jawnie dozwolone przez allowlistę LITE (mirror publiczny). Wszystko inne zostaje w repo prywatnym i przechodzi przez bramki (gitleaks/policy‑scan/branch‑protection) — bez wyjątków.
+
 ## Interpreter
 
 Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)

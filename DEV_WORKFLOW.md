@@ -1,5 +1,9 @@
 Developer Workflow (Public tests vs Private build)
 
+UWAGA — Zasada niezmienna (Immutable Rule)
+- Publikujemy wyłącznie to, co jest jawnie dozwolone przez allowlistę LITE (mirror publiczny). Wszystko inne zostaje w repo prywatnym i przechodzi przez bramki (gitleaks/policy‑scan/branch‑protection) — bez wyjątków.
+- Pełen opis: zob. `docs/AGENTS/README.md` (sekcja: Zasada niezmienna/Immutable Rule).
+
 1) Work locally on branch `work/daily`.
 2) Before end of week (W13/W14): run local lint/tests; ensure green.
 3) Commit with weekly marker: include "[week-end]" or a trailer line `weekly-promote: true`.
