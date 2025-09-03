@@ -196,7 +196,6 @@ _LOCK = Lock()
 
 # +=====================================================================+
 
-<<<<<<< HEAD
 __all__ = [
     "enforce_limits",
     "set_tenant_quota",
@@ -204,9 +203,6 @@ __all__ = [
     "get_tenant_balance",
     "refund_tenant_units",
 ]
-=======
-__all__ = ["enforce_limits", "set_tenant_quota", "get_tenant_id"]
->>>>>>> origin/main
 
 # In-memory MVP (można później podmienić na Redis/TokenBank)
 
