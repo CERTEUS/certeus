@@ -55,4 +55,13 @@ def publish_stub(req: PublishRequest) -> PublishResponse:  # pragma: no cover (k
     return PublishResponse(status="PENDING", pco=req.pco, ledger_ref=None)
 
 
+@router.post("/defx/reason", response_model=PublishResponse)
+def defx_reason_stub(req: PublishRequest) -> PublishResponse:  # pragma: no cover
+    """
+    PL: Alias DEFx (legacy) zapewniający zgodność z kontraktem docs.
+    EN: Legacy DEFx alias to satisfy docs contract parity.
+    """
+    return PublishResponse(status="PENDING", pco=req.pco, ledger_ref=None)
+
+
 # === TESTY / TESTS ===
