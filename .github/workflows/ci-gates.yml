@@ -14,7 +14,7 @@ on:
   pull_request:
 
 jobs:
-  gates:
+  ci-gates:
     runs-on: ubuntu-latest
     permissions:
       contents: write
