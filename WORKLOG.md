@@ -219,3 +219,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Release scripts: tag_release.(sh|ps1)
   - - curl_examples: ledger head
   - - Lint/testy: zielone (125 pass, 1 skip)
+- 2025-09-03 18:24:16Z [48793] (work/daily): WkX: Repo cleanup + green gates
+  - - Konflikty usunięte
+  - - Style 21 OK
+  - - 120-135 testów zielone
+  - - Billing router smoke + SDK
+  - - Verifier fix LFSC/DRAT
