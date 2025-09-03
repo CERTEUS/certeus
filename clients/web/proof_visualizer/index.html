@@ -1603,6 +1603,13 @@
 
       function buildBodyFromSchema(schema, root, depth = 0) {
         if (!schema || depth > 5) return {};
+        // Prefer explicit example/default on the node itself
+        if (schema.example != null) {
+          return schema.example;
+        }
+        if (schema.default != null) {
+          return schema.default;
+        }
         if (schema.$ref) {
           const t = resolveRef(root, schema.$ref);
           if (t) return buildBodyFromSchema(t, root, depth + 1);
@@ -1613,6 +1620,15 @@
           const out = {};
           for (const [k, v] of Object.entries(schema.properties || {})) {
             const sub = buildBodyFromSchema(v, root, depth + 1);
+            // Prefer property-level example/default
+            if (v && v.example != null) {
+              out[k] = v.example;
+              continue;
+            }
+            if (v && v.default != null) {
+              out[k] = v.default;
+              continue;
+            }
             out[k] = sub === {} && v?.type === 'string' ? (req.has(k) ? `${k}_value` : '') : sub;
             if (v?.type === 'number') out[k] = 0;
             if (v?.type === 'integer') out[k] = 0;
