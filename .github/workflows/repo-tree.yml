@@ -1,0 +1,39 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/repo-tree.yml                      |
+# | ROLE: Generate repo tree artifact on PRs                   |
+# +-------------------------------------------------------------+
+
+name: Repo Tree
+
+on:
+  pull_request:
+
+jobs:
+  tree:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate REPO_TREE.md
+        run: |
+          python - <<'PY'
+          import os
+          SKIP={".git","node_modules","venv",".venv",".ruff_cache",".pytest_cache","__pycache__"}
+          def tree(path, prefix=""):
+              files = sorted(os.listdir(path))
+              for i,f in enumerate(files):
+                  p=os.path.join(path,f)
+                  last = (i==len(files)-1)
+                  print(prefix + ("└── " if last else "├── ") + f)
+                  if os.path.isdir(p) and f not in SKIP:
+                      tree(p, prefix + ("    " if last else "│   "))
+          print("# Repository tree\n")
+          tree(".")
+          PY > REPO_TREE.md
+      - name: Upload REPO_TREE.md
+        uses: actions/upload-artifact@v4
+        with:
+          name: REPO_TREE
+          path: REPO_TREE.md
+
