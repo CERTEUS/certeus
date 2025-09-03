@@ -57,6 +57,27 @@ func (c *Client) doJSON(req *http.Request, out any) error {
     return dec.Decode(out)
 }
 
+// --- Typed responses ---
+type PublicPCO struct {
+    Rid         string `json:"rid"`
+    Smt2Hash    string `json:"smt2_hash"`
+    Lfsc        string `json:"lfsc"`
+    Drat        string `json:"drat,omitempty"`
+    MerkleProof []struct {
+        Sibling string `json:"sibling"`
+        Dir     string `json:"dir"`
+    } `json:"merkle_proof"`
+    Signature string `json:"signature"`
+}
+
+type PublishBundleAck struct {
+    Ok         bool   `json:"ok"`
+    Rid        string `json:"rid"`
+    DigestHex  string `json:"digest_hex"`
+    Signature  string `json:"signature"`
+    PublicPath string `json:"public_path"`
+}
+
 // OpenAPI fetches /openapi.json.
 func (c *Client) OpenAPI() (map[string]any, error) {
     req, _ := http.NewRequest(http.MethodGet, c.url("/openapi.json"), nil)
@@ -81,6 +102,14 @@ func (c *Client) GetPublicPCO(caseID string) (map[string]any, error) {
     return data, err
 }
 
+// GetPublicPCOTyped fetches a typed PublicPCO.
+func (c *Client) GetPublicPCOTyped(caseID string) (PublicPCO, error) {
+    req, _ := http.NewRequest(http.MethodGet, c.url("/pco/public/"+caseID), nil)
+    var data PublicPCO
+    err := c.doJSON(req, &data)
+    return data, err
+}
+
 // PublishPCOBundle posts a minimal ProofBundle creation request.
 func (c *Client) PublishPCOBundle(rid, smt2Hash, lfsc string) (map[string]any, error) {
     body := map[string]any{
@@ -92,6 +121,16 @@ func (c *Client) PublishPCOBundle(rid, smt2Hash, lfsc string) (map[string]any, e
     req, _ := http.NewRequest(http.MethodPost, c.url("/v1/pco/bundle"), bytes.NewReader(b))
     req.Header.Set("Content-Type", "application/json")
     var data map[string]any
+    err := c.doJSON(req, &data)
+    return data, err
+}
+
+// PublishPCOBundleAck returns typed ack for /v1/pco/bundle.
+func (c *Client) PublishPCOBundleAck(rid, smt2Hash, lfsc string) (PublishBundleAck, error) {
+    b, _ := json.Marshal(map[string]any{"rid": rid, "smt2_hash": smt2Hash, "lfsc": lfsc})
+    req, _ := http.NewRequest(http.MethodPost, c.url("/v1/pco/bundle"), bytes.NewReader(b))
+    req.Header.Set("Content-Type", "application/json")
+    var data PublishBundleAck
     err := c.doJSON(req, &data)
     return data, err
 }

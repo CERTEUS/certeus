@@ -162,6 +162,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: /app/public/pco_explorer.html (public payload + Merkle path)
   - API: GET /v1/metrics/summary (in-proc quick summary); qtm.html supports ?case&op&auto=1
   - Landing: nowe kafelki (Explorer/Pricing/PCO Explorer)
+- 2025-09-03 22:15:00Z [agent] (work/daily): W17+++: Case Studio + Live Metrics + tests
+  - Case Studio: /app/public/case_studio.html (ingest→analyze→publish, link do Ledger)
+  - Landing: panel Live Metrics (top avg/count via /v1/metrics/summary)
+  - Tests: tests/services/test_metrics_summary.py; wszystko zielone
 - 2025-09-03 19:10:00Z [agent] (work/daily): W14: i18n/A11y + OpenAPI runtime parity + demo outputs
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish

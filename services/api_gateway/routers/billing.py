@@ -87,6 +87,57 @@ def estimate(request: Request, body: EstimateRequest) -> dict[str, int | str]:
     return {"tenant": tenant, "tier": tier, "action": body.action, "estimated_units": base}
 
 
+@router.get(
+    "/recommendation",
+    summary="Recommend tier based on action and monthly volume",
+    description=(
+        "Provide a simple recommendation given an action key and a monthly volume. "
+        "Computes required daily units = units_per_request * (monthly / days)."
+    ),
+)
+def recommendation(
+    request: Request,
+    action: str,
+    monthly: int = 1000,
+    days: int = 30,
+) -> dict[str, object]:
+    tenant = get_tenant_id(request)
+    tier_cur = _limits.get_tenant_tier(tenant)
+    units_per_req = int(_COST_TABLE.get(action, 1))
+    daily_calls = max(1.0, float(monthly) / max(1, days))
+    req_daily_units = int(units_per_req * daily_calls)
+
+    pol = _limits._load_policies()  # type: ignore[attr-defined]
+    tiers = pol.get("tiers", {}) if isinstance(pol, dict) else {}
+    ranked: list[tuple[str, int]] = []
+    if isinstance(tiers, dict):
+        for name, cfg in tiers.items():
+            if isinstance(cfg, dict):
+                dq = cfg.get("daily_quota")
+                if isinstance(dq, (int, float)):
+                    ranked.append((str(name), int(dq)))
+    ranked.sort(key=lambda x: x[1])
+    rec: str | None = None
+    for name, dq in ranked:
+        if dq >= req_daily_units:
+            rec = name
+            break
+    rec = rec or (ranked[-1][0] if ranked else "free")
+    upgrade_needed = rec != tier_cur
+    return {
+        "tenant": tenant,
+        "tier_current": tier_cur,
+        "action": action,
+        "units_per_request": units_per_req,
+        "monthly_calls": int(monthly),
+        "days": int(days),
+        "required_daily_units": req_daily_units,
+        "recommended_tier": rec,
+        "upgrade_needed": upgrade_needed,
+        "tiers": [{"name": n, "daily_quota": q} for (n, q) in ranked],
+    }
+
+
 # --- ADMIN (DEV) --------------------------------------------------------------
 
 

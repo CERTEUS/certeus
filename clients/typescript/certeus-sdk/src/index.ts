@@ -20,6 +20,23 @@ export interface PublishBundleRequest {
   smt2?: string | null;
 }
 
+export interface PublicPCO {
+  rid: string;
+  smt2_hash: string;
+  lfsc: string;
+  drat?: string;
+  merkle_proof: Array<{ sibling: string; dir: 'L' | 'R' }>;
+  signature: string;
+}
+
+export interface PublishBundleAck {
+  ok: boolean;
+  rid: string;
+  digest_hex: string;
+  signature: string;
+  public_path: string;
+}
+
 export interface CerteusOptions {
   baseUrl?: string;
   tenantId?: string;
@@ -59,20 +76,20 @@ export class CerteusClient {
     return (await r.json()) as Json;
   }
 
-  async getPublicPCO(caseId: string): Promise<Json> {
+  async getPublicPCO(caseId: string): Promise<PublicPCO> {
     const r = await fetch(this.url(`/pco/public/${encodeURIComponent(caseId)}`));
     if (!r.ok) throw new Error(`/pco/public => ${r.status}`);
-    return (await r.json()) as Json;
+    return (await r.json()) as PublicPCO;
   }
 
-  async publishPCOBundle(payload: PublishBundleRequest): Promise<Json> {
+  async publishPCOBundle(payload: PublishBundleRequest): Promise<PublishBundleAck> {
     const r = await fetch(this.url(`/v1/pco/bundle`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(this.tenantId ? { 'X-Tenant-ID': this.tenantId } : {}) },
       body: JSON.stringify(payload),
     });
     if (!r.ok) throw new Error(`/v1/pco/bundle => ${r.status}`);
-    return (await r.json()) as Json;
+    return (await r.json()) as PublishBundleAck;
   }
 
   async analyze(caseId: string, file: Blob, filename = 'document.pdf'): Promise<Json> {

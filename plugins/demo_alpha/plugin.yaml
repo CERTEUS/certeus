@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/demo_alpha/plugin.yaml                      |
+# | ROLE: Demo plugin manifest.                                 |
+# | PLIK: plugins/demo_alpha/plugin.yaml                      |
+# | ROLA: Manifest wtyczki demo.                                |
+# +-------------------------------------------------------------+
+
 name: demo_alpha
 module: plugins.demo_alpha.src.main
 version: "0.1.0"
