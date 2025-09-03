@@ -36,10 +36,16 @@ jobs:
         run: |
           python -m pip install -U pip wheel setuptools
           python -m pip install -e .
-          python -m pip install ruff pytest httpx pytest-asyncio hypothesis z3-solver
+          python -m pip install ruff pytest httpx pytest-asyncio hypothesis z3-solver openapi-spec-validator PyYAML pytest-cov
       - name: Ruff
         run: |
           python -m ruff check .
-      - name: Tests
+      - name: Tests (with coverage)
         run: |
-          python -m pytest -q
+          python -m pytest -q --cov=. --cov-report=xml:coverage.xml
+      - name: Upload coverage artifact (1 day)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.sha }}
+          path: coverage.xml
+          retention-days: 1

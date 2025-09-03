@@ -1,14 +1,12 @@
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: docs/api/openapi.yaml                               |
-# | ROLE: Project YAML manifest.                                |
-# | PLIK: docs/api/openapi.yaml                               |
-# | ROLA: Manifest YAML projektu.                               |
-# +-------------------------------------------------------------+
-
 openapi: 3.0.3
 info:
-  title: CERTEUS API
+  title: CERTEUS API (placeholder)
   version: 0.0.1
-paths: {}
+paths:
+  /health:
+    get:
+      summary: Healthcheck
+      responses:
+        '200':
+          description: OK
+

@@ -25,3 +25,20 @@ docker compose down
 
 Test job: set runs-on: [self-hosted, linux, docker, build].
 
+Rotate / Update / Health
+
+1) Rotate token:
+
+docker compose down
+edit .env  # update GH_RUNNER_TOKEN
+docker compose up -d
+
+2) Update image:
+
+docker pull myoung34/github-runner:latest
+docker compose up -d --force-recreate
+
+3) Healthcheck runner:
+
+docker ps
+docker logs -n 100 certeus-gha-runner

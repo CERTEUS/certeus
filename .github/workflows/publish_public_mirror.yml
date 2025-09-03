@@ -1,0 +1,47 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/publish_public_mirror.yml          |
+# | ROLE: Publish sanitized mirror to CERTEUS/certeus-public   |
+# +-------------------------------------------------------------+
+
+name: Publish-Public-Mirror
+
+on:
+  workflow_run:
+    workflows: [Promote-Daily-To-Main]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
+    runs-on: [self-hosted, linux, docker, build]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare mirror workspace
+        run: |
+          rm -rf mirror && mkdir -p mirror
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue;; esac
+            rsync -aR --prune-empty-dirs "$line" mirror/ || true
+          done < tools/automation/public_allowlist.txt
+          echo "Mirror tree:" && find mirror -maxdepth 3 -type f | sed 's#^# - #' | head -n 200
+      - name: Push to public repo (force)
+        env:
+          PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}
+        run: |
+          cd mirror
+          git init
+          git config user.name "Certeus Bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A
+          git commit -m "mirror: publish sanitized snapshot ${GITHUB_SHA}"
+          git branch -M main
+          git remote add origin https://x-access-token:${PUBLIC_MIRROR_PAT}@github.com/CERTEUS/certeus-public.git
+          git push -f origin main
+
