@@ -50,7 +50,8 @@
           <button id="send" class="btn">Send</button>
         </div>
         <div class="row" style="margin-top:8px">
-          <button id="cmp" class="btn">Compare with docs</button>
+          <button id="cmp" class="btn">Compare endpoint</button>
+          <button id="cmpAll" class="btn">Export diff (all)</button>
           <span id="cmpOut" class="pill">-</span>
         </div>
         <div class="row" style="margin-top:8px">
@@ -153,11 +154,46 @@
         let msg='OK';
         if(!(p in (api.paths||{}))){ msg = 'Path missing in runtime'; }
         else if(missing.length){ msg = 'Missing methods: '+missing.join(', '); }
+        else {
+          // Shallow response codes and requestBody presence
+          const dR = Object.keys((dP[m]||{}).responses||{});
+          const rR = Object.keys((rP[m]||{}).responses||{});
+          const missResp = dR.filter(x=>!rR.includes(x));
+          const dHasRB = !!((dP[m]||{}).requestBody);
+          const rHasRB = !!((rP[m]||{}).requestBody);
+          if(missResp.length){ msg = 'Missing responses: '+missResp.join(', '); }
+          else if(dHasRB && !rHasRB){ msg = 'Missing requestBody'; }
+        }
         $("cmpOut").textContent = msg;
+      }
+      function exportDiffAll(){
+        const dPaths = Object.keys(docs.paths||{});
+        const rPaths = Object.keys(api.paths||{});
+        const out = { missing_paths: dPaths.filter(p=>!rPaths.includes(p)), paths: {} };
+        dPaths.forEach(p=>{
+          const dP = docs.paths[p]||{}; const rP = api.paths[p]||{};
+          const ep = {};
+          ['get','post','put','delete','patch'].forEach(m=>{
+            if(dP[m]){
+              const dM = dP[m]||{}; const rM = rP[m]||{};
+              const dR = Object.keys(dM.responses||{});
+              const rR = Object.keys(rM.responses||{});
+              const missResp = dR.filter(x=>!rR.includes(x));
+              const dHasRB = !!dM.requestBody; const rHasRB = !!rM.requestBody;
+              if(!(p in rPaths) || !api.paths[p] || !rM || missResp.length || (dHasRB && !rHasRB)){
+                ep[m] = { missing_responses: missResp, request_body_docs: dHasRB, request_body_runtime: rHasRB };
+              }
+            }
+          });
+          if(Object.keys(ep).length){ out.paths[p] = ep; }
+        });
+        const s = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(out, null, 2));
+        const a = document.createElement('a'); a.href=s; a.download='openapi_diff.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
       }
       $("search").addEventListener('input', renderList);
       $("send").addEventListener('click', ()=>{ updateCode(); send(); });
       $("cmp").addEventListener('click', compareDocs);
+      $("cmpAll").addEventListener('click', exportDiffAll);
       $("copyCurl").addEventListener('click', ()=> copyText(_lastSnippets.curl));
       $("copyPy").addEventListener('click', ()=> copyText(_lastSnippets.py));
       $("copyTs").addEventListener('click', ()=> copyText(_lastSnippets.ts));

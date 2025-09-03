@@ -82,19 +82,32 @@
         const t=await r.text(); try{ $("publish_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("publish_out").textContent=t }
         setLedgerLink();
       }
-      function buildBundle(){
+      async function sha256hex(blob){ const b = await blob.arrayBuffer(); const d = await crypto.subtle.digest('SHA-256', b); const a = Array.from(new Uint8Array(d)); return a.map(x=>x.toString(16).padStart(2,'0')).join(''); }
+      function validateBundle(b){
+        const issues=[];
+        if(!b || typeof b!=='object') issues.push('bundle not an object');
+        if(!b.rid || typeof b.rid!=='string') issues.push('rid missing');
+        if(!/^[0-9a-f]{64}$/i.test(b.smt2_hash||'')) issues.push('smt2_hash must be 64 hex chars');
+        if(typeof b.lfsc!=='string') issues.push('lfsc must be string');
+        if(!Array.isArray(b.merkle_proof)) issues.push('merkle_proof must be array');
+        return issues;
+      }
+      async function buildBundle(){
         const cs=$("case").value||'CER-LEX-001';
-        // Minimal bundle (must match schema expectations): rid, smt2_hash, lfsc, merkle_proof
         const rid = cs;
-        // deterministic 64-hex placeholder for demo
-        const smt2_hash = 'a'.repeat(64);
+        let smt2_hash = 'a'.repeat(64);
+        try{
+          const f=$("file").files?.[0]; if(f){ smt2_hash = await sha256hex(f); }
+        }catch{}
         const bundle = { rid, smt2_hash, lfsc: '(lfsc proof)', merkle_proof: [] };
+        const issues = validateBundle(bundle);
         const s = JSON.stringify(bundle, null, 2);
         $("bundleDl").href = 'data:application/json;charset=utf-8,' + encodeURIComponent(s);
+        $("publish_out").textContent = issues.length? ('Bundle validation: '+issues.join('; ')) : 'Bundle validation: OK';
         return bundle;
       }
       async function submitBundle(){
-        const b = buildBundle();
+        const b = await buildBundle();
         const r = await fetch('/v1/pco/bundle', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(b)});
         const t = await r.text(); try{ $("publish_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("publish_out").textContent=t }
       }

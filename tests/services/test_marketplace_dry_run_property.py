@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_marketplace_dry_run_property.py  |
+# | ROLE: Property tests.                                        |
+# | PLIK: tests/services/test_marketplace_dry_run_property.py  |
+# | ROLA: Testy własnościowe.                                     |
+# +-------------------------------------------------------------+
 """
 PL: Property tests dla /v1/marketplace/dry_run (nazwy i semver).
 EN: Property tests for /v1/marketplace/dry_run (names and semver).
@@ -10,6 +18,12 @@ from fastapi.testclient import TestClient
 from hypothesis import HealthCheck, given, settings, strategies as st
 
 from services.api_gateway.main import app
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def _req(name: str, module: str = "plugins.x.src.main", version: str = "0.1.0") -> dict:
@@ -41,3 +55,8 @@ def test_dry_run_accepts_semver(version: str):
     body = r.json()
     # może mieć invalid_signature, ale nie invalid_version_semver
     assert "invalid_version_semver" not in (body.get("errors") or [])
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

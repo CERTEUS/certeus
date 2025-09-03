@@ -102,6 +102,31 @@ class CerteusClient:
         r.raise_for_status()
         return r.json()
 
+    # --- Billing (first-class) ---
+    def get_balance(self) -> dict[str, Any]:
+        r = self.session.get(self._url("/v1/billing/balance"), timeout=self.timeout)
+        r.raise_for_status()
+        return r.json()
+
+    def allocate(self, units: int) -> dict[str, Any]:
+        r = self.session.post(self._url("/v1/billing/allocate"), json={"units": int(units)}, timeout=self.timeout)
+        r.raise_for_status()
+        return r.json()
+
+    def refund(self, tenant: str, units: int) -> dict[str, Any]:
+        r = self.session.post(
+            self._url("/v1/billing/refund"), json={"tenant": tenant, "units": int(units)}, timeout=self.timeout
+        )
+        r.raise_for_status()
+        return r.json()
+
+    def set_quota(self, tenant: str, units: int) -> dict[str, Any]:
+        r = self.session.post(
+            self._url("/v1/billing/quota"), json={"tenant": tenant, "units": int(units)}, timeout=self.timeout
+        )
+        r.raise_for_status()
+        return r.json()
+
 
 # === I/O / ENDPOINTS ===
 # === TESTY / TESTS ===
