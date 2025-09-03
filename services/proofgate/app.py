@@ -290,6 +290,9 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
+    # W9: Decision (base), then optional gates (PQ/roles)
+    decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
+
     # W9: PQ-crypto gate (optional, stub)
     pq_require = (os.getenv("PQCRYPTO_REQUIRE") or "").strip() in {"1", "true", "True"}
     pq_ready_env = (os.getenv("PQCRYPTO_READY") or "").strip() in {"1", "true", "True"}
@@ -308,8 +311,6 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     # W9: Fine-grained role enforcement (optional)
     enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
-
-    decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
         # Governance‑aware enforcement: require at least one allowed role per governance pack

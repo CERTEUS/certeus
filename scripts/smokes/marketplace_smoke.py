@@ -28,7 +28,7 @@ def main() -> int:
     with TestClient(app) as c:
         # setup key
         sk = Ed25519PrivateKey.generate()
-        pem = sk.private_bytes(
+        _pem = sk.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
             encryption_algorithm=serialization.NoEncryption(),

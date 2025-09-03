@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/smokes/billing_smoke.py                      |
+# | ROLE: Project script.                                        |
+# | PLIK: scripts/smokes/billing_smoke.py                      |
+# | ROLA: Skrypt projektu.                                       |
+# +-------------------------------------------------------------+
 """
 PL: Lekki smoke Billing (quota/balance/allocate/refund) via TestClient -> JSON report.
 EN: Lightweight Billing smoke (quota/balance/allocate/refund) via TestClient -> JSON report.
@@ -12,6 +20,12 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def main() -> int:
@@ -32,3 +46,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

@@ -446,6 +446,22 @@ CI integracja:
   - Go: `openapi-generator generate -i out/openapi.json -g go -o sdk/go`.
   - (lub użyj dowolnego generatora wspierającego OpenAPI 3.0).
 
+- Minimalne SDK w repo (quickstarts, ręcznie utrzymywane):
+  - Python: `clients/python/certeus_sdk` (zob. `docs/sdk/python.md`).
+  - TypeScript: `clients/typescript/certeus-sdk` (zob. `docs/sdk/typescript.md`).
+  - Go: `clients/go/certeus` (zob. `docs/sdk/go.md`).
+
+- DevEx w UI Cockpitu: zakładka „DevEx” w `clients/web/proof_visualizer/index.html` (Copy code: curl/py/ts/go + 1‑klik „Playground” dla GET/POST wybranych endpointów).
+
+### Publikacja SDK (opcjonalnie)
+
+- Python SDK (`clients/python/certeus_sdk`):
+  - Build: `bash scripts/sdk/build_python_sdk.sh`
+  - Publish (wymaga `TWINE_USERNAME/TWINE_PASSWORD` lub `~/.pypirc`): `bash scripts/sdk/publish_python_sdk.sh`
+- TypeScript SDK (`clients/typescript/certeus-sdk`):
+  - Publish (środowisko Node.js): `bash scripts/sdk/publish_ts_sdk.sh`
+- Go SDK: moduł w repo (`clients/go/certeus`), użyj `go get` do commita/tagu.
+
 ---
 
 ## Konfiguracja / ENV
@@ -663,4 +679,3 @@ Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=
 - cURL: docs/curl_examples.md
 - A11y: skip links + landmark `role="main"` w UI (Proof Visualizer, Mismatch Console)
 - Ω‑Kernel holonomia: scripts/gates/compute_gauge_drift.py (drift z transformacji PL↔EN)
-

@@ -133,6 +133,14 @@ curl -s http://127.0.0.1:8000/v1/billing/policies | jq .
 
 curl -s http://127.0.0.1:8000/v1/billing/tenant_tier -H 'X-Tenant-ID: acme' | jq .
 ```
+
+- Estymator kosztu akcji:
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/billing/estimate \
+  -H 'X-Tenant-ID: acme' -H 'Content-Type: application/json' \
+  -d '{"action":"qtm.measure"}' | jq .
+```
 ```
 
 ## FINENITH — Q‑Alpha (W16)
