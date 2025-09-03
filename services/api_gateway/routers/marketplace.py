@@ -93,6 +93,22 @@ def _verify_manifest(manifest_yaml: str, signature_b64u: str) -> bool:
         return False
 
 
+@router.get("/pubkey", summary="Return current Ed25519 public key (b64url)")
+def get_pubkey() -> dict[str, str] | dict[str, bool]:
+    """PL: Zwraca publiczny klucz Ed25519 w base64url; 404 gdy brak.
+
+    EN: Returns Ed25519 public key as base64url; 404-like response if missing.
+    """
+
+    try:
+        b = load_ed25519_public_bytes()
+        import base64
+
+        return {"ed25519_pubkey_b64url": base64.urlsafe_b64encode(b).rstrip(b"=").decode("ascii")}
+    except Exception:
+        return {"ok": False}
+
+
 @router.get("/plugins", summary="List installed plugins")
 def list_plugins() -> list[dict[str, Any]]:
     """PL: Wypisuje zainstalowane wtyczki i ich metadane (moduł, wersja, caps, signed).

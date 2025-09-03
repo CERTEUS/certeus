@@ -2,105 +2,48 @@
 +-------------------------------------------------------------+
 |                          CERTEUS                            |
 +-------------------------------------------------------------+
-| FILE: clients/web/public/index.html                         |
-| ROLE: Landing & Demo (W17 Go-to-Market)                     |
-| PLIK: clients/web/public/index.html                         |
-| ROLA: Landing + linki do sandboxów                          |
+| FILE: clients/web/public/index.html                        |
+| ROLE: Landing page.                                         |
+| PLIK: clients/web/public/index.html                        |
+| ROLA: Strona startowa.                                      |
 +-------------------------------------------------------------+
 -->
-
 <!doctype html>
-<html lang="pl" data-theme="dark">
+<html lang="pl">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CERTEUS • Proof-Native Platform</title>
-    <meta name="description" content="Proof‑Native platform: Geometry • Quantum • Boundary • Devices" />
-    <!-- Open Graph / Social Preview -->
-    <meta property="og:title" content="CERTEUS — Proof‑Native Platform" />
-    <meta property="og:description" content="Try now: live sandbox • Public PCO • OpenAPI" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/app/public/brand/apple-touch-icon.png" />
-    <meta property="og:image:alt" content="CERTEUS" />
-    <meta property="og:site_name" content="CERTEUS" />
-    <link rel="icon" href="/app/public/brand/favicon.svg" />
+    <title>CERTEUS — Start</title>
     <style>
-      :root { color-scheme: dark; }
-      body {
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-        margin: 0;
-        background: #0f1114;
-        color: #f2f2f3;
-      }
-      .wrap { max-width: 960px; margin: 40px auto; padding: 0 16px; }
-      .card { background: #161a1f; border: 1px solid #2a2d33; border-radius: 14px; padding: 20px; }
-      h1 { margin: 0 0 8px; font-size: 26px; }
-      p { color: #a2a8b0; }
-      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-      .btn { background: #1a1e24; border: 1px solid #2a2d33; color: #f2f2f3; padding: 10px 14px; border-radius: 10px; text-decoration: none; }
-      .btn:hover { background: #20252c; }
-      .links { margin-top: 12px; }
-      .links a { color: #9aa0a6; margin-right: 16px; }
-      .pill { display: inline-block; padding: 4px 8px; border: 1px solid #2a2d33; border-radius: 999px; background: #20242a; margin-left: 8px; }
+      :root{--bg:#0f1115;--fg:#e5e7eb;--card:#151922;--muted:#9aa0a6;--accent:#22c55e;--link:#60a5fa}
+      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--fg)}
+      .wrap{max-width:980px;margin:36px auto;padding:0 16px}
+      .card{background:var(--card);border:1px solid #232832;border-radius:12px;padding:18px;margin-bottom:16px}
+      a{color:var(--link);text-decoration:none}
+      a:hover{text-decoration:underline}
+      h1{margin:0 0 4px}
+      .grid{display:grid;gap:14px;grid-template-columns:1fr}
+      @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
     </style>
   </head>
   <body>
     <div class="wrap">
-      <div class="card">
-        <h1>CERTEUS — Proof‑Native Platform<span class="pill">W17</span></h1>
-        <p>Geometry • QTMP • Boundary • Devices • Ledger • Public PCO</p>
-        <div class="row">
-          <a class="btn" href="/app/public/qtm.html">Try now: QTMP sandbox</a>
-          <a class="btn" href="/app/proof_visualizer/index.html">Proof Visualizer</a>
-          <a class="btn" href="/docs">Docs</a>
+      <h1>CERTEUS — Start</h1>
+      <p class="muted">Szybkie linki do demo stron i narzędzi.</p>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Marketplace</h2>
+          <p>Instalacja podpisanych wtyczek, lista zainstalowanych, klucz publiczny.</p>
+          <p><a href="/app/public/marketplace.html">Otwórz Marketplace</a></p>
         </div>
-        <div style="margin-top:12px" class="card">
-          <h2 style="font-size:18px;margin:0 0 10px">Quick checks</h2>
-          <div class="row">
-            <input id="tenant" class="btn" placeholder="X-Tenant-ID (np. acme)" />
-            <button id="checkTier" class="btn">Check tier</button>
-            <button id="checkBal" class="btn">Check balance</button>
-            <span id="tInfo" class="muted"></span>
-          </div>
-          <div class="row" style="margin-top:8px">
-            <input id="rid" class="btn" placeholder="RID / case_id (np. CER-LEX-001)" />
-            <a id="openPCO" class="btn" href="#" target="_blank">Open Public PCO</a>
-          </div>
-        </div>
-        <div class="links">
-          <a href="/openapi.json" target="_blank">OpenAPI</a>
-          <a href="/v1/billing/policies" target="_blank">Billing policies</a>
-          <a href="/v1/metrics" target="_blank">/metrics</a>
+        <div class="card">
+          <h2>Proof Visualizer</h2>
+          <p>Wizualizator wyników analizy (ALI/PCO) z i18n i dostępnością.</p>
+          <p><a href="/app/proof_visualizer/index.html">Otwórz Wizualizator</a></p>
         </div>
       </div>
     </div>
-    <script>
-      async function jfetch(url, opts) {
-        const r = await fetch(url, opts);
-        const t = await r.text();
-        try { return { ok: r.ok, data: JSON.parse(t) }; } catch { return { ok: r.ok, data: t }; }
-      }
-      async function checkTier() {
-        const tid = document.getElementById('tenant').value || 'anonymous';
-        const r = await jfetch('/v1/billing/tenant_tier', { headers: { 'X-Tenant-ID': tid } });
-        const m = r.ok ? `tenant=${r.data.tenant} tier=${r.data.tier}` : 'error';
-        document.getElementById('tInfo').textContent = m;
-      }
-      async function checkBal() {
-        const tid = document.getElementById('tenant').value || 'anonymous';
-        const r = await jfetch('/v1/billing/balance', { headers: { 'X-Tenant-ID': tid } });
-        const m = r.ok ? `tenant=${tid} balance=${r.data.balance}` : 'error';
-        document.getElementById('tInfo').textContent = m;
-      }
-      function updPCOLink() {
-        const rid = (document.getElementById('rid').value || 'CER-LEX-001').trim();
-        const a = document.getElementById('openPCO');
-        a.href = `/pco/public/${encodeURIComponent(rid)}`;
-      }
-      document.getElementById('checkTier').addEventListener('click', checkTier);
-      document.getElementById('checkBal').addEventListener('click', checkBal);
-      document.getElementById('rid').addEventListener('input', updPCOLink);
-      updPCOLink();
-    </script>
   </body>
   </html>
+

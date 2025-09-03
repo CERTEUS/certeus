@@ -60,6 +60,32 @@ class AllocateRequest(BaseModel):
 
 router = APIRouter(prefix="/v1/billing", tags=["billing"])
 
+# Szacunkowe koszty akcji (jednostki budżetu)
+_COST_TABLE: dict[str, int] = {
+    "qtm.measure": 1,
+    "qtm.decoherence": 1,
+    "system.analyze": 3,
+    "ingest.upload": 2,
+    "lexqft.tunnel": 2,
+    "proofgate.publish": 5,
+}
+
+
+class EstimateRequest(BaseModel):
+    action: str = Field(..., description="Action key, e.g. qtm.measure")
+
+
+@router.post("/estimate", summary="Estimate cost units for an action")
+def estimate(request: Request, body: EstimateRequest) -> dict[str, int | str]:
+    """PL: Zwraca szacunkowy koszt jednostek dla podanej akcji.
+
+    EN: Returns estimated unit cost for a given action.
+    """
+    tenant = get_tenant_id(request)
+    base = int(_COST_TABLE.get(body.action, 1))
+    tier = _limits.get_tenant_tier(tenant)
+    return {"tenant": tenant, "tier": tier, "action": body.action, "estimated_units": base}
+
 
 @router.post("/quota", summary="Set tenant quota")
 def set_quota(req: QuotaRequest) -> dict[str, int | str]:

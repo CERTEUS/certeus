@@ -3,16 +3,14 @@
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
 # | FILE: clients/python/certeus_sdk/client.py                 |
-# | ROLE: Python SDK client                                     |
+# | ROLE: Python SDK client.                                     |
 # | PLIK: clients/python/certeus_sdk/client.py                 |
-# | ROLA: Klient SDK w Pythonie                                 |
+# | ROLA: Klient SDK w Pythonie.                                 |
 # +-------------------------------------------------------------+
 """
-PL: Prosty klient CERTEUS SDK (Python). Zawiera helpery do wywołań OpenAPI,
-    health, publikacji ProofBundle oraz odczytu publicznego PCO.
+PL: Klient SDK w Pythonie — cienki wrapper HTTP nad API Gateway CERTEUS.
 
-EN: Simple CERTEUS SDK client (Python). Helpers for OpenAPI, health,
-    ProofBundle publish and public PCO retrieval.
+EN: Python SDK client — thin HTTP wrapper over CERTEUS API Gateway.
 """
 
 # === IMPORTY / IMPORTS ===

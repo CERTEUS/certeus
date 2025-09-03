@@ -42,6 +42,11 @@
         <table id="tbl"><thead><tr><th>Nazwa</th><th>Moduł</th><th>Wersja</th><th>Podpis</th><th>Caps</th></tr></thead><tbody id="tbody"><tr><td colspan="5" class="muted">Ładowanie…</td></tr></tbody></table>
       </div>
 
+      <div class="card">
+        <h2>Klucz publiczny (Ed25519)</h2>
+        <div id="pubkey" class="muted">—</div>
+      </div>
+
       <div class="grid">
         <div class="card">
           <h2>Weryfikacja podpisu</h2>
@@ -100,6 +105,13 @@ version: '0.1.0'"></textarea>
           tb.innerHTML = `<tr><td colspan="5" class="bad">Błąd: ${e.message||e}</td></tr>`;
         }
       }
+      async function loadPubkey() {
+        const el = document.getElementById('pubkey');
+        try {
+          const res = await api('/v1/marketplace/pubkey');
+          el.textContent = res.ed25519_pubkey_b64url || 'brak/nieustawiony (ENV ED25519_PUBKEY_B64URL)';
+        } catch (e) { el.textContent = 'błąd: '+(e.message||e); }
+      }
       document.getElementById('btn-verify').addEventListener('click', async () => {
         const man = document.getElementById('verify-man').value;
         const sig = document.getElementById('verify-sig').value.trim();
@@ -131,7 +143,7 @@ version: '0.1.0'"></textarea>
         }
       });
       loadPlugins();
+      loadPubkey();
     </script>
   </body>
   </html>
-

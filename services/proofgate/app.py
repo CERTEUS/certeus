@@ -290,6 +290,22 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
+    # W9: PQ-crypto gate (optional, stub)
+    pq_require = (os.getenv("PQCRYPTO_REQUIRE") or "").strip() in {"1", "true", "True"}
+    pq_ready_env = (os.getenv("PQCRYPTO_READY") or "").strip() in {"1", "true", "True"}
+
+    if pq_require and decision != "ABSTAIN":
+        try:
+            pq_ready_pco = False
+            if isinstance(req.pco, dict):
+                crypto = req.pco.get("crypto") if isinstance(req.pco.get("crypto"), dict) else {}
+                pq = crypto.get("pq") if isinstance(crypto, dict) else None
+                pq_ready_pco = bool((pq or {}).get("ready", False))
+            if not (pq_ready_pco or pq_ready_env):
+                decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
+
     # W9: Fine-grained role enforcement (optional)
     enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
 

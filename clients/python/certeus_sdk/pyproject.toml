@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certeus-sdk"
+version = "0.1.0"
+description = "CERTEUS Python SDK (minimal)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["requests>=2.31"]
+authors = [{ name = "CERTEUS", email = "dev@certeus.example" }]
+license = { text = "MIT" }
+
+[tool.setuptools]
+packages = ["certeus_sdk"]
+

@@ -170,6 +170,13 @@ jobs:
       - name: OpenAPI smoke (/openapi.json)
         run: |
           python scripts/smokes/openapi_smoke.py
+      - name: OpenAPI contract parity (runtime vs docs)
+        run: |
+          python scripts/validate_openapi_contract.py
+      - name: Mark OpenAPI contract OK
+        if: success()
+        run: |
+          echo ok > out/openapi_contract_ok.txt
       - name: QTMP smoke (in-proc)
         run: |
           python scripts/smokes/qtm_smoke.py
@@ -379,6 +386,5 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
 
 
