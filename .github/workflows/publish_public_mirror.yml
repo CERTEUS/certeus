@@ -91,6 +91,26 @@ jobs:
           cp -f tools/automation/mirror/mkdocs.public.yml "$MIRROR_DIR/mkdocs.yml" || true
           cp -f tools/automation/mirror/LICENSE-AGPL-3.0.txt "$MIRROR_DIR/LICENSE" || true
 
+          # 2b) CDN-bust OG/fav in mirror_out (hashed filenames) and patch mkdocs.yml references
+          (
+            cd "$MIRROR_DIR"
+            SHORT_SHA="$(echo "${GITHUB_SHA}" | cut -c1-7)"
+            if [ -f docs/assets/og.svg ]; then
+              cp docs/assets/og.svg "docs/assets/og.${SHORT_SHA}.svg"
+              # Patch OG meta references in mkdocs.yml
+              if [ -f mkdocs.yml ]; then
+                sed -i "s|/assets/og\.svg|/assets/og.${SHORT_SHA}.svg|g" mkdocs.yml || true
+              fi
+            fi
+            if [ -f docs/assets/favicon.ico ]; then
+              cp docs/assets/favicon.ico "docs/assets/favicon.${SHORT_SHA}.ico"
+              # Patch favicon reference in mkdocs.yml
+              if [ -f mkdocs.yml ]; then
+                sed -i "s|favicon: assets/favicon\.ico|favicon: assets/favicon.${SHORT_SHA}.ico|g" mkdocs.yml || true
+              fi
+            fi
+          )
+
           # 3) PROVENANCE trail
           ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           printf "Source: CERTEUS/certeus@%s\nPublished: %s\nMode: LITE (allowlist + squash)\n" "$GITHUB_SHA" "$ts" > "$MIRROR_DIR/PROVENANCE.md"
@@ -142,6 +162,67 @@ jobs:
             gh api -X DELETE repos/CERTEUS/certeus-public/branches/main/protection/required_signatures -H 'Accept: application/vnd.github+json' || true
           fi
           echo "Branch protection restored to snapshot (normalized)"
+      - name: Post-publish wrap-up (assets + report)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          BASE="https://certeus.github.io/certeus-public"
+          SHORT_SHA="$(echo "${GITHUB_SHA}" | cut -c1-7)"
+          fav="$BASE/assets/favicon.${SHORT_SHA}.ico"
+          og="$BASE/assets/og.${SHORT_SHA}.svg"
+          # kick Pages if missing
+          curl -sSfI "$fav" >/dev/null || gh workflow run docs-site.yml --repo CERTEUS/certeus-public --ref main || true
+          curl -sSfI "$og"  >/dev/null || gh workflow run docs-site.yml --repo CERTEUS/certeus-public --ref main || true
+          for i in 1 2 3; do
+            sleep 20
+            curl -sSfI "$fav" >/dev/null 2>&1 && curl -sSfI "$og" >/dev/null 2>&1 && break || true
+          done
+          FAV_STATUS=$(curl -sI -o /dev/null -w "%{http_code}" "$fav" || echo 000)
+          OG_STATUS=$(curl -sI -o /dev/null -w "%{http_code}" "$og" || echo 000)
+          ASSETS_STATUS="favicon=${FAV_STATUS}, og.svg=${OG_STATUS}"
+          # Compose quick comment to Issue #46
+          LAST_DOCS_CORE="https://github.com/CERTEUS/certeus/actions/workflows/docs-site.yml"
+          LAST_DOCS_MIRROR="https://github.com/CERTEUS/certeus-public/actions/workflows/docs-site.yml"
+          LAST_CILIGHT="https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public_light.yml"
+          LAST_POL_CORE="https://github.com/CERTEUS/certeus/actions/workflows/policies-report.yml"
+          LAST_POL_MIRROR="https://github.com/CERTEUS/certeus-public/actions/workflows/policies-report.yml"
+          BP_JSON_URL="https://api.github.com/repos/CERTEUS/certeus-public/branches/main/protection"
+          BODY=$(cat <<'MD'
+### ✅ Post-publish wrap-up (mirror)
+
+**Pages**
+- Core: https://certeus.github.io/certeus  
+- Mirror: https://certeus.github.io/certeus-public
+
+**Runs**
+- Docs-Site (core): {{LAST_DOCS_CORE}}
+- Docs-Site (mirror): {{LAST_DOCS_MIRROR}}
+- CI-Public-Light (mirror): {{LAST_CILIGHT}}
+
+**Policies-Report**
+- Core: {{LAST_POL_CORE}}
+- Mirror: {{LAST_POL_MIRROR}}
+
+**Branch Protection (mirror JSON)**
+- {{BP_JSON_URL}}
+
+**Assets (mirror)**
+- {{ASSETS_STATUS}}
+
+> Publikacja: allowlista LITE → PROVENANCE → squash (autor: Radosław Skarżycki) → restore ochrony.  
+> Guardy: MIRROR_PUBLISH, freshness, pages health.
+MD
+          )
+          BODY=${BODY//\{\{LAST_DOCS_CORE\}\}/$LAST_DOCS_CORE}
+          BODY=${BODY//\{\{LAST_DOCS_MIRROR\}\}/$LAST_DOCS_MIRROR}
+          BODY=${BODY//\{\{LAST_CILIGHT\}\}/$LAST_CILIGHT}
+          BODY=${BODY//\{\{LAST_POL_CORE\}\}/$LAST_POL_CORE}
+          BODY=${BODY//\{\{LAST_POL_MIRROR\}\}/$LAST_POL_MIRROR}
+          BODY=${BODY//\{\{BP_JSON_URL\}\}/$BP_JSON_URL}
+          BODY=${BODY//\{\{ASSETS_STATUS\}\}/$ASSETS_STATUS}
+          gh issue comment 46 -R CERTEUS/certeus --body "$BODY" || true
       - name: Install git-filter-repo
         if: ${{ false }}
         run: |

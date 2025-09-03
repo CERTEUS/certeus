@@ -126,6 +126,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-03 17:35:00Z [agent] (work/daily): W15: testy zielone + README update
   - pytest: 124 passed, 1 skipped (lokalnie, venv_cli)
   - README: sekcja OpenAPI & SDK z quickstartami + DevEx wzmianka
+- 2025-09-03 18:05:00Z [agent] (work/daily): W15: CI gate (OpenAPI contract) + DevEx rozszerzony + skrypty SDK
+  - ci-gates: dodany krok `scripts/validate_openapi_contract.py` (contract parity)
+  - DevEx: POST /v1/pco/bundle i POST /v1/analyze (curl, py, ts; 1‑klik run)
+  - SDK publish: skrypty `scripts/sdk/*` (py build/publish, ts publish)
 - 2025-09-03 14:21:04Z [agent] (work/daily): W16: Piloty — per‑tenant SLO + FIN/LEX endpoints
   - Observability: metryki per‑tenant (histogram + licznik) + panele Grafana
   - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)

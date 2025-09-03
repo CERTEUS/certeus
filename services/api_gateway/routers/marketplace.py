@@ -26,7 +26,9 @@ EN: FastAPI router – Plugin Marketplace (list, verify, install).
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import os
 from pathlib import Path
+import re
 from typing import Any
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -174,10 +176,42 @@ def install_plugin(req: InstallRequest) -> dict[str, Any]:
     except Exception as e:  # nosec - user-provided YAML validation
         raise HTTPException(status_code=400, detail=f"Invalid manifest: {e}") from e
 
-    pdir = _PLUGINS_DIR / req.name
+    # Name hardening: allow only safe names 'a-zA-Z0-9_-'
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.name):
+        raise HTTPException(status_code=400, detail="Invalid plugin name")
+    pdir = (_PLUGINS_DIR / req.name).resolve()
+    plugins_root = _PLUGINS_DIR.resolve()
+    if not str(pdir).startswith(str(plugins_root)):
+        raise HTTPException(status_code=400, detail="Invalid destination path")
     pdir.mkdir(parents=True, exist_ok=True)
     (pdir / "plugin.yaml").write_text(req.manifest_yaml, encoding="utf-8")
     return {"ok": True, "name": req.name, "path": str(pdir)}
+
+
+@router.post("/sign_manifest", summary="Sign manifest (dev-only)")
+def sign_manifest(payload: dict[str, Any]) -> dict[str, Any]:
+    """PL: Podpisuje YAML Ed25519 (tylko DEV). Włącz przez MARKETPLACE_SIGNING_ENABLED=1.
+
+    EN: Signs YAML with Ed25519 (DEV only). Enable via MARKETPLACE_SIGNING_ENABLED=1.
+    """
+    if (os.getenv("MARKETPLACE_SIGNING_ENABLED") or "").strip() not in {"1", "true", "True"}:
+        raise HTTPException(status_code=403, detail="Signing disabled")
+    import base64
+
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
+    from security.key_manager import load_ed25519_private_pem
+
+    text = str(payload.get("manifest_yaml") or "")
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="manifest_yaml required")
+    pem = load_ed25519_private_pem()
+    sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)
+    assert isinstance(sk, Ed25519PrivateKey)
+    sig = sk.sign(text.encode("utf-8"))
+    b64u = base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
+    return {"signature_b64url": b64u}
 
 
 # === I/O / ENDPOINTS ===

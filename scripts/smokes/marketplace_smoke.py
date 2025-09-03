@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/smokes/marketplace_smoke.py                  |
+# | ROLE: Project script.                                        |
+# | PLIK: scripts/smokes/marketplace_smoke.py                  |
+# | ROLA: Skrypt projektu.                                       |
+# +-------------------------------------------------------------+
 """
 PL: Lekki smoke Marketplace (verify/install/list) via TestClient -> reports JSON.
 EN: Lightweight Marketplace smoke (verify/install/list) via TestClient -> JSON report.
@@ -57,3 +65,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
