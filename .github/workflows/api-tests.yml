@@ -1,0 +1,40 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/api-tests.yml                       |
+# | ROLE: Validate OpenAPI schema as dedicated required check    |
+# +-------------------------------------------------------------+
+
+name: Tests (API)
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'docs/api/openapi.yaml' ]
+  pull_request:
+    paths: [ 'docs/api/openapi.yaml' ]
+
+jobs:
+  validate-openapi:
+    name: Tests (API)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install validator
+        run: |
+          python -m pip install -U pip
+          python -m pip install openapi-spec-validator PyYAML
+      - name: Validate docs/api/openapi.yaml
+        run: |
+          python - << 'PY'
+          import sys, yaml
+          from openapi_spec_validator import validate_spec
+          with open('docs/api/openapi.yaml', 'r', encoding='utf-8') as f:
+              data = yaml.safe_load(f)
+          validate_spec(data)
+          print('OpenAPI schema valid')
+          PY
+

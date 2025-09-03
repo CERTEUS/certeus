@@ -1,0 +1,27 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/spectral.yml                        |
+# | ROLE: Lint OpenAPI with Spectral as a dedicated check       |
+# +-------------------------------------------------------------+
+
+name: Spectral (OpenAPI)
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'docs/api/openapi.yaml' ]
+  pull_request:
+    paths: [ 'docs/api/openapi.yaml' ]
+
+jobs:
+  spectral:
+    name: Spectral (OpenAPI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint OpenAPI (Spectral)
+        run: |
+          npm -v || true
+          npx -y @stoplight/spectral-cli lint docs/api/openapi.yaml
+
