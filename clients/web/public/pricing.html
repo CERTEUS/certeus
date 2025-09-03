@@ -46,6 +46,23 @@
         <div id="rec" class="muted"></div>
       </div>
       <div class="card">
+        <h2>Heatmap (action × tier × volume)</h2>
+        <p class="muted">Kolor: zielony=OK, żółty=blisko limitu (&lt; 10% marginesu), czerwony=przekroczony.</p>
+        <div class="row">
+          <label>Days: <input id="hDays" type="number" value="30"/></label>
+          <label>Volumes/mo:
+            <select id="hVol">
+              <option>100</option>
+              <option>1000</option>
+              <option selected>10000</option>
+              <option>100000</option>
+            </select>
+          </label>
+          <button id="hRender" class="btn">Render</button>
+        </div>
+        <div id="heat" style="overflow:auto"></div>
+      </div>
+      <div class="card">
         <h2>Docs</h2>
         <p><a href="/app/public/explorer.html">API Explorer</a> • <a href="/docs/pricing.md">Pricing doc</a></p>
       </div>
@@ -73,8 +90,33 @@
         const rr = await j(`/v1/billing/recommendation?action=${encodeURIComponent(act)}&monthly=${encodeURIComponent(n)}&days=${encodeURIComponent(days)}`);
         if(rr.ok){ const x=rr.data; $("rec").textContent = `Recommendation: ${x.recommended_tier} (current=${x.tier_current}, required_daily_units≈${x.required_daily_units}, upgrade=${x.upgrade_needed})`; }
       }
-      async function init(){ const pol = await j('/v1/billing/policies'); if(pol.ok) renderTiers(pol.data); }
-      $("calc").addEventListener('click', calc); init();
+      function buildHeatmap(pol){
+        const tiers = Object.keys(pol.tiers||{});
+        const actions = ['qtm.measure','qtm.decoherence','system.analyze','ingest.upload','lexqft.tunnel','proofgate.publish'];
+        const costs = {'qtm.measure':1,'qtm.decoherence':1,'system.analyze':3,'ingest.upload':2,'lexqft.tunnel':2,'proofgate.publish':5};
+        const vol = parseInt($("hVol").value||'10000',10)||10000;
+        const days = parseInt($("hDays").value||'30',10)||30;
+        const tbl=[]; tbl.push('<table><thead><tr><th>action \\ tier</th>'+tiers.map(t=>`<th>${t}</th>`).join('')+"</tr></thead><tbody>");
+        actions.forEach(a=>{
+          tbl.push(`<tr><td>${a}</td>`);
+          tiers.forEach(t=>{
+            const dq = (pol.tiers[t]||{}).daily_quota||0;
+            const req = Math.ceil(costs[a] * (vol/days));
+            const ok = dq >= req;
+            const margin = dq>0 ? (dq-req)/dq : -1;
+            let bg = ok ? '#173e2a' : '#3e171b';
+            if(ok && margin < 0.1) bg = '#3a3517';
+            tbl.push(`<td style="background:${bg};padding:4px" title="required=${req}/day vs quota=${dq}">${ok?'OK':'NO'}</td>`);
+          });
+          tbl.push('</tr>');
+        });
+        tbl.push('</tbody></table>');
+        $("heat").innerHTML = tbl.join('');
+      }
+      async function init(){ const pol = await j('/v1/billing/policies'); if(pol.ok){ renderTiers(pol.data); buildHeatmap(pol.data);} }
+      $("calc").addEventListener('click', calc);
+      $("hRender").addEventListener('click', async ()=>{ const pol = await j('/v1/billing/policies'); if(pol.ok) buildHeatmap(pol.data); });
+      init();
     </script>
   </body>
   </html>

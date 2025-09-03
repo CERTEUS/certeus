@@ -18,6 +18,16 @@ from __future__ import annotations
 
 from hypothesis import HealthCheck, settings
 
+# === KONFIGURACJA / CONFIGURATION ===
+
 # Profil CI: eliminujemy fałszywe alarmy na wolne generowanie wejść
 settings.register_profile("ci", suppress_health_check=[HealthCheck.too_slow])
 settings.load_profile("ci")
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

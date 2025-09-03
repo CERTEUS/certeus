@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: scripts/smokes/dryrun_smoke.py                      |
+# | ROLE: Project script.                                        |
+# | PLIK: scripts/smokes/dryrun_smoke.py                      |
+# | ROLA: Skrypt projektu.                                       |
+# +-------------------------------------------------------------+
 """
 PL: Smoke dla /v1/marketplace/dry_run — scenariusze pozytywne/negatywne.
 EN: Smoke for /v1/marketplace/dry_run — positive/negative scenarios.
@@ -12,6 +20,12 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def _req(name: str, module: str, version: str, sig: str = "sig") -> dict:
@@ -38,3 +52,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

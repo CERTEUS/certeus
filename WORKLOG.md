@@ -175,6 +175,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - API: GET /v1/billing/recommendation (tier proposal)
   - UI: pricing.html z rekomendacją (current/required/upgrade)
   - Explorer: Copy to clipboard (curl/py/ts) + fallback
+- 2025-09-03 23:40:00Z [agent] (work/daily): W17 ultra: Explorer diff, sparklines, PCO bundle
+  - API: /v1/openapi/docs (JSON z docs/openapi)
+  - Explorer: Compare docs vs runtime dla wybranego endpointu
+  - Metrics: /v1/metrics/series + landing sparklines (p95) auto‑refresh
+  - Case Studio: Build/Download/Submit PCO Bundle (schema‑minimal)
 - 2025-09-03 19:10:00Z [agent] (work/daily): W14: i18n/A11y + OpenAPI runtime parity + demo outputs
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish

@@ -21,3 +21,4 @@ PROVENANCE.md
 PROVENANCE_HISTORY.md
 docs/404.md
 docs/robots.txt
+.github/ISSUE_TEMPLATE/release-polish.md

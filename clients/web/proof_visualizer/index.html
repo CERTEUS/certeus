@@ -973,7 +973,8 @@
 
       // ====================== PREFS ============================= //
       const THEME_KEY = "certeus-theme",
-        LANG_KEY = "certeus-lang";
+        LANG_KEY = "certeus-lang",
+        CONTRAST_KEY = "certeus-contrast";
       function applyTheme(theme) {
         document.documentElement.setAttribute("data-theme", theme);
         localStorage.setItem(THEME_KEY, theme);
@@ -981,6 +982,11 @@
       function t(key) {
         const lang = localStorage.getItem(LANG_KEY) || "pl";
         return I18N[lang][key] ?? key;
+      }
+      function applyContrast(mode) {
+        const m = mode === "high" ? "high" : "normal";
+        document.documentElement.setAttribute("data-contrast", m);
+        localStorage.setItem(CONTRAST_KEY, m);
       }
       function applyI18N() {
         const lang = localStorage.getItem(LANG_KEY) || "pl";
@@ -1051,6 +1057,7 @@
         applyTheme(localStorage.getItem(THEME_KEY) || "dark");
         const savedLang = localStorage.getItem(LANG_KEY) || "pl";
         document.getElementById("lang").value = savedLang;
+        applyContrast(localStorage.getItem(CONTRAST_KEY) || "normal");
         applyI18N();
       })();
       elThemeToggle.addEventListener("click", () => {
@@ -1060,6 +1067,16 @@
             : "dark";
         applyTheme(now);
       });
+      const elContrastToggle = document.getElementById("contrastToggle");
+      if (elContrastToggle) {
+        elContrastToggle.addEventListener("click", () => {
+          const now =
+            document.documentElement.getAttribute("data-contrast") === "high"
+              ? "normal"
+              : "high";
+          applyContrast(now);
+        });
+      }
       // Tabs: click + keyboard (Left/Right/Home/End)
       (function initTabs(){
         tabs.forEach((t, i) => {
