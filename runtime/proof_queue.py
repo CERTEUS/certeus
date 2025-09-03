@@ -10,11 +10,17 @@
 """PL: Zwraca proof_task_id i eta_hint; eksportuje głębokość kolejki.
 EN: Returns proof_task_id & eta_hint; exposes queue depth metric.
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

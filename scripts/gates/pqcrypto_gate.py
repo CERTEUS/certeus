@@ -17,12 +17,14 @@ EN: PQ-crypto readiness gate. If `PQCRYPTO_REQUIRE=1`, requires
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _is_on(v: str | None) -> bool:
     return (v or "").strip().lower() in {"1", "true", "on", "yes"}
 
@@ -44,5 +46,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

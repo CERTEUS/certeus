@@ -16,6 +16,7 @@ EN: Compatibility alias to run Boundary gate.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import sys

@@ -14,12 +14,9 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Remove legacy CERTEUS banner blocks in Python files.
-
-
 
 Legacy pattern: a contiguous comment block that contains a line of
 
@@ -29,18 +26,18 @@ and mentions "CERTEUS" and "MODULE"/"DATE". We remove that entire comment
 
 block while keeping the new standard banner (which uses dashes).
 
-
-
 PL: Usuwa stary baner CERTEUS (z linią '='). Nowy standard ma linie z '-'.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ROOTS = [
     "cje",
     "clients",
@@ -128,7 +125,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

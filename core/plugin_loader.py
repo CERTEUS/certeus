@@ -14,34 +14,25 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 PL: Ładowanie wtyczek (Domain Packs) i rejestracja zdolności.
 
 EN: Plugin loader (Domain Packs) and capability registry.
 """
 
-
 # +-------------------------------------------------------------+
-
 
 # |                    CERTEUS - Plugin Loader                  |
 
-
 # +-------------------------------------------------------------+
-
 
 # | PLIK / FILE: core/plugin_loader.py                          |
 
-
 # | ROLA / ROLE: Wyszukuje i ładuje pluginy z katalogu          |
-
 
 # |              'plugins/<name>/{plugin.yaml, src/main.py}'.   |
 
-
 # |              Scans & loads plugins from the canonical tree. |
-
 
 # +-------------------------------------------------------------+
 
@@ -57,35 +48,25 @@ from typing import Any
 try:
     import yaml  # PyYAML (preferowane)
 
-
 except Exception:  # pragma: no cover
     yaml = None  # type: ignore[assignment]
 
-
 log = logging.getLogger("certeus.plugins")
-
 
 if not log.handlers:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
-
 # === KONFIG / CONFIG ===
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-
 PLUGINS_DIR = REPO_ROOT / "plugins"
-
 
 # Dopuszczamy entrypointy:
 
-
 # - moduł:  module: "plugins.lexlog_rules_pl.src.main"
 
-
 # - opcjonalnie: register: "register"  (funkcja)
-
 
 #   w braku: class Plugin z metodą register(api)
 
@@ -181,51 +162,15 @@ def _import_module(module_path: str) -> Any:
 def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
     """
 
-
-
-
-
-
-
     PL: Próbuje wywołać rejestrację; wspiera:
-
-
-
-
-
-
 
         - funkcję module-level: register(api[, name])
 
-
-
-
-
-
-
         - klasę Plugin z metodą register(api)
-
-
-
-
-
-
 
         - API.register(plugin) lub API.register(name, plugin)
 
-
-
-
-
-
-
     EN: Perform registration via module function or Plugin class.
-
-
-
-
-
-
 
     """
 
@@ -277,27 +222,9 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
 def load_all_plugins(api: Any) -> list[str]:
     """
 
-
-
-
-
-
-
     PL: Ładuje wszystkie pluginy i rejestruje je w przekazanym API.
 
-
-
-
-
-
-
     EN: Loads all plugins and registers them into the provided API.
-
-
-
-
-
-
 
     """
 
@@ -335,75 +262,21 @@ def load_all_plugins(api: Any) -> list[str]:
 def has_register(candidate: Any) -> bool:
     """
 
-
-
-
-
-
-
     PL: Sprawdza, czy obiekt/moduł udostępnia punkt rejestracji pluginu.
-
-
-
-
-
-
 
         Wspierane style:
 
-
-
-
-
-
-
           1) Funkcja modułowa:    register(api)
-
-
-
-
-
-
 
           2) Klasa Plugin:        class Plugin: def register(self, api) -> None
 
-
-
-
-
-
-
     EN: Checks whether the given object/module exposes a plugin registration entrypoint.
-
-
-
-
-
-
 
         Supported styles:
 
-
-
-
-
-
-
           1) Module-level function: register(api)
 
-
-
-
-
-
-
           2) Plugin class:          class Plugin: def register(self, api) -> None
-
-
-
-
-
-
 
     """
 
@@ -425,6 +298,5 @@ def has_register(candidate: Any) -> bool:
 
 
 # Zadeklaruj publiczny interfejs modułu / Public module API
-
 
 __all__ = ["PluginSpec", "load_all_plugins", "has_register"]

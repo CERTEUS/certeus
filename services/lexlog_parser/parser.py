@@ -14,18 +14,13 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 CERTEUS LEXLOG Parser - Production Implementation
 
-
-
 This module provides a comprehensive parser for LEXLOG legal logic files,
 
 supporting both structural AST generation and legacy stub compatibility.
-
-
 
 Key Components:
 
@@ -35,16 +30,20 @@ Key Components:
 
     - Full support for SMT assertions in conclusions
 
-
-
 Polish/English bilingual documentation maintained throughout.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations
@@ -62,7 +61,6 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-
 # ┌─────────────────────────────────────────────────────────────────────┐
 
 # │                      AST DATA STRUCTURES                            │
@@ -76,15 +74,11 @@ class Define:
 
     Variable definition in LEXLOG.
 
-
-
     Attributes:
 
         name: Variable identifier (e.g., 'cel_korzysci_majatkowej')
 
         type: Optional type hint (e.g., 'bool', 'int')
-
-
 
     PL: Definicja zmiennej w LEXLOG z opcjonalnym typem.
 
@@ -103,15 +97,11 @@ class Premise:
 
     Legal premise declaration.
 
-
-
     Attributes:
 
         id: Unique premise identifier (canonicalized)
 
         title: Human-readable premise description
-
-
 
     PL: Deklaracja przesłanki prawnej z ID i opisem.
 
@@ -130,8 +120,6 @@ class RuleDecl:
 
     Legal rule connecting premises to conclusions.
 
-
-
     Attributes:
 
         id: Rule identifier (e.g., 'R_286_OSZUSTWO')
@@ -139,8 +127,6 @@ class RuleDecl:
         premises: List of premise IDs required for this rule
 
         conclusion: Conclusion ID derived from premises
-
-
 
     PL: Reguła prawna łącząca przesłanki z konkluzją.
 
@@ -161,8 +147,6 @@ class Conclusion:
 
     Legal conclusion with optional SMT assertion.
 
-
-
     Attributes:
 
         id: Conclusion identifier
@@ -170,8 +154,6 @@ class Conclusion:
         title: Human-readable conclusion description
 
         assert_expr: SMT/Z3 assertion expression
-
-
 
     PL: Konkluzja prawna z opcjonalną asercją SMT.
 
@@ -191,8 +173,6 @@ class LexAst:
     """
 
     Complete LEXLOG Abstract Syntax Tree.
-
-
 
     PL: Pełne drzewo składniowe LEXLOG.
 
@@ -215,7 +195,6 @@ class LexAst:
 
 # └─────────────────────────────────────────────────────────────────────┘
 
-
 # Mapping from verbose IDs to canonical short forms
 
 _CANONICAL_ID_MAP: dict[str, str] = {
@@ -234,19 +213,13 @@ def _canonicalize_id(identifier: str) -> str:
 
     Normalize premise/rule identifiers to canonical form.
 
-
-
     Args:
 
         identifier: Raw identifier from LEXLOG
 
-
-
     Returns:
 
         Canonical short form if mapping exists, otherwise original
-
-
 
     PL: Normalizuje identyfikatory do formy kanonicznej.
 
@@ -265,18 +238,15 @@ def _canonicalize_id(identifier: str) -> str:
 
 # └─────────────────────────────────────────────────────────────────────┘
 
-
 # Pattern for DEFINE statements
 
 _PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
-
 
 # Pattern for PREMISE declarations
 
 _PATTERN_PREMISE: re.Pattern[str] = re.compile(
     r'^\s*PREMISE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"([^"]*)"?\s*$', re.MULTILINE
 )
-
 
 # Pattern for RULE declarations
 
@@ -285,7 +255,6 @@ _PATTERN_RULE: re.Pattern[str] = re.compile(
     re.MULTILINE,
 )
 
-
 # Pattern for CONCLUSION declarations (with optional ASSERT)
 
 _PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
@@ -293,11 +262,9 @@ _PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
     re.MULTILINE | re.DOTALL,
 )
 
-
 # Alternative pattern for ASSERT on separate line
 
 _PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
-
 
 # ┌─────────────────────────────────────────────────────────────────────┐
 
@@ -311,25 +278,17 @@ def parse_lexlog(text: str) -> LexAst:
 
     Parse LEXLOG content into structured AST.
 
-
-
     Args:
 
         text: Raw LEXLOG file content
-
-
 
     Returns:
 
         Complete LexAst with all parsed elements
 
-
-
     Raises:
 
         ValueError: If critical parsing errors occur
-
-
 
     PL: Parsuje zawartość LEXLOG do strukturalnego AST.
 
@@ -492,13 +451,9 @@ class LexlogParser:
 
     Legacy parser stub for Day 9 E2E compatibility.
 
-
-
     Provides dictionary-based interface for kernel integration
 
     while maintaining backward compatibility with existing tests.
-
-
 
     PL: Stub parsera dla kompatybilności z Dniem 9 (E2E).
 
@@ -511,19 +466,13 @@ class LexlogParser:
 
         Parse LEXLOG content into legacy dictionary format.
 
-
-
         Args:
 
             lexlog_content: Raw LEXLOG file content
 
-
-
         Returns:
 
             Dictionary with rule_id, premises, conclusion, smt_assertion
-
-
 
         PL: Parsuje LEXLOG do starego formatu słownikowego.
 
@@ -568,8 +517,6 @@ class LexlogParser:
 
         Build SMT assertion from AST and rule.
 
-
-
         PL: Buduje asercję SMT z AST i reguły.
 
         EN: Builds SMT assertion from AST and rule.
@@ -598,7 +545,6 @@ class LexlogParser:
 
 # └─────────────────────────────────────────────────────────────────────┘
 
-
 __all__ = [
     "parse_lexlog",
     "LexlogParser",
@@ -608,7 +554,6 @@ __all__ = [
     "RuleDecl",
     "Conclusion",
 ]
-
 
 # ═══════════════════════════════════════════════════════════════════════
 

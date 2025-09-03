@@ -16,7 +16,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +=====================================================================+
 
 # |                          CERTEUS                                    |
@@ -29,7 +28,6 @@
 
 # +=====================================================================+
 
-
 """
 
 PL: Hurtowy wstrzykiwacz banerów CERTEUS i docstringów modułów (idempotentny).
@@ -37,11 +35,17 @@ PL: Hurtowy wstrzykiwacz banerów CERTEUS i docstringów modułów (idempotentny
 EN: Bulk injector for CERTEUS banners and module docstrings (idempotent).
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations
@@ -73,7 +77,6 @@ FILES = [
     "tools/fix_certeus_headers.py",
 ]
 
-
 BANNER = """# +=====================================================================+
 
 # |                          CERTEUS                                    |
@@ -88,7 +91,6 @@ BANNER = """# +=================================================================
 
 """
 
-
 DOCSTRING_TMPL = '''"""
 
 PL: {pl_desc}
@@ -98,7 +100,6 @@ EN: {en_desc}
 """
 
 '''
-
 
 # Bezpieczny wzorzec na docstring: potrójne " lub ' (symetryczne)
 

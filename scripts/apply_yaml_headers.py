@@ -14,23 +14,22 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Add a lightweight CERTEUS header to YAML files that miss one.
-
-
 
 PL: Dodaje lekki nagłówek (komentarze) na górze plików YAML.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ROOTS = [
     ".",
 ]
@@ -97,7 +96,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

@@ -14,6 +14,7 @@ EN: Smoke that validates `/openapi.json` in-process.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -27,8 +28,9 @@ if str(_REPO_ROOT) not in sys.path:
 
 from services.api_gateway.main import app  # noqa: E402
 
-
 # === LOGIKA / LOGIC ===
+
+
 def main() -> int:
     c = TestClient(app)
     r = c.get("/openapi.json")
@@ -48,5 +50,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

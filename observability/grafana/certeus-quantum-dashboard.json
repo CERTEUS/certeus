@@ -32,7 +32,72 @@
         { "expr": "certeus_qtm_operator_priority{operator=\"L\"}", "legendFormat": "L" },
         { "expr": "certeus_qtm_operator_priority{operator=\"T\"}", "legendFormat": "T" }
       ]
+    },
+    {
+      "type": "timeseries",
+      "title": "QTMP Collapses by Operator",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(rate(certeus_qtm_collapse_total[5m])) by (operator)",
+          "legendFormat": "{{operator}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "QTMP Collapses by Verdict",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(rate(certeus_qtm_collapse_total[5m])) by (verdict)",
+          "legendFormat": "{{verdict}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Expectation Value (W) by Case",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "targets": [
+        {
+          "expr": "certeus_qtm_expectation_value{operator=\"W\"}",
+          "legendFormat": "{{case}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "History Length by Case",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "targets": [
+        {
+          "expr": "certeus_qtm_history_len",
+          "legendFormat": "{{case}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "LexQFT Coverage Gamma",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
+      "targets": [
+        {
+          "expr": "certeus_lexqft_coverage_gamma",
+          "legendFormat": "gamma"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "LexQFT Uncaptured Mass",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
+      "targets": [
+        {
+          "expr": "certeus_lexqft_uncaptured_mass",
+          "legendFormat": "uncaptured"
+        }
+      ]
     }
   ]
 }
-

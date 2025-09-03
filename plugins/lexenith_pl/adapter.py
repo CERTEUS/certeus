@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """PL: Zwraca jurysdykcję/pack i przekształca wejście na FACTLOG + DSL.
 
 EN: Returns jurisdiction/pack and builds FACTLOG + DSL.
@@ -22,14 +21,16 @@ EN: Returns jurisdiction/pack and builds FACTLOG + DSL.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class LexenithPLAdapter:  # (IDomainPlugin)
     """PL: Adapter PL. EN: Polish law adapter."""
 
@@ -56,7 +57,6 @@ class LexenithPLAdapter:  # (IDomainPlugin)
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
 
 # |                          CERTEUS — HEART                            |
@@ -73,9 +73,7 @@ class LexenithPLAdapter:  # (IDomainPlugin)
 
 # +=====================================================================+
 
-
 # from core.plugins import IDomainPlugin, FACTLOG  # zachowaj importy jak w repo
-
 
 # === I/O / ENDPOINTS ===
 

@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru FINENITH (quantum alpha).
-
-
 
 EN: FastAPI router for FINENITH (quantum alpha).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request, Response
@@ -35,8 +33,9 @@ from pydantic import BaseModel
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class MeasureRequest(BaseModel):
     signals: dict[str, float] | None = None
 
@@ -61,24 +60,17 @@ class EntanglementsResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/fin.py                           |
 
-
 # | ROLE: FINENITH / "Quantum Alpha" endpoints                          |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/fin/alpha", tags=["finance"])
 
@@ -99,13 +91,17 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # Operators R/S are non-commuting in this model; report commutator norm > 0
     comm_norm = 1.0 if (risk != 0.0 or sent != 0.0) else 0.0
 
-    # Build PCO
+    # Build PCO (+ basic DPCO/MCO fields, W12)
     pco = {
         "fin.alpha.measure": {
             "signals": s,
             "operators": {"R": risk, "S": sent, "commutator_RS": comm_norm},
             "outcome": outcome,
             "p": round(p, 6),
+            # W12: Data governance fields (minimal)
+            "dp_epsilon": 0.5,
+            "consent_ref": "consent://demo",
+            "lineage": ["io.email.mail_id", "cfe.geodesic_action"],
         }
     }
 

@@ -22,6 +22,7 @@ EN: FastAPI router for public PCO and JWKS.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import hashlib
@@ -44,6 +45,7 @@ from core.pco.crypto import (
 )
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 FORBIDDEN_KEYS = {
     "name",
     "first_name",
@@ -62,8 +64,9 @@ FORBIDDEN_KEYS = {
     "headers",
 }
 
-
 # === MODELE / MODELS ===
+
+
 class MerkleStep(BaseModel):
     sibling: str  # hex
 
@@ -93,9 +96,7 @@ class PublicPCO(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
-
 
 # stdlib
 
@@ -104,7 +105,6 @@ DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
 # core (kanoniczne funkcje i crypto)
 
 router = APIRouter(prefix="/pco/public", tags=["pco"])
-
 
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -157,7 +157,6 @@ def _bundle_dir() -> Path:
 # ──────────────────────────────────────────────────────────────────────────────
 
 # MODELE
-
 
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -292,8 +291,9 @@ def _assert_no_pii(bundle: dict[str, Any]) -> None:
 
 # ENTRYPOINT
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.get("/{rid}", response_model=PublicPCO)
 def get_public_pco(rid: str, request: Request) -> PublicPCO:
     """

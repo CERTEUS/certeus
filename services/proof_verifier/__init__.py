@@ -21,6 +21,7 @@ EN: CERTEUS project module (generic description).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from .verifier import verify_drat, verify_lfsc
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -29,9 +30,7 @@ from .verifier import verify_drat, verify_lfsc
 
 # === LOGIKA / LOGIC ===
 
-
 __all__ = ["verify_lfsc", "verify_drat"]
-
 
 # === I/O / ENDPOINTS ===
 

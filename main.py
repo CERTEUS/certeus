@@ -14,10 +14,15 @@ EN: Repository main entry module — fill in CLI/runner logic.
 """
 
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 if __name__ == "__main__":

@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru MailOps ingest/headers.
-
-
 
 EN: FastAPI router for MailOps ingest/headers.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -35,8 +33,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class Attachment(BaseModel):
     filename: str
 
@@ -75,24 +74,17 @@ class IngestEmailResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/mailops.py                       |
 
-
 # | ROLE: MailOps ingest + normalize                                    |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/mailops", tags=["MailOps"])
 

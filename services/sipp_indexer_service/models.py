@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Modele danych Pydantic v2 dla SIPP Indexer.
@@ -24,6 +23,7 @@ EN: Pydantic v2 data models for the SIPP Indexer.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -32,8 +32,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class LegalActSnapshot(BaseModel):
     """
 
@@ -75,7 +76,6 @@ class LegalActSnapshot(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
-
 
 # === I/O / ENDPOINTS ===
 

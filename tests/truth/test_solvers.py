@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Ten moduł zawiera testy dla generatora dowodów:
@@ -23,8 +22,6 @@ PL: Ten moduł zawiera testy dla generatora dowodów:
 
     - Test CLI (opcjonalny): wywołanie skryptu przez subprocess, jeśli dostępny jest `uv`.
 
-
-
 EN: This module contains tests for the proof generator:
 
     - Unit test: direct call to generate_proofs(...)
@@ -32,11 +29,17 @@ EN: This module contains tests for the proof generator:
     - Optional CLI test: run the script via subprocess if `uv` is available.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

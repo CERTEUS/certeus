@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Minimalna, deterministyczna implementacja Merkle z blokadą RLock. Brak PII —
@@ -25,13 +24,18 @@ PL: Minimalna, deterministyczna implementacja Merkle z blokadą RLock. Brak PII 
 EN: Minimal deterministic Merkle with RLock. No PII — operates on hex hashes.
 
 """
-# === IMPORTY / IMPORTS ===
-# === KONFIGURACJA / CONFIGURATION ===
-# === MODELE / MODELS ===
-# === LOGIKA / LOGIC ===
-# === I/O / ENDPOINTS ===
-# === TESTY / TESTS ===
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
 
 # --- blok --- Importy ----------------------------------------------------------
 
@@ -225,7 +229,6 @@ class CosmicMerkle:
 
 
 # --- blok --- Facade (poziom modułu) -------------------------------------------
-
 
 _LEDGER = CosmicMerkle()
 

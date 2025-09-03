@@ -14,14 +14,11 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Sprawdza istnienie plików {z3.drat,cvc5.lfsc} i ich plików *.sha256,
 
     porównuje wyliczone sumy SHA256 z zapisanymi. Zwraca kod 0/1.
-
-
 
 EN: Checks presence of {z3.drat,cvc5.lfsc} and their *.sha256 files,
 
@@ -30,6 +27,7 @@ EN: Checks presence of {z3.drat,cvc5.lfsc} and their *.sha256 files,
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -43,9 +41,7 @@ import sys
 
 # === LOGIKA / LOGIC ===
 
-
 # [BLOCK: IMPORTS / IMPORTY]
-
 
 # [BLOCK: CLI]
 
@@ -61,7 +57,6 @@ args = parser.parse_args()
 
 d = Path(args.dir)
 
-
 # [BLOCK: CHECK FILES / SPRAWDŹ PLIKI]
 
 required = ["z3.drat", "z3.drat.sha256", "cvc5.lfsc", "cvc5.lfsc.sha256"]
@@ -72,7 +67,6 @@ if missing:
     print(f"ERROR: Missing files: {', '.join(missing)}")
 
     sys.exit(1)
-
 
 # [BLOCK: VERIFY / WERYFIKUJ]
 
@@ -93,9 +87,7 @@ ok1 = verify(d / "z3.drat", d / "z3.drat.sha256")
 
 ok2 = verify(d / "cvc5.lfsc", d / "cvc5.lfsc.sha256")
 
-
 sys.exit(0 if (ok1 and ok2) else 1)
-
 
 # === I/O / ENDPOINTS ===
 

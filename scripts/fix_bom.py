@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
-
-
 
 EN: CERTEUS project module (generic description).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -38,27 +36,19 @@ from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: scripts/fix_bom.py                                            |
 
-
 # | ROLE: Re-save *.json as UTF-8 (no BOM), fixing utf-8-sig            |
-
 
 # +=====================================================================+
 
-
 # ----Bloki----- IMPORTY
-
 
 # ----Bloki----- MAIN
 
@@ -76,7 +66,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

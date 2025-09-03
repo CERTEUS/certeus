@@ -18,12 +18,14 @@ writes them to `$GITHUB_ENV` only if they are not already set.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
 # === LOGIKA / LOGIC ===
+
 ALLOW = {
     "BUNKER",
     "PROOFGATE_BUNKER",
@@ -62,5 +64,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

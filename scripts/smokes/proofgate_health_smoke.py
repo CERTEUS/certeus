@@ -14,6 +14,7 @@ EN: Smoke for ProofGate `/healthz` in-proc.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -27,8 +28,9 @@ if str(_REPO_ROOT) not in sys.path:
 
 from services.proofgate.app import app  # noqa: E402
 
-
 # === LOGIKA / LOGIC ===
+
+
 def main() -> int:
     c = TestClient(app)
     r = c.get("/healthz")
@@ -43,5 +45,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL:
@@ -40,8 +39,6 @@ PL:
     - input.cnf  (DIMACS),
 
   oraz opcjonalnie wygenerować pokwitowanie (receipt) z hashami SHA-256.
-
-
 
 EN:
 
@@ -87,25 +84,21 @@ from typing import Final
 
 # === CONSTANTS / KONSTANTY ===================================== #
 
-
 FORMAT_TO_FILE: Final[dict[str, str]] = {
     "drat": "z3.drat",
     "lfsc": "cvc5.lfsc",
 }
-
 
 FORMAT_TO_SOLVER: Final[dict[str, str]] = {
     "drat": "z3",
     "lfsc": "cvc5",
 }
 
-
 SMT2_FILE: Final[str] = "input.smt2"
 
 CNF_FILE: Final[str] = "input.cnf"
 
 RECEIPT_FILE: Final[str] = "provenance_receipt_v1.json"
-
 
 # === LOGGING (PL/EN) =========================================== #
 
@@ -351,8 +344,6 @@ def generate_proofs(
       - seed: ustala ziarno losowości (deterministyczny nonce w simulate)
 
       - write_receipt: czy zapisać manifest z hashami (provenance_receipt_v1.json)
-
-
 
     EN:
 

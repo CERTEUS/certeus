@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Testuje endpoint /v1/sipp/snapshot/{act_id}.
@@ -22,11 +21,17 @@ PL: Testuje endpoint /v1/sipp/snapshot/{act_id}.
 EN: Tests the /v1/sipp/snapshot/{act_id} endpoint.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

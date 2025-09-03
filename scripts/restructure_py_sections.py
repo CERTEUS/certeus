@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Przenosi bloki kodu do sekcji (sec. 21.1) w wybranych modułach Python
@@ -31,19 +30,19 @@ w sposób zachowujący semantykę:
 
 - reszta → LOGIKA
 
-
-
 Zakres domyślny: core/pco/** oraz services/api_gateway/routers/**.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import ast
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ROOTS = [
     ("core", True),
     ("services", True),
@@ -355,7 +354,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

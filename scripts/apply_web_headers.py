@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Add CERTEUS headers to HTML and JS files under clients/.
-
-
 
 PL: Dodaje nagłówek CERTEUS do plików HTML/JS w clients/.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -117,7 +115,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

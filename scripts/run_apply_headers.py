@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Helper runner to execute scripts.apply_headers.main() reliably on Windows.
-
-
 
 PL: Pomocniczy skrypt do uruchomienia scripts.apply_headers.main().
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from importlib import import_module
@@ -45,7 +43,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

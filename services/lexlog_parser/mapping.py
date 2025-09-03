@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Loader mapowania LEXLOG -> engine flags. JSON w repo trzymamy w packs/... .
@@ -24,6 +23,7 @@ EN: Loader of LEXLOG -> engine flags mapping. JSON lives in packs/... .
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -35,8 +35,9 @@ from services.lexlog_parser.evaluator import EvalContext
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class _MappingModel(BaseModel):
     premise_to_flag: dict[str, str | None] = Field(default_factory=dict)
 

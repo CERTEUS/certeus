@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Minimalne __init__, by uniknąć ostrzeżeń Pylance/Ruff o „unused import”.
@@ -31,13 +30,11 @@ EN: Minimal __init__ to avoid Pylance/Ruff 'unused import' warnings.
 
 # === LOGIKA / LOGIC ===
 
-
 # [UWAGA]
 
 # Nie re-eksportujemy tutaj verify/system/export/ledger, żeby nie generować
 
 # F401/unused-import. Moduły importujemy bezpośrednio w main.py.
-
 
 # === I/O / ENDPOINTS ===
 

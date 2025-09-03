@@ -15,6 +15,7 @@ EN: FastAPI router for Boundary: shard status and reconstruction.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -27,12 +28,9 @@ from core.boundary.reconstruct import bulk_reconstruct
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
 
-
 # === LOGIKA / LOGIC ===
-
 
 router = APIRouter(prefix="/v1/boundary", tags=["boundary"])
 

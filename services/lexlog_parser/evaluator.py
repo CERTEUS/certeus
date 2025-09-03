@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Ewaluator LEXLOG (MVP). Sprawdza, czy reguly z AST sa spelnione
@@ -28,6 +27,7 @@ EN: LEXLOG evaluator (MVP). Checks if AST rules hold based on engine
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -39,8 +39,9 @@ from services.lexlog_parser.parser import LexAst
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class EvalContext(BaseModel):
     """Mapping context LEXLOG -> engine flags."""
 

@@ -17,6 +17,7 @@ EN: OTel helper. If `OTEL_ENABLED=1`, tries to configure OTLP exporter
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -66,4 +67,5 @@ def set_span_attrs(attrs: dict[str, Any]) -> None:
 
 
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===

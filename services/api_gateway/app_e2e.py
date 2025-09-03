@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł systemu CERTEUS.
@@ -25,6 +24,7 @@ EN: CERTEUS system module.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -38,8 +38,9 @@ from services.exporter_service.exporter import ExporterService
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class SimpleFact(BaseModel):
     """Minimalny model wejściowy do E2E solve."""
 
@@ -68,9 +69,7 @@ class SolveResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 __all__ = ["app"]
-
 
 # ──────────────────────────────────────────────────────────────────────
 
@@ -78,9 +77,7 @@ __all__ = ["app"]
 
 # ──────────────────────────────────────────────────────────────────────
 
-
 app = FastAPI(title="CERTEUS E2E", version="1.1.0")
-
 
 # Provide explicit constructor args (fixes: missing template_dir/output_dir)
 
@@ -88,13 +85,11 @@ _exporter = ExporterService(template_dir="templates", output_dir="exports/e2e")
 
 _verifier = DualCoreVerifier()
 
-
 # ──────────────────────────────────────────────────────────────────────
 
 # Schemas
 
 # ──────────────────────────────────────────────────────────────────────
-
 
 # ──────────────────────────────────────────────────────────────────────
 

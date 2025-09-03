@@ -19,6 +19,7 @@ EN: SLO gate – checks `out/slo.json` against env thresholds:
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -42,4 +43,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===

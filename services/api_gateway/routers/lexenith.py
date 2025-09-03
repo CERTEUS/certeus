@@ -17,6 +17,7 @@ EN: FastAPI router for LEXENITH v0.1: Micro‑Court/Motion generator, CLDF
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import hashlib
@@ -28,8 +29,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class MotionRequest(BaseModel):
     case_id: str
     pattern_id: str = Field(pattern=r"^(motion-dismiss|motion-summary)$")
@@ -69,9 +71,7 @@ class WhyNotResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 router = APIRouter(prefix="/v1/lexenith", tags=["lexenith"])
-
 
 _MOTIONS: dict[str, str] = {
     "motion-dismiss": (

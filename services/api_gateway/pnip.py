@@ -17,6 +17,7 @@ EN: PNIP – Proof-Native Input Profile. Validate basic input (document hash,
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -29,8 +30,9 @@ import yaml
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class PNIP(BaseModel):
     document_hash: str = Field(..., min_length=7)
     juris_country: str = Field(..., min_length=2, max_length=2)

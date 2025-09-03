@@ -17,6 +17,7 @@ EN: Quick perf bench (TestClient) — times a few endpoints and reports p95.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -35,6 +36,7 @@ if str(_REPO_ROOT) not in sys.path:
 from services.api_gateway.main import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
+
 ENDPOINTS = [
     ("GET", "/health"),
     ("GET", "/openapi.json"),
@@ -55,6 +57,25 @@ def _time_endpoint(client: TestClient, method: str, path: str, n: int) -> list[f
     return durs
 
 
+def _warm_up(client: TestClient, rounds: int = 3) -> None:
+    """PL/EN: Rozgrzewka: pierwsze wywołania mogą budować cache/struktury.
+
+    Warm up endpoints to avoid counting cold-start costs in measurements.
+    """
+    for _ in range(max(0, rounds)):
+        for method, path in ENDPOINTS:
+            if method == "GET":
+                try:
+                    client.get(path)
+                except Exception:
+                    pass
+            else:
+                try:
+                    client.request(method, path)
+                except Exception:
+                    pass
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--iters", type=int, default=10)
@@ -63,6 +84,8 @@ def main() -> int:
     args = ap.parse_args()
 
     client = TestClient(app)
+    # Warm-up to stabilize p95 (cache OpenAPI, import paths, etc.)
+    _warm_up(client, rounds=3)
     worst_p95 = 0.0
     results: dict[str, Any] = {"endpoints": [], "iters": args.iters}
     for method, path in ENDPOINTS:
@@ -98,5 +121,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

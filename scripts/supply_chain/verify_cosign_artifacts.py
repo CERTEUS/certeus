@@ -17,6 +17,7 @@ EN: Verify supply-chain attestations (cosign). Deny-by-default: missing
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

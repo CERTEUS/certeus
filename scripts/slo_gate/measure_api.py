@@ -17,6 +17,7 @@ EN: Measure API SLO in DEV without a live server (in‑proc ASGI). Writes
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -36,9 +37,7 @@ from services.api_gateway.main import app  # noqa: E402
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
-
 
 # === LOGIKA / LOGIC ===
 
@@ -78,4 +77,5 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===

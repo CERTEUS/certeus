@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Główna aplikacja FastAPI dla CERTEUS: statyki, routery, CORS (DEV), health.
@@ -25,6 +24,7 @@ EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
@@ -71,12 +71,12 @@ from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.registry import get_llm, get_preview
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 APP_TITLE = "CERTEUS API Gateway"
 
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -85,7 +85,6 @@ STATIC_DIR = ROOT / "static"
 STATIC_PREVIEWS = STATIC_DIR / "previews"
 
 CLIENTS_WEB = ROOT / "clients" / "web"  # expects /app/proof_visualizer/index.html
-
 
 APP_VERSION = __version__
 
@@ -97,14 +96,11 @@ DEV_ORIGINS: list[str] = (
     else ["*"]
 )
 
-
 # --- blok --- Importy ----------------------------------------------------------
-
 
 # stdlib
 
 # third-party
-
 
 # local (rozbite na pojedyncze linie — łatwiej sortować i Ruff nie marudzi)
 
@@ -116,11 +112,9 @@ except Exception as _e:  # ModuleNotFoundError or dependency errors
 
 # --- blok --- Ścieżki i katalogi ----------------------------------------------
 
-
 STATIC_PREVIEWS.mkdir(parents=True, exist_ok=True)
 
 CLIENTS_WEB.mkdir(parents=True, exist_ok=True)
-
 
 # --- blok --- Lifespan (inicjalizacja adapterów) -------------------------------
 
@@ -142,7 +136,6 @@ async def lifespan(app: FastAPI):
 
 # --- blok --- Aplikacja i middleware -------------------------------------------
 
-
 app = FastAPI(
     title=APP_TITLE,
     version=APP_VERSION,
@@ -152,7 +145,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
 # Attach Proof-Only I/O middleware early (safe no-op unless STRICT_PROOF_ONLY=1)
 
 attach_proof_only_middleware(app)
@@ -160,16 +152,13 @@ attach_proof_only_middleware(app)
 # Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
 setup_fastapi_otel(app)
 
-
 # statyki
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
 
-
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -216,9 +205,7 @@ def _cached_openapi():  # type: ignore[override]
 
 app.openapi = _cached_openapi  # type: ignore[assignment]
 
-
 # --- blok --- Rejestr routerów -------------------------------------------------
-
 
 app.include_router(system.router)
 
@@ -267,7 +254,6 @@ app.include_router(packs.router)
 app.include_router(jwks_router)
 
 app.include_router(metrics.router)
-
 
 # --- blok --- Health i root redirect -------------------------------------------
 

@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # =============================================================================
 
 #  CERTEUS — OCR Injector (helper for /v1/ingest)
@@ -50,6 +49,7 @@ EN: Helper to inject OCR snippet (first page) into metadata.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any

@@ -14,18 +14,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
-
-
 
 EN: CERTEUS project module (generic description).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from threading import Lock
@@ -33,6 +31,7 @@ from threading import Lock
 from fastapi import HTTPException, Request
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 _DEFAULT_BUDGET = 10_000  # domyślny dzienny budżet jednostek
 
 _TOKEN_BUDGETS: dict[str, int] = {}
@@ -41,48 +40,33 @@ _TOKEN_BUDGETS: dict[str, int] = {}
 
 # === LOGIKA / LOGIC ===
 
-
 _LOCK = Lock()
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/limits.py                                |
 
-
 # | ROLE:                                                               |
-
 
 # |  PL: Hook limitów per-tenant (QPS/kroki/koszt dowodzenia).          |
 
-
 # |  EN: Per-tenant limits hook (QPS/steps/proof-cost).                 |
 
-
 # +=====================================================================+
-
 
 # | NOTES:                                                              |
 
-
 # |  - Zero zależności na ".deps": własny get_tenant_id(Request).       |
-
 
 # |  - Usuwa F841: "tenant" jest realnie użyty (budżet/charge).         |
 
-
 # +=====================================================================+
 
-
 __all__ = ["enforce_limits", "set_tenant_quota", "get_tenant_id"]
-
 
 # In-memory MVP (można później podmienić na Redis/TokenBank)
 
@@ -90,15 +74,9 @@ __all__ = ["enforce_limits", "set_tenant_quota", "get_tenant_id"]
 def get_tenant_id(req: Request) -> str:
     """
 
-
-
     PL: Identyfikacja tenant-a z nagłówka; fallback 'anonymous'.
 
-
-
     EN: Tenant identification from header; fallback to 'anonymous'.
-
-
 
     """
 

@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru interfejs ChatOps.
-
-
 
 EN: FastAPI router for ChatOps interface.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
@@ -35,8 +33,9 @@ from pydantic import BaseModel
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class CommandRequest(BaseModel):
     cmd: str
 
@@ -47,24 +46,17 @@ class CommandRequest(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/chatops.py                       |
 
-
 # | ROLE: ChatOps command router                                        |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/chatops", tags=["ChatOps"])
 

@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # =============================================================================
 
 #  CERTEUS — adapters package
@@ -40,7 +39,6 @@ EN: Adapters package (Preview/OCR/Drive/LLM).
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # === I/O / ENDPOINTS ===
 

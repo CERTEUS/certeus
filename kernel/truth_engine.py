@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł systemu CERTEUS.
@@ -25,6 +24,7 @@ EN: CERTEUS system module.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import time
@@ -36,8 +36,9 @@ from .mismatch_protocol import handle_mismatch  # ✅ import at top to avoid E40
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class _Z3AdapterProto(Protocol):
     def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]: ...
 
@@ -110,9 +111,7 @@ class DualCoreVerifier:
 
 # === LOGIKA / LOGIC ===
 
-
 _Z3 = cast(Any, z3)
-
 
 # Import adapter class if dostępny; w przeciwnym razie fallback.
 
@@ -156,7 +155,6 @@ except Exception:
                 result["model"] = model_bindings
 
             return result
-
 
 # === I/O / ENDPOINTS ===
 

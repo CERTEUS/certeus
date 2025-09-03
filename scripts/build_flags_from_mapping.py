@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Buduje plik flags JSON na podstawie mapowania przesłanek→flagi silnika.
@@ -28,6 +27,7 @@ EN: Builds flags JSON from mapping of premises→engine flags. Fills missing
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -260,7 +260,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

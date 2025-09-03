@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla obszaru Equity Meter / HHE.
-
-
 
 EN: FastAPI router for Equity Meter / HHE.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -35,8 +33,9 @@ from pydantic import BaseModel
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class EquityMeterRequest(BaseModel):
     distribution_a: list[float]
 
@@ -65,24 +64,17 @@ class DoubleVerdictResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: services/api_gateway/routers/ethics.py                        |
 
-
 # | ROLE: Equity-Meter & HHE (Double-Verdict)                           |
 
-
 # +=====================================================================+
-
 
 router = APIRouter(prefix="/v1/ethics", tags=["ethics"])
 

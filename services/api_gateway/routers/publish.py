@@ -14,10 +14,10 @@
 
 # +-------------------------------------------------------------+
 
-
 """PL: Mapuje wynik rdzenia na kontrakt publikacji. EN: Map core to publication contract."""
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -33,7 +33,6 @@ from runtime.proof_queue import PROOF_QUEUE
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # +=====================================================================+
 
@@ -51,11 +50,11 @@ from runtime.proof_queue import PROOF_QUEUE
 
 # +=====================================================================+
 
-
 router = APIRouter()
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.post("/defx/reason")
 def reason(
     body: dict[str, Any],
@@ -76,6 +75,33 @@ def reason(
         raise e
     except Exception:
         pass
+
+    # Optional redaction on ingress before solve (W12 compliance)
+    if (os.getenv("SEC_REDACTION_ENFORCED") or "0").strip() in {"1", "true", "True"}:
+        try:
+            from pathlib import Path
+            import re
+
+            import yaml
+
+            pack = Path(__file__).resolve().parents[3] / "policies" / "pco" / "policy_pack.yaml"
+            doc = yaml.safe_load(pack.read_text(encoding="utf-8")) or {}
+            pats = [re.compile(str(p)) for p in (((doc.get("redaction") or {}).get("pii_patterns")) or [])]
+
+            def _mask(v: Any) -> Any:
+                if isinstance(v, dict):
+                    return {k: _mask(x) for k, x in v.items()}
+                if isinstance(v, list):
+                    return [_mask(x) for x in v]
+                if isinstance(v, str):
+                    for rx in pats:
+                        if rx.search(v):
+                            return "[REDACTED]"
+                return v
+
+            body = _mask(body)
+        except Exception:
+            pass
 
     pre = pre_solve(body, policy_profile="default")
 

@@ -16,6 +16,7 @@ EN: Path coverage (lexqft) stub. Writes JSON with `coverage_gamma` and `uncaptur
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

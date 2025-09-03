@@ -18,6 +18,7 @@ EN: Helper script to generate OpenAPI without starting the server.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -32,11 +33,13 @@ if str(REPO_ROOT) not in sys.path:
 from services.api_gateway.main import app  # noqa: E402
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 OUT_DIR = REPO_ROOT / "out"
 OUT_FILE = OUT_DIR / "openapi.json"
 
-
 # === LOGIKA / LOGIC ===
+
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     spec = app.openapi()

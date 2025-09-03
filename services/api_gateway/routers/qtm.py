@@ -16,7 +16,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Stub API dla QTMP (pomiar). Zawiera wymagane pola: sequence[],
@@ -30,8 +29,11 @@ EN: QTMP (measurement) stub API. Includes required fields: sequence[],
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
+from datetime import UTC, datetime
+from hashlib import sha256
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -41,8 +43,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class InitCaseRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
     state_uri: str | None = None
@@ -58,9 +61,8 @@ class InitCaseResponse(BaseModel):
 
 class MeasureRequest(BaseModel):
     operator: str = Field(description="One of W/I/C/L/T (domain-dependent)")
-
     source: str | None = Field(default="ui", description="ui | chatops:<cmd> | mail:<id>")
-
+    case: str | None = Field(default=None, description="Optional case identifier to bind decoherence/presets")
     basis: list[str] | None = None
 
 
@@ -80,6 +82,25 @@ class MeasureResponse(BaseModel):
     uncertainty_bound: dict[str, float]
 
     latency_ms: float
+
+
+class SequenceRequest(BaseModel):
+    operators: list[str] = Field(..., min_items=1)
+    case: str | None = Field(default=None)
+    basis: list[str] | None = None
+    no_collapse: bool = Field(default=False, description="If true, do not collapse after each step")
+
+
+class SequenceStep(BaseModel):
+    operator: str
+    verdict: str
+    p: float
+
+
+class SequenceResponse(BaseModel):
+    steps: list[SequenceStep]
+    final_latency_ms: float
+    uncertainty_bound: dict[str, float]
 
 
 class CommutatorRequest(BaseModel):
@@ -106,7 +127,6 @@ class FindEntanglementResponse(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
 
 # |                              CERTEUS                                |
@@ -119,7 +139,6 @@ class FindEntanglementResponse(BaseModel):
 
 # +=====================================================================+
 
-
 router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 
 # Prosty graf spraw (case-graph) i rejestr kanałów dekoherencji (stub in-memory)
@@ -128,13 +147,71 @@ DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
 _PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
 
 
+def _uniform_probs(basis: list[str]) -> list[float]:
+    p = 1.0 / max(1, len(basis))
+    return [round(p, 6) for _ in basis]
+
+
+def _basis_probs_for_case(case_id: str, basis: list[str]) -> list[float]:
+    cg = CASE_GRAPH.get(case_id)
+    if cg and (pd := cg.get("predistribution")):
+        mv = {str(x.get("state")): float(x.get("p", 0.0)) for x in pd}
+        probs = [float(mv.get(b, 0.0)) for b in basis]
+        s = sum(probs)
+        if s > 0:
+            probs = [round(x / s, 6) for x in probs]
+            return probs
+    return _uniform_probs(basis)
+
+
+def _apply_decoherence(probs: list[float], case_id: str, basis: list[str]) -> list[float]:
+    deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default")
+    if not deco:
+        return probs
+    gamma = float(deco.get("gamma", 0.0) or 0.0)
+    if gamma <= 0.0:
+        return probs
+    ch = str(deco.get("channel", "dephasing")).lower()
+    n = len(probs)
+    if ch in {"dephasing", "depolarizing"}:
+        u = 1.0 / max(1, n)
+        return [round((1.0 - gamma) * p + gamma * u, 6) for p in probs]
+    if ch == "damping":
+        # Move gamma mass to a selected state (e.g. DENY) deterministically
+        try:
+            idx_target = basis.index("DENY")
+        except ValueError:
+            idx_target = 0
+        scaled = [(1.0 - gamma) * p for p in probs]
+        scaled[idx_target] += gamma
+        s = sum(scaled)
+        return [round(p / s, 6) for p in scaled]
+    # Fallback: uniform mix
+    u = 1.0 / max(1, n)
+    return [round((1.0 - gamma) * p + gamma * u, 6) for p in probs]
+
+
+def _stable_index(key: str, mod: int) -> int:
+    if mod <= 0:
+        return 0
+    h = int.from_bytes(sha256(key.encode("utf-8")).digest()[:4], "big")
+    return h % mod
+
+
 @router.post("/init_case", response_model=InitCaseResponse)
 async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
 
-    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
+    # Pick basis: if not provided and operator known, default to operator eigen basis
+    if req.basis is None:
+        if (emap := _operator_eigs().get(req.operator)) is not None:
+            basis = list(emap.keys())
+        else:
+            basis = ["ALLOW", "DENY", "ABSTAIN"]
+    else:
+        basis = req.basis
 
     # Simple uniform predistribution stub
 
@@ -164,28 +241,41 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     t0 = perf_counter()
 
-    # Stub: choose verdict based on operator hash
+    # Choose verdict based on operator hash; probabilities from case predistribution
+    _validate_operator(req.operator)
 
     basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
 
-    idx = abs(hash(req.operator)) % len(basis)
+    # Resolve case id for decoherence/presets
+    case_id = (req.case or req.source or "qtm-case").replace(":", "-")
 
+    # Preset override: if preset stored for this case, use it
+    try:
+        _presets = _load_presets()
+        op_effective = _presets.get(case_id, req.operator)
+    except Exception:
+        op_effective = req.operator
+    _validate_operator(op_effective)
+    if req.basis is not None:
+        _validate_basis_for_operator(op_effective, basis)
+
+    idx = _stable_index(op_effective, len(basis))
     verdict = basis[idx]
 
-    # Probability stub
-
-    p = round(0.55 + (idx * 0.1) % 0.4, 6)
+    # Probability from predistribution (Born-like), smoothed by decoherence if configured
+    probs0 = _basis_probs_for_case(case_id, basis)
+    probs = _apply_decoherence(probs0, case_id, basis)
+    p = float(probs[idx])
 
     sequence = [
         {
-            "operator": req.operator,
+            "operator": op_effective,
             "timestamp": "now",
             "source": req.source or "ui",
         }
     ]
 
     # Decoherence: use registry if available for this case
-    case_id = (req.source or "qtm-case").replace(":", "-")
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default") or {"channel": "dephasing"}
     collapse_log = CollapseLog(sequence=sequence, decoherence=deco)
 
@@ -207,7 +297,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # PCO headers: collapse event and optional predistribution from case-graph
     try:
         response.headers["X-CERTEUS-PCO-qtm.collapse_event"] = (
-            f"{{\"operator\":\"{req.operator}\",\"verdict\":\"{verdict}\",\"channel\":\"{deco.get('channel', '')}\"}}"
+            f"{{\"operator\":\"{op_effective}\",\"verdict\":\"{verdict}\",\"channel\":\"{deco.get('channel', '')}\"}}"
         )
         cg = CASE_GRAPH.get(case_id)
         if cg and "predistribution" in cg:
@@ -225,16 +315,47 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         base_pri["T"] = round(base_pri["T"] * boost, 3)
         response.headers["X-CERTEUS-PCO-qtmp.priorities"] = _json.dumps(base_pri, separators=(",", ":"))
         response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(round(kappa * 0.1, 6))
+        response.headers["X-CERTEUS-PCO-qtm.collapse_prob"] = str(p)
+        response.headers["X-CERTEUS-PCO-qtm.collapse_latency_ms"] = str(latency_ms)
     except Exception:
         pass
 
-    # Export UB/priorities metrics to Prometheus
+    # Append to in-memory history for this case
     try:
-        from monitoring.metrics_slo import certeus_qtm_operator_priority, certeus_qtm_ub_lt
+        hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
+        hist.append({"operator": op_effective, "verdict": verdict, "p": p, "ts": datetime.now(UTC).isoformat()})
+    except Exception:
+        pass
+
+    # Export UB/priorities metrics to Prometheus + collapse counters and history length
+    try:
+        from monitoring.metrics_slo import (
+            certeus_qtm_cfe_correlation,
+            certeus_qtm_collapse_prob,
+            certeus_qtm_collapse_total,
+            certeus_qtm_history_len,
+            certeus_qtm_operator_priority,
+            certeus_qtm_ub_lt,
+        )
 
         certeus_qtm_ub_lt.labels(source=case_id).set(float(ub.get("L_T", 0.0)))
         for op_key, val in base_pri.items():
             certeus_qtm_operator_priority.labels(operator=op_key).set(float(val))
+        certeus_qtm_collapse_total.labels(operator=op_effective, verdict=verdict).inc()
+        try:
+            certeus_qtm_collapse_prob.labels(operator=op_effective).observe(float(p))
+        except Exception:
+            pass
+        try:
+            corr = float(ub.get("L_T", 0.0))
+            certeus_qtm_cfe_correlation.labels(case=case_id).set(corr)
+        except Exception:
+            pass
+        try:
+            _hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
+            certeus_qtm_history_len.labels(case=case_id).set(_hist_len)
+        except Exception:
+            pass
     except Exception:
         pass
 
@@ -260,17 +381,304 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     return resp
 
 
+@router.post("/measure_sequence", response_model=SequenceResponse)
+async def measure_sequence(req: SequenceRequest, request: Request, response: Response) -> SequenceResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=max(1, len(req.operators)))
+    t0 = perf_counter()
+    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
+    case_id = (req.case or "qtm-seq").replace(":", "-")
+    # Start with predistribution if present
+    probs = _basis_probs_for_case(case_id, basis)
+    steps: list[SequenceStep] = []
+    for op in req.operators:
+        _validate_operator(op)
+        idx = _stable_index(op, len(basis))
+        verdict = basis[idx]
+        probs = _apply_decoherence(probs, case_id, basis)
+        p = float(probs[idx])
+        steps.append(SequenceStep(operator=op, verdict=verdict, p=p))
+        # Collapse to one-hot on verdict
+        if not req.no_collapse:
+            probs = [0.0 for _ in basis]
+            probs[idx] = 1.0
+    # UB as in measure()
+    try:
+        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
+
+        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
+    except Exception:
+        kappa = 0.012
+    ub = {"L_T": round(0.2 + min(0.2, kappa * 10.0), 3)}
+    latency_ms = round((perf_counter() - t0) * 1000.0, 3)
+    # Headers: record sequence PCO
+    try:
+        import json as _json
+
+        response.headers["X-CERTEUS-PCO-qtm.sequence"] = _json.dumps(
+            [s.model_dump() for s in steps], separators=(",", ":")
+        )
+    except Exception:
+        pass
+    # History append
+    try:
+        hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
+        for s in steps:
+            d = s.model_dump()
+            d["ts"] = datetime.now(UTC).isoformat()
+            hist.append(d)
+    except Exception:
+        pass
+    # Metrics
+    try:
+        from monitoring.metrics_slo import (
+            certeus_qtm_collapse_prob,
+            certeus_qtm_collapse_total,
+            certeus_qtm_history_len,
+        )
+
+        hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
+        certeus_qtm_history_len.labels(case=case_id).set(hist_len)
+        for s in steps:
+            certeus_qtm_collapse_total.labels(operator=s.operator, verdict=s.verdict).inc()
+            certeus_qtm_collapse_prob.labels(operator=s.operator).observe(float(s.p))
+    except Exception:
+        pass
+    return SequenceResponse(steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub)
+
+
+class QtmStateOut(BaseModel):
+    case: str
+    psi: str
+    basis: list[str]
+    predistribution: list[dict[str, Any]]
+
+
+@router.get("/state/{case}", response_model=QtmStateOut)
+async def get_state(case: str) -> QtmStateOut:
+    cg = CASE_GRAPH.get(case)
+    if not cg:
+        raise HTTPException(status_code=404, detail="Case not found")
+    return QtmStateOut(
+        case=case,
+        psi=str(cg.get("psi", "psi://unknown")),
+        basis=list(cg.get("basis", [])),
+        predistribution=list(cg.get("predistribution", [])),
+    )
+
+
+class QtmHistoryEvent(BaseModel):
+    operator: str
+    verdict: str
+    p: float
+
+
+class QtmHistoryOut(BaseModel):
+    case: str
+    history: list[QtmHistoryEvent]
+    total: int
+    offset: int
+    limit: int
+
+
+@router.get("/history/{case}", response_model=QtmHistoryOut)
+async def get_history(
+    case: str,
+    offset: int = 0,
+    limit: int = 100,
+    operator: str | None = None,
+    verdict: str | None = None,
+    sort: str = "asc",
+) -> QtmHistoryOut:
+    cg = CASE_GRAPH.get(case)
+    if not cg or "history" not in cg:
+        raise HTTPException(status_code=404, detail="History not found")
+    raw = list(cg.get("history", []))
+    if operator:
+        raw = [e for e in raw if str(e.get("operator")) == operator]
+    if verdict:
+        raw = [e for e in raw if str(e.get("verdict")) == verdict]
+    if sort.lower() in {"asc", "desc"}:
+        rev = sort.lower() == "desc"
+        try:
+            raw.sort(key=lambda e: str(e.get("ts", "")), reverse=rev)
+        except Exception:
+            pass
+    total = len(raw)
+    start = max(0, int(offset))
+    lmt = max(1, min(int(limit), 1000))
+    sliced = raw[start : start + lmt]
+    items = [QtmHistoryEvent(**e) for e in sliced]
+    return QtmHistoryOut(case=case, history=items, total=total, offset=start, limit=lmt)
+
+
+class OperatorsOut(BaseModel):
+    operators: dict[str, dict[str, float]]
+
+
+@router.get("/operators", response_model=OperatorsOut)
+async def list_operators() -> OperatorsOut:
+    # Example eigenvalue maps; can be made dynamic per domain
+    return OperatorsOut(operators=_operator_eigs())
+
+
+class UncertaintyOut(BaseModel):
+    lower_bound: float
+
+
+@router.get("/uncertainty", response_model=UncertaintyOut)
+async def uncertainty_bound() -> UncertaintyOut:
+    # Deterministic curvature-based bound to align with measure()
+    try:
+        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
+
+        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
+    except Exception:
+        kappa = 0.012
+    lb = round(0.2 + min(0.2, kappa * 10.0), 3)
+    return UncertaintyOut(lower_bound=lb)
+
+
+def _operator_eigs() -> dict[str, dict[str, float]]:
+    return {
+        "W": {"ALLOW": 1.0, "DENY": -1.0, "ABSTAIN": 0.0},
+        "L": {"ALLOW": 0.9, "DENY": 0.1, "ABSTAIN": 0.5},
+        "T": {"ALLOW": 0.2, "DENY": 0.8, "ABSTAIN": 0.6},
+        "I": {"dolus directus": 1.0, "dolus eventualis": 0.5, "culpa": -0.2},
+        "C": {"ALLOW": 0.0, "DENY": 1.0, "ABSTAIN": 0.5},
+    }
+
+
+def _validate_operator(name: str) -> None:
+    if name not in _operator_eigs().keys():
+        raise HTTPException(status_code=400, detail=f"Unknown operator: {name}")
+
+
+def _validate_basis_for_operator(operator: str, basis: list[str]) -> None:
+    eigs = _operator_eigs().get(operator)
+    if not eigs:
+        return
+    keys = set(eigs.keys())
+    if any(b not in keys for b in basis):
+        raise HTTPException(status_code=400, detail=f"Basis not compatible with operator {operator}")
+
+
+class SetStateRequest(BaseModel):
+    case: str = Field(..., min_length=1)
+    psi: str | None = Field(default=None, description="State URI or descriptor")
+    basis: list[str]
+    probs: list[float] = Field(description="Probabilities aligned with basis; will be normalized")
+
+
+@router.post("/state", response_model=QtmStateOut)
+async def set_state(req: SetStateRequest) -> QtmStateOut:
+    if len(req.basis) != len(req.probs):
+        raise HTTPException(status_code=400, detail="basis/probs length mismatch")
+    s = float(sum(req.probs))
+    if s <= 0.0:
+        raise HTTPException(status_code=400, detail="sum(probs) must be > 0")
+    probs = [round(float(x) / s, 6) for x in req.probs]
+    predistribution = [{"state": b, "p": p} for b, p in zip(req.basis, probs, strict=False)]
+    CASE_GRAPH[req.case] = {
+        "psi": req.psi or "psi://custom",
+        "basis": list(req.basis),
+        "predistribution": predistribution,
+    }
+    return QtmStateOut(
+        case=req.case, psi=CASE_GRAPH[req.case]["psi"], basis=list(req.basis), predistribution=predistribution
+    )
+
+
+class ExpectationRequest(BaseModel):
+    case: str
+    operator: str
+
+
+class ExpectationOut(BaseModel):
+    value: float
+
+
+@router.post("/expectation", response_model=ExpectationOut)
+async def expectation(req: ExpectationRequest) -> ExpectationOut:
+    cg = CASE_GRAPH.get(req.case)
+    if not cg:
+        raise HTTPException(status_code=404, detail="Case not found")
+    _validate_operator(req.operator)
+    basis: list[str] = list(cg.get("basis", [])) or ["ALLOW", "DENY", "ABSTAIN"]
+    probs0 = [float(x.get("p", 0.0)) for x in cg.get("predistribution", [])]
+    if len(probs0) != len(basis):
+        probs0 = _uniform_probs(basis)
+    # apply decoherence if configured
+    probs = _apply_decoherence(probs0, req.case, basis)
+    op_map = _operator_eigs().get(req.operator)
+    if not op_map:
+        raise HTTPException(status_code=400, detail="Unknown operator")
+    # expectation: sum p_i * eig(state)
+    val = 0.0
+    for b, p in zip(basis, probs, strict=False):
+        eig = float(op_map.get(b, 0.0))
+        val += p * eig
+    out = round(val, 6)
+    # Metrics
+    try:
+        from monitoring.metrics_slo import certeus_qtm_expectation_value
+
+        certeus_qtm_expectation_value.labels(case=req.case, operator=req.operator).set(out)
+    except Exception:
+        pass
+    return ExpectationOut(value=out)
+
+
+class DeleteResult(BaseModel):
+    ok: bool
+
+
+@router.delete("/preset/{case}", response_model=DeleteResult)
+async def delete_preset(case: str) -> DeleteResult:
+    presets = _load_presets()
+    if case not in presets:
+        raise HTTPException(status_code=404, detail="Preset not found")
+    presets.pop(case, None)
+    _save_presets(presets)
+    return DeleteResult(ok=True)
+
+
+@router.delete("/state/{case}", response_model=DeleteResult)
+async def delete_state(case: str) -> DeleteResult:
+    if case not in CASE_GRAPH:
+        raise HTTPException(status_code=404, detail="Case not found")
+    CASE_GRAPH.pop(case, None)
+    return DeleteResult(ok=True)
+
+
+def _fractional_commutator(a: str, b: str) -> float:
+    if a == b:
+        return 0.0
+    eigs = _operator_eigs()
+    mA = eigs.get(a)
+    mB = eigs.get(b)
+    if not mA or not mB:
+        return 1.0
+    keys = set(mA.keys()) | set(mB.keys())
+    num = 0.0
+    den = 0.0
+    for k in keys:
+        vA = float(mA.get(k, 0.0))
+        vB = float(mB.get(k, 0.0))
+        num += abs(vA - vB)
+        den += abs(vA) + abs(vB)
+    if den <= 0.0:
+        return 0.0
+    return round(min(1.0, num / den), 3)
+
+
 @router.post("/commutator", response_model=CommutatorResponse)
 async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
-
-    # Stub: non-commuting if names differ, return simple normalized score
-
-    value = 1.0 if req.A != req.B else 0.0
-
-    return CommutatorResponse(value=value)
+    return CommutatorResponse(value=_fractional_commutator(req.A, req.B))
 
 
 class DecoherenceRequest(BaseModel):
@@ -382,4 +790,38 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
 
 # === I/O / ENDPOINTS ===
 
+
 # === TESTY / TESTS ===
+class CommutatorExpRequest(BaseModel):
+    case: str
+    A: str
+    B: str
+
+
+@router.post("/commutator_expectation", response_model=CommutatorResponse)
+async def commutator_expectation(req: CommutatorExpRequest, request: Request) -> CommutatorResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    cg = CASE_GRAPH.get(req.case)
+    if not cg:
+        raise HTTPException(status_code=404, detail="Case not found")
+    basis: list[str] = list(cg.get("basis", [])) or ["ALLOW", "DENY", "ABSTAIN"]
+    probs0 = [float(x.get("p", 0.0)) for x in cg.get("predistribution", [])]
+    if len(probs0) != len(basis):
+        probs0 = _uniform_probs(basis)
+    probs = _apply_decoherence(probs0, req.case, basis)
+    _validate_operator(req.A)
+    _validate_operator(req.B)
+    eigs = _operator_eigs()
+    mA = eigs.get(req.A) or {}
+    mB = eigs.get(req.B) or {}
+    num = 0.0
+    den = 0.0
+    for b, p in zip(basis, probs, strict=False):
+        vA = float(mA.get(b, 0.0))
+        vB = float(mB.get(b, 0.0))
+        num += p * abs(vA - vB)
+        den += p * (abs(vA) + abs(vB))
+    val = 0.0 if den <= 0 else min(1.0, num / den)
+    return CommutatorResponse(value=round(val, 3))

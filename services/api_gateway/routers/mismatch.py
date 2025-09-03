@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla usług CERTEUS.
@@ -25,6 +24,7 @@ EN: FastAPI router for CERTEUS services.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
@@ -37,8 +37,9 @@ from services.mismatch_service.service import mismatch_service
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class EngineResult(BaseModel):
     status: str
 
@@ -65,11 +66,11 @@ class MismatchCreateRequest(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 router = APIRouter(prefix="/mismatch", tags=["mismatch"])
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.post("/tickets")
 def create_ticket(req: MismatchCreateRequest) -> dict[str, Any]:
     """PL: Tworzy nowy ticket niezgodności. EN: Creates a new mismatch ticket."""

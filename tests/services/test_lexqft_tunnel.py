@@ -33,12 +33,9 @@ from services.api_gateway.main import app
 
 # === LOGIKA / LOGIC ===
 
-
 client = TestClient(app)
 
-
 # === I/O / ENDPOINTS ===
-
 
 # === TESTY / TESTS ===
 

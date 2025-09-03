@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Router FastAPI dla księgi pochodzenia (ledger):
@@ -66,7 +65,6 @@ ledger_service: LedgerLike = cast(
     getattr(ledger_mod, "ledger_service", None) or ledger_mod.Ledger(),  # type: ignore[attr-defined, call-arg]
 )
 
-
 # Optional JSON Schema validation (soft dependency)
 
 try:
@@ -75,16 +73,13 @@ try:
 except Exception:  # pragma: no cover
     Draft7Validator = None  # type: ignore[assignment]
 
-
 router = APIRouter(prefix="/v1/ledger")
-
 
 # Repo paths
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 SCHEMAS_DIR = REPO_ROOT / "schemas"
-
 
 # Lazy schema/validator (not hard constants)
 
@@ -105,7 +100,6 @@ if Draft7Validator is not None:
             _provenance_schema = None
 
             _provenance_validator = None
-
 
 # === MODELS ===
 

@@ -21,6 +21,17 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 `$py -m ruff check . --fix`
 `$py -m ruff format .`
 
+## Pre-commit (lokalna dyscyplina)
+
+- Instalacja: `$py -m pip install pre-commit`
+- Aktywacja w repo: `pre-commit install`
+- Ręczne uruchomienie na całym repo: `pre-commit run -a`
+- Włączone hooki:
+  - `ruff` (lint + format)
+  - `normalize: section spacing (python)` — porządkuje puste linie wokół sekcji (Sekcja 21)
+  - `prettier` (md/yaml/json/html/js/css)
+  - `pytest (fast)` — szybka weryfikacja na zmianach py
+
 ## Testy
 
 `mkdir -Force reports`
@@ -36,14 +47,15 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
 `git commit -m "chore: lint+tests via Codex" --no-verify`
 `git push -u origin HEAD:work/daily`
 
+UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pełni ukończonego tygodnia pracy (wg 90‑dniowego planu). W trakcie tygodnia pracujemy lokalnie, uruchamiając `ruff` i `pytest` bez błędów.
+
 ## Auto‑push i auto‑promocja (operacje agenta)
 
 - Gałąź robocza: `work/daily` (agent wypycha zmiany tutaj).
 - Auto‑promocja do `main` po zielonych bramkach:
-  - Workflows bramkowe: „Proof Gate”, „asset‑guard”, „Gauge‑Gate”, „Path‑Coverage‑Gate”, „Boundary‑Rebuild‑Gate”.
-  - Workflow `.github/workflows/promote-daily-to-main.yml` weryfikuje wszystkie bramki dla danego commitu na `work/daily`. Gdy są `success`:
-    - próbuje fast‑forward `main` → push,
-    - gdy FF niemożliwy – tworzy PR `work/daily → main` i włącza auto‑merge.
+  - Wymagane checki (Branch Protection): `Smoke (ubuntu-latest)`, `Smoke (windows-latest)`, `ci-gates`.
+  - Gate’y informacyjne (PR‑only): Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate, asset‑guard, Proof Gate (push: main; PR: main).
+  - Workflow `.github/workflows/promote-daily-to-main.yml` nasłuchuje `ci-gates` i promuje `work/daily → main` (FF/PR auto‑merge).
 - Powiadomienia o porażkach: `.github/workflows/gate-failure-notify.yml` otwiera/aktualizuje Issue z linkiem do błędnego gate’u i blokuje promocję do `main` do czasu naprawy.
 
 ### Uwierzytelnianie push (agent)
@@ -59,6 +71,12 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
   - ustala właściciela repo z `origin`,
   - ustala login z ENV/pliku/API `/user`,
   - zapisuje poświadczenia do `.git-credentials` (ignorowane) i wykonuje `git push`.
+
+### Zasady oszczędzania minut (GH Actions)
+
+- Nie wypychamy drobnych commitów — łączymy pracę tygodnia w jeden push/PR.
+- Gate’y informacyjne są PR‑only; wymagane checki: `Smoke (ubuntu/windows)`, `ci-gates`.
+- W trakcie tygodnia testujemy lokalnie (`ruff check`, `ruff format`, `pytest -q`) i naprawiamy u siebie.
 
 ### Procedura pracy (każda sesja)
 
@@ -99,9 +117,8 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
   - Wypchnij na  i potwierdź zielony stan.
 
 ## Handoff / Stan prac (skrót)
-
-- Aktualny PR do main: `merge/daily-to-main-20250902-145204 → main` (PR #33). Auto‑merge włączony — scali po komplecie zielonych bramek.
-- Gałęzie: `main` = zielony; `work/daily` = zielony; PR‑branch = w toku gate’ów.
+- Historia wyczyszczona (single‑root commit, 2025‑09‑02). Archiwa starej historii: `origin/archive/old-main-*`, `origin/archive/old-daily-*`.
+- Gałęzie: `main` = zielony; `work/daily` = zielony.
 - CI/PR podsumowanie: ci‑gates publikuje komentarz z tickami (style/lint/tests/perf/slo/smokes) + statusy workflowów (Proof Gate / Gauge / Path‑Coverage / Boundary / asset‑guard) oraz trendem perf p95.
 - OTel w CI: włączony mock OTLP (`scripts/otel/mock_otlp.py`) + `OTEL_ENABLED=1` — ślady są przyjmowane lokalnie.
 - Smoki in‑proc: `/metrics`, `/openapi.json`, ProofGate `/healthz`.

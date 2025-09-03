@@ -19,6 +19,7 @@ from fastapi import APIRouter, Body, HTTPException
 from jsonschema import Draft202012Validator
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 router = APIRouter(tags=["PCO"])
 
 _SCHEMA_PATH = Path(__file__).resolve().parents[1] / "schemas" / "proofbundle_v0.2.json"

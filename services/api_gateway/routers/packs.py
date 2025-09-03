@@ -22,6 +22,7 @@ EN: FastAPI router for Domain Packs / capabilities.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
@@ -34,8 +35,9 @@ from services.api_gateway.limits import enforce_limits
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class HandleRequest(BaseModel):
     pack: str
 
@@ -45,7 +47,6 @@ class HandleRequest(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
-
 
 router = APIRouter(prefix="/v1/packs", tags=["packs"])
 

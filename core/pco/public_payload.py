@@ -20,11 +20,17 @@ PL: Public payload PCO: ekstrakcja i walidacja (bez PII).
 
 EN: PCO public payload: extraction and validation (no PII).
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations
@@ -61,7 +67,6 @@ FORBIDDEN_KEYS: set[str] = {
     "session_id",
     "headers",
 }
-
 
 # ----Bloki----- MODEL
 

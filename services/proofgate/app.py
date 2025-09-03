@@ -21,6 +21,7 @@ EN: CERTEUS project module (generic description).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -43,8 +44,9 @@ from services.ledger_service.ledger import (
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class PublishRequest(BaseModel):
     pco: dict[str, Any] | None = Field(default=None, description="Proof-Carrying Object")
 
@@ -62,7 +64,6 @@ class PublishResponse(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
-
 
 app = FastAPI(title="ProofGate", version=__version__)
 setup_fastapi_otel(app)

@@ -22,11 +22,17 @@ PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 EN: CERTEUS module – please complete the functional description.
 
 """
+
 # === IMPORTY / IMPORTS ===
+
 # === KONFIGURACJA / CONFIGURATION ===
+
 # === MODELE / MODELS ===
+
 # === LOGIKA / LOGIC ===
+
 # === I/O / ENDPOINTS ===
+
 # === TESTY / TESTS ===
 
 from __future__ import annotations

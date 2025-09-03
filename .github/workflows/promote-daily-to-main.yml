@@ -32,8 +32,26 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Determine if weekly promotion is requested
+        id: marker
+        env:
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          # Read commit message for head SHA
+          MSG=$(git show -s --format=%B "$SHA")
+          echo "Commit message for $SHA:"; echo "$MSG"
+          # Weekly promotion marker policy:
+          # - Include "[week-end]" anywhere in the message, OR
+          # - Include a trailer line like: weekly-promote: true
+          if echo "$MSG" | grep -Eqi '\[week-end\]|^weekly-promote:\s*(true|1)'; then
+            echo "promote=true" >> $GITHUB_OUTPUT
+          else
+            echo "promote=false" >> $GITHUB_OUTPUT
+          fi
       - name: Verify all required gates are green for HEAD SHA
         id: gates
+        if: steps.marker.outputs.promote == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SHA: ${{ github.event.workflow_run.head_sha }}
@@ -60,7 +78,7 @@ jobs:
             exit 0
           fi
       - name: Append WORKLOG on work/daily (pre-merge)
-        if: steps.gates.outputs.all_ok == 'true'
+        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true'
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           ACTOR: ${{ github.actor }}
@@ -74,6 +92,7 @@ jobs:
           git commit -m "chore(worklog): ${SUMMARY}" || true
           git push origin work/daily || true
       - name: Fast-forward main to work/daily (if possible)
+        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true'
         id: ff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -90,7 +109,7 @@ jobs:
           } || echo "No fast-forward possible; will create/auto-merge PR."
           echo "ff=false" >> $GITHUB_OUTPUT
       - name: Create or auto-merge PR (work/daily -> main)
-        if: steps.ff.outputs.ff == 'false'
+        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true' && steps.ff.outputs.ff == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

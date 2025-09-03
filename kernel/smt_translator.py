@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Translator SMT i powiązana logika.
@@ -25,6 +24,7 @@ EN: SMT translator and related logic.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -34,8 +34,9 @@ import z3  # type: ignore[reportMissingTypeStubs]
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class VarNode(TypedDict):
     kind: Literal["var"]
 
@@ -70,9 +71,7 @@ class NaryNode(TypedDict):
 
 # === LOGIKA / LOGIC ===
 
-
 _Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
-
 
 # ──────────────────────────────────────────────────────────────────────
 
@@ -80,9 +79,7 @@ _Z3 = cast(Any, z3)  # ✅ correct use of typing.cast
 
 # ──────────────────────────────────────────────────────────────────────
 
-
 ASTNode = VarNode | UnaryNode | BinaryNode | NaryNode
-
 
 # ──────────────────────────────────────────────────────────────────────
 
@@ -236,7 +233,6 @@ __all__ = [
     "validate_ast",
     "compile_bool_ast",
 ]
-
 
 # === I/O / ENDPOINTS ===
 

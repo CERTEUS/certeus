@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 # +======================================================================+
 
 # |                               CERTEUS                                |
@@ -52,6 +51,7 @@ EN: CERTEUS project module (generic description).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse
@@ -65,7 +65,6 @@ from cryptography.hazmat.primitives import serialization
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 # ----Bloki----- MAIN
 
@@ -93,7 +92,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

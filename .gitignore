@@ -14,6 +14,8 @@ venv/
 # Artefakty
 reports/
 data/public_pco/
+out/
+data/lexqft_coverage_state.json
 
 # IDE / OS
 .vscode/
@@ -35,3 +37,5 @@ htmlcov/
 data/law_cache/
 exports/
 static/previews/
+
+.hypothesis/

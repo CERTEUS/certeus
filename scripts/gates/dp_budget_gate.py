@@ -20,6 +20,7 @@ Defaults to PASS when no input.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -27,8 +28,9 @@ import os
 import sys
 from typing import Any
 
-
 # === LOGIKA / LOGIC ===
+
+
 def _read() -> dict[str, Any]:
     try:
         raw = sys.stdin.read().strip()
@@ -65,5 +67,6 @@ def main() -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":
     raise SystemExit(main())

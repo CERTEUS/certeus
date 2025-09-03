@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Dodaje znaczniki sekcji do plików Bash (.sh) i PowerShell (.ps1) zgodnie z sekcją 21.1.
@@ -26,11 +25,13 @@ Idempotentne (nie dubluje jeśli już obecne).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 SHELL_ROOTS = ["scripts"]
 
 MARKERS = [
@@ -109,7 +110,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

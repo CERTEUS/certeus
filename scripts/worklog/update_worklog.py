@@ -14,6 +14,7 @@ EN: Updates WORKLOG.md with an entry (date/author/branch/summary).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

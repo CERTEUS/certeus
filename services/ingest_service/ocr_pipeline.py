@@ -7,7 +7,6 @@
 # | ROLA: Moduł projektu.                                       |
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Ten moduł dostarcza stub potoku OCR na potrzeby F0_D6 (Ingest → FACTLOG).
@@ -15,8 +14,6 @@ PL: Ten moduł dostarcza stub potoku OCR na potrzeby F0_D6 (Ingest → FACTLOG).
     Nie wykonuje realnego OCR – zwraca deterministyczne, przewidywalne dane
 
     testowe. Ma wbudowane: logowanie i limit rozmiaru wejścia (bezpieczeństwo).
-
-
 
 EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
 
@@ -27,6 +24,7 @@ EN: This module provides an OCR pipeline stub for F0_D6 (Ingest → FACTLOG).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import logging
@@ -38,8 +36,9 @@ DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class OcrPipeline:
     """
 
@@ -48,8 +47,6 @@ class OcrPipeline:
         POLON-OCR. Metoda `process_document` przyjmuje bajty pliku oraz
 
         opcjonalny limit rozmiaru i zwraca ustrukturyzowany wynik.
-
-
 
     EN: Stub OCR pipeline class. The production version will be replaced by
 
@@ -67,8 +64,6 @@ class OcrPipeline:
         - Waliduje rozmiar wejścia (domyślnie 10 MB).
 
         - Zwraca przewidywalny wynik OCR (2 strony, język 'pl').
-
-
 
         EN:
 
@@ -111,10 +106,8 @@ class OcrPipeline:
 
 # === LOGIKA / LOGIC ===
 
-
 DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 logger = logging.getLogger(__name__)
-
 
 # === I/O / ENDPOINTS ===
 

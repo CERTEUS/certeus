@@ -14,23 +14,22 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 Dodaje baner CERTEUS do plików PowerShell (.ps1), jeśli brakuje.
-
-
 
 EN: Add CERTEUS banner to PowerShell scripts when missing.
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ROOTS = ["scripts"]
 
 # === MODELE / MODELS ===
@@ -89,7 +88,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 

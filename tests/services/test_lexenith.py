@@ -17,6 +17,7 @@ EN: Smoke tests for LEXENITH endpoints: motion/generate (PCO),
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
@@ -31,9 +32,7 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
-
 # === I/O / ENDPOINTS ===
-
 
 # === TESTY / TESTS ===
 

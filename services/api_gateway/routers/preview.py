@@ -14,10 +14,10 @@
 
 # +-------------------------------------------------------------+
 
-
 """PL: Router podglądu plików. EN: Preview router."""
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -34,12 +34,9 @@ from fastapi.responses import JSONResponse
 
 # === LOGIKA / LOGIC ===
 
-
 STATIC_PREV = Path("static/previews")
 
-
 router = APIRouter()
-
 
 STATIC_PREV.mkdir(parents=True, exist_ok=True)
 

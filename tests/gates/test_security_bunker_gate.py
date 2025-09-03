@@ -8,6 +8,7 @@ from __future__ import annotations
 import os  # noqa: E402
 from pathlib import Path  # noqa: E402
 import subprocess  # noqa: E402
+import sys  # noqa: E402
 
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
@@ -20,13 +21,14 @@ import subprocess  # noqa: E402
 
 # === IMPORTY / IMPORTS ===
 
-
 # === LOGIKA / LOGIC ===
+
+
 def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     e = os.environ.copy()
     e.update(env)
     return subprocess.run(
-        ["python", "scripts/gates/security_bunker_gate.py"],
+        [sys.executable, "scripts/gates/security_bunker_gate.py"],
         text=True,
         capture_output=True,
         env=e,
@@ -34,6 +36,8 @@ def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
 
 
 # === TESTY / TESTS ===
+
+
 def test_bunker_off_ok() -> None:
     res = run_gate({"BUNKER": "0", "PROOFGATE_BUNKER": "0"})
     assert res.returncode == 0, res.stderr or res.stdout

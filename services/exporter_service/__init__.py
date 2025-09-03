@@ -15,7 +15,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Pakiet inicjalizacyjny modułu.
@@ -25,6 +24,7 @@ EN: Package initializer.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from .exporter import ExporterService, export_answer, export_answer_to_txt
@@ -35,9 +35,7 @@ from .exporter import ExporterService, export_answer, export_answer_to_txt
 
 # === LOGIKA / LOGIC ===
 
-
 __all__ = ["ExporterService", "export_answer_to_txt", "export_answer"]
-
 
 # === I/O / ENDPOINTS ===
 

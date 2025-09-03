@@ -14,57 +14,29 @@
 
 # +-------------------------------------------------------------+
 
-
 """
-
-
-
-
-
-
 
 PL: Moduł CERTEUS – uzupełnij opis funkcjonalny.
 
-
-
-
-
-
-
 EN: CERTEUS module – please complete the functional description.
-
-
-
-
-
-
 
 """
 
-
 # +-------------------------------------------------------------+
-
 
 # |                CERTEUS - Schema Contract Tests              |
 
-
 # +-------------------------------------------------------------+
-
 
 # | PLIK / FILE: tests/services/test_schemas.py                 |
 
-
 # | ROLA / ROLE: Sprawdza poprawność przykładowych danych        |
-
 
 # |             względem 'Świętej Trójcy' schematów.            |
 
-
 # +-------------------------------------------------------------+
 
-
 # | STYLE: PL-first, headers & notes dual-language (PL/EN).     |
-
 
 # +-------------------------------------------------------------+
 
@@ -81,15 +53,11 @@ import pytest
 
 # === ALIASY TYPÓW / TYPE ALIASES ===
 
-
 Schema = dict[str, Any]
-
 
 JSONObj = dict[str, Any]
 
-
 SCHEMA_DIR: Final[Path] = Path("schemas")
-
 
 # === PROTOKÓŁ WALIDATORA / VALIDATOR PROTOCOL ===
 
@@ -97,27 +65,9 @@ SCHEMA_DIR: Final[Path] = Path("schemas")
 class _ValidatorProtocol(Protocol):
     """
 
-
-
-
-
-
-
     PL: Minimalny interfejs wymagany od walidatora.
 
-
-
-
-
-
-
     EN: Minimal interface required from a validator.
-
-
-
-
-
-
 
     """
 
@@ -127,27 +77,9 @@ class _ValidatorProtocol(Protocol):
 def load_schema(name: str) -> Schema:
     """
 
-
-
-
-
-
-
     PL: Ładuje i syntaktycznie weryfikuje schemat JSON (Draft7).
 
-
-
-
-
-
-
     EN: Loads and syntactically checks a JSON schema (Draft7).
-
-
-
-
-
-
 
     """
 
@@ -164,27 +96,9 @@ def load_schema(name: str) -> Schema:
 def assert_valid(instance: JSONObj, schema: Schema) -> None:
     """
 
-
-
-
-
-
-
     PL: Waliduje instancję względem danego schematu (z FormatCheckerem).
 
-
-
-
-
-
-
     EN: Validates the instance against the given schema (with FormatChecker).
-
-
-
-
-
-
 
     """
 
@@ -196,27 +110,9 @@ def assert_valid(instance: JSONObj, schema: Schema) -> None:
 def assert_invalid(instance: JSONObj, schema: Schema) -> None:
     """
 
-
-
-
-
-
-
     PL: Oczekuje błędu walidacji.
 
-
-
-
-
-
-
     EN: Expects validation error.
-
-
-
-
-
-
 
     """
 

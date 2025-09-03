@@ -14,7 +14,6 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Publiczny endpoint do weryfikacji formuł SMT-LIB2 przez Silnik Prawdy.
@@ -24,6 +23,7 @@ EN: Public endpoint to verify SMT-LIB2 formulas via the Truth Engine.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
@@ -36,8 +36,9 @@ from kernel.truth_engine import DualCoreVerifier
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-
 # === MODELE / MODELS ===
+
+
 class VerificationRequest(BaseModel):
     """
 
@@ -54,13 +55,13 @@ class VerificationRequest(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
-
 router = APIRouter(prefix="/v1", tags=["Truth Engine"])
 
 _verifier = DualCoreVerifier()
 
-
 # === I/O / ENDPOINTS ===
+
+
 @router.post("/verify")
 def verify_formula(req: VerificationRequest) -> dict[str, Any]:
     """

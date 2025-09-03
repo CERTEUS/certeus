@@ -16,18 +16,16 @@
 
 # +-------------------------------------------------------------+
 
-
 """
 
 PL: Moduł projektu CERTEUS (uogólniony opis).
-
-
 
 EN: CERTEUS project module (generic description).
 
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from argparse import ArgumentParser
@@ -43,21 +41,15 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 # === LOGIKA / LOGIC ===
 
-
 # +=====================================================================+
-
 
 # |                              CERTEUS                                |
 
-
 # +=====================================================================+
-
 
 # | FILE: scripts/ed25519_keytool.py                                    |
 
-
 # | ROLE: Generate Ed25519 keypair and export public key (Base64URL).   |
-
 
 # +=====================================================================+
 
@@ -124,7 +116,6 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 # === I/O / ENDPOINTS ===
 
