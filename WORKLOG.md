@@ -114,3 +114,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-03 06:29:54Z [CERTEUS] (main): auto-promote: 7d4f2b9ec3e438a8bf3cf8a8d0ae5fc738dbc048 (gates green)
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
+- 2025-09-03 06:32:30Z [48793] (work/daily): [week-end] Autopromote re-run (sync upstream)
+  - weekly-promote: true
+  - - Re-applied after upstream fast-forward
