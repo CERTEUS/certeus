@@ -16,9 +16,13 @@
 
 """
 
-PL: Moduł projektu CERTEUS (uogólniony opis).
+PL: Limity i budżety per-tenant (Proof‑Cost tokens) z wsparciem prostych
+    polityk cennikowych (tiering) z pliku JSON. Fallback do stałych domyślnych,
+    jeżeli plik polityk nie jest dostępny.
 
-EN: CERTEUS project module (generic description).
+EN: Per‑tenant limits and budgets (Proof‑Cost tokens) with simple pricing
+    policies (tiering) loaded from a JSON file. Falls back to static defaults
+    when the policy file is not available.
 
 """
 
@@ -26,6 +30,9 @@ EN: CERTEUS project module (generic description).
 
 from __future__ import annotations
 
+import json
+import os
+from pathlib import Path
 from threading import Lock
 
 from fastapi import HTTPException, Request
@@ -35,6 +42,85 @@ from fastapi import HTTPException, Request
 _DEFAULT_BUDGET = 10_000  # domyślny dzienny budżet jednostek
 
 _TOKEN_BUDGETS: dict[str, int] = {}
+
+# Polityki billing (tiering) – ładowane best‑effort z JSON
+_POLICY_CACHE: dict[str, object] | None = None
+
+
+def _policy_path() -> Path:
+    """Zwróć ścieżkę do pliku polityk (ENV lub domyślnie runtime/billing/policies.json)."""
+
+    root = Path(__file__).resolve().parents[2]
+    default = root / "runtime" / "billing" / "policies.json"
+    env = os.getenv("BILLING_POLICY_FILE")
+    return Path(env) if env else default
+
+
+def _load_policies() -> dict[str, object]:
+    """Wczytaj polityki z JSON (jeśli brak – struktura domyślna)."""
+
+    global _POLICY_CACHE
+    if _POLICY_CACHE is not None:
+        return _POLICY_CACHE
+
+    # Domyślne polityki (free/pro/enterprise)
+    default_policies: dict[str, object] = {
+        "tiers": {
+            "free": {"daily_quota": 200, "burst": 1.0},
+            "pro": {"daily_quota": 10_000, "burst": 2.0},
+            "enterprise": {"daily_quota": 250_000, "burst": 3.0},
+        },
+        "tenants": {
+            "anonymous": "free",
+        },
+    }
+
+    try:
+        p = _policy_path()
+        if p.exists():
+            data = json.loads(p.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and "tiers" in data:
+                _POLICY_CACHE = data  # type: ignore[assignment]
+            else:
+                _POLICY_CACHE = default_policies
+        else:
+            _POLICY_CACHE = default_policies
+    except Exception:
+        _POLICY_CACHE = default_policies
+
+    return _POLICY_CACHE
+
+
+def get_tenant_tier(tenant: str) -> str:
+    """Zwróć tier tenant‑a wg polityk (default: free)."""
+
+    pol = _load_policies()
+    tenants = pol.get("tenants", {}) if isinstance(pol, dict) else {}
+    if isinstance(tenants, dict):
+        t = tenants.get(tenant)
+        if isinstance(t, str) and t:
+            return t
+    return "free"
+
+
+def _default_budget_for(tenant: str) -> int:
+    """Budżet domyślny wg tier‑u (jeśli brak ekspl. ustawienia)."""
+
+    pol = _load_policies()
+    tiers = pol.get("tiers", {}) if isinstance(pol, dict) else {}
+    tier = get_tenant_tier(tenant)
+    if isinstance(tiers, dict):
+        t = tiers.get(tier)
+        if isinstance(t, dict):
+            dq = t.get("daily_quota")
+            if isinstance(dq, int | float):
+                try:
+                    return max(0, int(dq))
+                except Exception:
+                    pass
+    # fallback stały
+    return _DEFAULT_BUDGET
+
 
 # === MODELE / MODELS ===
 
@@ -66,7 +152,13 @@ _LOCK = Lock()
 
 # +=====================================================================+
 
-__all__ = ["enforce_limits", "set_tenant_quota", "get_tenant_id"]
+__all__ = [
+    "enforce_limits",
+    "set_tenant_quota",
+    "get_tenant_id",
+    "get_tenant_balance",
+    "refund_tenant_units",
+]
 
 # In-memory MVP (można później podmienić na Redis/TokenBank)
 
@@ -94,6 +186,19 @@ def set_tenant_quota(tenant: str, units: int) -> None:
         _TOKEN_BUDGETS[tenant] = max(0, int(units))
 
 
+def get_tenant_balance(tenant: str) -> int:
+    """PL: Pobierz bieżący budżet jednostek. EN: Get current budget balance.
+
+    Jeżeli tenant nie ma budżetu w `_TOKEN_BUDGETS`, zwracamy domyślny budżet
+    wg tier‑u z polityk billing.
+    """
+
+    with _LOCK:
+        if tenant in _TOKEN_BUDGETS:
+            return int(_TOKEN_BUDGETS[tenant])
+        return int(_default_budget_for(tenant))
+
+
 def _charge(tenant: str, cost_units: int) -> bool:
     """PL: Pobierz z budżetu; True jeśli wystarczyło. EN: Charge budget."""
 
@@ -109,6 +214,16 @@ def _charge(tenant: str, cost_units: int) -> bool:
         _TOKEN_BUDGETS[tenant] = cur - cost_units
 
         return True
+
+
+def refund_tenant_units(tenant: str, units: int) -> None:
+    """PL: Zwróć jednostki do budżetu. EN: Refund units to budget."""
+
+    if units <= 0:
+        return
+    with _LOCK:
+        cur = _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET)
+        _TOKEN_BUDGETS[tenant] = cur + int(units)
 
 
 def enforce_limits(req: Request, *, cost_units: int = 1) -> None:

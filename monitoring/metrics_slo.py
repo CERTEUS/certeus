@@ -122,6 +122,19 @@ certeus_http_request_duration_ms = Histogram(
     buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
 )
 
+# Per-tenant HTTP metrics (W16: SLO per tenant)
+certeus_http_request_duration_ms_tenant = Histogram(
+    "certeus_http_request_duration_ms_tenant",
+    "Gateway HTTP request duration (ms) per tenant",
+    labelnames=("tenant", "path", "method", "status"),
+    buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
+)
+certeus_http_requests_total = Counter(
+    "certeus_http_requests_total",
+    "Total HTTP requests by tenant/path/method/status",
+    labelnames=("tenant", "path", "method", "status"),
+)
+
 # QTMP: Uncertainty bound and operator priorities
 certeus_qtm_ub_lt = Gauge("certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",))
 certeus_qtm_operator_priority = Gauge(
@@ -169,3 +182,15 @@ certeus_fin_entanglement_mi = Gauge(
     "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
 )
 certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
+
+# LEX Pilot (W16): feedback counters and latest rating
+certeus_lex_pilot_feedback_total = Counter(
+    "certeus_lex_pilot_feedback_total",
+    "LEX pilot feedback submissions",
+    labelnames=("case", "tenant"),
+)
+certeus_lex_pilot_last_rating = Gauge(
+    "certeus_lex_pilot_last_rating",
+    "LEX pilot last feedback rating",
+    labelnames=("case", "tenant"),
+)

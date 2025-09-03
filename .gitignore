@@ -3,6 +3,18 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+# ignore any local virtualenvs created for dev/testing
+.venv_*/
+.venvlin*/
+.venvlin/
+.venvlin*/
+.venvlin
+.venvlin*
+.venvlin*
+.venv_cli/
+.venv_lin/
+.venv*/
+venv*/
 .git-credentials
 *.egg-info/
 gitleaks-report.json

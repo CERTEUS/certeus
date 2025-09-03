@@ -38,8 +38,8 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
-from monitoring.metrics_slo import certeus_http_request_duration_ms
 from monitoring.otel_setup import setup_fastapi_otel
+import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -51,6 +51,7 @@ import services.api_gateway.routers.fin as fin
 import services.api_gateway.routers.ledger as ledger
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
+import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
@@ -61,6 +62,7 @@ except Exception:
     pco_public = None  # type: ignore[assignment]
 import services.api_gateway.routers.lexenith as lexenith
 import services.api_gateway.routers.preview as preview
+import services.api_gateway.routers.proofgate_gateway as proofgate_gateway
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
 import services.api_gateway.routers.upn as upn
@@ -86,7 +88,9 @@ STATIC_PREVIEWS = STATIC_DIR / "previews"
 
 CLIENTS_WEB = ROOT / "clients" / "web"  # expects /app/proof_visualizer/index.html
 
-APP_VERSION = __version__
+# API versioning: semver for contract, full release for build metadata
+APP_RELEASE = __version__
+APP_VERSION = (__version__.split("-", 1)[0] or __version__).strip()
 
 ALLOW_ORIGINS_ENV = os.getenv("ALLOW_ORIGINS", "*")
 
@@ -169,22 +173,7 @@ app.add_middleware(
 )
 
 
-# Request duration metrics middleware (Prometheus)
-@app.middleware("http")
-async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
-    import time
-
-    start = time.perf_counter()
-    response = await call_next(request)
-    dur_ms = (time.perf_counter() - start) * 1000.0
-    try:
-        path = request.url.path
-        method = request.method
-        status = str(response.status_code)
-        certeus_http_request_duration_ms.labels(path=path, method=method, status=status).observe(dur_ms)
-    except Exception:
-        pass
-    return response
+# (usunięto wcześniejszy, duplikujący middleware metryk — pojedynczy wariant niżej)
 
 
 # Cache OpenAPI JSON in-memory to reduce per-request overhead
@@ -200,6 +189,38 @@ def _cached_openapi():  # type: ignore[override]
         version=APP_VERSION,
         routes=app.routes,
     )
+    # Enrich with compatibility metadata and docs pointers (W15 D71)
+    try:
+        info = _openapi_schema_cache.setdefault("info", {})
+        info.setdefault("x-release", APP_RELEASE)
+        info.setdefault(
+            "x-compat",
+            {
+                "semver": APP_VERSION,
+                "status": "rc" if "-" in APP_RELEASE else "stable",
+            },
+        )
+        _openapi_schema_cache.setdefault(
+            "externalDocs",
+            {
+                "description": "Additional resources (endpoints, cURL, runbooks)",
+                "url": "https://github.com/CERTEUS/certeus/tree/main/docs",
+            },
+        )
+        public_url = os.getenv("PUBLIC_BASE_URL") or "http://127.0.0.1:8000"
+        _openapi_schema_cache.setdefault("servers", [{"url": public_url}])
+        # Advertise SDK locations in tree (not runtime-coupled)
+        info.setdefault(
+            "x-clients",
+            {
+                "python": "clients/python/certeus_sdk",
+                "typescript": "clients/typescript/certeus-sdk",
+                "go": "clients/go/certeus",
+            },
+        )
+    except Exception:
+        # Never break endpoint due to cosmetics
+        pass
     return _openapi_schema_cache
 
 
@@ -211,6 +232,9 @@ app.include_router(system.router)
 
 app.include_router(preview.router)
 
+# Ensure ProofGate contract path present in runtime OpenAPI
+app.include_router(proofgate_gateway.router)
+
 if pco_public is not None:
     app.include_router(pco_public.router)
 
@@ -218,6 +242,7 @@ if pco_bundle is not None:  # only include if import succeeded
     app.include_router(pco_bundle.router)
 
 app.include_router(export.router)
+
 
 app.include_router(ledger.router)
 
@@ -251,9 +276,16 @@ app.include_router(fin.router)
 
 app.include_router(packs.router)
 
+app.include_router(marketplace.router)
+
+app.include_router(billing.router)
+
 app.include_router(jwks_router)
 
 app.include_router(metrics.router)
+
+# ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
+
 
 # --- blok --- Health i root redirect -------------------------------------------
 
@@ -269,13 +301,13 @@ def health() -> dict[str, object]:
 def root_redirect() -> RedirectResponse:
     """
 
-    PL: W DEV kierujemy na UI wizualizatora.
+    PL: Landing/Demo (W17): przekierowanie na prostą stronę startową.
 
-    EN: In DEV, redirect to the proof visualizer UI.
+    EN: Landing/Demo (W17): redirect to a simple landing page.
 
     """
 
-    return RedirectResponse(url="/app/proof_visualizer/index.html", status_code=307)
+    return RedirectResponse(url="/app/public/index.html", status_code=307)
 
 
 # --- blok --- Pomocnicze -------------------------------------------------------
@@ -309,17 +341,30 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
     response = await call_next(request)
 
     try:
-        route = request.scope.get("route")
-
-        path_tmpl = getattr(route, "path", request.url.path)
-
-        status = getattr(response, "status_code", 0)
-
-        certeus_http_request_duration_ms.labels(path=path_tmpl, method=request.method, status=str(status)).observe(
-            (_t.perf_counter() - start) * 1000.0
+        from monitoring.metrics_slo import (
+            certeus_http_request_duration_ms,
+            certeus_http_request_duration_ms_tenant,
+            certeus_http_requests_total,
         )
+        from services.api_gateway.limits import get_tenant_id  # lazy import to avoid cycles
+
+        route = request.scope.get("route")
+        path_tmpl = getattr(route, "path", request.url.path)
+        status = str(getattr(response, "status_code", 0))
+        method = request.method
+        dur_ms = (_t.perf_counter() - start) * 1000.0
+        tenant = get_tenant_id(request)
+
+        # Global histogram (per-path/method/status)
+        certeus_http_request_duration_ms.labels(path=path_tmpl, method=method, status=status).observe(dur_ms)
+        # Per-tenant histogram and counter (W16 SLO per tenant)
+        certeus_http_request_duration_ms_tenant.labels(
+            tenant=tenant, path=path_tmpl, method=method, status=status
+        ).observe(dur_ms)
+        certeus_http_requests_total.labels(tenant=tenant, path=path_tmpl, method=method, status=status).inc()
 
     except Exception:
+        # Metrics must be best-effort; never break request flow
         pass
 
     return response

@@ -58,6 +58,31 @@ class EntanglementsResponse(BaseModel):
     mi: float
 
 
+# --- Pilot W16: strategie Q-Alpha — symulacja i PnL ---
+
+
+class SimulateRequest(BaseModel):
+    strategy_id: str
+    capital: float = 100_000.0
+    horizon_days: int = 30
+    params: dict[str, float] | None = None
+
+
+class SimulateResponse(BaseModel):
+    strategy_id: str
+    capital_start: float
+    capital_end: float
+    pnl_abs: float
+    pnl_pct: float
+    sharpe_stub: float
+    pco: dict | None = None
+
+
+class PnLResponse(BaseModel):
+    tenant: str
+    runs: list[SimulateResponse]
+
+
 # === LOGIKA / LOGIC ===
 
 # +=====================================================================+
@@ -73,6 +98,9 @@ class EntanglementsResponse(BaseModel):
 # +=====================================================================+
 
 router = APIRouter(prefix="/v1/fin/alpha", tags=["finance"])
+
+# Per-tenant pamięć krótkoterminowa (ostatnie symulacje)
+_FIN_RUNS: dict[str, list[SimulateResponse]] = {}
 
 
 @router.post("/measure", response_model=MeasureResponse)
@@ -166,6 +194,98 @@ async def operators_commutator() -> dict[str, float]:
     except Exception:
         pass
     return {"norm": 1.0}
+
+
+@router.post("/simulate", response_model=SimulateResponse)
+async def simulate(req: SimulateRequest, request: Request, response: Response) -> SimulateResponse:
+    """
+    PL: Symulacja 2 strategii Q-Alpha (stub): qalpha-momentum, qalpha-arb.
+    EN: Simulate 2 Q-Alpha strategies (stub): qalpha-momentum, qalpha-arb.
+    """
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=3)
+
+    strat = req.strategy_id.lower().strip()
+    cap0 = float(req.capital)
+    days = max(1, int(req.horizon_days))
+
+    # Deterministyczne stopy zwrotu (stub)
+    if strat in {"qalpha-momentum", "momentum"}:
+        daily = 0.0008  # ~0.08% dziennie
+        vol = 0.004
+    elif strat in {"qalpha-arb", "arb", "arbitrage"}:
+        daily = 0.0005
+        vol = 0.001
+    else:
+        daily = 0.0003
+        vol = 0.002
+
+    # Prosty model: cap_T = cap0 * (1 + daily)^days; Sharpe stub = daily/vol*sqrt(252)
+    capT = cap0 * ((1.0 + daily) ** days)
+    pnl_abs = capT - cap0
+    pnl_pct = (capT / cap0) - 1.0
+    sharpe = (daily / max(1e-9, vol)) * (252**0.5)
+
+    pco = {
+        "fin.alpha.simulation": {
+            "strategy": strat,
+            "capital_start": round(cap0, 2),
+            "capital_end": round(capT, 2),
+            "horizon_days": days,
+            "params": req.params or {},
+            "metrics": {"pnl_abs": round(pnl_abs, 2), "pnl_pct": round(pnl_pct, 6), "sharpe_stub": round(sharpe, 3)},
+        }
+    }
+
+    # Nagłówek PCO i metryki
+    try:
+        import json as _json
+
+        response.headers["X-CERTEUS-PCO-fin.simulation"] = _json.dumps(
+            pco["fin.alpha.simulation"], separators=(",", ":")
+        )
+    except Exception:
+        pass
+    try:
+        from monitoring.metrics_slo import certeus_fin_commutator_rs
+
+        # sygnał żywych metryk — używamy commutator jako placeholder
+        certeus_fin_commutator_rs.set(1.0)
+    except Exception:
+        pass
+
+    out = SimulateResponse(
+        strategy_id=strat,
+        capital_start=round(cap0, 2),
+        capital_end=round(capT, 2),
+        pnl_abs=round(pnl_abs, 2),
+        pnl_pct=round(pnl_pct, 6),
+        sharpe_stub=round(sharpe, 3),
+        pco=pco,
+    )
+
+    # Zapamiętaj per-tenant (ostatnie 5 uruchomień)
+    try:
+        tenant = get_tenant_id(request)
+        runs = _FIN_RUNS.setdefault(tenant, [])
+        runs.append(out)
+        if len(runs) > 5:
+            del runs[:-5]
+    except Exception:
+        pass
+
+    return out
+
+
+@router.get("/pnl", response_model=PnLResponse)
+async def pnl(request: Request) -> PnLResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    tenant = get_tenant_id(request)
+    runs = list(_FIN_RUNS.get(tenant, []))
+    return PnLResponse(tenant=tenant, runs=runs)
 
 
 # === I/O / ENDPOINTS ===

@@ -6,7 +6,11 @@
 - Grafana: import dashboards from `observability/grafana/*.json`.
 - Dashboards preview: see `observability/preview/`.
 
+Per-tenant SLO (W16):
+- Użyj nagłówka `X-Tenant-ID` w żądaniach, aby metryki miały etykietę `tenant`.
+- p95 per-tenant: `histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_tenant_bucket[5m])) by (le, tenant))`.
+- Error-rate per-tenant: `sum(rate(certeus_http_requests_total{status=~"5.."}[5m])) by (tenant) / sum(rate(certeus_http_requests_total[5m])) by (tenant)`.
+
 Tips:
 - Set `OTEL_ENABLED=1` to enable tracing in CI/local demos.
 - Quick perf: `python scripts/perf/quick_bench.py` writes `out/perf_bench.json` and CI publishes p95.
-

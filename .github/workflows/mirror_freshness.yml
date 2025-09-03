@@ -1,0 +1,36 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/mirror_freshness.yml                |
+# | ROLE: Weekly: alert if PROVENANCE older than 8 days         |
+# +-------------------------------------------------------------+
+
+name: Mirror-Freshness
+
+on:
+  schedule:
+    - cron: "37 5 * * 1"  # weekly Monday 05:37 UTC
+  workflow_dispatch:
+
+jobs:
+  check:
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PROVENANCE age
+        run: |
+          set -euo pipefail
+          if [ ! -f PROVENANCE.md ]; then
+            echo "No PROVENANCE.md"; exit 0
+          fi
+          PUBLISHED=$(grep '^Published:' PROVENANCE.md | awk '{print $2}')
+          if [ -z "$PUBLISHED" ]; then exit 0; fi
+          now=$(date -u +%s)
+          ts=$(date -u -d "$PUBLISHED" +%s || true)
+          if [ -z "$ts" ]; then exit 0; fi
+          age=$(( (now - ts) / 86400 ))
+          echo "Age days: $age"
+          if [ "$age" -gt 8 ]; then
+            gh issue create --title "Mirror stale: PROVENANCE.Published=$PUBLISHED" --body "PROVENANCE older than 8 days. Trigger publish pipeline." || true
+          fi

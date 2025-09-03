@@ -15,7 +15,7 @@ on:
 
 jobs:
   mirror:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily')) && vars.MIRROR_PUBLISH == 'enabled' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -27,6 +27,38 @@ jobs:
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
           args: detect --redact --no-banner --exit-code 1
+      - name: Backup branch protection (mirror)
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh api repos/CERTEUS/certeus-public/branches/main/protection -H 'Accept: application/vnd.github+json' > bp_before.json
+          echo "Saved to bp_before.json"
+      - name: Relax branch protection (allow force-push)
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Extract strict + contexts from snapshot (support both checks/contexts)
+          STRICT=$(jq -r '.required_status_checks.strict // true' bp_before.json)
+          CTXS=$(jq -r '[ (.required_status_checks.contexts // [])[], (.required_status_checks.checks // [] | map(.context)[]) ] | unique' bp_before.json)
+          cat > bp_relaxed.json <<'JSON'
+          {
+            "required_status_checks": { "strict": true, "contexts": [] },
+            "enforce_admins": true,
+            "required_pull_request_reviews": { "dismiss_stale_reviews": true },
+            "restrictions": null,
+            "required_linear_history": false,
+            "allow_force_pushes": true,
+            "allow_deletions": false,
+            "required_conversation_resolution": true
+          }
+          JSON
+          jq --argjson ctxs "$CTXS" --argjson strict "$STRICT" \
+             '.required_status_checks.strict=$strict | .required_status_checks.contexts=$ctxs' \
+             bp_relaxed.json > bp_relaxed.final.json
+          gh api -X PUT repos/CERTEUS/certeus-public/branches/main/protection --input bp_relaxed.final.json -H 'Accept: application/vnd.github+json'
+          echo "Branch protection relaxed for publish"
       - name: Build LITE mirror tree and push (hosted)
         env:
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
@@ -76,6 +108,40 @@ jobs:
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
           args: detect --source mirror_out --redact --no-banner --exit-code 1
+      - name: Restore branch protection (mirror)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Build a valid restore payload from snapshot
+          jq '{
+                required_status_checks: {
+                  strict: (.required_status_checks.strict // true),
+                  contexts: ((.required_status_checks.contexts // []) + ((.required_status_checks.checks // []) | map(.context))) | unique
+                },
+                enforce_admins: (.enforce_admins.enabled // true),
+                required_pull_request_reviews: (if .required_pull_request_reviews then {
+                  dismiss_stale_reviews: (.required_pull_request_reviews.dismiss_stale_reviews // true),
+                  required_approving_review_count: (.required_pull_request_reviews.required_approving_review_count // 0),
+                  require_code_owner_reviews: (.required_pull_request_reviews.require_code_owner_reviews // false),
+                  require_last_push_approval: (.required_pull_request_reviews.require_last_push_approval // false)
+                } else null end),
+                restrictions: null,
+                required_linear_history: (.required_linear_history.enabled // true),
+                allow_force_pushes: (.allow_force_pushes.enabled // false),
+                allow_deletions: (.allow_deletions.enabled // false),
+                required_conversation_resolution: (.required_conversation_resolution.enabled // true)
+              }' bp_before.json > bp_restore.json
+          gh api -X PUT repos/CERTEUS/certeus-public/branches/main/protection --input bp_restore.json -H 'Accept: application/vnd.github+json'
+          # Restore signed commits setting explicitly
+          SIG=$(jq -r '.required_signatures.enabled // false' bp_before.json)
+          if [ "$SIG" = "true" ]; then
+            gh api -X POST repos/CERTEUS/certeus-public/branches/main/protection/required_signatures -H 'Accept: application/vnd.github+json' || true
+          else
+            gh api -X DELETE repos/CERTEUS/certeus-public/branches/main/protection/required_signatures -H 'Accept: application/vnd.github+json' || true
+          fi
+          echo "Branch protection restored to snapshot (normalized)"
       - name: Install git-filter-repo
         if: ${{ false }}
         run: |

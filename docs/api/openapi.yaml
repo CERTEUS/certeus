@@ -92,7 +92,7 @@ paths:
       summary: Decision Recall
       tags: [DR]
       responses: { "200": { description: ok } }
-  /v1/proofgate/publish:
+  /defx/reason:
     post:
       summary: Publication decision (ProofGate)
       tags: [ProofGate]
@@ -146,12 +146,12 @@ paths:
                     signatures: [{ role: producer, alg: ed25519, key_id: "kid123", signature: "b64u..." }]
                     risk: { ece: 0, brier: 0, p95_latency_ms: 0, abstain_rate: 0 }
                     status: "PENDING"
-  /pco/public/{case_id}:
+  /pco/public/{rid}:
     get:
       summary: Public payload of ProofBundle (zero PII)
       parameters:
         - in: path
-          name: case_id
+          name: rid
           required: true
           schema: { type: string }
       responses:
@@ -238,9 +238,44 @@ paths:
       summary: Handle pack action
       tags: [Packs]
       responses: { "200": { description: ok } }
-  /v1/ledger/{case_id}:
+  /v1/marketplace/plugins:
     get:
-      summary: Ledger head for case
+      summary: List installed plugins
+      tags: [Marketplace]
+      responses: { "200": { description: ok } }
+  /v1/marketplace/verify_manifest:
+    post:
+      summary: Verify signed manifest
+      tags: [Marketplace]
+      responses: { "200": { description: ok } }
+  /v1/marketplace/install:
+    post:
+      summary: Install/upgrade plugin (signed)
+      tags: [Marketplace]
+      responses: { "200": { description: ok } }
+  /v1/billing/quota:
+    post:
+      summary: Set tenant quota (cost tokens)
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/balance:
+    get:
+      summary: Get current tenant balance
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/refund:
+    post:
+      summary: Refund units to tenant budget
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/allocate:
+    post:
+      summary: Allocate units to current tenant (PENDING → allocate)
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/ledger/{case_id}/records:
+    get:
+      summary: Ledger records for case
       tags: [Ledger]
       parameters:
         - name: case_id
@@ -319,4 +354,3 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
-

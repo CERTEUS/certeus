@@ -1,0 +1,7 @@
+name: demo_beta
+module: plugins.demo_beta.src.main
+version: "0.1.0"
+capabilities:
+  - demo
+# signature: (dodaj przez scripts/marketplace/sign_manifest.py --embed)
+

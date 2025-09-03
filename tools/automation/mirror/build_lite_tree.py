@@ -44,9 +44,7 @@ def build(out_dir: Path) -> None:
     provenance = out_dir / "PROVENANCE.md"
     sha = os.environ.get("GITHUB_SHA", "local")
     provenance.write_text(
-        f"Source: CERTEUS/certeus@{sha}\n"
-        f"Published: GENERATED\n"
-        f"Mode: LITE (allowlist + squash)\n",
+        f"Source: CERTEUS/certeus@{sha}\nPublished: GENERATED\nMode: LITE (allowlist + squash)\n",
         encoding="utf-8",
     )
 
@@ -59,4 +57,3 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
-

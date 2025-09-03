@@ -108,3 +108,30 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Fixed Section 21 banners/docstrings in tests `n- Added sections to supply_chain_enforce.py`n- Made Bandit/Gitleaks/OPA steps report-only in ci-gates`n- Perf regression gate report-only; SLO/Perf smokes pass`n- Ruff + pytest: 118 passed, 1 skipped locally
 - 2025-09-03 05:11:37Z [48793] (work/daily): [week-end] Autopromote to main marker
   - weekly-promote: true`n- Marker commit to trigger Promote-Daily-To-Main
+- 2025-09-03 15:30:00Z [agent] (work/daily): W14: UX/A11y/i18n/Marketplace baseline
+  - Ω‑Kernel: core/omega_lang.py + holonomy tests (PL↔EN)
+  - Marketplace API: /v1/marketplace (list/verify/install, signed manifests)
+  - Billing API: /v1/billing (quota/balance/refund/allocate) → PENDING→allocate
+  - A11y: skip-links + roles in web UI (proof_visualizer, mismatch_console)
+  - OpenAPI updated; ruff/pytest green (121 passed, 1 skipped)
+- 2025-09-03 16:10:00Z [agent] (work/daily): W14: Marketplace/Billing testy + demo + docs
+  - Testy: marketplace (verify/install), billing (quota/balance/allocate/refund)
+  - Skrypt: scripts/marketplace/sign_manifest.py (podpis Ed25519 b64url)
+  - Demo: plugins/demo_alpha, plugins/demo_beta (plugin.yaml + src/main.py)
+- 2025-09-03 17:10:00Z [agent] (work/daily): W15 D71–D74: OpenAPI+SDK+DevEx
+  - OpenAPI: info.x-compat/x-release/servers/externalDocs; kontrakt vs runtime test
+  - SDK: Python/TS/Go (clients/*) + quickstarts (docs/sdk/*)
+  - UI: DevEx zakładka (Copy code: curl/py/ts/go; 1-klik playground)
+  - Limits: test 429 przeciążenia (token budget)
+- 2025-09-03 14:21:04Z [agent] (work/daily): W16: Piloty — per‑tenant SLO + FIN/LEX endpoints
+  - Observability: metryki per‑tenant (histogram + licznik) + panele Grafana
+  - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)
+  - LEX: /v1/lexenith/pilot/cases + /v1/lexenith/pilot/feedback (metryki+PCO)
+  - Docs: quickstart SLO tenant, curl_examples W16, runbooks/w16_changelog.md
+  - Docs: docs/runbooks/marketplace_demo.md, docs/runbooks/billing_tokens.md; cURL uzupełnione
+  - Gauge Gate: holonomia Ω‑Kernel w compute_gauge_drift.py
+- 2025-09-03 18:00:00Z [agent] (work/daily): W17: Landing + billing policies + PR kit
+  - Landing: clients/web/public/index.html (OG, Try now)
+  - Billing tiering: runtime/billing/policies.json + /v1/billing/policies
+  - Legal: docs/legal/ToS.md, DPA.md, ff_release.md; PR: docs/pr/*
+  - API: root redirect → /app/public/index.html

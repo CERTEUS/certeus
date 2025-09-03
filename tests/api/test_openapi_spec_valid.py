@@ -41,5 +41,3 @@ def test_openapi_spec_is_valid() -> None:
     with open("docs/api/openapi.yaml", encoding="utf-8") as f:
         spec = yaml.safe_load(f)
     validate_spec(spec)  # type: ignore[arg-type]
-
-

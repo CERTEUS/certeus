@@ -92,6 +92,20 @@
         background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
       }
 
+      /* A11y: skip link for keyboard users */
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        top: 0;
+        background: #000;
+        color: #fff;
+        padding: 8px 12px;
+        z-index: 1000;
+      }
+      .skip-link:focus {
+        left: 8px;
+      }
+
       .container {
         max-width: 1180px;
         margin: 24px auto;
@@ -396,8 +410,9 @@
     </style>
   </head>
 
-  <body>
-    <div class="container">
+<body>
+    <a href="#main" class="skip-link" aria-label="Skip to main content">Skip to content</a>
+      <div class="container" id="main" role="main" tabindex="-1">
       <!-- HEADER -->
       <div class="card" style="margin-bottom: 16px">
         <div class="row" style="align-items: center">
@@ -429,6 +444,7 @@
               id="themeToggle"
               title="Przełącz motyw"
               data-i18n="theme"
+              aria-label="Przełącz motyw / Toggle theme"
             >
               Motyw
             </button>
@@ -467,7 +483,7 @@
                   />
                 </div>
                 <div class="stack">
-                  <button id="analyzeBtn" class="btn" aria-label="Analyze">
+                  <button id="analyzeBtn" class="btn" aria-label="Analizuj / Analyze">
                     <span
                       class="spinner"
                       id="spinAnalyze"
@@ -632,6 +648,16 @@
           >
             Surowe
           </button>
+          <button
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-devex"
+            id="tabbtn-devex"
+            title="DevEx: curl/SDK/Playground"
+          >
+            DevEx
+          </button>
         </div>
 
         <section
@@ -768,6 +794,34 @@
             >
               Kopiuj JSON
             </button>
+          </div>
+        </section>
+
+        <section
+          id="tab-devex"
+          class="tabpanel"
+          role="tabpanel"
+          aria-labelledby="tabbtn-devex"
+        >
+          <div class="row">
+            <div class="col">
+              <h2>Copy code</h2>
+              <div class="stack" style="margin-bottom: 8px">
+                <select id="devexKind" class="select" title="SDK">
+                  <option value="curl">cURL</option>
+                  <option value="py">Python</option>
+                  <option value="ts">TypeScript</option>
+                  <option value="go">Go</option>
+                </select>
+                <select id="devexEndpoint" class="select" title="Endpoint">
+                  <option value="health">GET /health</option>
+                  <option value="pco_public">GET /pco/public/{case_id}</option>
+                </select>
+                <button class="btn" id="devexCopy">Kopiuj</button>
+                <button class="btn secondary" id="devexRun">Playground</button>
+              </div>
+              <div class="json" id="devexSnippet">—</div>
+            </div>
           </div>
         </section>
       </div>
@@ -1427,6 +1481,72 @@
             .writeText(elModel.textContent || "")
             .then(() => toast(t("toast_copied"))),
         );
+
+      // ====================== DEVEX ============================ //
+      const elDevexKind = document.getElementById("devexKind");
+      const elDevexEndpoint = document.getElementById("devexEndpoint");
+      const elDevexSnippet = document.getElementById("devexSnippet");
+
+      const DEVEX_BASE = API_BASE || location.origin;
+
+      function devexSnippet() {
+        const kind = elDevexKind?.value || "curl";
+        const ep = elDevexEndpoint?.value || "health";
+        const caseId = document.getElementById("caseId").value || "case-001";
+        if (kind === "curl") {
+          if (ep === "health") return `curl -s ${DEVEX_BASE}/health`;
+          if (ep === "pco_public") return `curl -s ${DEVEX_BASE}/pco/public/${caseId}`;
+        }
+        if (kind === "py") {
+          if (ep === "health")
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.health())`;
+          if (ep === "pco_public")
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.get_public_pco('${caseId}'))`;
+        }
+        if (kind === "ts") {
+          if (ep === "health")
+            return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.health())`;
+          if (ep === "pco_public")
+            return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.getPublicPCO('${caseId}'))`;
+        }
+        if (kind === "go") {
+          if (ep === "health")
+            return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.Health()\nfmt.Println(resp)`;
+          if (ep === "pco_public")
+            return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.GetPublicPCO("${caseId}")\nfmt.Println(resp)`;
+        }
+        return "—";
+      }
+
+      function refreshDevex() {
+        if (!elDevexSnippet) return;
+        elDevexSnippet.textContent = devexSnippet();
+      }
+      elDevexKind?.addEventListener("change", refreshDevex);
+      elDevexEndpoint?.addEventListener("change", refreshDevex);
+      refreshDevex();
+
+      document.getElementById("devexCopy")?.addEventListener("click", () => {
+        if (!elDevexSnippet) return;
+        navigator.clipboard.writeText(elDevexSnippet.textContent || "").then(
+          () => toast(t("toast_copied")),
+        );
+      });
+      document.getElementById("devexRun")?.addEventListener("click", async () => {
+        try {
+          const ep = elDevexEndpoint?.value || "health";
+          let res;
+          if (ep === "health") res = await fetch(`${DEVEX_BASE}/health`);
+          if (ep === "pco_public") {
+            const caseId = document.getElementById("caseId").value || "case-001";
+            res = await fetch(`${DEVEX_BASE}/pco/public/${encodeURIComponent(caseId)}`);
+          }
+          if (!res || !res.ok) throw new Error(String(res && res.status));
+          toast(t("toast_copied"));
+        } catch (e) {
+          toast(String(e));
+        }
+      });
     </script>
   </body>
 </html>

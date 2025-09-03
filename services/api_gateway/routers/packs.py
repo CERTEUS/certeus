@@ -52,6 +52,7 @@ router = APIRouter(prefix="/v1/packs", tags=["packs"])
 
 
 @router.get("/", summary="List available packs")
+@router.get("", summary="List available packs (alias)")
 async def list_packs() -> list[dict[str, Any]]:
     infos = discover()
 

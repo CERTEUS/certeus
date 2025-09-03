@@ -655,3 +655,12 @@ curl -sX POST "$CER_BASE/v1/proofgate/publish" \
   -d '{"pco": {"case_id":"CER-LEX-99","risk":{"ece":0.01,"brier":0.05,"abstain_rate":0.1},"tee":{"attested":false}}, "budget_tokens": 10 }' | jq
 ```
 Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
+
+## W14: UX/A11y/i18n/Marketplace — Demo
+
+- Marketplace demo: docs/runbooks/marketplace_demo.md
+- Billing/Cost‑tokens: docs/runbooks/billing_tokens.md
+- cURL: docs/curl_examples.md
+- A11y: skip links + landmark `role="main"` w UI (Proof Visualizer, Mismatch Console)
+- Ω‑Kernel holonomia: scripts/gates/compute_gauge_drift.py (drift z transformacji PL↔EN)
+

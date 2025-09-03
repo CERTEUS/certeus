@@ -27,3 +27,11 @@
 ## Kontakt
 Dyskusje → **Discussions / Proposal**.  
 E-mail: `kontakt@certeus.pl`
+
+## Polityka publikacji (LITE)
+- Publicznie pokazujemy wyłącznie landing, assets, `Overview API` i pliki polityk.
+- Nie publikujemy: kodu core, testów, pełnych kontraktów API, infra, coverage.
+- Mirror budowany jest automatycznie z allowlisty i publikowany jako jeden squash-commit (autor: Radosław Skarżycki).
+- Każde wydanie ma ślad: PROVENANCE.md (źródłowy SHA + data).
+- Publikacja działa tylko, gdy `MIRROR_PUBLISH == "enabled"`.
+- Wymagane checki mirrora: `Docs-Site`, `CI-Public-Light`, `Policy-Scan` (FF-only).

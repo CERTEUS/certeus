@@ -48,6 +48,25 @@
         }
       ]
     }
+    ,
+    {
+      "type": "table",
+      "title": "p95 latency by tenant (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_tenant_bucket[5m])) by (le, tenant))"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Error rate by tenant (5m)",
+      "targets": [
+        {
+          "expr": "sum(rate(certeus_http_requests_total{status=~\"5..\"}[5m])) by (tenant) / sum(rate(certeus_http_requests_total[5m])) by (tenant)"
+        }
+      ]
+    }
   ],
   "time": { "from": "now-6h", "to": "now" }
 }

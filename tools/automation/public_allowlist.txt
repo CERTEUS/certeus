@@ -11,6 +11,8 @@ docs/assets/**
 .github/workflows/ci_public_light.yml
 .github/workflows/policies-report.yml
 .github/workflows/policy-scan.yml
+.github/workflows/mirror_freshness.yml
+.github/workflows/mirror_pages_health.yml
 tools/automation/public_allowlist.txt
 PROVENANCE.md
 docs/robots.txt

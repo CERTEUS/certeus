@@ -1,0 +1,67 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/index.html                         |
+| ROLE: Landing & Demo (W17 Go-to-Market)                     |
+| PLIK: clients/web/public/index.html                         |
+| ROLA: Landing + linki do sandboxów                          |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Proof-Native Platform</title>
+    <meta name="description" content="Proof‑Native platform: Geometry • Quantum • Boundary • Devices" />
+    <!-- Open Graph / Social Preview -->
+    <meta property="og:title" content="CERTEUS — Proof‑Native Platform" />
+    <meta property="og:description" content="Try now: live sandbox • Public PCO • OpenAPI" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/app/public/brand/apple-touch-icon.png" />
+    <meta property="og:image:alt" content="CERTEUS" />
+    <meta property="og:site_name" content="CERTEUS" />
+    <link rel="icon" href="/app/public/brand/favicon.svg" />
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        margin: 0;
+        background: #0f1114;
+        color: #f2f2f3;
+      }
+      .wrap { max-width: 960px; margin: 40px auto; padding: 0 16px; }
+      .card { background: #161a1f; border: 1px solid #2a2d33; border-radius: 14px; padding: 20px; }
+      h1 { margin: 0 0 8px; font-size: 26px; }
+      p { color: #a2a8b0; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      .btn { background: #1a1e24; border: 1px solid #2a2d33; color: #f2f2f3; padding: 10px 14px; border-radius: 10px; text-decoration: none; }
+      .btn:hover { background: #20252c; }
+      .links { margin-top: 12px; }
+      .links a { color: #9aa0a6; margin-right: 16px; }
+      .pill { display: inline-block; padding: 4px 8px; border: 1px solid #2a2d33; border-radius: 999px; background: #20242a; margin-left: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>CERTEUS — Proof‑Native Platform<span class="pill">W17</span></h1>
+        <p>Geometry • QTMP • Boundary • Devices • Ledger • Public PCO</p>
+        <div class="row">
+          <a class="btn" href="/app/public/qtm.html">Try now: QTMP sandbox</a>
+          <a class="btn" href="/app/proof_visualizer/index.html">Proof Visualizer</a>
+          <a class="btn" href="/docs">Docs</a>
+        </div>
+        <div class="links">
+          <a href="/openapi.json" target="_blank">OpenAPI</a>
+          <a href="/v1/billing/policies" target="_blank">Billing policies</a>
+          <a href="/pco/public/RID-EXAMPLE" target="_blank">Public PCO (example RID)</a>
+          <a href="/v1/metrics" target="_blank">/metrics</a>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>
+

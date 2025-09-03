@@ -144,6 +144,75 @@ async def why_not_export(req: WhyNotRequest, request: Request) -> WhyNotResponse
     return WhyNotResponse(ok=True, trace_uri=trace_uri)
 
 
+# --- Pilot W16: 3 sprawy E2E + feedback ---
+
+
+class PilotCase(BaseModel):
+    case_id: str
+    title: str
+    status: str
+
+
+class PilotCasesResponse(BaseModel):
+    cases: list[PilotCase]
+
+
+class PilotFeedbackRequest(BaseModel):
+    case_id: str
+    rating: int = Field(ge=1, le=5)
+    comments: str | None = None
+
+
+class PilotFeedbackResponse(BaseModel):
+    ok: bool
+    case_id: str
+    rating: int
+
+
+_PILOT_CASES: list[PilotCase] = [
+    PilotCase(case_id="LEX-PILOT-001", title="Umowa pożyczki — spór o odsetki", status="IN_PROGRESS"),
+    PilotCase(case_id="LEX-PILOT-002", title="Odszkodowanie komunikacyjne — regres", status="IN_PROGRESS"),
+    PilotCase(case_id="LEX-PILOT-003", title="Naruszenie dóbr osobistych — przeprosiny", status="IN_PROGRESS"),
+]
+
+_PILOT_FEEDBACK: dict[str, list[int]] = {}
+
+
+@router.get("/pilot/cases", response_model=PilotCasesResponse)
+async def pilot_cases(request: Request) -> PilotCasesResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    return PilotCasesResponse(cases=_PILOT_CASES)
+
+
+@router.post("/pilot/feedback", response_model=PilotFeedbackResponse)
+async def pilot_feedback(req: PilotFeedbackRequest, request: Request, response: Response) -> PilotFeedbackResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    tenant = get_tenant_id(request)
+    rating = int(req.rating)
+    _PILOT_FEEDBACK.setdefault(req.case_id, []).append(rating)
+
+    # Metryki + PCO
+    try:
+        from monitoring.metrics_slo import certeus_lex_pilot_feedback_total, certeus_lex_pilot_last_rating
+
+        certeus_lex_pilot_feedback_total.labels(case=req.case_id, tenant=tenant).inc()
+        certeus_lex_pilot_last_rating.labels(case=req.case_id, tenant=tenant).set(float(rating))
+    except Exception:
+        pass
+    try:
+        response.headers["X-CERTEUS-PCO-lex.pilot.feedback"] = json.dumps(
+            {"case": req.case_id, "rating": rating, "tenant": tenant}, separators=(",", ":")
+        )
+    except Exception:
+        pass
+
+    return PilotFeedbackResponse(ok=True, case_id=req.case_id, rating=rating)
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
