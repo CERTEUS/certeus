@@ -50,7 +50,7 @@ jobs:
           else
             echo "promote=false" >> $GITHUB_OUTPUT
           fi
-      # ci-gates conclusion is already 'success' by job condition above
+      # ci-gates conclusion is already 'success' by job condition above${insert}
       - name: Append WORKLOG on work/daily (pre-merge)
         if: steps.marker.outputs.promote == 'true'
         env:
@@ -96,3 +96,5 @@ jobs:
           fi
           # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
           gh pr merge "$PR_NUM" --auto --squash || true
+
+
