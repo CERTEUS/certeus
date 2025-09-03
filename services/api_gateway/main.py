@@ -287,8 +287,6 @@ app.include_router(jwks_router)
 app.include_router(metrics.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
-
-
 # --- blok --- Health i root redirect -------------------------------------------
 
 

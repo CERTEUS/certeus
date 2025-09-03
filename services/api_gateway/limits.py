@@ -16,11 +16,11 @@
 
 """
 
-PL: Limity i budżety per-tenant (Proof‑Cost tokens) z wsparciem prostych
+PL: Limity i budżety per-tenant (Proof-Cost tokens) z wsparciem prostych
     polityk cennikowych (tiering) z pliku JSON. Fallback do stałych domyślnych,
     jeżeli plik polityk nie jest dostępny.
 
-EN: Per‑tenant limits and budgets (Proof‑Cost tokens) with simple pricing
+EN: Per-tenant limits and budgets (Proof-Cost tokens) with simple pricing
     policies (tiering) loaded from a JSON file. Falls back to static defaults
     when the policy file is not available.
 
@@ -196,6 +196,7 @@ _LOCK = Lock()
 
 # +=====================================================================+
 
+<<<<<<< HEAD
 __all__ = [
     "enforce_limits",
     "set_tenant_quota",
@@ -203,6 +204,9 @@ __all__ = [
     "get_tenant_balance",
     "refund_tenant_units",
 ]
+=======
+__all__ = ["enforce_limits", "set_tenant_quota", "get_tenant_id"]
+>>>>>>> origin/main
 
 # In-memory MVP (można później podmienić na Redis/TokenBank)
 

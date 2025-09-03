@@ -22,3 +22,12 @@ PROVENANCE_HISTORY.md
 docs/404.md
 docs/robots.txt
 .github/ISSUE_TEMPLATE/release-polish.md
+.github/workflows/ci_public.yml
+.github/PULL_REQUEST_TEMPLATE.md
+CODEOWNERS
+DEV_WORKFLOW.md
+docs/**
+clients/web/**
+services/api_gateway/**
+core/**
+observability/**

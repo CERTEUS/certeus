@@ -80,7 +80,7 @@ jobs:
             echo "ff=true" >> $GITHUB_OUTPUT
             git push origin main
             exit 0
-          } || echo "No fast-forward possible; will create/auto-merge PR."
+          } || echo "No fast-forward possible; skipping (PR path disabled)."
           echo "ff=false" >> $GITHUB_OUTPUT
       - name: Create or auto-merge PR (work/daily -> main)
         if: steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
@@ -96,5 +96,4 @@ jobs:
           fi
           # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
           gh pr merge "$PR_NUM" --auto --squash || true
-
 

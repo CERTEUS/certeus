@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CERTEUS
 
 > **Dowód, nie opinia.**  
@@ -16,3 +17,12 @@
 ### Moto
 > „Nie gonimy za szumem. Publikujemy to, co możemy podpisać.”  
 > — Radosław Skarżycki / CERTEUS
+=======
+CERTEUS Documentation
+
+Welcome to the CERTEUS docs.
+
+- API: see API section (rendered from OpenAPI).
+- Observability: quickstart and dashboards.
+
+>>>>>>> origin/main

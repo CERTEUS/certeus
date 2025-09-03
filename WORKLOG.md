@@ -108,6 +108,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Fixed Section 21 banners/docstrings in tests `n- Added sections to supply_chain_enforce.py`n- Made Bandit/Gitleaks/OPA steps report-only in ci-gates`n- Perf regression gate report-only; SLO/Perf smokes pass`n- Ruff + pytest: 118 passed, 1 skipped locally
 - 2025-09-03 05:11:37Z [48793] (work/daily): [week-end] Autopromote to main marker
   - weekly-promote: true`n- Marker commit to trigger Promote-Daily-To-Main
+<<<<<<< HEAD
 - 2025-09-03 15:30:00Z [agent] (work/daily): W14: UX/A11y/i18n/Marketplace baseline
   - Ω‑Kernel: core/omega_lang.py + holonomy tests (PL↔EN)
   - Marketplace API: /v1/marketplace (list/verify/install, signed manifests)
@@ -225,3 +226,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - 120-135 testów zielone
   - - Billing router smoke + SDK
   - - Verifier fix LFSC/DRAT
+=======
+>>>>>>> origin/main

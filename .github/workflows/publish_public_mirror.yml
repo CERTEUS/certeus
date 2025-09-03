@@ -15,14 +15,20 @@ on:
 
 jobs:
   mirror:
+<<<<<<< HEAD
     if: ${{ (github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily')) && vars.MIRROR_PUBLISH == 'enabled' }}
     runs-on: ubuntu-latest
+=======
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
+    runs-on: [self-hosted, linux, docker, build]
+>>>>>>> origin/main
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Secret scan (gitleaks)
+<<<<<<< HEAD
         if: ${{ false }}
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
@@ -322,6 +328,15 @@ MD
           python -m pip install git-filter-repo
       - name: Filter repository to allowlist
         if: ${{ false }}
+=======
+        uses: zricethezav/gitleaks-action@v2.3.7
+        with:
+          args: detect --redact --no-banner --exit-code 1
+      - name: Install git-filter-repo
+        run: |
+          python -m pip install git-filter-repo
+      - name: Filter repository to allowlist
+>>>>>>> origin/main
         run: |
           rm -rf mirror && git clone --mirror . mirror
           cd mirror
@@ -333,6 +348,7 @@ MD
           git filter-repo "${ARGS[@]}"
           git for-each-ref --format='delete %(refname)' refs/original/ | git update-ref --stdin || true
           git repack -Ad && git prune --expire=now || true
+<<<<<<< HEAD
       - name: Prepare worktree (convert from bare)
         if: ${{ false }}
         run: |
@@ -376,6 +392,9 @@ MD
           git update-ref -m "squash" refs/heads/main "$new_commit"
       - name: Push to public repo (force)
         if: ${{ false }}
+=======
+      - name: Push to public repo (force)
+>>>>>>> origin/main
         env:
           PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}
         run: |
