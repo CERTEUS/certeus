@@ -57,13 +57,17 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/lint_ok.txt
-      - name: Bandit security scan
+      - name: Bandit security scan (report-only)
+        continue-on-error: true
         run: |
           python -m pip install bandit
-          bandit -q -r . -x .venv,venv,clients/web,clients/cli,dist,build || exit 1
+          # Report-only in ci-gates; enforcement lives in dedicated workflow
+          bandit -q -r . -x .venv,venv,clients/web,clients/cli,dist,build || true
       - name: Gitleaks (secrets scan)
+        continue-on-error: true
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
+          # Report-only for ci-gates; blocking in security-scan.yml
           args: detect --verbose --redact --no-banner --exit-code 1
       - name: Tests
         env:

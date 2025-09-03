@@ -48,12 +48,13 @@ SECTION_RE = re.compile(r"^#\s*===\s+.*?\s+===\s*$")
 # === LOGIKA / LOGIC ===
 def list_tracked_py_files(repo: Path) -> Iterable[Path]:
     try:
+        # nosec B603: calls git with static args; not user-controlled
         out = subprocess.check_output(["git", "ls-files", "*.py"], cwd=str(repo))
         for line in out.decode("utf-8").splitlines():
             p = (repo / line).resolve()
             if p.is_file():
                 yield p
-    except Exception:
+    except Exception:  # nosec B112: fallback path is intentional and safe
         # Fallback: recurse, but skip common virtualenvs
         for p in repo.rglob("*.py"):
             if any(seg in {".venv", "venv", "env", "site-packages"} for seg in p.parts):

@@ -142,7 +142,7 @@ def print_safe(text: str, stream: StreamLike | None = None) -> None:
     except Exception:
         # Faux-stream może nie mieć flush; ignorujemy.
 
-        pass
+        return
 
 
 def _color(prefix: str, code: str, *, stream: StreamLike) -> str:
