@@ -1,0 +1,11 @@
+# Gitleaks configuration (minimal, redact output)
+[rules]
+
+[allowlist]
+  description = "Allow test fixtures and sample hashes"
+  paths = [
+    "tests/",
+    "docs/",
+    "clients/web/",
+  ]
+

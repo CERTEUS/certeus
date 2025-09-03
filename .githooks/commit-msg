@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MSG_FILE="$1"
+MSG_CONTENT="$(cat "$MSG_FILE")"
+
+# Block Co-authored-by lines
+if grep -qiE '^Co-authored-by:' "$MSG_FILE"; then
+  echo "Commit message contains 'Co-authored-by:' which is not allowed." >&2
+  exit 1
+fi
+
+# Enforce Conventional Commits: type(scope?): summary
+if ! grep -qE '^(feat|fix|chore|docs|refactor|test|ci|build|perf|style)(\([a-z0-9_\-]+\))?: .+' "$MSG_FILE"; then
+  echo "Commit message must follow Conventional Commits: type(scope?): summary" >&2
+  exit 1
+fi
+
+exit 0
+

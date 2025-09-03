@@ -1,17 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-staged=$(git diff --name-only --cached)
-blocked=()
-for f in $staged; do
-  if [ "$f" = ".env" ] || [ "$f" = ".env.local" ] || [[ "$f" == .devkeys/* ]] || [[ "$f" == .devkeys\\* ]]; then
-    blocked+=("$f")
-  fi
-done
+# Block files from denylist from being committed.
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+DENYLIST_FILE="$REPO_ROOT/tools/automation/denylist.txt"
 
-if [ ${#blocked[@]} -gt 0 ]; then
-  echo "Zablokowano commit tajnych plików: ${blocked[*]}" >&2
-  exit 1
+if [[ -f "$DENYLIST_FILE" ]]; then
+  mapfile -t STAGED < <(git diff --cached --name-only)
+  mapfile -t PATTERNS < "$DENYLIST_FILE"
+  VIOLATIONS=()
+  for p in "${STAGED[@]}"; do
+    for pat in "${PATTERNS[@]}"; do
+      # Skip comments and empty lines
+      [[ -z "$pat" || "$pat" =~ ^# ]] && continue
+      if [[ "$p" == $pat ]]; then
+        VIOLATIONS+=("$p matches $pat")
+        break
+      fi
+      # Glob match
+      if [[ "$p" == $pat ]]; then
+        VIOLATIONS+=("$p matches $pat")
+        break
+      fi
+    done
+  done
+  if (( ${#VIOLATIONS[@]} > 0 )); then
+    echo "Commit blocked by denylist patterns:" >&2
+    printf ' - %s\n' "${VIOLATIONS[@]}" >&2
+    exit 1
+  fi
 fi
 
 exit 0
