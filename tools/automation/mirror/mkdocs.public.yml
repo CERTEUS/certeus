@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tools/automation/mirror/mkdocs.public.yml            |
+# | ROLE: Public mirror MkDocs config.                           |
+# | PLIK: tools/automation/mirror/mkdocs.public.yml            |
+# | ROLA: Konfiguracja MkDocs dla mirrora publicznego.           |
+# +-------------------------------------------------------------+
+
 site_name: CERTEUS
 site_description: Verifiable Cognitive Intelligence — Dowód, nie opinia.
 site_url: https://certeus.github.io/certeus-public

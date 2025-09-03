@@ -1,3 +1,18 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tools/automation/mirror/build_lite_tree.py           |
+# | ROLE: Mirror builder.                                        |
+# | PLIK: tools/automation/mirror/build_lite_tree.py           |
+# | ROLA: Budowa drzewa publicznego z allowlisty.                |
+# +-------------------------------------------------------------+
+"""
+PL: Buduje drzewo mirroru publicznego z allowlisty i dodaje artefakt PROVENANCE.
+EN: Builds the public mirror tree from the allowlist and writes PROVENANCE.
+"""
+
+# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
 import glob
@@ -57,3 +72,9 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
+
+# === KONFIGURACJA / CONFIGURATION ===
+# === MODELE / MODELS ===
+# === LOGIKA / LOGIC ===
+# === I/O / ENDPOINTS ===
+# === TESTY / TESTS ===

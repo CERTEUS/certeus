@@ -140,6 +140,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)
   - LEX: /v1/lexenith/pilot/cases + /v1/lexenith/pilot/feedback (metryki+PCO)
   - Docs: quickstart SLO tenant, curl_examples W16, runbooks/w16_changelog.md
+- 2025-09-03 15:26:58Z [agent] (work/daily): W16: CI gates — Policy‑Scan scoped; Premium Style fixes
+  - CI: ograniczenie Policy‑Scan do repo publicznego (mirror)
+  - Style (sec.21): banery/sekcje dla SDK/smokes/scripts/mirror; proxy sections
+  - Demo: scripts/demos/w16_generate_tenant_traffic.py (ruch per‑tenant)
   - Docs: docs/runbooks/marketplace_demo.md, docs/runbooks/billing_tokens.md; cURL uzupełnione
   - Gauge Gate: holonomia Ω‑Kernel w compute_gauge_drift.py
 - 2025-09-03 18:00:00Z [agent] (work/daily): W17: Landing + billing policies + PR kit
@@ -147,6 +151,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Billing tiering: runtime/billing/policies.json + /v1/billing/policies
   - Legal: docs/legal/ToS.md, DPA.md, ff_release.md; PR: docs/pr/*
   - API: root redirect → /app/public/index.html
+- 2025-09-03 20:05:00Z [agent] (work/daily): W17+: Estimator, admin endpoints, SEO, demo runbook
+  - Billing: POST /v1/billing/estimate (koszt akcji), tests
+  - Admin DEV: POST /v1/billing/admin/set_tier, /admin/reload (+landing panel), tests
+  - SEO: meta OG/description dla cockpitów (geometry/quantum/lexenith)
+  - Runbook: docs/runbooks/w17_demo.md; Pricing: docs/pricing.md
 - 2025-09-03 19:10:00Z [agent] (work/daily): W14: i18n/A11y + OpenAPI runtime parity + demo outputs
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish

@@ -23,6 +23,8 @@
 ## Sprawdź
 - Strona: **https://certeus.github.io/certeus-public**  
 - Roadmap: [docs/ROADMAP.md](docs/ROADMAP.md) (zarys publiczny)
+- PROVENANCE: [PROVENANCE.md](PROVENANCE.md) (aktualny snapshot)  
+- PROVENANCE historia: [PROVENANCE_HISTORY.md](PROVENANCE_HISTORY.md)
 
 ## Kontakt
 Dyskusje → **Discussions / Proposal**.  

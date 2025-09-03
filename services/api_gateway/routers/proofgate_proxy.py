@@ -16,6 +16,8 @@ EN: Lightweight stub of /v1/proofgate/publish for OpenAPI compatibility on the
     API Gateway side (actual implementation lives in services.proofgate.app).
 """
 
+# === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from typing import Any
@@ -24,9 +26,20 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
 
 @router.post("/v1/proofgate/publish")
 def publish_stub(body: dict[str, Any] | None = None) -> dict[str, Any]:
     """PL/EN: Stub zwracający decyzję PENDING (zgodny z kontraktem)."""
 
     return {"status": "PENDING", "pco": (body or {}).get("pco"), "ledger_ref": None}
+
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
