@@ -6,10 +6,9 @@ This repository contains an allowlisted subset of the original project suitable 
 
 ## Status & Badges
 
-- Build: ![CI-Public](https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public.yml/badge.svg?branch=main)
-- Tests: ![Tests](https://github.com/CERTEUS/certeus-public/actions/workflows/tests.yml/badge.svg?branch=main)
 - Docs: ![Docs-Site](https://github.com/CERTEUS/certeus-public/actions/workflows/docs-site.yml/badge.svg?branch=main)
-- Coverage: ![Coverage](https://raw.githubusercontent.com/CERTEUS/certeus-public/main/docs/badges/coverage.svg)
+- CI (Light): ![CI-Public-Light](https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public_light.yml/badge.svg?branch=main)
+- Policy Scan: ![Policy-Scan](https://github.com/CERTEUS/certeus-public/actions/workflows/policy-scan.yml/badge.svg?branch=main)
 - License: AGPL-3.0
 
 ## Quickstart (60s)

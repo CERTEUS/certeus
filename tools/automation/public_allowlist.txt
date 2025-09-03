@@ -4,10 +4,9 @@ LICENSE
 mkdocs.yml
 SECURITY.md
 docs/index.md
-docs/api/openapi.md
-docs/api/openapi.yaml
+docs/landing/**
+docs/api/overview.md
 docs/assets/**
-docs/badges/**
 .github/workflows/docs-site.yml
 .github/workflows/ci_public_light.yml
 .github/workflows/policies-report.yml
