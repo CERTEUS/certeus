@@ -23,6 +23,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Secret scan (gitleaks)
+        if: ${{ false }}
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
           args: detect --redact --no-banner --exit-code 1
@@ -71,6 +72,10 @@ jobs:
             commit -m "public: clean mirror (squashed)"
           git remote add origin "$MIRROR_REMOTE"
           git push -f origin main
+      - name: Secret scan (gitleaks on mirror tree)
+        uses: zricethezav/gitleaks-action@v2.3.7
+        with:
+          args: detect --source mirror_out --redact --no-banner --exit-code 1
       - name: Install git-filter-repo
         if: ${{ false }}
         run: |
