@@ -16,8 +16,15 @@ EN: Informational PQ‑crypto gate. If PQCRYPTO_REQUIRE=1, expects READY via
 """
 from __future__ import annotations
 
+# === IMPORTY / IMPORTS ===
 import os
 from pathlib import Path
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def main() -> int:
@@ -36,3 +43,6 @@ def main() -> int:
 if __name__ == "__main__":
     raise SystemExit(main())
 
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

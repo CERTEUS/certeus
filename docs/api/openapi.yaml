@@ -11,11 +11,52 @@ openapi: 3.0.3
 info:
   title: CERTEUS API
   version: "1.0.0"
+  description: >-
+    Verifiable Cognitive Intelligence API. Proof-first endpoints for PCO,
+    ProofGate, QTMP, devices, billing and more. This description is required
+    by Spectral rules.
+  contact:
+    name: CERTEUS Team
+    url: https://github.com/CERTEUS/certeus
+    email: sre@certeus.dev
 servers:
   - url: http://localhost:8081
 externalDocs:
   description: Additional resources (endpoints, cURL, runbooks)
   url: https://github.com/CERTEUS/certeus/tree/main/docs
+tags:
+  - name: CFE
+    description: Case Field Equations
+  - name: QTMP
+    description: Quantum Truth Measurement Protocol
+  - name: Devices
+    description: Proof devices / oracles
+  - name: UPN
+    description: Unified Proof Number
+  - name: DR
+    description: Decision Replay/Recall
+  - name: ProofGate
+    description: Publication decision gate
+  - name: PCO
+    description: Proof Carrying Object
+  - name: System
+    description: System endpoints
+  - name: Sources
+    description: Legal sources cache
+  - name: Packs
+    description: Content and plugin packs
+  - name: Marketplace
+    description: Plugin marketplace
+  - name: Billing
+    description: Billing & quotas
+  - name: Ledger
+    description: Ledger access
+  - name: Boundary
+    description: Boundary reconstruction
+  - name: Finance
+    description: FINENITH finance API
+  - name: LEXENITH
+    description: LEXENITH pilot endpoints
 paths:
   /v1/cfe/geodesic:
     post:
@@ -97,11 +138,7 @@ paths:
       summary: Publication decision (ProofGate)
       tags: [ProofGate]
       responses: { "200": { description: ok } }
-  /v1/proofgate/publish:
-    post:
-      summary: Publication decision (ProofGate)
-      tags: [ProofGate]
-      responses: { "200": { description: ok } }
+  # (removed duplicate minimal ProofGate path; kept the full variant below)
   /v1/pco/bundle:
     post:
       summary: Create and publish ProofBundle (v0.2)
@@ -144,6 +181,7 @@ paths:
                   value:
                     version: "0.2"
                     case_id: "case-001"
+                    created_at: "2025-01-01T00:00:00Z"
                     rid: "case-001"
                     smt2_hash: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                     lfsc: "(lfsc proof)"
@@ -154,6 +192,7 @@ paths:
   /pco/public/{rid}:
     get:
       summary: Public payload of ProofBundle (zero PII)
+      tags: [PCO]
       parameters:
         - in: path
           name: rid
@@ -188,6 +227,7 @@ paths:
   /v1/sources/cache:
     post:
       summary: Cache a legal source by URI
+      tags: [Sources]
       requestBody:
         required: true
         content:
@@ -212,6 +252,7 @@ paths:
   /v1/proofgate/publish:
     post:
       summary: Publication decision (ProofGate)
+      tags: [ProofGate]
       requestBody:
         required: true
         content:
