@@ -12,3 +12,4 @@ docs/assets/**
 .github/workflows/policies-report.yml
 .github/workflows/policy-scan.yml
 tools/automation/public_allowlist.txt
+PROVENANCE.md

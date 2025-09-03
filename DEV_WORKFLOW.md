@@ -13,3 +13,6 @@ Private-only build: `.github/workflows/build_private.yml` (runs when repo is pri
 
 Self-hosted runner: see `infra/runner/` (docker compose with ephemeral runner).
 
+PAT rotacja (przypominajka)
+- Personal Access Token (ADMIN_TOKEN) rotujemy co 30–90 dni.
+- Po rotacji zaktualizuj `.devkeys/admin_token.txt` lub odśwież `gh auth` (scope: repo/workflow).

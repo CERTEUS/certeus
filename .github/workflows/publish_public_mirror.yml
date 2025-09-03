@@ -16,7 +16,7 @@ on:
 jobs:
   mirror:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
-    runs-on: [self-hosted, linux, docker, build]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -26,10 +26,57 @@ jobs:
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
           args: detect --redact --no-banner --exit-code 1
+      - name: Build LITE mirror tree and push (hosted)
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}
+        run: |
+          set -euo pipefail
+          MIRROR_DIR=mirror_out
+          PUSH_TOKEN="${ADMIN_TOKEN:-${PUBLIC_MIRROR_PAT:-}}"
+          if [ -z "$PUSH_TOKEN" ]; then
+            echo "No push token (ADMIN_TOKEN or PUBLIC_MIRROR_PAT) available" >&2
+            exit 1
+          fi
+          MIRROR_REMOTE="https://x-access-token:${PUSH_TOKEN}@github.com/CERTEUS/certeus-public.git"
+
+          # 1) Clean and build tree from allowlist
+          rm -rf "$MIRROR_DIR"
+          mkdir -p "$MIRROR_DIR"
+          shopt -s nullglob globstar dotglob
+          while IFS= read -r path || [[ -n "${path:-}" ]]; do
+            [[ -z "$path" ]] && continue
+            [[ "$path" =~ ^# ]] && continue
+            for p in $path; do
+              [ -e "$p" ] || continue
+              rsync -aR "$p" "$MIRROR_DIR"/
+            done
+          done < tools/automation/public_allowlist.txt
+
+          # 2) Replace public README/mkdocs/license if present
+          cp -f tools/automation/mirror/README.public.md "$MIRROR_DIR/README.md" || true
+          cp -f tools/automation/mirror/mkdocs.public.yml "$MIRROR_DIR/mkdocs.yml" || true
+          cp -f tools/automation/mirror/LICENSE-AGPL-3.0.txt "$MIRROR_DIR/LICENSE" || true
+
+          # 3) PROVENANCE trail
+          ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          printf "Source: CERTEUS/certeus@%s\nPublished: %s\nMode: LITE (allowlist + squash)\n" "$GITHUB_SHA" "$ts" > "$MIRROR_DIR/PROVENANCE.md"
+
+          # 4) Init and push to 'main' with branded author
+          cd "$MIRROR_DIR"
+          git init
+          git checkout -b main
+          git add -A
+          git -c user.name="Radosław Skarżycki" -c user.email="skarzyckiradoslaw@gmail.com" \
+            commit -m "public: clean mirror (squashed)"
+          git remote add origin "$MIRROR_REMOTE"
+          git push -f origin main
       - name: Install git-filter-repo
+        if: ${{ false }}
         run: |
           python -m pip install git-filter-repo
       - name: Filter repository to allowlist
+        if: ${{ false }}
         run: |
           rm -rf mirror && git clone --mirror . mirror
           cd mirror
@@ -41,7 +88,16 @@ jobs:
           git filter-repo "${ARGS[@]}"
           git for-each-ref --format='delete %(refname)' refs/original/ | git update-ref --stdin || true
           git repack -Ad && git prune --expire=now || true
+      - name: Prepare worktree (convert from bare)
+        if: ${{ false }}
+        run: |
+          set -euo pipefail
+          cd mirror
+          git config --local core.bare false
+          git config --local core.worktree .
+          git reset --hard
       - name: Replace README and LICENSE for mirror
+        if: ${{ false }}
         run: |
           set -euo pipefail
           test -f tools/automation/mirror/README.public.md || { echo "mirror README asset missing" >&2; exit 1; }
@@ -54,6 +110,7 @@ jobs:
           git add README.md LICENSE || true
           git commit -m "chore(mirror): apply public README + AGPL license" || true
       - name: Replace mkdocs with public minimal config
+        if: ${{ false }}
         run: |
           set -euo pipefail
           test -f tools/automation/mirror/mkdocs.public.yml || { echo "mkdocs.public.yml missing" >&2; exit 1; }
@@ -62,12 +119,18 @@ jobs:
           git add mkdocs.yml || true
           git commit -m "chore(mirror): apply public mkdocs config" || true
       - name: Squash history to single clean commit
+        if: ${{ false }}
         run: |
           set -euo pipefail
           cd mirror
+          export GIT_AUTHOR_NAME="Radosław Skarżycki"
+          export GIT_AUTHOR_EMAIL="skarzyckiradoslaw@gmail.com"
+          export GIT_COMMITTER_NAME="Radosław Skarżycki"
+          export GIT_COMMITTER_EMAIL="skarzyckiradoslaw@gmail.com"
           new_commit=$(git commit-tree HEAD^{tree} -m "public: clean mirror (squashed)")
           git update-ref -m "squash" refs/heads/main "$new_commit"
       - name: Push to public repo (force)
+        if: ${{ false }}
         env:
           PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}
         run: |
