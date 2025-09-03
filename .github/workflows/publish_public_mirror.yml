@@ -41,6 +41,18 @@ jobs:
           git filter-repo "${ARGS[@]}"
           git for-each-ref --format='delete %(refname)' refs/original/ | git update-ref --stdin || true
           git repack -Ad && git prune --expire=now || true
+      - name: Replace README and LICENSE for mirror
+        run: |
+          set -euo pipefail
+          test -f tools/automation/mirror/README.public.md || { echo "mirror README asset missing" >&2; exit 1; }
+          test -f tools/automation/mirror/LICENSE-AGPL-3.0.txt || { echo "mirror LICENSE asset missing" >&2; exit 1; }
+          cd mirror
+          git config user.name "CERTEUS Bot"
+          git config user.email "bot@users.noreply.github.com"
+          cp -f ../tools/automation/mirror/README.public.md README.md
+          cp -f ../tools/automation/mirror/LICENSE-AGPL-3.0.txt LICENSE
+          git add README.md LICENSE || true
+          git commit -m "chore(mirror): apply public README + AGPL license" || true
       - name: Push to public repo (force)
         env:
           PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}

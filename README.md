@@ -15,6 +15,7 @@
 [![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![OpenAPI](https://img.shields.io/badge/openapi-latest-blue)](https://CERTEUS.github.io/certeus/openapi/openapi.json)
+[![Coverage](https://raw.githubusercontent.com/CERTEUS/certeus/main/docs/badges/coverage.svg)](https://github.com/CERTEUS/certeus/actions/workflows/ci_public.yml)
 
 <p align="center">
   <picture>
@@ -654,4 +655,3 @@ curl -sX POST "$CER_BASE/v1/proofgate/publish" \
   -d '{"pco": {"case_id":"CER-LEX-99","risk":{"ece":0.01,"brier":0.05,"abstain_rate":0.1},"tee":{"attested":false}}, "budget_tokens": 10 }' | jq
 ```
 Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
-
