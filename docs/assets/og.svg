@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0b0f1a"/>
+  <text x="60" y="200" fill="#9ae6b4" font-family="Inter,Segoe UI,Arial" font-size="72" font-weight="700">
+    CERTEUS — Verifiable Cognitive Intelligence
+  </text>
+  <text x="60" y="300" fill="#cbd5e1" font-family="Inter,Segoe UI,Arial" font-size="36">
+    Dowód, nie opinia. Publiczny front LITE. Core pod kołdrą.
+  </text>
+  <text x="60" y="380" fill="#94a3b8" font-family="Inter,Segoe UI,Arial" font-size="28">
+    certeus.github.io/certeus-public
+  </text>
+</svg>
+

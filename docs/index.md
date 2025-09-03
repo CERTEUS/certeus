@@ -1,18 +1,18 @@
 # CERTEUS
 
-> Dowód, nie opinia.  
-> Verifiable Cognitive Intelligence — weryfikowalność, polityki publikacji i praktyczna automatyzacja.
+> **Dowód, nie opinia.**  
+> Verifiable Cognitive Intelligence: weryfikowalność, polityki publikacji, odpowiedzialna automatyzacja.
 
-## Dlaczego?
-- Zaufanie: twierdzenia mają dowód i politykę publikacji.  
-- Kontrola: publiczny front jest lekki; pełna moc działa w prywatnym core.  
-- Higiena: publikację poprzedza policy-scan, link-check i health.
+## Po co?
+- **Zaufanie:** twierdzenia z dowodem i polityką.  
+- **Kontrola:** publiczny front jest lekki; pełna moc działa w prywatnym core.  
+- **Higiena:** publikację poprzedza policy-scan, link-check i health.
 
 ## Co tu znajdziesz?
-- Overview API — kierunek (bez pełnej specyfikacji).  
-- PROVENANCE — z jakiego commita i kiedy powstał ten mirror.  
-- Roadmap — najbliższe kroki rozwoju.
+- **Overview API** – kierunek (bez pełnej specyfikacji).  
+- **PROVENANCE** – z jakiego SHA i kiedy powstał mirror.  
+- **Roadmap** – najbliższe kroki.
 
-## Śledzenie postępów
-- Sprawdź PROVENANCE.md i statusy (Docs-Site, CI-Public-Light, Policy-Scan).
-
+### Moto
+> „Nie gonimy za szumem. Publikujemy to, co możemy podpisać.”  
+> — Radosław Skarżycki / CERTEUS
