@@ -216,6 +216,41 @@ def sign_manifest(payload: dict[str, Any]) -> dict[str, Any]:
     return {"signature_b64url": b64u}
 
 
+@router.post("/dry_run", summary="Validate manifest and name (no write)")
+def dry_run(req: InstallRequest) -> dict[str, Any]:
+    """PL: Waliduje nazwę, podpis i strukturę YAML — bez zapisu.
+
+    EN: Validates plugin name, signature and YAML structure — no write.
+    """
+    result: dict[str, Any] = {"ok": False, "errors": []}
+    # Name & path
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.name):
+        result.setdefault("errors", []).append("invalid_name")
+    pdir = (_PLUGINS_DIR / req.name).resolve()
+    plugins_root = _PLUGINS_DIR.resolve()
+    if not str(pdir).startswith(str(plugins_root)):
+        result.setdefault("errors", []).append("invalid_path")
+    # Signature
+    if not _verify_manifest(req.manifest_yaml, req.signature_b64u):
+        result.setdefault("errors", []).append("invalid_signature")
+    # YAML schema-lite
+    try:
+        data = yaml.safe_load(req.manifest_yaml) or {}
+        mod = str(data.get("module") or "").strip()
+        ver = str(data.get("version") or "").strip()
+        if not mod:
+            result.setdefault("errors", []).append("missing_module")
+        if ver and not re.fullmatch(r"\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?", ver):
+            result.setdefault("errors", []).append("invalid_version_semver")
+        result["module"] = mod
+        result["version"] = ver
+    except Exception:
+        result.setdefault("errors", []).append("invalid_yaml")
+    result["would_write_path"] = str(pdir)
+    result["ok"] = not result.get("errors")
+    return result
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

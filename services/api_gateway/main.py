@@ -345,6 +345,7 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
             certeus_http_request_duration_ms,
             certeus_http_request_duration_ms_tenant,
             certeus_http_requests_total,
+            record_http_observation,
         )
         from services.api_gateway.limits import get_tenant_id  # lazy import to avoid cycles
 
@@ -362,6 +363,8 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
             tenant=tenant, path=path_tmpl, method=method, status=status
         ).observe(dur_ms)
         certeus_http_requests_total.labels(tenant=tenant, path=path_tmpl, method=method, status=status).inc()
+        # In-proc quick summary aggregator (for /v1/metrics/summary)
+        record_http_observation(path_tmpl, method, status, tenant, dur_ms)
 
     except Exception:
         # Metrics must be best-effort; never break request flow

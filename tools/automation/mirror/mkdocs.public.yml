@@ -43,6 +43,10 @@ extra:
       content: Dowód, nie opinia. Publiczny front LITE. Core pod kołdrą.
     - name: twitter:image
       content: /assets/og.svg
+    - property: og:image:alt
+      content: CERTEUS — Dowód, nie opinia.
+    - name: author
+      content: Radosław Skarżycki (CERTEUS)
 nav:
   - Home: index.md
   - API Overview: api/overview.md

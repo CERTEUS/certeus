@@ -828,6 +828,10 @@
                 <button class="btn" id="devexCopy">Kopiuj</button>
                 <button class="btn secondary" id="devexRun">Playground</button>
               </div>
+              <div id="devexParamRow" class="stack" style="margin-bottom:8px; display:none">
+                <label id="devexParamLabel" for="devexParamInput" class="muted">Param</label>
+                <input id="devexParamInput" class="input" type="text" placeholder="wartość parametru" style="max-width:260px" />
+              </div>
               <div class="json" id="devexSnippet">—</div>
             </div>
           </div>
@@ -1535,17 +1539,17 @@
           // Find pco.public
           for (const p of Object.keys(paths)) {
             if (/^\/pco\/public\/.+/.test(p) && paths[p]?.get) {
-              opts.push({ value: 'pco_public', label: `GET ${p}` });
+              opts.push({ value: 'pco_public', label: `GET ${p}`, path: p });
               break;
             }
           }
           // pco bundle
           if (paths['/v1/pco/bundle']?.post) {
-            opts.push({ value: 'pco_bundle', label: 'POST /v1/pco/bundle' });
+            opts.push({ value: 'pco_bundle', label: 'POST /v1/pco/bundle', path: '/v1/pco/bundle' });
           }
           // analyze
           if (paths['/v1/analyze']?.post) {
-            opts.push({ value: 'analyze', label: 'POST /v1/analyze' });
+            opts.push({ value: 'analyze', label: 'POST /v1/analyze', path: '/v1/analyze' });
           }
           // write options if we found anything
           if (opts.length) {
@@ -1554,12 +1558,56 @@
               const option = document.createElement('option');
               option.value = o.value;
               option.textContent = o.label;
+              if (o.path) option.setAttribute('data-path', o.path);
               elDevexEndpoint.appendChild(option);
             }
           }
+          window.__DEVEX_SPEC__ = spec; // store for body heuristics
         } catch {}
       }
       fillEndpointsFromOpenAPI();
+
+      function endpointPath() {
+        const sel = elDevexEndpoint.options[elDevexEndpoint.selectedIndex];
+        return sel?.getAttribute('data-path') || '';
+      }
+
+      function firstPathParam(path) {
+        const m = /\{([^}]+)\}/.exec(path || '');
+        return m ? m[1] : '';
+      }
+
+      function resolveRef(schema, ref) {
+        try {
+          const name = String(ref).split('#/components/schemas/')[1];
+          return schema?.components?.schemas?.[name] || null;
+        } catch { return null; }
+      }
+
+      function buildBodyFromSchema(schema, root, depth = 0) {
+        if (!schema || depth > 5) return {};
+        if (schema.$ref) {
+          const t = resolveRef(root, schema.$ref);
+          if (t) return buildBodyFromSchema(t, root, depth + 1);
+        }
+        const typ = schema.type || (schema.oneOf ? schema.oneOf[0]?.type : undefined);
+        if (typ === 'object' || schema.properties) {
+          const req = new Set(schema.required || []);
+          const out = {};
+          for (const [k, v] of Object.entries(schema.properties || {})) {
+            const sub = buildBodyFromSchema(v, root, depth + 1);
+            out[k] = sub === {} && v?.type === 'string' ? (req.has(k) ? `${k}_value` : '') : sub;
+            if (v?.type === 'number') out[k] = 0;
+            if (v?.type === 'integer') out[k] = 0;
+            if (v?.type === 'array') out[k] = [];
+          }
+          return out;
+        }
+        if (typ === 'array') return [];
+        if (typ === 'string') return '';
+        if (typ === 'integer' || typ === 'number') return 0;
+        return {};
+      }
 
       function devexSnippet() {
         const kind = elDevexKind?.value || "curl";

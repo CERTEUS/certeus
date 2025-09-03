@@ -170,6 +170,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Marketplace API: hardening nazw folderów i path traversal + endpoint `sign_manifest` (DEV)
   - Visualizer: klawiaturowa nawigacja po zakładkach + aria-selected
   - Marketplace UI: drag&drop/wgraj plik + heurystyczna walidacja YAML
+  - API: `/v1/marketplace/dry_run` (walidacja bez zapisu; name/path/signature/semver)
   - Lint/test: 129 passed, 1 skipped; demo+smokes uruchomione lokalnie
 - 2025-09-03 14:39:26Z [root] (work/daily): W18: Launch — kontrakt OpenAPI domknięty + zielone testy
   - - Alias /v1/proofgate/publish w API Gateway

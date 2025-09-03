@@ -37,6 +37,48 @@ EN: CERTEUS module – please complete the functional description.
 from __future__ import annotations
 
 from prometheus_client import Counter, Gauge, Histogram
+from threading import Lock
+
+# In‑proc lightweight aggregator for quick summaries (landing widgets, API)
+_REQ_AGG_LOCK: Lock = Lock()
+_REQ_AGG: dict[tuple[str, str], dict[str, float]] = {}
+
+
+def record_http_observation(path: str, method: str, status: str, tenant: str, dur_ms: float) -> None:
+    """Record a simple aggregate for (path, method): count, sum_ms, last_ms.
+
+    This is supplementary to Prometheus metrics and intended for quick JSON
+    summaries without scraping the /metrics exposition.
+    """
+
+    key = (str(path), str(method))
+    with _REQ_AGG_LOCK:
+        st = _REQ_AGG.get(key)
+        if not st:
+            st = {"count": 0.0, "sum_ms": 0.0, "last_ms": 0.0}
+            _REQ_AGG[key] = st
+        st["count"] += 1.0
+        st["sum_ms"] += float(dur_ms)
+        st["last_ms"] = float(dur_ms)
+
+
+def http_summary(top: int = 10) -> dict[str, object]:
+    """Return a snapshot summary of top endpoints by average latency and by count."""
+
+    with _REQ_AGG_LOCK:
+        items = [
+            {
+                "path": k[0],
+                "method": k[1],
+                "count": int(v.get("count", 0.0)),
+                "avg_ms": (v.get("sum_ms", 0.0) / v.get("count", 1.0)),
+                "last_ms": v.get("last_ms", 0.0),
+            }
+            for k, v in _REQ_AGG.items()
+        ]
+    by_avg = sorted(items, key=lambda x: x["avg_ms"], reverse=True)[:top]
+    by_count = sorted(items, key=lambda x: x["count"], reverse=True)[:top]
+    return {"top_avg_ms": by_avg, "top_count": by_count, "total_paths": len(items)}
 
 # Gauges for model calibration and decision quality
 

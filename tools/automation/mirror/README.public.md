@@ -27,8 +27,8 @@
 - PROVENANCE historia: [PROVENANCE_HISTORY.md](PROVENANCE_HISTORY.md)
 
 ## Kontakt
-Dyskusje → **Discussions / Proposal**.  
-E-mail: `kontakt@certeus.pl`
+- **Dyskusje / Propozycje:** https://github.com/CERTEUS/certeus-public/discussions
+- **E-mail:** kontakt@certeus.pl
 
 ## Polityka publikacji (LITE)
 - Publicznie pokazujemy wyłącznie landing, assets, `Overview API` i pliki polityk.

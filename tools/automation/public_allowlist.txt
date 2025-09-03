@@ -7,6 +7,7 @@ docs/index.md
 docs/landing/**
 docs/api/overview.md
 docs/assets/**
+docs/.well-known/security.txt
 .github/workflows/docs-site.yml
 .github/workflows/ci_public_light.yml
 .github/workflows/policies-report.yml

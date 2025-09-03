@@ -195,6 +195,10 @@ jobs:
           FAV_STATUS=$(curl -sI -o /dev/null -w "%{http_code}" "$fav" || echo 000)
           OG_STATUS=$(curl -sI -o /dev/null -w "%{http_code}" "$og" || echo 000)
           ASSETS_STATUS="favicon=${FAV_STATUS}, og.svg=${OG_STATUS}"
+          # Ping sitemaps (best-effort)
+          SITEMAP="https://certeus.github.io/certeus-public/sitemap.xml"
+          curl -fsS "https://www.google.com/ping?sitemap=${SITEMAP}" || true
+          curl -fsS "https://www.bing.com/ping?sitemap=${SITEMAP}" || true
           # Resolve exact last run links (html_url)
           LAST_DOCS_MIRROR=$(gh api repos/CERTEUS/certeus-public/actions/workflows/docs-site.yml/runs -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1 || echo "")
           LAST_DOCS_CORE=$(gh api repos/CERTEUS/certeus/actions/workflows/docs-site.yml/runs -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1 || echo "")
