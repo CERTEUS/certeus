@@ -1,0 +1,44 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/policy-scan.yml                     |
+# | ROLE: Verify public allowlist + deny patterns               |
+# +-------------------------------------------------------------+
+
+name: Policy-Scan
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  policy-scan:
+    name: policy-scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check no forbidden file patterns
+        run: |
+          set -euo pipefail
+          git ls-files | grep -Ei '\\.devkeys|\\.env|id_rsa|id_ed25519|\\.pem|\\.key|docs/90_dni_work\\.md|docs/AGENTS|docs/legal|packs/.*/input|packs/.*/evidence' && {
+            echo 'Forbidden paths detected in public mirror' >&2; exit 1; } || echo 'OK: no forbidden paths.'
+      - name: Verify files are within allowlist
+        run: |
+          python - <<'PY'
+          import fnmatch, sys, pathlib
+          root = pathlib.Path('.')
+          allow = []
+          for line in (root/'tools/automation/public_allowlist.txt').read_text(encoding='utf-8').splitlines():
+              line = line.strip()
+              if not line or line.startswith('#'): continue
+              allow.append(line)
+          files = [str(p).replace('\\\\','/') for p in root.rglob('*') if p.is_file() and '.git/' not in str(p)]
+          def allowed(path:str)->bool:
+              return any(fnmatch.fnmatch(path, pat) for pat in allow)
+          bad = [f for f in files if not allowed(f)]
+          if bad:
+              print('Files outside allowlist:', *bad, sep='\n', file=sys.stderr)
+              sys.exit(1)
+          print('OK: all files match allowlist patterns')
+          PY
+

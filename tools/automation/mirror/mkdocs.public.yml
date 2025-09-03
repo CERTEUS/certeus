@@ -1,0 +1,15 @@
+# Minimal mkdocs for public mirror
+site_name: CERTEUS Public
+site_url: https://CERTEUS.github.io/certeus-public
+theme:
+  name: material
+  language: en
+nav:
+  - Home: index.md
+  - API: api/openapi.md
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - toc
+

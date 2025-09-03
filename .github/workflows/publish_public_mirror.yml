@@ -53,6 +53,20 @@ jobs:
           cp -f ../tools/automation/mirror/LICENSE-AGPL-3.0.txt LICENSE
           git add README.md LICENSE || true
           git commit -m "chore(mirror): apply public README + AGPL license" || true
+      - name: Replace mkdocs with public minimal config
+        run: |
+          set -euo pipefail
+          test -f tools/automation/mirror/mkdocs.public.yml || { echo "mkdocs.public.yml missing" >&2; exit 1; }
+          cd mirror
+          cp -f ../tools/automation/mirror/mkdocs.public.yml mkdocs.yml
+          git add mkdocs.yml || true
+          git commit -m "chore(mirror): apply public mkdocs config" || true
+      - name: Squash history to single clean commit
+        run: |
+          set -euo pipefail
+          cd mirror
+          new_commit=$(git commit-tree HEAD^{tree} -m "public: clean mirror (squashed)")
+          git update-ref -m "squash" refs/heads/main "$new_commit"
       - name: Push to public repo (force)
         env:
           PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}

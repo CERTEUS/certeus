@@ -1,0 +1,31 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/ci_public_light.yml                 |
+# | ROLE: Lightweight CI for public mirror                      |
+# +-------------------------------------------------------------+
+
+name: CI-Public-Light
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci-public-light:
+    name: ci-public-light
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Spectral (OpenAPI)
+        run: npx -y @stoplight/spectral-cli lint docs/api/openapi.yaml
+      - name: Build docs (no deploy)
+        run: |
+          python -m pip install -U pip wheel setuptools
+          python -m pip install mkdocs mkdocs-material
+          mkdocs build -d _site
+

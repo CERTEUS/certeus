@@ -9,7 +9,7 @@ This repository contains an allowlisted subset of the original project suitable 
 - Build: ![CI-Public](https://github.com/CERTEUS/certeus-public/actions/workflows/ci_public.yml/badge.svg?branch=main)
 - Tests: ![Tests](https://github.com/CERTEUS/certeus-public/actions/workflows/tests.yml/badge.svg?branch=main)
 - Docs: ![Docs-Site](https://github.com/CERTEUS/certeus-public/actions/workflows/docs-site.yml/badge.svg?branch=main)
-- Coverage: ![Coverage](https://raw.githubusercontent.com/CERTEUS/certeus/main/docs/badges/coverage.svg)
+- Coverage: ![Coverage](https://raw.githubusercontent.com/CERTEUS/certeus-public/main/docs/badges/coverage.svg)
 - License: AGPL-3.0
 
 ## Quickstart (60s)
@@ -33,4 +33,3 @@ This repository contains an allowlisted subset of the original project suitable 
 
 ---
 Note: This mirror is auto-published from a private upstream via an allowlist and automated checks (secret scan, policy gates).
-
