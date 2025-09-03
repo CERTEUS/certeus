@@ -5,6 +5,7 @@
 - Observability: metryki SLO per‑tenant (`certeus_http_request_duration_ms_tenant`, `certeus_http_requests_total`) + dwa panele na dashboardzie Grafana.
 - Middleware metryk: uproszczony do pojedynczej instancji (usunięto duplikat), rejestruje tenant/path/method/status.
 - curl examples: uzupełniono przykłady dla W16 (pilot/fin/SLO per‑tenant).
+- Demo ruchu per‑tenant: `scripts/demos/w16_generate_tenant_traffic.py` (zmienne: `CERTEUS_BASE`, `N_REQ`, `SLEEP_S`).
 
 Top‑10 pain points (skrót; do rozwinięcia po feedbacku pilotów):
 - Brak per‑tenant SLO → dodano metryki i panele.
@@ -14,4 +15,3 @@ Top‑10 pain points (skrót; do rozwinięcia po feedbacku pilotów):
 - CORS dev: włączony wildcard; w produkcji należy zawęzić (`ALLOW_ORIGINS`).
 
 Uwaga: pełna analiza UX po zakończeniu tygodnia; plik będzie aktualizowany.
-

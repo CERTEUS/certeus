@@ -73,13 +73,28 @@ def run_marketplace_demo(client: TestClient) -> dict[str, Any]:
     out: dict[str, Any] = {}
 
     r_ver = client.post("/v1/marketplace/verify_manifest", json={"manifest_yaml": unsigned, "signature_b64u": sig})
-    out["verify_manifest"] = {"status": r_ver.status_code, "body": r_ver.json()}
+    out["alpha_verify"] = {"status": r_ver.status_code, "body": r_ver.json()}
 
     r_inst = client.post(
         "/v1/marketplace/install",
         json={"name": "demo_alpha", "manifest_yaml": unsigned, "signature_b64u": sig},
     )
-    out["install"] = {"status": r_inst.status_code, "body": r_inst.json()}
+    out["alpha_install"] = {"status": r_inst.status_code, "body": r_inst.json()}
+
+    # demo_beta
+    man_path_b = Path("plugins/demo_beta/plugin.yaml")
+    manifest_b = man_path_b.read_text(encoding="utf-8")
+    unsigned_b = "\n".join([ln for ln in manifest_b.splitlines() if not ln.strip().startswith("signature:")])
+    sig_b = _b64u(sk.sign(unsigned_b.encode("utf-8")))
+    r_ver_b = client.post(
+        "/v1/marketplace/verify_manifest", json={"manifest_yaml": unsigned_b, "signature_b64u": sig_b}
+    )
+    out["beta_verify"] = {"status": r_ver_b.status_code, "body": r_ver_b.json()}
+    r_inst_b = client.post(
+        "/v1/marketplace/install",
+        json={"name": "demo_beta", "manifest_yaml": unsigned_b, "signature_b64u": sig_b},
+    )
+    out["beta_install"] = {"status": r_inst_b.status_code, "body": r_inst_b.json()}
 
     r_list = client.get("/v1/marketplace/plugins")
     out["plugins"] = {"status": r_list.status_code, "body": r_list.json()}

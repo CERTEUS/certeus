@@ -1,0 +1,137 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/marketplace.html                  |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/marketplace.html                  |
+| ROLA: Strona marketplace wtyczek.                           |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS — Marketplace</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; padding: 0; background: #0f1115; color: #e5e7eb; }
+      .wrap { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+      h1, h2 { margin: 8px 0; }
+      .card { background: #161a20; border: 1px solid #232832; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { text-align: left; padding: 8px; border-bottom: 1px solid #2a2f3a; }
+      .row { display: grid; gap: 8px; margin: 8px 0; }
+      textarea, input[type="text"] { width: 100%; background: #0f1319; color: #e5e7eb; border: 1px solid #2a2f3a; border-radius: 8px; padding: 8px; }
+      button { background: #2563eb; border: none; color: #fff; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+      button:hover { background: #1d4ed8; }
+      .muted { color: #9aa0a6; }
+      .ok { color: #22c55e; }
+      .bad { color: #ef4444; }
+      .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+      @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>CERTEUS — Marketplace wtyczek</h1>
+      <p class="muted">Lista zainstalowanych wtyczek oraz instalacja przez podpisany manifest.</p>
+
+      <div class="card">
+        <h2>Wtyczki</h2>
+        <table id="tbl"><thead><tr><th>Nazwa</th><th>Moduł</th><th>Wersja</th><th>Podpis</th><th>Caps</th></tr></thead><tbody id="tbody"><tr><td colspan="5" class="muted">Ładowanie…</td></tr></tbody></table>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Weryfikacja podpisu</h2>
+          <div class="row">
+            <label for="verify-man">Manifest YAML (bez linii signature:)</label>
+            <textarea id="verify-man" rows="8" placeholder="name: demo_alpha
+module: plugins.demo_alpha.src.main
+version: '0.1.0'"></textarea>
+          </div>
+          <div class="row">
+            <label for="verify-sig">Podpis (base64url, Ed25519)</label>
+            <input type="text" id="verify-sig" placeholder="b64u..." />
+          </div>
+          <div class="row">
+            <button id="btn-verify">Zweryfikuj</button>
+            <div id="verify-out" class="muted"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Instalacja/upgrade</h2>
+          <div class="row">
+            <label for="install-name">Nazwa pakietu (folder w plugins/)</label>
+            <input type="text" id="install-name" placeholder="demo_alpha" />
+          </div>
+          <div class="row">
+            <label for="install-man">Manifest YAML (bez linii signature:)</label>
+            <textarea id="install-man" rows="8"></textarea>
+          </div>
+          <div class="row">
+            <label for="install-sig">Podpis (base64url, Ed25519)</label>
+            <input type="text" id="install-sig" />
+          </div>
+          <div class="row">
+            <button id="btn-install">Zainstaluj</button>
+            <div id="install-out" class="muted"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const API = location.origin;
+      async function api(path, init) {
+        const r = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...init });
+        const ct = r.headers.get('content-type') || '';
+        const body = ct.includes('application/json') ? await r.json() : await r.text();
+        if (!r.ok) throw new Error(typeof body === 'string' ? body : (body.detail || 'HTTP ' + r.status));
+        return body;
+      }
+      async function loadPlugins() {
+        const tb = document.getElementById('tbody');
+        try {
+          const data = await api('/v1/marketplace/plugins');
+          if (!data || !data.length) { tb.innerHTML = '<tr><td colspan="5" class="muted">Brak wtyczek</td></tr>'; return; }
+          tb.innerHTML = data.map(p => `<tr><td>${p.name}</td><td>${p.module||''}</td><td>${p.version||''}</td><td>${p.signed?'<span class=ok>TAK</span>':'<span class=bad>NIE</span>'}</td><td>${(p.capabilities||p.caps||[]).join(', ')}</td></tr>`).join('');
+        } catch (e) {
+          tb.innerHTML = `<tr><td colspan="5" class="bad">Błąd: ${e.message||e}</td></tr>`;
+        }
+      }
+      document.getElementById('btn-verify').addEventListener('click', async () => {
+        const man = document.getElementById('verify-man').value;
+        const sig = document.getElementById('verify-sig').value.trim();
+        const out = document.getElementById('verify-out');
+        out.textContent = 'Pracuję...';
+        try {
+          const res = await api('/v1/marketplace/verify_manifest', { method: 'POST', body: JSON.stringify({ manifest_yaml: man, signature_b64u: sig }) });
+          out.textContent = res.ok ? 'OK: podpis poprawny' : 'BŁĄD: podpis nieprawidłowy';
+          out.className = res.ok ? 'ok' : 'bad';
+        } catch (e) {
+          out.textContent = 'BŁĄD: ' + (e.message||e);
+          out.className = 'bad';
+        }
+      });
+      document.getElementById('btn-install').addEventListener('click', async () => {
+        const name = document.getElementById('install-name').value.trim();
+        const man = document.getElementById('install-man').value;
+        const sig = document.getElementById('install-sig').value.trim();
+        const out = document.getElementById('install-out');
+        out.textContent = 'Pracuję...';
+        try {
+          const res = await api('/v1/marketplace/install', { method: 'POST', body: JSON.stringify({ name, manifest_yaml: man, signature_b64u: sig }) });
+          out.textContent = 'OK: ' + JSON.stringify(res);
+          out.className = 'ok';
+          await loadPlugins();
+        } catch (e) {
+          out.textContent = 'BŁĄD: ' + (e.message||e);
+          out.className = 'bad';
+        }
+      });
+      loadPlugins();
+    </script>
+  </body>
+  </html>
+

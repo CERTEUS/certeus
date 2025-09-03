@@ -138,14 +138,23 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Billing tiering: runtime/billing/policies.json + /v1/billing/policies
   - Legal: docs/legal/ToS.md, DPA.md, ff_release.md; PR: docs/pr/*
   - API: root redirect → /app/public/index.html
- - 2025-09-03 19:10:00Z [agent] (work/daily): W14: i18n/A11y + OpenAPI runtime parity + demo outputs
-   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
-   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish
-   - Demo runner: scripts/demos/run_w14_demo.py → reports/w14_marketplace.json, reports/w14_billing.json
-   - Lint/test: 124 passed, 1 skipped; OpenAPI validator OK
+- 2025-09-03 19:10:00Z [agent] (work/daily): W14: i18n/A11y + OpenAPI runtime parity + demo outputs
+  - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
+  - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish
+  - Demo runner: scripts/demos/run_w14_demo.py → reports/w14_marketplace.json, reports/w14_billing.json
+  - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
+  - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 14:39:26Z [root] (work/daily): W18: Launch — kontrakt OpenAPI domknięty + zielone testy
   - - Alias /v1/proofgate/publish w API Gateway
   - - Alias /pco/public/{case_id} → /pco/public/{rid}
   - - Ledger: GET /v1/ledger/{case_id} (head)
   - - pytest-asyncio + stabilizacja Hypothesis (conftest)
   - - UV_PROJECT_ENVIRONMENT w testach (CLI smoke)
+- 2025-09-03 14:52:27Z [root] (work/daily): W18: v1.0.0 Release Notes + cookbooks + examples
+  - - Bump version: 1.0.0
+  - - RELEASE_NOTES_v1.0.0.md
+  - - Cookbooks: FIN Alpha, LEX Micro‑Court
+  - - Examples: fin_alpha_curl.sh, lex_motion_curl.sh
+  - - Release scripts: tag_release.(sh|ps1)
+  - - curl_examples: ledger head
+  - - Lint/testy: zielone (125 pass, 1 skip)
