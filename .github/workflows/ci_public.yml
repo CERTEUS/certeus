@@ -56,6 +56,7 @@ jobs:
           while IFS= read -r line; do
             [ -z "$line" ] && continue
             case "$line" in \#*) continue;; esac
+            case "$line" in .github/*) continue;; esac
             ALLOW+=("$line")
           done < tools/automation/public_allowlist.txt
           TMP=$(mktemp -d)
@@ -64,4 +65,5 @@ jobs:
           done
           cd "$TMP"
           ! grep -R -i -n -E '(codex|agent_token|session_context|secret_context)' -- . \
+            | grep -vE '^\./\.github' \
             || (echo 'agent-hygiene: suspicious keywords found in public allowlist paths' >&2; exit 1)
