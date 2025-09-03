@@ -1,3 +1,7 @@
 * @skarzyckiradoslaw
 .github/ @skarzyckiradoslaw
 infra/ @skarzyckiradoslaw
+core/ @skarzyckiradoslaw
+services/api_gateway/ @skarzyckiradoslaw
+policies/ @skarzyckiradoslaw
+docs/ @skarzyckiradoslaw
