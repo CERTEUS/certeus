@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="28" fill="#0D1B2A"/>
-  <text x="50%" y="56%" text-anchor="middle" font-size="140" font-family="Arial,Helvetica,sans-serif" fill="#C9A227">Ω</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect width="16" height="16" fill="#1f2940"/><text x="3" y="12" fill="#fff" font-family="Arial" font-size="10">C</text></svg>
