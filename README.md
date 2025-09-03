@@ -457,6 +457,19 @@ CI integracja:
   - Body JSON: edytowalne pole „Body (JSON)” z heurystycznie wygenerowanym szkieletem z OpenAPI; walidacja JSON (blokuje Copy/Run na błędach, widoczny komunikat błędu).
   - Tenant: pole `X-Tenant-ID` (opcjonalne) — dodawane jako nagłówek do snippetów/Playground (np. billing).
   - Dodane endpointy: `GET /v1/billing/balance`, `POST /v1/billing/allocate` (autouzupełnianie i przykładowe body `{ "units": 10 }`).
+  - Dodatkowo: `POST /v1/billing/refund` oraz `POST /v1/billing/quota` z domyślnym body (używa `X-Tenant-ID` jeśli podane).
+
+### SDK — skrót użycia
+
+- Python (`clients/python/certeus_sdk`):
+  - `CerteusClient(base_url, tenant_id)` – nagłówek `X-Tenant-ID` ustawiany automatycznie.
+  - Metody: `openapi()`, `health()`, `get_public_pco(rid)`, `publish_pco_bundle(...)`, `analyze(case_id, file)`, `preview(file)`, `get_balance()`, `allocate(units)`, `refund(tenant, units)`, `set_quota(tenant, units)`.
+- TypeScript (`clients/typescript/certeus-sdk`):
+  - Typy: `PublicPCO`, `PublishBundleAck`, `PublishBundleRequest`.
+  - Metody: `openapi()`, `health()`, `getPublicPCO(rid)`, `publishPCOBundle(payload)`, `analyze(caseId, file)`.
+- Go (`clients/go/certeus`):
+  - Struktury: `PublicPCO`, `PublishBundleAck`.
+  - Metody: `OpenAPI()`, `Health()`, `GetPublicPCO()`, `GetPublicPCOTyped()`, `PublishPCOBundle()`, `PublishPCOBundleAck()`, `Analyze()`.
 
 ### Publikacja SDK (opcjonalnie)
 

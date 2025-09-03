@@ -55,6 +55,11 @@
           <span id="cmpOut" class="pill">-</span>
         </div>
         <div class="row" style="margin-top:8px">
+          <details style="width:100%"><summary>Diff details</summary>
+            <pre id="cmpDetails"></pre>
+          </details>
+        </div>
+        <div class="row" style="margin-top:8px">
           <input id="path" style="flex:1" placeholder="/v1/..." />
           <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
           <select id="ctype"><option>application/json</option><option>text/plain</option></select>
@@ -144,6 +149,13 @@
         try { const d = await j('/v1/openapi/docs'); docs = d.data||{}; } catch(err) { docs={paths:{}} }
         renderList(); updateCode();
       }
+      function _schemaProps(obj){
+        try{
+          const props = Object.keys((obj||{}).properties||{});
+          const req = new Set(((obj||{}).required)||[]);
+          return { props, req };
+        }catch{ return { props: [], req: new Set() } }
+      }
       function compareDocs(){
         const p = $("path").value || '/';
         const m = ($("method").value || 'GET').toLowerCase();
@@ -163,6 +175,17 @@
           const rHasRB = !!((rP[m]||{}).requestBody);
           if(missResp.length){ msg = 'Missing responses: '+missResp.join(', '); }
           else if(dHasRB && !rHasRB){ msg = 'Missing requestBody'; }
+          else {
+            // Deeper: compare top-level properties/required
+            const dSch = (dP[m]?.requestBody?.content?.['application/json']?.schema)||{};
+            const rSch = (rP[m]?.requestBody?.content?.['application/json']?.schema)||{};
+            const dS = _schemaProps(dSch), rS = _schemaProps(rSch);
+            const missProps = dS.props.filter(x=>!rS.props.includes(x));
+            const missReq = Array.from(dS.req).filter(x=>!rS.req?.has?.(x));
+            if(missProps.length || missReq.length){ msg = 'Schema diff'; }
+            const detail = { missing_properties: missProps, missing_required: missReq };
+            $("cmpDetails").textContent = JSON.stringify(detail, null, 2);
+          }
         }
         $("cmpOut").textContent = msg;
       }

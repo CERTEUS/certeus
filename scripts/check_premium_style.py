@@ -31,6 +31,7 @@ Zwraca kod 0 (OK) lub 1 (naruszenia). Wypisuje listę problemów.
 from __future__ import annotations
 
 import ast
+import os
 from pathlib import Path
 import sys
 
@@ -54,23 +55,48 @@ SKIP_DIRS = {
 }
 
 
+PROJECT_DIRS = [
+    ".github",
+    "charts",
+    "clients",
+    "core",
+    "docs",
+    "governance",
+    "monitoring",
+    "observability",
+    "ops",
+    "packs",
+    "packs_core",
+    "plugins",
+    "policies",
+    "runtime",
+    "scripts",
+    "security",
+    "services",
+    "tests",
+    "tools",
+]
+
+
 def iter_files(patterns: list[str]) -> list[Path]:
     out: list[Path] = []
-    for p in REPO.rglob("*"):
-        try:
-            rel = p.relative_to(REPO).as_posix()
-        except Exception:
-            continue
-        # Skip vendor/venv before stat (avoid bad symlinks on Windows)
-        if any(rel.startswith(d + "/") or rel == d for d in SKIP_DIRS):
-            continue
-        try:
-            if not p.is_file():
+    roots = [REPO / d for d in PROJECT_DIRS if (REPO / d).exists()]
+    for root in roots:
+        for dirpath, dirnames, filenames in os.walk(root):
+            rel_root = Path(dirpath).relative_to(REPO).as_posix()
+            if any(rel_root == d or rel_root.startswith(d + "/") for d in SKIP_DIRS):
+                dirnames[:] = []
                 continue
-        except OSError:
-            continue
-        if any(rel.endswith(suf) for suf in patterns):
-            out.append(p)
+            for fn in filenames:
+                if not any(fn.endswith(suf) for suf in patterns):
+                    continue
+                p = Path(dirpath) / fn
+                try:
+                    if not p.is_file():
+                        continue
+                except OSError:
+                    continue
+                out.append(p)
     return out
 
 
@@ -185,11 +211,15 @@ def main() -> int:
     issues += check_textual([".ps1"], "PS1")
 
     if issues:
+        try:
+            outdir = REPO / "out"
+            outdir.mkdir(parents=True, exist_ok=True)
+            (outdir / "premium_violations.txt").write_text("\n".join(issues), encoding="utf-8")
+        except Exception:
+            pass
         print("Premium Code Style violations (sec.21):", file=sys.stderr)
-
         for line in issues:
             print(line, file=sys.stderr)
-
         return 1
 
     print("Premium Code Style: OK")

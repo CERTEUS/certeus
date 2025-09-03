@@ -20,5 +20,18 @@ print(cli.openapi()["info"])  # zawiera x-compat i x-release
 # Publiczne PCO (zero PII)
 pcop = cli.get_public_pco("case-001")
 print(pcop)
-```
 
+# Publish ProofBundle (v0.2)
+ack = cli.publish_pco_bundle(
+    rid="case-001",
+    smt2_hash="a"*64,
+    lfsc="(lfsc proof)",
+)
+print(ack)
+
+# Billing (tenant=demo z nagłówka X-Tenant-ID)
+print(cli.get_balance())
+print(cli.allocate(10))
+print(cli.refund("other-tenant", 5))
+print(cli.set_quota("other-tenant", 100))
+```

@@ -234,6 +234,88 @@ jobs:
 MD
           )
           gh issue comment 46 -R CERTEUS/certeus --body "$BODY" || true
+
+      # 🧠 Add-on: automatyczne Issue „Release polish (LITE)” w mirrorze
+      - name: Open Release polish issue in mirror (once per AssetRev)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          BASE_MIRROR_REPO="CERTEUS/certeus-public"
+
+          # 1) Wyciągnij bieżący AssetRev z PROVENANCE (mirror_out użyty do publikacji)
+          REV="$(grep -E '^AssetRev:' mirror_out/PROVENANCE.md | awk '{print $2}')"
+          TS="$(grep -E '^Published:' mirror_out/PROVENANCE.md | sed 's/Published: //')"
+
+          # 2) Czy już istnieje otwarte issue dla tego REV?
+          FOUND=$(gh api repos/$BASE_MIRROR_REPO/issues \
+            -q "[].title" -f state=open -f labels=release,docs,public-lite | grep -c "$REV" || true)
+          if [ "$FOUND" -gt 0 ]; then
+            echo "Release polish issue for rev=$REV already open. Skipping."
+            exit 0
+          fi
+
+          # 3) Zbierz linki (ostatnie ukończone runy)
+          PAGES_CORE="https://certeus.github.io/certeus"
+          PAGES_MIRROR="https://certeus.github.io/certeus-public"
+          BP_JSON_URL="https://api.github.com/repos/$BASE_MIRROR_REPO/branches/main/protection"
+
+          DOCS_CORE=$(gh api repos/CERTEUS/certeus/actions/workflows/docs-site.yml/runs \
+            -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1)
+          DOCS_MIRROR=$(gh api repos/$BASE_MIRROR_REPO/actions/workflows/docs-site.yml/runs \
+            -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1)
+          CILIGHT=$(gh api repos/$BASE_MIRROR_REPO/actions/workflows/ci_public_light.yml/runs \
+            -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1)
+          POL_CORE=$(gh api repos/CERTEUS/certeus/actions/workflows/policies-report.yml/runs \
+            -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1)
+          POL_MIRROR=$(gh api repos/$BASE_MIRROR_REPO/actions/workflows/policies-report.yml/runs \
+            -q '.workflow_runs | map(select(.head_branch=="main")) | map(select(.status=="completed")) | .[0].html_url' -f per_page=1)
+
+          # 4) Złóż treść issue (checklista LITE)
+          TITLE="Release polish (LITE) – ${TS} – rev ${REV}"
+          BODY=$(cat <<'MD'
+## ✅ Checklist (LITE)
+- [ ] Social preview ustawione (PNG og.png w Settings → General → Social preview)
+- [ ] Pages działają (200/OK): strona główna + /api/overview/
+- [ ] OG / favicon (CDN-BUST): `og.<rev>.svg` i `favicon.<rev>.ico` = **200/OK**
+- [ ] PROVENANCE.md zaktualizowane (Source + Published + AssetRev)
+- [ ] PROVENANCE_HISTORY.md dopisany nowy wiersz
+- [ ] Policy-Scan = zielone (brak niedozwolonych ścieżek)
+- [ ] CI-Public-Light = zielone (link-check)
+- [ ] Policies-Report = wygenerowany artefakt
+- [ ] README (CTA + kontakt) aktualne
+
+### Linki
+- Pages (core): __PAGES_CORE__
+- Pages (mirror): __PAGES_MIRROR__
+- Docs-Site (core): __DOCS_CORE__
+- Docs-Site (mirror): __DOCS_MIRROR__
+- CI-Public-Light (mirror): __CILIGHT__
+- Policies-Report (core): __POL_CORE__
+- Policies-Report (mirror): __POL_MIRROR__
+- Branch-Protection (mirror JSON): __BP_JSON_URL__
+
+> rev = `AssetRev` z **PROVENANCE.md**
+MD
+          )
+          BODY="${BODY/__PAGES_CORE__/$PAGES_CORE}"
+          BODY="${BODY/__PAGES_MIRROR__/$PAGES_MIRROR}"
+          BODY="${BODY/__DOCS_CORE__/$DOCS_CORE}"
+          BODY="${BODY/__DOCS_MIRROR__/$DOCS_MIRROR}"
+          BODY="${BODY/__CILIGHT__/$CILIGHT}"
+          BODY="${BODY/__POL_CORE__/$POL_CORE}"
+          BODY="${BODY/__POL_MIRROR__/$POL_MIRROR}"
+          BODY="${BODY/__BP_JSON_URL__/$BP_JSON_URL}"
+          BODY="${BODY//<rev>/$REV}"
+
+          # 5) Utwórz issue z etykietami
+          gh api repos/$BASE_MIRROR_REPO/issues \
+            -f title="$TITLE" \
+            -f body="$BODY" \
+            -f labels="release,docs,public-lite" >/dev/null
+
+          echo "Opened Release polish (LITE) issue for rev=$REV"
       - name: Install git-filter-repo
         if: ${{ false }}
         run: |

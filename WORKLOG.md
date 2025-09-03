@@ -180,6 +180,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Explorer: Compare docs vs runtime dla wybranego endpointu
   - Metrics: /v1/metrics/series + landing sparklines (p95) auto‑refresh
   - Case Studio: Build/Download/Submit PCO Bundle (schema‑minimal)
+- 2025-09-04 00:20:00Z [agent] (work/daily): W17 hyper: pricing heatmap + diff export + hashing/validation
+  - Pricing: heatmap (action×tier×volume) + Days; rekomendacja w UI
+  - Explorer: Export diff (all) do JSON; porównanie response/requestBody
+  - Case Studio: WebCrypto SHA‑256 smt2_hash + walidacja bundle w przeglądarce
+  - Landing: polish metryk (sparklines p95 + auto‑refresh)
 - 2025-09-03 19:10:00Z [agent] (work/daily): W14: i18n/A11y + OpenAPI runtime parity + demo outputs
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish
