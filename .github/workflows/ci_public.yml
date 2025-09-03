@@ -1,0 +1,71 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/ci_public.yml                      |
+# | ROLE: Public-only CI (tests/lint)                          |
+# | PLIK: .github/workflows/ci_public.yml                      |
+# | ROLA: CI tylko dla publicznego repo                        |
+# +-------------------------------------------------------------+
+
+name: CI-Public
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            constraints/**
+      - name: Install deps
+        run: |
+          python -m pip install -U pip wheel setuptools
+          python -m pip install -e .
+          python -m pip install ruff pytest httpx pytest-asyncio hypothesis z3-solver openapi-spec-validator PyYAML pytest-cov
+      - name: Ruff
+        run: |
+          python -m ruff check .
+      - name: Tests (with coverage)
+        run: |
+          python -m pytest -q --cov=. --cov-report=xml:coverage.xml
+      - name: Upload coverage artifact (1 day)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.sha }}
+          path: coverage.xml
+          retention-days: 1
+      - name: Agent hygiene scan (keywords on allowlist only)
+        run: |
+          set -euo pipefail
+          ALLOW=()
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue;; esac
+            case "$line" in .github/*) continue;; esac
+            ALLOW+=("$line")
+          done < tools/automation/public_allowlist.txt
+          TMP=$(mktemp -d)
+          for p in "${ALLOW[@]}"; do
+            rsync -aR --prune-empty-dirs "$p" "$TMP/" 2>/dev/null || true
+          done
+          cd "$TMP"
+          if grep -R -i -n -E '(codex|agent_token|session_context|secret_context)' -- . \
+            | grep -vE '^\./\.github' ; then
+            echo 'agent-hygiene: suspicious keywords found in public allowlist paths' >&2
+            exit 1
+          fi

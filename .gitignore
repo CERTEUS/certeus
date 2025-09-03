@@ -5,6 +5,9 @@ __pycache__/
 venv/
 .git-credentials
 *.egg-info/
+gitleaks-report.json
+.secrets.baseline
+tools/automation/*.local
 
 # Env / secrets (local only)
 .env

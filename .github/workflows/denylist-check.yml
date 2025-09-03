@@ -1,0 +1,59 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/denylist-check.yml                  |
+# | ROLE: Block PR/push if denylisted paths are touched         |
+# | PLIK: .github/workflows/denylist-check.yml                  |
+# | ROLA: Blokuje PR/push gdy naruszona czarna lista            |
+# +-------------------------------------------------------------+
+
+name: Denylist-Check
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  filter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect changed files
+        id: changes
+        uses: tj-actions/changed-files@v45
+        with:
+          files_ignore: |
+            **/*.md
+            **/*.png
+            **/*.jpg
+            **/*.jpeg
+            **/*.gif
+      - name: Enforce denylist (from tools/automation/denylist.txt)
+        run: |
+          set -euo pipefail
+          FILES=$(printf "%s" "${{ steps.changes.outputs.all_changed_and_modified_files }}" | tr ' ' '\n' | sed '/^$/d')
+          if [ ! -f tools/automation/denylist.txt ]; then
+            echo "No denylist.txt present; skipping."
+            exit 0
+          fi
+          mapfile -t PATTERNS < tools/automation/denylist.txt
+          viol=()
+          for f in $FILES; do
+            for pat in "${PATTERNS[@]}"; do
+              [[ -z "$pat" || "$pat" =~ ^# ]] && continue
+              case "$f" in
+                $pat) viol+=("$f (matches $pat)"); break;;
+              esac
+            done
+          done
+          if [ ${#viol[@]} -gt 0 ]; then
+            echo "Denylist violation(s):" >&2
+            printf ' - %s\n' "${viol[@]}" >&2
+            exit 1
+          fi

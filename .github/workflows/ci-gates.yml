@@ -13,6 +13,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci-gates:
     runs-on: ubuntu-latest
@@ -32,7 +36,7 @@ jobs:
           # Install project runtime deps
           python -m pip install -e .
           # Install test/dev helpers explicitly used by the suite
-          python -m pip install ruff pytest pytest-asyncio httpx z3-solver hypothesis
+          python -m pip install ruff pytest pytest-asyncio httpx z3-solver hypothesis openapi-spec-validator PyYAML
 
       - name: Load CI defaults (non-secrets)
         run: |
@@ -375,9 +379,6 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
-
-
 
 
 

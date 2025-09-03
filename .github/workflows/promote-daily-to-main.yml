@@ -50,21 +50,7 @@ jobs:
           else
             echo "promote=false" >> $GITHUB_OUTPUT
           fi
-      # ci-gates conclusion is already 'success' by job condition above${insert}
-      - name: Append WORKLOG on work/daily (pre-merge)
-        if: steps.marker.outputs.promote == 'true'
-        env:
-          SHA: ${{ github.event.workflow_run.head_sha }}
-          ACTOR: ${{ github.actor }}
-        run: |
-          set -euo pipefail
-          git checkout work/daily
-          SUMMARY="auto-promote: ${SHA} (gates green)"
-          DETAILS=$'Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate\nActor: '${ACTOR}
-          python scripts/worklog/update_worklog.py --summary "$SUMMARY" --details "$DETAILS"
-          git add WORKLOG.md
-          git commit -m "chore(worklog): ${SUMMARY}" || true
-          git push origin work/daily || true
+      # ci-gates has succeeded by workflow_run condition; no bot commits.
       - name: Fast-forward main to work/daily (if possible)
         if: steps.marker.outputs.promote == 'true'
         id: ff
@@ -80,21 +66,7 @@ jobs:
             echo "ff=true" >> $GITHUB_OUTPUT
             git push origin main
             exit 0
-          } || echo "No fast-forward possible; will create/auto-merge PR."
+          } || echo "No fast-forward possible; skipping (PR path disabled)."
           echo "ff=false" >> $GITHUB_OUTPUT
-      - name: Create or auto-merge PR (work/daily -> main)
-        if: steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          # Find existing PR
-          PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number' || true)
-          if [ -z "$PR_NUM" ]; then
-            gh pr create -B main -H work/daily -t "Promote work/daily to main" -b "Auto-promotion after green CI."
-            PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number')
-          fi
-          # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
-          gh pr merge "$PR_NUM" --auto --squash || true
 
 

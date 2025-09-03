@@ -1,0 +1,18 @@
+# internal only (never publish)
+docs/internal/**
+legal/**
+evidence/**
+finance/**
+notes/**
+drafts/**
+*.docx
+*.xlsx
+**/*.pem
+**/*.key
+**/id_rsa*
+**/id_ed25519*
+tools/agents/**
+agents/**
+*.agent.json
+*.codex.json
+context_snapshots/**

@@ -1,0 +1,51 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/publish_public_mirror.yml          |
+# | ROLE: Publish sanitized mirror to CERTEUS/certeus-public   |
+# +-------------------------------------------------------------+
+
+name: Publish-Public-Mirror
+
+on:
+  workflow_run:
+    workflows: [Promote-Daily-To-Main]
+    types: [completed]
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
+    runs-on: [self-hosted, linux, docker, build]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Secret scan (gitleaks)
+        uses: zricethezav/gitleaks-action@v2.3.7
+        with:
+          args: detect --redact --no-banner --exit-code 1
+      - name: Install git-filter-repo
+        run: |
+          python -m pip install git-filter-repo
+      - name: Filter repository to allowlist
+        run: |
+          rm -rf mirror && git clone --mirror . mirror
+          cd mirror
+          mapfile -t PATHS < <(grep -vE '^(#|\s*$)' ../tools/automation/public_allowlist.txt)
+          ARGS=()
+          for p in "${PATHS[@]}"; do
+            ARGS+=("--path" "$p")
+          done
+          git filter-repo "${ARGS[@]}"
+          git for-each-ref --format='delete %(refname)' refs/original/ | git update-ref --stdin || true
+          git repack -Ad && git prune --expire=now || true
+      - name: Push to public repo (force)
+        env:
+          PUBLIC_MIRROR_PAT: ${{ secrets.PUBLIC_MIRROR_PAT }}
+        run: |
+          cd mirror
+          git remote remove origin || true
+          git remote add origin https://x-access-token:${PUBLIC_MIRROR_PAT}@github.com/CERTEUS/certeus-public.git
+          git push -f origin main

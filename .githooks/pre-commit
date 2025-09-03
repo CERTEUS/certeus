@@ -1,18 +1,56 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-staged=$(git diff --name-only --cached)
-blocked=()
-for f in $staged; do
-  if [ "$f" = ".env" ] || [ "$f" = ".env.local" ] || [[ "$f" == .devkeys/* ]] || [[ "$f" == .devkeys\\* ]]; then
-    blocked+=("$f")
-  fi
+# Block hard-coded sensitive paths regardless of denylist.txt
+mapfile -t STAGED < <(git diff --cached --name-only)
+BLOCKED_PATTERNS=(
+  ".env"
+  ".env.local"
+  ".env.*"
+  ".devkeys/**"
+  "secrets/**"
+  "**/*.pem"
+  "**/*.key"
+  "**/id_rsa*"
+  "**/id_ed25519*"
+)
+viol=()
+for f in "${STAGED[@]}"; do
+  for pat in "${BLOCKED_PATTERNS[@]}"; do
+    if [[ "$f" == $pat ]]; then
+      viol+=("$f (matches $pat)")
+      break
+    fi
+  done
 done
-
-if [ ${#blocked[@]} -gt 0 ]; then
-  echo "Zablokowano commit tajnych plików: ${blocked[*]}" >&2
+if (( ${#viol[@]} > 0 )); then
+  echo "Commit blocked: sensitive files detected:" >&2
+  printf ' - %s\n' "${viol[@]}" >&2
   exit 1
 fi
 
-exit 0
+# Block files from denylist (repo-configurable)
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+DENYLIST_FILE="$REPO_ROOT/tools/automation/denylist.txt"
 
+if [[ -f "$DENYLIST_FILE" ]]; then
+  mapfile -t PATTERNS < "$DENYLIST_FILE"
+  VIOLATIONS=()
+  for p in "${STAGED[@]}"; do
+    for pat in "${PATTERNS[@]}"; do
+      # Skip comments and empty lines
+      [[ -z "$pat" || "$pat" =~ ^# ]] && continue
+      if [[ "$p" == $pat ]]; then
+        VIOLATIONS+=("$p matches $pat")
+        break
+      fi
+    done
+  done
+  if (( ${#VIOLATIONS[@]} > 0 )); then
+    echo "Commit blocked by denylist patterns:" >&2
+    printf ' - %s\n' "${VIOLATIONS[@]}" >&2
+    exit 1
+  fi
+fi
+
+exit 0
