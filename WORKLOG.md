@@ -153,7 +153,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - API: `GET /v1/marketplace/pubkey` (b64url); bez zmian w kontrakcie docs
   - Smokes: `scripts/smokes/marketplace_smoke.py`, `scripts/smokes/billing_smoke.py` → reports/smoke_*.json
   - Mismatch Console: przełącznik języka (PL/EN) i i18n etykiet modali (resolve/escalate)
-  - Lint/test: 126 passed, 1 skipped; demo+smokes uruchomione lokalnie
+  - Marketplace API: hardening nazw folderów i path traversal + endpoint `sign_manifest` (DEV)
+  - Lint/test: 128 passed, 1 skipped; demo+smokes uruchomione lokalnie
 - 2025-09-03 14:39:26Z [root] (work/daily): W18: Launch — kontrakt OpenAPI domknięty + zielone testy
   - - Alias /v1/proofgate/publish w API Gateway
   - - Alias /pco/public/{case_id} → /pco/public/{rid}

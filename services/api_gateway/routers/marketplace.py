@@ -165,6 +165,14 @@ def install_plugin(req: InstallRequest) -> dict[str, Any]:
 
     EN: Install/upgrade plugin after verified signature.
     """
+    # Name & path hardening first
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.name):
+        raise HTTPException(status_code=400, detail="Invalid plugin name")
+    pdir = (_PLUGINS_DIR / req.name).resolve()
+    plugins_root = _PLUGINS_DIR.resolve()
+    if not str(pdir).startswith(str(plugins_root)):
+        raise HTTPException(status_code=400, detail="Invalid destination path")
+    # Then signature verification
     if not _verify_manifest(req.manifest_yaml, req.signature_b64u):
         raise HTTPException(status_code=400, detail="Invalid signature")
     # Basic YAML sanity
@@ -176,13 +184,7 @@ def install_plugin(req: InstallRequest) -> dict[str, Any]:
     except Exception as e:  # nosec - user-provided YAML validation
         raise HTTPException(status_code=400, detail=f"Invalid manifest: {e}") from e
 
-    # Name hardening: allow only safe names 'a-zA-Z0-9_-'
-    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", req.name):
-        raise HTTPException(status_code=400, detail="Invalid plugin name")
-    pdir = (_PLUGINS_DIR / req.name).resolve()
-    plugins_root = _PLUGINS_DIR.resolve()
-    if not str(pdir).startswith(str(plugins_root)):
-        raise HTTPException(status_code=400, detail="Invalid destination path")
+    # pdir resolved above
     pdir.mkdir(parents=True, exist_ok=True)
     (pdir / "plugin.yaml").write_text(req.manifest_yaml, encoding="utf-8")
     return {"ok": True, "name": req.name, "path": str(pdir)}
