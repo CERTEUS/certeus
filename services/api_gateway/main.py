@@ -61,6 +61,7 @@ try:  # optional: avoid hard fail if core/pco deps are unavailable
 except Exception:
     pco_public = None  # type: ignore[assignment]
 import services.api_gateway.routers.lexenith as lexenith
+import services.api_gateway.routers.openapi_docs as openapi_docs
 import services.api_gateway.routers.preview as preview
 import services.api_gateway.routers.proofgate_gateway as proofgate_gateway
 import services.api_gateway.routers.qtm as qtm
@@ -234,6 +235,7 @@ app.include_router(preview.router)
 
 # Ensure ProofGate contract path present in runtime OpenAPI
 app.include_router(proofgate_gateway.router)
+app.include_router(openapi_docs.router)
 
 if pco_public is not None:
     app.include_router(pco_public.router)

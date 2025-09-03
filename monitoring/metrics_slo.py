@@ -36,6 +36,7 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
+from collections import deque
 from threading import Lock
 
 from prometheus_client import Counter, Gauge, Histogram
@@ -43,6 +44,7 @@ from prometheus_client import Counter, Gauge, Histogram
 # In‑proc lightweight aggregator for quick summaries (landing widgets, API)
 _REQ_AGG_LOCK: Lock = Lock()
 _REQ_AGG: dict[tuple[str, str], dict[str, float]] = {}
+_SERIES: dict[tuple[str, str], deque[float]] = {}
 
 
 def record_http_observation(path: str, method: str, status: str, tenant: str, dur_ms: float) -> None:
@@ -61,6 +63,11 @@ def record_http_observation(path: str, method: str, status: str, tenant: str, du
         st["count"] += 1.0
         st["sum_ms"] += float(dur_ms)
         st["last_ms"] = float(dur_ms)
+        dq = _SERIES.get(key)
+        if dq is None:
+            dq = deque(maxlen=200)
+            _SERIES[key] = dq
+        dq.append(float(dur_ms))
 
 
 def http_summary(top: int = 10) -> dict[str, object]:
@@ -80,6 +87,29 @@ def http_summary(top: int = 10) -> dict[str, object]:
     by_avg = sorted(items, key=lambda x: x["avg_ms"], reverse=True)[:top]
     by_count = sorted(items, key=lambda x: x["count"], reverse=True)[:top]
     return {"top_avg_ms": by_avg, "top_count": by_count, "total_paths": len(items)}
+
+
+def http_series(top: int = 5) -> dict[str, object]:
+    """Return series for top endpoints by count with p95 and last durations.
+
+    The series contains up to 200 most recent durations (ms) per path/method.
+    """
+
+    with _REQ_AGG_LOCK:
+        counts = [(k, int(v.get("count", 0.0))) for k, v in _REQ_AGG.items()]
+        top_keys = [k for (k, _) in sorted(counts, key=lambda x: x[1], reverse=True)[:top]]
+        out = []
+        for k in top_keys:
+            pts = list(_SERIES.get(k, deque()))
+            if pts:
+                s = sorted(pts)
+                # p95 index
+                idx = int(0.95 * (len(s) - 1))
+                p95 = s[idx]
+            else:
+                p95 = 0.0
+            out.append({"path": k[0], "method": k[1], "points": pts, "p95": p95, "count": len(pts)})
+    return {"series": out}
 
 
 # Gauges for model calibration and decision quality

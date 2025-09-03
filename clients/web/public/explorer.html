@@ -50,6 +50,10 @@
           <button id="send" class="btn">Send</button>
         </div>
         <div class="row" style="margin-top:8px">
+          <button id="cmp" class="btn">Compare with docs</button>
+          <span id="cmpOut" class="pill">-</span>
+        </div>
+        <div class="row" style="margin-top:8px">
           <input id="path" style="flex:1" placeholder="/v1/..." />
           <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
           <select id="ctype"><option>application/json</option><option>text/plain</option></select>
@@ -72,6 +76,7 @@
       const $ = (id)=>document.getElementById(id);
       async function j(url, opts){ const r=await fetch(url, opts); const t=await r.text(); let data=t; try{ data=JSON.parse(t)}catch{} return {ok:r.ok,status:r.status,data,headers:r.headers}; }
       let api={paths:{}};
+      let docs={paths:{}};
       function renderList(){
         const q = ($("search").value||"").toLowerCase();
         const list = $("list"); list.innerHTML='';
@@ -100,6 +105,8 @@
           if(first){ $("body").value = JSON.stringify(first, null, 2); }
         }catch{}
         updateCode();
+        // Reset compare label
+        $("cmpOut").textContent='-';
       }
       let _lastSnippets={curl:'',py:'',ts:''};
       function updateCode(){
@@ -132,10 +139,25 @@
         $("resp").textContent = typeof r.data==='string' ? r.data : JSON.stringify(r.data, null, 2);
       }
       async function init(){
-        const doc = await j('/openapi.json'); api = doc.data||{}; renderList(); updateCode();
+        const doc = await j('/openapi.json'); api = doc.data||{};
+        try { const d = await j('/v1/openapi/docs'); docs = d.data||{}; } catch(err) { docs={paths:{}} }
+        renderList(); updateCode();
+      }
+      function compareDocs(){
+        const p = $("path").value || '/';
+        const m = ($("method").value || 'GET').toLowerCase();
+        const dP = (docs.paths||{})[p]||{}; const rP = (api.paths||{})[p]||{};
+        const dM = Object.keys(dP).filter(x=>['get','post','put','delete','patch'].includes(x));
+        const rM = Object.keys(rP).filter(x=>['get','post','put','delete','patch'].includes(x));
+        const missing = dM.filter(x=>!rM.includes(x));
+        let msg='OK';
+        if(!(p in (api.paths||{}))){ msg = 'Path missing in runtime'; }
+        else if(missing.length){ msg = 'Missing methods: '+missing.join(', '); }
+        $("cmpOut").textContent = msg;
       }
       $("search").addEventListener('input', renderList);
       $("send").addEventListener('click', ()=>{ updateCode(); send(); });
+      $("cmp").addEventListener('click', compareDocs);
       $("copyCurl").addEventListener('click', ()=> copyText(_lastSnippets.curl));
       $("copyPy").addEventListener('click', ()=> copyText(_lastSnippets.py));
       $("copyTs").addEventListener('click', ()=> copyText(_lastSnippets.ts));

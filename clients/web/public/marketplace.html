@@ -30,6 +30,9 @@
       .bad { color: #ef4444; }
       .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
       @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+      .diffgrid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+      .diffgrid pre { background: #0f1319; border: 1px solid #2a2f3a; border-radius: 8px; padding: 8px; overflow: auto; }
+      mark { background: #ef44441a; color: #ef4444; padding: 0 2px; border-radius: 3px; }
     </style>
   </head>
   <body>
@@ -90,11 +93,13 @@ version: '0.1.0'"></textarea>
           <div class="row">
             <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
               <button id="btn-dryrun" class="neutral">Dry‑Run</button>
+              <button id="btn-fetch-installed" class="neutral">Pobierz zainstalowany manifest</button>
               <button id="btn-install">Zainstaluj</button>
               <span id="install-out" class="muted"></span>
             </div>
             <div id="dryrun-report" class="muted" style="white-space:pre-wrap"></div>
             <div id="diff" class="muted"></div>
+            <div id="diff-yaml" class="diffgrid"></div>
           </div>
         </div>
       </div>
@@ -170,6 +175,25 @@ version: '0.1.0'"></textarea>
           out.className = 'bad';
         }
       });
+      function markDiff(a,b){
+        a = String(a||''); b = String(b||'');
+        if (a===b) return `<code>${a||'(brak)'}</code> → <code>${b||'(brak)'}</code>`;
+        let i=0; while(i<a.length && i<b.length && a[i]===b[i]) i++;
+        let j=0; while(j<a.length-i && j<b.length-i && a[a.length-1-j]===b[b.length-1-j]) j++;
+        const aMid = a.slice(i, a.length-j), bMid = b.slice(i, b.length-j);
+        const aHtml = `${a.slice(0,i)}<mark>${aMid||'∅'}</mark>${a.slice(a.length-j)}`;
+        const bHtml = `${b.slice(0,i)}<mark>${bMid||'∅'}</mark>${b.slice(b.length-j)}`;
+        return `<code>${aHtml||'(brak)'}</code> → <code>${bHtml||'(brak)'}</code>`;
+      }
+      function semverRisk(from, to){
+        const rx=/^(\d+)\.(\d+)\.(\d+)/; const m1=String(from||'').match(rx); const m2=String(to||'').match(rx);
+        if(!m1||!m2) return 'unknown';
+        const a=[+m1[1],+m1[2],+m1[3]], b=[+m2[1],+m2[2],+m2[3]];
+        if (b[0]>a[0]) return 'major'; if (b[0]<a[0]) return 'downgrade';
+        if (b[1]>a[1]) return 'minor'; if (b[1]<a[1]) return 'downgrade';
+        if (b[2]>a[2]) return 'patch'; if (b[2]<a[2]) return 'downgrade';
+        return 'same';
+      }
       document.getElementById('btn-dryrun').addEventListener('click', async () => {
         const name = document.getElementById('install-name').value.trim();
         const man = document.getElementById('install-man').value;
@@ -188,7 +212,8 @@ version: '0.1.0'"></textarea>
           if (existing) {
             const from = existing.version || '(brak)'; const to = res.version || '(brak)';
             const modFrom = existing.module || '(?)'; const modTo = res.module || '(?)';
-            diff.innerHTML = `<div>Aktualizacja: <strong>${name}</strong><br>module: <code>${modFrom}</code> → <code>${modTo}</code><br>version: <code>${from}</code> → <code>${to}</code></div>`;
+            const risk = semverRisk(from,to);
+            diff.innerHTML = `<div>Aktualizacja: <strong>${name}</strong> [ryzyko: <em>${risk}</em>]<br>module: ${markDiff(modFrom,modTo)}<br>version: ${markDiff(from,to)}</div>`;
           } else {
             diff.textContent = '';
           }
@@ -197,6 +222,30 @@ version: '0.1.0'"></textarea>
         } catch (e) {
           rep.textContent = 'BŁĄD: ' + (e.message||e);
           rep.className = 'bad';
+        }
+      });
+      document.getElementById('btn-fetch-installed').addEventListener('click', async () => {
+        const name = document.getElementById('install-name').value.trim();
+        const diffBox = document.getElementById('diff-yaml'); diffBox.innerHTML='';
+        if (!name) { diffBox.textContent = 'Podaj nazwę pakietu.'; return; }
+        try {
+          const res = await api('/v1/marketplace/plugin_manifest/'+encodeURIComponent(name));
+          const inst = String(res.manifest_yaml||'').split('\n');
+          const cur = String(document.getElementById('install-man').value||'').split('\n');
+          const left = [], right = [];
+          const N = Math.max(inst.length, cur.length);
+          for (let i=0;i<N;i++) {
+            const a = inst[i]||''; const b = cur[i]||'';
+            left.push((a===b? '  ' : '- ') + a);
+            right.push((a===b? '  ' : '+ ') + b);
+          }
+          diffBox.innerHTML = `<div class="muted">Porównanie linii (zainstalowany ⇄ obecny formularz)</div>`+
+            `<div style="display:grid; gap:8px; grid-template-columns:1fr 1fr;">`+
+            `<pre>${left.map(x=>x.replace(/</g,'&lt;')).join('\n')}</pre>`+
+            `<pre>${right.map(x=>x.replace(/</g,'&lt;')).join('\n')}</pre>`+
+            `</div>`;
+        } catch (e) {
+          diffBox.textContent = 'BŁĄD: ' + (e.message||e);
         }
       });
       // Drag&drop do textarea (install)

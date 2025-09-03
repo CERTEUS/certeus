@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/prevent-tags.yml                  |
+# | ROLE: Prevent tags/releases in public mirror.               |
+# | PLIK: .github/workflows/prevent-tags.yml                  |
+# | ROLA: Blokada tagów/releasów w mirrorze publicznym.         |
+# +-------------------------------------------------------------+
+
 name: Prevent tags & releases (mirror)
 
 on:
@@ -13,4 +22,3 @@ jobs:
       - run: |
           echo "Releases/tags not allowed in LITE mirror." >&2
           exit 1
-

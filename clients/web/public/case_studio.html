@@ -36,6 +36,9 @@
           <button id="ingest" class="btn">1) Ingest</button>
           <button id="analyze" class="btn">2) Analyze</button>
           <button id="publish" class="btn">3) Publish</button>
+          <button id="bundle" class="btn">Build PCO Bundle</button>
+          <button id="bundleSend" class="btn">Submit Bundle</button>
+          <a id="bundleDl" class="btn" href="#" download="pco_bundle.json">Download JSON</a>
         </div>
         <div class="row" style="margin-top:8px">
           <a id="ledger" class="btn" target="_blank" href="#">Open Ledger</a>
@@ -79,11 +82,28 @@
         const t=await r.text(); try{ $("publish_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("publish_out").textContent=t }
         setLedgerLink();
       }
+      function buildBundle(){
+        const cs=$("case").value||'CER-LEX-001';
+        // Minimal bundle (must match schema expectations): rid, smt2_hash, lfsc, merkle_proof
+        const rid = cs;
+        // deterministic 64-hex placeholder for demo
+        const smt2_hash = 'a'.repeat(64);
+        const bundle = { rid, smt2_hash, lfsc: '(lfsc proof)', merkle_proof: [] };
+        const s = JSON.stringify(bundle, null, 2);
+        $("bundleDl").href = 'data:application/json;charset=utf-8,' + encodeURIComponent(s);
+        return bundle;
+      }
+      async function submitBundle(){
+        const b = buildBundle();
+        const r = await fetch('/v1/pco/bundle', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(b)});
+        const t = await r.text(); try{ $("publish_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("publish_out").textContent=t }
+      }
       document.getElementById('ingest').addEventListener('click', ingest);
       document.getElementById('analyze').addEventListener('click', analyze);
       document.getElementById('publish').addEventListener('click', publish);
+      document.getElementById('bundle').addEventListener('click', buildBundle);
+      document.getElementById('bundleSend').addEventListener('click', submitBundle);
       setLedgerLink();
     </script>
   </body>
   </html>
-

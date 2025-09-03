@@ -453,6 +453,10 @@ CI integracja:
 
 - DevEx w UI Cockpitu: zakładka „DevEx” w `clients/web/proof_visualizer/index.html` (Copy code: curl/py/ts/go + 1‑klik „Playground” dla GET/POST wybranych endpointów).
   - Autouzupełnianie listy endpointów na bazie runtime `/openapi.json` (best‑effort: zdrowie, PCO public, bundle, analyze).
+  - Parametry ścieżek: pole „Param {…}” do wstawienia wartości (np. `{rid}`), domyślnie z Case ID.
+  - Body JSON: edytowalne pole „Body (JSON)” z heurystycznie wygenerowanym szkieletem z OpenAPI; walidacja JSON (blokuje Copy/Run na błędach, widoczny komunikat błędu).
+  - Tenant: pole `X-Tenant-ID` (opcjonalne) — dodawane jako nagłówek do snippetów/Playground (np. billing).
+  - Dodane endpointy: `GET /v1/billing/balance`, `POST /v1/billing/allocate` (autouzupełnianie i przykładowe body `{ "units": 10 }`).
 
 ### Publikacja SDK (opcjonalnie)
 

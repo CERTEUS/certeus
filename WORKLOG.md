@@ -135,6 +135,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - SDK TS: `publishPCOBundle()` i `analyze()` (FormData)
   - SDK Go: `PublishPCOBundle()` i `Analyze()` (multipart)
   - Testy: 129 passed, 1 skipped (zielone)
+- 2025-09-03 19:15:00Z [agent] (work/daily): DevEx: walidacja JSON + billing + Tenant
+  - Body JSON: edytor + walidacja (blokada Copy/Run przy błędach)
+  - Endpointy billing: `GET /v1/billing/balance`, `POST /v1/billing/allocate` (autobody `{units:10}`)
+  - X-Tenant-ID: pole w DevEx, dołączane do snippetów i Playground
+  - Testy: 133 passed, 1 skipped (zielone)
 - 2025-09-03 14:21:04Z [agent] (work/daily): W16: Piloty — per‑tenant SLO + FIN/LEX endpoints
   - Observability: metryki per‑tenant (histogram + licznik) + panele Grafana
   - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)
@@ -185,7 +190,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Visualizer: klawiaturowa nawigacja po zakładkach + aria-selected
   - Marketplace UI: drag&drop/wgraj plik + heurystyczna walidacja YAML
   - API: `/v1/marketplace/dry_run` (walidacja bez zapisu; name/path/signature/semver)
-  - Lint/test: 129 passed, 1 skipped; demo+smokes uruchomione lokalnie
+  - Marketplace UI: pre‑diff module/version + ryzyko (major/minor/patch)
+  - Lint/test: 133 passed, 1 skipped; demo+smokes uruchomione lokalnie
 - 2025-09-03 14:39:26Z [root] (work/daily): W18: Launch — kontrakt OpenAPI domknięty + zielone testy
   - - Alias /v1/proofgate/publish w API Gateway
   - - Alias /pco/public/{case_id} → /pco/public/{rid}
