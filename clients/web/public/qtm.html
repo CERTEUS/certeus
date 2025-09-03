@@ -161,6 +161,14 @@
           ? "initialized"
           : "init failed";
       }
+      function q(k){ return new URLSearchParams(location.search).get(k)||''; }
+      async function autoRun(){
+        const cs = q('case') || '';
+        const op = (q('op')||'').toUpperCase();
+        const autorun = q('auto');
+        if(cs){ document.getElementById('case').value = cs; await initCase(); }
+        if(autorun==='1' && (op==='LT' || op==='TL')){ await measure(op); }
+      }
       async function measure(op) {
         const cs = document.getElementById("case").value || "LEX-001";
         const r = await fetchJSON("/v1/qtm/measure", {
@@ -194,6 +202,7 @@
         .getElementById("tl")
         .addEventListener("click", () => measure("TL"));
       document.getElementById("lockDeco").addEventListener("click", setDeco);
+      autoRun();
     </script>
   </body>
 </html>

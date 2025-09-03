@@ -79,6 +79,21 @@
           <p>Wizualizator wyników analizy (ALI/PCO) z i18n i dostępnością.</p>
           <p><a href="/app/proof_visualizer/index.html">Otwórz Wizualizator</a></p>
         </div>
+        <div class="card">
+          <h2>API Explorer</h2>
+          <p>Interaktywny eksplorator OpenAPI z wysyłką żądań i gotowymi snippetami.</p>
+          <p><a href="/app/public/explorer.html">Otwórz API Explorer</a></p>
+        </div>
+        <div class="card">
+          <h2>Pricing & Estimator</h2>
+          <p>Porównanie tierów + kalkulator jednostek akcji/miesiąc.</p>
+          <p><a href="/app/public/pricing.html">Otwórz Pricing</a></p>
+        </div>
+        <div class="card">
+          <h2>Public PCO Explorer</h2>
+          <p>Podgląd publicznych payloadów PCO z trasą Merkle i linkami.</p>
+          <p><a href="/app/public/pco_explorer.html">Otwórz PCO Explorer</a></p>
+        </div>
       </div>
       <script>
         async function jfetch(url, opts){ const r = await fetch(url, opts||{}); const t = await r.text(); try{ return {ok:r.ok, data: JSON.parse(t)} }catch{ return {ok:r.ok, data:t} } }

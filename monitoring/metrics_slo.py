@@ -36,8 +36,9 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
-from prometheus_client import Counter, Gauge, Histogram
 from threading import Lock
+
+from prometheus_client import Counter, Gauge, Histogram
 
 # In‑proc lightweight aggregator for quick summaries (landing widgets, API)
 _REQ_AGG_LOCK: Lock = Lock()
@@ -79,6 +80,7 @@ def http_summary(top: int = 10) -> dict[str, object]:
     by_avg = sorted(items, key=lambda x: x["avg_ms"], reverse=True)[:top]
     by_count = sorted(items, key=lambda x: x["count"], reverse=True)[:top]
     return {"top_avg_ms": by_avg, "top_count": by_count, "total_paths": len(items)}
+
 
 # Gauges for model calibration and decision quality
 

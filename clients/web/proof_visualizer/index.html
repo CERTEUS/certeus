@@ -1613,9 +1613,13 @@
         const kind = elDevexKind?.value || "curl";
         const ep = elDevexEndpoint?.value || "health";
         const caseId = document.getElementById("caseId").value || "case-001";
+        const pth = endpointPath();
+        const paramName = firstPathParam(pth);
+        const paramVal = (document.getElementById('devexParamInput')?.value || caseId);
+        const pathWithParam = paramName ? pth.replace(`{${paramName}}`, encodeURIComponent(paramVal)) : pth;
         if (kind === "curl") {
           if (ep === "health") return `curl -s ${DEVEX_BASE}/health`;
-          if (ep === "pco_public") return `curl -s ${DEVEX_BASE}/pco/public/${caseId}`;
+          if (ep === "pco_public") return `curl -s ${DEVEX_BASE}${pathWithParam || ('/pco/public/' + caseId)}`;
           if (ep === "pco_bundle") return `curl -s -X POST ${DEVEX_BASE}/v1/pco/bundle -H 'Content-Type: application/json' \\\n+  -d '{"rid":"${caseId}","smt2_hash":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","lfsc":"(lfsc proof)"}'`;
           if (ep === "analyze") return `curl -s -X POST -F file=@/path/to/file.pdf '${DEVEX_BASE}/v1/analyze?case_id=${caseId}'`;
         }
@@ -1623,7 +1627,7 @@
           if (ep === "health")
             return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.health())`;
           if (ep === "pco_public")
-            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.get_public_pco('${caseId}'))`;
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.get_public_pco('${paramName ? paramVal : caseId}'))`;
           if (ep === "pco_bundle")
             return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nresp = cli.publish_pco_bundle(rid='${caseId}', smt2_hash='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc='(lfsc proof)')\nprint(resp)`;
           if (ep === "analyze")
@@ -1633,7 +1637,7 @@
           if (ep === "health")
             return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.health())`;
           if (ep === "pco_public")
-            return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.getPublicPCO('${caseId}'))`;
+            return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.getPublicPCO('${paramName ? paramVal : caseId}'))`;
           if (ep === "pco_bundle")
             return `const res = await fetch('${DEVEX_BASE}/v1/pco/bundle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rid:'${caseId}',smt2_hash:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',lfsc:'(lfsc proof)'})});\nconsole.log(await res.json())`;
           if (ep === "analyze")
@@ -1643,7 +1647,7 @@
           if (ep === "health")
             return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.Health()\nfmt.Println(resp)`;
           if (ep === "pco_public")
-            return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.GetPublicPCO("${caseId}")\nfmt.Println(resp)`;
+            return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.GetPublicPCO("${paramName ? paramVal : caseId}")\nfmt.Println(resp)`;
           if (ep === "pco_bundle")
             return `// Use curl or write a small http client to POST JSON to ${DEVEX_BASE}/v1/pco/bundle`;
           if (ep === "analyze")
@@ -1657,7 +1661,22 @@
         elDevexSnippet.textContent = devexSnippet();
       }
       elDevexKind?.addEventListener("change", refreshDevex);
-      elDevexEndpoint?.addEventListener("change", refreshDevex);
+      elDevexEndpoint?.addEventListener("change", () => {
+        const p = endpointPath();
+        const name = firstPathParam(p);
+        const row = document.getElementById('devexParamRow');
+        const lab = document.getElementById('devexParamLabel');
+        if (name) {
+          row.style.display = '';
+          lab.textContent = `Param {${name}}`;
+          const v = document.getElementById('devexParamInput');
+          if (v && !v.value) v.value = document.getElementById('caseId').value || 'case-001';
+        } else {
+          row.style.display = 'none';
+        }
+        refreshDevex();
+      });
+      document.getElementById('devexParamInput')?.addEventListener('input', refreshDevex);
       refreshDevex();
 
       document.getElementById("devexCopy")?.addEventListener("click", () => {

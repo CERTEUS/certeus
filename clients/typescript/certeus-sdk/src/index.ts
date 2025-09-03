@@ -11,6 +11,15 @@
 
 export type Json = Record<string, unknown>;
 
+export interface PublishBundleRequest {
+  rid: string;
+  smt2_hash: string;
+  lfsc: string;
+  drat?: string | null;
+  merkle_proof?: Array<{ sibling: string; dir: 'L' | 'R' }> | { path: Array<{ sibling: string; dir: 'L' | 'R' }> } | null;
+  smt2?: string | null;
+}
+
 export interface CerteusOptions {
   baseUrl?: string;
   tenantId?: string;
@@ -56,14 +65,7 @@ export class CerteusClient {
     return (await r.json()) as Json;
   }
 
-  async publishPCOBundle(payload: {
-    rid: string;
-    smt2_hash: string;
-    lfsc: string;
-    drat?: string | null;
-    merkle_proof?: Array<{ sibling: string; dir: 'L' | 'R' }> | { path: Array<{ sibling: string; dir: 'L' | 'R' }> } | null;
-    smt2?: string | null;
-  }): Promise<Json> {
+  async publishPCOBundle(payload: PublishBundleRequest): Promise<Json> {
     const r = await fetch(this.url(`/v1/pco/bundle`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(this.tenantId ? { 'X-Tenant-ID': this.tenantId } : {}) },
