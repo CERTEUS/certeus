@@ -14,7 +14,7 @@
 [![SLSA](https://img.shields.io/badge/slsa-3%2B-8A2BE2)](https://slsa.dev)
 [![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![OpenAPI](https://img.shields.io/badge/openapi-latest-blue)](https://CERTEUS.github.io/certeus/openapi/openapi.json)
+[Roadmap](docs/ROADMAP.md)
 [![Coverage](https://raw.githubusercontent.com/CERTEUS/certeus/main/docs/badges/coverage.svg)](https://github.com/CERTEUS/certeus/actions/workflows/ci_public.yml)
 
 <p align="center">
