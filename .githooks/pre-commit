@@ -1,23 +1,45 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Block files from denylist from being committed.
+# Block hard-coded sensitive paths regardless of denylist.txt
+mapfile -t STAGED < <(git diff --cached --name-only)
+BLOCKED_PATTERNS=(
+  ".env"
+  ".env.local"
+  ".env.*"
+  ".devkeys/**"
+  "secrets/**"
+  "**/*.pem"
+  "**/*.key"
+  "**/id_rsa*"
+  "**/id_ed25519*"
+)
+viol=()
+for f in "${STAGED[@]}"; do
+  for pat in "${BLOCKED_PATTERNS[@]}"; do
+    if [[ "$f" == $pat ]]; then
+      viol+=("$f (matches $pat)")
+      break
+    fi
+  done
+done
+if (( ${#viol[@]} > 0 )); then
+  echo "Commit blocked: sensitive files detected:" >&2
+  printf ' - %s\n' "${viol[@]}" >&2
+  exit 1
+fi
+
+# Block files from denylist (repo-configurable)
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 DENYLIST_FILE="$REPO_ROOT/tools/automation/denylist.txt"
 
 if [[ -f "$DENYLIST_FILE" ]]; then
-  mapfile -t STAGED < <(git diff --cached --name-only)
   mapfile -t PATTERNS < "$DENYLIST_FILE"
   VIOLATIONS=()
   for p in "${STAGED[@]}"; do
     for pat in "${PATTERNS[@]}"; do
       # Skip comments and empty lines
       [[ -z "$pat" || "$pat" =~ ^# ]] && continue
-      if [[ "$p" == $pat ]]; then
-        VIOLATIONS+=("$p matches $pat")
-        break
-      fi
-      # Glob match
       if [[ "$p" == $pat ]]; then
         VIOLATIONS+=("$p matches $pat")
         break
@@ -32,4 +54,3 @@ if [[ -f "$DENYLIST_FILE" ]]; then
 fi
 
 exit 0
-

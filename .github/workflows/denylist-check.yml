@@ -22,27 +22,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Paths filter (denylist)
-        id: filter
-        uses: dorny/paths-filter@v3
         with:
-          token: ${{ github.token }}
-          filters: |
-            deny:
-              - 'docs/internal/**'
-              - 'legal/**'
-              - 'evidence/**'
-              - 'finance/**'
-              - 'notes/**'
-              - 'drafts/**'
-              - '*.docx'
-              - '*.xlsx'
-              - '**/*.pem'
-              - '**/*.key'
-              - '**/id_rsa*'
-              - '**/id_ed25519*'
-      - name: Fail on denylist
-        if: steps.filter.outputs.deny == 'true'
+          fetch-depth: 0
+      - name: Detect changed files
+        id: changes
+        uses: tj-actions/changed-files@v45
+        with:
+          files_ignore: |
+            **/*.md
+            **/*.png
+            **/*.jpg
+            **/*.jpeg
+            **/*.gif
+      - name: Enforce denylist (from tools/automation/denylist.txt)
         run: |
-          echo "Denylist patterns matched changed files. Aborting." >&2
-          exit 1
+          set -euo pipefail
+          FILES=$(printf "%s" "${{ steps.changes.outputs.all_changed_and_modified_files }}" | tr ' ' '\n' | sed '/^$/d')
+          if [ ! -f tools/automation/denylist.txt ]; then
+            echo "No denylist.txt present; skipping."
+            exit 0
+          fi
+          mapfile -t PATTERNS < tools/automation/denylist.txt
+          viol=()
+          for f in $FILES; do
+            for pat in "${PATTERNS[@]}"; do
+              [[ -z "$pat" || "$pat" =~ ^# ]] && continue
+              case "$f" in
+                $pat) viol+=("$f (matches $pat)"); break;;
+              esac
+            done
+          done
+          if [ ${#viol[@]} -gt 0 ]; then
+            echo "Denylist violation(s):" >&2
+            printf ' - %s\n' "${viol[@]}" >&2
+            exit 1
+          fi
