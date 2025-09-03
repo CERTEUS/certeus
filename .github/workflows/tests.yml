@@ -89,9 +89,9 @@ jobs:
         run: |
           uv run ruff format --check
 
-      - name: Install OpenAPI validator deps
+      - name: Install OpenAPI validator deps (uv env)
         run: |
-          python -m pip install openapi-spec-validator PyYAML
+          uv run python -m pip install openapi-spec-validator PyYAML
 
       - name: 🧪 Pytest (JUnit report)
         run: |
