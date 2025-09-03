@@ -13,6 +13,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci-gates:
     runs-on: ubuntu-latest
@@ -375,8 +379,6 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
-
 
 
 

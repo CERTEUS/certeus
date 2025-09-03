@@ -13,6 +13,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   path-coverage:
     runs-on: ubuntu-latest
@@ -32,7 +36,7 @@ jobs:
 
   pr-summary:
     if: github.event_name == 'pull_request' && always()
-    needs: [path-coverage]
+    needs: [path_coverage]
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -42,7 +46,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const result = '${{ needs["path-coverage"].result }}';
+            const result = '${{ needs.path_coverage.result }}';
             const body = `✔ Path-Coverage-Gate: ${result}`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,

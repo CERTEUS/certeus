@@ -1,0 +1,44 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/denylist-check.yml                  |
+# | ROLE: Block PR/push if denylisted paths are touched         |
+# | PLIK: .github/workflows/denylist-check.yml                  |
+# | ROLA: Blokuje PR/push gdy naruszona czarna lista            |
+# +-------------------------------------------------------------+
+
+name: Denylist-Check
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  filter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load denylist
+        id: deny
+        run: |
+          echo "list<<EOF" >> $GITHUB_OUTPUT
+          cat tools/automation/denylist.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Paths filter
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          token: ${{ github.token }}
+          list: |
+            deny:
+              - ${{ steps.deny.outputs.list }}
+      - name: Fail on denylist
+        if: steps.filter.outputs.deny == 'true'
+        run: |
+          echo "Denylist patterns matched changed files. Aborting." >&2
+          exit 1
+

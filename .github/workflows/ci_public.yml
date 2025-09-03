@@ -1,0 +1,46 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/ci_public.yml                      |
+# | ROLE: Public-only CI (tests/lint)                          |
+# | PLIK: .github/workflows/ci_public.yml                      |
+# | ROLA: CI tylko dla publicznego repo                        |
+# +-------------------------------------------------------------+
+
+name: CI-Public
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            constraints/**
+      - name: Install deps
+        run: |
+          python -m pip install -U pip wheel setuptools
+          python -m pip install -e .
+          python -m pip install ruff pytest
+      - name: Ruff
+        run: |
+          python -m ruff check .
+      - name: Tests
+        run: |
+          python -m pytest -q
+
