@@ -123,3 +123,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-03 06:34:28Z [48793] (work/daily): [week-end] Autopromote re-run (after rebase)
   - weekly-promote: true
   - - Ensure marker is on tip
+- 2025-09-03 06:35:47Z [CERTEUS] (main): auto-promote: 28d6e834b7d530fbf1fd9a1639f1cf1cf518e7d2 (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
