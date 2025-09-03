@@ -122,3 +122,5 @@ jobs:
           fi
           # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
           gh pr merge "$PR_NUM" --auto --squash || true
+
+
