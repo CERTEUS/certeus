@@ -54,14 +54,53 @@
           <a class="btn" href="/app/proof_visualizer/index.html">Proof Visualizer</a>
           <a class="btn" href="/docs">Docs</a>
         </div>
+        <div style="margin-top:12px" class="card">
+          <h2 style="font-size:18px;margin:0 0 10px">Quick checks</h2>
+          <div class="row">
+            <input id="tenant" class="btn" placeholder="X-Tenant-ID (np. acme)" />
+            <button id="checkTier" class="btn">Check tier</button>
+            <button id="checkBal" class="btn">Check balance</button>
+            <span id="tInfo" class="muted"></span>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <input id="rid" class="btn" placeholder="RID / case_id (np. CER-LEX-001)" />
+            <a id="openPCO" class="btn" href="#" target="_blank">Open Public PCO</a>
+          </div>
+        </div>
         <div class="links">
           <a href="/openapi.json" target="_blank">OpenAPI</a>
           <a href="/v1/billing/policies" target="_blank">Billing policies</a>
-          <a href="/pco/public/RID-EXAMPLE" target="_blank">Public PCO (example RID)</a>
           <a href="/v1/metrics" target="_blank">/metrics</a>
         </div>
       </div>
     </div>
+    <script>
+      async function jfetch(url, opts) {
+        const r = await fetch(url, opts);
+        const t = await r.text();
+        try { return { ok: r.ok, data: JSON.parse(t) }; } catch { return { ok: r.ok, data: t }; }
+      }
+      async function checkTier() {
+        const tid = document.getElementById('tenant').value || 'anonymous';
+        const r = await jfetch('/v1/billing/tenant_tier', { headers: { 'X-Tenant-ID': tid } });
+        const m = r.ok ? `tenant=${r.data.tenant} tier=${r.data.tier}` : 'error';
+        document.getElementById('tInfo').textContent = m;
+      }
+      async function checkBal() {
+        const tid = document.getElementById('tenant').value || 'anonymous';
+        const r = await jfetch('/v1/billing/balance', { headers: { 'X-Tenant-ID': tid } });
+        const m = r.ok ? `tenant=${tid} balance=${r.data.balance}` : 'error';
+        document.getElementById('tInfo').textContent = m;
+      }
+      function updPCOLink() {
+        const rid = (document.getElementById('rid').value || 'CER-LEX-001').trim();
+        const a = document.getElementById('openPCO');
+        a.href = `/pco/public/${encodeURIComponent(rid)}`;
+      }
+      document.getElementById('checkTier').addEventListener('click', checkTier);
+      document.getElementById('checkBal').addEventListener('click', checkBal);
+      document.getElementById('rid').addEventListener('input', updPCOLink);
+      updPCOLink();
+    </script>
   </body>
   </html>
-

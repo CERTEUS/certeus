@@ -121,8 +121,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-03 17:10:00Z [agent] (work/daily): W15 D71–D74: OpenAPI+SDK+DevEx
   - OpenAPI: info.x-compat/x-release/servers/externalDocs; kontrakt vs runtime test
   - SDK: Python/TS/Go (clients/*) + quickstarts (docs/sdk/*)
-  - UI: DevEx zakładka (Copy code: curl/py/ts/go; 1-klik playground)
+  - UI: DevEx zakładka (Copy code: curl/py/ts/go; 1‑klik playground)
   - Limits: test 429 przeciążenia (token budget)
+- 2025-09-03 17:35:00Z [agent] (work/daily): W15: testy zielone + README update
+  - pytest: 124 passed, 1 skipped (lokalnie, venv_cli)
+  - README: sekcja OpenAPI & SDK z quickstartami + DevEx wzmianka
 - 2025-09-03 14:21:04Z [agent] (work/daily): W16: Piloty — per‑tenant SLO + FIN/LEX endpoints
   - Observability: metryki per‑tenant (histogram + licznik) + panele Grafana
   - FIN: /v1/fin/alpha/simulate + /v1/fin/alpha/pnl (PCO)

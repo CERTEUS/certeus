@@ -97,6 +97,11 @@ paths:
       summary: Publication decision (ProofGate)
       tags: [ProofGate]
       responses: { "200": { description: ok } }
+  /v1/proofgate/publish:
+    post:
+      summary: Publication decision (ProofGate)
+      tags: [ProofGate]
+      responses: { "200": { description: ok } }
   /v1/pco/bundle:
     post:
       summary: Create and publish ProofBundle (v0.2)

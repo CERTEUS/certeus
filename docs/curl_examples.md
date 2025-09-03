@@ -48,6 +48,13 @@ curl -s http://127.0.0.1:8000/v1/ledger/$CASE/records | jq .
 curl -s http://127.0.0.1:8000/v1/ledger/$CASE/prove | jq .
 ```
 
+- Ledger Head (skrót sprawy):
+
+```
+CASE=case-ledger-01
+curl -s http://127.0.0.1:8000/v1/ledger/$CASE | jq .
+```
+
 - E2E publish via /v1/pco/bundle (status + ledger_ref in response JSON):
 
 ```
