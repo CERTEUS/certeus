@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_marketplace_security.py          |
+# | ROLE: Marketplace security tests.                            |
+# | PLIK: tests/services/test_marketplace_security.py          |
+# | ROLA: Testy bezpieczeństwa Marketplace.                      |
+# +-------------------------------------------------------------+
 """
 PL: Testy bezpieczeństwa Marketplace: walidacja nazwy wtyczki i endpoint sign (dev-only).
 EN: Marketplace security tests: plugin name validation and dev-only sign endpoint.
@@ -11,6 +19,12 @@ import os
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
 
 
 def test_install_rejects_unsafe_name(monkeypatch):
@@ -51,3 +65,7 @@ def test_sign_manifest_dev_only(monkeypatch):
     r2 = client.post("/v1/marketplace/sign_manifest", json={"manifest_yaml": "name: x"})
     assert r2.status_code == 200
     assert "signature_b64url" in r2.json()
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

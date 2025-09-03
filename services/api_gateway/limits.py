@@ -45,6 +45,7 @@ _TOKEN_BUDGETS: dict[str, int] = {}
 
 # Polityki billing (tiering) – ładowane best‑effort z JSON
 _POLICY_CACHE: dict[str, object] | None = None
+_POLICY_LOCK: Lock = Lock()
 
 
 def _policy_path() -> Path:
@@ -120,6 +121,49 @@ def _default_budget_for(tenant: str) -> int:
                     pass
     # fallback stały
     return _DEFAULT_BUDGET
+
+
+def reload_policies() -> None:
+    """Wyczyść cache i przeładuj polityki z pliku."""
+
+    global _POLICY_CACHE
+    with _POLICY_LOCK:
+        _POLICY_CACHE = None
+        _ = _load_policies()
+
+
+def set_tenant_tier_policy(tenant: str, tier: str, *, persist: bool = False) -> dict[str, object]:
+    """Ustaw mapowanie tenant→tier w politykach. Opcjonalnie zapisz do pliku.
+
+    Zwraca wynik z polami: tenant, tier, persisted (bool), policy_path (opcjonalnie).
+    """
+
+    pol = _load_policies()
+    if not (isinstance(pol, dict) and isinstance(pol.get("tiers"), dict)):
+        raise ValueError("Invalid billing policies structure")
+    if tier not in pol["tiers"]:  # type: ignore[index]
+        raise ValueError(f"Unknown tier: {tier}")
+
+    with _POLICY_LOCK:
+        tmap = pol.setdefault("tenants", {})  # type: ignore[assignment]
+        if not isinstance(tmap, dict):
+            raise ValueError("Invalid tenants map in policies")
+        tmap[str(tenant)] = str(tier)
+
+        persisted = False
+        pth: str | None = None
+        want_write = persist or (os.getenv("BILLING_POLICY_FILE_WRITE") in {"1", "true", "True"})
+        if want_write:
+            try:
+                p = _policy_path()
+                p.write_text(json.dumps(pol, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+                persisted = True
+                pth = str(p)
+            except Exception:
+                persisted = False
+                pth = None
+
+    return {"tenant": tenant, "tier": tier, "persisted": persisted, "policy_path": pth or ""}
 
 
 # === MODELE / MODELS ===

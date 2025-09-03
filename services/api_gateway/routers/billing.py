@@ -87,6 +87,37 @@ def estimate(request: Request, body: EstimateRequest) -> dict[str, int | str]:
     return {"tenant": tenant, "tier": tier, "action": body.action, "estimated_units": base}
 
 
+# --- ADMIN (DEV) --------------------------------------------------------------
+
+
+class AdminSetTierRequest(BaseModel):
+    tenant: str
+    tier: str
+    persist: bool = Field(default=False, description="Persist changes to policy file if allowed")
+
+
+@router.post("/admin/set_tier", summary="[DEV] Map tenant to tier")
+def admin_set_tier(req: AdminSetTierRequest) -> dict[str, object]:
+    import os
+    from fastapi import HTTPException
+
+    if (os.getenv("BILLING_ADMIN") or "").strip() not in {"1", "true", "True"}:
+        raise HTTPException(status_code=403, detail="Admin disabled")
+    return _limits.set_tenant_tier_policy(req.tenant, req.tier, persist=req.persist)
+
+
+@router.post("/admin/reload", summary="[DEV] Reload billing policies from file")
+def admin_reload() -> dict[str, object]:
+    import os
+    from fastapi import HTTPException
+
+    if (os.getenv("BILLING_ADMIN") or "").strip() not in {"1", "true", "True"}:
+        raise HTTPException(status_code=403, detail="Admin disabled")
+    _limits.reload_policies()
+    pol = _limits._load_policies()  # type: ignore[attr-defined]
+    return {"reloaded": True, "tiers": list((pol.get("tiers") or {}).keys())}
+
+
 @router.post("/quota", summary="Set tenant quota")
 def set_quota(req: QuotaRequest) -> dict[str, int | str]:
     """PL: Ustaw całkowity budżet jednostek (quota) dla wskazanego tenant-a.
