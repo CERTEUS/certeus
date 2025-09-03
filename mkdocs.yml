@@ -1,3 +1,12 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: mkdocs.yml                                            |
+# | ROLE: Docs site config (Material)                           |
+# | PLIK: mkdocs.yml                                            |
+# | ROLA: Konfiguracja strony dokumentacji                      |
+# +-------------------------------------------------------------+
+
 site_name: CERTEUS Docs
 site_url: https://CERTEUS.github.io/certeus
 theme:
@@ -6,13 +15,8 @@ theme:
 nav:
   - Home: index.md
   - API: api/openapi.md
-  - Observability: observability/README.md
 plugins:
   - search
-  - openapi:
-      spec_dir: docs/api
-      use_nav: false
 markdown_extensions:
   - admonition
   - toc
-

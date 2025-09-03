@@ -49,3 +49,9 @@ jobs:
           name: coverage-${{ github.sha }}
           path: coverage.xml
           retention-days: 1
+      - name: Agent hygiene scan (keywords)
+        run: |
+          set -euo pipefail
+          ! grep -R -i -n -E '(codex|agent_token|session_context|secret_context)' -- . \
+            | grep -vE '(^\.git|^docs/|^tests/|node_modules|dist|build|\.venv)' \
+            || (echo 'agent-hygiene: suspicious keywords found in tree' >&2; exit 1)
