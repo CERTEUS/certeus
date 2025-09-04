@@ -247,3 +247,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - release.yml: cosign sign-blob + attach sbom/provenance to release
 - 2025-09-04 07:26:47Z [48793] (work/daily): fix: canary_gate sys.path injection (robust import)
   - - scripts/gates/canary_gate.py: add repo root to sys.path before importing app
+- 2025-09-04 07:47:45Z [48793] (work/daily): vNext: Canary workflow + RTBF endpoints/smokes + runbook
+  - - New workflow: .github/workflows/canary_gate.yml (PR-only)
+  - - ProofGate: /v1/rtbf/{appeal,erase,erased} endpoints + store
+  - - Smokes: rtbf_proofgate_smoke.py + canary_gate.py in ci-gates
+  - - Runbook: section for new gates
+  - - Lint+tests: green; promote monitoring continues
