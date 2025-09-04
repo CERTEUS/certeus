@@ -55,9 +55,76 @@
           <span class="muted">UB L_T:<span id="ub" class="pill">?</span></span>
           <span class="muted">Collapse:<span id="collapse" class="pill">-</span></span>
           <span class="muted">Priorities:<span id="pri" class="pill">-</span></span>
+          <a id="qcaseLink" href="#" target="_blank" class="muted">Open case</a>
         </div>
         <div id="heat" class="grid"></div>
         <p class="muted">Coverage: <span id="gamma" class="pill">?</span> • Tunneling p: <span id="ptun" class="pill">?</span></p>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Sequence</h1>
+        <div class="row">
+          <input id="seq" placeholder="operators (np. L,T,W)" />
+          <label class="muted"><input type="checkbox" id="noCollapse"> no_collapse</label>
+          <button id="run-seq" class="btn">Run sequence</button>
+          <span class="muted">UB L_T:<span id="seq-ub" class="pill">?</span></span>
+          <span class="muted">Latency:<span id="seq-lat" class="pill">?</span></span>
+        </div>
+        <table id="seqtbl"><thead><tr><th>#</th><th>op</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Measurement Log</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="log-refresh" class="btn">Refresh log</button>
+          <span class="muted">last events for case: <span id="log-case" class="pill">-</span></span>
+        </div>
+        <table id="logtbl"><thead><tr><th>ts</th><th>operator</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Sequence</h1>
+        <div class="row">
+          <input id="seq" placeholder="operators (np. L,T,W)" />
+          <label class="muted"><input type="checkbox" id="noCollapse"> no_collapse</label>
+          <button id="run-seq" class="btn">Run sequence</button>
+          <span class="muted">UB L_T:<span id="seq-ub" class="pill">?</span></span>
+          <span class="muted">Latency:<span id="seq-lat" class="pill">?</span></span>
+        </div>
+        <table id="seqtbl"><thead><tr><th>#</th><th>op</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Compare Sequences</h1>
+        <div class="row">
+          <input id="seqA" placeholder="seq A (np. L,T)" value="L,T" />
+          <input id="seqB" placeholder="seq B (np. T,L)" value="T,L" />
+          <label class="muted"><input type="checkbox" id="noCollapseCmp"> no_collapse</label>
+          <button id="run-compare" class="btn">Run compare</button>
+          <span class="muted">ΔUB:<span id="cmp-dub" class="pill">0</span></span>
+        </div>
+        <div id="cmp-bars" style="display:flex;gap:12px;align-items:flex-end;height:80px;margin:8px 0;"></div>
+        <table id="cmptbl"><thead><tr><th>#</th><th>opA</th><th>verdictA</th><th>pA</th><th>opB</th><th>verdictB</th><th>pB</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Commutator Heatmap</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="comm-refresh" class="btn">Refresh heatmap</button>
+          <span class="muted">operators: <span class="pill">W/I/C/L/T</span></span>
+        </div>
+        <div id="comm" class="grid"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Entanglement</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <input id="vars" placeholder="variables (np. RISK,SENTIMENT)" />
+          <button id="ent" class="btn">Find entanglement</button>
+          <span class="muted">MI:<span id="mi" class="pill">?</span></span>
+          <span class="muted">Negativity:<span id="neg" class="pill">?</span></span>
+        </div>
+        <table id="enttbl"><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
     <script>
@@ -66,13 +133,94 @@
       async function fetchJSON(url,opts){ const r = await fetch(url,opts); const j = await r.json(); return {ok:r.ok,data:j,headers:r.headers} }
       async function updateCoverage(){ const r = await fetchJSON('/v1/lexqft/coverage'); if(r.ok){ document.getElementById('gamma').textContent = r.data.coverage_gamma; } }
       async function updateTunnel(){ const r = await fetchJSON('/v1/lexqft/tunnel',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({evidence_energy: 1.1})}); if(r.ok){ document.getElementById('ptun').textContent = r.data.p_tunnel; } }
-      async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); } }
+      async function runSequence(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const raw = (document.getElementById('seq').value||'L,T,W').split(',').map(s=>s.trim()).filter(Boolean);
+        const noC = document.getElementById('noCollapse').checked;
+        const r = await fetchJSON('/v1/qtm/measure_sequence', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({operators: raw, case: cs, no_collapse: noC})});
+        const tb = document.querySelector('#seqtbl tbody'); tb.innerHTML='';
+        if(!r.ok) return;
+        (r.data.steps||[]).forEach((s,i)=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${i+1}</td><td>${s.operator}</td><td>${s.verdict}</td><td>${(s.p||0).toFixed(3)}</td>`; tb.appendChild(tr); });
+        const ub = (r.data.uncertainty_bound||{}).L_T ?? '?';
+        document.getElementById('seq-ub').textContent = ub;
+        document.getElementById('seq-lat').textContent = (r.data.final_latency_ms||0).toFixed(1)+'ms';
+        document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
+      async function runCompare(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const a = (document.getElementById('seqA').value||'L,T').split(',').map(s=>s.trim()).filter(Boolean);
+        const b = (document.getElementById('seqB').value||'T,L').split(',').map(s=>s.trim()).filter(Boolean);
+        const noC = document.getElementById('noCollapseCmp').checked;
+        const call = async (ops)=> await fetchJSON('/v1/qtm/measure_sequence', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({operators: ops, case: cs, no_collapse: noC})});
+        const ra = await call(a); const rb = await call(b);
+        const A = (ra.ok && ra.data.steps)||[]; const B = (rb.ok && rb.data.steps)||[];
+        const n = Math.max(A.length, B.length);
+        const tb = document.querySelector('#cmptbl tbody'); tb.innerHTML='';
+        for(let i=0;i<n;i++){
+          const sa=A[i]||{}; const sb=B[i]||{}; const tr=document.createElement('tr');
+          tr.innerHTML = `<td>${i+1}</td><td>${sa.operator||''}</td><td>${sa.verdict||''}</td><td>${(sa.p||0).toFixed? (sa.p||0).toFixed(3): ''}</td><td>${sb.operator||''}</td><td>${sb.verdict||''}</td><td>${(sb.p||0).toFixed? (sb.p||0).toFixed(3): ''}</td>`;
+          tb.appendChild(tr);
+        }
+        const uba = (ra.ok && ra.data.uncertainty_bound && ra.data.uncertainty_bound.L_T) || 0;
+        const ubb = (rb.ok && rb.data.uncertainty_bound && rb.data.uncertainty_bound.L_T) || 0;
+        const dub = Number(uba) - Number(ubb);
+        document.getElementById('cmp-dub').textContent = (isFinite(dub)? dub.toFixed(3): '0');
+        const cnt = (arr)=>{ const m={ALLOW:0,DENY:0,ABSTAIN:0}; (arr||[]).forEach(x=>{ const v=(x.verdict||'').toUpperCase(); if(m[v]!==undefined){ m[v]++; }}); return m; };
+        const ca = cnt(A), cb = cnt(B);
+        const mx = Math.max(1, ca.ALLOW+ca.DENY+ca.ABSTAIN, cb.ALLOW+cb.DENY+cb.ABSTAIN);
+        const mkBar = (label, a, b, color)=>{ const wrap=document.createElement('div'); wrap.style.display='flex'; wrap.style.flexDirection='column'; wrap.style.alignItems='center'; const barA=document.createElement('div'); barA.style.width='18px'; barA.style.height=(60*(a/mx)).toFixed(0)+'px'; barA.style.background=color; barA.title=`A ${label}: ${a}`; const barB=document.createElement('div'); barB.style.width='18px'; barB.style.height=(60*(b/mx)).toFixed(0)+'px'; barB.style.background=color; barB.style.opacity='0.5'; barB.title=`B ${label}: ${b}`; const lab=document.createElement('div'); lab.textContent=label; lab.style.fontSize='12px'; lab.style.color='#9aa0a6'; wrap.appendChild(barA); wrap.appendChild(barB); wrap.appendChild(lab); return wrap; };
+        const bars=document.getElementById('cmp-bars'); bars.innerHTML='';
+        bars.appendChild(mkBar('ALLOW', ca.ALLOW, cb.ALLOW, '#60a5fa'));
+        bars.appendChild(mkBar('DENY', ca.DENY, cb.DENY, '#f87272'));
+        bars.appendChild(mkBar('ABSTAIN', ca.ABSTAIN, cb.ABSTAIN, '#facc15'));
+      }
+      async function runSequence(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const raw = (document.getElementById('seq').value||'L,T,W').split(',').map(s=>s.trim()).filter(Boolean);
+        const noC = document.getElementById('noCollapse').checked;
+        const r = await fetchJSON('/v1/qtm/measure_sequence', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({operators: raw, case: cs, no_collapse: noC})});
+        const tb = document.querySelector('#seqtbl tbody'); tb.innerHTML='';
+        if(!r.ok) return;
+        (r.data.steps||[]).forEach((s,i)=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${i+1}</td><td>${s.operator}</td><td>${s.verdict}</td><td>${(s.p||0).toFixed(3)}</td>`; tb.appendChild(tr); });
+        const ub = (r.data.uncertainty_bound||{}).L_T ?? '?';
+        document.getElementById('seq-ub').textContent = ub;
+        document.getElementById('seq-lat').textContent = (r.data.final_latency_ms||0).toFixed(1)+'ms';
+        document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
+      async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`; } }
       async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); }
       async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
+      async function refreshLog(){ try{ const cs = document.getElementById('case').value || 'LEX-001'; document.getElementById('log-case').textContent = cs; const r = await fetchJSON(`/v1/qtm/history/${encodeURIComponent(cs)}?limit=20&sort=desc`); if(!r.ok) return; const tb = document.querySelector('#logtbl tbody'); tb.innerHTML=''; const items=(r.data?.history)||[]; for(const it of items){ const tr=document.createElement('tr'); const td=(v)=>{ const d=document.createElement('td'); d.textContent=v; return d; }; tr.appendChild(td(it.ts||'')); tr.appendChild(td(it.operator||'')); tr.appendChild(td(it.verdict||'')); tr.appendChild(td(typeof it.p==='number'? it.p.toFixed(3):'')); tb.appendChild(tr); } document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`; }catch(e){} }
+      async function findEnt(){ try{ const vs=(document.getElementById('vars').value||'RISK,SENTIMENT').split(',').map(x=>x.trim()).filter(Boolean); const r = await fetchJSON('/v1/qtm/find_entanglement',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({variables:vs})}); if(!r.ok) return; const tb=document.querySelector('#enttbl tbody'); tb.innerHTML=''; (r.data.pairs||[]).forEach(p=>{ const tr=document.createElement('tr'); const td=(v)=>{ const d=document.createElement('td'); d.textContent=v; return d; }; tr.appendChild(td(p[0]||'')); tr.appendChild(td(p[1]||'')); tb.appendChild(tr); }); document.getElementById('mi').textContent = (r.data.mi||0).toFixed(3); document.getElementById('neg').textContent = (r.data.negativity||0).toFixed(3); }catch(e){} }
       document.getElementById('measure').addEventListener('click', doMeasure);
       document.getElementById('save').addEventListener('click', savePreset);
       document.getElementById('load').addEventListener('click', loadPreset);
-      loadPreset(); updateCoverage(); updateTunnel();
+      document.getElementById('log-refresh').addEventListener('click', refreshLog);
+      document.getElementById('ent').addEventListener('click', findEnt);
+      document.getElementById('run-seq').addEventListener('click', runSequence);
+      document.getElementById('run-compare').addEventListener('click', runCompare);
+      document.getElementById('run-seq').addEventListener('click', runSequence);
+      async function refreshCommutator(){
+        const ops=['W','I','C','L','T'];
+        const grid=document.getElementById('comm'); grid.innerHTML='';
+        const cs = document.getElementById('case').value || 'LEX-001';
+        for(let i=0;i<ops.length;i++){
+          for(let j=0;j<ops.length;j++){
+            const A=ops[i], B=ops[j];
+            let val=0.0;
+            try{
+              const r = await fetch(`/v1/qtm/commutator`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({A,B})});
+              if(r.ok){ const body = await r.json(); val = Number(body.value||0); }
+            }catch(e){}
+            const d=document.createElement('div'); d.className='cell';
+            if(val>0.5) d.classList.add('hot'); else if(val<0.2) d.classList.add('cold');
+            d.title = `[${A},${B}]=${val.toFixed(3)}`;
+            grid.appendChild(d);
+          }
+        }
+      }
+      document.getElementById('comm-refresh').addEventListener('click', refreshCommutator);
+      loadPreset(); updateCoverage(); updateTunnel(); refreshLog(); findEnt(); refreshCommutator();
     </script>
   </body>
   </html>

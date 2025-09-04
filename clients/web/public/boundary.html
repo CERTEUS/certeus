@@ -26,6 +26,10 @@
       .row { display:flex; gap: 12px; align-items: center; flex-wrap: wrap; }
       .btn { background:#1a1c20; border:1px solid #2a2d33; color:#f2f2f3; padding:8px 12px; border-radius:10px; cursor:pointer; }
       .btn:hover { background:#20242a; }
+      .ok { color:#7cd992; font-weight:600; }
+      .bad { color:#ff7b7b; font-weight:600; }
+      .row-bad { background:#2a1518; }
+      .row-ok { background:#162a1a; }
       a { color:#9aa0a6; }
     </style>
   </head>
@@ -44,6 +48,7 @@
             <tr>
               <th>Shard</th>
               <th>Δbits</th>
+              <th>Status</th>
               <th>Files</th>
               <th>Bytes</th>
               <th>GZip Ratio</th>
@@ -70,13 +75,19 @@
         tbd.innerHTML='';
         const bitsMap = body.bits_delta_map || {};
         const stats = body.stats || {};
+        const shards = Object.keys(bitsMap).sort((a,b)=> Number(bitsMap[b]||0) - Number(bitsMap[a]||0));
         let rows='';
-        for (const shard of Object.keys(bitsMap).sort()) {
+        for (const shard of shards) {
           const st = stats[shard] || {};
-          rows += `<tr><td>${shard}</td><td>${bitsMap[shard]}</td><td>${st.files||0}</td><td>${st.bytes||0}</td><td>${(st.gzip_ratio||1).toFixed(2)}</td></tr>`
+          const bad = Number(bitsMap[shard]||0) !== 0;
+          const status = bad ? 'FAIL' : 'OK';
+          rows += `<tr class="${bad?'row-bad':'row-ok'}"><td>${shard}</td><td class="${bad?'bad':'ok'}">${bitsMap[shard]}</td><td class="${bad?'bad':'ok'}">${status}</td><td>${st.files||0}</td><td>${st.bytes||0}</td><td>${(st.gzip_ratio||1).toFixed(2)}</td></tr>` 
         }
         tbd.innerHTML = rows;
-        document.getElementById('summary').textContent = `delta_bits=${body.delta_bits}`;
+        const db = Number(body.delta_bits||0);
+        const sumEl = document.getElementById('summary');
+        sumEl.textContent = `delta_bits=${db} • shards=${Object.keys(bitsMap).length}`;
+        sumEl.style.color = db===0 ? '#9aa0a6' : '#f2c8cc';
         const obs = (body.anchors && body.anchors.observed_at) ? `observed_at=${body.anchors.observed_at}` : '';
         document.getElementById('observed').textContent = obs;
       }
@@ -85,4 +96,3 @@
     </script>
   </body>
   </html>
-

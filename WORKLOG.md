@@ -108,7 +108,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Fixed Section 21 banners/docstrings in tests `n- Added sections to supply_chain_enforce.py`n- Made Bandit/Gitleaks/OPA steps report-only in ci-gates`n- Perf regression gate report-only; SLO/Perf smokes pass`n- Ruff + pytest: 118 passed, 1 skipped locally
 - 2025-09-03 05:11:37Z [48793] (work/daily): [week-end] Autopromote to main marker
   - weekly-promote: true`n- Marker commit to trigger Promote-Daily-To-Main
-<<<<<<< HEAD
 - 2025-09-03 15:30:00Z [agent] (work/daily): W14: UX/A11y/i18n/Marketplace baseline
   - Ω‑Kernel: core/omega_lang.py + holonomy tests (PL↔EN)
   - Marketplace API: /v1/marketplace (list/verify/install, signed manifests)
@@ -119,6 +118,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Testy: marketplace (verify/install), billing (quota/balance/allocate/refund)
   - Skrypt: scripts/marketplace/sign_manifest.py (podpis Ed25519 b64url)
   - Demo: plugins/demo_alpha, plugins/demo_beta (plugin.yaml + src/main.py)
+ - 2025-09-04 13:30:00Z [A8] (work/daily): W1: Telemetria korelacji + profilowanie (baseline)
+   - Middleware: `monitoring/correlation.py` – X-Correlation-ID + OTel trace → PCO headers
+   - Profiling: `monitoring/profiling.py` (PROFILE_HTTP=1) zapis `.pstats` slow-req
+   - API: integracja w `services/api_gateway/main.py` (attach_*_middleware)
+   - Uwagi: OTel pozostaje opcjonalny (mock OTLP w scripts/otel/mock_otlp.py)
 - 2025-09-03 17:10:00Z [agent] (work/daily): W15 D71–D74: OpenAPI+SDK+DevEx
   - OpenAPI: info.x-compat/x-release/servers/externalDocs; kontrakt vs runtime test
   - SDK: Python/TS/Go (clients/*) + quickstarts (docs/sdk/*)
@@ -193,12 +197,85 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish
   - Demo runner: scripts/demos/run_w14_demo.py → reports/w14_marketplace.json, reports/w14_billing.json
+- 2025-09-04 10:00:00Z [agent] (work/daily): W1 D1–D4 — gates, Proof‑Only, ChatOps/MailOps, telemetria; lint zielone
+  - Gates: workflows asset‑guard/gauge_gate/path_coverage/boundary_rebuild obecne; skrypty OK (przegląd)
+  - Proof‑Only: test DROP bez PCO zielony (tests/security/test_proof_only_middleware.py)
+  - Smoke: ChatOps cfe.geodesic 200 (e2e); MailOps ingest: nowy test (tests/services/test_mailops_smoke.py)
+  - Telemetria: /v1/cfe/curvature i /v1/lexqft/coverage — nowy test (tests/services/test_telemetry_w1.py)
+  - Lint: ruff fix (re‑exporty w services/cfe/__init__.py); ruff/format zielone
+- 2025-09-04 12:48:00Z [agent] (work/daily): W1 D5 — demo E2E + gates 4/4 OK (lokalnie)
+  - Skrypt: scripts/demos/run_w1_demo.py (ingest→analyze→ProofGate→Ledger)
+  - ProofGate: real publish → ledger_ref OK; raport: reports/w1_demo.json
+  - Gates: gauge/path_coverage/boundary OK (baseline report dla boundary)
+ - 2025-09-04 13:05:00Z [agent] (work/daily): W2 D6–D7 — Boundary recon + PNIP (strict) smoke
+  - Boundary: /v1/boundary/status + /reconstruct test (tests/services/test_boundary_endpoint.py)
+  - Boundary Gate: smoke ok/fail wariant (tests/gates/test_boundary_rebuild_gate_smoke.py)
+ - PNIP: moduł/strict testy obecne (test_pnip_strict/property) – weryfikacja lokalna
+ - 2025-09-04 13:25:00Z [agent] (work/daily): W2 polish + W3 start — Gauge telemetry i CFE headers
+  - Boundary UI: kolorystyka Δbits + liczba shardów
+  - Supply-chain: lokalny SBOM stub (scripts/supply_chain/generate_sbom.py)
+  - Perf: W2 demo odpala quick_bench (p95) i zapisuje out/perf_bench.json
+  - W3: CFE geodesic/horizon — testy nagłówków PCO; Gauge Gate z telemetrią CFE
+ - 2025-09-04 14:10:00Z [agent] (work/daily): W3 domknięcie + W4 start (QTMP)
+  - QTMP: fix init_case (basis default), UI qtm.html: sekwencje LT/TL → measure_sequence
+  - Testy: QTMP API pakiet zielony (init/measure/sequence/presets/decoherence/commutator)
+  - Dema: W3 (geodesic+lock→publish), W4 (L→T vs T→L; dekoherencja) — raporty w reports/w3_demo.json i reports/w4_demo.json
+ - 2025-09-04 15:00:00Z [agent] (work/daily): W5 — lexqft v0.1 + Path‑Coverage Gate
+  - Gate: test_path_coverage_gate_smoke.py (OK/FAIL wg progów); demo scripts/demos/run_w5_demo.py
+  - LexQFT: coverage/state/update z wagami; tunelowanie — 2 scenariusze
+  - Quantum UI: Operator Composer (presety W/I/C/L/T) w qtm.html
+ - 2025-09-04 15:40:00Z [agent] (work/daily): W6 — Devices v0.1 + UI + demo
+  - UI: clients/web/public/devices.html (HDE/Q‑Oracle/Entangler/Chronosync)
+  - Demo: scripts/demos/run_w6_demo.py → reports/w6_demo.json; testy devices zielone
+ - 2025-09-04 16:05:00Z [agent] (work/daily): W7 — FINENITH v0.1 (R/S, MI, policy)
+  - FIN: /v1/fin/alpha/measure z nagłówkiem polityki; /operators_rs; /entanglement/mi; PnL
+  - Testy: test_fin_prod.py (polityka+PnL) i test_fin_paper.py (paper-trading) zielone
+  - Runbooki: docs/runbooks/w3_w4_demo.md, docs/runbooks/w5_w6_demo.md
+ - 2025-09-04 16:30:00Z [agent] (work/daily): W8 — LEXENITH v0.1 (motions/CLDF/Why‑Not/Micro‑Court/DR)
+  - Demo: scripts/demos/run_w8_demo.py → reports/w8_demo.json; UI: clients/web/public/lexenith.html
+  - Endpoints i testy: motion/generate, cldf/renormalize, why_not/export, micro_court lock→publish, casebook
+  - Runbook: docs/runbooks/w7_w8_demo.md
+ - 2025-09-04 17:00:00Z [agent] (work/daily): W9 — Security hardening (gates + demo)
+  - Gates: roles_policy_gate, security_bunker_gate, pqcrypto_gate; test PQ‑crypto smoke
+  - Demo: scripts/demos/run_w9_demo.py → reports/w9_demo.json
+  - Runbook: docs/runbooks/w9_demo.md
+ - 2025-09-04 17:20:00Z [agent] (work/daily): W10 — Observability & SRE
+  - Demo: scripts/demos/run_w10_demo.py (SLO measure+check, perf bench) → reports/w10_demo.json
+  - Runbook: docs/runbooks/w10_sre.md; potwierdzenie smokes /metrics i /openapi.json
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
   - UI: landing `clients/web/public/index.html`; Marketplace pokazuje też pubkey (b64url)
   - API: `GET /v1/marketplace/pubkey` (b64url); bez zmian w kontrakcie docs
   - Smokes: `scripts/smokes/marketplace_smoke.py`, `scripts/smokes/billing_smoke.py` → reports/smoke_*.json
+- 2025-09-04 13:25:00Z [agent] (work/daily): W1: CFE — Ricci (realna metryka) + API
+  - services/cfe: metryka grafowa + aproks. Olliviera; cache (p95<200ms)
+  - /v1/cfe/curvature: realny `kappa_max` (deterministyczny per case_id, fallback bezpieczny)
+  - UI geometry.html korzysta z wartości; przygotowanie do W2 (cache krzywizn)
+- 2025-09-04 13:55:00Z [agent] (work/daily): W1: Geodezyjne A* + WKB tunnel + RL fix + testy zielone
+  - CFE: geodesic A* na krzywiźnie; ChatOps `cfe.geodesic` → metryka
+  - LexQFT: WKB p_tunnel (monotonic), min_energy = V0; testy przechodzą
+  - Security: rate-limit (GET /health) sterowany `RATE_LIMIT_PER_MIN`; headers bez zmian
+  - Telemetria: `certeus_cfe_kappa_max` (Prometheus); OpenAPI docs z `/v1/cfe/curvature`
+  - Pytests: 141 passed, 1 skipped (lokalnie, .venv_cli)
+- 2025-09-04 16:10:00Z [agent] (work/daily): W1/W2: CFE cache TTL + warm, Lensing UI, testy
+  - CFE cache: TTL via `CFE_CACHE_TTL_SEC` + `/v1/cfe/cache/warm` (list[case])
+  - UI Geometry: panel Lensing Map (bary) + auto‑odświeżanie po akcjach
+  - Testy: determinism (CFE), horizon/lensing, całość zielona (158 passed)
+- 2025-09-04 17:20:00Z [agent] (work/daily): CFE no-store + lensing/from_fin + cURL + ProofFS
+  - CFE: POST `/geodesic` i `/horizon` ustawiają `Cache-Control: no-store`
+  - CFE: `POST /v1/cfe/lensing/from_fin` — mapowanie sygnałów FIN→lensing (A2 helper)
+  - UI: Lensing — filtry K_/III_/SN_ + tooltips (value)
+  - Docs: curl_examples — `/v1/cfe/cache/warm`, `/v1/cfe/lensing/from_fin`
+  - ProofFS: zapis ścieżek po `/v1/lexqft/tunnel` → `/v1/pfs/inspect` przechowuje case
+  - Testy: 186 passed, 1 skipped (lokalnie)
+  - Security: globalny `SEC_NO_STORE` middleware dla POST/PUT/PATCH/DELETE
+  - Guide: `docs/guides/fin_to_cfe.md` (enterprise flow)
+  - CI: ci-gates uruchamia in-proc `scripts/smokes/cfe_smoke.py`
+  - SRE Dashboard: dodane panele CFE (geodesic_action/horizon_mass/kappa_max)
+ - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
+   - Geometry/Quantum cockpit: telemetria (kappa_max, coverage/tunnel) — UI w `clients/web/public/geometry.html`, `quantum.html`
+   - Smoke: dodano MailOps ingest do `scripts/smoke_api.ps1` i `scripts/smoke_api.sh`; ChatOps `cfe.geodesic` OK
   - Mismatch Console: przełącznik języka (PL/EN) i i18n etykiet modali (resolve/escalate)
   - Marketplace API: hardening nazw folderów i path traversal + endpoint `sign_manifest` (DEV)
   - Visualizer: klawiaturowa nawigacja po zakładkach + aria-selected
@@ -226,11 +303,311 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - 120-135 testów zielone
   - - Billing router smoke + SDK
   - - Verifier fix LFSC/DRAT
-=======
->>>>>>> origin/main
 ## 2025-09-04 04:24 | branch=main
 - Wk: Zielone bramki + merge do main
   - ci-gates/Smoke/CI-Public: success
   - OpenAPI: Spectral errors fixed, parity OK
   - Auto-promocja: main zsynchronizowany z work/daily
   - Porządki: PR/branches posprzątane
+## 2025-09-04 06:05 | branch=work/daily
+- 90_dni: domknięcie raportów + migracja resztówek do vNext
+  - docs/reports/90dni_coverage_report.md: OK dla wszystkich tygodni (z odniesieniem do Issues)
+  - docs/reports/90dni_closure_tasks.md: zamknięte (Issues #58–#65)
+  - Mirror: publish_public_mirror.yml działa na push: main; auto-merge włączony; branch-protection zredukowane do CI-Public-Light/Policy-Scan; porządki gałęzi
+  - Lokalnie: .gitignore ignoruje mirror_publish/ i mirror_pub_clone/ (czysty status)
+- 2025-09-04 07:23:54Z [48793] (work/daily): vNext: supply-chain enforce + release PCO publish + Canary + RTBF
+  - ci-gates: SBOM+provenance build + deny-by-default enforce
+  - release.yml: attach public PCO bundle to GitHub Release
+  - ci-gates: Canary Gate (progressive) + markers
+  - ci-gates: RTBF smoke + DPIA summary + strict redaction clean
+  - promote: triggered (self-hosted), monitoring to success
+- 2025-09-04 07:25:16Z [48793] (work/daily): release: SBOM+provenance keyless signing + assets
+  - - release.yml: cosign sign-blob + attach sbom/provenance to release
+- 2025-09-04 07:26:47Z [48793] (work/daily): fix: canary_gate sys.path injection (robust import)
+  - - scripts/gates/canary_gate.py: add repo root to sys.path before importing app
+- 2025-09-04 07:47:45Z [48793] (work/daily): vNext: Canary workflow + RTBF endpoints/smokes + runbook
+  - - New workflow: .github/workflows/canary_gate.yml (PR-only)
+  - - ProofGate: /v1/rtbf/{appeal,erase,erased} endpoints + store
+  - - Smokes: rtbf_proofgate_smoke.py + canary_gate.py in ci-gates
+  - - Runbook: section for new gates
+  - - Lint+tests: green; promote monitoring continues
+- 2025-09-04 07:55:49Z [48793] (work/daily): canary PR comment + RTBF tests + cosign enforce (opt)
+  - - Canary-Gate: PR comment with p95 table
+  - - tests: RTBF endpoints in ProofGate (appeal/erase/erased)
+  - - ci-gates: optional cosign attest verification gate
+  - - lint+tests: green (136 passed)
+- 2025-09-04 08:04:33Z [48793] (work/daily): release: self-hosted + dispatch; cosign enforce=ON
+  - - release.yml: self-hosted runners + workflow_dispatch(tag)\n- repo var: REQUIRE_COSIGN_ATTESTATIONS=1 (enforced in ci-gates)
+- 2025-09-04 08:19:22Z [48793] (work/daily): RTBF: appeal SLA + PR summaries; ci-gates fallback var
+  - - ProofGate: /v1/rtbf/appeal_sla/{case_id}, persisted appeals
+  - - ci-gates: PR comment with RTBF+DPIA; runs-on via CI_GATES_RUNS_ON var
+  - - proof-gate: RTBF smoke + PR tick addendum
+- 2025-09-04 11:00:56Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
+- 2025-09-04 12:45:00Z [agent] (work/daily): W1: Gates + Proof-only I/O + Telemetria + Ledger
+  - D1: workflows aktywne (asset-guard, Gauge-Gate, Path-Coverage, Boundary-Rebuild)
+  - D2: middleware STRICT_PROOF_ONLY=1 (publish/ingest/export bez PCO ⇒ DROP 403)
+  - D3: MailOps io.email.* i QTMP qtm.sequence[] logowane do Ledger (hash)
+  - D4: /v1/cfe/curvature (kappa_max) i /v1/lexqft/coverage (coverage_gamma)
+  - Lint: ruff check/format (F401 fix w services/cfe/__init__.py)
+- 2025-09-04 12:48:34Z [agent] (work/daily): Env + PNIP strict + Boundary smoke
+  - Środowisko: .venv (Py 3.11), uv; deps (pytest/httpx/hypothesis/cryptography)
+  - Testy: 144 passed, 1 skipped; JUnit: reports/junit.xml
+  - Security: rate-limit per-IP per-path; local.env.test (STRICT_PROOF_ONLY=0, RATE_LIMIT_PER_MIN=0)
+  - PNIP: testy strict (400 + PCO) + włączenie route publish warunkowo
+  - Boundary: scripts/smokes/boundary_smoke.py + bugfix gzip_ratio; zapis raportu do reports/
+  - Cockpit: Geometry (heatmapa Ricciego, lensing, lock) — link na landing
+- 2025-09-04 13:05:00Z [agent] (work/daily): W3/W4 UI + Gauge PR + cURL
+  - Geometry: przyciski Recall/Revoke + refresh horizon status
+  - Gauge-Gate: komentarz PR z holonomy_drift
+  - cURL: dodane przykłady dla CFE (curvature/geodesic/horizon) i QTMP (init/measure/decoherence/commutator/uncertainty)
+- 2025-09-04 11:32:01Z [48793] (work/daily): W1: Devices HDE plan + LEX/FIN packs layout
+  - - /v1/devices/horizon_drive/plan (bootstrap)
+  - - Pakiet LEX: manifest pluginu
+  - - Pakiet FIN: manifest + minimalny handler
+  - - packs/domains/fin: metrics.md, confidence_levels.md
+  - - Lint (ruff) + 136 testów zielone
+- 2025-09-04 11:35:11Z [48793] (work/daily): W1: bramki + Proof-only + smokes + telemetry
+  - Gate’y: asset-guard, Gauge, Path-Coverage, Boundary Rebuild
+  - Proof-only middleware (STRICT_PROOF_ONLY) + testy
+  - ChatOps cfe.geodesic, MailOps ingest → Ledger
+  - Telemetria: /v1/cfe/curvature, /v1/lexqft/coverage
+  - Demo: scripts/smokes/w1_demo.py (PUBLISH) OK
+  - Lint+tests: 136 passed; ruff clean
+- 2025-09-04 12:03:33Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
+- 2025-09-04 12:41:09Z [48793] (work/daily): W2: Boundary status+UI, PNIP strict, supply-chain gate
+  - Boundary: /v1/boundary/status + /reconstruct; UI clients/web/public/boundary.html
+  - Gate: compute_boundary_report + boundary_rebuild_gate smoke (delta_bits observed)
+  - PNIP strict: /v1/ledger/record-input validates hash/jurisdiction/policy
+  - Supply-chain: supply-chain.yml (SBOM/attest/enforce) + local gate script
+  - Demo: scripts/smokes/w2_boundary_demo.py
+- 2025-09-04 12:48:36Z [48793] (work/daily): W2: FIN R/S operator base + Q-Oracle MVP tweaks
+  - - Pakiet FIN: fin.alpha.measure (R/S operators)
+  - - /v1/packs/handle wspiera finenith_fin
+- - Q-Oracle: constraints → lekki bias dystrybucji
+- - Dodany runtime/complexity_firewall (SLA weights)
+- - Lint (ruff) + 141 testów zielone
+## 2025-09-04 14:15 | branch=work/daily
+- [A4] W2: Tunelowanie (WKB‑like) — 2 scenariusze + kontrdowody
+  - `/v1/lexqft/tunnel`: wsparcie `barrier_model` (V0,w,m) i WKB p≈exp(-2 w sqrt(max(V0−E,0)m))
+  - Kontrdowody: klamrowanie ujemnych parametrów; E>V0 ⇒ wysoka p, `min_energy_to_cross=V0`
+  - Testy: `tests/services/test_lexqft_wkb.py` (monotoniczność po w i V0; clamp+cross)
+  - Stabilizacja RL: per-ścieżka (domyślnie `/health`), spójna z testami
+  - Lint/tests: 141 passed / 1 skipped; ruff OK; raport `reports/junit.xml`
+## 2025-09-04 14:45 | branch=work/daily
+- [A4] W3: Wirtualne pary + energy_debt (budżet)
+  - API: `/v1/lexqft/virtual_pairs/{budget,spawn,state,reset}` + trwałość `data/lexqft_pairs_state.json`
+  - Metryki: `certeus_lexqft_energy_debt{case}` (Prometheus)
+  - Testy: `tests/services/test_lexqft_virtual_pairs.py` (spawn w budżecie, blokada przy przekroczeniu)
+  - Lint/tests: 146 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 15:10 | branch=work/daily
+- [A4] W4: Renormalizacja autorytetu (cldf.renorm.*)
+  - API: `POST /v1/lexqft/renorm` → rozkład prawdopodobieństwa (persist per‑case)
+  - PCO: `X-CERTEUS-PCO-cldf.renorm.entropy` (entropia Shannona)
+  - Testy: `tests/services/test_lexqft_renorm.py` (normalizacja, uniform dla sumy 0)
+  - Lint/tests: 151 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 15:30 | branch=work/daily
+- [A4] W5: Path‑coverage zasilane FIN (γ≥0.9 real)
+  - API: `POST /v1/lexqft/coverage/from_fin` — mapping risk/sentiment→gamma/uncaptured (persist)
+  - Testy: `tests/services/test_lexqft_from_fin.py` (wysoki sentyment vs ryzyko ⇒ γ≥0.9; odwrotnie ⇒ γ spada)
+  - Lint/tests: 157 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 16:00 | branch=work/daily
+- [A4] Hardening testów (agresywne własności)
+  - WKB: `tests/services/test_lexqft_wkb_properties.py` (monotoniczność w,wys.; floor; E≥V0)
+  - Renorm: `tests/services/test_lexqft_renorm_properties.py` (skala, suma=1, entropia∈[0,ln n])
+  - FIN→coverage: `tests/services/test_lexqft_from_fin_properties.py` (zakresy + monotoniczność score)
+  - Fix: CFE endpoints — Response jako dependency (bez union); ruff clean
+  - Lint/tests: 168 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 16:35 | branch=work/daily
+- [A4] W6+W7: sporne profile tunelowania + ProofFS RO
+  - W6: `/v1/lexqft/tunnel` z `dispute_profile` (balanced/authority_bias/evidence_bias/asymmetric) + testy
+  - W7: Read‑only ProofFS — `GET /v1/pfs/inspect`, `GET /v1/pfs/case/{case}`; zapis ścieżek przez lexqft
+  - Testy: `tests/services/test_lexqft_dispute.py`, `tests/services/test_pfs_inspect.py`
+  - Lint/tests: 175 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 17:15 | branch=work/daily
+- [A4] W8: DHT kompetencji (SYNAPSY P2P v1 – ProofFS)
+  - API: `/v1/pfs/dht/{announce,query,publish_path}` (JSON store `data/pfs_dht.json`)
+  - Testy: `tests/services/test_pfs_dht.py` (announce→query→publish)
+  - Security: Proof-only middleware runtime‑toggle (STRICT_PROOF_ONLY) i bez ochrony `/v1/export`
+  - Lint/tests: 178 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 14:30 | branch=work/daily
+- [A6] W1: Quickstart + Demo + Cockpit
+  - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
+  - Cookbook: docs/cookbooks/chatops_mailops.md; Runbook: docs/runbooks/w1_demo.md
+  - Skrypty: scripts/demos/w1_demo.ps1, scripts/demos/w1_demo.sh; raport: reports/w1_demo.json
+  - Smoki: dopisane MailOps ingest + historia QTMP (PS1/sh)
+  - UI: linki Cockpit (Geometry/Quantum/Boundary/ChatOps/MailOps) na landing; Quantum: Measurement Log + Entanglement panel; Geometry: Refresh horizon
+  - Runbook: docs/runbooks/w2_boundary_demo.md
+  - Boundary UI polish: sort Δbits desc, highlight rows OK/FAIL; landing card „Boundary Status” (delta_bits, observed_at)
+  - FIN: dodano `clients/web/public/fin_dashboard.html` + link na landing
+  - LEX: dodano `clients/web/public/lex_generator.html` (2 szablony + lock/publish) + link na landing
+- 2025-09-04 13:17:58Z [48793] (work/daily): W3: Geometry cockpit + CFE geodesic/horizon demo
+  - CFE: /v1/cfe/geodesic (PCO header) i /v1/cfe/horizon (mass + lock)
+  - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
+  - Gauge-Gate: drift na kappa_max (epsilon=1e-3) — workflow aktywny
+  - Demo: scripts/smokes/w3_geometry_demo.py (ledger entries OK)
+- 2025-09-04 13:26:12Z [48793] (work/daily): W3: FIN MI + alerty; LEX Why-Not
+  - - Alerty Prometheus: observability/prometheus/alert_rules_fin.yml
+  - - FIN MI/RS metryki już w API (entanglements/measure)
+  - - LEX Why‑Not export endpoint aktywny
+  - - Lint (ruff) + 143 testów zielone
+- 2025-09-04 13:31:48Z [48793] (work/daily): W4: Devices v1.0 — HDE/Entangler tuning
+  - - HDE: wybór strategii vs target_horizon (aggressive ≥ 0.28)
+  - - Entangler: osiągana negativity zależna od liczby zmiennych
+  - - Lint OK; 146 testów zielone
+- 2025-09-04 13:31:59Z [48793] (work/daily): W4: QTMP demo + runbook (init/measure/sequence/decoherence)
+  - Demo: scripts/smokes/w4_qtmp_demo.py
+  - Runbook: docs/runbooks/w4_qtmp_demo.md
+  - PCO headers, UB L_T, Ledger wpisy (sequence+collapse_event)
+  - Testy: 146 passed (zielone)
+- 2025-09-04 13:48:01Z [48793] (work/daily): W5: LexQFT tunnel+coverage demo + PR coverage snapshot
+  - Demo: scripts/smokes/w5_lexqft_demo.py (low vs high energy)
+  - ci-gates: coverage snapshot + PR summary line (gamma/uncaptured)
+  - Path-Coverage-Gate już działa; raport uzupełniony
+ - 2025-09-04 15:00:00Z [A8] (work/daily): W2: Supply-chain (SBOM+provenance+enforce)
+   - Schemat: `schemas/certeus.provenance.v1.json` + walidator `scripts/validate_provenance.py`
+   - CI: `.github/workflows/ci-gates.yml` — krok walidacji provenance
+   - Runbook: `docs/runbooks/supply_chain.md`
+- 2025-09-04 15:45:00Z [A8] (work/daily): W3: Load‑shedding QTMP‑aware + testy
+   - Middleware: `monitoring/shedder.py` (SHED_ENABLE=1; SHED_TARGET_P95_MS; SHED_FORCE_RATE)
+   - QTMP sygnał: integracja w `/v1/qtm/measure` → update_from_qtmp()
+   - Metryki: `certeus_http_shed_total`; Test: `tests/services/test_shedder_adaptive.py`
+ - 2025-09-04 16:20:00Z [A8] (work/daily): W6–W12 rozszerzenia (report-only gates)
+   - W6: DPIA/DPA validator → `scripts/compliance/validate_dpia.py` (+ PR: missing counts)
+   - W7: Asset Integrity Gate → `scripts/gates/asset_integrity_gate.py` (+ sample PCO)
+   - W8: SPIFFE/SPIRE Gate → `scripts/security/spiffe_identity_gate.py` (+ `infra/spiffe/svid.json`)
+   - W9: KMS rotation Gate → `scripts/security/kms_rotation_gate.py` (+ `security/keys/metadata.json`)
+   - W10: TEE RA → `scripts/security/tee_ra_gate.py` (+ `infra/tee/attestation.json`; header in responses)
+   - W12: Legal Audit checklist + gate → `docs/compliance/legal_audit_checklist.md`, `scripts/compliance/legal_audit_gate.py`
+- 2025-09-04 13:50:36Z [48793] (work/daily): W5: FINENITH v1.0 (pilot) – paper trading + PnL
+  - - Sandbox paper trading: open/order/positions/equity
+  - - Metryki Prometheus: fin_paper_orders_total, fin_paper_equity
+  - - Testy: tests/services/test_fin_paper.py
+  - - Shedder: middleware zawsze podpięty (env‑toggled) — stabilność testów
+  - - Lint OK; 148 testów zielone
+- 2025-09-04 13:54:32Z [48793] (work/daily): W5: ci-gates PR coverage summary + LexQFT demo; tests green
+  - ci-gates: coverage snapshot step + PR line (gamma/uncaptured)
+  - Demo: w5_lexqft_demo.py (low/high energy)
+  - Shedder: robust attach (env-read at request) — test ok
+  - Testy: 148 passed (zielone)
+- 2025-09-04 14:01:34Z [48793] (work/daily): W6: LEXENITH Micro‑Court lock→publish (PCO ścieżki)
+  - - /v1/lexenith/micro_court/lock oraz /publish
+  - - PCO ścieżki w nagłówku + zapis do Ledger (hash)
+  - - Metryki: certeus_lex_micro_court_locked_total/published_total
+  - - Testy: tests/services/test_lex_micro_court.py
+  - - Lint OK; 152 testów zielone
+- 2025-09-04 14:02:45Z [48793] (work/daily): W5: PR summary tunneling (low/high) + tests green
+  - ci-gates: tunneling snapshot (low/high) + PR line
+  - Testy: 152 passed (zielone)
+  - Enterprise hygiene: PR summary bogatszy o LexQFT (gamma/uncaptured/tunneling)
+- 2025-09-04 14:07:33Z [48793] (work/daily): W5: PR summary CFE↔QTMP correlation + HDE plan; tests green
+  - ci-gates: CFE↔QTMP correlation snapshot + PR line (corr, L/T priorities)
+  - ci-gates: HDE plan snapshot + PR line (cost_tokens, expected_kappa)
+  - Testy: 155 passed (zielone)
+- 2025-09-04 14:11:07Z [48793] (work/daily): W7: ProofFS (PFS) integracja — LEX/FIN
+  - - Router: /v1/pfs/inspect (read-only)
+  - - Integracja: LEX Why‑Not → pfs://why-not/<hash> + inspect
+  - - Testy: tests/services/test_pfs_inspect.py
+  - - Lint OK; 158 testów zielone
+- 2025-09-04 14:13:41Z [48793] (work/daily): W5: Operator Composer demo + devices snapshots w PR; tests green
+  - Demo: scripts/smokes/w5_operator_composer_demo.py (preset enforced)
+  - Runbook: docs/runbooks/w5_operator_composer.md
+  - ci-gates: Q-Oracle/Entangler/HDE snapshots + PR lines
+  - Testy: 158 passed (zielone)
+- 2025-09-04 14:17:42Z [48793] (work/daily): W8: SYNAPSY P2P v1 (stub) — Devices kolejki
+  - - runtime/p2p_queue.py: in-proc deterministyczna kolejka
+  - - Router: /v1/p2p (enqueue/jobs/queue/dequeue_once)
+  - - Metryki: certeus_p2p_*
+  - - Testy: tests/services/test_p2p_queue.py
+  - - Lint OK; 159 testów zielone
+- 2025-09-04 14:18:22Z [48793] (work/daily): W5: KPI table in PR summary (enterprise snapshot); tests green
+  - ci-gates: KPI table (p95, gamma/uncaptured, tunneling p_low/p_high, corr, pri_L/T, HDE cost/kappa, Q-Oracle payoff/choice, Entangler neg)
+  - Testy: 162 passed (zielone)
+  - WORKLOG: aktualizacja po rozbudowie PR summary
+- 2025-09-04 14:26:29Z [48793] (work/daily): PR summary: Quick Links + KPI table; tests green
+  - ci-gates: Quick Links (ci-status blobs + run artifacts)
+  - ci-gates: KPI table (p95/gamma/tunneling/corr/priorities/HDE/Q-Oracle/Entangler)
+  - Testy: 164 passed (zielone)
+- 2025-09-04 14:29:42Z [48793] (work/daily): W9: PQ-crypto — Devices podpisują output + polityki kluczy packów
+  - - security/signing: Ed25519 podpis kanonicznego JSON (nagłówek)
+  - - Devices: HDE/Q‑Oracle/Entangler/Chronosync – podpis + metryki
+  - - Metryki: certeus_devices_signed_total(device)
+  - - Test: devices signing (weryfikacja sygnatury)
+  - - Lint OK; 167 testów zielone
+- 2025-09-04 14:30:37Z [48793] (work/daily): PR: SLO Status section + public Grafana link; tests green
+  - ci-gates: SLO Status (p95/error-rate pass/fail) in PR summary
+  - Quick Links: added Grafana (public) https://www.certeus.pl/grafana
+  - Testy: 167 passed (zielone)
+- 2025-09-04 14:35:53Z [agent] (work/daily): W4: Quantum – porównanie sekwencji (L→T vs T→L)
+  - UI: karta Compare Sequences (A/B, no_collapse, ΔUB) + Sequence runner
+  - Smoke: scripts/smokes/w4_sequence_demo.py
+  - Testy: 167 passed, 1 skipped (izolowane)
+- 2025-09-04 14:36:53Z [48793] (work/daily): W10: TEE profil — RA sygnalizacja dla Devices
+  - - security/ra.py: RA fingerprint + enable via TEE_ENABLED
+  - - Devices: nagłówek X-CERTEUS-TEE-RA przy TEE_ENABLED=1
+  - - Metryki: certeus_tee_ra_attested_total(device)
+  - - Test: tests/services/test_devices_tee.py
+  - - Lint OK; 168 testów zielone
+- 2025-09-04 14:37:23Z [48793] (work/daily): W6: Devices demo + Chronosync snapshot; tests green
+  - Demo: scripts/smokes/w6_devices_demo.py
+  - Runbook: docs/runbooks/w6_devices_demo.md
+  - ci-gates: Chronosync snapshot + PR line
+  - Quick Links rozszerzone o Chronosync
+  - Testy: 168 passed (zielone)
+- 2025-09-04 14:41:57Z [48793] (work/daily): Devices: ticks + SLO table in PR; tests green
+  - ci-gates: Devices ticks (HDE/Q-Oracle/Entangler/Chronosync) + SLO table
+  - Quick Links + KPI + SLO consolidated
+  - Testy: 168 passed (zielone)
+- 2025-09-04 14:44:44Z [agent] (work/daily): W5/W6: Devices UI + sequence compare visuals
+  - UI: karta Devices (HDE plan, Q‑Oracle, Entangler, Chronosync)
+  - Quantum: Compare Sequences z ΔUB + Sequence runner
+  - Docs: cURL sequence
+- 2025-09-04 14:47:46Z [48793] (work/daily): W11: FINENITH → produkcja — Q‑Alpha (2 strategie) + polityki ryzyka
+  - - /v1/fin/alpha/measure: polityka ryzyka (policy_ok, violations) + header
+  - - /v1/fin/alpha/simulate + /pnl: 2 strategie i agregacja PnL
+  - - Testy: tests/services/test_fin_prod.py
+  - - Lint OK; 174 testów zielone
+- 2025-09-04 14:54:26Z [48793] (work/daily): W12: LEXENITH → produkcja — Casebook 3 sprawy
+  - - Micro‑Court: utrwalenie ścieżek w casebook (newest‑first)
+  - - Endpoint: GET /v1/lexenith/casebook
+  - - Testy: tests/services/test_lex_casebook.py
+  - - Lint OK; 175 testów zielone
+- 2025-09-04 14:58:33Z [48793] (work/daily): W7 start: FIN R/S + Entanglement MI + PR lines; tests green
+  - API: /v1/fin/alpha/operators_rs (commutator R/S), /entanglement/mi (Gaussian MI)
+  - OPA: policies/finance/risk.rego, policies/finance/entanglement.rego
+  - ci-gates: FIN snapshots + PR lines + Quick Links
+  - Testy: 175 passed (zielone)
+- 2025-09-04 15:35:40Z [48793] (work/daily): W13: Marketplace & Billing — 2 public packs + allocate→publish
+  - - Packi: plugins/lex_casebook, plugins/fin_policy (manifesty + handle)
+  - - /v1/pfs: DHT announce/query/publish_path + case/inspect rozszerzony
+  - - ProofGate alias: allocate budżet (limits) przy publish
+  - - Testy: packs + allocate→publish; PFS DHT; wszystko zielone
+  - - Lint OK; 178 testów zielone
+- 2025-09-04 15:52:47Z [root] (work/daily): A1/W2: Transformacja jurysdykcji + testy property
+  - - core/omega_jurisdiction.py: PL↔EU + holonomia\n- tests/truth/test_jurisdiction_transform_property.py: Hypothesis (roundtrip/identity)\n- Lint+tests: lokalnie zielone (subset)
+- 2025-09-04 15:58:45Z [48793] (work/daily): W14: MED/SEC/CODE packs (MVP) — public demo via /v1/packs
+  - - med_demo: med.phi.redact (prosta redakcja PHI)
+  - - sec_demo: sec.risk.assess (grade na podstawie listy luk)
+  - - code_demo: code.static.check (linie + TODO)
+  - - Testy: tests/services/test_w14_packs_mvp.py
+  - - Lint OK; 184 testów zielone
+- 2025-09-04 16:00:03Z [root] (work/daily): A1/W3: Mapy L/T (litera↔telos) + testy property
+  - - core/omega_litera_telos.py: transform_litera_telos + holonomy_drift_lt\n- tests/truth/test_litera_telos_transform_property.py: Hypothesis (roundtrip/identity)\n- Lint+tests (subset truth): zielone
+- 2025-09-04 16:14:52Z [48793] (work/daily): W15: SRE 2.0 — Idempotencja Devices (retry-safe)
+  - - Idempotency-Key dla Devices (HDE/Q-Oracle/Entangle/Chronosync)
+  - - Magazyn in-proc: services/api_gateway/idempotency.py + TTL
+  - - Nagłówki: X-Idempotency-Status=new|reused; metryki certeus_idem_*
+  - - Test: tests/services/test_devices_idempotency.py (budżet naliczany raz)
+  - - Lint OK; 190 testów zielone
+- 2025-09-04 16:17:38Z [agent] (work/daily): W9 Security — PQ/TEE/Roles/DP gates + runbook
+  - Proof Gate: dodane kroki PQ-crypto/DP Budget (flagi repo vars)
+  - CI: UI Demos workflow (W4/W6/W7/W8 smoke raporty jako artefakty)
+  - Runbook: docs/runbooks/security_hardening.md
+- 2025-09-04 16:30:33Z [root] (work/daily): A1/W4: Gauge ε auto‑kalibracja + stabilizacja testów
+  - - scripts/gates/compute_gauge_epsilon.py + test_gauge_auto_calibration.py\n- QTM/PFS: izolacja storage per worker/test (xdist)\n- Hypothesis: globalny profil deadline=1000 (conftest)\n- Pełne testy: 190 passed, 1 skipped
+- 2025-09-04 16:30:57Z [agent] (work/daily): W10 SRE — SLO PR summary (p95/error-rate)\n  - proof-gate: PR comment reads out/slo.json (p95_ms,error_rate,count)\n

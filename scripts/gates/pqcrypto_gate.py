@@ -27,6 +27,7 @@ from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
+
 def _is_on(v: str | None) -> bool:
     return (v or "").strip().lower() in {"1", "true", "on", "yes"}
 
@@ -42,6 +43,7 @@ def main() -> int:
     (out / "pqcrypto.txt").write_text(status, encoding="utf-8")
     # Never fail here (informational)
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

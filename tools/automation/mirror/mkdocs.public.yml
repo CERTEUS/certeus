@@ -22,7 +22,6 @@ theme:
   favicon: assets/favicon.ico
 plugins:
   - search
-  - sitemap
 use_directory_urls: true
 extra:
   social:

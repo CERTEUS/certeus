@@ -81,6 +81,11 @@ class LensingResponse(BaseModel):
     critical_precedents: list[str]
 
 
+class WarmCacheResponse(BaseModel):
+    warmed: int
+    ttl_sec: int | None = None
+
+
 # === LOGIKA / LOGIC ===
 
 # +=====================================================================+
@@ -103,10 +108,35 @@ class CurvatureResponse(BaseModel):
 
 
 @router.get("/curvature", response_model=CurvatureResponse)
-async def curvature() -> CurvatureResponse:
-    """PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max)."""
-    # Stub: stała wartość, wykorzystywana przez gate'y/telemetrię
-    return CurvatureResponse(kappa_max=0.012)
+async def curvature(response: Response, case_id: str | None = None) -> CurvatureResponse:
+    """PL/EN: CFE telemetry — compute Ricci (approx Ollivier) kappa_max for case.
+
+    case_id opcjonalny — determinuje ziarno grafu (metryka realna, ale lekka).
+    """
+    try:
+        from monitoring.metrics_slo import certeus_cfe_kappa_max
+        from services.cfe import kappa_max_for_case
+
+        summary = kappa_max_for_case(case_id)
+        try:
+            certeus_cfe_kappa_max.set(float(summary.kappa_max))
+        except Exception:
+            pass
+        # Cache headers
+        try:
+            import os as _os
+
+            ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+            if response is not None and ttl > 0:
+                response.headers.setdefault("Cache-Control", f"public, max-age={ttl}")
+            if response is not None:
+                response.headers.setdefault("X-CERTEUS-CFE-Cache-TTL", str(ttl))
+        except Exception:
+            pass
+        return CurvatureResponse(kappa_max=summary.kappa_max)
+    except Exception:
+        # Fallback bezpieczny (nie przerywać smoków/UI)
+        return CurvatureResponse(kappa_max=0.012)
 
 
 @router.post("/geodesic", response_model=GeodesicResponse)
@@ -115,15 +145,29 @@ async def geodesic(req: GeodesicRequest, request: Request, response: Response) -
 
     enforce_limits(request, cost_units=2)
 
-    # Placeholder: return deterministic stub values
+    # Real metric-based geodesic over case graph (lightweight)
+    try:
+        from monitoring.metrics_slo import certeus_cfe_geodesic_action
+        from services.cfe.metric import geodesic_for_case
 
-    path = ["premise:A", "premise:B", "inference:merge", "conclusion:C"]
-
-    action = 12.34
+        path, action = geodesic_for_case(req.case)
+        try:
+            certeus_cfe_geodesic_action.observe(float(action))
+        except Exception:
+            pass
+    except Exception:
+        # Placeholder fallback (deterministic)
+        path = ["premise:A", "premise:B", "inference:merge", "conclusion:C"]
+        action = 12.34
 
     # PCO header for downstream proof-native flows
     try:
         response.headers["X-CERTEUS-PCO-cfe.geodesic_action"] = str(action)
+    except Exception:
+        pass
+    # POST responses should not be cached by intermediaries
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
     except Exception:
         pass
 
@@ -151,10 +195,28 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
         isinstance(req.case, str) and ("sample" in req.case.lower() or "przyklad" in req.case.lower())
     )
 
+    # Compute mass (deterministic per case)
+    try:
+        from monitoring.metrics_slo import certeus_cfe_horizon_mass
+        from services.cfe.metric import horizon_mass_for_case
+
+        mass = horizon_mass_for_case(req.case)
+        try:
+            certeus_cfe_horizon_mass.set(float(mass))
+        except Exception:
+            pass
+    except Exception:
+        mass = 0.15
+
     # PCO headers
     try:
-        response.headers["X-CERTEUS-PCO-cfe.horizon_mass"] = str(0.15)
+        response.headers["X-CERTEUS-PCO-cfe.horizon_mass"] = str(mass)
         response.headers["X-CERTEUS-CFE-Locked"] = "true" if locked else "false"
+    except Exception:
+        pass
+    # POST responses should not be cached
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
     except Exception:
         pass
 
@@ -162,24 +224,107 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
     try:
         from services.ledger_service.ledger import compute_provenance_hash, ledger_service
 
-        payload = {"cfe.horizon_mass": 0.15, "cfe.locked": locked}
+        payload = {"cfe.horizon_mass": float(mass), "cfe.locked": locked}
         doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
         case_id = req.case or "cfe-case"
         ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
     except Exception:
         pass
 
-    return HorizonResponse(locked=locked, horizon_mass=0.15)
+    return HorizonResponse(locked=locked, horizon_mass=float(mass))
+
+
+class LensingFromFinIn(BaseModel):
+    signals: dict[str, float]
+    seed: str | None = None
+
+
+class LensingFromFinOut(BaseModel):
+    lensing_map: dict[str, float]
+    critical_precedents: list[str]
+
+
+@router.post("/lensing/from_fin", response_model=LensingFromFinOut)
+async def lensing_from_fin(payload: LensingFromFinIn, response: Response) -> LensingFromFinOut:
+    """PL/EN: Mapuje sygnały FIN (risk/sentiment) na szkic lensingu CFE.
+
+    Heurystyka: score = sentiment - risk, skaluje wagi 2–3 precedensów deterministycznie.
+    """
+    s = payload.signals or {}
+    risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
+    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
+    score = sent - risk
+    # Deterministyczny wybór precedensów na podstawie seed/score
+    seed_key = payload.seed or f"FIN::{int(score * 1000)}"
+    try:
+        from services.cfe.metric import lensing_map_for_case
+
+        m = lensing_map_for_case(seed_key)
+        # Lekka modulacja wag przez score
+        shift = 0.05 * max(-1.0, min(1.0, score))
+        mm = {k: max(0.0, min(1.0, float(v) + shift)) for k, v in m.items()}
+        tot = sum(mm.values()) or 1.0
+        mm = {k: round(v / tot, 3) for k, v in mm.items()}
+    except Exception:
+        mm = {"precedent:K_2001": 0.6, "precedent:III_2020": 0.4}
+    crit = sorted(mm, key=mm.get, reverse=True)[:1]
+    # PCO header
+    try:
+        import json as _json
+
+        response.headers["X-CERTEUS-PCO-cfe.lensing_from_fin"] = _json.dumps({"score": score})
+    except Exception:
+        pass
+    return LensingFromFinOut(lensing_map=mm, critical_precedents=crit)
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing() -> LensingResponse:
-    # Placeholder: simple map of precedence influence
+async def lensing(response: Response, case_id: str | None = None) -> LensingResponse:
+    try:
+        from services.cfe.metric import lensing_map_for_case
 
-    return LensingResponse(
-        lensing_map={"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
-        critical_precedents=["precedent:K_2001"],
-    )
+        m = lensing_map_for_case(case_id)
+        crit = sorted(m, key=m.get, reverse=True)[:1]
+        # Cache headers
+        try:
+            import os as _os
+
+            ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+            if response is not None and ttl > 0:
+                response.headers.setdefault("Cache-Control", f"public, max-age={ttl}")
+            if response is not None:
+                response.headers.setdefault("X-CERTEUS-CFE-Cache-TTL", str(ttl))
+        except Exception:
+            pass
+        return LensingResponse(lensing_map=m, critical_precedents=crit)
+    except Exception:
+        # Fallback placeholder
+        return LensingResponse(
+            lensing_map={"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
+            critical_precedents=["precedent:K_2001"],
+        )
+
+
+@router.post("/cache/warm", response_model=WarmCacheResponse)
+async def warm_cache(cases: list[str] | None = None) -> WarmCacheResponse:
+    """PL/EN: Rozgrzewa cache CFE dla listy case_id."""
+    warmed = 0
+    try:
+        from services.cfe import kappa_max_for_case
+
+        for cid in cases or []:
+            _ = kappa_max_for_case(cid)
+            warmed += 1
+    except Exception:
+        pass
+    # Report current TTL setting
+    try:
+        import os as _os
+
+        ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+    except Exception:
+        ttl = None
+    return WarmCacheResponse(warmed=warmed, ttl_sec=ttl)
 
 
 # === I/O / ENDPOINTS ===

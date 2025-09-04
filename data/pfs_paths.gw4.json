@@ -1,0 +1,38 @@
+{
+  "pfs-demo-1": [
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    }
+  ],
+  "lexqft-case": [
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    }
+  ]
+}

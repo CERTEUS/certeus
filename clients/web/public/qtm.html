@@ -119,6 +119,17 @@
           <button id="lockDeco" class="btn">Decoherence: dephasing</button>
           <span id="status" class="muted"></span>
         </div>
+        <div class="row" style="margin-top:8px;">
+          <span class="muted">Operator Composer:</span>
+          <label class="muted"><input type="radio" name="op" value="W" checked /> W</label>
+          <label class="muted"><input type="radio" name="op" value="I" /> I</label>
+          <label class="muted"><input type="radio" name="op" value="C" /> C</label>
+          <label class="muted"><input type="radio" name="op" value="L" /> L</label>
+          <label class="muted"><input type="radio" name="op" value="T" /> T</label>
+          <button id="savePreset" class="btn">Save preset</button>
+          <button id="loadPreset" class="btn">Load preset</button>
+          <span id="presetStatus" class="muted"></span>
+        </div>
         <p class="muted">
           Uncertainty L_T: <span id="ub" class="pill">?</span>, collapse:
           <span id="collapse" class="pill">-</span>
@@ -127,6 +138,26 @@
         <p class="muted">
           Case ledger: <a id="caseLink" href="#" target="_blank">open</a>
         </p>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <h1>QTMP • Commutator heatmap</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="heatmap" class="btn">Build heatmap</button>
+          <span class="muted">0=commute • 1=max non‑commute</span>
+        </div>
+        <table id="cmt" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th></th>
+              <th>W</th>
+              <th>I</th>
+              <th>C</th>
+              <th>L</th>
+              <th>T</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
     <script>
@@ -169,19 +200,61 @@
         if(cs){ document.getElementById('case').value = cs; await initCase(); }
         if(autorun==='1' && (op==='LT' || op==='TL')){ await measure(op); }
       }
+      function colorForValue(v){
+        // v in [0,1]; green (0) -> red (1)
+        const r = Math.round(255 * v);
+        const g = Math.round(200 * (1 - v));
+        return `rgb(${r},${g},120)`;
+      }
+      async function buildHeatmap(){
+        const ops = ['W','I','C','L','T'];
+        const tb = document.querySelector('#cmt tbody');
+        if(!tb) return;
+        tb.innerHTML='';
+        for(const A of ops){
+          const tr = document.createElement('tr');
+          const th = document.createElement('th'); th.textContent = A; th.className='muted'; th.style.textAlign='left'; tr.appendChild(th);
+          for(const B of ops){
+            const td = document.createElement('td'); td.style.height='22px'; td.style.textAlign='center'; td.style.borderBottom='1px solid #2a2d33';
+            try{
+              const r = await fetchJSON('/v1/qtm/commutator', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({A,B})});
+              const v = r.ok ? Number(r.data?.value||0) : 0;
+              td.style.background = colorForValue(Math.max(0, Math.min(1, v)));
+              td.title = `${A},${B} = ${v}`;
+              td.textContent = v.toFixed(2);
+            }catch(e){ td.textContent='-'; }
+            tr.appendChild(td);
+          }
+          tb.appendChild(tr);
+        }
+      }
       async function measure(op) {
         const cs = document.getElementById("case").value || "LEX-001";
-        const r = await fetchJSON("/v1/qtm/measure", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ operator: op, source: cs }),
-        });
-        const ub = r.data?.uncertainty_bound?.L_T ?? "?";
-        const ce = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+        let ub = '?';
+        let collapseText = '-';
+        // If operator represents a sequence (LT/TL), use measure_sequence for a nicer UI
+        if (op === 'LT' || op === 'TL') {
+          const r = await fetchJSON('/v1/qtm/measure_sequence', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ operators: op.split(''), case: cs })
+          });
+          if (r.ok) {
+            ub = r.data?.uncertainty_bound?.L_T ?? '?';
+            collapseText = (r.data?.steps || []).map(s => `${s.operator}:${s.verdict}@${(s.p||0).toFixed(2)}`).join(', ');
+          }
+        } else {
+          const r = await fetchJSON("/v1/qtm/measure", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ operator: op, source: cs }),
+          });
+          ub = r.data?.uncertainty_bound?.L_T ?? "?";
+          collapseText = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+        }
         document.getElementById("ub").textContent = ub;
-        document.getElementById("collapse").textContent = ce;
-        document.getElementById("caseLink").href =
-          `/v1/ledger/${encodeURIComponent(cs)}/records`;
+        document.getElementById("collapse").textContent = collapseText;
+        document.getElementById("caseLink").href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
         paintHeat(ub || 0.25);
       }
       async function setDeco() {
@@ -202,6 +275,26 @@
         .getElementById("tl")
         .addEventListener("click", () => measure("TL"));
       document.getElementById("lockDeco").addEventListener("click", setDeco);
+      document.getElementById("heatmap")?.addEventListener("click", buildHeatmap);
+      document.getElementById("savePreset").addEventListener("click", async ()=>{
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const sel = document.querySelector('input[name="op"]:checked');
+        const op = sel ? sel.value : 'W';
+        const r = await fetchJSON('/v1/qtm/preset', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, operator: op})});
+        document.getElementById('presetStatus').textContent = r.ok ? `saved: ${op}` : 'save failed';
+      });
+      document.getElementById("loadPreset").addEventListener("click", async ()=>{
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const r = await fetchJSON(`/v1/qtm/preset/${encodeURIComponent(cs)}`);
+        if(r.ok){
+          const op = r.data?.operator||'W';
+          const sel = document.querySelector(`input[name="op"][value="${op}"]`);
+          if(sel) sel.checked = true;
+          document.getElementById('presetStatus').textContent = `loaded: ${op}`;
+        } else {
+          document.getElementById('presetStatus').textContent = 'no preset';
+        }
+      });
       autoRun();
     </script>
   </body>

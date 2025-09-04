@@ -8,7 +8,9 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 - WORKLOG (dziennik): `WORKLOG.md`
 - Manifest / standard kodowania: `docs/manifest.md`, `docs/manifest_v1_7.md`
 - Runbooki bezpieczeństwa i ról: `docs/runbooks/security_bunker.md`, `docs/runbooks/roles_governance.md`
+- Cookbooks operacyjne: `docs/cookbooks/chatops_mailops.md`
 - Dashboardy/alerty SRE: `observability/grafana/certeus-sre-dashboard.json`, `observability/prometheus/alert_rules_w10.yml`
+ - Runbooki demo: `docs/runbooks/w1_demo.md`
 
 ## Gałęzie i automatyzacja
 
@@ -117,15 +119,17 @@ UWAGA: Auto‑promocja następuje wyłącznie po zakończeniu tygodnia — commi
 - Commity: Conventional Commits (feat/fix/chore/docs/ci/perf…).
 - Gałęzie PR: `merge/daily-to-main-YYYYMMDD-HHMMSS` (automatyczne tworzenie do merge).
 - Tokeny: `.devkeys/admin_token.txt` (lokalnie; nie publikować), `GITHUB_TOKEN` w CI; nigdy nie wklejać do logów/PR.
-<<<<<<< HEAD
-
 ## Zasada niezmienna (Immutable Rule)
 
 "Publikuj wyłącznie to, co jest jawnie dozwolone przez obowiązującą allowlistę LITE; wszystko inne pozostaje prywatne, a każdy push respektuje bramki i ochronę gałęzi (bez wyjątków)."
 
 Praktyka:
-- Pracuj prywatnie (repo główne), testuj lokalnie/CI; publiczny mirror utrzymuj jako LITE‑surface (README, landing, assets, overview, lekkie CI).
-- Gdy masz wątpliwość – nie publikuj; dopisz do allowlisty wyłącznie po akceptacji i z pełną świadomością konsekwencji.
-- Nigdy nie omijaj gate’ów (gitleaks/policy‑scan/branch‑protection) i nie publikuj poza allowlistą.
-=======
->>>>>>> origin/main
+- Pracuj prywatnie (repo główne), testuj lokalnie/CI; publiczny mirror utrzymuj jako LITE-surface (README, landing, assets, overview, lekkie CI).
+- Gdy masz wątpliwość — nie publikuj; dopisz do allowlisty wyłącznie po akceptacji i z pełną świadomością konsekwencji.
+- Nigdy nie omijaj gate’ów (gitleaks/policy-scan/branch-protection) i nie publikuj poza allowlistą.
+## Quickstart Cockpit/ChatOps/MailOps
+
+- UI: `http://127.0.0.1:8000/app/public/geometry.html`, `.../quantum.html`
+- ChatOps: `curl -s -H 'Content-Type: application/json' -d '{"cmd":"cfe.geodesic","args":{}}' http://127.0.0.1:8000/v1/chatops/command`
+- MailOps: `curl -s -H 'Content-Type: application/json' -d '{"mail_id":"MAIL-1","from_addr":"a@b","to":["ops@example.com"],"attachments":[]}' http://127.0.0.1:8000/v1/mailops/ingest`
+- Proof‑Only I/O (opcjonalnie): `STRICT_PROOF_ONLY=1`

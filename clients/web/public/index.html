@@ -33,6 +33,43 @@
 
       <div class="grid">
         <div class="card">
+          <h2>Cockpit</h2>
+          <p>Geometry/Quantum — telemetria, heatmapy, Measurement Log.</p>
+          <p>
+            <a href="/app/public/geometry.html">Otwórz Geometry</a> •
+            <a href="/app/public/quantum.html">Otwórz Quantum</a> •
+            <a href="/app/public/fin_dashboard.html">Otwórz FIN Dashboard</a> •
+            <a href="/app/public/lexenith.html">Otwórz LEXENITH</a> •
+            <a href="/app/public/boundary.html">Otwórz Boundary</a> •
+            <a href="/app/public/devices.html">Otwórz Devices</a>
+          </p>
+        </div>
+        <div class="card">
+          <h2>ChatOps / MailOps</h2>
+          <p>Wywołania komend i ingest e‑mail (cookbook + UI).</p>
+          <p>
+            <a href="/app/public/chatops.html">ChatOps Console</a> •
+            <a href="/app/public/mailops.html">MailOps Ingest</a> •
+            <a href="/docs#/?path=docs/cookbooks/chatops_mailops.md">Cookbook</a>
+          </p>
+        </div>
+        <div class="card">
+          <h2>Boundary Status</h2>
+          <p class="muted">delta_bits: <span id="b-delta">?</span> • observed_at: <span id="b-obs">?</span></p>
+          <ul id="b-shards" class="muted"></ul>
+          <p><a href="/app/public/boundary.html">Otwórz Boundary</a></p>
+        </div>
+        <div class="card">
+          <h2>FIN Dashboard</h2>
+          <p>Sentyment, ryzyko i splątania; symulacja strategii.</p>
+          <p><a href="/app/public/fin_dashboard.html">Otwórz FIN Dashboard</a></p>
+        </div>
+        <div class="card">
+          <h2>LEX Generator</h2>
+          <p>Generator pism (2 szablony) + Micro‑Court lock/publish.</p>
+          <p><a href="/app/public/lex_generator.html">Otwórz LEX Generator</a></p>
+        </div>
+        <div class="card">
           <h2>Quick checks</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <input id="tenant" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="X-Tenant-ID (np. acme)">
@@ -139,8 +176,9 @@
         document.getElementById('admSet').addEventListener('click', admSetTier);
         document.getElementById('admReload').addEventListener('click', admReload);
         document.getElementById('rid').addEventListener('input', updPCOLink);
+        async function refreshBoundary(){ const r=await jfetch('/v1/boundary/status'); if(r.ok){ document.getElementById('b-delta').textContent = r.data.delta_bits; const a=(r.data.anchors||{}).observed_at||''; document.getElementById('b-obs').textContent = a||'-'; const ul=document.getElementById('b-shards'); ul.innerHTML=''; const mp=r.data.bits_delta_map||{}; Object.keys(mp).filter(k=>Number(mp[k]||0)!==0).sort((a,b)=>Number(mp[b])-Number(mp[a])).slice(0,5).forEach(k=>{ const li=document.createElement('li'); li.textContent = `${k}: Δ=${mp[k]}`; ul.appendChild(li); }); } }
         updPCOLink();
-        refreshMetrics(); setInterval(refreshMetrics, 5000); refreshSeries(); setInterval(refreshSeries, 5000);
+        refreshMetrics(); setInterval(refreshMetrics, 5000); refreshSeries(); setInterval(refreshSeries, 5000); refreshBoundary(); setInterval(refreshBoundary, 10000);
         document.getElementById('mFilter').addEventListener('input', ()=>{ refreshMetrics(); refreshSeries(); });
       </script>
     </div>

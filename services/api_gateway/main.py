@@ -38,7 +38,10 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
+from monitoring.correlation import attach_correlation_middleware
 from monitoring.otel_setup import setup_fastapi_otel
+from monitoring.profiling import attach_profiling_middleware
+from monitoring.shedder import attach_shedder_middleware
 import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
@@ -54,7 +57,10 @@ import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
+import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
+import services.api_gateway.routers.pfs as pfs
+import services.api_gateway.routers.pfs_dht as pfs_dht
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
@@ -156,6 +162,15 @@ attach_proof_only_middleware(app)
 
 # Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
 setup_fastapi_otel(app)
+
+# Correlation-ID ↔ OTel trace ↔ PCO bridge (safe, best-effort)
+attach_correlation_middleware(app)
+
+# Optional per-request profiler (PROFILE_HTTP=1)
+attach_profiling_middleware(app)
+
+# Adaptive load-shedding (enable with SHED_ENABLE=1)
+attach_shedder_middleware(app)
 
 # statyki
 
@@ -285,6 +300,9 @@ app.include_router(billing.router)
 app.include_router(jwks_router)
 
 app.include_router(metrics.router)
+app.include_router(pfs.router)
+app.include_router(p2p.router)
+app.include_router(pfs_dht.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------

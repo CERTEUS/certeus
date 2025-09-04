@@ -1,28 +1,59 @@
-<<<<<<< HEAD
 # CERTEUS
 
-> **Dowód, nie opinia.**  
+> Dowód, nie opinia.
 > Verifiable Cognitive Intelligence: weryfikowalność, polityki publikacji, odpowiedzialna automatyzacja.
 
 ## Po co?
-- **Zaufanie:** twierdzenia z dowodem i polityką.  
-- **Kontrola:** publiczny front jest lekki; pełna moc działa w prywatnym core.  
-- **Higiena:** publikację poprzedza policy-scan, link-check i health.
+- Zaufanie: twierdzenia z dowodem i polityką.
+- Kontrola: publiczny front jest lekki; pełna moc działa w prywatnym core.
+- Higiena: publikację poprzedza policy-scan, link-check i health.
 
 ## Co tu znajdziesz?
-- **Overview API** – kierunek (bez pełnej specyfikacji).  
-- **PROVENANCE** – z jakiego SHA i kiedy powstał mirror.  
-- **Roadmap** – najbliższe kroki.
+- Overview API — kierunek (bez pełnej specyfikacji).
+- PROVENANCE — z jakiego SHA i kiedy powstał mirror.
+- Roadmap — najbliższe kroki.
+- 90 dni — Final Status: docs/reports/90dni_final_status.md
+- 90 dni — Raport pokrycia: docs/reports/90dni_coverage_report.md
+- 90 dni — Status matrix: docs/reports/90dni_status_matrix.md
 
-### Moto
-> „Nie gonimy za szumem. Publikujemy to, co możemy podpisać.”  
-> — Radosław Skarżycki / CERTEUS
-=======
-CERTEUS Documentation
+### Motto
+"Nie gonimy za szumem. Publikujemy to, co możemy podpisać." — Radosław Skarżycki / CERTEUS
+
+---
+
+CERTEUS Documentation (EN)
 
 Welcome to the CERTEUS docs.
 
 - API: see API section (rendered from OpenAPI).
 - Observability: quickstart and dashboards.
 
->>>>>>> origin/main
+## Run Locally (Quickstart)
+
+```
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip wheel setuptools fastapi uvicorn ruff pytest jsonschema cryptography
+python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+```
+
+Windows (PowerShell):
+
+```
+py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools fastapi uvicorn ruff pytest jsonschema cryptography
+.\.venv\Scripts\python.exe -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+```
+
+Open Cockpit UI:
+
+- Geometry: `/app/public/geometry.html`
+- Quantum: `/app/public/quantum.html`
+ - ChatOps: `/app/public/chatops.html`
+ - MailOps: `/app/public/mailops.html`
+ - FIN Dashboard: `/app/public/fin_dashboard.html`
+ - LEX Generator: `/app/public/lex_generator.html`
+
+Smoke tests:
+
+- PowerShell: `pwsh -File scripts/smoke_api.ps1`
+- Bash: `bash scripts/smoke_api.sh`

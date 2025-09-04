@@ -73,6 +73,34 @@ paths:
       summary: Lensing map (CFE)
       tags: [CFE]
       responses: { "200": { description: ok } }
+  /v1/cfe/cache/warm:
+    post:
+      summary: Warm up CFE cache for case list
+      tags: [CFE]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { type: string }
+      responses:
+        "200": { description: ok }
+  /v1/cfe/lensing/from_fin:
+    post:
+      summary: Build lensing map from FIN signals
+      tags: [CFE]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signals]
+              properties:
+                signals: { type: object, additionalProperties: { type: number } }
+                seed: { type: string, nullable: true }
+      responses: { "200": { description: ok } }
   /v1/qtm/init_case:
     post:
       summary: Initialize QTMP case predistribution
@@ -440,5 +468,3 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
-
-

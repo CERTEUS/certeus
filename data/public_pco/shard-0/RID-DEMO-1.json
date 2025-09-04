@@ -1,0 +1,11 @@
+{
+  "rid": "RID-DEMO-1",
+  "smt2_hash": "5d689da408f88478230c3bd11aa720c90145d2e0985a569ba66f05cafc1054c8",
+  "lfsc": "(lfsc proof)",
+  "merkle_proof": [],
+  "ledger": {
+    "merkle_root": "0cbbd6f3de8e8aff1a5b6b807bae394490180f4ffc7afc06573397528a1d4b54"
+  },
+  "signature": "",
+  "issued_at": ""
+}

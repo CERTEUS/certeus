@@ -120,6 +120,17 @@ certeus_brier = Gauge("certeus_brier", "Brier score")
 
 certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
 
+# CFE: Ricci (kappa_max)
+certeus_cfe_kappa_max = Gauge("certeus_cfe_kappa_max", "CFE kappa_max curvature")
+
+# CFE: Geodesic action (hist) and Horizon mass (gauge)
+certeus_cfe_geodesic_action = Histogram(
+    "certeus_cfe_geodesic_action",
+    "CFE geodesic action",
+    buckets=(1, 2, 3, 5, 8, 13, 21, 34),
+)
+certeus_cfe_horizon_mass = Gauge("certeus_cfe_horizon_mass", "CFE horizon mass")
+
 # Histogram for compile/verification durations (ms)
 
 certeus_compile_duration_ms = Histogram(
@@ -209,6 +220,13 @@ certeus_http_requests_total = Counter(
     labelnames=("tenant", "path", "method", "status"),
 )
 
+# HTTP load shedding counter
+certeus_http_shed_total = Counter(
+    "certeus_http_shed_total",
+    "Total HTTP shed events",
+    labelnames=("tenant", "path", "method", "reason"),
+)
+
 # QTMP: Uncertainty bound and operator priorities
 certeus_qtm_ub_lt = Gauge("certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",))
 certeus_qtm_operator_priority = Gauge(
@@ -247,15 +265,67 @@ certeus_qtm_cfe_correlation = Gauge(
     labelnames=("case",),
 )
 
-# LexQFT: Coverage (gamma, uncaptured)
+# LexQFT: Coverage (gamma, uncaptured) + energy debt
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
+certeus_lexqft_energy_debt = Gauge("certeus_lexqft_energy_debt", "LexQFT energy debt (per case)", labelnames=("case",))
 
 # FINENITH: entanglement MI and commutator
 certeus_fin_entanglement_mi = Gauge(
     "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
 )
 certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
+
+# FINENITH: paper trading (W5)
+certeus_fin_paper_orders_total = Counter(
+    "certeus_fin_paper_orders_total",
+    "FIN paper trading orders total",
+    labelnames=("tenant", "side"),
+)
+certeus_fin_paper_equity = Gauge(
+    "certeus_fin_paper_equity",
+    "FIN paper trading account equity",
+    labelnames=("tenant",),
+)
+
+# P2P queue (W8)
+certeus_p2p_enqueued_total = Counter(
+    "certeus_p2p_enqueued_total",
+    "P2P enqueued jobs",
+    labelnames=("device",),
+)
+certeus_p2p_dequeued_total = Counter(
+    "certeus_p2p_dequeued_total",
+    "P2P dequeued jobs",
+    labelnames=("device",),
+)
+certeus_p2p_queue_depth = Gauge("certeus_p2p_queue_depth", "P2P queue depth")
+
+# Devices signatures (W9)
+certeus_devices_signed_total = Counter(
+    "certeus_devices_signed_total",
+    "Device outputs signed",
+    labelnames=("device",),
+)
+
+# TEE/RA signalling
+certeus_tee_ra_attested_total = Counter(
+    "certeus_tee_ra_attested_total",
+    "TEE RA headers attached",
+    labelnames=("device",),
+)
+
+# Idempotency (W15)
+certeus_idem_new_total = Counter(
+    "certeus_idem_new_total",
+    "Idempotency new computations",
+    labelnames=("endpoint",),
+)
+certeus_idem_reused_total = Counter(
+    "certeus_idem_reused_total",
+    "Idempotency cache hits",
+    labelnames=("endpoint",),
+)
 
 # LEX Pilot (W16): feedback counters and latest rating
 certeus_lex_pilot_feedback_total = Counter(
@@ -266,5 +336,17 @@ certeus_lex_pilot_feedback_total = Counter(
 certeus_lex_pilot_last_rating = Gauge(
     "certeus_lex_pilot_last_rating",
     "LEX pilot last feedback rating",
+    labelnames=("case", "tenant"),
+)
+
+# LEX Micro‑Court (W6)
+certeus_lex_micro_court_locked_total = Counter(
+    "certeus_lex_micro_court_locked_total",
+    "LEX Micro‑Court locked events",
+    labelnames=("case", "tenant"),
+)
+certeus_lex_micro_court_published_total = Counter(
+    "certeus_lex_micro_court_published_total",
+    "LEX Micro‑Court published events",
     labelnames=("case", "tenant"),
 )

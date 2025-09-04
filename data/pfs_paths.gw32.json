@@ -1,0 +1,34 @@
+{
+  "psi://case-low": [
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.12,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    }
+  ],
+  "lexqft-case": [
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.12,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    }
+  ]
+}

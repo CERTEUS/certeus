@@ -200,6 +200,44 @@ jobs:
       - name: Mark SLO OK
         if: success()
         run: echo ok > out/pg_slo_ok.txt
+
+      - name: Comment PR with SLO metrics (p95/error-rate)
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const raw = fs.readFileSync('out/slo.json','utf8');
+              const j = JSON.parse(raw);
+              const p95 = Number(j.p95_ms||0).toFixed(2);
+              const er = Number(j.error_rate||0).toFixed(4);
+              const cnt = Number(j.count||0);
+              const body = `### SLO Metrics\n- p95: ${p95} ms\n- error-rate: ${er}\n- samples: ${cnt}`;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            } catch (e) {
+              core.warning(`Could not read out/slo.json: ${e?.message || e}`);
+            }
+
+      - name: Comment PR with RTBF tick (addendum)
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            function tick(p){ try { fs.accessSync(p); return '?'; } catch(e){ return '?'; } }
+            const body = `### Proof Gate - RTBF\nRTBF: ${tick('out/pg_rtbf_ok.txt')}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
       - name: Comment PR with Proof Gate ticks
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7

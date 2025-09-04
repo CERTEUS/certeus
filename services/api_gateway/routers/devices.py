@@ -33,6 +33,13 @@ from typing import Any
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
+from monitoring.metrics_slo import (
+    certeus_idem_new_total,
+    certeus_idem_reused_total,
+)
+from security.ra import ra_fingerprint, tee_enabled
+from services.api_gateway import idempotency as idem
+
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
@@ -119,8 +126,18 @@ router = APIRouter(prefix="/v1/devices", tags=["devices"])
 
 
 @router.post("/horizon_drive/plan", response_model=HDEPlanResponse)
-async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
+async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -> HDEPlanResponse:
     from services.api_gateway.limits import enforce_limits
+
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.hde.plan").inc()
+        return HDEPlanResponse(**cached)
 
     enforce_limits(request, cost_units=2)
 
@@ -147,8 +164,10 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         HDEPlanAlternative(strategy="balanced", cost_tokens=cost_bal, expected_kappa=kappa),
         HDEPlanAlternative(strategy="aggressive", cost_tokens=cost_aggr, expected_kappa=min(0.05, kappa * 1.1)),
     ]
-    best = min(alt, key=lambda x: (abs(target - 0.2) * 0.0 + x.cost_tokens)).strategy
-    return HDEPlanResponse(
+    # W4: decyzja strategii zależna od celu horyzontu — dla wyższych progów
+    # wybieramy wariant „aggressive”, inaczej „balanced” (deterministycznie).
+    best = "aggressive" if target >= 0.28 else "balanced"
+    result = HDEPlanResponse(
         evidence_plan=plan_balanced,
         plan_of_evidence=plan_balanced,
         cost_tokens=cost_bal,
@@ -156,28 +175,106 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         alternatives=alt,
         best_strategy=best,
     )
+    # W9: podpis urządzenia (opcjonalny; wymaga klucza ED25519 w ENV)
+    try:
+        import json as _json
+
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        sig = sign_payload(result.model_dump())
+        certeus_devices_signed_total.labels(device="hde").inc()
+        response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    # W10: TEE RA header (optional)
+    try:
+        if tee_enabled():
+            from monitoring.metrics_slo import certeus_tee_ra_attested_total
+
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps(ra_fingerprint(), separators=(",", ":"))
+            certeus_tee_ra_attested_total.labels(device="hde").inc()
+    except Exception:
+        pass
+    try:
+        idem.put(idem_key, result.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.hde.plan").inc()
+    except Exception:
+        pass
+    return result
 
 
 # Quantum Oracle (QOC)
 
 
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
-async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleResponse:
+async def qoracle_expectation(req: QOracleRequest, request: Request, response: Response) -> QOracleResponse:
     from services.api_gateway.limits import enforce_limits
+
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.qoracle.expectation").inc()
+        return QOracleResponse(**cached)
 
     enforce_limits(request, cost_units=2)
 
     text = (req.question or req.objective or "").strip()
     L = max(1, len(text))
-    pA = min(0.8, 0.4 + (L % 10) * 0.02)
+    pA_base = min(0.8, 0.4 + (L % 10) * 0.02)
+    # W2: lekka korekta pod constraints (jeśli podane), deterministyczna i ograniczona
+    bias = 0.0
+    try:
+        cons = dict(req.constraints or {})
+        cons_l = {str(k).lower(): v for k, v in cons.items()}
+        if "maximize" in cons_l or "fairness" in cons_l or ("maximize fairness" in text.lower()):
+            bias += 0.03
+        risk_v = cons_l.get("risk")
+        if isinstance(risk_v, int | float) and float(risk_v) > 0.5:
+            bias -= 0.03
+    except Exception:
+        bias = 0.0
+    pA = max(0.1, min(0.9, pA_base + bias))
     pB = max(0.1, 1.0 - pA)
     dist = [{"outcome": "A", "p": round(pA, 3)}, {"outcome": "B", "p": round(pB, 3)}]
     choice = "A" if pA >= pB else "B"
-    return QOracleResponse(
+    result = QOracleResponse(
         optimum={"choice": choice, "reason": text or "heuristic"},
         payoff=round(max(pA, pB), 3),
         distribution=dist,
     )
+    # W9: podpis i nagłówek
+    try:
+        import json as _json
+
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        sig = sign_payload(result.model_dump())
+        certeus_devices_signed_total.labels(device="qoracle").inc()
+        response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    try:
+        if tee_enabled():
+            from monitoring.metrics_slo import certeus_tee_ra_attested_total
+
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps(ra_fingerprint(), separators=(",", ":"))
+            certeus_tee_ra_attested_total.labels(device="qoracle").inc()
+    except Exception:
+        pass
+    try:
+        idem.put(idem_key, result.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.qoracle.expectation").inc()
+    except Exception:
+        pass
+    return result
 
 
 # Entanglement Inducer (EI)
@@ -187,6 +284,16 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
 async def entangle(req: EntangleRequest, request: Request, response: Response) -> EntangleResponse:
     from services.api_gateway.limits import enforce_limits
 
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.entangle").inc()
+        return EntangleResponse(**cached)
+
     enforce_limits(request, cost_units=2)
 
     cert = "stub-certificate"
@@ -194,7 +301,11 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
         response.headers["X-CERTEUS-PCO-entangler.certificate"] = cert
     except Exception:
         pass
-    achieved = min(0.12, float(req.target_negativity))
+    # W4: osiągana negatywność zależy łagodnie od liczby zmiennych (więcej → trudniej)
+    nvars = max(1, len(req.variables))
+    base = min(0.12, float(req.target_negativity))
+    factor = max(0.5, 1.0 - 0.05 * max(0, nvars - 2))
+    achieved = min(0.12, max(0.0, base * factor))
     try:
         from monitoring.metrics_slo import Gauge
 
@@ -211,15 +322,52 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
             _devices_negativity.labels(var=v).set(achieved)
     except Exception:
         pass
-    return EntangleResponse(certificate=cert, achieved_negativity=achieved)
+    out = EntangleResponse(certificate=cert, achieved_negativity=achieved)
+    # W9: podpis + nagłówek
+    try:
+        import json as _json
+
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        sig = sign_payload(out.model_dump())
+        certeus_devices_signed_total.labels(device="entangler").inc()
+        response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    try:
+        if tee_enabled():
+            from monitoring.metrics_slo import certeus_tee_ra_attested_total
+
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps(ra_fingerprint(), separators=(",", ":"))
+            certeus_tee_ra_attested_total.labels(device="entangler").inc()
+    except Exception:
+        pass
+    try:
+        idem.put(idem_key, out.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.entangle").inc()
+    except Exception:
+        pass
+    return out
 
 
 # Chronosync (LCSI)
 
 
 @router.post("/chronosync/reconcile", response_model=ChronoSyncResponse)
-async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> ChronoSyncResponse:
+async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, response: Response) -> ChronoSyncResponse:
     from services.api_gateway.limits import enforce_limits
+
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.chronosync").inc()
+        return ChronoSyncResponse(**cached)
 
     enforce_limits(request, cost_units=2)
 
@@ -234,7 +382,23 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> Chro
         "treaty": req.treaty_clause_skeleton or {"clauses": default_clauses},
     }
 
-    return ChronoSyncResponse(reconciled=True, sketch=sketch)
+    out = ChronoSyncResponse(reconciled=True, sketch=sketch)
+    # W9: podpis (bez nagłówka)
+    try:
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        _ = sign_payload(out.model_dump())
+        certeus_devices_signed_total.labels(device="chronosync").inc()
+    except Exception:
+        pass
+    try:
+        idem.put(idem_key, out.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.chronosync").inc()
+    except Exception:
+        pass
+    return out
 
 
 # === I/O / ENDPOINTS ===

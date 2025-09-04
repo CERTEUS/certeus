@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Generate REPO_TREE.md
         run: |
-          python - <<'PY'
+          python - <<'PY' > REPO_TREE.md
           import os
           SKIP={".git","node_modules","venv",".venv",".ruff_cache",".pytest_cache","__pycache__"}
           def tree(path, prefix=""):
@@ -30,10 +30,9 @@ jobs:
                       tree(p, prefix + ("    " if last else "│   "))
           print("# Repository tree\n")
           tree(".")
-          PY > REPO_TREE.md
+          PY
       - name: Upload REPO_TREE.md
         uses: actions/upload-artifact@v4
         with:
           name: REPO_TREE
           path: REPO_TREE.md
-

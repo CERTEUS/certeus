@@ -17,6 +17,8 @@ jobs:
   gauge-gate:
     continue-on-error: true
     runs-on: ubuntu-latest
+    outputs:
+      holonomy: ${{ steps.extract.outputs.holonomy }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -33,6 +35,22 @@ jobs:
           # Oblicz metryki in-proc (uv zapewni zależności) i oceń bramkę; brak pliku => fallback w skrypcie
           uv run python scripts/gates/compute_gauge_drift.py --out out/gauge.json || true
           uv run python scripts/gates/gauge_gate.py --epsilon 1e-3 --input out/gauge.json || true
+      - name: Extract holonomy
+        id: extract
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f out/gauge.json ]]; then
+            python - << 'PY'
+import json, sys
+o=json.load(open('out/gauge.json','r',encoding='utf-8'))
+print(f"holonomy={float(((o.get('gauge') or {}).get('holonomy_drift',0.0))):.6f}")
+PY
+          else
+            echo "holonomy=0.0"
+          fi | tee /dev/stderr | sed -n 's/^holonomy=//p' | {
+            read v; echo "holonomy=$v" >> "$GITHUB_OUTPUT";
+          }
 
   pr-summary:
     if: github.event_name == 'pull_request' && always()
@@ -47,7 +65,8 @@ jobs:
         with:
           script: |
             const result = '${{ needs["gauge-gate"].result }}';
-            const body = `✔ Gauge-Gate: ${result}`;
+            const hol = '${{ needs["gauge-gate"].outputs.holonomy }}';
+            const body = `✔ Gauge-Gate: ${result} (holonomy_drift=${hol})`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,

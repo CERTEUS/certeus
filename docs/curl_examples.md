@@ -65,6 +65,78 @@ curl -s -X POST http://127.0.0.1:8000/v1/pco/bundle \
 -d '{"rid":"'"$RID"'","smt2_hash":"'"$SMT"'","lfsc":"(lfsc proof)","merkle_proof":[]}' | jq .
 ```
 
+## CFE — Geodezje, Horyzont, Cache, Lensing
+
+- Telemetria krzywizny (kappa_max):
+
+```
+  curl -s http://127.0.0.1:8000/v1/cfe/curvature | jq .
+```
+
+- Geodezyjny dowód (PCO w nagłówkach: X-CERTEUS-PCO-cfe.geodesic_action):
+
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/cfe/geodesic \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-001","facts":{},"norms":{}}'
+```
+
+- Horyzont zdarzeń (lock) + masa (PCO w nagłówkach):
+
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/cfe/horizon \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-001","lock":true}'
+```
+
+## QTMP — Pomiary (v0.1)
+
+- Inicjalizacja stanu sprawy (predystrybucja):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/init_case \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-QTMP-1","basis":["ALLOW","DENY","ABSTAIN"],"state_uri":"psi://uniform"}' | jq .
+```
+
+- Pomiary (PCO: X-CERTEUS-PCO-qtm.collapse_event, X-CERTEUS-PCO-qtm.predistribution[]):
+
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/qtm/measure \
+ -H 'Content-Type: application/json' \
+ -d '{"operator":"L","source":"ui","case":"LEX-QTMP-1"}'
+```
+
+- Dekoherecja (kanał):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/decoherence \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-QTMP-1","channel":"dephasing","gamma":0.2}' | jq .
+```
+
+- Komutator (MVP):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/commutator \
+ -H 'Content-Type: application/json' \
+ -d '{"A":"L","B":"T"}' | jq .
+```
+
+- Granica nieoznaczoności (L_T):
+
+```
+curl -s http://127.0.0.1:8000/v1/qtm/uncertainty | jq .
+```
+
+- Sekwencja operatorów (L,T,W):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/measure_sequence \
+ -H 'Content-Type: application/json' \
+ -d '{"operators":["L","T","W"],"case":"LEX-QTMP-1"}' | jq .
+```
+
 ## Marketplace (podpisy i instalacja)
 
 - Lista wtyczek:
@@ -199,4 +271,82 @@ histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_tenant_bucket
 sum(rate(certeus_http_requests_total{status=~"5.."}[5m])) by (tenant)
 / sum(rate(certeus_http_requests_total[5m])) by (tenant)
 ```
+- Rozgrzanie cache dla listy spraw (`/v1/cfe/cache/warm`):
 
+```
+curl -s -X POST http://127.0.0.1:8000/v1/cfe/cache/warm \
+ -H 'Content-Type: application/json' \
+ -d '["LEX-001","LEX-002"]' | jq .
+```
+
+- Lensing z sygnałów FIN (`/v1/cfe/lensing/from_fin`):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/cfe/lensing/from_fin \
+ -H 'Content-Type: application/json' \
+ -d '{"signals":{"risk":0.2,"sentiment":0.6},"seed":"FIN-CASE-1"}' | jq .
+```
+
+## Devices (W6)
+
+- HDE — plan:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/devices/horizon_drive/plan \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-001","target_horizon":0.25}' | jq .
+```
+
+- Q‑Oracle — expectation:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/devices/qoracle/expectation \
+ -H 'Content-Type: application/json' \
+ -d '{"objective":"maximize fairness","constraints":{"risk":0.6}}' | jq .
+```
+
+- Entangler — splątanie (nagłówek PCO):
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/devices/entangle \
+ -H 'Content-Type: application/json' \
+ -d '{"variables":["A","B","C"],"target_negativity":0.12}'
+```
+
+- Chronosync — reconcile:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/devices/chronosync/reconcile \
+ -H 'Content-Type: application/json' \
+ -d '{"coords":{"t":0},"pc_delta":{}}' | jq .
+```
+
+## LEXENITH (W8)
+
+- Motion (generate):
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/motion/generate \
+ -H 'Content-Type: application/json' \
+ -d '{"case_id":"LEX-CASE-001","pattern_id":"motion-dismiss","facts":{"ok":true},"citations":["K 2001","III 2020"]}' | jq .
+```
+
+- CLDF — renormalize:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/cldf/renormalize \
+ -H 'Content-Type: application/json' \
+ -d '{"citations":[{"text":"K 2001","weight":1.0},{"text":"III 2020","weight":0.5}],"damping":0.9}' | jq .
+```
+
+- Why‑Not (PCΔ) — export:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/why_not/export \
+ -H 'Content-Type: application/json' \
+ -d '{"claim":"A","counter_arguments":["B","C"]}' | jq .
+```
+
+- Micro‑Court — lock/publish:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/micro_court/lock \
+ -H 'Content-Type: application/json' \
+ -d '{"case_id":"LEX-CASE-001"}' | jq .
+
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/micro_court/publish \
+ -H 'Content-Type: application/json' \
+ -d '{"case_id":"LEX-CASE-001","footnotes":[]}' | jq .
+```

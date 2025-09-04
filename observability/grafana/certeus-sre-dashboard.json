@@ -4,22 +4,38 @@
     {
       "type": "stat",
       "title": "HTTP error rate 5m",
-      "targets": [{ "expr": "certeus_http_error_rate_5m" }]
+      "targets": [
+        {
+          "expr": "certeus_http_error_rate_5m"
+        }
+      ]
     },
     {
       "type": "stat",
       "title": "HTTP error rate 1h",
-      "targets": [{ "expr": "certeus_http_error_rate_1h" }]
+      "targets": [
+        {
+          "expr": "certeus_http_error_rate_1h"
+        }
+      ]
     },
     {
       "type": "stat",
       "title": "HTTP p95 latency (ms)",
-      "targets": [{ "expr": "certeus_http_p95_ms" }]
+      "targets": [
+        {
+          "expr": "certeus_http_p95_ms"
+        }
+      ]
     },
     {
       "type": "graph",
       "title": "p95 latency (ms)",
-      "targets": [{ "expr": "certeus_http_p95_ms" }]
+      "targets": [
+        {
+          "expr": "certeus_http_p95_ms"
+        }
+      ]
     },
     {
       "type": "table",
@@ -47,8 +63,7 @@
           "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket[5m])) by (le, status))"
         }
       ]
-    }
-    ,
+    },
     {
       "type": "table",
       "title": "p95 latency by tenant (ms)",
@@ -66,7 +81,69 @@
           "expr": "sum(rate(certeus_http_requests_total{status=~\"5..\"}[5m])) by (tenant) / sum(rate(certeus_http_requests_total[5m])) by (tenant)"
         }
       ]
+    },
+    {
+      "type": "timeseries",
+      "title": "CFE • Geodesic Action (count by le)",
+      "targets": [
+        {
+          "expr": "sum(rate(certeus_cfe_geodesic_action_bucket[5m])) by (le)",
+          "legendFormat": "le={{le}}"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "CFE • Horizon Mass",
+      "targets": [
+        {
+          "expr": "certeus_cfe_horizon_mass"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1
+        }
+      }
+    },
+    {
+      "type": "gauge",
+      "title": "CFE • Kappa Max",
+      "targets": [
+        {
+          "expr": "certeus_cfe_kappa_max"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "QTMP↔CFE Correlation (L_T)",
+      "targets": [
+        {
+          "expr": "certeus_qtm_cfe_correlation",
+          "legendFormat": "case={{case}}"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CFE endpoints p95 latency (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket{path=~\"/v1/cfe/.*\"}[5m])) by (le, path))"
+        }
+      ]
     }
   ],
-  "time": { "from": "now-6h", "to": "now" }
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  }
 }

@@ -29,6 +29,14 @@ $py = ".\\.venv\\Scripts\\python.exe"
 curl.exe -s http://127.0.0.1:8000/health
 ```
 
+Jeśli `py/python` wskazuje na stub WindowsApps (problem z utworzeniem venv), zainstaluj Pythona:
+
+```
+winget install -e --id Python.Python.3.11 --silent --accept-package-agreements --accept-source-agreements
+```
+
+Następnie powtórz komendy tworzące venv.
+
 ## Lint i testy
 
 ```
@@ -94,3 +102,38 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
   - P95: powtórz smoke lokalnie i sprawdź `/metrics`; problemy zwykle wynikają z zimnego startu albo konfliktów portów.
   - Multipart: w Windows używamy `curl.exe -F ...` (Invoke-RestMethod bywa wrażliwy na boundary i typy MIME).
   - Tolerancja błędów: można ustawić `SMOKE_MAX_FAILS` (domyślnie 0) do tymczasowej tolerancji w DEV/CI.
+
+---
+
+## Cockpit (UI) — Geometry/Quantum/Boundary
+
+Po uruchomieniu API odwiedź:
+
+- Geometry: `http://127.0.0.1:8000/app/public/geometry.html` — Ricci heatmap, lensing, geodesic/horizon lock (PCO headers) + link do Ledger.
+- Quantum: `http://127.0.0.1:8000/app/public/quantum.html` — Operator Composer, UB/priorities, Measurement Log (`/v1/qtm/history/{case}`).
+- Boundary (jeśli włączony): `http://127.0.0.1:8000/app/public/boundary.html` — shard view i reconstruct.
+
+## ChatOps/MailOps (Cookbook)
+
+Przykłady wywołań, Proof‑Only I/O oraz gotowe fragmenty cURL: `docs/cookbooks/chatops_mailops.md`.
+
+## Proof‑Only I/O (STRICT_PROOF_ONLY)
+
+W DEV/CI możesz wymusić token PCO na publikowalnych ścieżkach:
+
+```
+# Linux/macOS
+export STRICT_PROOF_ONLY=1
+# Windows
+$env:STRICT_PROOF_ONLY='1'
+```
+
+Bez tokenu np. `POST /v1/mailops/ingest` zwróci `403` (DROP: proof-required).
+
+## Szybkie komendy (Windows)
+
+```
+pwsh -File .\scripts\smoke_api.ps1
+pwsh -File .\scripts\keys_dev.ps1; . .\scripts\env_load.ps1
+.\.venv\Scripts\python.exe scripts\worklog\update_worklog.py --summary "W1: Cockpit + ChatOps/MailOps" --details "- Geometry/Quantum telemetry\n- ChatOps/MailOps smoke"
+```

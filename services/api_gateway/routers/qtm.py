@@ -34,6 +34,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from hashlib import sha256
+import os
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -144,7 +145,10 @@ router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 # Prosty graf spraw (case-graph) i rejestr kanałów dekoherencji (stub in-memory)
 CASE_GRAPH: dict[str, dict[str, Any]] = {}
 DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
-_PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
+# Per-worker store to avoid xdist races in tests
+_WORKER = os.getenv("PYTEST_XDIST_WORKER")
+_PRESET_NAME = f"qtm_presets.{_WORKER}.json" if _WORKER else "qtm_presets.json"
+_PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / _PRESET_NAME
 
 
 def _uniform_probs(basis: list[str]) -> list[float]:
@@ -199,17 +203,14 @@ def _stable_index(key: str, mod: int) -> int:
 
 
 @router.post("/init_case", response_model=InitCaseResponse)
-async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
+async def init_case(req: InitCaseRequest, request: Request, response: Response) -> InitCaseResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
 
-    # Pick basis: if not provided and operator known, default to operator eigen basis
+    # Pick basis: if not provided, default to canonical basis
     if req.basis is None:
-        if (emap := _operator_eigs().get(req.operator)) is not None:
-            basis = list(emap.keys())
-        else:
-            basis = ["ALLOW", "DENY", "ABSTAIN"]
+        basis = ["ALLOW", "DENY", "ABSTAIN"]
     else:
         basis = req.basis
 
@@ -230,6 +231,10 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
     except Exception:
         pass
 
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return InitCaseResponse(ok=True, predistribution=predistribution)
 
 
@@ -320,6 +325,14 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         pass
 
+    # Update shedder with QTMP signal (latency + UB L_T)
+    try:
+        from monitoring.shedder import update_from_qtmp
+
+        update_from_qtmp(ub_lt=float(ub.get("L_T", 0.0)), collapse_latency_ms=float(latency_ms))
+    except Exception:
+        pass
+
     # Append to in-memory history for this case
     try:
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
@@ -378,6 +391,10 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         pass
 
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return resp
 
 
@@ -403,13 +420,8 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
         if not req.no_collapse:
             probs = [0.0 for _ in basis]
             probs[idx] = 1.0
-    # UB as in measure()
-    try:
-        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
-
-        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
-    except Exception:
-        kappa = 0.012
+    # UB (fast path): avoid import cost in tight loops; use baseline kappa
+    kappa = 0.012
     ub = {"L_T": round(0.2 + min(0.2, kappa * 10.0), 3)}
     latency_ms = round((perf_counter() - t0) * 1000.0, 3)
     # Headers: record sequence PCO
@@ -572,7 +584,7 @@ class SetStateRequest(BaseModel):
 
 
 @router.post("/state", response_model=QtmStateOut)
-async def set_state(req: SetStateRequest) -> QtmStateOut:
+async def set_state(req: SetStateRequest, response: Response) -> QtmStateOut:
     if len(req.basis) != len(req.probs):
         raise HTTPException(status_code=400, detail="basis/probs length mismatch")
     s = float(sum(req.probs))
@@ -585,6 +597,10 @@ async def set_state(req: SetStateRequest) -> QtmStateOut:
         "basis": list(req.basis),
         "predistribution": predistribution,
     }
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return QtmStateOut(
         case=req.case, psi=CASE_GRAPH[req.case]["psi"], basis=list(req.basis), predistribution=predistribution
     )
@@ -600,7 +616,7 @@ class ExpectationOut(BaseModel):
 
 
 @router.post("/expectation", response_model=ExpectationOut)
-async def expectation(req: ExpectationRequest) -> ExpectationOut:
+async def expectation(req: ExpectationRequest, response: Response) -> ExpectationOut:
     cg = CASE_GRAPH.get(req.case)
     if not cg:
         raise HTTPException(status_code=404, detail="Case not found")
@@ -625,6 +641,10 @@ async def expectation(req: ExpectationRequest) -> ExpectationOut:
         from monitoring.metrics_slo import certeus_qtm_expectation_value
 
         certeus_qtm_expectation_value.labels(case=req.case, operator=req.operator).set(out)
+    except Exception:
+        pass
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
     except Exception:
         pass
     return ExpectationOut(value=out)

@@ -1,0 +1,35 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: observability/prometheus/alert_rules_fin.yml         |
+# | ROLE: Prometheus alert rules (FIN MI/RS)                     |
+# | PLIK: observability/prometheus/alert_rules_fin.yml         |
+# | ROLA: Reguły alertów Prometheus (FIN MI/RS)                  |
+# +-------------------------------------------------------------+
+
+groups:
+  - name: certeus_fin_alerts
+    rules:
+      # W3: Pierwsze alerty FIN — mutual information (MI) wysokie wartości
+      - alert: FINHighEntanglementMIWarning
+        expr: max_over_time(certeus_fin_entanglement_mi[10m]) > 0.5
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "FIN entanglement MI elevated (>0.5)"
+
+      - alert: FINHighEntanglementMICritical
+        expr: max_over_time(certeus_fin_entanglement_mi[10m]) > 0.8
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "FIN entanglement MI very high (>0.8)"
+
+      # RS komutator: detekcja spłaszczenia (brak nieprzemienności) przez dłuższy czas
+      - alert: FINCommutatorFlatline
+        expr: max_over_time(certeus_fin_commutator_rs[15m]) == 0
+        for: 15m
+        labels: { severity: info }
+        annotations:
+          summary: "FIN commutator [R,S] flatlined at 0 for 15m"
+
