@@ -113,6 +113,9 @@ jobs:
         run: |
           python scripts/supply_chain/make_provenance.py
           test -s out/provenance.json
+      - name: Validate provenance schema
+        run: |
+          python scripts/validate_provenance.py
       - name: Enforce supply-chain (deny-by-default)
         env:
           SUPPLY_CHAIN_ENFORCE: '1'
