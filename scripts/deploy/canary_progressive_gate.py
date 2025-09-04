@@ -21,7 +21,6 @@ EN: Progressive deployment gate (report‑only). Reads `deploy/canary_policy.yml
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
-
 import json
 from pathlib import Path
 from typing import Any
@@ -35,8 +34,8 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
-
 # === LOGIKA / LOGIC ===
+
 
 def _p95(vals: list[float]) -> float:
     if not vals:
