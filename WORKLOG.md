@@ -305,3 +305,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Telemetria: /v1/cfe/curvature, /v1/lexqft/coverage
   - Demo: scripts/smokes/w1_demo.py (PUBLISH) OK
   - Lint+tests: 136 passed; ruff clean
+- 2025-09-04 12:03:33Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
