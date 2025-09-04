@@ -83,6 +83,30 @@
       </div>
 
       <div class="card" style="margin-top:16px;">
+        <h1>Sequence</h1>
+        <div class="row">
+          <input id="seq" placeholder="operators (np. L,T,W)" />
+          <label class="muted"><input type="checkbox" id="noCollapse"> no_collapse</label>
+          <button id="run-seq" class="btn">Run sequence</button>
+          <span class="muted">UB L_T:<span id="seq-ub" class="pill">?</span></span>
+          <span class="muted">Latency:<span id="seq-lat" class="pill">?</span></span>
+        </div>
+        <table id="seqtbl"><thead><tr><th>#</th><th>op</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Compare Sequences</h1>
+        <div class="row">
+          <input id="seqA" placeholder="seq A (np. L,T)" value="L,T" />
+          <input id="seqB" placeholder="seq B (np. T,L)" value="T,L" />
+          <label class="muted"><input type="checkbox" id="noCollapseCmp"> no_collapse</label>
+          <button id="run-compare" class="btn">Run compare</button>
+          <span class="muted">ΔUB:<span id="cmp-dub" class="pill">0</span></span>
+        </div>
+        <table id="cmptbl"><thead><tr><th>#</th><th>opA</th><th>verdictA</th><th>pA</th><th>opB</th><th>verdictB</th><th>pB</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
         <h1>Commutator Heatmap</h1>
         <div class="row" style="margin-bottom:10px;">
           <button id="comm-refresh" class="btn">Refresh heatmap</button>
@@ -121,6 +145,39 @@
         document.getElementById('seq-lat').textContent = (r.data.final_latency_ms||0).toFixed(1)+'ms';
         document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
       }
+      async function runCompare(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const a = (document.getElementById('seqA').value||'L,T').split(',').map(s=>s.trim()).filter(Boolean);
+        const b = (document.getElementById('seqB').value||'T,L').split(',').map(s=>s.trim()).filter(Boolean);
+        const noC = document.getElementById('noCollapseCmp').checked;
+        const call = async (ops)=> await fetchJSON('/v1/qtm/measure_sequence', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({operators: ops, case: cs, no_collapse: noC})});
+        const ra = await call(a); const rb = await call(b);
+        const A = (ra.ok && ra.data.steps)||[]; const B = (rb.ok && rb.data.steps)||[];
+        const n = Math.max(A.length, B.length);
+        const tb = document.querySelector('#cmptbl tbody'); tb.innerHTML='';
+        for(let i=0;i<n;i++){
+          const sa=A[i]||{}; const sb=B[i]||{}; const tr=document.createElement('tr');
+          tr.innerHTML = `<td>${i+1}</td><td>${sa.operator||''}</td><td>${sa.verdict||''}</td><td>${(sa.p||0).toFixed? (sa.p||0).toFixed(3): ''}</td><td>${sb.operator||''}</td><td>${sb.verdict||''}</td><td>${(sb.p||0).toFixed? (sb.p||0).toFixed(3): ''}</td>`;
+          tb.appendChild(tr);
+        }
+        const uba = (ra.ok && ra.data.uncertainty_bound && ra.data.uncertainty_bound.L_T) || 0;
+        const ubb = (rb.ok && rb.data.uncertainty_bound && rb.data.uncertainty_bound.L_T) || 0;
+        const dub = Number(uba) - Number(ubb);
+        document.getElementById('cmp-dub').textContent = (isFinite(dub)? dub.toFixed(3): '0');
+      }
+      async function runSequence(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const raw = (document.getElementById('seq').value||'L,T,W').split(',').map(s=>s.trim()).filter(Boolean);
+        const noC = document.getElementById('noCollapse').checked;
+        const r = await fetchJSON('/v1/qtm/measure_sequence', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({operators: raw, case: cs, no_collapse: noC})});
+        const tb = document.querySelector('#seqtbl tbody'); tb.innerHTML='';
+        if(!r.ok) return;
+        (r.data.steps||[]).forEach((s,i)=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${i+1}</td><td>${s.operator}</td><td>${s.verdict}</td><td>${(s.p||0).toFixed(3)}</td>`; tb.appendChild(tr); });
+        const ub = (r.data.uncertainty_bound||{}).L_T ?? '?';
+        document.getElementById('seq-ub').textContent = ub;
+        document.getElementById('seq-lat').textContent = (r.data.final_latency_ms||0).toFixed(1)+'ms';
+        document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
       async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`; } }
       async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); }
       async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
@@ -131,6 +188,8 @@
       document.getElementById('load').addEventListener('click', loadPreset);
       document.getElementById('log-refresh').addEventListener('click', refreshLog);
       document.getElementById('ent').addEventListener('click', findEnt);
+      document.getElementById('run-seq').addEventListener('click', runSequence);
+      document.getElementById('run-compare').addEventListener('click', runCompare);
       document.getElementById('run-seq').addEventListener('click', runSequence);
       async function refreshCommutator(){
         const ops=['W','I','C','L','T'];

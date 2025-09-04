@@ -372,12 +372,15 @@ async def renorm(req: RenormRequest, response: Response) -> RenormResponse:
     _renorm_load()
     case = req.case or "lexqft-case"
     vals: list[tuple[str, float]] = []
+    EPS = 1e-300  # clamp subnormals to 0 to preserve scale invariance numerically
     for it in req.items:
         try:
             a = float(it.authority) * max(0.0, float(it.weight))
         except Exception:
             a = 0.0
         if not (a >= 0.0):  # includes NaN
+            a = 0.0
+        if a < EPS:
             a = 0.0
         vals.append((it.uid, a))
     s = sum(a for _, a in vals)

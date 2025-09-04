@@ -128,6 +128,26 @@
           Case ledger: <a id="caseLink" href="#" target="_blank">open</a>
         </p>
       </div>
+      <div class="card" style="margin-top:16px;">
+        <h1>QTMP • Commutator heatmap</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="heatmap" class="btn">Build heatmap</button>
+          <span class="muted">0=commute • 1=max non‑commute</span>
+        </div>
+        <table id="cmt" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th></th>
+              <th>W</th>
+              <th>I</th>
+              <th>C</th>
+              <th>L</th>
+              <th>T</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
     <script>
       async function fetchJSON(url, opts) {
@@ -168,6 +188,34 @@
         const autorun = q('auto');
         if(cs){ document.getElementById('case').value = cs; await initCase(); }
         if(autorun==='1' && (op==='LT' || op==='TL')){ await measure(op); }
+      }
+      function colorForValue(v){
+        // v in [0,1]; green (0) -> red (1)
+        const r = Math.round(255 * v);
+        const g = Math.round(200 * (1 - v));
+        return `rgb(${r},${g},120)`;
+      }
+      async function buildHeatmap(){
+        const ops = ['W','I','C','L','T'];
+        const tb = document.querySelector('#cmt tbody');
+        if(!tb) return;
+        tb.innerHTML='';
+        for(const A of ops){
+          const tr = document.createElement('tr');
+          const th = document.createElement('th'); th.textContent = A; th.className='muted'; th.style.textAlign='left'; tr.appendChild(th);
+          for(const B of ops){
+            const td = document.createElement('td'); td.style.height='22px'; td.style.textAlign='center'; td.style.borderBottom='1px solid #2a2d33';
+            try{
+              const r = await fetchJSON('/v1/qtm/commutator', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({A,B})});
+              const v = r.ok ? Number(r.data?.value||0) : 0;
+              td.style.background = colorForValue(Math.max(0, Math.min(1, v)));
+              td.title = `${A},${B} = ${v}`;
+              td.textContent = v.toFixed(2);
+            }catch(e){ td.textContent='-'; }
+            tr.appendChild(td);
+          }
+          tb.appendChild(tr);
+        }
       }
       async function measure(op) {
         const cs = document.getElementById("case").value || "LEX-001";
@@ -216,6 +264,7 @@
         .getElementById("tl")
         .addEventListener("click", () => measure("TL"));
       document.getElementById("lockDeco").addEventListener("click", setDeco);
+      document.getElementById("heatmap")?.addEventListener("click", buildHeatmap);
       autoRun();
     </script>
   </body>

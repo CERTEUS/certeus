@@ -308,6 +308,13 @@ certeus_devices_signed_total = Counter(
     labelnames=("device",),
 )
 
+# TEE/RA signalling
+certeus_tee_ra_attested_total = Counter(
+    "certeus_tee_ra_attested_total",
+    "TEE RA headers attached",
+    labelnames=("device",),
+)
+
 # LEX Pilot (W16): feedback counters and latest rating
 certeus_lex_pilot_feedback_total = Counter(
     "certeus_lex_pilot_feedback_total",

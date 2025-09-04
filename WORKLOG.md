@@ -484,3 +484,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: SLO Status (p95/error-rate pass/fail) in PR summary
   - Quick Links: added Grafana (public) https://www.certeus.pl/grafana
   - Testy: 167 passed (zielone)
+- 2025-09-04 14:35:53Z [agent] (work/daily): W4: Quantum – porównanie sekwencji (L→T vs T→L)
+  - UI: karta Compare Sequences (A/B, no_collapse, ΔUB) + Sequence runner
+  - Smoke: scripts/smokes/w4_sequence_demo.py
+  - Testy: 167 passed, 1 skipped (izolowane)

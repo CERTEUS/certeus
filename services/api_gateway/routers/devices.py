@@ -33,6 +33,8 @@ from typing import Any
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
+from security.ra import ra_fingerprint, tee_enabled
+
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
@@ -170,6 +172,15 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
         response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
     except Exception:
         pass
+    # W10: TEE RA header (optional)
+    try:
+        if tee_enabled():
+            from monitoring.metrics_slo import certeus_tee_ra_attested_total
+
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps(ra_fingerprint(), separators=(",", ":"))
+            certeus_tee_ra_attested_total.labels(device="hde").inc()
+    except Exception:
+        pass
     return result
 
 
@@ -216,6 +227,14 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
         sig = sign_payload(result.model_dump())
         certeus_devices_signed_total.labels(device="qoracle").inc()
         response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    try:
+        if tee_enabled():
+            from monitoring.metrics_slo import certeus_tee_ra_attested_total
+
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps(ra_fingerprint(), separators=(",", ":"))
+            certeus_tee_ra_attested_total.labels(device="qoracle").inc()
     except Exception:
         pass
     return result
@@ -267,6 +286,14 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
         sig = sign_payload(out.model_dump())
         certeus_devices_signed_total.labels(device="entangler").inc()
         response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    try:
+        if tee_enabled():
+            from monitoring.metrics_slo import certeus_tee_ra_attested_total
+
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps(ra_fingerprint(), separators=(",", ":"))
+            certeus_tee_ra_attested_total.labels(device="entangler").inc()
     except Exception:
         pass
     return out

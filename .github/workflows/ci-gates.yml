@@ -233,6 +233,7 @@ jobs:
             out/hde_plan.json
             out/qoracle.json
             out/entangler.json
+            out/chronosync.json
 
       - name: SLO Smoke (in-proc)
         env:
@@ -457,6 +458,21 @@ jobs:
               json.dump(body, f)
           print('entangler achieved_negativity=', body.get('achieved_negativity'))
           PY
+      - name: Chronosync snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          r = c.post('/v1/devices/chronosync/reconcile', json={'coords': {'case':'ci-chronosync','t': 0}})
+          r.raise_for_status()
+          body = r.json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/chronosync.json','w',encoding='utf-8') as f:
+              json.dump(body, f)
+          print('chronosync reconciled=', body.get('reconciled'))
+          PY
       - name: Mark OpenAPI smoke OK
         if: success()
         run: |
@@ -597,6 +613,12 @@ jobs:
               lines.append(f"Entangler: achieved_negativity={ei.get('achieved_negativity')}")
           except Exception:
               lines.append('Entangler: summary n/a')
+          # Chronosync summary
+          try:
+              cs = json.loads((repo/'out'/'chronosync.json').read_text())
+              lines.append(f"Chronosync: reconciled={cs.get('reconciled')}")
+          except Exception:
+              lines.append('Chronosync: summary n/a')
           # KPI table (compact snapshot)
           try:
               def _read(p):
@@ -755,7 +777,7 @@ jobs:
               cp -f out/perf_bench.json ci/perf_bench.json || true
             fi
             # Persist latest snapshots for quick links in PR
-            for f in lexqft_coverage_state.json lexqft_tunnel.json cfe_qtmp.json hde_plan.json qoracle.json entangler.json; do
+            for f in lexqft_coverage_state.json lexqft_tunnel.json cfe_qtmp.json hde_plan.json qoracle.json entangler.json chronosync.json; do
               if [ -f "out/$f" ]; then
                 cp -f "out/$f" "ci/$f" || true
                 git add "ci/$f" || true
@@ -792,6 +814,7 @@ jobs:
               `- HDE plan: ${baseCi}/hde_plan.json`,
               `- Q-Oracle: ${baseCi}/qoracle.json`,
               `- Entangler: ${baseCi}/entangler.json`,
+              `- Chronosync: ${baseCi}/chronosync.json`,
               `- Grafana (public): https://www.certeus.pl/grafana`,
               `- CI Run Artifacts: https://github.com/${repo}/actions/runs/${{ github.run_id }}`,
             ];

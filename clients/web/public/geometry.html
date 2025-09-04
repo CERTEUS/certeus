@@ -31,6 +31,8 @@
       .grid{display:grid;grid-template-columns:repeat(10, 1fr);gap:2px;margin-top:8px}
       .cell{width:18px;height:18px;background:#20242a;border-radius:2px;position:relative}
       .cell[data-v]{background: linear-gradient(180deg, #20242a, #2a2d33)}
+      .spark{height:36px;display:flex;gap:2px;align-items:flex-end}
+      .bar{width:6px;background:#5bbaf2;border-radius:2px}
       .cell:hover::after{content:attr(data-tip);position:absolute;left:20px;top:-10px;background:#1a1c20;border:1px solid #2a2d33;padding:4px 6px;border-radius:6px;white-space:nowrap;font-size:12px}
       a{color:#9aa0a6}
       .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
@@ -42,6 +44,8 @@
         <h1>Geometry • Ricci heatmap <span id="kappa" class="pill">kappa_max: ?</span></h1>
         <div id="ricci" class="grid"></div>
         <p class="muted">Lensing map (precedents): <span id="lensing"></span></p>
+        <p class="muted">UB L_T (trend): <span id="ubval" class="pill">?</span></p>
+        <div id="spark" class="spark" aria-label="UB L_T sparkline"></div>
         <div class="row">
           <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
           <button id="geodesic" class="btn">Compute geodesic</button>
@@ -84,12 +88,41 @@
           panel.appendChild(row);
         }
       }
-
+      
+      const _ubSeries = [];
+      function renderSpark(){
+        const wrap = document.getElementById('spark');
+        if(!wrap) return;
+        wrap.innerHTML = '';
+        const max = Math.max(0.01, ..._ubSeries);
+        _ubSeries.slice(-40).forEach(v=>{
+          const b = document.createElement('div');
+          b.className = 'bar';
+          b.style.height = `${Math.max(2, 32 * (v/max))}px`;
+          wrap.appendChild(b);
+        });
+      }
+      async function pollUB(){
+        try{
+          const r = await fetch('/v1/qtm/uncertainty');
+          if(!r.ok) return;
+          const j = await r.json();
+          const v = Number(j.lower_bound||0);
+          if(!Number.isFinite(v)) return;
+          _ubSeries.push(v);
+          const el = document.getElementById('ubval');
+          if(el) el.textContent = String(v);
+          renderSpark();
+        }catch(e){/*noop*/}
+      }
+      
       async function init(){
         const cur = await fetchJSON('/v1/cfe/curvature');
         if(cur.ok){ document.getElementById('kappa').textContent = `kappa_max: ${cur.data.kappa_max}`; paintRicci(cur.data.kappa_max||0.01) }
         const lm = await fetchJSON('/v1/cfe/lensing');
         if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
+        await pollUB();
+        setInterval(pollUB, 3000);
       }
       async function doGeodesic(){
         const cs = document.getElementById('case').value || 'LEX-001';
