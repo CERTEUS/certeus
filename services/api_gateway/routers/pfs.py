@@ -193,6 +193,8 @@ class AnnounceRequest(BaseModel):
     node: str
     competencies: list[str] = Field(default_factory=list)
     capacity: int = 1
+    ttl_sec: int | None = Field(default=None, ge=0, description="Node TTL (seconds); 0 => expired immediately")
+    health: str | None = Field(default="up")
 
 
 class AnnounceResponse(BaseModel):
@@ -202,7 +204,15 @@ class AnnounceResponse(BaseModel):
 @router.post("/dht/announce", response_model=AnnounceResponse)
 async def dht_announce(req: AnnounceRequest) -> AnnounceResponse:
     d = _dht_load()
-    d[req.node] = {"competencies": list(req.competencies or []), "capacity": int(req.capacity)}
+    from time import time as _now
+
+    d[req.node] = {
+        "competencies": list(req.competencies or []),
+        "capacity": int(req.capacity),
+        "ttl_sec": int(req.ttl_sec) if req.ttl_sec is not None else None,
+        "health": (req.health or "up").strip(),
+        "last_seen": float(_now()),
+    }
     _dht_save(d)
     return AnnounceResponse(ok=True)
 
@@ -212,11 +222,23 @@ class QueryResponse(BaseModel):
 
 
 @router.get("/dht/query", response_model=QueryResponse)
-async def dht_query(competency: str) -> QueryResponse:
+async def dht_query(competency: str, include_stale: int = 0) -> QueryResponse:
     d = _dht_load()
     matches: list[str] = []
+    from time import time as _now
     for node, meta in d.items():
-        comps = meta.get("competencies") if isinstance(meta, dict) else []
+        if not isinstance(meta, dict):
+            continue
+        # TTL/health filter unless include_stale=1
+        if not include_stale:
+            ttl = meta.get("ttl_sec")
+            last = float(meta.get("last_seen", 0.0) or 0.0)
+            if isinstance(ttl, int) and ttl is not None:
+                if (_now() - last) > max(0, ttl):
+                    continue
+            if str(meta.get("health", "up")).lower() != "up":
+                continue
+        comps = meta.get("competencies")
         if not isinstance(comps, list):
             continue
         for patt in comps:
@@ -237,21 +259,43 @@ class PublishPathRequest(BaseModel):
 class PublishPathResponse(BaseModel):
     ok: bool
     nodes: list[str]
+    assigned: dict[str, int]
 
 
 @router.post("/dht/publish_path", response_model=PublishPathResponse)
 async def dht_publish_path(req: PublishPathRequest) -> PublishPathResponse:
-    # choose nodes that match any competency in the path
+    # choose nodes that match any competency in the path; balance by capacity
     d = _dht_load()
     sel: set[str] = set()
+    assigned: dict[str, int] = {}
     for step in req.path:
         for node, meta in d.items():
-            comps = meta.get("competencies") if isinstance(meta, dict) else []
+            if not isinstance(meta, dict):
+                continue
+            comps = meta.get("competencies")
             if not isinstance(comps, list):
                 continue
+            ttl = meta.get("ttl_sec")
+            last = float(meta.get("last_seen", 0.0) or 0.0)
+            from time import time as _now
+
+            if isinstance(ttl, int) and ttl is not None and (_now() - last) > max(0, ttl):
+                continue
             if any(fnmatch.fnmatch(step, str(p)) for p in comps):
+                # pick least-loaded by assigned/capacity
+                cap = int(meta.get("capacity", 1) or 1)
+                loadf = lambda n: (assigned.get(n, 0) / max(1, int(d.get(n, {}).get("capacity", 1))))
+                # initialize presence in map
+                assigned.setdefault(node, 0)
+                # nothing else to do now; actual split done after loop
                 sel.add(node)
-    return PublishPathResponse(ok=True, nodes=sorted(sel))
+        # assign this step to best node among sel (matching this step)
+        if sel:
+            best = min(sel, key=lambda n: (assigned.get(n, 0) / max(1, int(d.get(n, {}).get("capacity", 1)))))
+            assigned[best] = assigned.get(best, 0) + 1
+    nodes = [n for n, cnt in assigned.items() if cnt > 0]
+    nodes.sort()
+    return PublishPathResponse(ok=True, nodes=nodes, assigned=assigned)
 
 
 # === I/O / ENDPOINTS ===

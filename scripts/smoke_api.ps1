@@ -68,7 +68,9 @@ function Hit($method, $path, $bodyJson) {
 $results = @()
 $proc = $null
 try {
-  $proc = Start-Server
+  $start = $true
+  try { if ($env:SMOKE_START_SERVER -and $env:SMOKE_START_SERVER -eq '0') { $start = $false } } catch { $start = $true }
+  if ($start) { $proc = Start-Server }
   $results += Hit 'GET' '/health' $null
   $results += Hit 'GET' '/' $null
   $results += Hit 'GET' '/metrics' $null

@@ -316,3 +316,37 @@ curl -s -X POST http://127.0.0.1:8000/v1/devices/chronosync/reconcile \
  -H 'Content-Type: application/json' \
  -d '{"coords":{"t":0},"pc_delta":{}}' | jq .
 ```
+
+## LEXENITH (W8)
+
+- Motion (generate):
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/motion/generate \
+ -H 'Content-Type: application/json' \
+ -d '{"case_id":"LEX-CASE-001","pattern_id":"motion-dismiss","facts":{"ok":true},"citations":["K 2001","III 2020"]}' | jq .
+```
+
+- CLDF — renormalize:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/cldf/renormalize \
+ -H 'Content-Type: application/json' \
+ -d '{"citations":[{"text":"K 2001","weight":1.0},{"text":"III 2020","weight":0.5}],"damping":0.9}' | jq .
+```
+
+- Why‑Not (PCΔ) — export:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/why_not/export \
+ -H 'Content-Type: application/json' \
+ -d '{"claim":"A","counter_arguments":["B","C"]}' | jq .
+```
+
+- Micro‑Court — lock/publish:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/micro_court/lock \
+ -H 'Content-Type: application/json' \
+ -d '{"case_id":"LEX-CASE-001"}' | jq .
+
+curl -s -X POST http://127.0.0.1:8000/v1/lexenith/micro_court/publish \
+ -H 'Content-Type: application/json' \
+ -d '{"case_id":"LEX-CASE-001","footnotes":[]}' | jq .
+```

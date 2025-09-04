@@ -88,6 +88,14 @@ jobs:
           FINE_GRAINED_ROLES: "0"
         run: |
           python -m pytest -q
+      - name: CFE Smoke (in-proc)
+        run: |
+          python scripts/smokes/cfe_smoke.py > out/cfe_smoke.json
+          test -s out/cfe_smoke.json
+      - name: Mark Smokes OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/smokes_ok.txt
       - name: Mark Tests OK
         if: success()
         run: |
