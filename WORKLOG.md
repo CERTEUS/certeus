@@ -370,3 +370,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - HDE: wybór strategii vs target_horizon (aggressive ≥ 0.28)
   - - Entangler: osiągana negativity zależna od liczby zmiennych
   - - Lint OK; 146 testów zielone
+- 2025-09-04 13:31:59Z [48793] (work/daily): W4: QTMP demo + runbook (init/measure/sequence/decoherence)
+  - Demo: scripts/smokes/w4_qtmp_demo.py
+  - Runbook: docs/runbooks/w4_qtmp_demo.md
+  - PCO headers, UB L_T, Ledger wpisy (sequence+collapse_event)
+  - Testy: 146 passed (zielone)
