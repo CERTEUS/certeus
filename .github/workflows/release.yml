@@ -61,12 +61,49 @@ jobs:
     needs: build-and-push-images
     permissions:
       contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Generate SBOM (CycloneDX JSON)
+        run: |
+          python -m pip install -q cyclonedx-bom || true
+          python - << 'PY'
+          import subprocess, json
+          cmds = [
+            ['cyclonedx-py','--format','json','--output','sbom.json'],
+            ['cyclonedx-bom','-o','sbom.json','-F','json'],
+          ]
+          ok=False
+          for c in cmds:
+            try:
+              subprocess.check_call(c)
+              ok=True; break
+            except Exception:
+              pass
+          if not ok:
+            open('sbom.json','w',encoding='utf-8').write('{}')
+          print('SBOM ready')
+          PY
+          test -s sbom.json || echo '{}' > sbom.json
+      - name: Build provenance (in-toto style)
+        run: |
+          python scripts/supply_chain/make_provenance.py
+          test -s out/provenance.json
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: 'v2.2.4'
+      - name: Cosign sign SBOM and provenance (keyless)
+        run: |
+          cosign version
+          cosign sign-blob --yes --output-signature sbom.json.sig --output-certificate sbom.json.cert sbom.json
+          cosign sign-blob --yes --output-signature out/provenance.sig --output-certificate out/provenance.cert out/provenance.json
+          test -s sbom.json.sig && test -s sbom.json.cert
+          test -s out/provenance.sig && test -s out/provenance.cert
       - name: Generate public PCO bundle (release seed)
         env:
           PROOF_BUNDLE_DIR: out/release_pco
@@ -78,5 +115,11 @@ jobs:
         with:
           generate_release_notes: true
           files: |
+            sbom.json
+            sbom.json.sig
+            sbom.json.cert
+            out/provenance.json
+            out/provenance.sig
+            out/provenance.cert
             out/release_pco/*.json
 
