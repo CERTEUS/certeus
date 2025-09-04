@@ -587,3 +587,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - code_demo: code.static.check (linie + TODO)
   - - Testy: tests/services/test_w14_packs_mvp.py
   - - Lint OK; 184 testów zielone
+- 2025-09-04 16:00:03Z [root] (work/daily): A1/W3: Mapy L/T (litera↔telos) + testy property
+  - - core/omega_litera_telos.py: transform_litera_telos + holonomy_drift_lt\n- tests/truth/test_litera_telos_transform_property.py: Hypothesis (roundtrip/identity)\n- Lint+tests (subset truth): zielone
