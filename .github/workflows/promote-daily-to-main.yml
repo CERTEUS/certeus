@@ -29,24 +29,18 @@ jobs:
     steps:
       - name: Decide whether to evaluate promotion
         id: cond
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            if [ "${{ github.event.workflow_run.head_branch }}" = "work/daily" ] && [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
-              echo "ok=true" >> $GITHUB_OUTPUT
-            else
-              echo "ok=false" >> $GITHUB_OUTPUT
-            fi
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            if [ "${{ github.ref }}" = "refs/heads/work/daily" ]; then
-              echo "ok=true" >> $GITHUB_OUTPUT
-            else
-              echo "ok=false" >> $GITHUB_OUTPUT
-            fi
-          else
-            # workflow_dispatch
-            echo "ok=true" >> $GITHUB_OUTPUT
-          fi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const evt = context.eventName;
+            let ok = true;
+            if (evt === 'workflow_run') {
+              const wr = context.payload.workflow_run || {};
+              ok = (wr.head_branch === 'work/daily' && wr.conclusion === 'success');
+            } else if (evt === 'push') {
+              ok = (context.ref === 'refs/heads/work/daily');
+            }
+            core.setOutput('ok', ok ? 'true' : 'false');
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -59,31 +53,26 @@ jobs:
       - name: Determine SHA for evaluation
         id: sha
         if: steps.cond.outputs.ok == 'true'
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
-          else
-            echo "sha=${{ github.sha }}" >> $GITHUB_OUTPUT
-          fi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const evt = context.eventName;
+            let sha;
+            if (evt === 'workflow_run') sha = context.payload.workflow_run?.head_sha;
+            else sha = context.sha;
+            core.setOutput('sha', sha);
       - name: Determine if weekly promotion is requested
         id: marker
         if: steps.cond.outputs.ok == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          SHA='${{ steps.sha.outputs.sha }}'
-          # Read commit message for head SHA
-          MSG=$(git show -s --format=%B "$SHA")
-          echo "Commit message for $SHA:"; echo "$MSG"
-          # Weekly promotion marker policy:
-          # - Include "[week-end]" anywhere in the message, OR
-          # - Include a trailer line like: weekly-promote: true
-          if echo "$MSG" | grep -Eqi '\[week-end\]|^weekly-promote:\s*(true|1)'; then
-            echo "promote=true" >> $GITHUB_OUTPUT
-          else
-            echo "promote=false" >> $GITHUB_OUTPUT
-          fi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = core.getInput('sha', { required: false }) || '${{ steps.sha.outputs.sha }}';
+            const { data: commit } = await github.rest.repos.getCommit({ owner: context.repo.owner, repo: context.repo.repo, ref: sha });
+            const msg = commit?.commit?.message || '';
+            core.info('Commit message for '+sha+':\n'+msg);
+            const promote = /\[week-end\]/i.test(msg) || /^weekly-promote:\s*(true|1)/mi.test(msg);
+            core.setOutput('promote', promote ? 'true' : 'false');
       # ci-gates conclusion is already 'success' by job condition above${insert}
       - name: Set up Python
         if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
@@ -95,34 +84,33 @@ jobs:
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           ACTOR: ${{ github.actor }}
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
           git checkout work/daily
-          SUMMARY="auto-promote: ${SHA} (gates green)"
-          DETAILS=$'Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate\nActor: '${ACTOR}
+          $SUMMARY = "auto-promote: ${env:SHA} (gates green)"
+          $DETAILS = "Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate`nActor: ${env:ACTOR}"
           python scripts/worklog/update_worklog.py --summary "$SUMMARY" --details "$DETAILS"
           git add WORKLOG.md
-          git commit -m "chore(worklog): ${SUMMARY}" || true
-          git push origin work/daily || true
+          git commit -m "chore(worklog): $SUMMARY" || exit 0
+          git push origin work/daily || exit 0
       - name: Fast-forward main to work/daily (if possible)
         if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
         id: ff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
           git fetch origin
-          # Ensure branches are up-to-date
           git checkout main
           git reset --hard origin/main
-          git merge --ff-only origin/work/daily && {
-            echo "ff=true" >> $GITHUB_OUTPUT
+          git merge --ff-only origin/work/daily 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            "ff=true" >> $env:GITHUB_OUTPUT
             git push origin main
-            exit 0
-          } || echo "No fast-forward possible; skipping (PR path disabled)."
-          echo "ff=false" >> $GITHUB_OUTPUT
+          } else {
+            Write-Host "No fast-forward possible; skipping (PR path)."
+            "ff=false" >> $env:GITHUB_OUTPUT
+          }
       - name: Create or auto-merge PR (work/daily -> main)
         if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
         uses: actions/github-script@v7
