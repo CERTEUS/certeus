@@ -165,6 +165,11 @@ async def geodesic(req: GeodesicRequest, request: Request, response: Response) -
         response.headers["X-CERTEUS-PCO-cfe.geodesic_action"] = str(action)
     except Exception:
         pass
+    # POST responses should not be cached by intermediaries
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
 
     # Record to Ledger (hash of cfe.geodesic_action)
     try:
@@ -209,6 +214,11 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
         response.headers["X-CERTEUS-CFE-Locked"] = "true" if locked else "false"
     except Exception:
         pass
+    # POST responses should not be cached
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
 
     # Record to Ledger (hash of cfe.horizon_mass + locked)
     try:
@@ -222,6 +232,50 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
         pass
 
     return HorizonResponse(locked=locked, horizon_mass=float(mass))
+
+
+class LensingFromFinIn(BaseModel):
+    signals: dict[str, float]
+    seed: str | None = None
+
+
+class LensingFromFinOut(BaseModel):
+    lensing_map: dict[str, float]
+    critical_precedents: list[str]
+
+
+@router.post("/lensing/from_fin", response_model=LensingFromFinOut)
+async def lensing_from_fin(payload: LensingFromFinIn, response: Response) -> LensingFromFinOut:
+    """PL/EN: Mapuje sygnały FIN (risk/sentiment) na szkic lensingu CFE.
+
+    Heurystyka: score = sentiment - risk, skaluje wagi 2–3 precedensów deterministycznie.
+    """
+    s = payload.signals or {}
+    risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
+    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
+    score = sent - risk
+    # Deterministyczny wybór precedensów na podstawie seed/score
+    seed_key = payload.seed or f"FIN::{int(score*1000)}"
+    try:
+        from services.cfe.metric import lensing_map_for_case
+
+        m = lensing_map_for_case(seed_key)
+        # Lekka modulacja wag przez score
+        shift = 0.05 * max(-1.0, min(1.0, score))
+        mm = {k: max(0.0, min(1.0, float(v) + shift)) for k, v in m.items()}
+        tot = sum(mm.values()) or 1.0
+        mm = {k: round(v / tot, 3) for k, v in mm.items()}
+    except Exception:
+        mm = {"precedent:K_2001": 0.6, "precedent:III_2020": 0.4}
+    crit = sorted(mm, key=mm.get, reverse=True)[:1]
+    # PCO header
+    try:
+        import json as _json
+
+        response.headers["X-CERTEUS-PCO-cfe.lensing_from_fin"] = _json.dumps({"score": score})
+    except Exception:
+        pass
+    return LensingFromFinOut(lensing_map=mm, critical_precedents=crit)
 
 
 @router.get("/lensing", response_model=LensingResponse)

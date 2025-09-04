@@ -633,6 +633,7 @@ jobs:
               hde = _read('hde_plan.json')
               qo = _read('qoracle.json')
               ei = _read('entangler.json')
+              cs = _read('chronosync.json')
               lines.append('')
               lines.append('### KPI Snapshot')
               lines.append('| Metric | Value |')
@@ -656,6 +657,29 @@ jobs:
               lines.append(f"| Q-Oracle payoff | {qo.get('payoff', 'n/a')} |")
               lines.append(f"| Q-Oracle choice | {(qo.get('optimum') or {}).get('choice', 'n/a')} |")
               lines.append(f"| Entangler achieved_negativity | {ei.get('achieved_negativity', 'n/a')} |")
+              # Devices SLO table
+              lines.append('')
+              lines.append('### Devices SLO')
+              try:
+                  hde_cost = float(hde.get('cost_tokens', 0)) if hde else 0.0
+                  hde_ok = hde_cost <= float(os.getenv('DEVICES_HDE_MAX_COST', '60') or 60)
+              except Exception:
+                  hde_ok = False
+              try:
+                  qo_pay = float(qo.get('payoff', 0)) if qo else 0.0
+                  qo_ok = qo_pay >= float(os.getenv('DEVICES_QORACLE_MIN_PAYOFF', '0.5') or 0.5)
+              except Exception:
+                  qo_ok = False
+              try:
+                  ei_neg = float(ei.get('achieved_negativity', 0)) if ei else 0.0
+                  ei_ok = ei_neg >= float(os.getenv('DEVICES_ENTANGLER_MIN_NEG', '0.1') or 0.1)
+              except Exception:
+                  ei_ok = False
+              cs_ok = bool(cs.get('reconciled')) if cs else False
+              lines.append(f"- HDE cost_tokens<=60: {'✅' if hde_ok else '❌'}")
+              lines.append(f"- Q-Oracle payoff>=0.5: {'✅' if qo_ok else '❌'}")
+              lines.append(f"- Entangler neg>=0.1: {'✅' if ei_ok else '❌'}")
+              lines.append(f"- Chronosync reconciled: {'✅' if cs_ok else '❌'}")
           except Exception:
               pass
           # Local gate ticks
@@ -688,6 +712,25 @@ jobs:
               lines.append(f"PQ-crypto: {pq}")
           except Exception:
               lines.append('PQ-crypto: n/a')
+          # Devices snapshots tick
+          try:
+              def _ok(d: dict, keys: list[str] | None = None) -> bool:
+                  return bool(d) and all(k in d for k in (keys or []))
+              hde = json.loads((repo/'out'/'hde_plan.json').read_text()) if (repo/'out'/'hde_plan.json').exists() else {}
+              qo = json.loads((repo/'out'/'qoracle.json').read_text()) if (repo/'out'/'qoracle.json').exists() else {}
+              ei = json.loads((repo/'out'/'entangler.json').read_text()) if (repo/'out'/'entangler.json').exists() else {}
+              cs = json.loads((repo/'out'/'chronosync.json').read_text()) if (repo/'out'/'chronosync.json').exists() else {}
+              tick = lambda b: '✅' if b else '❌'
+              lines.append(
+                'Devices: HDE={} Q-Oracle={} Entangler={} Chronosync={}'.format(
+                  tick(_ok(hde, ['cost_tokens','expected_kappa'])),
+                  tick(_ok(qo, ['payoff','optimum'])),
+                  tick(_ok(ei, ['achieved_negativity'])),
+                  tick(bool(cs.get('reconciled'))) if cs else '❌'
+                )
+              )
+          except Exception:
+              lines.append('Devices: (snapshots not available)')
           # Proof Gate related workflow ticks via GitHub API
           try:
               token = os.getenv('GITHUB_TOKEN')

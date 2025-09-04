@@ -86,6 +86,21 @@ paths:
               items: { type: string }
       responses:
         "200": { description: ok }
+  /v1/cfe/lensing/from_fin:
+    post:
+      summary: Build lensing map from FIN signals
+      tags: [CFE]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signals]
+              properties:
+                signals: { type: object, additionalProperties: { type: number } }
+                seed: { type: string, nullable: true }
+      responses: { "200": { description: ok } }
   /v1/qtm/init_case:
     post:
       summary: Initialize QTMP case predistribution
@@ -453,4 +468,3 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
-

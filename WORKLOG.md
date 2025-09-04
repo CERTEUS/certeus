@@ -507,3 +507,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: Chronosync snapshot + PR line
   - Quick Links rozszerzone o Chronosync
   - Testy: 168 passed (zielone)
+- 2025-09-04 14:41:57Z [48793] (work/daily): Devices: ticks + SLO table in PR; tests green
+  - ci-gates: Devices ticks (HDE/Q-Oracle/Entangler/Chronosync) + SLO table
+  - Quick Links + KPI + SLO consolidated
+  - Testy: 168 passed (zielone)
