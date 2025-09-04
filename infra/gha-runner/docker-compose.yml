@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   gha-runner:
-    image: ghcr.io/myoung34/github-runner:latest
+    image: myoung34/github-runner:latest
     container_name: gha-runner-linux
     environment:
       # Required: target repository URL
@@ -21,10 +19,7 @@ services:
       EPHEMERAL: "true"
     volumes:
       - runner_work:/_work
-      # Enable docker build from jobs by mounting host docker socket (Linux hosts)
-      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
 volumes:
   runner_work:
-
