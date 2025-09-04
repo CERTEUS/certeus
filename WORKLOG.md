@@ -253,3 +253,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - pytest: 216 passed, 5 skipped; ruff OK
 - 2025-09-04 21:49:46Z [root] (work/daily): W14 (start): Domain Views (MED/SEC/CODE)
   - - UI: /app/public/med.html, /sec.html, /code.html\n- SEC: probe /health headers + RL\n- Tests: 220 passed (lokalnie)
+- 2025-09-04 21:49:56Z [root] (work/daily): W18 (A8): Canary Progressive Gate + Postmortem Template
+  - - Policy: deploy/canary_policy.yml; Gate: scripts/deploy/canary_progressive_gate.py (report-only)\n- CI: step added with canary_ok.txt tick; generates out/canary_report.json\n- Docs: docs/runbooks/postmortem_template.md\n- Suite: 220 passed
