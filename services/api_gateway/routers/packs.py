@@ -108,6 +108,7 @@ async def list_packs() -> list[dict[str, Any]]:
             "version": i.version,
             "enabled": bool(overrides.get(i.name, {}).get("enabled", i.enabled)),
             "signature": bool(overrides.get(i.name, {}).get("signature")),
+            "installed_version": overrides.get(i.name, {}).get("installed_version"),
         }
         for i in infos
     ]
@@ -200,7 +201,23 @@ async def get_pack_details(name: str) -> dict[str, Any]:
         "enabled": bool(overrides.get(info.name, {}).get("enabled", info.enabled)),
         "manifest": manifest,
         "status": {"semver_ok": semver_ok, "baseline_present": baseline_present},
+        "installed_version": overrides.get(info.name, {}).get("installed_version"),
+        "signature_present": bool(overrides.get(info.name, {}).get("signature")),
     }
+
+
+@router.get("/{name}/baseline", summary="Get ABI baseline JSON if present")
+async def get_pack_baseline(name: str) -> dict[str, Any]:
+    infos = {i.name: i for i in discover()}
+    if name not in infos:
+        raise HTTPException(status_code=404, detail=f"unknown pack: {name}")
+    p = _repo_root() / "plugins" / name / "abi_baseline.json"
+    if not p.exists():
+        raise HTTPException(status_code=404, detail="baseline not found")
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"cannot read baseline: {e}") from e
 
 
 class TryRequest(BaseModel):

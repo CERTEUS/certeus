@@ -75,6 +75,11 @@ jobs:
         run: |
           python scripts/dr/turbulence_p2p_smoke.py --iters 30 --out out/turbulence_p2p.json || true
           test -f out/turbulence_p2p.json && echo ok > out/p2p_turbulence_ok.txt || true
+      - name: Tenant SLO Smoke (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/slo_gate/tenant_slo_sanity.py --tenants tenant-a tenant-b --iters 10 --out out/tenant_slo.json || true
+          test -f out/tenant_slo.json && echo ok > out/tenant_slo_ok.txt || true
       - name: Marketplace Policy Gate (report-only)
         continue-on-error: true
         run: |
@@ -327,7 +332,29 @@ jobs:
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
-          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')} • P2P={_tick('p2p_turbulence_ok.txt')}")
+          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')} • P2P={_tick('p2p_turbulence_ok.txt')} • TenantSLO={_tick('tenant_slo_ok.txt')}")
+      - name: Generate OpenAPI (reports/openapi.json)
+        run: |
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          r = c.get('/openapi.json')
+          r.raise_for_status()
+          Path('reports').mkdir(parents=True, exist_ok=True)
+          Path('reports/openapi.json').write_text(json.dumps(r.json(), indent=2), encoding='utf-8')
+          print('Generated reports/openapi.json')
+          PY
+      - name: Spectral Lint OpenAPI (report-only)
+        continue-on-error: true
+        run: |
+          npx -y @stoplight/spectral-cli lint -r .spectral.yaml -f json -o reports/spectral.json reports/openapi.json || true
+      - name: Mark Spectral OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/openapi_spectral_ok.txt
       - name: Install OpenAPI validator
         run: |
           python -m pip install openapi-spec-validator

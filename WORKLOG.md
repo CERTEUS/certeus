@@ -9,6 +9,14 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Core: helper core/pfs/uri.py (sanityzacja i budowa URI)
   - Lint+Tests: ruff OK; 114 passed (unit), e2e/perf pominięte lokalnie
 
+- 2025-09-04 21:25:00Z [agent] (work/daily): W13 — ProofFS materializacja+listing, Boundary snapshot/diff, i18n static compat
+  - MailOps: PROOFS_FS_MATERIALIZE=1 → zapis stubów do data/proof_fs/mail/<id> (JSON meta)
+  - ProofFS: /v1/pfs/list (prefix, recursive, limit), router podpięty w API
+  - Boundary: snapshot/diff (core+scripts) — artefakt publikowany w CI (ci-gates)
+  - Static: /app/marketplace.html serwowane z clients/web/public (kompatybilność)
+  - Ω‑Kernel: usuwanie U+FFFD → stabilny Gauge drift
+  - Tests: 209 passed, 5 skipped; ruff OK
+
 - 2025-09-04 00:00:00Z [agent] (work/daily): QTMP cockpit — komutatory + sekwencje + dekoherencja
   - Quantum UI: heatmapa komutatorów (W/I/C/L/T), przyciski L→T/T→L, ustawienia kanału/gamma
   - API reuse: /v1/qtm/commutator, /v1/qtm/measure_sequence, /v1/qtm/decoherence; PCO widoczne w nagłówkach
@@ -206,3 +214,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - E2E/services: nowe testy; OpenAPI odświeżone; ruff OK
 - 2025-09-04 19:42:01Z [root] (work/daily): W15–W16 (A8): P2P turbulence + OpenAPI validation + GET sanity
   - - DR: scripts/dr/turbulence_p2p_smoke.py + ci-gates step (report-only)\n- Contracts: scripts/contracts/openapi_spec_validate.py + openapi_get_sanity.py; ci-gates steps + ticks\n- Tests: suite green (211 passed)
+- 2025-09-04 19:57:18Z [48793] (work/daily): W14 D66–D67: i18n (Ω‑Kernel lang_map) + test holonomii; A11y baseline ok
+  - - core/omega/transforms.py: tokenize Unicode; normalize; lang_map PL↔EN; entropia/NER drift
+  - - tests/omega/test_lang_holonomy.py: PL→EN→PL holonomia ≤ 0.10
+  - - clients/web/public: strony mają skip-link/role/aria; kosmetyczne a11y utrzymane
+  - - pytest: 214 passed, 5 skipped; ruff OK
+- 2025-09-04 19:57:57Z [root] (work/daily): W13: Marketplace — badges (signed/installed) + baseline endpoint
+  - - API: GET /v1/packs/{name}/baseline; list returns installed_version\n- UI: install badge + table column\n- Tests: 214 passed (lokalnie)

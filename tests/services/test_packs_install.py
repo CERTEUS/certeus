@@ -65,3 +65,11 @@ def test_packs_install_with_signature_and_state() -> None:
         # Zły podpis — zbyt krótki
         r3 = c.post("/v1/packs/install", json={"pack": name, "signature": "short"})
         assert r3.status_code == 400
+
+        # Lista odzwierciedla signature oraz installed_version
+        r4 = c.get("/v1/packs/")
+        assert r4.status_code == 200
+        items2: list[dict[str, Any]] = r4.json()
+        rec = {i["name"]: i for i in items2}[name]
+        assert rec.get("signature") is True
+        assert rec.get("installed_version") == (items[0].get("version") or "0.1.0")

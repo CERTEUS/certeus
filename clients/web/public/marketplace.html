@@ -57,6 +57,7 @@
               <th>ABI</th>
               <th>Capabilities</th>
               <th>Status</th>
+              <th>Install</th>
               <th>Akcja</th>
               <th>Szczegóły</th>
             </tr>
@@ -126,6 +127,7 @@
         tb.innerHTML = filtered.map(p=>{
           const caps = (p.capabilities && p.capabilities.length) ? p.capabilities.map(c=>`<span class="tag">${c}</span>`).join('') : '<span class="muted">—</span>';
           const status = p.enabled ? '<span class="pill">enabled</span>' : '<span class="pill">disabled</span>';
+          const install = `${p.installed_version?`<span class=\"pill\">${p.installed_version}</span>`:'-'} ${p.signature?'<span class=\"pill\">signed</span>':''}`;
           const btn = `<button class=\"btn toggle\" data-pack=\"${p.name}\" data-enabled=\"${p.enabled ? '1':'0'}\">${p.enabled?'Disable':'Enable'}</button>`;
           const inst = `<button class=\"btn install\" data-pack=\"${p.name}\">${p.version? 'Upgrade':'Install'}</button>`;
           const det = `<button class=\"btn details\" data-pack=\"${p.name}\">Details</button>`;
@@ -134,7 +136,8 @@
             <td>${p.version || '-'}</td>
             <td><code>${p.abi}</code></td>
             <td>${caps}</td>
-            <td>${status}${p.signature? ' · <span class=\"pill\">signed</span>':''}</td>
+            <td>${status}</td>
+            <td>${install}</td>
             <td>${btn} ${inst}</td>
             <td>${det}</td>
           </tr>`;

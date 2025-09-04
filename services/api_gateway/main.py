@@ -40,6 +40,7 @@ from fastapi.staticfiles import StaticFiles
 from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
 from monitoring.otel_setup import setup_fastapi_otel
+import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -294,6 +295,8 @@ app.include_router(fin.router)
 app.include_router(packs.router)
 
 app.include_router(pfs.router)
+
+app.include_router(billing.router)
 
 app.include_router(pfs.router)
 

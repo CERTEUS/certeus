@@ -19,6 +19,12 @@
   - `python scripts/packs/update_abi_baselines.py`
   - Creates/updates `plugins/<pack>/abi_baseline.json` from current module shape.
 
+### API
+
+- GET `/v1/packs/`: list packs `{name, version, abi, capabilities[], enabled, signature?}`
+- POST `/v1/packs/enable`: body `{pack, enabled}` → toggles overlay state
+- POST `/v1/packs/install`: body `{pack, signature, version?}` → persists signature and optional installed_version
+
 See also `docs/openapi/certeus.v1.yaml` for full schemas and examples.
 
 - GET `/v1/lexqft/coverage`: Aggregated path coverage gamma (`coverage_gamma`).
@@ -31,6 +37,13 @@ See also `docs/openapi/certeus.v1.yaml` for full schemas and examples.
 - POST `/v1/devices/qoracle/expectation`: Q‑Oracle expectation (heuristic distribution); returns `{optimum, payoff, distribution[]}`.
 - POST `/v1/devices/entangle`: Entangler; returns `{certificate, achieved_negativity}` and exposes negativity metrics per variable.
 - POST `/v1/devices/chronosync/reconcile`: Chronosync; returns `{reconciled, sketch}` with treaty clause skeleton.
+
+## Billing & Cost‑tokens (T14)
+
+- GET `/v1/billing/quota`: returns `{tenant, balance}`; tenant inferred from `X-Tenant-ID`/`X-Org-ID`
+- POST `/v1/billing/quota`: body `{tenant?, units}` sets quota for tenant (demo‑admin)
+- POST `/v1/billing/allocate`: body `{cost_units}` → `{status: "ALLOCATED"|"PENDING", tenant, balance}`
+- POST `/v1/billing/refund`: body `{units}` → `{ok, tenant, balance}`
 
 ## Examples
 
@@ -136,4 +149,15 @@ curl -sS -X POST \
         "pc_delta": {"doc1": "+hash"},
         "protocol": "mediation.v1"
       }'
+
+- Billing — quota / allocate / refund
+
+```
+TENANT=t-demo
+curl -sS http://127.0.0.1:8000/v1/billing/quota -H "X-Tenant-ID: $TENANT"
+curl -sS -X POST http://127.0.0.1:8000/v1/billing/quota -H 'content-type: application/json' -d '{"tenant":"t-demo","units":3}'
+curl -sS -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"cost_units":2}'
+curl -sS -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"cost_units":2}'
+curl -sS -X POST http://127.0.0.1:8000/v1/billing/refund   -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"units":1}'
+```
 ```
