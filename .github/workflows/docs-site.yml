@@ -10,6 +10,7 @@ name: Docs-Site
 on:
   workflow_dispatch:
   push:
+    branches: [ main ]
     paths:
       - 'mkdocs.yml'
       - 'docs/**'
