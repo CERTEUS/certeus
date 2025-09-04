@@ -14,6 +14,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - API reuse: /v1/qtm/commutator, /v1/qtm/measure_sequence, /v1/qtm/decoherence; PCO widoczne w nagłówkach
   - Dodano sekcję „History & Ledger” (ostatnie 5 zdarzeń + link do /v1/ledger/{case}/records)
   - ChatOps: qtm.measure mapowane do realnego /v1/qtm/measure (PCO+Ledger)
+  - i18n/A11y: przełącznik PL/EN, aria‑live dla wyników; wykres predistribution; porównanie L→T vs T→L
 
 - 2025-09-02 00:00:00Z [agent] (work/daily): W5 D21–D25 — tunneling PCO + tests; CFE↔QTMP priorities/correlation; Quantum cockpit; README/AGENTS.
   - /v1/lexqft/tunnel PCO headers + ledger hash
@@ -181,3 +182,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - UI: panel detali (capabilities, manifest, status)\n- API: GET /v1/packs/{name} — manifest+meta\n- Testy: 199 passed (lokalnie)
 - 2025-09-04 19:15:50Z [root] (work/daily): W14 (A8): Compliance Mapping Gate (DPIA/ISO/SOC2) w CI
   - - Gate: scripts/gates/compliance_mapping_gate.py (report-only; ENFORCE_COMPLIANCE_MAPPING=1 for hard fail)\n- CI: .github/workflows/ci-gates.yml — krok i tick w PR summary\n- Test: tests/policies/test_compliance_mapping_gate.py; suite 199 passed
+- 2025-09-04 19:29:32Z [root] (work/daily): W15–W16 (A8): GameDay DR + OpenAPI Contract Gate
+  - - GameDay DR: ci-gates step (dry-run) via scripts/dr/drill_boundary_failure.py; tick in PR summary\n- OpenAPI Contract Gate: scripts/gates/openapi_contract_gate.py (docs vs runtime subset); CI step + tick\n- PFS: /v1/pfs/list (stub) for ProofFS tests; omega transforms drift bounded\n- Suite: 209 passed, 5 skipped

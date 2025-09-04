@@ -58,7 +58,7 @@ class GaugeDrift:
 def _tokenize(text: str) -> list[str]:
     text = text.strip()
     # remove Unicode replacement characters to keep token sets stable
-    text = text.replace("\uFFFD", "")
+    text = text.replace("\ufffd", "")
     # normalize quotes and dash variants
     text = _QUOTE_RE.sub('"', text)
     for k, v in _PUNCT_MAP.items():
@@ -99,7 +99,7 @@ def normalize_text(text: str, lang: str = "pl") -> str:
     """
 
     # collapse whitespace and drop replacement characters
-    txt = _WS_RE.sub(" ", text).strip().replace("\uFFFD", "")
+    txt = _WS_RE.sub(" ", text).strip().replace("\ufffd", "")
     # normalize quotes and dash variants
     txt = _QUOTE_RE.sub('"', txt)
     for k, v in _PUNCT_MAP.items():
