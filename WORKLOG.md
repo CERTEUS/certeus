@@ -204,3 +204,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - API: /v1/pfs (resolve/list) włączone w app
   - - Ω‑Kernel transforms: unicode tokenize + bounded drift; tests ok
   - - E2E/services: nowe testy; OpenAPI odświeżone; ruff OK
+- 2025-09-04 19:42:01Z [root] (work/daily): W15–W16 (A8): P2P turbulence + OpenAPI validation + GET sanity
+  - - DR: scripts/dr/turbulence_p2p_smoke.py + ci-gates step (report-only)\n- Contracts: scripts/contracts/openapi_spec_validate.py + openapi_get_sanity.py; ci-gates steps + ticks\n- Tests: suite green (211 passed)

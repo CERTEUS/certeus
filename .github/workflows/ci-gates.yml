@@ -70,6 +70,11 @@ jobs:
         run: |
           python scripts/dr/drill_boundary_failure.py --max-rto-sec 120 --max-rpo-sec 300 || true
           test -f out/drill_boundary.json && echo ok > out/gameday_ok.txt || true
+      - name: P2P Turbulence Smoke (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/dr/turbulence_p2p_smoke.py --iters 30 --out out/turbulence_p2p.json || true
+          test -f out/turbulence_p2p.json && echo ok > out/p2p_turbulence_ok.txt || true
       - name: Marketplace Policy Gate (report-only)
         continue-on-error: true
         run: |
@@ -110,6 +115,16 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/tests_ok.txt
+
+      - name: Boundary Snapshot (artifact)
+        run: |
+          python scripts/boundary_snapshot.py --out out/boundary_snapshot.json
+      - name: Upload boundary snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boundary-snapshot-${{ github.sha }}
+          path: out/boundary_snapshot.json
       - name: Perf Smoke (W11)
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
@@ -312,7 +327,18 @@ jobs:
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
-          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')}")
+          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')} • P2P={_tick('p2p_turbulence_ok.txt')}")
+      - name: Install OpenAPI validator
+        run: |
+          python -m pip install openapi-spec-validator
+      - name: OpenAPI Spec Validate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/contracts/openapi_spec_validate.py || true
+      - name: Mark OpenAPI Spec Validate OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/openapi_spec_ok.txt
       - name: OpenAPI Contract (report-only)
         continue-on-error: true
         run: |
@@ -321,6 +347,14 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/openapi_contract_ok.txt
+      - name: OpenAPI GET Sanity (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/contracts/openapi_get_sanity.py || true
+      - name: Mark OpenAPI GET Sanity OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/openapi_get_sanity_ok.txt
 
       - name: Comment PR with SLO/Smokes/Perf
         if: github.event_name == 'pull_request' && always()
