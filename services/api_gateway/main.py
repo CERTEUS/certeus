@@ -41,7 +41,7 @@ from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
 from monitoring.otel_setup import setup_fastapi_otel
 import services.api_gateway.routers.billing as billing
-import services.api_gateway.routers.billing as billing
+import services.api_gateway.routers.billing_api as billing_api
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -160,6 +160,12 @@ setup_fastapi_otel(app)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
+
+# Serve repository docs for simple in-app linking (read-only)
+try:  # pragma: no cover
+    app.mount("/docs", StaticFiles(directory=str(ROOT / "docs")), name="docs")
+except Exception:
+    pass
 
 # Backward-compat: serve marketplace.html from clients/web/public if not at root
 from fastapi.responses import FileResponse  # noqa: E402
@@ -293,6 +299,7 @@ app.include_router(ethics.router)
 
 app.include_router(fin.router)
 app.include_router(billing.router_tokens)
+
 app.include_router(billing_api.router)
 app.include_router(packs.router)
 

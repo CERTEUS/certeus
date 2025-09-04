@@ -58,6 +58,21 @@ async def list_entries(prefix: str = Query(..., description="pfs:// prefix")) ->
     return {"prefix": prefix, "entries": entries}
 
 
+@router.get("/exists")
+async def exists(uri: str = Query(..., description="pfs:// URI")) -> dict[str, Any]:
+    if not uri.startswith("pfs://"):
+        raise HTTPException(status_code=400, detail="uri must start with pfs://")
+    parts = uri[len("pfs://") :].strip("/").split("/")
+    p = _root().joinpath(*parts)
+    if p.exists() and p.is_file():
+        try:
+            size = p.stat().st_size
+        except Exception:
+            size = None
+        return {"uri": uri, "exists": True, "size": size, "path": str(p)}
+    return {"uri": uri, "exists": False, "size": None, "path": str(p)}
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

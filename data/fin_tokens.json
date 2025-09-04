@@ -1,0 +1,60 @@
+{
+  "requests": {
+    "33d41702fe534b4db87815d47d696872": {
+      "request_id": "33d41702fe534b4db87815d47d696872",
+      "status": "ALLOCATED",
+      "user_id": "u123",
+      "amount": 50,
+      "purpose": "compute",
+      "allocated_by": "ops"
+    },
+    "65c0a75c99914c66a0f39a63cedce16e": {
+      "request_id": "65c0a75c99914c66a0f39a63cedce16e",
+      "status": "ALLOCATED",
+      "user_id": "u123",
+      "amount": 50,
+      "purpose": "compute",
+      "allocated_by": "ops"
+    },
+    "60a8739eb443455494e9e8cbfa6b1c18": {
+      "request_id": "60a8739eb443455494e9e8cbfa6b1c18",
+      "status": "ALLOCATED",
+      "user_id": "u123",
+      "amount": 50,
+      "purpose": "compute",
+      "allocated_by": "ops"
+    },
+    "a26a7ebfc98845c0a0578addb9887bc9": {
+      "request_id": "a26a7ebfc98845c0a0578addb9887bc9",
+      "status": "ALLOCATED",
+      "user_id": "u123",
+      "amount": 50,
+      "purpose": "compute",
+      "allocated_by": "ops"
+    },
+    "eae5a11aeb9340c2acb8749d005c0871": {
+      "request_id": "eae5a11aeb9340c2acb8749d005c0871",
+      "status": "ALLOCATED",
+      "user_id": "u123",
+      "amount": 50,
+      "purpose": "compute",
+      "allocated_by": "ops"
+    },
+    "5b5ad1c501434e14a591be5451d678eb": {
+      "request_id": "5b5ad1c501434e14a591be5451d678eb",
+      "status": "ALLOCATED",
+      "user_id": "u123",
+      "amount": 50,
+      "purpose": "compute",
+      "allocated_by": "ops"
+    },
+    "bc81df6633c049c09ace90637850f740": {
+      "request_id": "bc81df6633c049c09ace90637850f740",
+      "status": "PENDING",
+      "user_id": "u",
+      "amount": 1,
+      "purpose": null,
+      "allocated_by": null
+    }
+  }
+}

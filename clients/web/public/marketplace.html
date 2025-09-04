@@ -119,7 +119,7 @@
           finally{ tryBtn.disabled = false; }
         };
         const docsBtn = document.getElementById('d-docs');
-        docsBtn.onclick = ()=>{ card.scrollIntoView({behavior:'smooth'}); };
+        docsBtn.onclick = ()=>{ window.open('/docs/guides/packs_abi_semver.md','_blank'); };
         const baseBtn = document.getElementById('d-baseline-btn');
         baseBtn.onclick = async ()=>{
           const j = await fetchBaseline(d.name);

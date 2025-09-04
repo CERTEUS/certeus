@@ -1,0 +1,15 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/demo_billing_pl/plugin.yaml                 |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: plugins/demo_billing_pl/plugin.yaml                 |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: demo_billing_pl
+version: 1.0.0
+license: MIT
+module: plugins.demo_billing_pl.src.main
+register: register
+

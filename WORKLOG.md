@@ -232,3 +232,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - CI: Generate reports/openapi.json + Spectral lint (report-only) + ticks\n- SLO: scripts/slo_gate/tenant_slo_sanity.py + ci-gates step\n- Billing API: /v1/billing/{quota,allocate,refund}; omega entity/entropy invariants stabilized\n- Suite: 214 passed
 - 2025-09-04 20:29:06Z [root] (work/daily): T14 D68: Marketplace admin API + tests; Billing API domknięte
   - - Packs admin: /v1/packs/install/enable/try/list/details + test smoke\n- Billing: /v1/billing (quota/allocate/refund) + /v1/fin/tokens endpoints włączone\n- Ω‑Kernel: entropy/entities drift (stabilized)\n- pytest: 215 passed, 5 skipped; ruff OK
+- 2025-09-04 20:31:53Z [root] (work/daily): W13: Marketplace — Docs link + /docs mount [week-end]
+  - - UI: Docs button → /docs/guides/packs_abi_semver.md\n- API: mount /docs as static (read-only)\n- Tests: 215 passed (lokalnie)\nweekly-promote: true
