@@ -171,7 +171,8 @@ async def verify_path(req: PFSVerifyIn) -> PFSVerifyOut:
 # --- DHT (W8/W13): announce/query/publish_path --------------------------------
 
 
-_DHT_STORE = Path(__file__).resolve().parents[3] / "data" / "pfs_dht.json"
+_DHT_NAME = f"pfs_dht.{_WORKER}.json" if _WORKER else "pfs_dht.json"
+_DHT_STORE = Path(__file__).resolve().parents[3] / "data" / _DHT_NAME
 
 
 def _dht_load() -> dict[str, dict]:
@@ -286,10 +287,7 @@ async def dht_publish_path(req: PublishPathRequest) -> PublishPathResponse:
             if isinstance(ttl, int) and ttl is not None and (_now() - last) > max(0, ttl):
                 continue
             if any(fnmatch.fnmatch(step, str(p)) for p in comps):
-                # pick least-loaded by assigned/capacity
-                cap = int(meta.get("capacity", 1) or 1)
-                loadf = lambda n: (assigned.get(n, 0) / max(1, int(d.get(n, {}).get("capacity", 1))))
-                # initialize presence in map
+                # initialize presence in map (capacity may be used by scheduler elsewhere)
                 assigned.setdefault(node, 0)
                 # nothing else to do now; actual split done after loop
                 sel.add(node)

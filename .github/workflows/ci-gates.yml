@@ -322,6 +322,12 @@ PY
           python scripts/compliance/legal_audit_gate.py || true
           test -f out/legal_audit.json && echo ok || true
 
+      - name: Licensing Gate (plugins)
+        continue-on-error: true
+        run: |
+          python scripts/gates/license_gate.py || true
+          test -f out/license_report.json && echo ok || true
+
       - name: Upload perf report
         if: always()
         uses: actions/upload-artifact@v4
@@ -915,6 +921,12 @@ PY
               lines.append(f"Legal Audit: missing={len(la.get('missing', []))}")
           except Exception:
               lines.append('Legal Audit: n/a')
+          # Licensing summary
+          try:
+              lic = json.loads((repo/'out'/'license_report.json').read_text())
+              lines.append(f"Licenses: ok={lic.get('ok')} files={len(lic.get('results', []))}")
+          except Exception:
+              lines.append('Licenses: n/a')
           # Correlation headers sample
           try:
               corr = (repo/'out'/'correlation.txt').read_text().strip()
