@@ -349,6 +349,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Testy: `tests/services/test_lexqft_wkb.py` (monotoniczność po w i V0; clamp+cross)
   - Stabilizacja RL: per-ścieżka (domyślnie `/health`), spójna z testami
   - Lint/tests: 141 passed / 1 skipped; ruff OK; raport `reports/junit.xml`
+## 2025-09-04 14:45 | branch=work/daily
+- [A4] W3: Wirtualne pary + energy_debt (budżet)
+  - API: `/v1/lexqft/virtual_pairs/{budget,spawn,state,reset}` + trwałość `data/lexqft_pairs_state.json`
+  - Metryki: `certeus_lexqft_energy_debt{case}` (Prometheus)
+  - Testy: `tests/services/test_lexqft_virtual_pairs.py` (spawn w budżecie, blokada przy przekroczeniu)
+  - Lint/tests: 146 passed / 1 skipped; `reports/junit.xml`
 ## 2025-09-04 14:30 | branch=work/daily
 - [A6] W1: Quickstart + Demo + Cockpit
   - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
