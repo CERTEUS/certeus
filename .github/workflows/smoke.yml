@@ -27,8 +27,8 @@ env:
 
 jobs:
   smoke:
-    name: Smoke
-    runs-on: ${{ matrix.os }}
+    name: Smoke (${{ matrix.os }})
+    runs-on: [self-hosted, linux, docker, build]
     timeout-minutes: 20
     strategy:
       fail-fast: false
