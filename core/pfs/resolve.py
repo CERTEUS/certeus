@@ -58,6 +58,23 @@ def resolve_uri(uri: str, root: Path | None = None) -> ResolveResult:
     return ResolveResult(uri=uri, path=file_path, exists=exists, size=size)
 
 
+def resolve_prefix_dir(prefix: str, root: Path | None = None) -> Path:
+    """
+    PL/EN: Resolve a ProofFS prefix (pfs://<...>/) into a directory path under root.
+    Accepts both directory prefixes and full file URIs (returns parent dir in that case).
+    """
+    if not isinstance(prefix, str) or not prefix.startswith("pfs://"):
+        raise ValueError("invalid ProofFS prefix")
+    rest = prefix[len("pfs://") :]
+    parts = [p for p in rest.split("/") if p]
+    if not parts:
+        raise ValueError("invalid ProofFS prefix path")
+    safe_parts = [_sanitize(seg) for seg in parts]
+    base = root or _root_dir()
+    p = base.joinpath(*safe_parts)
+    return p if p.is_dir() else p.parent
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

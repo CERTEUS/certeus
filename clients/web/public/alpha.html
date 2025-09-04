@@ -34,18 +34,25 @@
   <body>
     <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
     <div class="container" id="main" role="main">
+      <div class="row" style="justify-content:flex-end;margin-bottom:8px">
+        <label class="muted" for="lang">Lang</label>
+        <select id="lang" aria-label="Language select" class="btn">
+          <option value="pl" selected>PL</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
       <div class="card">
-        <h1>Quantum Alpha • Measure</h1>
+        <h1 id="title-alpha">Quantum Alpha • Measure</h1>
         <div class="row">
           <label>risk <input id="risk" type="number" value="0.3" step="0.01" min="0" max="1" /></label>
           <label>sentiment <input id="sent" type="number" value="0.6" step="0.01" min="0" max="1" /></label>
-          <button id="measure" class="btn">Measure</button>
+          <button id="measure" class="btn" data-i18n="measure">Measure</button>
           <span class="muted">Outcome:<span id="outcome" class="pill">-</span></span>
           <span class="muted">p:<span id="prob" class="pill">-</span></span>
         </div>
       </div>
       <div class="card">
-        <h1>Timeline • p/outcome</h1>
+        <h1 id="title-timeline">Timeline • p/outcome</h1>
         <canvas id="chart" width="940" height="240"></canvas>
         <table id="hist">
           <thead><tr><th>t</th><th>risk</th><th>sent</th><th>outcome</th><th>p</th></tr></thead>
@@ -74,6 +81,10 @@
         hist.push({t:Date.now(), risk, sent, outcome:body.outcome, p:body.p}); if(hist.length>50) hist.shift(); localStorage.setItem(key, JSON.stringify(hist)); redraw();
       }
       document.getElementById('measure').addEventListener('click', doMeasure);
+      const I18N={ pl:{title:'Quantum Alpha • Pomiary',measure:'Pomiary',timeline:'Oś czasu • p/wynik'}, en:{title:'Quantum Alpha • Measure',measure:'Measure',timeline:'Timeline • p/outcome'} };
+      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return (p==='en'||p==='pl')?p:'pl'; }
+      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title-alpha').textContent=d.title; document.getElementById('measure').textContent=d.measure; document.getElementById('title-timeline').textContent=d.timeline; const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
+      applyI18n();
       redraw();
     </script>
     <style>

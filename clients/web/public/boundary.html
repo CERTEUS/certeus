@@ -33,11 +33,18 @@
     <a href="#main" class="sr-only sr-only-focusable">Skip to main content</a>
     <main id="main" role="main">
     <div class="container">
+      <div class="row" style="justify-content:flex-end;margin-bottom:8px">
+        <label class="muted" for="lang">Lang</label>
+        <select id="lang" aria-label="Language select" class="btn">
+          <option value="en" selected>EN</option>
+          <option value="pl">PL</option>
+        </select>
+      </div>
       <div class="card">
-        <h1>Boundary • Shards</h1>
+        <h1 id="title-b">Boundary • Shards</h1>
         <p class="muted">Delta bits and per-shard map. Link to ledger and time anchors.</p>
         <div class="row" style="margin-bottom:10px;">
-          <button class="btn" id="reconstruct">Reconstruct now</button>
+          <button class="btn" id="reconstruct" data-i18n="reconstruct">Reconstruct now</button>
           <span class="muted" id="observed"></span>
         </div>
         <div id="summary" class="muted"></div>
@@ -83,6 +90,10 @@
         document.getElementById('observed').textContent = obs;
       }
       document.getElementById('reconstruct').addEventListener('click', reconstruct);
+      const I18N={ en:{title:'Boundary • Shards',reconstruct:'Reconstruct now'}, pl:{title:'Boundary • Shardy',reconstruct:'Odtwórz teraz'} };
+      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); if(p==='pl'||p==='en') return p; return 'en'; }
+      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.en; document.getElementById('title-b').textContent=d.title; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
+      applyI18n();
       fetchStatus();
     </script>
     <style>

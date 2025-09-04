@@ -25,9 +25,11 @@ EN: FastAPI router for Domain Packs / capabilities.
 
 from __future__ import annotations
 
+import inspect
 import json
 import os
 from pathlib import Path
+import re
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -67,21 +69,28 @@ def _state_path() -> Path:
     return _repo_root() / "data" / "packs_state.json"
 
 
-def _load_state() -> dict[str, bool]:
+def _load_state() -> dict[str, dict[str, Any]]:
     try:
         sp = _state_path()
         if not sp.exists():  # no state yet
             return {}
         data = json.loads(sp.read_text(encoding="utf-8"))
         if isinstance(data, dict):
-            # normalize to bools
-            return {str(k): bool(v) for k, v in data.items()}
+            norm: dict[str, dict[str, Any]] = {}
+            for k, v in data.items():
+                if isinstance(v, bool):
+                    norm[str(k)] = {"enabled": bool(v)}
+                elif isinstance(v, dict):
+                    dv = dict(v)
+                    dv["enabled"] = bool(dv.get("enabled", False))
+                    norm[str(k)] = dv
+            return norm
     except Exception:
         return {}
     return {}
 
 
-def _save_state(state: dict[str, bool]) -> None:
+def _save_state(state: dict[str, dict[str, Any]]) -> None:
     sp = _state_path()
     sp.parent.mkdir(parents=True, exist_ok=True)
     sp.write_text(json.dumps(state, indent=2, sort_keys=True), encoding="utf-8")
@@ -97,7 +106,8 @@ async def list_packs() -> list[dict[str, Any]]:
             "abi": i.abi,
             "capabilities": i.caps,
             "version": i.version,
-            "enabled": bool(overrides.get(i.name, i.enabled)),
+            "enabled": bool(overrides.get(i.name, {}).get("enabled", i.enabled)),
+            "signature": bool(overrides.get(i.name, {}).get("signature")),
         }
         for i in infos
     ]
@@ -106,6 +116,37 @@ async def list_packs() -> list[dict[str, Any]]:
 class ToggleRequest(BaseModel):
     pack: str
     enabled: bool
+
+
+class InstallRequest(BaseModel):
+    pack: str
+    signature: str
+    version: str | None = None
+
+
+@router.post("/install", summary="Install or upgrade a pack (signature required)")
+async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
+    enforce_limits(request, cost_units=1)
+
+    # Validate pack exists
+    names = {i.name for i in discover()}
+    if req.pack not in names:
+        raise HTTPException(status_code=404, detail=f"unknown pack: {req.pack}")
+
+    sig = (req.signature or "").strip()
+    if len(sig) < 40:
+        raise HTTPException(status_code=400, detail="invalid signature: too short")
+
+    # Persist signature and installed_version in state
+    state = _load_state()
+    cur = state.get(req.pack, {"enabled": True})
+    cur["signature"] = sig
+    if req.version:
+        cur["installed_version"] = str(req.version)
+    state[req.pack] = cur
+    _save_state(state)
+
+    return {"ok": True, "pack": req.pack, "signature": True, "installed_version": cur.get("installed_version")}
 
 
 @router.post("/enable", summary="Enable or disable a pack")
@@ -118,7 +159,9 @@ async def enable_pack(req: ToggleRequest, request: Request) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail=f"unknown pack: {req.pack}")
 
     state = _load_state()
-    state[req.pack] = bool(req.enabled)
+    cur = state.get(req.pack, {"enabled": False})
+    cur["enabled"] = bool(req.enabled)
+    state[req.pack] = cur
     _save_state(state)
     return {"ok": True, "pack": req.pack, "enabled": bool(req.enabled)}
 
@@ -145,14 +188,120 @@ async def get_pack_details(name: str) -> dict[str, Any]:
     except Exception:
         manifest = {}
     overrides = _load_state()
+    # Simple SemVer + baseline status
+    ver = info.version or ""
+    semver_ok = bool(re.match(r"^\d+\.\d+\.\d+$", ver))
+    baseline_present = (_repo_root() / "plugins" / name / "abi_baseline.json").exists()
     return {
         "name": info.name,
         "version": info.version,
         "abi": info.abi,
         "capabilities": info.caps,
-        "enabled": bool(overrides.get(info.name, info.enabled)),
+        "enabled": bool(overrides.get(info.name, {}).get("enabled", info.enabled)),
         "manifest": manifest,
+        "status": {"semver_ok": semver_ok, "baseline_present": baseline_present},
     }
+
+
+class TryRequest(BaseModel):
+    pack: str
+    kind: str | None = None
+    payload: dict[str, Any] | None = None
+
+
+class _MiniAPI:
+    def __init__(self) -> None:
+        self.plugins: dict[str, Any] = {}
+        self.adapters: dict[str, Any] = {}
+        self.exporters: dict[str, Any] = {}
+
+    def register_plugin(self, name: str, meta: Any) -> None:  # compat for plugin.register(api)
+        self.plugins[name] = meta
+
+    def register_adapter(self, key: str, fn: Any) -> None:
+        self.adapters[key] = fn
+
+    def register_exporter(self, key: str, fn: Any) -> None:
+        self.exporters[key] = fn
+
+
+def _module_path_for(name: str) -> str | None:
+    p = _repo_root() / "plugins" / name / "plugin.yaml"
+    if not p.exists():
+        return None
+    try:
+        import yaml  # type: ignore
+
+        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        mod = str(data.get("module") or "").strip()
+        return mod or None
+    except Exception:
+        return None
+
+
+@router.post("/try", summary="Try invoking a pack (best-effort)")
+async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
+    enforce_limits(request, cost_units=1)
+    names = {i.name for i in discover()}
+    if req.pack not in names:
+        raise HTTPException(status_code=404, detail=f"unknown pack: {req.pack}")
+
+    mod_path = _module_path_for(req.pack)
+    if not mod_path:
+        return {"ok": False, "reason": "no module path in manifest"}
+    try:
+        mod = __import__(mod_path, fromlist=["*"])  # nosec - local manifest
+    except Exception as e:
+        return {"ok": False, "reason": f"import error: {e}"}
+    api = _MiniAPI()
+    reg = getattr(mod, "register", None)
+    if not callable(reg):
+        return {"ok": False, "reason": "module has no register(api)"}
+    try:
+        reg(api)  # type: ignore[misc]
+    except Exception as e:
+        return {"ok": False, "reason": f"register() error: {e}"}
+
+    # Prefer exporters (format JSON)
+    if api.exporters:
+        key, fn = next(iter(api.exporters.items()))
+        sample = req.payload or {"case_id": "DEMO", "status": "ok", "model": "demo"}
+        try:
+            kwargs: dict[str, Any] = {}
+            if "fmt" in inspect.signature(fn).parameters:
+                kwargs["fmt"] = "json"
+            res = fn(sample, **kwargs)  # type: ignore[misc]
+            return {"ok": True, "used": {"type": "exporter", "key": key}, "result": res}
+        except Exception as e:  # pragma: no cover
+            return {"ok": False, "used": {"type": "exporter", "key": key}, "reason": str(e)}
+
+    # Fallback: adapters
+    if api.adapters:
+        key, fn = next(iter(api.adapters.items()))
+        sig = inspect.signature(fn)
+        args: list[Any] = []
+        for pname, param in sig.parameters.items():
+            if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
+                continue
+            n = pname.lower()
+            if n in {"case", "case_id", "act_id"}:
+                args.append("DEMO-CASE")
+            elif n in {"v_from", "from_version", "v1"}:
+                args.append("v1")
+            elif n in {"v_to", "to_version", "v2"}:
+                args.append("v2")
+            elif n in {"out_dir", "output_dir", "out", "dest"}:
+                # avoid writing to fs in try
+                continue
+            else:
+                args.append("demo")
+        try:
+            res = fn(*args)  # type: ignore[misc]
+            return {"ok": True, "used": {"type": "adapter", "key": key}, "result": res}
+        except Exception as e:  # pragma: no cover
+            return {"ok": False, "used": {"type": "adapter", "key": key}, "reason": str(e)}
+
+    return {"ok": False, "reason": "no exporters/adapters registered"}
 
 
 @router.post("/handle", summary="Handle a request using a pack")

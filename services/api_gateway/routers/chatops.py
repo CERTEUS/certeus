@@ -89,7 +89,7 @@ async def command(req: CommandRequest, request: Request) -> dict:
                 "pco": pco_headers,
             }
         except Exception as e:  # pragma: no cover
-            raise HTTPException(status_code=500, detail=f"qtm.measure failed: {e}")
+            raise HTTPException(status_code=500, detail=f"qtm.measure failed: {e}") from e
 
     if req.cmd == "cfe.geodesic":
         return {"dispatched": req.cmd, "result": {"path": ["A", "B", "C"], "geodesic_action": 12.34}}

@@ -122,7 +122,7 @@ curl -sS -X POST \
 curl -sS -X POST \
   http://127.0.0.1:8000/v1/devices/entangle \
   -H 'Content-Type: application/json' \
-  -d '{"variables": ["X", "Y", "Z"], "target_negativity": 0.2}'
+  -d '{"variables": ["X", "Y", "Z"], "target_negativity": 0.2, "scenario": "pairwise"}'
 ```
 
 - Chronosync — reconcile
@@ -133,6 +133,7 @@ curl -sS -X POST \
   -H 'Content-Type: application/json' \
   -d '{
         "coords": {"timeline": "v2", "node": "A"},
-        "pc_delta": {"doc1": "+hash"}
+        "pc_delta": {"doc1": "+hash"},
+        "protocol": "mediation.v1"
       }'
 ```

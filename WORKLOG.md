@@ -13,6 +13,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Quantum UI: heatmapa komutatorów (W/I/C/L/T), przyciski L→T/T→L, ustawienia kanału/gamma
   - API reuse: /v1/qtm/commutator, /v1/qtm/measure_sequence, /v1/qtm/decoherence; PCO widoczne w nagłówkach
   - Dodano sekcję „History & Ledger” (ostatnie 5 zdarzeń + link do /v1/ledger/{case}/records)
+  - ChatOps: qtm.measure mapowane do realnego /v1/qtm/measure (PCO+Ledger)
 
 - 2025-09-02 00:00:00Z [agent] (work/daily): W5 D21–D25 — tunneling PCO + tests; CFE↔QTMP priorities/correlation; Quantum cockpit; README/AGENTS.
   - /v1/lexqft/tunnel PCO headers + ledger hash

@@ -67,8 +67,14 @@
       <div class="card" id="details" style="display:none;">
         <h1>Szczegóły pakietu <span id="d-name" class="pill">–</span></h1>
         <p class="muted">Wersja: <span id="d-version" class="pill">–</span> ABI: <span id="d-abi" class="pill">–</span> Status: <span id="d-enabled" class="pill">–</span></p>
+        <p class="muted">SemVer: <span id="d-semver" class="pill">–</span> Baseline: <span id="d-baseline" class="pill">–</span></p>
+        <div class="row" style="margin:8px 0;">
+          <button class="btn" id="d-try">Try</button>
+          <button class="btn" id="d-docs">Docs</button>
+        </div>
         <div id="d-caps"></div>
         <pre id="d-manifest" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:280px"></pre>
+        <pre id="d-result" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:220px;display:none"></pre>
       </div>
       <p class="muted">Tip: API <code>/v1/packs/</code> zwraca listę pakietów (name, version, abi, capabilities, enabled).</p>
     </div>
@@ -89,9 +95,23 @@
         document.getElementById('d-version').textContent = d.version||'-';
         document.getElementById('d-abi').textContent = d.abi||'-';
         document.getElementById('d-enabled').textContent = d.enabled ? 'enabled' : 'disabled';
+        document.getElementById('d-semver').textContent = d.status && d.status.semver_ok ? 'ok' : 'invalid';
+        document.getElementById('d-baseline').textContent = d.status && d.status.baseline_present ? 'present' : 'missing';
         const caps = (d.capabilities||[]).map(c=>`<span class="tag">${c}</span>`).join('') || '<span class="muted">—</span>';
         document.getElementById('d-caps').innerHTML = caps;
         document.getElementById('d-manifest').textContent = JSON.stringify(d.manifest||{}, null, 2);
+        const res = document.getElementById('d-result'); res.style.display='none'; res.textContent='';
+        const tryBtn = document.getElementById('d-try');
+        tryBtn.onclick = async ()=>{
+          tryBtn.disabled = true;
+          try{
+            const r = await fetch('/v1/packs/try',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({pack:d.name})});
+            const j = await r.json(); res.style.display=''; res.textContent = JSON.stringify(j, null, 2);
+          }catch(_){ res.style.display=''; res.textContent='Error'; }
+          finally{ tryBtn.disabled = false; }
+        };
+        const docsBtn = document.getElementById('d-docs');
+        docsBtn.onclick = ()=>{ card.scrollIntoView({behavior:'smooth'}); };
         card.style.display = '';
         card.scrollIntoView({behavior:'smooth'});
       }
@@ -106,15 +126,16 @@
         tb.innerHTML = filtered.map(p=>{
           const caps = (p.capabilities && p.capabilities.length) ? p.capabilities.map(c=>`<span class="tag">${c}</span>`).join('') : '<span class="muted">—</span>';
           const status = p.enabled ? '<span class="pill">enabled</span>' : '<span class="pill">disabled</span>';
-          const btn = `<button class="btn toggle" data-pack="${p.name}" data-enabled="${p.enabled ? '1':'0'}">${p.enabled?'Disable':'Enable'}</button>`;
-          const det = `<button class="btn details" data-pack="${p.name}">Details</button>`;
+          const btn = `<button class=\"btn toggle\" data-pack=\"${p.name}\" data-enabled=\"${p.enabled ? '1':'0'}\">${p.enabled?'Disable':'Enable'}</button>`;
+          const inst = `<button class=\"btn install\" data-pack=\"${p.name}\">${p.version? 'Upgrade':'Install'}</button>`;
+          const det = `<button class=\"btn details\" data-pack=\"${p.name}\">Details</button>`;
           return `<tr>
             <td>${p.name}</td>
             <td>${p.version || '-'}</td>
             <td><code>${p.abi}</code></td>
             <td>${caps}</td>
-            <td>${status}</td>
-            <td>${btn}</td>
+            <td>${status}${p.signature? ' · <span class=\"pill\">signed</span>':''}</td>
+            <td>${btn} ${inst}</td>
             <td>${det}</td>
           </tr>`;
         }).join('');
@@ -124,6 +145,17 @@
             const el = e.currentTarget; const name = el.getAttribute('data-pack'); const enabled = el.getAttribute('data-enabled')==='1';
             try{
               const r = await fetch('/v1/packs/enable',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pack:name, enabled:!enabled})});
+              if(r.ok){ await refresh(); }
+            }catch(_){/* noop */}
+          });
+        });
+        Array.from(document.querySelectorAll('button.install')).forEach(btn=>{
+          btn.addEventListener('click', async (e)=>{
+            const el = e.currentTarget; const name = el.getAttribute('data-pack');
+            const sig = window.prompt('Podaj podpis (signature):');
+            if(!sig) return;
+            try{
+              const r = await fetch('/v1/packs/install',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pack:name, signature:sig})});
               if(r.ok){ await refresh(); }
             }catch(_){/* noop */}
           });

@@ -54,6 +54,7 @@ import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
+import services.api_gateway.routers.pfs as pfs
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
@@ -157,6 +158,18 @@ setup_fastapi_otel(app)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
+
+# Backward-compat: serve marketplace.html from clients/web/public if not at root
+from fastapi.responses import FileResponse  # noqa: E402
+
+
+@app.get("/app/marketplace.html")
+def _serve_marketplace():
+    cand = CLIENTS_WEB / "marketplace.html"
+    if not cand.exists():
+        cand = CLIENTS_WEB / "public" / "marketplace.html"
+    return FileResponse(str(cand))
+
 
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
 
@@ -279,6 +292,10 @@ app.include_router(ethics.router)
 app.include_router(fin.router)
 
 app.include_router(packs.router)
+
+app.include_router(pfs.router)
+
+app.include_router(pfs.router)
 
 app.include_router(jwks_router)
 

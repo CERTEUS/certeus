@@ -78,11 +78,17 @@ class EntangleRequest(BaseModel):
 
     target_negativity: float = 0.1
 
+    scenario: str | None = Field(default=None, description="Scenario label (e.g., 'pairwise', 'global')")
+
 
 class EntangleResponse(BaseModel):
     certificate: str
 
     achieved_negativity: float
+
+    scenario: str | None = None
+
+    pairs: list[dict[str, float]] | None = None
 
 
 class ChronoSyncRequest(BaseModel):
@@ -92,11 +98,19 @@ class ChronoSyncRequest(BaseModel):
 
     treaty_clause_skeleton: dict[str, Any] | None = None
 
+    protocol: str | None = Field(default=None, description="Protocol tag (e.g., 'mediation.v1')")
+
 
 class ChronoSyncResponse(BaseModel):
     reconciled: bool
 
     sketch: dict[str, Any]
+
+    protocol: str | None = None
+
+    collisions_count: int | None = None
+
+    mediated: bool | None = None
 
 
 # === LOGIKA / LOGIC ===
@@ -147,7 +161,21 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         HDEPlanAlternative(strategy="balanced", cost_tokens=cost_bal, expected_kappa=kappa),
         HDEPlanAlternative(strategy="aggressive", cost_tokens=cost_aggr, expected_kappa=min(0.05, kappa * 1.1)),
     ]
-    best = min(alt, key=lambda x: (abs(target - 0.2) * 0.0 + x.cost_tokens)).strategy
+    # Comparative planner: balance cost vs. reaching target horizon mass (proxy via expected_kappa)
+    max_cost = max(a.cost_tokens for a in alt) or 1
+
+    def _estimate_horizon_from_kappa(k: float) -> float:
+        return max(0.0, min(1.0, k * 4.0))
+
+    weight_target = 0.3 if target <= 0.25 else 0.6
+
+    def _score(a: HDEPlanAlternative) -> float:
+        cost_norm = a.cost_tokens / max_cost
+        horizon = _estimate_horizon_from_kappa(a.expected_kappa)
+        shortfall = max(0.0, float(target) - horizon)
+        return (1.0 - weight_target) * cost_norm + weight_target * shortfall
+
+    best = min(alt, key=_score).strategy
     return HDEPlanResponse(
         evidence_plan=plan_balanced,
         plan_of_evidence=plan_balanced,
@@ -217,6 +245,12 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
     except Exception:
         pass
     achieved = min(0.12, float(req.target_negativity))
+    pairs: list[dict[str, float]] | None = None
+    if len(req.variables) >= 2:
+        pairs = []
+        for i in range(len(req.variables) - 1):
+            a, b = req.variables[i], req.variables[i + 1]
+            pairs.append({f"{a}|{b}": round(achieved * 0.8, 6)})
     try:
         from monitoring.metrics_slo import Gauge
 
@@ -233,7 +267,12 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
             _devices_negativity.labels(var=v).set(achieved)
     except Exception:
         pass
-    return EntangleResponse(certificate=cert, achieved_negativity=achieved)
+    return EntangleResponse(
+        certificate=cert,
+        achieved_negativity=achieved,
+        scenario=req.scenario,
+        pairs=pairs,
+    )
 
 
 # Chronosync (LCSI)
@@ -250,13 +289,25 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> Chro
         "force_majeure": True,
         "revision_window_days": 14,
     }
+    collisions = 0
+    try:
+        if isinstance(req.pc_delta, dict):
+            collisions = len(req.pc_delta)
+    except Exception:
+        collisions = 0
+
     sketch = {
         "coords": req.coords,
         "pc_delta": req.pc_delta or {},
         "treaty": req.treaty_clause_skeleton or {"clauses": default_clauses},
     }
-
-    return ChronoSyncResponse(reconciled=True, sketch=sketch)
+    return ChronoSyncResponse(
+        reconciled=True,
+        sketch=sketch,
+        protocol=req.protocol,
+        collisions_count=collisions,
+        mediated=collisions > 0,
+    )
 
 
 # === I/O / ENDPOINTS ===

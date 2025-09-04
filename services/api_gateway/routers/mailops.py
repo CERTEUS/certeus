@@ -28,8 +28,13 @@ EN: FastAPI router for MailOps ingest/headers.
 
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, Request
 from pydantic import BaseModel, Field
+
+from core.pfs.materialize import materialize_mail_attachment
+from core.pfs.uri import mail_attachment_uri
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -98,22 +103,13 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
     # Normalize into io.email.* fields
 
     # Build attachments with ProofFS URIs
-    try:
-        from core.pfs.uri import mail_attachment_uri
-    except Exception:
-
-        def mail_attachment_uri(mid: str, fn: str) -> str:
-            """Fallback: build a basic ProofFS URI for an e-mail attachment."""
-            return f"pfs://mail/{mid}/{fn}"
-
-    atts = []
-    for a in req.attachments:
-        d = a.model_dump()
-        try:
-            d["pfs_uri"] = mail_attachment_uri(req.mail_id, a.filename)
-        except Exception:
-            d["pfs_uri"] = f"pfs://mail/{req.mail_id}/{a.filename}"
-        atts.append(d)
+    atts = [
+        {
+            **a.model_dump(),
+            "pfs_uri": mail_attachment_uri(req.mail_id, a.filename),
+        }
+        for a in req.attachments
+    ]
 
     io_email = {
         "io.email.mail_id": req.mail_id,
@@ -123,6 +119,22 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
         "io.email.dmarc": req.dmarc,
         "attachments": atts,
     }
+    # Optional: materialize ProofFS artifacts for attachments (dev/test)
+    flag = (os.getenv("PROOFS_FS_MATERIALIZE") or "").strip() in {"1", "true", "True"}
+    if flag:
+        for a in req.attachments:
+            try:
+                materialize_mail_attachment(
+                    mail_id=req.mail_id,
+                    filename=a.filename,
+                    meta={
+                        "content_type": a.content_type,
+                        "declared_size": a.size,
+                    },
+                )
+            except Exception:
+                # Best-effort in dev/test; ignore write errors
+                pass
     # Record to Ledger as an input (io.email.* hash)
     try:
         from services.ledger_service.ledger import compute_provenance_hash, ledger_service
