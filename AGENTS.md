@@ -32,6 +32,15 @@ Python: `.\.venv\Scripts\python.exe` (zmienna `$py`)
   - `prettier` (md/yaml/json/html/js/css)
   - `pytest (fast)` — szybka weryfikacja na zmianach py
 
+## Pre-push (lokalna bramka)
+
+- Ścieżka hooków: `git config core.hooksPath .githooks` (ustawione w repo).
+- Hook: `.githooks/pre-push` — uruchamia:
+  - Premium Style Gate: `scripts/check_premium_style.py` (Sekcja 21),
+  - `ruff check .` oraz `ruff format --check`,
+  - `pytest -q` (pełen zestaw). Skrócony bieg: ustaw `PREPUSH_PYTEST_FAST=1` (uruchomi bez `slow/e2e`).
+- Interpreter: preferuje lokalny `.venv_cli/Scripts/python.exe`, w fallback `python3/python` z PATH.
+
 ## Testy
 
 `mkdir -Force reports`
