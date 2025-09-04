@@ -128,6 +128,18 @@ try {
   $smt = "(set-logic QF_UF) (declare-fun x () Bool) (assert x) (check-sat)"
   $results += Hit 'POST' '/v1/verify' ("{`"formula`":`"$smt`",`"lang`":`"smt2`"}")
 
+  # PCO bundle (dev) + public fetch
+  try {
+    $rid = 'RID-SMOKE-1'
+    $smt2 = '(set-logic ALL) (check-sat)'
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($smt2)
+    $hash = ($sha.ComputeHash($bytes) | ForEach-Object { $_.ToString('x2') }) -join ''
+    $payload = '{"rid":"' + $rid + '","smt2_hash":"' + $hash + '","lfsc":"(lfsc proof)","merkle_proof":[]}'
+    $results += Hit 'POST' '/v1/pco/bundle' $payload
+    $results += Hit 'GET' ('/pco/public/' + $rid) $null
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/pco/bundle'; code=0; ok=$false; msg=$_.Exception.Message } }
+
   # PCO bundle + public verify
   $rid = 'RID-SMOKE-1'
   $payload = '{"rid":"' + $rid + '","smt2_hash":"' + ('0'*64) + '","lfsc":"(lfsc proof)","drat":"p drat","merkle_proof":[]}'
