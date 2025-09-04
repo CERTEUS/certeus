@@ -253,3 +253,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Smokes: rtbf_proofgate_smoke.py + canary_gate.py in ci-gates
   - - Runbook: section for new gates
   - - Lint+tests: green; promote monitoring continues
+- 2025-09-04 07:55:49Z [48793] (work/daily): canary PR comment + RTBF tests + cosign enforce (opt)
+  - - Canary-Gate: PR comment with p95 table
+  - - tests: RTBF endpoints in ProofGate (appeal/erase/erased)
+  - - ci-gates: optional cosign attest verification gate
+  - - lint+tests: green (136 passed)
