@@ -494,3 +494,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Metryki: certeus_tee_ra_attested_total(device)
   - - Test: tests/services/test_devices_tee.py
   - - Lint OK; 168 testów zielone
+- 2025-09-04 14:37:23Z [48793] (work/daily): W6: Devices demo + Chronosync snapshot; tests green
+  - Demo: scripts/smokes/w6_devices_demo.py
+  - Runbook: docs/runbooks/w6_devices_demo.md
+  - ci-gates: Chronosync snapshot + PR line
+  - Quick Links rozszerzone o Chronosync
+  - Testy: 168 passed (zielone)
