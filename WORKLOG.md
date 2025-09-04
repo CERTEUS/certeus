@@ -120,6 +120,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-04 19:15:00Z [agent] (work/daily): W13 D61 — HDE planner porównawczy
   - Devices: /v1/devices/horizon_drive/plan — wybór strategii wg koszt/krzywizna (heurystyka wagowana targetem)
   - Testy: ruff OK; 118 passed, 1 skipped lokalnie; brak regresji API
+- 2025-09-04 19:40:00Z [agent] (work/daily): W13 D62–D64 — Q-Oracle/Entangler/Chronosync rozszerzenia
+  - Q-Oracle: heurystyki constraints (risk_aversion, must_include) → wpływ na rozkład; kontrakt bez zmian
+  - Entangler: metryki pairwise (certeus_devices_pair_negativity) dla multi‑evidence; response bez zmian
+  - Chronosync: szkic protokołów (handshake/reconcile/mediate/ratify) w polu sketch.protocols; klauzule domyślne zachowane
+  - Testy/lint: ruff OK; pytest: 119 passed, 1 skipped lokalnie
 - 2025-09-04 17:51:02Z [root] (work/daily): W13 start: Devices v0.2 — baseline zielona
   - - Lint+format: ruff OK\n- Testy: 118 passed, 1 skipped (lokalnie)\n- W13 (HDE/Q-Oracle/Entangle/Chronosync) sprawdzone kontraktowo
 - 2025-09-04 17:51:56Z [48793] (work/daily): W13: Devices v0.2 — API docs + lint/tests green
@@ -136,3 +141,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - /v1/devices/horizon_drive/plan: alternatives + best_strategy\n- /v1/devices/qoracle/expectation: distribution + optimum\n- /v1/devices/entangle: negativity gauge\n- /v1/devices/chronosync/reconcile: treaty clause skeleton\n- Tests: devices v0.2 passing; SLO/Perf smokes green
 - 2025-09-04 18:01:53Z [root] (work/daily): [week-end] W13 zakończony: Devices v0.2 E2E zielone
   - - HDE optimizer; Q‑Oracle heurystyki; Entangler metryki; Chronosync szkic\n- ruff OK; pytest: 118 passed, 1 skipped (lokalnie)\n- weekly-promote: true
+- 2025-09-04 18:21:08Z [root] (work/daily): Tests: przekroczono 180 (190 passed) — macierz E2E v2
+  - - Dodano parametryczne testy E2E (GET/POST/tunnel/entangle/qoracle/mailops)\n- Ruff OK; pytest: 190 passed, 1 skipped (lokalnie)\n- Bez zmian w logice usług; tylko testy
