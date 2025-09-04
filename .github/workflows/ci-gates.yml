@@ -242,6 +242,18 @@ PY
           python scripts/gates/dp_policy_gate.py || true
           test -f out/dp_policy_report.json && echo ok || true
 
+      - name: DPIA/DPA validation
+        continue-on-error: true
+        run: |
+          python scripts/compliance/validate_dpia.py || true
+          test -f out/dpia_report.json && echo ok || true
+
+      - name: Asset Integrity Gate (PCO public)
+        continue-on-error: true
+        run: |
+          python scripts/gates/asset_integrity_gate.py || true
+          test -f out/asset_integrity.json && echo ok || true
+
       - name: Upload perf report
         if: always()
         uses: actions/upload-artifact@v4
@@ -737,6 +749,20 @@ PY
               lines.append(f"DP Policy: status={dp.get('status')} used={dp.get('used')}")
           except Exception:
               lines.append('DP Policy: n/a')
+          # DPIA/DPA summary
+          try:
+              dr = json.loads((repo/'out'/'dpia_report.json').read_text())
+              miss_dpia = len(dr.get('dpia',{}).get('missing',[]))
+              miss_dpa = len(dr.get('dpa',{}).get('missing',[]))
+              lines.append(f"DPIA: missing={miss_dpia} DPA: missing={miss_dpa}")
+          except Exception:
+              lines.append('DPIA/DPA: n/a')
+          # Asset integrity summary
+          try:
+              ai = json.loads((repo/'out'/'asset_integrity.json').read_text())
+              lines.append(f"Assets: checked={ai.get('checked')} ok={ai.get('ok')}")
+          except Exception:
+              lines.append('Assets: n/a')
           # Correlation headers sample
           try:
               corr = (repo/'out'/'correlation.txt').read_text().strip()
