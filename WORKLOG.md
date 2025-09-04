@@ -237,3 +237,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - docs/reports/90dni_closure_tasks.md: zamknięte (Issues #58–#65)
   - Mirror: publish_public_mirror.yml działa na push: main; auto-merge włączony; branch-protection zredukowane do CI-Public-Light/Policy-Scan; porządki gałęzi
   - Lokalnie: .gitignore ignoruje mirror_publish/ i mirror_pub_clone/ (czysty status)
+- 2025-09-04 07:23:54Z [48793] (work/daily): vNext: supply-chain enforce + release PCO publish + Canary + RTBF
+  - ci-gates: SBOM+provenance build + deny-by-default enforce
+  - release.yml: attach public PCO bundle to GitHub Release
+  - ci-gates: Canary Gate (progressive) + markers
+  - ci-gates: RTBF smoke + DPIA summary + strict redaction clean
+  - promote: triggered (self-hosted), monitoring to success
