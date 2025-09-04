@@ -235,6 +235,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Demo: scripts/demos/run_w8_demo.py → reports/w8_demo.json; UI: clients/web/public/lexenith.html
   - Endpoints i testy: motion/generate, cldf/renormalize, why_not/export, micro_court lock→publish, casebook
   - Runbook: docs/runbooks/w7_w8_demo.md
+ - 2025-09-04 17:00:00Z [agent] (work/daily): W9 — Security hardening (gates + demo)
+  - Gates: roles_policy_gate, security_bunker_gate, pqcrypto_gate; test PQ‑crypto smoke
+  - Demo: scripts/demos/run_w9_demo.py → reports/w9_demo.json
+  - Runbook: docs/runbooks/w9_demo.md
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -591,3 +595,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Lint OK; 184 testów zielone
 - 2025-09-04 16:00:03Z [root] (work/daily): A1/W3: Mapy L/T (litera↔telos) + testy property
   - - core/omega_litera_telos.py: transform_litera_telos + holonomy_drift_lt\n- tests/truth/test_litera_telos_transform_property.py: Hypothesis (roundtrip/identity)\n- Lint+tests (subset truth): zielone
+- 2025-09-04 16:14:52Z [48793] (work/daily): W15: SRE 2.0 — Idempotencja Devices (retry-safe)
+  - - Idempotency-Key dla Devices (HDE/Q-Oracle/Entangle/Chronosync)
+  - - Magazyn in-proc: services/api_gateway/idempotency.py + TTL
+  - - Nagłówki: X-Idempotency-Status=new|reused; metryki certeus_idem_*
+  - - Test: tests/services/test_devices_idempotency.py (budżet naliczany raz)
+  - - Lint OK; 190 testów zielone

@@ -315,6 +315,18 @@ certeus_tee_ra_attested_total = Counter(
     labelnames=("device",),
 )
 
+# Idempotency (W15)
+certeus_idem_new_total = Counter(
+    "certeus_idem_new_total",
+    "Idempotency new computations",
+    labelnames=("endpoint",),
+)
+certeus_idem_reused_total = Counter(
+    "certeus_idem_reused_total",
+    "Idempotency cache hits",
+    labelnames=("endpoint",),
+)
+
 # LEX Pilot (W16): feedback counters and latest rating
 certeus_lex_pilot_feedback_total = Counter(
     "certeus_lex_pilot_feedback_total",

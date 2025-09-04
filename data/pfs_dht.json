@@ -4,13 +4,46 @@
       "lexqft.*",
       "proof.*"
     ],
-    "capacity": 2
+    "capacity": 2,
+    "ttl_sec": null,
+    "health": "up",
+    "last_seen": 1757002473.009785
   },
   "node-B": {
     "competencies": [
       "cfe.geodesic",
       "lexenith.*"
     ],
-    "capacity": 1
+    "capacity": 1,
+    "ttl_sec": null,
+    "health": "up",
+    "last_seen": 1757002473.224573
+  },
+  "node-expired": {
+    "competencies": [
+      "lexqft.*"
+    ],
+    "capacity": 10,
+    "ttl_sec": 0,
+    "health": "up",
+    "last_seen": 1757002485.6271822
+  },
+  "node-low": {
+    "competencies": [
+      "proof.*"
+    ],
+    "capacity": 1,
+    "ttl_sec": 3600,
+    "health": "up",
+    "last_seen": 1757002486.2924654
+  },
+  "node-high": {
+    "competencies": [
+      "proof.*"
+    ],
+    "capacity": 3,
+    "ttl_sec": 3600,
+    "health": "up",
+    "last_seen": 1757002486.6875134
   }
 }

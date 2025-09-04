@@ -19,16 +19,14 @@ EN: Smoke test for PQ‑crypto gate — writes `out/pqcrypto.txt` marker and doe
 from __future__ import annotations
 
 import os
-import subprocess
 from pathlib import Path
+import subprocess
 
 
 def _run_gate(env: dict[str, str]) -> tuple[int, str]:
     e = os.environ.copy()
     e.update(env)
-    proc = subprocess.run(
-        ["python", "scripts/gates/pqcrypto_gate.py"], capture_output=True, text=True, env=e
-    )
+    proc = subprocess.run(["python", "scripts/gates/pqcrypto_gate.py"], capture_output=True, text=True, env=e)
     return proc.returncode, (proc.stdout or "")
 
 
@@ -43,6 +41,7 @@ def test_pqcrypto_gate_off_and_ready(tmp_path: Path) -> None:
     marker = Path("out") / "pqcrypto.txt"
     assert marker.exists()
 
+
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
@@ -52,4 +51,3 @@ def test_pqcrypto_gate_off_and_ready(tmp_path: Path) -> None:
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

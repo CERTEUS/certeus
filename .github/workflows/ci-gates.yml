@@ -96,6 +96,42 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/smokes_ok.txt
+      - name: Upload CFE smoke artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cfe-smoke-${{ github.sha }}
+          path: out/cfe_smoke.json
+          if-no-files-found: warn
+      - name: Append CFE smoke summary to job summary
+        if: always()
+        run: |
+          python - << 'PY'
+          import json, os, pathlib
+          p = pathlib.Path('out/cfe_smoke.json')
+          if not p.exists():
+            print('no cfe_smoke.json found')
+          else:
+            j = json.loads(p.read_text(encoding='utf-8'))
+            kappa = (j.get('curvature') or {}).get('kappa_max')
+            lm = (j.get('lensing') or {}).get('lensing_map') or {}
+            lm_keys = ', '.join(list(lm.keys())[:3])
+            fm = (j.get('from_fin') or {}).get('lensing_map') or {}
+            crit = ((j.get('from_fin') or {}).get('critical_precedents') or ['-'])[0]
+            md = []
+            md.append('### CFE Smoke Summary')
+            md.append('')
+            md.append(f'- kappa_max: `{kappa}`')
+            md.append(f'- lensing keys: `{len(lm)}` (sample: {lm_keys})')
+            md.append(f'- from_fin critical: `{crit}` (keys={len(fm)})')
+            path = os.environ.get('GITHUB_STEP_SUMMARY')
+            if path:
+              with open(path, 'a', encoding='utf-8') as f:
+                f.write('\n'.join(md) + '\n')
+              print('Appended CFE smoke summary')
+            else:
+              print('\n'.join(md))
+          PY
       - name: Mark Tests OK
         if: success()
         run: |

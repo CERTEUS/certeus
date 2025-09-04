@@ -33,7 +33,12 @@ from typing import Any
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
+from monitoring.metrics_slo import (
+    certeus_idem_new_total,
+    certeus_idem_reused_total,
+)
 from security.ra import ra_fingerprint, tee_enabled
+from services.api_gateway import idempotency as idem
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -124,6 +129,16 @@ router = APIRouter(prefix="/v1/devices", tags=["devices"])
 async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -> HDEPlanResponse:
     from services.api_gateway.limits import enforce_limits
 
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.hde.plan").inc()
+        return HDEPlanResponse(**cached)
+
     enforce_limits(request, cost_units=2)
 
     plan_balanced = [
@@ -181,6 +196,12 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
             certeus_tee_ra_attested_total.labels(device="hde").inc()
     except Exception:
         pass
+    try:
+        idem.put(idem_key, result.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.hde.plan").inc()
+    except Exception:
+        pass
     return result
 
 
@@ -190,6 +211,16 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
 async def qoracle_expectation(req: QOracleRequest, request: Request, response: Response) -> QOracleResponse:
     from services.api_gateway.limits import enforce_limits
+
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.qoracle.expectation").inc()
+        return QOracleResponse(**cached)
 
     enforce_limits(request, cost_units=2)
 
@@ -237,6 +268,12 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
             certeus_tee_ra_attested_total.labels(device="qoracle").inc()
     except Exception:
         pass
+    try:
+        idem.put(idem_key, result.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.qoracle.expectation").inc()
+    except Exception:
+        pass
     return result
 
 
@@ -246,6 +283,16 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
 @router.post("/entangle", response_model=EntangleResponse)
 async def entangle(req: EntangleRequest, request: Request, response: Response) -> EntangleResponse:
     from services.api_gateway.limits import enforce_limits
+
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.entangle").inc()
+        return EntangleResponse(**cached)
 
     enforce_limits(request, cost_units=2)
 
@@ -296,6 +343,12 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
             certeus_tee_ra_attested_total.labels(device="entangler").inc()
     except Exception:
         pass
+    try:
+        idem.put(idem_key, out.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.entangle").inc()
+    except Exception:
+        pass
     return out
 
 
@@ -303,8 +356,18 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
 
 
 @router.post("/chronosync/reconcile", response_model=ChronoSyncResponse)
-async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> ChronoSyncResponse:
+async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, response: Response) -> ChronoSyncResponse:
     from services.api_gateway.limits import enforce_limits
+
+    idem_key = request.headers.get("Idempotency-Key")
+    cached = idem.get(idem_key)
+    if cached is not None:
+        try:
+            response.headers["X-Idempotency-Status"] = "reused"
+        except Exception:
+            pass
+        certeus_idem_reused_total.labels(endpoint="devices.chronosync").inc()
+        return ChronoSyncResponse(**cached)
 
     enforce_limits(request, cost_units=2)
 
@@ -327,6 +390,12 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> Chro
 
         _ = sign_payload(out.model_dump())
         certeus_devices_signed_total.labels(device="chronosync").inc()
+    except Exception:
+        pass
+    try:
+        idem.put(idem_key, out.model_dump())
+        response.headers["X-Idempotency-Status"] = "new"
+        certeus_idem_new_total.labels(endpoint="devices.chronosync").inc()
     except Exception:
         pass
     return out

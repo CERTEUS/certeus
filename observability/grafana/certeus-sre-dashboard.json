@@ -121,6 +121,25 @@
           "max": 1
         }
       }
+    },
+    {
+      "type": "timeseries",
+      "title": "QTMP↔CFE Correlation (L_T)",
+      "targets": [
+        {
+          "expr": "certeus_qtm_cfe_correlation",
+          "legendFormat": "case={{case}}"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "CFE endpoints p95 latency (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_bucket{path=~\"/v1/cfe/.*\"}[5m])) by (le, path))"
+        }
+      ]
     }
   ],
   "time": {

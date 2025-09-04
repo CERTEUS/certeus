@@ -29,6 +29,7 @@ EN: FastAPI router for lexqft / geometry of meaning.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from fastapi import APIRouter, Request, Response
@@ -196,7 +197,7 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         import json as _json
         from pathlib import Path as _Path
 
-        _pfs_store = _Path(__file__).resolve().parents[3] / "data" / "pfs_paths.json"
+        _pfs_store = _Path(__file__).resolve().parents[3] / "data" / _PFS_NAME
         store: dict[str, list[dict]] = {}
         if _pfs_store.exists():
             try:
@@ -219,7 +220,7 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
 
     # Persist path into PFS view (read-only API reads it)
     try:
-        pfs_store = Path(__file__).resolve().parents[3] / "data" / "pfs_paths.json"
+        pfs_store = Path(__file__).resolve().parents[3] / "data" / _PFS_NAME
         store: dict[str, list[dict]] = {}
         if pfs_store.exists():
             store = json.loads(pfs_store.read_text(encoding="utf-8"))  # type: ignore[assignment]
@@ -610,3 +611,7 @@ async def coverage_state() -> CoverageState:
 
         return CoverageState(coverage_gamma=round(gamma, 6), uncaptured_mass=round(unc, 6))
     return CoverageState(coverage_gamma=0.953, uncaptured_mass=0.02)
+
+
+_WORKER = os.getenv("PYTEST_XDIST_WORKER")
+_PFS_NAME = f"pfs_paths.{_WORKER}.json" if _WORKER else "pfs_paths.json"

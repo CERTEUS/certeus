@@ -19,6 +19,7 @@ import base64
 import fnmatch
 import hashlib
 import json
+import os
 from pathlib import Path
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
@@ -27,7 +28,9 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-_STORE = Path(__file__).resolve().parents[3] / "data" / "pfs_paths.json"
+_WORKER = os.getenv("PYTEST_XDIST_WORKER")
+_STORE_NAME = f"pfs_paths.{_WORKER}.json" if _WORKER else "pfs_paths.json"
+_STORE = Path(__file__).resolve().parents[3] / "data" / _STORE_NAME
 
 # === MODELE / MODELS ===
 
@@ -226,6 +229,7 @@ async def dht_query(competency: str, include_stale: int = 0) -> QueryResponse:
     d = _dht_load()
     matches: list[str] = []
     from time import time as _now
+
     for node, meta in d.items():
         if not isinstance(meta, dict):
             continue

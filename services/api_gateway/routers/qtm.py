@@ -34,6 +34,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from hashlib import sha256
+import os
 from pathlib import Path
 from time import perf_counter
 from typing import Any
@@ -144,7 +145,10 @@ router = APIRouter(prefix="/v1/qtm", tags=["QTMP"])
 # Prosty graf spraw (case-graph) i rejestr kanałów dekoherencji (stub in-memory)
 CASE_GRAPH: dict[str, dict[str, Any]] = {}
 DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
-_PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
+# Per-worker store to avoid xdist races in tests
+_WORKER = os.getenv("PYTEST_XDIST_WORKER")
+_PRESET_NAME = f"qtm_presets.{_WORKER}.json" if _WORKER else "qtm_presets.json"
+_PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / _PRESET_NAME
 
 
 def _uniform_probs(basis: list[str]) -> list[float]:
