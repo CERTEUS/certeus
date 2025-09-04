@@ -370,6 +370,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - PCO: `X-CERTEUS-PCO-cldf.renorm.entropy` (entropia Shannona)
   - Testy: `tests/services/test_lexqft_renorm.py` (normalizacja, uniform dla sumy 0)
   - Lint/tests: 151 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 15:30 | branch=work/daily
+- [A4] W5: Path‑coverage zasilane FIN (γ≥0.9 real)
+  - API: `POST /v1/lexqft/coverage/from_fin` — mapping risk/sentiment→gamma/uncaptured (persist)
+  - Testy: `tests/services/test_lexqft_from_fin.py` (wysoki sentyment vs ryzyko ⇒ γ≥0.9; odwrotnie ⇒ γ spada)
+  - Lint/tests: 157 passed / 1 skipped; `reports/junit.xml`
 ## 2025-09-04 14:30 | branch=work/daily
 - [A6] W1: Quickstart + Demo + Cockpit
   - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
