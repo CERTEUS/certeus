@@ -221,3 +221,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - pytest: 214 passed, 5 skipped; ruff OK
 - 2025-09-04 19:57:57Z [root] (work/daily): W13: Marketplace — badges (signed/installed) + baseline endpoint
   - - API: GET /v1/packs/{name}/baseline; list returns installed_version\n- UI: install badge + table column\n- Tests: 214 passed (lokalnie)
+- 2025-09-04 19:59:24Z [root] (work/daily): W15–W16 (A8): Spectral lint + Tenant SLO smoke
+  - - CI: Generate reports/openapi.json + Spectral lint (report-only) + ticks\n- SLO: scripts/slo_gate/tenant_slo_sanity.py + ci-gates step\n- Billing API: /v1/billing/{quota,allocate,refund}; omega entity/entropy invariants stabilized\n- Suite: 214 passed
