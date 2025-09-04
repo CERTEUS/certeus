@@ -515,3 +515,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: karta Devices (HDE plan, Q‑Oracle, Entangler, Chronosync)
   - Quantum: Compare Sequences z ΔUB + Sequence runner
   - Docs: cURL sequence
+- 2025-09-04 14:47:46Z [48793] (work/daily): W11: FINENITH → produkcja — Q‑Alpha (2 strategie) + polityki ryzyka
+  - - /v1/fin/alpha/measure: polityka ryzyka (policy_ok, violations) + header
+  - - /v1/fin/alpha/simulate + /pnl: 2 strategie i agregacja PnL
+  - - Testy: tests/services/test_fin_prod.py
+  - - Lint OK; 174 testów zielone

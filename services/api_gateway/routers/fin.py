@@ -131,13 +131,22 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     # Operators R/S are non-commuting in this model; report commutator norm > 0
     comm_norm = 1.0 if (risk != 0.0 or sent != 0.0) else 0.0
 
-    # Build PCO (+ basic DPCO/MCO fields, W12)
+    # Build PCO (+ basic DPCO/MCO fields, W12) + W11 risk policy check
+    policy: dict[str, object] = {
+        "policy_ok": True,
+        "violations": [],
+        "thresholds": {"risk_max": 0.9, "sentiment_min": -1.0},
+    }
+    if risk > 0.9:
+        policy["policy_ok"] = False
+        policy.setdefault("violations", []).append("risk_above_max")  # type: ignore[arg-type]
     pco = {
         "fin.alpha.measure": {
             "signals": s,
             "operators": {"R": risk, "S": sent, "commutator_RS": comm_norm},
             "outcome": outcome,
             "p": round(p, 6),
+            "policy": policy,
             # W12: Data governance fields (minimal)
             "dp_epsilon": 0.5,
             "consent_ref": "consent://demo",
@@ -150,6 +159,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         import json as _json
 
         response.headers["X-CERTEUS-PCO-fin.measure"] = _json.dumps(pco["fin.alpha.measure"], separators=(",", ":"))
+        response.headers["X-CERTEUS-Policy-FIN"] = _json.dumps(policy, separators=(",", ":"))
     except Exception:
         pass
     try:

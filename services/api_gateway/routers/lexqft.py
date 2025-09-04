@@ -202,11 +202,13 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         case_id = req.state_uri or "lexqft-case"
         recs = store.get(case_id) if isinstance(store.get(case_id), list) else []
         recs = list(recs)
-        recs.append({
-            "source": "lexqft.tunnel",
-            "p": float(resp.p_tunnel),
-            "path": path,
-        })
+        recs.append(
+            {
+                "source": "lexqft.tunnel",
+                "p": float(resp.p_tunnel),
+                "path": path,
+            }
+        )
         store[case_id] = recs
         pfs_store.parent.mkdir(parents=True, exist_ok=True)
         pfs_store.write_text(json.dumps(store, ensure_ascii=False, indent=2), encoding="utf-8")

@@ -119,6 +119,17 @@
           <button id="lockDeco" class="btn">Decoherence: dephasing</button>
           <span id="status" class="muted"></span>
         </div>
+        <div class="row" style="margin-top:8px;">
+          <span class="muted">Operator Composer:</span>
+          <label class="muted"><input type="radio" name="op" value="W" checked /> W</label>
+          <label class="muted"><input type="radio" name="op" value="I" /> I</label>
+          <label class="muted"><input type="radio" name="op" value="C" /> C</label>
+          <label class="muted"><input type="radio" name="op" value="L" /> L</label>
+          <label class="muted"><input type="radio" name="op" value="T" /> T</label>
+          <button id="savePreset" class="btn">Save preset</button>
+          <button id="loadPreset" class="btn">Load preset</button>
+          <span id="presetStatus" class="muted"></span>
+        </div>
         <p class="muted">
           Uncertainty L_T: <span id="ub" class="pill">?</span>, collapse:
           <span id="collapse" class="pill">-</span>
@@ -265,6 +276,25 @@
         .addEventListener("click", () => measure("TL"));
       document.getElementById("lockDeco").addEventListener("click", setDeco);
       document.getElementById("heatmap")?.addEventListener("click", buildHeatmap);
+      document.getElementById("savePreset").addEventListener("click", async ()=>{
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const sel = document.querySelector('input[name="op"]:checked');
+        const op = sel ? sel.value : 'W';
+        const r = await fetchJSON('/v1/qtm/preset', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, operator: op})});
+        document.getElementById('presetStatus').textContent = r.ok ? `saved: ${op}` : 'save failed';
+      });
+      document.getElementById("loadPreset").addEventListener("click", async ()=>{
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const r = await fetchJSON(`/v1/qtm/preset/${encodeURIComponent(cs)}`);
+        if(r.ok){
+          const op = r.data?.operator||'W';
+          const sel = document.querySelector(`input[name="op"][value="${op}"]`);
+          if(sel) sel.checked = true;
+          document.getElementById('presetStatus').textContent = `loaded: ${op}`;
+        } else {
+          document.getElementById('presetStatus').textContent = 'no preset';
+        }
+      });
       autoRun();
     </script>
   </body>

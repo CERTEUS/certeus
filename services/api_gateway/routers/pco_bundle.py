@@ -167,6 +167,16 @@ def _load_private_key_from_pem() -> Ed25519PrivateKey:
 
         return key_any
 
+    # Developer-friendly fallback: use local .devkeys/ed25519_priv.pem if present
+    try:
+        dev_pem = Path(".devkeys") / "ed25519_priv.pem"
+        if dev_pem.exists():
+            key_any = serialization.load_pem_private_key(dev_pem.read_bytes(), password=None)
+            if isinstance(key_any, Ed25519PrivateKey):
+                return key_any
+    except Exception:
+        pass
+
     raise HTTPException(status_code=500, detail="Missing ED25519_PRIVKEY_PEM or *_PATH")
 
 

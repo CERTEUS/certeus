@@ -255,7 +255,7 @@ async def lensing_from_fin(payload: LensingFromFinIn, response: Response) -> Len
     sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
     score = sent - risk
     # Deterministyczny wybór precedensów na podstawie seed/score
-    seed_key = payload.seed or f"FIN::{int(score*1000)}"
+    seed_key = payload.seed or f"FIN::{int(score * 1000)}"
     try:
         from services.cfe.metric import lensing_map_for_case
 
