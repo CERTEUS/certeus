@@ -495,7 +495,7 @@ class CoverageItem(BaseModel):
 
 
 @router.post("/coverage/update")
-async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
+async def coverage_update(items: list[CoverageItem], request: Request, response: Response) -> dict:
     """PL/EN: Ustaw (zastąp) wkłady ścieżek do pokrycia (gamma, wagi, uncaptured)."""
     from services.api_gateway.limits import enforce_limits
 
@@ -508,11 +508,15 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
         _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
     except Exception:
         pass
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return {"ok": True, "count": len(_COVERAGE_AGG)}
 
 
 @router.post("/coverage/reset")
-async def coverage_reset(request: Request) -> dict:
+async def coverage_reset(request: Request, response: Response) -> dict:
     """PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty)."""
     from services.api_gateway.limits import enforce_limits
 
@@ -522,6 +526,10 @@ async def coverage_reset(request: Request) -> dict:
     try:
         if _COVERAGE_STORE.exists():
             _COVERAGE_STORE.unlink()
+    except Exception:
+        pass
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
     except Exception:
         pass
     return {"ok": True}

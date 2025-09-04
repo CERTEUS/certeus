@@ -60,6 +60,7 @@ import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
+import services.api_gateway.routers.pfs_dht as pfs_dht
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
@@ -301,6 +302,7 @@ app.include_router(jwks_router)
 app.include_router(metrics.router)
 app.include_router(pfs.router)
 app.include_router(p2p.router)
+app.include_router(pfs_dht.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------

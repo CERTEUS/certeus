@@ -77,7 +77,19 @@
     </div>
     <script>
       async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
-      function paintRicci(kappa){ const grid = document.getElementById('ricci'); grid.innerHTML=''; for(let i=0;i<100;i++){ const v = Math.random()*kappa*100; const d=document.createElement('div'); d.className='cell'; d.dataset.tip = `Ricci[${i}]=${v.toFixed(2)}`; if(v>0.5) d.dataset.v = '1'; grid.appendChild(d);} }
+      function paintRicci(kappa){
+        const grid = document.getElementById('ricci'); grid.innerHTML='';
+        for(let i=0;i<100;i++){
+          const v = Math.random()*kappa*100;
+          const d=document.createElement('div'); d.className='cell';
+          const tip = `Ricci[${i}]=${v.toFixed(2)}`;
+          d.dataset.tip = tip;
+          d.setAttribute('aria-label', tip);
+          d.setAttribute('tabindex','0');
+          if(v>0.5) d.dataset.v = '1';
+          grid.appendChild(d);
+        }
+      }
       function renderLensing(map){
         const panel = document.getElementById('lensingPanel');
         panel.innerHTML = '';

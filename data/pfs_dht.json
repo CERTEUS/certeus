@@ -1,0 +1,16 @@
+{
+  "node-A": {
+    "competencies": [
+      "lexqft.*",
+      "proof.*"
+    ],
+    "capacity": 2
+  },
+  "node-B": {
+    "competencies": [
+      "cfe.geodesic",
+      "lexenith.*"
+    ],
+    "capacity": 1
+  }
+}

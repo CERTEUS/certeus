@@ -224,6 +224,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Gate: test_path_coverage_gate_smoke.py (OK/FAIL wg progów); demo scripts/demos/run_w5_demo.py
   - LexQFT: coverage/state/update z wagami; tunelowanie — 2 scenariusze
   - Quantum UI: Operator Composer (presety W/I/C/L/T) w qtm.html
+ - 2025-09-04 15:40:00Z [agent] (work/daily): W6 — Devices v0.1 + UI + demo
+  - UI: clients/web/public/devices.html (HDE/Q‑Oracle/Entangler/Chronosync)
+  - Demo: scripts/demos/run_w6_demo.py → reports/w6_demo.json; testy devices zielone
+ - 2025-09-04 16:05:00Z [agent] (work/daily): W7 — FINENITH v0.1 (R/S, MI, policy)
+  - FIN: /v1/fin/alpha/measure z nagłówkiem polityki; /operators_rs; /entanglement/mi; PnL
+  - Testy: test_fin_prod.py (polityka+PnL) i test_fin_paper.py (paper-trading) zielone
+  - Runbooki: docs/runbooks/w3_w4_demo.md, docs/runbooks/w5_w6_demo.md
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes

@@ -52,6 +52,15 @@
         <table id="enttbl"><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>
       </div>
       <div class="card">
+        <h1>Entanglement MI (compute)</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <input id="miA" placeholder="series A (csv)" value="0.1,0.2,0.3,0.25,0.4" />
+          <input id="miB" placeholder="series B (csv)" value="0.05,0.15,0.22,0.2,0.3" />
+          <button id="mi-run" class="btn">Compute MI</button>
+          <span class="muted">top MI:<span id="mi-top" class="pill">?</span></span>
+        </div>
+      </div>
+      <div class="card">
         <h1>Simulation</h1>
         <div class="row">
           <select id="strat"><option value="qalpha-momentum">qalpha-momentum</option><option value="qalpha-arb">qalpha-arb</option></select>
@@ -66,12 +75,13 @@
       async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
       async function doMeasure(){ const risk=parseFloat(document.getElementById('risk').value||'0')||0; const sent=parseFloat(document.getElementById('sent').value||'0')||0; const r = await fetchJSON('/v1/fin/alpha/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({signals:{risk, sentiment:sent}})}); if(r.ok){ document.getElementById('outcome').textContent = r.data.outcome; document.getElementById('prob').textContent = r.data.p; const rs = await fetchJSON('/v1/fin/alpha/operators/commutator'); if(rs.ok){ document.getElementById('rsn').textContent = rs.data.norm; } } }
       async function refreshEnt(){ const r = await fetchJSON('/v1/fin/alpha/entanglements'); if(!r.ok) return; document.getElementById('mi').textContent = r.data.mi; const tb=document.querySelector('#enttbl tbody'); tb.innerHTML=''; (r.data.pairs||[]).forEach(p=>{ const tr=document.createElement('tr'); const td=(v)=>{ const d=document.createElement('td'); d.textContent=v; return d; }; tr.appendChild(td(p[0]||'')); tr.appendChild(td(p[1]||'')); tb.appendChild(tr); }); }
+      async function computeMI(){ const pa=(document.getElementById('miA').value||'').split(',').map(x=>parseFloat(x)).filter(x=>!isNaN(x)); const pb=(document.getElementById('miB').value||'').split(',').map(x=>parseFloat(x)).filter(x=>!isNaN(x)); const r=await fetchJSON('/v1/fin/alpha/entanglement/mi',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify([{a:'A',b:'B',series_a:pa,series_b:pb}])}); if(r.ok){ const top=(r.data.top||[])[0]; document.getElementById('mi-top').textContent = top? top.mi: '?'; } }
       async function runSim(){ const strat=document.getElementById('strat').value; const capital=parseFloat(document.getElementById('capital').value||'100000'); const days=parseInt(document.getElementById('days').value||'30'); const r = await fetchJSON('/v1/fin/alpha/simulate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({strategy_id:strat, capital, horizon_days:days})}); if(r.ok){ const pnlAbs = (r.data.pnl_abs||0).toFixed(2); const pnlPct = ((r.data.pnl_pct||0)*100).toFixed(2)+'%'; document.getElementById('pnl').textContent = `${pnlAbs} (${pnlPct})`; } }
       document.getElementById('measure').addEventListener('click', doMeasure);
       document.getElementById('ent').addEventListener('click', refreshEnt);
       document.getElementById('sim').addEventListener('click', runSim);
+      document.getElementById('mi-run').addEventListener('click', computeMI);
       doMeasure(); refreshEnt();
     </script>
   </body>
   </html>
-

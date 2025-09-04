@@ -585,7 +585,7 @@ class SetStateRequest(BaseModel):
 
 
 @router.post("/state", response_model=QtmStateOut)
-async def set_state(req: SetStateRequest) -> QtmStateOut:
+async def set_state(req: SetStateRequest, response: Response) -> QtmStateOut:
     if len(req.basis) != len(req.probs):
         raise HTTPException(status_code=400, detail="basis/probs length mismatch")
     s = float(sum(req.probs))
@@ -598,6 +598,10 @@ async def set_state(req: SetStateRequest) -> QtmStateOut:
         "basis": list(req.basis),
         "predistribution": predistribution,
     }
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return QtmStateOut(
         case=req.case, psi=CASE_GRAPH[req.case]["psi"], basis=list(req.basis), predistribution=predistribution
     )
@@ -613,7 +617,7 @@ class ExpectationOut(BaseModel):
 
 
 @router.post("/expectation", response_model=ExpectationOut)
-async def expectation(req: ExpectationRequest) -> ExpectationOut:
+async def expectation(req: ExpectationRequest, response: Response) -> ExpectationOut:
     cg = CASE_GRAPH.get(req.case)
     if not cg:
         raise HTTPException(status_code=404, detail="Case not found")
@@ -638,6 +642,10 @@ async def expectation(req: ExpectationRequest) -> ExpectationOut:
         from monitoring.metrics_slo import certeus_qtm_expectation_value
 
         certeus_qtm_expectation_value.labels(case=req.case, operator=req.operator).set(out)
+    except Exception:
+        pass
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
     except Exception:
         pass
     return ExpectationOut(value=out)

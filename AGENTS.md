@@ -129,3 +129,68 @@ UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pe�
 - SLO/Perf: quick bench (p95) zapisuje `out/perf_bench.json` (artefakt), SLO smoke mierzy i weryfikuje progi.
 - Dashboards: `observability/grafana/certeus-sre-dashboard.json` (p95 by path/method/status, error‑rate, p95 staty).
 - Pełny opis i następne kroki: `docs/AGENTS/HANDOFF.md`.
+
+## CI/Runner — tryb „0 minut” (self‑hosted)
+
+- Runnery:
+  - Windows self‑hosted (poza repo) — Promote i kroki administracyjne.
+  - Linux self‑hosted (Docker) — ci‑gates, Smoke, Release, Mirror; gotowe compose w `infra/gha-runner/`:
+    - Windows (Docker Desktop): `docker compose -f docker-compose.yml -f docker-compose.windows.yml up -d`
+    - Linux: `docker compose -f docker-compose.yml -f docker-compose.linux.yml up -d`
+    - Token rejestracyjny (ephemeral): `gh api -X POST repos/CERTEUS/certeus/actions/runners/registration-token -q .token` → wpisz do `infra/gha-runner/.env` jako `RUNNER_TOKEN=`.
+    - Obraz: `myoung34/github-runner:latest` (Docker Hub) z labelami: `self-hosted,linux,docker,build`.
+
+- Zmienne repo (sterowanie runnerami):
+  - `CI_GATES_RUNS_ON` — np. `["self-hosted","linux","docker","build"]`
+  - `RELEASE_RUNS_ON` — jw.
+  - `PROMOTE_RUNS_ON` — np. `["self-hosted"]`
+  - `MIRROR_RUNS_ON` — jw. (opcjonalnie GH‑hosted dla public „free”)
+  - `SMOKE_USE_GH_HOSTED` — `0/1` (fallback dla Smoke)
+  - `REQUIRE_COSIGN_ATTESTATIONS` — `1` (wymuszenie cosign dla SBOM/provenance)
+
+## Workflowy — zasady i optymalizacje
+
+- `ci-gates`:
+  - cache pip (`actions/setup-python@v5` + `cache: pip`),
+  - testy równoległe (`pytest-xdist`): `-n auto --durations=15`.
+- `smoke`:
+  - `dorny/paths-filter@v3` — ciężkie kroki Smoke odpalane tylko przy istotnych zmianach (services/scripts/clients/web/docs-api/pyproject/requirements),
+  - wczesny short‑circuit („No smoke-relevant changes”).
+- `canary_gate` (PR‑only):
+  - `permissions: pull-requests: write` (komentarz p95 do PR),
+  - deps: `fastapi httpx uvicorn cryptography jsonschema openapi-spec-validator python-multipart z3-solver`.
+- `repo-tree`: heredoc → `REPO_TREE.md` (bez błędów parsera).
+- `release`: SBOM/provenance + cosign keyless (assets Release) + PCO bundle; wspiera `workflow_dispatch(tag)`.
+- `promote-daily-to-main`:
+  - marker tygodnia: `[week-end] …` lub `weekly-promote: true`,
+  - cross‑platform (github‑script/pwsh), 
+  - `workflow_dispatch` z `force=true` (awaryjnie),
+  - auto‑PR i auto‑merge (GraphQL) gdy FF niemożliwy.
+
+## Poświadczenia agenta (lokalnie)
+
+- Pliki (ignorowane):
+  - `.devkeys/admin_token.txt` — PAT (repo:write)
+  - `.devkeys/github_user.txt` — login GitHub
+- Alternatywa: `gh auth login` + `gh auth setup-git`.
+- Loader: `scripts/env_load.ps1` zapisuje do `~/.git-credentials` i ustawia helper `store`.
+
+## Higiena repo i sprzątanie
+
+- `.gitignore` obejmuje: `venv/.venv/.venv_cli`, `node_modules`, `out/`, `reports/`, artefakty runnera (`_work/`, `_diag/`, `bin/`, `externals/`), `.devkeys/`, itp.
+- Sprzątanie tylko ignorowanych: `pwsh -File scripts/tools/local_clean.ps1 -Yes` (bez ruszania śledzonych plików).
+
+## SOP (dla zespołu)
+
+- Dziennie:
+  - `ruff check . --fix && ruff format . && pytest -q` (lokalnie można `-n auto`),
+  - push na `work/daily`, wpis do `WORKLOG.md` (`scripts/worklog/update_worklog.py`).
+- Tygodniowo:
+  - commit z markerem `[week-end] …` + `weekly-promote: true`,
+  - po zielonych gate’ach auto‑Promote → Mirror (LITE/allowlista).
+
+## Monitoring (pod ręką)
+
+- Lista biegów: `gh run list -L 10`
+- Podgląd runu: `gh run view <id> -v`
+- Checki PR: `gh pr checks <nr>`

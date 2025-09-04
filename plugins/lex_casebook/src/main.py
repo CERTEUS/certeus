@@ -27,4 +27,3 @@ def register():  # noqa: D401 - simple register
         return {"ok": False, "error": "unsupported kind"}
 
     return type("_Pack", (), {"handle": staticmethod(handle)})()
-

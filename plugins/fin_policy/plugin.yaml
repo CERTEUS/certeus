@@ -1,0 +1,7 @@
+name: fin_policy
+module: plugins.fin_policy.src.main
+version: "0.1.0"
+capabilities:
+  - fin
+  - policy
+

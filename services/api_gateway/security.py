@@ -58,68 +58,59 @@ __all__ = ["attach_proof_only_middleware"]
 
 
 def attach_proof_only_middleware(app: FastAPI) -> None:
-    # 1) Proof-only (optional)
+    # 1) Proof-only (runtime-toggled by STRICT_PROOF_ONLY)
 
-    if os.getenv("STRICT_PROOF_ONLY") == "1":
-        logger = logging.getLogger("proofgate")
+    logger = logging.getLogger("proofgate")
 
-        def _is_protected(path: str, method: str) -> bool:
-            # Publish-like and mutating endpoints which require a PCO token
-            protected_exact = {
-                "/v1/pco/bundle",
-                "/v1/proofgate/publish",
-                "/v1/export",
-            }
-            if path in protected_exact and method.upper() == "POST":
-                return True
+    def _is_protected(path: str, method: str) -> bool:
+        protected_exact = {"/v1/pco/bundle", "/v1/proofgate/publish"}
+        return path in protected_exact and method.upper() == "POST"
+
+    def _extract_token(req: Request) -> str | None:
+        auth = req.headers.get("authorization") or req.headers.get("Authorization")
+        if auth and auth.lower().startswith("bearer "):
+            return auth.split(" ", 1)[1].strip()
+        x = req.headers.get("x-pco-token") or req.headers.get("X-PCO-Token")
+        return x.strip() if x else None
+
+    def _verify_ed25519_jws(jws: str) -> bool:
+        try:
+            parts = jws.split(".")
+            if len(parts) != 3:
+                return False
+            header_b64u, payload_b64u, sig_b64u = parts
+            signing_input = (header_b64u + "." + payload_b64u).encode("ascii")
+            header = b64u_decode(header_b64u)
+            if b'"EdDSA"' not in header and b"EdDSA" not in header:
+                return False
+            pk = load_pubkey_bytes_from_env()
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
+            Ed25519PublicKey.from_public_bytes(pk).verify(b64u_decode(sig_b64u), signing_input)
+            return True
+        except Exception:
             return False
 
-        def _extract_token(req: Request) -> str | None:
-            # Prefer Authorization: Bearer <JWS>, fallback to X-PCO-Token
-            auth = req.headers.get("authorization") or req.headers.get("Authorization")
-            if auth and auth.lower().startswith("bearer "):
-                return auth.split(" ", 1)[1].strip()
-            x = req.headers.get("x-pco-token") or req.headers.get("X-PCO-Token")
-            return x.strip() if x else None
-
-        def _verify_ed25519_jws(jws: str) -> bool:
-            try:
-                parts = jws.split(".")
-                if len(parts) != 3:
-                    return False
-                header_b64u, payload_b64u, sig_b64u = parts
-                signing_input = (header_b64u + "." + payload_b64u).encode("ascii")
-                header = b64u_decode(header_b64u)
-                # minimal header check (alg EdDSA)
-                if b'"EdDSA"' not in header and b'EdDSA' not in header:
-                    return False
-                pk = load_pubkey_bytes_from_env()
-                from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
-
-                Ed25519PublicKey.from_public_bytes(pk).verify(b64u_decode(sig_b64u), signing_input)
-                return True
-            except Exception:
-                return False
-
-        @app.middleware("http")
-        async def _proof_only(  # type: ignore[override]
-            request: Request, call_next: Callable[[Request], Response]
-        ) -> Response:
-            try:
-                path = request.url.path
-                method = request.method
-                if _is_protected(path, method):
-                    tok = _extract_token(request)
-                    if not tok or not _verify_ed25519_jws(tok):
-                        try:
-                            logger.warning("DROP: missing/invalid PCO token path=%s method=%s", path, method)
-                        except Exception:
-                            pass
-                        return Response(status_code=403, content="DROP: proof-required")
-            except Exception:
-                # Safety net: do not block traffic unless clearly invalid
-                pass
-            return await call_next(request)
+    @app.middleware("http")
+    async def _proof_only(  # type: ignore[override]
+        request: Request, call_next: Callable[[Request], Response]
+    ) -> Response:
+        try:
+            if os.getenv("STRICT_PROOF_ONLY") != "1":
+                return await call_next(request)
+            path = request.url.path
+            method = request.method
+            if _is_protected(path, method):
+                tok = _extract_token(request)
+                if not tok or not _verify_ed25519_jws(tok):
+                    try:
+                        logger.warning("DROP: missing/invalid PCO token path=%s method=%s", path, method)
+                    except Exception:
+                        pass
+                    return Response(status_code=403, content="DROP: proof-required")
+        except Exception:
+            pass
+        return await call_next(request)
 
     # 2) Security headers (default on; disable with SEC_HEADERS=0)
 
@@ -181,6 +172,21 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
             except Exception:
                 pass
             return await call_next(request)
+
+    # 4) Enterprise: set Cache-Control: no-store on mutating methods
+    if os.getenv("SEC_NO_STORE", "1") != "0":
+
+        @app.middleware("http")
+        async def _no_store_mutations(  # type: ignore[override]
+            request: Request, call_next: Callable[[Request], Response]
+        ) -> Response:
+            resp = await call_next(request)
+            try:
+                if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+                    resp.headers.setdefault("Cache-Control", "no-store")
+            except Exception:
+                pass
+            return resp
 
 
 # === I/O / ENDPOINTS ===
