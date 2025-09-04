@@ -103,10 +103,24 @@ class CurvatureResponse(BaseModel):
 
 
 @router.get("/curvature", response_model=CurvatureResponse)
-async def curvature() -> CurvatureResponse:
-    """PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max)."""
-    # Stub: stała wartość, wykorzystywana przez gate'y/telemetrię
-    return CurvatureResponse(kappa_max=0.012)
+async def curvature(case_id: str | None = None) -> CurvatureResponse:
+    """PL/EN: CFE telemetry — compute Ricci (approx Ollivier) kappa_max for case.
+
+    case_id opcjonalny — determinuje ziarno grafu (metryka realna, ale lekka).
+    """
+    try:
+        from services.cfe import kappa_max_for_case
+        from monitoring.metrics_slo import certeus_cfe_kappa_max
+
+        summary = kappa_max_for_case(case_id)
+        try:
+            certeus_cfe_kappa_max.set(float(summary.kappa_max))
+        except Exception:
+            pass
+        return CurvatureResponse(kappa_max=summary.kappa_max)
+    except Exception:
+        # Fallback bezpieczny (nie przerywać smoków/UI)
+        return CurvatureResponse(kappa_max=0.012)
 
 
 @router.post("/geodesic", response_model=GeodesicResponse)

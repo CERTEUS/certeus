@@ -99,6 +99,10 @@ try {
   # ChatOps
   $results += Hit 'POST' '/v1/chatops/command' '{"cmd":"cfe.geodesic","args":{}}'
 
+  # MailOps
+  $mail = '{"mail_id":"SMOKE-EMAIL-1","from_addr":"smoke@example.com","to":["ops@example.com"],"subject":"Smoke","body_text":"Hello","spf":"pass","dkim":"pass","dmarc":"pass","attachments":[]}'
+  $results += Hit 'POST' '/v1/mailops/ingest' $mail
+
   # Ledger
   $rand = -join ((65..70 + 48..57) | Get-Random -Count 64 | ForEach-Object {[char]$_})
   $results += Hit 'POST' '/v1/ledger/record-input' ("{`"case_id`":`"CER-1`",`"document_hash`":`"sha256:" + $rand + "`"}")

@@ -133,6 +133,9 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"W_litera":"ALLOW","T_telos":"TRUTH","rationale":"smoke"}' http://127.0.0.1:8000/v1/ethics/double_verdict); echo "[POST] /v1/ethics/double_verdict => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"cmd":"cfe.geodesic","args":{}}' http://127.0.0.1:8000/v1/chatops/command); echo "[POST] /v1/chatops/command => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 
+# MailOps
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"mail_id":"SMOKE-EMAIL-1","from_addr":"smoke@example.com","to":["ops@example.com"],"subject":"Smoke","body_text":"Hello","spf":"pass","dkim":"pass","dmarc":"pass","attachments":[]}' http://127.0.0.1:8000/v1/mailops/ingest); echo "[POST] /v1/mailops/ingest => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+
 # Ledger
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"case_id":"CER-1","document_hash":"sha256:0000000000000000000000000000000000000000000000000000000000000000"}' http://127.0.0.1:8000/v1/ledger/record-input); echo "[POST] /v1/ledger/record-input => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 hit GET /v1/ledger/CER-1/records && PASSES+=1 || FAILS+=1

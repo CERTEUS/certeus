@@ -120,6 +120,9 @@ certeus_brier = Gauge("certeus_brier", "Brier score")
 
 certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
 
+# CFE: Ricci (kappa_max)
+certeus_cfe_kappa_max = Gauge("certeus_cfe_kappa_max", "CFE kappa_max curvature")
+
 # Histogram for compile/verification durations (ms)
 
 certeus_compile_duration_ms = Histogram(

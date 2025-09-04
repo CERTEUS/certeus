@@ -118,6 +118,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Testy: marketplace (verify/install), billing (quota/balance/allocate/refund)
   - Skrypt: scripts/marketplace/sign_manifest.py (podpis Ed25519 b64url)
   - Demo: plugins/demo_alpha, plugins/demo_beta (plugin.yaml + src/main.py)
+ - 2025-09-04 13:30:00Z [A8] (work/daily): W1: Telemetria korelacji + profilowanie (baseline)
+   - Middleware: `monitoring/correlation.py` – X-Correlation-ID + OTel trace → PCO headers
+   - Profiling: `monitoring/profiling.py` (PROFILE_HTTP=1) zapis `.pstats` slow-req
+   - API: integracja w `services/api_gateway/main.py` (attach_*_middleware)
+   - Uwagi: OTel pozostaje opcjonalny (mock OTLP w scripts/otel/mock_otlp.py)
 - 2025-09-03 17:10:00Z [agent] (work/daily): W15 D71–D74: OpenAPI+SDK+DevEx
   - OpenAPI: info.x-compat/x-release/servers/externalDocs; kontrakt vs runtime test
   - SDK: Python/TS/Go (clients/*) + quickstarts (docs/sdk/*)
@@ -192,12 +197,25 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish
   - Demo runner: scripts/demos/run_w14_demo.py → reports/w14_marketplace.json, reports/w14_billing.json
+ - 2025-09-04 10:00:00Z [agent] (work/daily): W1 D1–D4 — gates, Proof‑Only, ChatOps/MailOps, telemetria; lint zielone
+  - Gates: workflows asset‑guard/gauge_gate/path_coverage/boundary_rebuild obecne; skrypty OK (przegląd)
+  - Proof‑Only: test DROP bez PCO zielony (tests/security/test_proof_only_middleware.py)
+  - Smoke: ChatOps cfe.geodesic 200 (e2e); MailOps ingest: nowy test (tests/services/test_mailops_smoke.py)
+  - Telemetria: /v1/cfe/curvature i /v1/lexqft/coverage — nowy test (tests/services/test_telemetry_w1.py)
+  - Lint: ruff fix (re‑exporty w services/cfe/__init__.py); ruff/format zielone
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
   - UI: landing `clients/web/public/index.html`; Marketplace pokazuje też pubkey (b64url)
   - API: `GET /v1/marketplace/pubkey` (b64url); bez zmian w kontrakcie docs
   - Smokes: `scripts/smokes/marketplace_smoke.py`, `scripts/smokes/billing_smoke.py` → reports/smoke_*.json
+- 2025-09-04 13:25:00Z [agent] (work/daily): W1: CFE — Ricci (realna metryka) + API
+  - services/cfe: metryka grafowa + aproks. Olliviera; cache (p95<200ms)
+  - /v1/cfe/curvature: realny `kappa_max` (deterministyczny per case_id, fallback bezpieczny)
+  - UI geometry.html korzysta z wartości; przygotowanie do W2 (cache krzywizn)
+ - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
+   - Geometry/Quantum cockpit: telemetria (kappa_max, coverage/tunnel) — UI w `clients/web/public/geometry.html`, `quantum.html`
+   - Smoke: dodano MailOps ingest do `scripts/smoke_api.ps1` i `scripts/smoke_api.sh`; ChatOps `cfe.geodesic` OK
   - Mismatch Console: przełącznik języka (PL/EN) i i18n etykiet modali (resolve/escalate)
   - Marketplace API: hardening nazw folderów i path traversal + endpoint `sign_manifest` (DEV)
   - Visualizer: klawiaturowa nawigacja po zakładkach + aria-selected
@@ -261,8 +279,29 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-04 08:04:33Z [48793] (work/daily): release: self-hosted + dispatch; cosign enforce=ON
   - - release.yml: self-hosted runners + workflow_dispatch(tag)\n- repo var: REQUIRE_COSIGN_ATTESTATIONS=1 (enforced in ci-gates)
 - 2025-09-04 08:19:22Z [48793] (work/daily): RTBF: appeal SLA + PR summaries; ci-gates fallback var
-  - - ProofGate: /v1/rtbf/appeal_sla/{case_id}, persisted appeals\n- ci-gates: PR comment with RTBF+DPIA; runs-on via CI_GATES_RUNS_ON var\n- proof-gate: RTBF smoke + PR tick addendum
+  - - ProofGate: /v1/rtbf/appeal_sla/{case_id}, persisted appeals
+  - - ci-gates: PR comment with RTBF+DPIA; runs-on via CI_GATES_RUNS_ON var
+  - - proof-gate: RTBF smoke + PR tick addendum
 - 2025-09-04 11:00:56Z [CERTEUS] (work/daily): auto-promote:  (gates green)
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
 
+- 2025-09-04 12:45:00Z [agent] (work/daily): W1: Gates + Proof-only I/O + Telemetria + Ledger
+  - D1: workflows aktywne (asset-guard, Gauge-Gate, Path-Coverage, Boundary-Rebuild)
+  - D2: middleware STRICT_PROOF_ONLY=1 (publish/ingest/export bez PCO ⇒ DROP 403)
+  - D3: MailOps io.email.* i QTMP qtm.sequence[] logowane do Ledger (hash)
+  - D4: /v1/cfe/curvature (kappa_max) i /v1/lexqft/coverage (coverage_gamma)
+  - Lint: ruff check/format (F401 fix w services/cfe/__init__.py)
+- 2025-09-04 11:32:01Z [48793] (work/daily): W1: Devices HDE plan + LEX/FIN packs layout
+  - - /v1/devices/horizon_drive/plan (bootstrap)
+  - - Pakiet LEX: manifest pluginu
+  - - Pakiet FIN: manifest + minimalny handler
+  - - packs/domains/fin: metrics.md, confidence_levels.md
+  - - Lint (ruff) + 136 testów zielone
+- 2025-09-04 11:35:11Z [48793] (work/daily): W1: bramki + Proof-only + smokes + telemetry
+  - Gate’y: asset-guard, Gauge, Path-Coverage, Boundary Rebuild
+  - Proof-only middleware (STRICT_PROOF_ONLY) + testy
+  - ChatOps cfe.geodesic, MailOps ingest → Ledger
+  - Telemetria: /v1/cfe/curvature, /v1/lexqft/coverage
+  - Demo: scripts/smokes/w1_demo.py (PUBLISH) OK
+  - Lint+tests: 136 passed; ruff clean

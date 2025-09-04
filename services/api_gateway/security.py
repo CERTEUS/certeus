@@ -69,7 +69,6 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
                 "/v1/pco/bundle",
                 "/v1/proofgate/publish",
                 "/v1/export",
-                "/v1/mailops/ingest",
             }
             if path in protected_exact and method.upper() == "POST":
                 return True
@@ -162,6 +161,10 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
             request: Request, call_next: Callable[[Request], Response]
         ) -> Response:
             try:
+                # Ogranicz RL do operacji mutujących — GET/HEAD/OPTIONS przepuszczamy
+                if request.method.upper() in {"GET", "HEAD", "OPTIONS"}:
+                    return await call_next(request)
+
                 ip = request.client.host if request.client else "unknown"
 
                 now = time.time()

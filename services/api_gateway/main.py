@@ -38,7 +38,9 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
+from monitoring.correlation import attach_correlation_middleware
 from monitoring.otel_setup import setup_fastapi_otel
+from monitoring.profiling import attach_profiling_middleware
 import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
@@ -156,6 +158,12 @@ attach_proof_only_middleware(app)
 
 # Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
 setup_fastapi_otel(app)
+
+# Correlation-ID ↔ OTel trace ↔ PCO bridge (safe, best-effort)
+attach_correlation_middleware(app)
+
+# Optional per-request profiler (PROFILE_HTTP=1)
+attach_profiling_middleware(app)
 
 # statyki
 
