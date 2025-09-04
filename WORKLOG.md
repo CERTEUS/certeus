@@ -228,3 +228,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Verifier fix LFSC/DRAT
 =======
 >>>>>>> origin/main
+## 2025-09-04 04:24 | branch=main
+- Wk: Zielone bramki + merge do main
+  - ci-gates/Smoke/CI-Public: success
+  - OpenAPI: Spectral errors fixed, parity OK
+  - Auto-promocja: main zsynchronizowany z work/daily
+  - Porządki: PR/branches posprzątane
