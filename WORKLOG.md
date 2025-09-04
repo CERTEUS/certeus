@@ -231,3 +231,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - OpenAPI: Spectral errors fixed, parity OK
   - Auto-promocja: main zsynchronizowany z work/daily
   - Porządki: PR/branches posprzątane
+## 2025-09-04 06:05 | branch=work/daily
+- 90_dni: domknięcie raportów + migracja resztówek do vNext
+  - docs/reports/90dni_coverage_report.md: OK dla wszystkich tygodni (z odniesieniem do Issues)
+  - docs/reports/90dni_closure_tasks.md: zamknięte (Issues #58–#65)
+  - Mirror: publish_public_mirror.yml działa na push: main; auto-merge włączony; branch-protection zredukowane do CI-Public-Light/Policy-Scan; porządki gałęzi
+  - Lokalnie: .gitignore ignoruje mirror_publish/ i mirror_pub_clone/ (czysty status)
