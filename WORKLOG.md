@@ -309,3 +309,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
 
+- 2025-09-04 12:41:09Z [48793] (work/daily): W2: Boundary status+UI, PNIP strict, supply-chain gate
+  - Boundary: /v1/boundary/status + /reconstruct; UI clients/web/public/boundary.html
+  - Gate: compute_boundary_report + boundary_rebuild_gate smoke (delta_bits observed)
+  - PNIP strict: /v1/ledger/record-input validates hash/jurisdiction/policy
+  - Supply-chain: supply-chain.yml (SBOM/attest/enforce) + local gate script
+  - Demo: scripts/smokes/w2_boundary_demo.py
