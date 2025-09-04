@@ -10,6 +10,7 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 - Runbooki bezpieczeństwa i ról: `docs/runbooks/security_bunker.md`, `docs/runbooks/roles_governance.md`
 - Cookbooks operacyjne: `docs/cookbooks/chatops_mailops.md`
 - Dashboardy/alerty SRE: `observability/grafana/certeus-sre-dashboard.json`, `observability/prometheus/alert_rules_w10.yml`
+ - Runbooki demo: `docs/runbooks/w1_demo.md`
 
 ## Gałęzie i automatyzacja
 

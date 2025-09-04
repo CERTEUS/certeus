@@ -344,3 +344,15 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Testy: `tests/services/test_lexqft_wkb.py` (monotoniczność po w i V0; clamp+cross)
   - Stabilizacja RL: per-ścieżka (domyślnie `/health`), spójna z testami
   - Lint/tests: 141 passed / 1 skipped; ruff OK; raport `reports/junit.xml`
+## 2025-09-04 14:30 | branch=work/daily
+- [A6] W1: Quickstart + Demo + Cockpit
+  - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
+  - Cookbook: docs/cookbooks/chatops_mailops.md; Runbook: docs/runbooks/w1_demo.md
+  - Skrypty: scripts/demos/w1_demo.ps1, scripts/demos/w1_demo.sh; raport: reports/w1_demo.json
+  - Smoki: dopisane MailOps ingest + historia QTMP (PS1/sh)
+  - UI: linki Cockpit (Geometry/Quantum/Boundary) na landing `clients/web/public/index.html`; Quantum: Measurement Log
+- 2025-09-04 13:17:58Z [48793] (work/daily): W3: Geometry cockpit + CFE geodesic/horizon demo
+  - CFE: /v1/cfe/geodesic (PCO header) i /v1/cfe/horizon (mass + lock)
+  - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
+  - Gauge-Gate: drift na kappa_max (epsilon=1e-3) — workflow aktywny
+  - Demo: scripts/smokes/w3_geometry_demo.py (ledger entries OK)
