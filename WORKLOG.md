@@ -198,6 +198,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: marketplace.html – przycisk Install/Upgrade + znacznik signed
   - Gate: marketplace_policy_gate — kompatybilny; manifests mają license
   - Testy: 209 passed, 5 skipped; a11y smoke OK
+- 2025-09-05 00:00:00Z [agent] (work/daily): W14 D69–D70 — Billing API + Demo tygodnia
+  - Billing: /v1/billing (quota/allocate/refund) + /v1/fin/tokens (request/allocate/status)
+  - README/ENDPOINTS: instrukcje demo (Marketplace + Billing + i18n/A11y)
+  - Testy: 215 passed, 5 skipped; a11y smoke OK
 - 2025-09-04 19:15:45Z [root] (work/daily): W13: Marketplace — szczegóły pakietu (modal) + /v1/packs/{name}
   - - UI: panel detali (capabilities, manifest, status)\n- API: GET /v1/packs/{name} — manifest+meta\n- Testy: 199 passed (lokalnie)
 - 2025-09-04 19:15:50Z [root] (work/daily): W14 (A8): Compliance Mapping Gate (DPIA/ISO/SOC2) w CI
@@ -234,3 +238,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Packs admin: /v1/packs/install/enable/try/list/details + test smoke\n- Billing: /v1/billing (quota/allocate/refund) + /v1/fin/tokens endpoints włączone\n- Ω‑Kernel: entropy/entities drift (stabilized)\n- pytest: 215 passed, 5 skipped; ruff OK
 - 2025-09-04 20:31:53Z [root] (work/daily): W13: Marketplace — Docs link + /docs mount [week-end]
   - - UI: Docs button → /docs/guides/packs_abi_semver.md\n- API: mount /docs as static (read-only)\n- Tests: 215 passed (lokalnie)\nweekly-promote: true
+- 2025-09-04 20:37:09Z [root] (work/daily): W17 (A8): Tenant SLO trend + Isolation; stabilize Billing/FIN tokens
+  - - CI: tenant SLO trend gate vs ci-status + publish tenant_slo.json\n- Isolation: tenant isolation check gate (report-only)\n- Billing: /v1/billing/* stabilized; FIN tokens state path via CERTEUS_TEST_STATE_PATH; test reload-safe\n- Suite: 215 passed

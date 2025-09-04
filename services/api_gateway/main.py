@@ -42,6 +42,7 @@ from monitoring.metrics_slo import certeus_http_request_duration_ms
 from monitoring.otel_setup import setup_fastapi_otel
 import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.billing_api as billing_api
+import services.api_gateway.routers.billing_quota as billing_quota
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -50,6 +51,7 @@ import services.api_gateway.routers.dr as dr
 import services.api_gateway.routers.ethics as ethics
 import services.api_gateway.routers.export as export
 import services.api_gateway.routers.fin as fin
+import services.api_gateway.routers.fin_tokens_api as fin_tokens_api
 import services.api_gateway.routers.ledger as ledger
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
@@ -258,55 +260,37 @@ app.openapi = _cached_openapi  # type: ignore[assignment]
 # --- blok --- Rejestr routerów -------------------------------------------------
 
 app.include_router(system.router)
-
 app.include_router(preview.router)
-
 if pco_public is not None:
     app.include_router(pco_public.router)
-
-if pco_bundle is not None:  # only include if import succeeded
+if pco_bundle is not None:
     app.include_router(pco_bundle.router)
-
 app.include_router(export.router)
-
 app.include_router(ledger.router)
-
 app.include_router(mismatch.router)
-
 app.include_router(boundary.router)
-
 app.include_router(verify.router)
-
 app.include_router(cfe.router)
-
 app.include_router(qtm.router)
-
 app.include_router(lexenith.router)
-
 app.include_router(devices.router)
-
 app.include_router(dr.router)
-
 app.include_router(upn.router)
-
 app.include_router(lexqft.router)
-
 app.include_router(chatops.router)
-
 app.include_router(mailops.router)
-
 app.include_router(ethics.router)
-
 app.include_router(fin.router)
+app.include_router(fin_tokens_api.router)
 app.include_router(billing.router_tokens)
-
+app.include_router(billing.router)
+app.include_router(billing_quota.router)
 app.include_router(billing_api.router)
+app.include_router(billing.router_tokens)
+app.include_router(billing.router)
 app.include_router(packs.router)
-
 app.include_router(pfs.router)
-
 app.include_router(jwks_router)
-
 app.include_router(metrics.router)
 
 
