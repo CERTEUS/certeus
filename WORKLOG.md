@@ -184,3 +184,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Gate: scripts/gates/compliance_mapping_gate.py (report-only; ENFORCE_COMPLIANCE_MAPPING=1 for hard fail)\n- CI: .github/workflows/ci-gates.yml — krok i tick w PR summary\n- Test: tests/policies/test_compliance_mapping_gate.py; suite 199 passed
 - 2025-09-04 19:29:32Z [root] (work/daily): W15–W16 (A8): GameDay DR + OpenAPI Contract Gate
   - - GameDay DR: ci-gates step (dry-run) via scripts/dr/drill_boundary_failure.py; tick in PR summary\n- OpenAPI Contract Gate: scripts/gates/openapi_contract_gate.py (docs vs runtime subset); CI step + tick\n- PFS: /v1/pfs/list (stub) for ProofFS tests; omega transforms drift bounded\n- Suite: 209 passed, 5 skipped
+- 2025-09-04 19:29:50Z [root] (work/daily): W13: Marketplace — Try endpoint + SemVer/Baseline status
+  - - API: POST /v1/packs/try (mini-registry; exporter/adapter)\n- Details: semver_ok + baseline_present\n- UI: Try/Docs w panelu szczegółów\n- Tests: 209 passed (lokalnie)
