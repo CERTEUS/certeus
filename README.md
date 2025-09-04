@@ -46,6 +46,7 @@ Przeglądaj w przeglądarce po uruchomieniu API:
  - ChatOps: `http://127.0.0.1:8000/app/public/chatops.html`
  - MailOps: `http://127.0.0.1:8000/app/public/mailops.html`
   - FIN Dashboard: `http://127.0.0.1:8000/app/public/fin_dashboard.html`
+  - LEX Generator: `http://127.0.0.1:8000/app/public/lex_generator.html`
 
 ## ChatOps / MailOps (cURL)
 

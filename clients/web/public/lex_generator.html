@@ -1,0 +1,80 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/lex_generator.html                |
+| ROLE: Web client page (LEX generator).                       |
+| PLIK: clients/web/public/lex_generator.html                |
+| ROLA: Strona web (generator pism + micro-court).             |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="CERTEUS LEX generator: motions + micro-court pipeline" />
+    <title>CERTEUS • LEX Generator</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:1080px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      input,select,textarea{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
+      textarea{width:100%;min-height:140px}
+      pre{white-space:pre-wrap;background:#0f1115;border:1px solid #2a2d33;border-radius:10px;padding:12px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>LEX • Motion generator</h1>
+        <div class="row">
+          <input id="case" placeholder="case id (LEX-001)">
+          <select id="pattern">
+            <option value="motion-dismiss">motion-dismiss</option>
+            <option value="motion-summary">motion-summary</option>
+          </select>
+          <button id="gen" class="btn">Generate</button>
+          <button id="download" class="btn">Download</button>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <textarea id="facts" placeholder='facts JSON (opcjonalnie), np. {"claim":"..."}'></textarea>
+        </div>
+        <div class="row" style="margin-top:8px;">
+          <input id="cites" placeholder="citations (comma or newline)">
+        </div>
+        <p class="muted">Document:</p>
+        <pre id="doc"></pre>
+      </div>
+      <div class="card">
+        <h1>Micro‑Court</h1>
+        <div class="row">
+          <input id="mcase" placeholder="case id (LEX-001)">
+          <button id="lock" class="btn">Lock</button>
+          <button id="publish" class="btn">Publish</button>
+          <span class="muted">Status:<span id="mcStatus" class="pill">-</span></span>
+          <a id="mledger" href="#" target="_blank" class="muted">Open ledger</a>
+        </div>
+      </div>
+    </div>
+    <script>
+      async function fetchJSON(url, opts){ const r = await fetch(url, opts); const t = await r.text(); try{ return {ok:r.ok, data: JSON.parse(t), headers:r.headers} } catch { return {ok:r.ok, data:t, headers:r.headers} } }
+      function parseFacts(){ try{ const raw=document.getElementById('facts').value||''; if(!raw.trim()) return {}; return JSON.parse(raw); }catch{return {}} }
+      function parseCitations(){ const raw=(document.getElementById('cites').value||'').split(/\n|,/).map(x=>x.trim()).filter(Boolean); return raw }
+      async function generate(){ const caseId=(document.getElementById('case').value||'LEX-001'); const pattern=document.getElementById('pattern').value; const facts=parseFacts(); const citations=parseCitations(); const r=await fetchJSON('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId, pattern_id:pattern, facts, citations})}); if(r.ok){ document.getElementById('doc').textContent = r.data.document || ''; } }
+      function download(){ const txt=document.getElementById('doc').textContent||''; const blob=new Blob([txt],{type:'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='motion.txt'; a.click(); URL.revokeObjectURL(a.href); }
+      async function mcLock(){ const caseId=(document.getElementById('mcase').value||'LEX-001'); const r=await fetchJSON('/v1/lexenith/micro_court/lock',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId})}); if(r.ok){ document.getElementById('mcStatus').textContent='locked'; document.getElementById('mledger').href = `/v1/ledger/${encodeURIComponent(caseId)}/records`; } }
+      async function mcPublish(){ const caseId=(document.getElementById('mcase').value||'LEX-001'); const r=await fetchJSON('/v1/lexenith/micro_court/publish',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId, footnotes:[]})}); if(r.ok){ document.getElementById('mcStatus').textContent='published'; document.getElementById('mledger').href = `/v1/ledger/${encodeURIComponent(caseId)}/records`; } }
+      document.getElementById('gen').addEventListener('click', generate);
+      document.getElementById('download').addEventListener('click', download);
+      document.getElementById('lock').addEventListener('click', mcLock);
+      document.getElementById('publish').addEventListener('click', mcPublish);
+    </script>
+  </body>
+  </html>
+

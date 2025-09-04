@@ -232,6 +232,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Security: rate-limit (GET /health) sterowany `RATE_LIMIT_PER_MIN`; headers bez zmian
   - Telemetria: `certeus_cfe_kappa_max` (Prometheus); OpenAPI docs z `/v1/cfe/curvature`
   - Pytests: 141 passed, 1 skipped (lokalnie, .venv_cli)
+- 2025-09-04 16:10:00Z [agent] (work/daily): W1/W2: CFE cache TTL + warm, Lensing UI, testy
+  - CFE cache: TTL via `CFE_CACHE_TTL_SEC` + `/v1/cfe/cache/warm` (list[case])
+  - UI Geometry: panel Lensing Map (bary) + auto‑odświeżanie po akcjach
+  - Testy: determinism (CFE), horizon/lensing, całość zielona (158 passed)
  - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
    - Geometry/Quantum cockpit: telemetria (kappa_max, coverage/tunnel) — UI w `clients/web/public/geometry.html`, `quantum.html`
    - Smoke: dodano MailOps ingest do `scripts/smoke_api.ps1` i `scripts/smoke_api.sh`; ChatOps `cfe.geodesic` OK
@@ -451,3 +455,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Runbook: docs/runbooks/w5_operator_composer.md
   - ci-gates: Q-Oracle/Entangler/HDE snapshots + PR lines
   - Testy: 158 passed (zielone)
+- 2025-09-04 14:17:42Z [48793] (work/daily): W8: SYNAPSY P2P v1 (stub) — Devices kolejki
+  - - runtime/p2p_queue.py: in-proc deterministyczna kolejka
+  - - Router: /v1/p2p (enqueue/jobs/queue/dequeue_once)
+  - - Metryki: certeus_p2p_*
+  - - Testy: tests/services/test_p2p_queue.py
+  - - Lint OK; 159 testów zielone

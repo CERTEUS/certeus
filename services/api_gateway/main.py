@@ -57,9 +57,8 @@ import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
-import services.api_gateway.routers.packs as packs
-import services.api_gateway.routers.pfs as pfs
 import services.api_gateway.routers.p2p as p2p
+import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable

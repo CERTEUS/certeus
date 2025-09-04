@@ -51,6 +51,7 @@ Open Cockpit UI:
  - ChatOps: `/app/public/chatops.html`
  - MailOps: `/app/public/mailops.html`
  - FIN Dashboard: `/app/public/fin_dashboard.html`
+ - LEX Generator: `/app/public/lex_generator.html`
 
 Smoke tests:
 

@@ -537,6 +537,45 @@ jobs:
               lines.append(f"Entangler: achieved_negativity={ei.get('achieved_negativity')}")
           except Exception:
               lines.append('Entangler: summary n/a')
+          # KPI table (compact snapshot)
+          try:
+              def _read(p):
+                  try:
+                      return json.loads((repo/'out'/p).read_text())
+                  except Exception:
+                      return {}
+              perf = _read('perf_bench.json')
+              cov = _read('lexqft_coverage_state.json')
+              tun = _read('lexqft_tunnel.json')
+              cq = _read('cfe_qtmp.json')
+              hde = _read('hde_plan.json')
+              qo = _read('qoracle.json')
+              ei = _read('entangler.json')
+              lines.append('')
+              lines.append('### KPI Snapshot')
+              lines.append('| Metric | Value |')
+              lines.append('|--|--|')
+              try:
+                  lines.append(f"| p95 worst | {float(perf.get('worst_p95_ms', 0.0)):.2f} ms |")
+              except Exception:
+                  lines.append('| p95 worst | n/a |')
+              lines.append(f"| coverage_gamma | {cov.get('coverage_gamma', 'n/a')} |")
+              lines.append(f"| uncaptured_mass | {cov.get('uncaptured_mass', 'n/a')} |")
+              p_low = ((tun.get('low') or {}).get('p_tunnel') if tun else None)
+              p_high = ((tun.get('high') or {}).get('p_tunnel') if tun else None)
+              lines.append(f"| tunneling p_low | {p_low if p_low is not None else 'n/a'} |")
+              lines.append(f"| tunneling p_high | {p_high if p_high is not None else 'n/a'} |")
+              lines.append(f"| CFE↔QTMP corr | {(cq.get('corr') if cq else 'n/a')} |")
+              pri = cq.get('priorities') if cq else {}
+              lines.append(f"| pri_L | {pri.get('L', 'n/a')} |")
+              lines.append(f"| pri_T | {pri.get('T', 'n/a')} |")
+              lines.append(f"| HDE cost_tokens | {hde.get('cost_tokens', 'n/a')} |")
+              lines.append(f"| HDE expected_kappa | {hde.get('expected_kappa', 'n/a')} |")
+              lines.append(f"| Q-Oracle payoff | {qo.get('payoff', 'n/a')} |")
+              lines.append(f"| Q-Oracle choice | {(qo.get('optimum') or {}).get('choice', 'n/a')} |")
+              lines.append(f"| Entangler achieved_negativity | {ei.get('achieved_negativity', 'n/a')} |")
+          except Exception:
+              pass
           # Local gate ticks
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
