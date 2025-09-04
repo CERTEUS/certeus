@@ -154,3 +154,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - OpenAPI odświeżone; ruff OK; pytest: 191 passed, 4 skipped
 - 2025-09-04 18:36:38Z [root] (work/daily): T14 D66 start: A11y baseline tests + checklist
   - - tests/web/test_a11y_static_pages.py: meta/lang/title/h1/img-alt/link checks\n- docs/a11y_checklist.md: WCAG 2.2 AA baseline\n- Stabilizacja Hypothesis (too_slow) w QTM property\n- pytest: 191 passed, 4 skipped; ruff OK
+- 2025-09-04 18:56:21Z [root] (work/daily): W13 (A8): CI — Marketplace Policy Gate dodany do ci-gates (report-only)
+  - - Workflow: .github/workflows/ci-gates.yml (krok + tick w PR summary)\n- Plugin manifests: license: MIT dodane (plugins/*/plugin.yaml)\n- Tests: full suite 198 passed

@@ -9,5 +9,6 @@
 
 name: exporter_pl
 version: 0.1.0
+license: MIT
 module: plugins.exporter_pl.src.main
 register: register

@@ -12,6 +12,7 @@
 # +-------------------------------------------------------------+
 name: lexlog_rules_pl
 version: "0.1.0"
+license: MIT
 enabled: true
 
 # Moduł, który zawiera funkcję `register(api)` lub klasę `Plugin` z `register(api)`
