@@ -1,61 +1,15 @@
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-# ignore any local virtualenvs created for dev/testing
-.venv_*/
-.venvlin*/
-.venvlin/
-.venvlin*/
-.venvlin
-.venvlin*
-.venvlin*
-.venv_cli/
-.venv_lin/
-.venv*/
-venv*/
-.git-credentials
-*.egg-info/
-gitleaks-report.json
-.secrets.baseline
-tools/automation/*.local
-
-# Env / secrets (local only)
-.env
-.env.local
-.devkeys/
-
-# Artefakty
-/reports/
-data/public_pco/
-out/
-data/lexqft_coverage_state.json
-
-# IDE / OS
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-
-# Build / frontend
-build/
-dist/
-node_modules/
-site/
-
-# Local mirror worktrees
-mirror_publish/
-mirror_pub_clone/
-
-# Cache / coverage
-.cache/
-.ruff_cache/
-.pytest_cache/
-.coverage*
-htmlcov/
-data/law_cache/
-exports/
-static/previews/
-
-.hypothesis/
+# GitHub Actions runner local artifacts (keep runner out of repo!)
+_work/
+_diag/
+externals/
+bin/
+.run*
+.credentials*
+actions-runner-*
+config.cmd
+run.cmd
+run-helper.cmd*
+# Runner toolcache
+_work/_tool/
+# Embedded checkout from runner
+_work/certeus/certeus/
