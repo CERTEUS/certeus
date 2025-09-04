@@ -8,6 +8,18 @@ Cel: Utrzymać czysty core (prywatny) i publiczny mirror LITE z zielonymi checka
 - Core CI na gałęzi roboczej: ciężkie workflowy ograniczone (ci-gates/UI/Docs/denylist uruchamiają się tylko na main lub w PR)
 - Mirror: publikacja przez `Publish-Public-Mirror` (po Promote-Daily-to-Main, oraz na push: main)
 
+## Bramki vNext (nowe)
+- Canary Gate (readiness):
+  - Lokalnie: `python scripts/gates/canary_gate.py --phases 3 --count 60`
+  - CI: `ci-gates` (krok Canary) oraz PR-only workflow `Canary-Gate`.
+- RTBF smoke + DPIA:
+  - CLI: `python scripts/compliance/right_to_be_forgotten_smoke.py`
+  - ProofGate RTBF endpoints smoke (in-proc): `python scripts/compliance/rtbf_proofgate_smoke.py`
+- Redaction enforcement (STRICT):
+  - CI (ci-gates): krok „Redaction Gate (STRICT clean payload)” — musi przejść.
+- Supply-chain enforce (deny-by-default):
+  - CI (ci-gates): generacja SBOM + provenance + enforce.
+
 ## Tygodniowy promote
 - Upewnij się, że tydzień zamknięty i testy zielone.
 - Zrób commit z markerem tygodnia `[week-end]` lub trailer `weekly-promote: true`.
@@ -41,4 +53,3 @@ Cel: Utrzymać czysty core (prywatny) i publiczny mirror LITE z zielonymi checka
 - Commit: Conventional Commits (feat/fix/chore/docs/ci/perf).
 - PR: auto-merge po zielonych checkach.
 - Mirror: squash z allowlisty; publikacja na `main`.
-

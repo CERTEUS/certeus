@@ -63,6 +63,26 @@ class PublishResponse(BaseModel):
     ledger_ref: str | None = None
 
 
+class RtbfAppealRequest(BaseModel):
+    case_id: str = Field(..., description="Case identifier (RID or CASE_ID)")
+    reason: str | None = Field(default=None, description="Optional appeal reason")
+
+
+class RtbfAppealResponse(BaseModel):
+    status: str
+    case_id: str
+    reason: str | None = None
+
+
+class RtbfEraseRequest(BaseModel):
+    case_id: str = Field(..., description="Case identifier (RID or CASE_ID)")
+
+
+class RtbfEraseResponse(BaseModel):
+    status: str
+    case_id: str
+
+
 # === LOGIKA / LOGIC ===
 
 app = FastAPI(title="ProofGate", version=__version__)
@@ -76,6 +96,29 @@ def healthz() -> dict[str, Any]:
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+_RTBF_STORE = _repo_root() / "out" / "rtbf_erased.json"
+
+
+def _load_rtbf_store() -> set[str]:
+    try:
+        import json
+
+        data = json.loads(_RTBF_STORE.read_text(encoding="utf-8")) if _RTBF_STORE.exists() else []
+        return {str(x) for x in (data or [])}
+    except Exception:
+        return set()
+
+
+def _save_rtbf_store(items: set[str]) -> None:
+    try:
+        import json
+
+        _RTBF_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _RTBF_STORE.write_text(json.dumps(sorted(items), indent=2), encoding="utf-8")
+    except Exception:
+        pass
 
 
 def _load_policy_pack() -> dict[str, Any]:
@@ -366,6 +409,38 @@ def publish(req: PublishRequest) -> PublishResponse:
 
 
 # === I/O / ENDPOINTS ===
+
+
+@app.post("/v1/rtbf/appeal", response_model=RtbfAppealResponse)
+def rtbf_appeal(req: RtbfAppealRequest) -> RtbfAppealResponse:
+    """
+    PL: Rejestruje odwołanie RTBF (stub); zwraca status RECEIVED.
+    EN: Registers an RTBF appeal (stub); returns status RECEIVED.
+    """
+
+    return RtbfAppealResponse(status="RECEIVED", case_id=req.case_id, reason=req.reason)
+
+
+@app.post("/v1/rtbf/erase", response_model=RtbfEraseResponse)
+def rtbf_erase(req: RtbfEraseRequest) -> RtbfEraseResponse:
+    """
+    PL: Zaznacza sprawę jako usuniętą (stub, brak dostępu do prywatnych danych w ProofGate).
+    EN: Marks case as erased (stub; ProofGate has no access to private data).
+    """
+
+    items = _load_rtbf_store()
+    items.add(req.case_id)
+    _save_rtbf_store(items)
+    return RtbfEraseResponse(status="ERASED", case_id=req.case_id)
+
+
+@app.get("/v1/rtbf/erased/{case_id}")
+def rtbf_erased(case_id: str) -> dict[str, bool]:
+    """PL/EN: Returns whether a case is marked as erased (best-effort)."""
+
+    items = _load_rtbf_store()
+    return {"erased": case_id in items}
+
 
 # Cache OpenAPI JSON in-memory to reduce overhead
 _openapi_schema_cache = None
