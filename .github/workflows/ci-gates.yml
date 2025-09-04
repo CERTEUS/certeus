@@ -254,6 +254,18 @@ PY
           python scripts/gates/asset_integrity_gate.py || true
           test -f out/asset_integrity.json && echo ok || true
 
+      - name: SPIFFE Identity Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/security/spiffe_identity_gate.py || true
+          test -f out/spiffe_report.json && echo ok || true
+
+      - name: KMS Rotation Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/security/kms_rotation_gate.py || true
+          test -f out/kms_rotation.json && echo ok || true
+
       - name: Upload perf report
         if: always()
         uses: actions/upload-artifact@v4
@@ -810,6 +822,18 @@ PY
               lines.append(f"Assets: checked={ai.get('checked')} ok={ai.get('ok')}")
           except Exception:
               lines.append('Assets: n/a')
+          # SPIFFE summary
+          try:
+              sp = json.loads((repo/'out'/'spiffe_report.json').read_text())
+              lines.append(f"SPIFFE: present={sp.get('present')} source={sp.get('source')}")
+          except Exception:
+              lines.append('SPIFFE: n/a')
+          # KMS rotation summary
+          try:
+              km = json.loads((repo/'out'/'kms_rotation.json').read_text())
+              lines.append(f"KMS: present={km.get('present')} mode={km.get('mode')}")
+          except Exception:
+              lines.append('KMS: n/a')
           # Correlation headers sample
           try:
               corr = (repo/'out'/'correlation.txt').read_text().strip()
