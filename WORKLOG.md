@@ -245,3 +245,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - promote: triggered (self-hosted), monitoring to success
 - 2025-09-04 07:25:16Z [48793] (work/daily): release: SBOM+provenance keyless signing + assets
   - - release.yml: cosign sign-blob + attach sbom/provenance to release
+- 2025-09-04 07:26:47Z [48793] (work/daily): fix: canary_gate sys.path injection (robust import)
+  - - scripts/gates/canary_gate.py: add repo root to sys.path before importing app
