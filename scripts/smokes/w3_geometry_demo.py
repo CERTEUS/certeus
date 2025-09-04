@@ -28,6 +28,7 @@ def _ensure_repo_on_path() -> None:
 _ensure_repo_on_path()
 
 from fastapi.testclient import TestClient  # noqa: E402
+
 from services.api_gateway.main import app as gateway_app  # noqa: E402
 
 
@@ -70,4 +71,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
