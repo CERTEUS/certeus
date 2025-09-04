@@ -108,7 +108,7 @@ class CurvatureResponse(BaseModel):
 
 
 @router.get("/curvature", response_model=CurvatureResponse)
-async def curvature(case_id: str | None = None, response: Response | None = None) -> CurvatureResponse:
+async def curvature(case_id: str | None = None, response: Response = None) -> CurvatureResponse:
     """PL/EN: CFE telemetry — compute Ricci (approx Ollivier) kappa_max for case.
 
     case_id opcjonalny — determinuje ziarno grafu (metryka realna, ale lekka).

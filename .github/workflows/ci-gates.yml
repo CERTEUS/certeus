@@ -31,13 +31,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            constraints/**
       - name: Install tools
         run: |
           python -m pip install -U pip wheel setuptools
           # Install project runtime deps
           python -m pip install -e .
           # Install test/dev helpers explicitly used by the suite
-          python -m pip install ruff pytest pytest-asyncio httpx z3-solver hypothesis openapi-spec-validator PyYAML
+          python -m pip install ruff pytest pytest-xdist pytest-asyncio httpx z3-solver hypothesis openapi-spec-validator PyYAML
 
       - name: Load CI defaults (non-secrets)
         run: |
@@ -77,7 +82,7 @@ jobs:
           args: detect --verbose --redact --no-banner --exit-code 1
       - name: Tests
         env:
-          PYTEST_ADDOPTS: "-k 'not test_generate_proofs_cli_smoke_test'"
+          PYTEST_ADDOPTS: "-n auto --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"
           OTEL_ENABLED: "1"
           OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
           FINE_GRAINED_ROLES: "0"
@@ -202,6 +207,12 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/perf_ok.txt
+
+      - name: DP Policy Gate (OPA/Rego)
+        continue-on-error: true
+        run: |
+          python scripts/gates/dp_policy_gate.py || true
+          test -f out/dp_policy_report.json && echo ok || true
 
       - name: Upload perf report
         if: always()
@@ -625,6 +636,12 @@ jobs:
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
           # Supply-chain summary
           lines.append(f"Supply-chain: {'✅' if (repo/'out'/'supply_chain_ok.txt').exists() else '❌'} (sbom+provenance)")
+          # DP Policy summary
+          try:
+              dp = json.loads((repo/'out'/'dp_policy_report.json').read_text())
+              lines.append(f"DP Policy: status={dp.get('status')} used={dp.get('used')}")
+          except Exception:
+              lines.append('DP Policy: n/a')
           # Correlation headers sample
           try:
               corr = (repo/'out'/'correlation.txt').read_text().strip()

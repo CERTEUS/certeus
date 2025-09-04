@@ -216,6 +216,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Supply-chain: lokalny SBOM stub (scripts/supply_chain/generate_sbom.py)
   - Perf: W2 demo odpala quick_bench (p95) i zapisuje out/perf_bench.json
   - W3: CFE geodesic/horizon — testy nagłówków PCO; Gauge Gate z telemetrią CFE
+ - 2025-09-04 14:10:00Z [agent] (work/daily): W3 domknięcie + W4 start (QTMP)
+  - QTMP: fix init_case (basis default), UI qtm.html: sekwencje LT/TL → measure_sequence
+  - Testy: QTMP API pakiet zielony (init/measure/sequence/presets/decoherence/commutator)
+  - Dema: W3 (geodesic+lock→publish), W4 (L→T vs T→L; dekoherencja) — raporty w reports/w3_demo.json i reports/w4_demo.json
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes

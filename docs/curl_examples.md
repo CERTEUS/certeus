@@ -129,6 +129,14 @@ curl -s -X POST http://127.0.0.1:8000/v1/qtm/commutator \
 curl -s http://127.0.0.1:8000/v1/qtm/uncertainty | jq .
 ```
 
+- Sekwencja operatorów (L,T,W):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/measure_sequence \
+ -H 'Content-Type: application/json' \
+ -d '{"operators":["L","T","W"],"case":"LEX-QTMP-1"}' | jq .
+```
+
 ## Marketplace (podpisy i instalacja)
 
 - Lista wtyczek:
