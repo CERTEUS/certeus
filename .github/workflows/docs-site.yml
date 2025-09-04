@@ -40,7 +40,7 @@ jobs:
           # Auto-install common mkdocs plugins if referenced in mkdocs.yml
           if [ -f mkdocs.yml ]; then
             if grep -q 'sitemap' mkdocs.yml; then
-              python -m pip install 'mkdocs-sitemap-plugin' || python -m pip install 'mkdocs-sitemap'
+              echo 'sitemap plugin referenced; skipping install (plugin unavailable)'
             fi
             if grep -q 'minify' mkdocs.yml; then
               python -m pip install 'mkdocs-minify-plugin'

@@ -8,6 +8,8 @@
 name: Publish-Public-Mirror
 
 on:
+  push:
+    branches: [ main ]
   workflow_run:
     workflows: [Promote-Daily-To-Main]
     types: [completed]

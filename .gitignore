@@ -44,6 +44,10 @@ dist/
 node_modules/
 site/
 
+# Local mirror worktrees
+mirror_publish/
+mirror_pub_clone/
+
 # Cache / coverage
 .cache/
 .ruff_cache/
