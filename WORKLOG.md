@@ -414,6 +414,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - W7: Read‑only ProofFS — `GET /v1/pfs/inspect`, `GET /v1/pfs/case/{case}`; zapis ścieżek przez lexqft
   - Testy: `tests/services/test_lexqft_dispute.py`, `tests/services/test_pfs_inspect.py`
   - Lint/tests: 175 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 17:15 | branch=work/daily
+- [A4] W8: DHT kompetencji (SYNAPSY P2P v1 – ProofFS)
+  - API: `/v1/pfs/dht/{announce,query,publish_path}` (JSON store `data/pfs_dht.json`)
+  - Testy: `tests/services/test_pfs_dht.py` (announce→query→publish)
+  - Security: Proof-only middleware runtime‑toggle (STRICT_PROOF_ONLY) i bez ochrony `/v1/export`
+  - Lint/tests: 178 passed / 1 skipped; `reports/junit.xml`
 ## 2025-09-04 14:30 | branch=work/daily
 - [A6] W1: Quickstart + Demo + Cockpit
   - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
