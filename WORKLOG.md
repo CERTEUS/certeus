@@ -355,6 +355,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Metryki: `certeus_lexqft_energy_debt{case}` (Prometheus)
   - Testy: `tests/services/test_lexqft_virtual_pairs.py` (spawn w budżecie, blokada przy przekroczeniu)
   - Lint/tests: 146 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 15:10 | branch=work/daily
+- [A4] W4: Renormalizacja autorytetu (cldf.renorm.*)
+  - API: `POST /v1/lexqft/renorm` → rozkład prawdopodobieństwa (persist per‑case)
+  - PCO: `X-CERTEUS-PCO-cldf.renorm.entropy` (entropia Shannona)
+  - Testy: `tests/services/test_lexqft_renorm.py` (normalizacja, uniform dla sumy 0)
+  - Lint/tests: 151 passed / 1 skipped; `reports/junit.xml`
 ## 2025-09-04 14:30 | branch=work/daily
 - [A6] W1: Quickstart + Demo + Cockpit
   - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)

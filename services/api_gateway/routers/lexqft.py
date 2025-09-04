@@ -404,6 +404,7 @@ async def renorm(req: RenormRequest, response: Response) -> RenormResponse:
 
     try:
         from monitoring.metrics_slo import certeus_lexqft_coverage_gamma as _noop  # keep import style consistent
+
         # (opcjonalnie można dodać dedykowany gauge, ale nie wymuszamy tutaj)
         _ = _noop
     except Exception:

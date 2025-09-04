@@ -291,3 +291,15 @@ certeus_lex_pilot_last_rating = Gauge(
     "LEX pilot last feedback rating",
     labelnames=("case", "tenant"),
 )
+
+# LEX Micro‑Court (W6)
+certeus_lex_micro_court_locked_total = Counter(
+    "certeus_lex_micro_court_locked_total",
+    "LEX Micro‑Court locked events",
+    labelnames=("case", "tenant"),
+)
+certeus_lex_micro_court_published_total = Counter(
+    "certeus_lex_micro_court_published_total",
+    "LEX Micro‑Court published events",
+    labelnames=("case", "tenant"),
+)
