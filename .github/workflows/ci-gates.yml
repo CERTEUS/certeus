@@ -446,6 +446,52 @@ jobs:
           python scripts/deploy/canary_progressive_gate.py || true
           test -f out/canary_report.json && echo ok > out/canary_ok.txt || true
 
+      - name: Compose CI Summary
+        if: always()
+        run: |
+          python - << 'PY'
+          import json, os, pathlib, urllib.request
+          repo = pathlib.Path('.').resolve()
+          lines = []
+          # Perf summary
+          try:
+              p = repo/'out'/'perf_bench.json'
+              if p.exists():
+                  data = json.loads(p.read_text())
+                  lines.append(f"Perf: worst_p95_ms={data.get('worst_p95_ms')} avg_p95_ms={data.get('avg_p95_ms')}")
+          except Exception:
+              lines.append('Perf: not available')
+          # Tenant SLO summary
+          try:
+              t = repo/'out'/'tenant_slo.json'
+              if t.exists():
+                  ts = json.loads(t.read_text())
+                  parts = []
+                  for k,v in (ts or {}).items():
+                      parts.append(f"{k}:p95={v.get('p95_ms')} er={v.get('error_rate')}")
+                  lines.append('Tenant SLO: ' + ' | '.join(parts))
+          except Exception:
+              lines.append('Tenant SLO: not available')
+          # Endpoint SLO aggregation (top 3 worst p95)
+          try:
+              ep = repo/'out'/'endpoint_slo.json'
+              if ep.exists():
+                  es = json.loads(ep.read_text())
+                  items = [ (k, float(v.get('p95_ms') or 0.0), float(v.get('error_rate') or 0.0)) for k,v in (es or {}).items() ]
+                  items.sort(key=lambda x: x[1], reverse=True)
+                  top = items[:3]
+                  if top:
+                      lines.append('Endpoint SLO (top p95): ' + ' | '.join(f"{k}:p95={p95:.1f} er={er:.3f}" for k,p95,er in top))
+          except Exception:
+              lines.append('Endpoint SLO: not available')
+          # Smokes/Gates ticks
+          def _tick(p: str) -> str:
+              return '✅' if (repo/'out'/p).exists() else '❌'
+          lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
+          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')} • P2P={_tick('p2p_turbulence_ok.txt')} • TenantSLO={_tick('tenant_slo_ok.txt')} • EndpointSLO={_tick('endpoint_slo_ok.txt')} • Trend(Tenant)={_tick('tenant_slo_trend_ok.txt')} • Trend(Endpoint)={_tick('endpoint_slo_trend_ok.txt')} • Burn={_tick('burn_ok.txt')} • Canary={_tick('canary_ok.txt')} • OpenAPI(spec)={_tick('openapi_spec_ok.txt')} • OpenAPI(contract)={_tick('openapi_contract_ok.txt')} • OpenAPI(GET)={_tick('openapi_get_sanity_ok.txt')} • Spectral={_tick('openapi_spectral_ok.txt')}")
+          (repo/'out'/'ci_pr_comment.md').write_text('\n'.join(lines), encoding='utf-8')
+          PY
+
       - name: Comment PR with SLO/Smokes/Perf
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
