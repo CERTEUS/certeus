@@ -16,6 +16,8 @@ EN: Hypothesis compatibility shim — adds `whitespace` support to
 
 from __future__ import annotations
 
+# === IMPORTY / IMPORTS ===
+
 try:
     import hypothesis.strategies as _st  # type: ignore
 
@@ -40,3 +42,13 @@ try:
 except Exception:
     # Silent no‑op if Hypothesis not installed
     pass
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
