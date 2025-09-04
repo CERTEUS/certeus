@@ -61,7 +61,8 @@ jobs:
               if (rows.length) {
                 body += '| phase% | count | p95_ms | error_rate | ok |\n|---:|---:|---:|---:|:---:|\n';
                 for (const r of rows) {
-                  body += `| ${r.phase_pct} | ${r.count} | ${r.p95_ms?.toFixed?.(2) ?? r.p95_ms} | ${r.error_rate} | ${r.ok ? '✅' : '❌'} |\n`;
+                  const p95 = (typeof r.p95_ms==='number') ? r.p95_ms.toFixed(2) : r.p95_ms;
+                  body += `| ${r.phase_pct} | ${r.count} | ${p95} | ${r.error_rate} | ${r.ok ? '✅' : '❌'} |\n`;
                 }
               } else {
                 body += 'No results found in out/canary.json';
@@ -69,12 +70,16 @@ jobs:
             } catch (e) {
               body += 'Could not parse out/canary.json';
             }
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            });
+            try {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            } catch (e) {
+              core.warning('Could not create PR comment: ' + (e?.message || e));
+            }
 
 
 
