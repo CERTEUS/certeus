@@ -162,3 +162,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - pytest: 198 passed, 4 skipped; ruff OK
 - 2025-09-04 18:57:27Z [root] (work/daily): T14 D66+D67: A11y semantyka + i18n (Accept-Language) + testy
   - - HTML: <main> + skip links + focus styles (geometry/boundary/qtm/marketplace)\n- i18n: middleware → Content-Language; lang param overrides header\n- Testy: i18n negotiation + PCO invariance; gates stable\n- pytest: 198 passed, 4 skipped; ruff OK
+- 2025-09-04 18:57:44Z [root] (work/daily): W13: Marketplace — toggle enable/disable + tests
+  - - API: POST /v1/packs/enable (persist overlay)\n- UI: toggle button in marketplace listing\n- Tests: packs list+toggle; suite: 198 passed (lokalnie)

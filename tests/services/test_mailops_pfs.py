@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_mailops_pfs.py                    |
+# | ROLE: Project test module.                                  |
+# | PLIK: tests/services/test_mailops_pfs.py                    |
+# | ROLA: Moduł testów projektu.                                |
+# +-------------------------------------------------------------+
 
 """
 PL: Test sprawdzający, że MailOps /ingest nadaje URI ProofFS dla załączników.

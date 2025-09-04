@@ -19,6 +19,7 @@ reports/
 data/public_pco/
 out/
 data/lexqft_coverage_state.json
+data/packs_state.json
 
 # IDE / OS
 .vscode/

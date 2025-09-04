@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/policies/test_marketplace_policy_gate.py        |
+# | ROLE: Project test module.                                  |
+# | PLIK: tests/policies/test_marketplace_policy_gate.py        |
+# | ROLA: Moduł testów projektu.                                |
+# +-------------------------------------------------------------+
 
 """
 PL: Test smoke dla bramki Marketplace Policy — ma się wykonać bez wyjątku

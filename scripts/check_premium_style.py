@@ -36,10 +36,10 @@ import sys
 
 REPO = Path(__file__).resolve().parents[1]
 
+# Exact top-level directories to skip
 SKIP_DIRS = {
     ".git",
-    ".venv",
-    "venv",
+    ".github/ci-status",  # status branch checkout (when present)
     "node_modules",
     "dist",
     "build",
@@ -47,7 +47,34 @@ SKIP_DIRS = {
     ".ruff_cache",
     ".pytest_cache",
     "clients/web/public/brand",
+    "out",
+    "reports",
 }
+
+# Prefix-based directories to skip anywhere in tree (handles local/CI venvs)
+SKIP_DIR_PREFIXES = (
+    ".venv",
+    "venv",
+    "_venv",
+    "mirror_",
+)
+
+
+def _should_skip(rel: str) -> bool:
+    # Normalize to POSIX-style
+    r = rel.replace("\\", "/")
+    # Skip exact directories at repo root
+    if any(r == d or r.startswith(d + "/") for d in SKIP_DIRS):
+        return True
+    # Skip any path containing virtualenv or mirrors
+    parts = r.split("/")
+    for part in parts:
+        if any(part.startswith(pfx) for pfx in SKIP_DIR_PREFIXES):
+            return True
+    # Skip third-party packages laid out in local/CI envs
+    if "/site-packages/" in r or r.endswith("/site-packages") or "/dist-packages/" in r:
+        return True
+    return False
 
 
 def iter_files(patterns: list[str]) -> list[Path]:
@@ -58,7 +85,7 @@ def iter_files(patterns: list[str]) -> list[Path]:
         except Exception:
             continue
         # Skip vendor/venv before stat (avoid bad symlinks on Windows)
-        if any(rel.startswith(d + "/") or rel == d for d in SKIP_DIRS):
+        if _should_skip(rel):
             continue
         try:
             if not p.is_file():
