@@ -262,3 +262,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - release.yml: self-hosted runners + workflow_dispatch(tag)\n- repo var: REQUIRE_COSIGN_ATTESTATIONS=1 (enforced in ci-gates)
 - 2025-09-04 08:19:22Z [48793] (work/daily): RTBF: appeal SLA + PR summaries; ci-gates fallback var
   - - ProofGate: /v1/rtbf/appeal_sla/{case_id}, persisted appeals\n- ci-gates: PR comment with RTBF+DPIA; runs-on via CI_GATES_RUNS_ON var\n- proof-gate: RTBF smoke + PR tick addendum
+- 2025-09-04 11:00:56Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
