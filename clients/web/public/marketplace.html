@@ -32,6 +32,8 @@
     </style>
   </head>
   <body>
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <main id="main" role="main">
     <div class="container">
       <div class="card">
         <h1>Marketplace • Packs</h1>
@@ -48,6 +50,7 @@
               <th>ABI</th>
               <th>Capabilities</th>
               <th>Status</th>
+              <th>Akcja</th>
             </tr>
           </thead>
           <tbody id="rows"></tbody>
@@ -72,21 +75,37 @@
         tb.innerHTML = filtered.map(p=>{
           const caps = (p.capabilities && p.capabilities.length) ? p.capabilities.map(c=>`<span class="tag">${c}</span>`).join('') : '<span class="muted">—</span>';
           const status = p.enabled ? '<span class="pill">enabled</span>' : '<span class="pill">disabled</span>';
+          const btn = `<button class="btn toggle" data-pack="${p.name}" data-enabled="${p.enabled ? '1':'0'}">${p.enabled?'Disable':'Enable'}</button>`;
           return `<tr>
             <td>${p.name}</td>
             <td>${p.version || '-'}</td>
             <td><code>${p.abi}</code></td>
             <td>${caps}</td>
             <td>${status}</td>
+            <td>${btn}</td>
           </tr>`;
         }).join('');
         document.getElementById('count').textContent = String(filtered.length);
+        Array.from(document.querySelectorAll('button.toggle')).forEach(btn=>{
+          btn.addEventListener('click', async (e)=>{
+            const el = e.currentTarget; const name = el.getAttribute('data-pack'); const enabled = el.getAttribute('data-enabled')==='1';
+            try{
+              const r = await fetch('/v1/packs/enable',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pack:name, enabled:!enabled})});
+              if(r.ok){ await refresh(); }
+            }catch(_){/* noop */}
+          });
+        });
       }
       async function refresh(){ const packs = await fetchPacks(); render(packs); }
       document.getElementById('refresh').addEventListener('click', refresh);
       document.getElementById('q').addEventListener('input', refresh);
       refresh();
     </script>
+    <style>
+      :focus-visible{outline:2px solid #8a8f98;outline-offset:2px}
+      .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+      .sr-only-focusable:focus{position:static;width:auto;height:auto;padding:8px 10px;margin:6px;background:#181b20;border:2px solid #8a8f98;border-radius:8px}
+    </style>
+    </main>
   </body>
   </html>
-

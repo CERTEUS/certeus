@@ -169,6 +169,35 @@ app.add_middleware(
 )
 
 
+# Simple i18n negotiation: query param `lang` overrides `Accept-Language`.
+# Sets `request.state.lang` and adds `Content-Language` response header.
+@app.middleware("http")
+async def _i18n_language_negotiator(request, call_next):  # type: ignore[no-redef]
+    def _pick_lang(raw: str | None) -> str:
+        if not raw:
+            return "pl"
+        s = raw.lower()
+        if "en" in s:
+            return "en"
+        if "pl" in s:
+            return "pl"
+        return "pl"
+
+    qp_lang = request.query_params.get("lang")
+    hdr_lang = request.headers.get("accept-language")
+    lang = _pick_lang(qp_lang or hdr_lang)
+    try:
+        request.state.lang = lang  # type: ignore[attr-defined]
+    except Exception:
+        pass
+    response = await call_next(request)
+    try:
+        response.headers["Content-Language"] = lang
+    except Exception:
+        pass
+    return response
+
+
 # Request duration metrics middleware (Prometheus)
 @app.middleware("http")
 async def _metrics_timing(request, call_next):  # type: ignore[no-redef]

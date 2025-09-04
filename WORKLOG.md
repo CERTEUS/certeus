@@ -156,3 +156,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - tests/web/test_a11y_static_pages.py: meta/lang/title/h1/img-alt/link checks\n- docs/a11y_checklist.md: WCAG 2.2 AA baseline\n- Stabilizacja Hypothesis (too_slow) w QTM property\n- pytest: 191 passed, 4 skipped; ruff OK
 - 2025-09-04 18:56:21Z [root] (work/daily): W13 (A8): CI — Marketplace Policy Gate dodany do ci-gates (report-only)
   - - Workflow: .github/workflows/ci-gates.yml (krok + tick w PR summary)\n- Plugin manifests: license: MIT dodane (plugins/*/plugin.yaml)\n- Tests: full suite 198 passed
+- 2025-09-04 18:57:19Z [48793] (work/daily): W13: E2E flow (lexqft+Devices) + fix ABI gate reload
+  - - tests/e2e/test_w13_devices_lexqft_flow.py: jeden przepływ HDE→Q-Oracle→Entangle→Chronosync→Tunnel
+  - - scripts/gates/pack_abi_semver_gate.py: reload modułu dla poprawnej detekcji zmian ABI
+  - - pytest: 198 passed, 4 skipped; ruff OK
+- 2025-09-04 18:57:27Z [root] (work/daily): T14 D66+D67: A11y semantyka + i18n (Accept-Language) + testy
+  - - HTML: <main> + skip links + focus styles (geometry/boundary/qtm/marketplace)\n- i18n: middleware → Content-Language; lang param overrides header\n- Testy: i18n negotiation + PCO invariance; gates stable\n- pytest: 198 passed, 4 skipped; ruff OK

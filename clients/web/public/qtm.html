@@ -108,6 +108,8 @@
     </style>
   </head>
   <body>
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <main id="main" role="main">
     <div class="container">
       <div class="card">
         <h1>QTMP • Measurement cockpit</h1>
@@ -195,5 +197,11 @@
         .addEventListener("click", () => measure("TL"));
       document.getElementById("lockDeco").addEventListener("click", setDeco);
     </script>
+    <style>
+      :focus-visible{outline:2px solid #8a8f98;outline-offset:2px}
+      .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+      .sr-only-focusable:focus{position:static;width:auto;height:auto;padding:8px 10px;margin:6px;background:#181b20;border:2px solid #8a8f98;border-radius:8px}
+    </style>
+    </main>
   </body>
 </html>
