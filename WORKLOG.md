@@ -601,3 +601,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Nagłówki: X-Idempotency-Status=new|reused; metryki certeus_idem_*
   - - Test: tests/services/test_devices_idempotency.py (budżet naliczany raz)
   - - Lint OK; 190 testów zielone
+- 2025-09-04 16:29:40Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
