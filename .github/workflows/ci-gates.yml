@@ -178,6 +178,40 @@ jobs:
         run: |
           mkdir -p out && echo ok > out/slo_ok.txt
 
+      - name: Canary Gate (progressive readiness)
+        env:
+          CANARY_COUNT: "50"
+          CANARY_MAX_P95_MS: "250"
+          CANARY_MAX_ERROR_RATE: "0.01"
+        run: |
+          python scripts/gates/canary_gate.py --phases 3 --count "$CANARY_COUNT" --p95-max "$CANARY_MAX_P95_MS" --error-rate-max "$CANARY_MAX_ERROR_RATE" --out out/canary.json
+      - name: Mark Canary OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/canary_ok.txt
+
+      - name: Right-To-Be-Forgotten smoke + DPIA summary
+        run: |
+          python scripts/compliance/right_to_be_forgotten_smoke.py
+      - name: Mark RTBF OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/rtbf_ok.txt
+
+      - name: Redaction Gate (STRICT clean payload)
+        run: |
+          python - << 'PY'
+          import json, os, sys, subprocess
+          clean={"subject":{"name":"Jan TEST"},"content":"Brak wrażliwych danych."}
+          env=os.environ.copy(); env['STRICT_REDACTION']='1'
+          p=subprocess.run([sys.executable,'scripts/gates/redaction_gate.py'], input=json.dumps(clean), text=True, env=env)
+          sys.exit(p.returncode)
+          PY
+      - name: Mark Redaction OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/redaction_ok.txt
+
       - name: Setup OPA CLI
         uses: open-policy-agent/setup-opa@v2
         with:
