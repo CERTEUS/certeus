@@ -231,6 +231,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - FIN: /v1/fin/alpha/measure z nagłówkiem polityki; /operators_rs; /entanglement/mi; PnL
   - Testy: test_fin_prod.py (polityka+PnL) i test_fin_paper.py (paper-trading) zielone
   - Runbooki: docs/runbooks/w3_w4_demo.md, docs/runbooks/w5_w6_demo.md
+ - 2025-09-04 16:30:00Z [agent] (work/daily): W8 — LEXENITH v0.1 (motions/CLDF/Why‑Not/Micro‑Court/DR)
+  - Demo: scripts/demos/run_w8_demo.py → reports/w8_demo.json; UI: clients/web/public/lexenith.html
+  - Endpoints i testy: motion/generate, cldf/renormalize, why_not/export, micro_court lock→publish, casebook
+  - Runbook: docs/runbooks/w7_w8_demo.md
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -577,3 +581,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Lint OK; 178 testów zielone
 - 2025-09-04 15:52:47Z [root] (work/daily): A1/W2: Transformacja jurysdykcji + testy property
   - - core/omega_jurisdiction.py: PL↔EU + holonomia\n- tests/truth/test_jurisdiction_transform_property.py: Hypothesis (roundtrip/identity)\n- Lint+tests: lokalnie zielone (subset)
+- 2025-09-04 15:58:45Z [48793] (work/daily): W14: MED/SEC/CODE packs (MVP) — public demo via /v1/packs
+  - - med_demo: med.phi.redact (prosta redakcja PHI)
+  - - sec_demo: sec.risk.assess (grade na podstawie listy luk)
+  - - code_demo: code.static.check (linie + TODO)
+  - - Testy: tests/services/test_w14_packs_mvp.py
+  - - Lint OK; 184 testów zielone

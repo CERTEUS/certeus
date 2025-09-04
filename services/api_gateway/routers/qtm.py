@@ -416,13 +416,8 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
         if not req.no_collapse:
             probs = [0.0 for _ in basis]
             probs[idx] = 1.0
-    # UB as in measure()
-    try:
-        from services.api_gateway.routers.cfe import curvature as _cfe_curvature
-
-        kappa = (await _cfe_curvature()).kappa_max  # type: ignore[misc]
-    except Exception:
-        kappa = 0.012
+    # UB (fast path): avoid import cost in tight loops; use baseline kappa
+    kappa = 0.012
     ub = {"L_T": round(0.2 + min(0.2, kappa * 10.0), 3)}
     latency_ms = round((perf_counter() - t0) * 1000.0, 3)
     # Headers: record sequence PCO
