@@ -12,6 +12,8 @@
 - Overview API — kierunek (bez pełnej specyfikacji).
 - PROVENANCE — z jakiego SHA i kiedy powstał mirror.
 - Roadmap — najbliższe kroki.
+- 90 dni — Final Status: docs/reports/90dni_final_status.md
+- 90 dni — Raport pokrycia: docs/reports/90dni_coverage_report.md
 
 ### Motto
 "Nie gonimy za szumem. Publikujemy to, co możemy podpisać." — Radosław Skarżycki / CERTEUS
