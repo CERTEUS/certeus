@@ -123,6 +123,38 @@ async def enable_pack(req: ToggleRequest, request: Request) -> dict[str, Any]:
     return {"ok": True, "pack": req.pack, "enabled": bool(req.enabled)}
 
 
+@router.get("/{name}", summary="Get pack details")
+async def get_pack_details(name: str) -> dict[str, Any]:
+    """
+    Zwraca szczegóły pakietu na podstawie manifestu plugin.yaml oraz overlayu enabled.
+    Returns pack details based on plugin.yaml manifest and enabled overlay.
+    """
+    # Find target info
+    infos = {i.name: i for i in discover()}
+    if name not in infos:
+        raise HTTPException(status_code=404, detail=f"unknown pack: {name}")
+    info = infos[name]
+    # Try to locate manifest
+    manifest: dict[str, Any] = {}
+    try:
+        plug_root = _repo_root() / "plugins" / name / "plugin.yaml"
+        if plug_root.exists():
+            import yaml  # type: ignore
+
+            manifest = yaml.safe_load(plug_root.read_text(encoding="utf-8")) or {}
+    except Exception:
+        manifest = {}
+    overrides = _load_state()
+    return {
+        "name": info.name,
+        "version": info.version,
+        "abi": info.abi,
+        "capabilities": info.caps,
+        "enabled": bool(overrides.get(info.name, info.enabled)),
+        "manifest": manifest,
+    }
+
+
 @router.post("/handle", summary="Handle a request using a pack")
 async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
     enforce_limits(request, cost_units=1)

@@ -172,3 +172,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - API: POST /v1/packs/enable (persist overlay)\n- UI: toggle button in marketplace listing\n- Tests: packs list+toggle; suite: 198 passed (lokalnie)
 - 2025-09-04 19:06:22Z [root] (work/daily): W14 (A8): A11y/i18n — smoke + testy + CI tick
   - - A11y smoke: scripts/smokes/a11y_smoke.py (lang/viewport/main/skip)\n- Testy: tests/smokes/test_a11y_smoke.py; tests/services/test_i18n_negotiation.py\n- CI: .github/workflows/ci-gates.yml — krok A11y (report-only) + tick\n- Suite: 198 passed, 4 skipped
+- 2025-09-04 22:00:00Z [agent] (work/daily): W14 D66–D67 — A11y + i18n baseline
+  - A11y: skip‑link (#main), :focus‑visible, role=main; smoke: scripts/smokes/a11y_smoke.py
+  - i18n: negocjacja `Accept-Language` + `lang` → `Content-Language` (middleware)
+  - Testy: ruff OK; pytest: 198 passed, 4 skipped; a11y smoke zielony
+- 2025-09-04 19:15:45Z [root] (work/daily): W13: Marketplace — szczegóły pakietu (modal) + /v1/packs/{name}
+  - - UI: panel detali (capabilities, manifest, status)\n- API: GET /v1/packs/{name} — manifest+meta\n- Testy: 199 passed (lokalnie)

@@ -73,6 +73,14 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/marketplace_ok.txt
+      - name: Compliance Mapping (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/gates/compliance_mapping_gate.py || true
+      - name: Mark Compliance OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/compliance_ok.txt
       - name: Bandit security scan (report-only)
         continue-on-error: true
         run: |
@@ -299,7 +307,7 @@ jobs:
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
-          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')}")
+          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')}")
           # Proof Gate related workflow ticks via GitHub API
           try:
               token = os.getenv('GITHUB_TOKEN')
@@ -402,6 +410,5 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
 
 
