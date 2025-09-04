@@ -16,6 +16,18 @@ EN: Validate OpenAPI specs (docs and runtime). Report‑only; enforce via
     `ENFORCE_OPENAPI_SPEC_VALIDATE=1`.
 """
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
+
 from __future__ import annotations
 
 import json

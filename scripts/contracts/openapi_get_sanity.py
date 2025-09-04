@@ -16,6 +16,18 @@ EN: Runtime OpenAPI GET sanity: iterates GET paths without path params and
     calls them in‑proc. Reports 2xx/non‑2xx.
 """
 
+# === IMPORTY / IMPORTS ===
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
+
 from __future__ import annotations
 
 import os
