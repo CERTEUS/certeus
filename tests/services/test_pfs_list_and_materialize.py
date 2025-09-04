@@ -49,6 +49,17 @@ def test_pfs_list_returns_entries(monkeypatch) -> None:
         assert "pfs://mail/MID/a.txt" in uris
         assert "pfs://mail/MID/b.txt" in uris
 
+        # recursive + mime filter
+        (root / "mail" / "MID" / "sub").mkdir(parents=True, exist_ok=True)
+        (root / "mail" / "MID" / "sub" / "c.pdf").write_text("C", encoding="utf-8")
+        r2 = client.get(
+            "/v1/pfs/list",
+            params={"prefix": "pfs://mail/MID", "recursive": True, "mime": "pdf"},
+        )
+        assert r2.status_code == 200
+        uris2 = {e["uri"] for e in r2.json().get("entries", [])}
+        assert "pfs://mail/MID/sub/c.pdf" in uris2 and "pfs://mail/MID/a.txt" not in uris2
+
 
 def test_mailops_ingest_materializes_when_flag(monkeypatch) -> None:
     client = TestClient(app)

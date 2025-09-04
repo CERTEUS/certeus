@@ -36,6 +36,9 @@ def test_identity_is_stable(words: list[str]) -> None:
     assert d.jaccard_drift == 0.0 and d.token_count_delta == 0
 
 
+_PUNCT = [",", ".", ";", ":", "-", "—", "–", "(", ")", "[", "]", '"', "'", "/"]
+
+
 @settings(max_examples=25, deadline=None)
 @given(
     st.lists(
@@ -47,11 +50,7 @@ def test_identity_is_stable(words: list[str]) -> None:
         min_size=3,
         max_size=10,
     ),
-    st.lists(
-        st.sampled_from([",", ".", ";", ":", "-", "—", "–", "(", ")", "[", "]", "\"", "'", "/"]),
-        min_size=2,
-        max_size=6,
-    ),
+    st.lists(st.sampled_from(_PUNCT), min_size=2, max_size=6),
 )
 def test_normalize_limits_drift_under_punctuation_noise(words: list[str], punct: list[str]) -> None:
     base = " ".join(words)
