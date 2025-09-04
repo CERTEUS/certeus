@@ -9,8 +9,9 @@
 
 name: asset-guard
 on:
-  pull_request:
+  push:
     branches: [ main ]
+  workflow_dispatch:
 jobs:
   check-assets:
     runs-on: ubuntu-latest
