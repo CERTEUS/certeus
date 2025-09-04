@@ -27,7 +27,7 @@ tools/automation/*.local
 .devkeys/
 
 # Artefakty
-reports/
+/reports/
 data/public_pco/
 out/
 data/lexqft_coverage_state.json
