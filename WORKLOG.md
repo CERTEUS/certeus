@@ -610,3 +610,4 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Runbook: docs/runbooks/security_hardening.md
 - 2025-09-04 16:30:33Z [root] (work/daily): A1/W4: Gauge ε auto‑kalibracja + stabilizacja testów
   - - scripts/gates/compute_gauge_epsilon.py + test_gauge_auto_calibration.py\n- QTM/PFS: izolacja storage per worker/test (xdist)\n- Hypothesis: globalny profil deadline=1000 (conftest)\n- Pełne testy: 190 passed, 1 skipped
+- 2025-09-04 16:30:57Z [agent] (work/daily): W10 SRE — SLO PR summary (p95/error-rate)\n  - proof-gate: PR comment reads out/slo.json (p95_ms,error_rate,count)\n
