@@ -71,6 +71,61 @@ class Graph:
     def neighbors(self, u: int) -> list[int]:
         return self.adj.get(u, [])
 
+    def bfs_path(self, src: int, dst: int) -> list[int]:
+        """Najkrótsza ścieżka (węzły) między src a dst metodą BFS."""
+        if src == dst:
+            return [src]
+        from collections import deque
+
+        q = deque([src])
+        prev: dict[int, int] = {src: -1}
+        while q:
+            u = q.popleft()
+            for v in self.neighbors(u):
+                if v in prev:
+                    continue
+                prev[v] = u
+                if v == dst:
+                    path = [v]
+                    while path[-1] != src:
+                        path.append(prev[path[-1]])
+                    path.reverse()
+                    return path
+                q.append(v)
+        return []
+
+    def astar_path_and_action(self, src: int, dst: int) -> tuple[list[int], float]:
+        """A*: koszt krawędzi = 1 + (1 - kappa(u,v)); heurystyka: odległość po pierścieniu."""
+        import heapq
+
+        def h(u: int) -> float:
+            d = abs(dst - u)
+            return float(min(d, self.n - d))
+
+        open_q: list[tuple[float, int]] = [(h(src), src)]
+        came_from: dict[int, int] = {src: -1}
+        g_score: dict[int, float] = {src: 0.0}
+
+        while open_q:
+            _, u = heapq.heappop(open_q)
+            if u == dst:
+                path = [u]
+                while path[-1] != src:
+                    path.append(came_from[path[-1]])
+                path.reverse()
+                return path, float(round(g_score[dst], 3))
+
+            for v in self.neighbors(u):
+                k = _approx_ollivier_kappa(self, u, v)
+                w = 1.0 + (1.0 - k)
+                tentative = g_score[u] + w
+                if tentative < g_score.get(v, float("inf")):
+                    came_from[v] = u
+                    g_score[v] = tentative
+                    f_score = tentative + h(v)
+                    heapq.heappush(open_q, (f_score, v))
+        return [], float("inf")
+
 
 def _seed_from_case(case_id: str | None) -> int:
     if not case_id:
@@ -190,6 +245,54 @@ def kappa_max_for_case(case_id: str | None) -> CurvatureSummary:
     g = _build_legal_smallworld(n=n, seed=seed)
     kmax = _kappa_max(g)
     return CurvatureSummary(kappa_max=round(kmax, 3))
+
+
+def geodesic_for_case(case_id: str | None) -> tuple[list[str], float]:
+    """Geodezyjna ścieżka i akcja na grafie case (deterministycznie per case_id)."""
+    seed = _seed_from_case(case_id)
+    g = _build_legal_smallworld(n=_DEFAULT_NODES, seed=seed)
+    src = int(seed % g.n)
+    dst = int((src + (g.n // 2)) % g.n)
+    idx_path, action = g.astar_path_and_action(src, dst)
+    if not idx_path:
+        idx_path = g.bfs_path(src, dst) or [src]
+        action = float(len(idx_path) - 1)
+    names = [f"n{i}" for i in idx_path]
+    return names, float(round(action, 3))
+
+
+def horizon_mass_for_case(case_id: str | None) -> float:
+    """Masa horyzontu z uśrednionej penalizacji (1-kappa) na geodezyjnej."""
+    seed = _seed_from_case(case_id)
+    g = _build_legal_smallworld(n=_DEFAULT_NODES, seed=seed)
+    src = int(seed % g.n)
+    dst = int((src + (g.n // 2)) % g.n)
+    path, _ = g.astar_path_and_action(src, dst)
+    if not path:
+        return 0.15
+    penalties: list[float] = []
+    for i in range(len(path) - 1):
+        u, v = path[i], path[i + 1]
+        k = _approx_ollivier_kappa(g, u, v)
+        penalties.append(max(0.0, 1.0 - k))
+    avg_pen = (sum(penalties) / len(penalties)) if penalties else 0.0
+    mass = 0.1 + 0.6 * avg_pen
+    return float(round(max(0.05, min(0.95, mass)), 3))
+
+
+def lensing_map_for_case(case_id: str | None) -> dict[str, float]:
+    """Deterministyczna, lekka mapa lensingu precedensów (2–3 klucze)."""
+    rng = random.Random(_seed_from_case(case_id) ^ 0xA5A5)
+    keys = [
+        f"precedent:K_{2000 + rng.randrange(0, 30)}",
+        f"precedent:III_{2010 + rng.randrange(0, 14)}",
+    ]
+    weights = [0.3 + 0.4 * rng.random(), 0.2 + 0.3 * rng.random()]
+    if rng.random() > 0.6:
+        keys.append(f"precedent:SN_{1990 + rng.randrange(0, 35)}")
+        weights.append(0.1 + 0.2 * rng.random())
+    total = sum(weights) or 1.0
+    return {k: float(round(w / total, 3)) for k, w in zip(keys, weights, strict=False)}
 
 
 # === I/O / ENDPOINTS ===

@@ -212,6 +212,13 @@ certeus_http_requests_total = Counter(
     labelnames=("tenant", "path", "method", "status"),
 )
 
+# HTTP load shedding counter
+certeus_http_shed_total = Counter(
+    "certeus_http_shed_total",
+    "Total HTTP shed events",
+    labelnames=("tenant", "path", "method", "reason"),
+)
+
 # QTMP: Uncertainty bound and operator priorities
 certeus_qtm_ub_lt = Gauge("certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",))
 certeus_qtm_operator_priority = Gauge(
@@ -250,9 +257,10 @@ certeus_qtm_cfe_correlation = Gauge(
     labelnames=("case",),
 )
 
-# LexQFT: Coverage (gamma, uncaptured)
+# LexQFT: Coverage (gamma, uncaptured) + energy debt
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
+certeus_lexqft_energy_debt = Gauge("certeus_lexqft_energy_debt", "LexQFT energy debt (per case)", labelnames=("case",))
 
 # FINENITH: entanglement MI and commutator
 certeus_fin_entanglement_mi = Gauge(

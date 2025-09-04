@@ -165,9 +165,17 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
         isinstance(req.case, str) and ("sample" in req.case.lower() or "przyklad" in req.case.lower())
     )
 
+    # Compute mass (deterministic per case)
+    try:
+        from services.cfe.metric import horizon_mass_for_case
+
+        mass = horizon_mass_for_case(req.case)
+    except Exception:
+        mass = 0.15
+
     # PCO headers
     try:
-        response.headers["X-CERTEUS-PCO-cfe.horizon_mass"] = str(0.15)
+        response.headers["X-CERTEUS-PCO-cfe.horizon_mass"] = str(mass)
         response.headers["X-CERTEUS-CFE-Locked"] = "true" if locked else "false"
     except Exception:
         pass
@@ -176,24 +184,30 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
     try:
         from services.ledger_service.ledger import compute_provenance_hash, ledger_service
 
-        payload = {"cfe.horizon_mass": 0.15, "cfe.locked": locked}
+        payload = {"cfe.horizon_mass": float(mass), "cfe.locked": locked}
         doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
         case_id = req.case or "cfe-case"
         ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
     except Exception:
         pass
 
-    return HorizonResponse(locked=locked, horizon_mass=0.15)
+    return HorizonResponse(locked=locked, horizon_mass=float(mass))
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing() -> LensingResponse:
-    # Placeholder: simple map of precedence influence
+async def lensing(case_id: str | None = None) -> LensingResponse:
+    try:
+        from services.cfe.metric import lensing_map_for_case
 
-    return LensingResponse(
-        lensing_map={"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
-        critical_precedents=["precedent:K_2001"],
-    )
+        m = lensing_map_for_case(case_id)
+        crit = sorted(m, key=m.get, reverse=True)[:1]
+        return LensingResponse(lensing_map=m, critical_precedents=crit)
+    except Exception:
+        # Fallback placeholder
+        return LensingResponse(
+            lensing_map={"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
+            critical_precedents=["precedent:K_2001"],
+        )
 
 
 # === I/O / ENDPOINTS ===

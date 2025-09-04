@@ -356,3 +356,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
   - Gauge-Gate: drift na kappa_max (epsilon=1e-3) — workflow aktywny
   - Demo: scripts/smokes/w3_geometry_demo.py (ledger entries OK)
+- 2025-09-04 13:26:12Z [48793] (work/daily): W3: FIN MI + alerty; LEX Why-Not
+  - - Alerty Prometheus: observability/prometheus/alert_rules_fin.yml
+  - - FIN MI/RS metryki już w API (entanglements/measure)
+  - - LEX Why‑Not export endpoint aktywny
+  - - Lint (ruff) + 143 testów zielone
