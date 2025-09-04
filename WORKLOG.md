@@ -126,6 +126,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Entangler: metryki pairwise (certeus_devices_pair_negativity) dla multi‑evidence; response bez zmian
   - Chronosync: szkic protokołów (handshake/reconcile/mediate/ratify) w polu sketch.protocols; klauzule domyślne zachowane
   - Testy/lint: ruff OK; pytest: 119 passed, 1 skipped lokalnie
+- 2025-09-04 20:35:00Z [agent] (work/daily): W13 — Packs ABI/SemVer gate + testy kontraktowe
+  - Gate: scripts/gates/pack_abi_semver_gate.py (report‑only w ci-gates)
+  - Helper: scripts/packs/update_abi_baselines.py (tworzy plugins/*/abi_baseline.json)
+  - CI: dodany krok Marketplace Policy Gate + Pack ABI/SemVer Gate (report‑only)
+  - Testy: tests/gates/test_pack_abi_semver_gate.py (wykrywa zmianę ABI bez bump MAJOR)
+  - Stan: ruff OK; pytest lokalnie: 198 passed, 4 skipped
 - 2025-09-04 17:51:02Z [root] (work/daily): W13 start: Devices v0.2 — baseline zielona
   - - Lint+format: ruff OK\n- Testy: 118 passed, 1 skipped (lokalnie)\n- W13 (HDE/Q-Oracle/Entangle/Chronosync) sprawdzone kontraktowo
 - 2025-09-04 17:51:56Z [48793] (work/daily): W13: Devices v0.2 — API docs + lint/tests green
@@ -164,3 +170,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - HTML: <main> + skip links + focus styles (geometry/boundary/qtm/marketplace)\n- i18n: middleware → Content-Language; lang param overrides header\n- Testy: i18n negotiation + PCO invariance; gates stable\n- pytest: 198 passed, 4 skipped; ruff OK
 - 2025-09-04 18:57:44Z [root] (work/daily): W13: Marketplace — toggle enable/disable + tests
   - - API: POST /v1/packs/enable (persist overlay)\n- UI: toggle button in marketplace listing\n- Tests: packs list+toggle; suite: 198 passed (lokalnie)
+- 2025-09-04 19:06:22Z [root] (work/daily): W14 (A8): A11y/i18n — smoke + testy + CI tick
+  - - A11y smoke: scripts/smokes/a11y_smoke.py (lang/viewport/main/skip)\n- Testy: tests/smokes/test_a11y_smoke.py; tests/services/test_i18n_negotiation.py\n- CI: .github/workflows/ci-gates.yml — krok A11y (report-only) + tick\n- Suite: 198 passed, 4 skipped

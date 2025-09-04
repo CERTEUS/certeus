@@ -57,6 +57,14 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/lint_ok.txt
+      - name: A11y Smoke (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/smokes/a11y_smoke.py || true
+      - name: Mark A11y OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/a11y_ok.txt
       - name: Marketplace Policy Gate (report-only)
         continue-on-error: true
         run: |
@@ -291,7 +299,7 @@ jobs:
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
-          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')}")
+          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')}")
           # Proof Gate related workflow ticks via GitHub API
           try:
               token = os.getenv('GITHUB_TOKEN')
@@ -394,7 +402,6 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
 
 
 

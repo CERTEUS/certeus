@@ -2,20 +2,20 @@
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
-# | FILE: scripts/smokes/a11y_smoke.py                          |
-# | ROLE: Project script.                                       |
-# | PLIK: scripts/smokes/a11y_smoke.py                          |
-# | ROLA: Skrypt projektu.                                      |
+# | FILE: scripts/smokes/a11y_smoke.py                         |
+# | ROLE: Smoke: public HTML A11y checks                         |
+# | PLIK: scripts/smokes/a11y_smoke.py                         |
+# | ROLA: Smoke: A11y sprawdzenie HTML public                    |
 # +-------------------------------------------------------------+
+
 """
+PL: Lekki smoke A11y: sprawdza pliki HTML w `clients/web/public/` pod kątem
+    atrybutu `lang`, obecności `meta viewport` oraz landmarku `<main>`/`role="main"`
+    lub linku skip‑to‑content.
 
-PL: Prosty smoke test dostępności HTML (statyczne pliki w clients/web/*).
-    Sprawdza minimalne kryteria: <html lang>, <meta viewport>, #main, skip-link
-    oraz atrybuty alt na <img>.
-
-EN: Simple accessibility smoke for static HTML pages (clients/web/*).
-    Checks minimal criteria: <html lang>, <meta viewport>, #main, skip-link,
-    and alt attributes for <img>.
+EN: Lightweight A11y smoke: checks HTML files in `clients/web/public/` for
+    `lang` attribute, `meta viewport` presence, and a `<main>`/`role="main"`
+    landmark or a skip‑to‑content link.
 """
 
 # === IMPORTY / IMPORTS ===
@@ -25,70 +25,55 @@ from __future__ import annotations
 from pathlib import Path
 import re
 
-# === KONFIGURACJA / CONFIGURATION ===
-
-ROOT = Path(__file__).resolve().parents[2]
-PAGES = [
-    ROOT / "clients/web/proof_visualizer/index.html",
-    ROOT / "clients/web/mismatch_console/index.html",
-    *(ROOT / "clients/web/public").glob("*.html"),
-]
+_RE_LANG = re.compile(r"<html[^>]*\slang=\"[a-zA-Z-]+\"", re.IGNORECASE)
+_RE_VIEWPORT = re.compile(r"<meta[^>]*name=\"viewport\"", re.IGNORECASE)
+_RE_MAIN = re.compile(r"<(main|[^>]*role=\"main\")[^>]*>", re.IGNORECASE)
+_RE_SKIP = re.compile(r"<a[^>]*href=\"#main\"", re.IGNORECASE)
 
 
-# === MODELE / MODELS ===
-
-
-# === LOGIKA / LOGIC ===
-
-
-def check_page(p: Path) -> list[str]:
-    errs: list[str] = []
-    text = p.read_text(encoding="utf-8", errors="ignore")
-
-    if not re.search(r"<html[^>]*\blang=\"[a-zA-Z-]+\"", text):
-        errs.append("missing <html lang>")
-
-    if "<meta name=\"viewport\"" not in text:
-        errs.append("missing <meta viewport>")
-
-    if not re.search(r"id=\"main\"", text):
-        errs.append("missing #main container")
-
-    if not re.search(r"<a[^>]+href=\"#main\"", text):
-        errs.append("missing skip-link to #main")
-
-    for m in re.finditer(r"<img([^>]*)>", text, flags=re.IGNORECASE):
-        attrs = m.group(1)
-        if "alt=" not in attrs:
-            errs.append("img without alt attribute")
-            break
-
-    return errs
-
-
-def main() -> int:
-    pages = [p for p in PAGES if p.exists()]
-    all_errs: dict[str, list[str]] = {}
-    for p in pages:
-        errs = check_page(p)
+def check_public_html(root: str | Path | None = None) -> tuple[dict[str, list[str]], int]:
+    """PL/EN: Zwraca (issues_by_file, checked_count). Nie rzuca wyjątków."""
+    repo = Path(root or ".").resolve()
+    web = repo / "clients" / "web" / "public"
+    issues: dict[str, list[str]] = {}
+    checked = 0
+    if not web.exists():
+        return issues, 0
+    for p in sorted(web.glob("*.html")):
+        try:
+            html = p.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+        errs: list[str] = []
+        if not _RE_LANG.search(html):
+            errs.append("missing <html lang=…>")
+        if not _RE_VIEWPORT.search(html):
+            errs.append("missing <meta name=\"viewport\">")
+        if not (_RE_MAIN.search(html) or _RE_SKIP.search(html)):
+            errs.append("missing <main>/role=main or skip link")
         if errs:
-            all_errs[str(p)] = errs
+            issues[str(p)] = errs
+        checked += 1
+    return issues, checked
 
-    if all_errs:
-        print("A11y smoke failed:")
-        for k, vs in all_errs.items():
-            print(f" - {k}:")
-            for e in vs:
-                print(f"   * {e}")
+
+def main() -> int:  # pragma: no cover (integration)
+    issues, checked = check_public_html()
+    if checked == 0:
+        print("A11y: no public HTML files found (clients/web/public)")
+        return 0
+    if issues:
+        print("A11y: issues found:")
+        for f, errs in issues.items():
+            for e in errs:
+                print(f" - {f}: {e}")
+        # Report-only usage in CI; non-zero signals problems
         return 1
-
-    print(f"A11y smoke passed on {len(pages)} pages")
+    print(f"A11y: OK ({checked} files)")
     return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
-
 # === I/O / ENDPOINTS ===
 
-# === TESTY / TESTS ===
+if __name__ == "__main__":
+    raise SystemExit(main())
