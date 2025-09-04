@@ -78,6 +78,8 @@ _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverag
 _PAIRS_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_pairs_state.json"
 # case -> {"pairs": int, "energy_debt": float, "budget": float}
 _PAIRS: dict[str, dict[str, float | int]] = {}
+_RENORM_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_renorm_state.json"
+_RENORM: dict[str, dict[str, float]] = {}  # case -> {uid -> prob}
 
 
 class CoverageResponse(BaseModel):
@@ -309,6 +311,109 @@ async def pairs_reset(case: str | None = None) -> dict:
         _PAIRS.pop(case, None)
     _pairs_save()
     return {"ok": True}
+
+
+# Renormalizacja autorytetu (cldf.renorm.*)
+
+
+class RenormItem(BaseModel):
+    uid: str
+    authority: float = Field(ge=0)
+    weight: float = Field(default=1.0, ge=0)
+
+
+class RenormRequest(BaseModel):
+    case: str | None = None
+    items: list[RenormItem]
+
+
+class RenormOutItem(BaseModel):
+    uid: str
+    p: float
+
+
+class RenormResponse(BaseModel):
+    case: str
+    dist: list[RenormOutItem]
+    entropy: float
+
+
+def _renorm_load() -> None:
+    global _RENORM
+    if _RENORM:
+        return
+    try:
+        if _RENORM_STORE.exists():
+            raw = json.loads(_RENORM_STORE.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                _RENORM = raw  # type: ignore[assignment]
+    except Exception:
+        _RENORM = {}
+
+
+def _renorm_save() -> None:
+    try:
+        _RENORM_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _RENORM_STORE.write_text(json.dumps(_RENORM, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+@router.post("/renorm", response_model=RenormResponse)
+async def renorm(req: RenormRequest, response: Response) -> RenormResponse:
+    """PL/EN: Renormalizacja autorytetu (CLDF) do rozkładu probabilistycznego.
+
+    Zasady:
+    - Ujemne i NaN traktowane jako 0.
+    - Jeśli suma autorytetów==0 → rozkład jednostajny.
+    - Wynik jest persistowany per-case.
+    """
+
+    _renorm_load()
+    case = req.case or "lexqft-case"
+    vals: list[tuple[str, float]] = []
+    for it in req.items:
+        try:
+            a = float(it.authority) * max(0.0, float(it.weight))
+        except Exception:
+            a = 0.0
+        if not (a >= 0.0):  # includes NaN
+            a = 0.0
+        vals.append((it.uid, a))
+    s = sum(a for _, a in vals)
+    if s <= 0.0:
+        n = max(1, len(vals))
+        dist = [(uid, 1.0 / n) for uid, _ in vals] if n else [("_", 1.0)]
+    else:
+        dist = [(uid, a / s) for uid, a in vals]
+
+    # Persist
+    _RENORM[case] = {uid: float(p) for uid, p in dist}
+    _renorm_save()
+
+    # Entropia Shannona (nats)
+    import math as _m
+
+    entropy = -sum(p * _m.log(p) for _, p in dist if p > 0.0)
+
+    # PCO header: cldf.renorm.entropy
+    try:
+        response.headers["X-CERTEUS-PCO-cldf.renorm.entropy"] = str(entropy)
+    except Exception:
+        pass
+
+    try:
+        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma as _noop  # keep import style consistent
+        # (opcjonalnie można dodać dedykowany gauge, ale nie wymuszamy tutaj)
+        _ = _noop
+    except Exception:
+        pass
+
+    return RenormResponse(
+        case=case,
+        dist=[RenormOutItem(uid=uid, p=float(p)) for uid, p in dist],
+        entropy=float(entropy),
+    )
 
 
 class CoverageItem(BaseModel):

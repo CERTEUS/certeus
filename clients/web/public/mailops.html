@@ -76,6 +76,7 @@
         </div>
         <p class="muted">Response:</p>
         <pre id="out"></pre>
+        <p class="muted">Ledger: <a id="mlink" href="#" target="_blank">open records</a></p>
       </div>
     </div>
     <script>
@@ -94,10 +95,9 @@
         };
         const r = await fetch('/v1/mailops/ingest',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body)});
         const txt = await r.text();
-        try{ document.getElementById('out').textContent = JSON.stringify(JSON.parse(txt), null, 2); }catch{ document.getElementById('out').textContent = txt; }
+        try{ const j = JSON.parse(txt); document.getElementById('out').textContent = JSON.stringify(j, null, 2); const tid = (j.io && (j.io['io.email.thread_id']||j.io['io.email.mail_id'])) || body.thread_id || body.mail_id; if(tid){ document.getElementById('mlink').href = `/v1/ledger/${encodeURIComponent(tid)}/records`; } }catch{ document.getElementById('out').textContent = txt; }
       }
       document.getElementById('send').addEventListener('click', send);
     </script>
   </body>
   </html>
-
