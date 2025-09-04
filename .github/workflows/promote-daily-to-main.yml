@@ -25,17 +25,27 @@ permissions:
 
 jobs:
   promote:
-    # Allow three triggering modes:
-    # 1) workflow_run from ci-gates: success on work/daily
-    # 2) push to work/daily (weekly marker in commit message)
-    # 3) manual workflow_dispatch
-    if: ${{
-      (github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'work/daily' && github.event.workflow_run.conclusion == 'success')
-      || (github.event_name == 'push' && github.ref == 'refs/heads/work/daily')
-      || github.event_name == 'workflow_dispatch'
-    }}
     runs-on: ubuntu-latest
     steps:
+      - name: Decide whether to evaluate promotion
+        id: cond
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            if [ "${{ github.event.workflow_run.head_branch }}" = "work/daily" ] && [ "${{ github.event.workflow_run.conclusion }}" = "success" ]; then
+              echo "ok=true" >> $GITHUB_OUTPUT
+            else
+              echo "ok=false" >> $GITHUB_OUTPUT
+            fi
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            if [ "${{ github.ref }}" = "refs/heads/work/daily" ]; then
+              echo "ok=true" >> $GITHUB_OUTPUT
+            else
+              echo "ok=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # workflow_dispatch
+            echo "ok=true" >> $GITHUB_OUTPUT
+          fi
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -46,6 +56,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Determine SHA for evaluation
         id: sha
+        if: steps.cond.outputs.ok == 'true'
         run: |
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             echo "sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
@@ -54,6 +65,7 @@ jobs:
           fi
       - name: Determine if weekly promotion is requested
         id: marker
+        if: steps.cond.outputs.ok == 'true'
         run: |
           set -euo pipefail
           SHA='${{ steps.sha.outputs.sha }}'
@@ -70,7 +82,7 @@ jobs:
           fi
       # ci-gates conclusion is already 'success' by job condition above${insert}
       - name: Append WORKLOG on work/daily (pre-merge)
-        if: steps.marker.outputs.promote == 'true'
+        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           ACTOR: ${{ github.actor }}
@@ -84,7 +96,7 @@ jobs:
           git commit -m "chore(worklog): ${SUMMARY}" || true
           git push origin work/daily || true
       - name: Fast-forward main to work/daily (if possible)
-        if: steps.marker.outputs.promote == 'true'
+        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
         id: ff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -101,7 +113,7 @@ jobs:
           } || echo "No fast-forward possible; skipping (PR path disabled)."
           echo "ff=false" >> $GITHUB_OUTPUT
       - name: Create or auto-merge PR (work/daily -> main)
-        if: steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
+        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
