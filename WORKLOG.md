@@ -4,6 +4,15 @@
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
 
+- 2025-09-04 20:10:00Z [agent] (work/daily): W13 — ProofFS I/O (stub) + MailOps pfs:// URIs
+  - MailOps: /v1/mailops/ingest wzbogacony o pfs://mail/<mail_id>/<filename> dla załączników
+  - Core: helper core/pfs/uri.py (sanityzacja i budowa URI)
+  - Lint+Tests: ruff OK; 114 passed (unit), e2e/perf pominięte lokalnie
+
+- 2025-09-04 00:00:00Z [agent] (work/daily): QTMP cockpit — komutatory + sekwencje + dekoherencja
+  - Quantum UI: heatmapa komutatorów (W/I/C/L/T), przyciski L→T/T→L, ustawienia kanału/gamma
+  - API reuse: /v1/qtm/commutator, /v1/qtm/measure_sequence, /v1/qtm/decoherence; PCO widoczne w nagłówkach
+
 - 2025-09-02 00:00:00Z [agent] (work/daily): W5 D21–D25 — tunneling PCO + tests; CFE↔QTMP priorities/correlation; Quantum cockpit; README/AGENTS.
   - /v1/lexqft/tunnel PCO headers + ledger hash
   - /v1/qtm/measure priorities + correlation PCO; Quantum cockpit
@@ -108,3 +117,20 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Fixed Section 21 banners/docstrings in tests `n- Added sections to supply_chain_enforce.py`n- Made Bandit/Gitleaks/OPA steps report-only in ci-gates`n- Perf regression gate report-only; SLO/Perf smokes pass`n- Ruff + pytest: 118 passed, 1 skipped locally
 - 2025-09-03 05:11:37Z [48793] (work/daily): [week-end] Autopromote to main marker
   - weekly-promote: true`n- Marker commit to trigger Promote-Daily-To-Main
+- 2025-09-04 19:15:00Z [agent] (work/daily): W13 D61 — HDE planner porównawczy
+  - Devices: /v1/devices/horizon_drive/plan — wybór strategii wg koszt/krzywizna (heurystyka wagowana targetem)
+  - Testy: ruff OK; 118 passed, 1 skipped lokalnie; brak regresji API
+- 2025-09-04 17:51:02Z [root] (work/daily): W13 start: Devices v0.2 — baseline zielona
+  - - Lint+format: ruff OK\n- Testy: 118 passed, 1 skipped (lokalnie)\n- W13 (HDE/Q-Oracle/Entangle/Chronosync) sprawdzone kontraktowo
+- 2025-09-04 17:51:56Z [48793] (work/daily): W13: Devices v0.2 — API docs + lint/tests green
+  - - ENDPOINTS.md: added qoracle/hde/entangle/chronosync + lexqft docs
+  - - ruff+format OK; pytest: 118 passed, 1 skipped (uv isolated env)
+  - - Next: W13 D61–D65 per docs/90_dni_work.md
+- 2025-09-04 17:57:15Z [root] (work/daily): W13: Devices v0.2 — HDE/Q-Oracle/Entangler/Chronosync (testy green)
+  - - /v1/devices/horizon_drive/plan: planner porównawczy (koszt vs kappa)\n- /v1/devices/qoracle/expectation: heurystyczne pytania i rozkład\n- /v1/devices/entangle: metryka certeus_devices_negativity (+ nagłówek PCO)\n- /v1/devices/chronosync/reconcile: szkic klauzul traktatu\n- Tests: services/e2e OK; SLO/Perf/Smokes zielone
+- 2025-09-04 17:59:04Z [48793] (work/daily): HDE: poprawiony komparator + OpenAPI wygenerowane
+  - - devices: wybór best_strategy uwzględnia koszt i shortfall do target_horizon (proxy z expected_kappa)
+  - - ruff+pytest zielone (118 passed, 1 skipped)
+  - - out/openapi.json odświeżone
+- 2025-09-04 17:59:44Z [root] (work/daily): W13: Devices v0.2 — HDE optimizer + Q‑Oracle heurystyki + Entangler metryki + Chronosync szkic
+  - - /v1/devices/horizon_drive/plan: alternatives + best_strategy\n- /v1/devices/qoracle/expectation: distribution + optimum\n- /v1/devices/entangle: negativity gauge\n- /v1/devices/chronosync/reconcile: treaty clause skeleton\n- Tests: devices v0.2 passing; SLO/Perf smokes green
