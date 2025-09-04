@@ -258,3 +258,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - tests: RTBF endpoints in ProofGate (appeal/erase/erased)
   - - ci-gates: optional cosign attest verification gate
   - - lint+tests: green (136 passed)
+- 2025-09-04 08:04:33Z [48793] (work/daily): release: self-hosted + dispatch; cosign enforce=ON
+  - - release.yml: self-hosted runners + workflow_dispatch(tag)\n- repo var: REQUIRE_COSIGN_ATTESTATIONS=1 (enforced in ci-gates)
