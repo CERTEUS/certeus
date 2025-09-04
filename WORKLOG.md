@@ -383,6 +383,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - API: `POST /v1/lexqft/coverage/from_fin` — mapping risk/sentiment→gamma/uncaptured (persist)
   - Testy: `tests/services/test_lexqft_from_fin.py` (wysoki sentyment vs ryzyko ⇒ γ≥0.9; odwrotnie ⇒ γ spada)
   - Lint/tests: 157 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 16:00 | branch=work/daily
+- [A4] Hardening testów (agresywne własności)
+  - WKB: `tests/services/test_lexqft_wkb_properties.py` (monotoniczność w,wys.; floor; E≥V0)
+  - Renorm: `tests/services/test_lexqft_renorm_properties.py` (skala, suma=1, entropia∈[0,ln n])
+  - FIN→coverage: `tests/services/test_lexqft_from_fin_properties.py` (zakresy + monotoniczność score)
+  - Fix: CFE endpoints — Response jako dependency (bez union); ruff clean
+  - Lint/tests: 168 passed / 1 skipped; `reports/junit.xml`
 ## 2025-09-04 14:30 | branch=work/daily
 - [A6] W1: Quickstart + Demo + Cockpit
   - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
