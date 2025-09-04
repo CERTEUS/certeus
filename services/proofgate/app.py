@@ -99,6 +99,7 @@ def _repo_root() -> Path:
 
 
 _RTBF_STORE = _repo_root() / "out" / "rtbf_erased.json"
+_RTBF_APPEALS = _repo_root() / "out" / "rtbf_appeals.json"
 
 
 def _load_rtbf_store() -> set[str]:
@@ -117,6 +118,42 @@ def _save_rtbf_store(items: set[str]) -> None:
 
         _RTBF_STORE.parent.mkdir(parents=True, exist_ok=True)
         _RTBF_STORE.write_text(json.dumps(sorted(items), indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _now_iso() -> str:
+    import time
+
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def _load_appeals() -> dict[str, dict[str, str]]:
+    try:
+        import json
+
+        data = {} if not _RTBF_APPEALS.exists() else json.loads(_RTBF_APPEALS.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            return {}
+        # Ensure mapping of case -> {received_at, reason}
+        out: dict[str, dict[str, str]] = {}
+        for k, v in data.items():
+            if isinstance(v, dict):
+                rec = {"received_at": str(v.get("received_at") or _now_iso())}
+                if v.get("reason"):
+                    rec["reason"] = str(v["reason"])  # type: ignore[index]
+                out[str(k)] = rec
+        return out
+    except Exception:
+        return {}
+
+
+def _save_appeals(data: dict[str, dict[str, str]]) -> None:
+    try:
+        import json
+
+        _RTBF_APPEALS.parent.mkdir(parents=True, exist_ok=True)
+        _RTBF_APPEALS.write_text(json.dumps(data, indent=2), encoding="utf-8")
     except Exception:
         pass
 
@@ -418,6 +455,9 @@ def rtbf_appeal(req: RtbfAppealRequest) -> RtbfAppealResponse:
     EN: Registers an RTBF appeal (stub); returns status RECEIVED.
     """
 
+    appeals = _load_appeals()
+    appeals[req.case_id] = {"received_at": _now_iso(), **({"reason": req.reason} if req.reason else {})}
+    _save_appeals(appeals)
     return RtbfAppealResponse(status="RECEIVED", case_id=req.case_id, reason=req.reason)
 
 
@@ -440,6 +480,35 @@ def rtbf_erased(case_id: str) -> dict[str, bool]:
 
     items = _load_rtbf_store()
     return {"erased": case_id in items}
+
+
+@app.get("/v1/rtbf/appeal_sla/{case_id}")
+def rtbf_appeal_sla(case_id: str) -> dict[str, str | float | bool]:
+    """
+    PL: Zwraca szczegóły SLA dla odwołania (received_at, due_by). Domyślnie 72h.
+    EN: Returns SLA details for an appeal (received_at, due_by). Default 72h.
+    """
+
+    import datetime as _dt
+
+    appeals = _load_appeals()
+    rec = appeals.get(case_id)
+    sla_h = float(os.getenv("RTBF_APPEAL_SLA_HOURS", "72") or 72)
+    if not rec:
+        return {"present": False, "sla_hours": sla_h}
+    try:
+        received_at = rec.get("received_at") or _now_iso()
+        t = _dt.datetime.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_dt.UTC)
+    except Exception:
+        t = _dt.datetime.now(tz=_dt.UTC)
+        received_at = _now_iso()
+    due = t + _dt.timedelta(hours=sla_h)
+    return {
+        "present": True,
+        "received_at": received_at,
+        "sla_hours": sla_h,
+        "due_by": due.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
 
 
 # Cache OpenAPI JSON in-memory to reduce overhead

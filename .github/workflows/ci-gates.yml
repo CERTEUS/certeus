@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   ci-gates:
-    runs-on: [self-hosted, linux, docker, build]
+    runs-on: ${{ fromJSON(vars.CI_GATES_RUNS_ON || '["self-hosted","linux","docker","build"]') }}
     permissions:
       contents: write
       pull-requests: write
@@ -222,6 +222,32 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/redaction_ok.txt
+
+      - name: Append RTBF + DPIA summary to PR comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '### Compliance (RTBF + DPIA)\n\n';
+            try {
+              const rtbf = JSON.parse(fs.readFileSync('reports/rtbf_smoke.json','utf8'));
+              body += `RTBF smoke: ${rtbf.ok ? '✅' : '❌'} (detect=${rtbf.pii_detection_rc}, clean_strict=${rtbf.clean_strict_rc})\n`;
+            } catch (e) {
+              body += 'RTBF smoke: no report\n';
+            }
+            try {
+              const dpia = fs.readFileSync('out/dpia_summary.txt','utf8').trim();
+              body += `DPIA: ${dpia}\n`;
+            } catch (e) {
+              body += 'DPIA: n/a\n';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
 
       - name: Setup OPA CLI
         uses: open-policy-agent/setup-opa@v2
