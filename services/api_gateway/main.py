@@ -299,11 +299,8 @@ app.include_router(billing.router)
 app.include_router(jwks_router)
 
 app.include_router(metrics.router)
-
 app.include_router(pfs.router)
-
 app.include_router(p2p.router)
-app.include_router(pfs.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------

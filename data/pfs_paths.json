@@ -1,8 +1,6017 @@
 {
-  "psi://case-low": [
+  "lexqft-case": [
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
     {
       "source": "lexqft.tunnel",
-      "p": 0.12,
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.168805,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.140729,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.037044,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.03838,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.124042,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.227323,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.02262,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.124042,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.180242,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.049036,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.139814,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.063108,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.174795,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.184305,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.139006,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.049787,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.139006,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.068339,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.387251,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.068339,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.08127,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.088947,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.04376,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.04376,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.055705,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.149963,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.027678,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.027678,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.170295,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.101085,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.101085,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.101085,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.113184,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.019112,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.26168,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.019112,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.26168,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058101,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.060789,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.060789,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.067223,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.059008,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.685162,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.078039,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.685162,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.091953,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.094766,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.343961,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.040581,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.343961,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.189916,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.189916,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.192045,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.017628,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.177301,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.017051,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.017051,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.10554,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.019181,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.10554,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.019181,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.038692,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.019181,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.046522,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.046522,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.025116,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.036668,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.176921,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.015999,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.176921,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.041503,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.149963,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.288697,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.035216,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.155823,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.187623,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.035202,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.111817,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.914441,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.062492,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.914441,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.062492,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.547803,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.938713,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.140772,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.005546,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.09214,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.028045,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.000851,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.003493,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.003493,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.753638,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.753638,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.759055,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.162646,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.162646,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.680035,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.934363,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.236049,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.911063,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.236049,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.836202,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.062492,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.553605,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.001814,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.239255,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.01437,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.115446,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.241486,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.046421,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.091503,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.196608,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.017904,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.635113,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.041877,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.635113,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.142144,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.08127,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.381736,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.03501,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.381736,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.067991,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.14752,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.14752,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.022945,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.153023,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.153023,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.051804,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.089463,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.028333,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.089463,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.159912,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.099819,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.017304,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.017304,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.021741,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.03735,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.119873,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.015999,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.028735,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.149963,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.149963,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.074775,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.074775,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.022581,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.097919,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.033895,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.097919,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.309035,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.101194,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.101194,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.058073,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.151749,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.144974,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.02009,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.261416,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.02009,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.648785,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.037263,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.038343,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.090623,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.117581,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.125123,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.0005,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    }
+  ],
+  "pfs-demo-1": [
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.95,
+      "path": [
+        "start",
+        "barrier",
+        "post-barrier"
+      ]
+    }
+  ],
+  "psi://case-low": [
+    {
       "path": [
         "start",
         "reflect"
@@ -19,4327 +6028,12 @@
   ],
   "psi://case-high": [
     {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
       "path": [
         "start",
         "barrier",
         "post-barrier"
       ]
     },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    }
-  ],
-  "lexqft-case": [
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.187623,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.035202,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.111817,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.914441,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.072035,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.007845,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.914441,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.015008,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.018463,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.03301,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.290615,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0125,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.655507,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.728706,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.933654,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.105431,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.892362,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.023943,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.836202,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.023943,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.836202,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.403567,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.403567,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002998,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.265257,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.648526,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.310823,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.000513,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.310823,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.00561,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.535206,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.938713,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.140772,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.085606,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.032675,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.085606,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.032675,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.902357,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.032675,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.762495,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.032675,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.762495,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.041374,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.902357,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.041374,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.006302,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.006302,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002754,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.179255,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002754,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.189398,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.273028,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.273028,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002495,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.824206,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002495,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.782366,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.01942,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002523,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.113408,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.013779,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.00948,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.86047,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.00948,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.058073,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.135594,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.229285,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.066375,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.26318,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.058257,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.234393,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.049937,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.148449,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.075785,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.035911,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.321787,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.114397,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.06017,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.049271,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.114017,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.08127,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.113147,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.113147,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.258955,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.258955,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.033538,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.15645,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.15645,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.15645,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.127347,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.064973,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.098827,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.178647,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.024487,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.178647,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.075879,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.104094,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.104094,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.022808,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.24776,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.018706,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.24776,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.018706,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.018706,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.20819,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.098348,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.061705,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.127919,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.127919,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.06118,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.345529,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.031189,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.345529,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.065502,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.123687,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.170667,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.041503,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.149963,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.288697,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.035216,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.155823,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.187623,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.035202,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.111817,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.914441,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.069654,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.716367,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.481284,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.013621,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002349,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002349,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.764316,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.768104,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.006789,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.679176,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.003884,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.816585,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.001871,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.824894,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002561,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.124959,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.001871,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.047452,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002913,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.007423,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.007423,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.007423,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.763625,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.938713,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.140772,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.13044,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.13044,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.00121,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.403071,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.049968,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.161551,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.002451,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.485267,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.836202,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.062492,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.001411,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.001411,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.000968,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.058073,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.058073,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.094804,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.033529,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.086564,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.017865,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.250286,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.080795,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.145299,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.159303,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.077822,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.077822,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.103656,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.104782,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.104782,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.238827,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.08127,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.144661,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.017051,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.511289,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.017051,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.511289,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.074417,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.30022,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.387251,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.132411,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.132411,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.193367,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.119876,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.193367,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.149963,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.387251,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.387251,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.049005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.333084,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.021949,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.65047,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.021949,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.022489,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.017865,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.129347,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.129347,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.03153,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.078177,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.078177,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.101136,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.103534,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.103534,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.068339,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.01437,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.261416,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.01437,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.017865,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.195495,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.490956,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.221074,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.221074,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.95,
-      "path": [
-        "start",
-        "barrier",
-        "post-barrier"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.0005,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.041503,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.149963,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.288697,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.035216,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    },
-    {
-      "source": "lexqft.tunnel",
-      "p": 0.155823,
-      "path": [
-        "start",
-        "reflect"
-      ]
-    }
-  ],
-  "pfs-demo-1": [
     {
       "source": "lexqft.tunnel",
       "p": 0.95,

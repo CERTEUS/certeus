@@ -191,6 +191,32 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
     except Exception:
         pass
 
+    # Append path to ProofFS store (read-only inspection API)
+    try:
+        import json as _json
+        from pathlib import Path as _Path
+
+        _pfs_store = _Path(__file__).resolve().parents[3] / "data" / "pfs_paths.json"
+        store: dict[str, list[dict]] = {}
+        if _pfs_store.exists():
+            try:
+                raw = _json.loads(_pfs_store.read_text(encoding="utf-8"))
+                if isinstance(raw, dict):
+                    store = raw  # type: ignore[assignment]
+            except Exception:
+                store = {}
+        keys = [c for c in [req.state_uri, "lexqft-case"] if c]
+        for key in keys:
+            recs = store.get(key)
+            if not isinstance(recs, list):
+                recs = []
+                store[key] = recs
+            recs.append({"path": path})
+        _pfs_store.parent.mkdir(parents=True, exist_ok=True)
+        _pfs_store.write_text(_json.dumps(store, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
     # Persist path into PFS view (read-only API reads it)
     try:
         pfs_store = Path(__file__).resolve().parents[3] / "data" / "pfs_paths.json"
@@ -199,17 +225,17 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
             store = json.loads(pfs_store.read_text(encoding="utf-8"))  # type: ignore[assignment]
             if not isinstance(store, dict):
                 store = {}
-        case_id = req.state_uri or "lexqft-case"
-        recs = store.get(case_id) if isinstance(store.get(case_id), list) else []
-        recs = list(recs)
-        recs.append(
-            {
-                "source": "lexqft.tunnel",
-                "p": float(resp.p_tunnel),
-                "path": path,
-            }
-        )
-        store[case_id] = recs
+        for cid in [c for c in [req.state_uri, "lexqft-case"] if c]:
+            recs = store.get(cid) if isinstance(store.get(cid), list) else []
+            recs = list(recs)
+            recs.append(
+                {
+                    "source": "lexqft.tunnel",
+                    "p": float(resp.p_tunnel),
+                    "path": path,
+                }
+            )
+            store[cid] = recs
         pfs_store.parent.mkdir(parents=True, exist_ok=True)
         pfs_store.write_text(json.dumps(store, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception:

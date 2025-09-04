@@ -60,7 +60,12 @@ def get_status() -> dict[str, Any]:
         return _status()
     except Exception:
         # Best-effort: never fail the UI/smoke — return empty status
-        return {"delta_bits": 0, "bits_delta_map": {"shard-0": 0}, "stats": {"shard-0": {"files": 0, "bytes": 0, "gzip_ratio": 1.0}}, "anchors": {"observed_at": _now_iso()}}
+        return {
+            "delta_bits": 0,
+            "bits_delta_map": {"shard-0": 0},
+            "stats": {"shard-0": {"files": 0, "bytes": 0, "gzip_ratio": 1.0}},
+            "anchors": {"observed_at": _now_iso()},
+        }
 
 
 @router.post("/reconstruct")
@@ -69,7 +74,12 @@ def reconstruct_now() -> dict[str, Any]:
     try:
         return _status()
     except Exception:
-        return {"delta_bits": 0, "bits_delta_map": {"shard-0": 0}, "stats": {"shard-0": {"files": 0, "bytes": 0, "gzip_ratio": 1.0}}, "anchors": {"observed_at": _now_iso()}}
+        return {
+            "delta_bits": 0,
+            "bits_delta_map": {"shard-0": 0},
+            "stats": {"shard-0": {"files": 0, "bytes": 0, "gzip_ratio": 1.0}},
+            "anchors": {"observed_at": _now_iso()},
+        }
 
 
 # === TESTY / TESTS ===

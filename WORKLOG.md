@@ -220,6 +220,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - QTMP: fix init_case (basis default), UI qtm.html: sekwencje LT/TL → measure_sequence
   - Testy: QTMP API pakiet zielony (init/measure/sequence/presets/decoherence/commutator)
   - Dema: W3 (geodesic+lock→publish), W4 (L→T vs T→L; dekoherencja) — raporty w reports/w3_demo.json i reports/w4_demo.json
+ - 2025-09-04 15:00:00Z [agent] (work/daily): W5 — lexqft v0.1 + Path‑Coverage Gate
+  - Gate: test_path_coverage_gate_smoke.py (OK/FAIL wg progów); demo scripts/demos/run_w5_demo.py
+  - LexQFT: coverage/state/update z wagami; tunelowanie — 2 scenariusze
+  - Quantum UI: Operator Composer (presety W/I/C/L/T) w qtm.html
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -240,6 +244,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - CFE cache: TTL via `CFE_CACHE_TTL_SEC` + `/v1/cfe/cache/warm` (list[case])
   - UI Geometry: panel Lensing Map (bary) + auto‑odświeżanie po akcjach
   - Testy: determinism (CFE), horizon/lensing, całość zielona (158 passed)
+- 2025-09-04 17:20:00Z [agent] (work/daily): CFE no-store + lensing/from_fin + cURL + ProofFS
+  - CFE: POST `/geodesic` i `/horizon` ustawiają `Cache-Control: no-store`
+  - CFE: `POST /v1/cfe/lensing/from_fin` — mapowanie sygnałów FIN→lensing (A2 helper)
+  - UI: Lensing — filtry K_/III_/SN_ + tooltips (value)
+  - Docs: curl_examples — `/v1/cfe/cache/warm`, `/v1/cfe/lensing/from_fin`
+  - ProofFS: zapis ścieżek po `/v1/lexqft/tunnel` → `/v1/pfs/inspect` przechowuje case
+  - Testy: 174 passed, 1 skipped (lokalnie)
  - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
    - Geometry/Quantum cockpit: telemetria (kappa_max, coverage/tunnel) — UI w `clients/web/public/geometry.html`, `quantum.html`
    - Smoke: dodano MailOps ingest do `scripts/smoke_api.ps1` i `scripts/smoke_api.sh`; ChatOps `cfe.geodesic` OK
@@ -520,3 +531,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - /v1/fin/alpha/simulate + /pnl: 2 strategie i agregacja PnL
   - - Testy: tests/services/test_fin_prod.py
   - - Lint OK; 174 testów zielone
+- 2025-09-04 14:54:26Z [48793] (work/daily): W12: LEXENITH → produkcja — Casebook 3 sprawy
+  - - Micro‑Court: utrwalenie ścieżek w casebook (newest‑first)
+  - - Endpoint: GET /v1/lexenith/casebook
+  - - Testy: tests/services/test_lex_casebook.py
+  - - Lint OK; 175 testów zielone

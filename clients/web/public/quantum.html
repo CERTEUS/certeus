@@ -103,6 +103,7 @@
           <button id="run-compare" class="btn">Run compare</button>
           <span class="muted">ΔUB:<span id="cmp-dub" class="pill">0</span></span>
         </div>
+        <div id="cmp-bars" style="display:flex;gap:12px;align-items:flex-end;height:80px;margin:8px 0;"></div>
         <table id="cmptbl"><thead><tr><th>#</th><th>opA</th><th>verdictA</th><th>pA</th><th>opB</th><th>verdictB</th><th>pB</th></tr></thead><tbody></tbody></table>
       </div>
 
@@ -164,6 +165,14 @@
         const ubb = (rb.ok && rb.data.uncertainty_bound && rb.data.uncertainty_bound.L_T) || 0;
         const dub = Number(uba) - Number(ubb);
         document.getElementById('cmp-dub').textContent = (isFinite(dub)? dub.toFixed(3): '0');
+        const cnt = (arr)=>{ const m={ALLOW:0,DENY:0,ABSTAIN:0}; (arr||[]).forEach(x=>{ const v=(x.verdict||'').toUpperCase(); if(m[v]!==undefined){ m[v]++; }}); return m; };
+        const ca = cnt(A), cb = cnt(B);
+        const mx = Math.max(1, ca.ALLOW+ca.DENY+ca.ABSTAIN, cb.ALLOW+cb.DENY+cb.ABSTAIN);
+        const mkBar = (label, a, b, color)=>{ const wrap=document.createElement('div'); wrap.style.display='flex'; wrap.style.flexDirection='column'; wrap.style.alignItems='center'; const barA=document.createElement('div'); barA.style.width='18px'; barA.style.height=(60*(a/mx)).toFixed(0)+'px'; barA.style.background=color; barA.title=`A ${label}: ${a}`; const barB=document.createElement('div'); barB.style.width='18px'; barB.style.height=(60*(b/mx)).toFixed(0)+'px'; barB.style.background=color; barB.style.opacity='0.5'; barB.title=`B ${label}: ${b}`; const lab=document.createElement('div'); lab.textContent=label; lab.style.fontSize='12px'; lab.style.color='#9aa0a6'; wrap.appendChild(barA); wrap.appendChild(barB); wrap.appendChild(lab); return wrap; };
+        const bars=document.getElementById('cmp-bars'); bars.innerHTML='';
+        bars.appendChild(mkBar('ALLOW', ca.ALLOW, cb.ALLOW, '#60a5fa'));
+        bars.appendChild(mkBar('DENY', ca.DENY, cb.DENY, '#f87272'));
+        bars.appendChild(mkBar('ABSTAIN', ca.ABSTAIN, cb.ABSTAIN, '#facc15'));
       }
       async function runSequence(){
         const cs = document.getElementById('case').value || 'LEX-001';

@@ -179,6 +179,110 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     return MeasureResponse(outcome=outcome, p=round(p, 6), pco=pco)
 
 
+# --- W7: Operators R/S commutator ---------------------------------------------
+
+
+class OperatorsRSRequest(BaseModel):
+    signals: dict[str, float] | None = None
+
+
+class OperatorsRSResponse(BaseModel):
+    R: float
+    S: float
+    commutator_norm: float
+
+
+@router.post("/operators_rs", response_model=OperatorsRSResponse)
+async def operators_rs(req: OperatorsRSRequest, request: Request, response: Response) -> OperatorsRSResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    s = req.signals or {}
+    risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
+    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
+    # Simple non‑commutation surrogate: absolute difference normalized
+    denom = max(1.0, abs(risk) + abs(sent))
+    comm = abs(risk - sent) / denom
+    try:
+        from monitoring.metrics_slo import certeus_fin_commutator_rs
+
+        certeus_fin_commutator_rs.set(float(comm))
+    except Exception:
+        pass
+    return OperatorsRSResponse(R=round(risk, 6), S=round(sent, 6), commutator_norm=round(comm, 6))
+
+
+# --- W7: Entanglement MI (pairs) ---------------------------------------------
+
+
+class MIItem(BaseModel):
+    a: str
+    b: str
+    series_a: list[float]
+    series_b: list[float]
+
+
+class MISummary(BaseModel):
+    pair: tuple[str, str]
+    mi: float
+
+
+class MIResponse(BaseModel):
+    top: list[MISummary]
+
+
+def _pearson_r(xs: list[float], ys: list[float]) -> float:
+    try:
+        n = min(len(xs), len(ys))
+        if n == 0:
+            return 0.0
+        import math
+
+        x = xs[:n]
+        y = ys[:n]
+        mx = sum(x) / n
+        my = sum(y) / n
+        vx = sum((u - mx) ** 2 for u in x)
+        vy = sum((v - my) ** 2 for v in y)
+        if vx <= 0 or vy <= 0:
+            return 0.0
+        cov = sum((u - mx) * (v - my) for (u, v) in zip(x, y, strict=False))
+        r = cov / math.sqrt(vx * vy)
+        return max(-1.0, min(1.0, r))
+    except Exception:
+        return 0.0
+
+
+@router.post("/entanglement/mi", response_model=MIResponse)
+async def entanglement_mi(items: list[MIItem], request: Request) -> MIResponse:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=max(1, len(items)))
+    out: list[MISummary] = []
+    try:
+        from monitoring.metrics_slo import certeus_fin_entanglement_mi
+    except Exception:
+        certeus_fin_entanglement_mi = None  # type: ignore
+    for it in items:
+        r = _pearson_r(it.series_a, it.series_b)
+        # Gaussian assumption MI ~ -0.5 * ln(1 - r^2)
+        import math
+
+        try:
+            mi = -0.5 * math.log(max(1e-9, 1.0 - (r * r)))
+        except Exception:
+            mi = 0.0
+        mi = float(round(mi, 6))
+        out.append(MISummary(pair=(it.a, it.b), mi=mi))
+        try:
+            if certeus_fin_entanglement_mi is not None:
+                certeus_fin_entanglement_mi.labels(a=it.a, b=it.b).set(mi)
+        except Exception:
+            pass
+    out.sort(key=lambda s: s.mi, reverse=True)
+    return MIResponse(top=out[:5])
+
+
 @router.get("/uncertainty", response_model=UncertaintyResponse)
 async def uncertainty(request: Request) -> UncertaintyResponse:
     from services.api_gateway.limits import enforce_limits

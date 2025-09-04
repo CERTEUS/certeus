@@ -172,6 +172,7 @@ class MicroCourtPublishResponse(BaseModel):
 
 
 _LOCKS: dict[str, bool] = {}
+_CASEBOOK: list[dict[str, Any]] = []  # newest-first entries: {case_id, path}
 
 
 @router.post("/micro_court/lock", response_model=MicroCourtLockResponse)
@@ -249,7 +250,39 @@ async def micro_court_publish(
         )
     except Exception:
         pass
+    # Casebook (newest-first)
+    try:
+        _CASEBOOK.insert(0, {"case_id": case, "path": path})
+        if len(_CASEBOOK) > 20:
+            del _CASEBOOK[20:]
+    except Exception:
+        pass
     return MicroCourtPublishResponse(ok=True, case_id=case, published=True, path=path, pco=pco)
+
+
+# --- Casebook (W12): lista ostatnich spraw Micro‑Court ------------------------
+
+
+class CasebookEntry(BaseModel):
+    case_id: str
+    path: list[dict[str, str]]
+
+
+class CasebookResponse(BaseModel):
+    cases: list[CasebookEntry]
+
+
+@router.get("/casebook", response_model=CasebookResponse)
+async def casebook(request: Request) -> CasebookResponse:
+    """Zwraca ostatnie sprawy z Micro‑Court (max 10), newest‑first."""
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    # zwróć kopię, newest-first (już utrzymywane newest-first)
+    out: list[CasebookEntry] = []
+    for it in _CASEBOOK[:10]:
+        out.append(CasebookEntry(case_id=str(it.get("case_id") or ""), path=list(it.get("path") or [])))
+    return CasebookResponse(cases=out)
 
 
 # --- Pilot W16: 3 sprawy E2E + feedback ---
