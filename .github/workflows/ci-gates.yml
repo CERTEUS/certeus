@@ -321,6 +321,20 @@ jobs:
           print('coverage_gamma=', body.get('coverage_gamma'))
           print('uncaptured_mass=', body.get('uncaptured_mass'))
           PY
+      - name: LexQFT tunneling snapshot (low/high energy)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          low = c.post('/v1/lexqft/tunnel', json={'evidence_energy': 0.6}).json()
+          high = c.post('/v1/lexqft/tunnel', json={'evidence_energy': 1.2}).json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/lexqft_tunnel.json','w',encoding='utf-8') as f:
+            json.dump({'low': low, 'high': high}, f)
+          print('p_low=', low.get('p_tunnel'), 'p_high=', high.get('p_tunnel'))
+          PY
       - name: Mark OpenAPI smoke OK
         if: success()
         run: |
@@ -421,6 +435,14 @@ jobs:
               lines.append(f"LexQFT: coverage_gamma={cov.get('coverage_gamma')} uncaptured_mass={cov.get('uncaptured_mass')}")
           except Exception:
               lines.append('LexQFT: coverage summary n/a')
+          # LexQFT tunneling summary
+          try:
+              tun = json.loads((repo/'out'/'lexqft_tunnel.json').read_text())
+              p_low = (tun.get('low') or {}).get('p_tunnel')
+              p_high = (tun.get('high') or {}).get('p_tunnel')
+              lines.append(f"LexQFT: tunneling p_low={p_low} p_high={p_high}")
+          except Exception:
+              lines.append('LexQFT: tunneling summary n/a')
           # Local gate ticks
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'

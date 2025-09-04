@@ -409,3 +409,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Metryki: certeus_lex_micro_court_locked_total/published_total
   - - Testy: tests/services/test_lex_micro_court.py
   - - Lint OK; 152 testów zielone
+- 2025-09-04 14:02:45Z [48793] (work/daily): W5: PR summary tunneling (low/high) + tests green
+  - ci-gates: tunneling snapshot (low/high) + PR line
+  - Testy: 152 passed (zielone)
+  - Enterprise hygiene: PR summary bogatszy o LexQFT (gamma/uncaptured/tunneling)
