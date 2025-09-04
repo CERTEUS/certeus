@@ -1,0 +1,7 @@
+name: lex_casebook
+module: plugins.lex_casebook.src.main
+version: "0.1.0"
+capabilities:
+  - lex
+  - casebook
+

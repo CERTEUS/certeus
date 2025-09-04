@@ -2,12 +2,13 @@
 +-------------------------------------------------------------+
 |                          CERTEUS                            |
 +-------------------------------------------------------------+
-| FILE: clients/web/public/devices.html                      |
+| FILE: clients/web/public/devices.html                       |
 | ROLE: Web client page.                                      |
-| PLIK: clients/web/public/devices.html                      |
+| PLIK: clients/web/public/devices.html                       |
 | ROLA: Strona klienta web.                                   |
 +-------------------------------------------------------------+
 -->
+
 <!doctype html>
 <html lang="pl" data-theme="dark">
   <head>
@@ -16,90 +17,83 @@
     <title>CERTEUS • Devices</title>
     <style>
       body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:1080px;margin:24px auto;padding:0 16px}
+      .container{max-width:980px;margin:24px auto;padding:0 16px}
       .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
       h1{margin:0 0 10px;font-size:22px}
       .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
       .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
       .btn:hover{background:#20242a}
       .muted{color:#9aa0a6}
-      input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
-      pre{background:#0f1115;border:1px solid #2a2d33;border-radius:10px;padding:10px;overflow:auto}
+      textarea{width:100%;height:140px;background:#111315;color:#f2f2f3;border:1px solid #2a2d33;border-radius:8px;padding:8px}
     </style>
   </head>
   <body>
     <div class="container">
       <div class="card">
-        <h1>HDE — Plan</h1>
+        <h1>HDE • Horizon Drive Plan</h1>
         <div class="row">
-          <input id="hde-case" placeholder="case id (LEX-001)" />
-          <input id="hde-target" placeholder="target horizon (0.2)" />
-          <button id="hde-run" class="btn">Plan</button>
-          <span class="muted">best:<span id="hde-best" class="pill">?</span></span>
-          <span class="muted">cost:<span id="hde-cost" class="pill">?</span></span>
+          <input id="hde-case" class="btn" placeholder="case id (np. CER-1)" />
+          <input id="hde-target" class="btn" placeholder="target_horizon (np. 0.2)" />
+          <button id="hde-go" class="btn">Plan</button>
         </div>
-        <pre id="hde-out" class="muted"></pre>
+        <textarea id="hde-out" readonly></textarea>
       </div>
 
       <div class="card">
-        <h1>Q‑Oracle — Expectation</h1>
+        <h1>Q‑Oracle • Expectation</h1>
         <div class="row">
-          <input id="qo-text" placeholder="objective/question" />
-          <button id="qo-run" class="btn">Ask</button>
-          <span class="muted">optimum:<span id="qo-opt" class="pill">?</span></span>
+          <input id="qo-q" class="btn" placeholder="question (np. Should we appeal?)" />
+          <button id="qo-go" class="btn">Ask</button>
         </div>
-        <pre id="qo-out" class="muted"></pre>
+        <textarea id="qo-out" readonly></textarea>
       </div>
 
       <div class="card">
         <h1>Entangler</h1>
         <div class="row">
-          <input id="ent-vars" placeholder="variables (A,B,C)" />
-          <input id="ent-neg" placeholder="target_negativity (0.1)" />
-          <button id="ent-run" class="btn">Entangle</button>
-          <span class="muted">achieved:<span id="ent-ach" class="pill">?</span></span>
+          <input id="ent-vars" class="btn" placeholder="variables (comma‑sep)" />
+          <input id="ent-neg" class="btn" placeholder="target_negativity (np. 0.1)" />
+          <button id="ent-go" class="btn">Entangle</button>
         </div>
-        <pre id="ent-out" class="muted"></pre>
+        <textarea id="ent-out" readonly></textarea>
       </div>
 
       <div class="card">
-        <h1>Chronosync — Reconcile</h1>
+        <h1>Chronosync • Reconcile</h1>
         <div class="row">
-          <input id="chr-coords" placeholder='coords JSON (e.g. {"t":0})' />
-          <button id="chr-run" class="btn">Reconcile</button>
-          <span class="muted">ok:<span id="chr-ok" class="pill">?</span></span>
+          <input id="chr-t" class="btn" placeholder="t (np. 0)" />
+          <button id="chr-go" class="btn">Reconcile</button>
         </div>
-        <pre id="chr-out" class="muted"></pre>
+        <textarea id="chr-out" readonly></textarea>
       </div>
     </div>
     <script>
-      async function jfetch(url, opts){ const r=await fetch(url, opts||{}); const t=await r.text(); try{ return {ok:r.ok, data: JSON.parse(t), headers:r.headers} }catch{ return {ok:r.ok, data:t, headers:r.headers} } }
-      function show(el, obj){ el.textContent = typeof obj==='string'? obj : JSON.stringify(obj, null, 2); }
-      document.getElementById('hde-run').addEventListener('click', async ()=>{
-        const cs=(document.getElementById('hde-case').value||'LEX-001');
-        const tgt=parseFloat(document.getElementById('hde-target').value||'0.2');
-        const r=await jfetch('/v1/devices/horizon_drive/plan',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case:cs, target_horizon: tgt})});
-        if(r.ok){ document.getElementById('hde-best').textContent = r.data.best_strategy||'?'; document.getElementById('hde-cost').textContent = r.data.cost_tokens; }
-        show(document.getElementById('hde-out'), r.data);
+      async function call(url, body){
+        const r = await fetch(url, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body||{})});
+        const txt = await r.text();
+        return {ok:r.ok, text:txt};
+      }
+      document.getElementById('hde-go').addEventListener('click', async ()=>{
+        const caseId = document.getElementById('hde-case').value||'CER-1';
+        const target = parseFloat(document.getElementById('hde-target').value||'0.2');
+        const r = await call('/v1/devices/horizon_drive/plan', {case: caseId, target_horizon: target});
+        document.getElementById('hde-out').value = r.text;
       });
-      document.getElementById('qo-run').addEventListener('click', async ()=>{
-        const q=(document.getElementById('qo-text').value||'maximize fairness');
-        const r=await jfetch('/v1/devices/qoracle/expectation',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({objective:q, constraints:{}})});
-        if(r.ok){ document.getElementById('qo-opt').textContent = (r.data.optimum||{}).choice||'?'; }
-        show(document.getElementById('qo-out'), r.data);
+      document.getElementById('qo-go').addEventListener('click', async ()=>{
+        const q = document.getElementById('qo-q').value||'Should we appeal?';
+        const r = await call('/v1/devices/qoracle/expectation', {question: q});
+        document.getElementById('qo-out').value = r.text;
       });
-      document.getElementById('ent-run').addEventListener('click', async ()=>{
-        const vs=(document.getElementById('ent-vars').value||'RISK,SENTIMENT').split(',').map(x=>x.trim()).filter(Boolean);
-        const neg=parseFloat(document.getElementById('ent-neg').value||'0.1');
-        const r=await jfetch('/v1/devices/entangle',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({variables:vs, target_negativity:neg})});
-        if(r.ok){ document.getElementById('ent-ach').textContent = r.data.achieved_negativity; }
-        show(document.getElementById('ent-out'), r.data);
+      document.getElementById('ent-go').addEventListener('click', async ()=>{
+        const v = (document.getElementById('ent-vars').value||'A,B').split(',').map(s=>s.trim()).filter(Boolean);
+        const n = parseFloat(document.getElementById('ent-neg').value||'0.1');
+        const r = await call('/v1/devices/entangle', {variables: v, target_negativity: n});
+        document.getElementById('ent-out').value = r.text;
       });
-      document.getElementById('chr-run').addEventListener('click', async ()=>{
-        let coords={t:0}; try{ coords=JSON.parse(document.getElementById('chr-coords').value||'{"t":0}'); }catch(e){}
-        const r=await jfetch('/v1/devices/chronosync/reconcile',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({coords:coords, pc_delta:{}})});
-        if(r.ok){ document.getElementById('chr-ok').textContent = r.data.reconciled? 'true':'false'; }
-        show(document.getElementById('chr-out'), r.data);
+      document.getElementById('chr-go').addEventListener('click', async ()=>{
+        const t = parseFloat(document.getElementById('chr-t').value||'0');
+        const r = await call('/v1/devices/chronosync/reconcile', {coords:{t}, pc_delta:{}});
+        document.getElementById('chr-out').value = r.text;
       });
     </script>
   </body>

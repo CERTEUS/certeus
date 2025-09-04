@@ -455,6 +455,38 @@ PY
               json.dump(out, f)
           print('corr=', corr, 'priorities(L,T)=', pri.get('L'), pri.get('T'))
           PY
+      - name: FIN R/S snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          r = c.post('/v1/fin/alpha/operators_rs', json={'signals': {'risk_a': 0.4, 'sent_b': 0.5}})
+          r.raise_for_status()
+          body = r.json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/fin_comm_rs.json','w',encoding='utf-8') as f:
+              json.dump(body, f)
+          print('commutator_RS=', body.get('commutator_norm'))
+          PY
+      - name: FIN MI snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          items=[{'a':'X','b':'Y','series_a':[1,2,3,4,5],'series_b':[1.1,2.1,2.9,4.2,5.1]}]
+          r = c.post('/v1/fin/alpha/entanglement/mi', json=items)
+          r.raise_for_status()
+          body = r.json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/fin_mi.json','w',encoding='utf-8') as f:
+              json.dump(body, f)
+          top = (body.get('top') or [{}])[0]
+          print('mi_top=', top.get('mi'))
+          PY
       - name: HDE plan snapshot (in-proc)
         run: |
           python - << 'PY'
@@ -714,7 +746,7 @@ PY
               lines.append(f"| Q-Oracle payoff | {qo.get('payoff', 'n/a')} |")
               lines.append(f"| Q-Oracle choice | {(qo.get('optimum') or {}).get('choice', 'n/a')} |")
               lines.append(f"| Entangler achieved_negativity | {ei.get('achieved_negativity', 'n/a')} |")
-              # Devices SLO table
+          # Devices SLO table
               lines.append('')
               lines.append('### Devices SLO')
               try:
@@ -739,6 +771,19 @@ PY
               lines.append(f"- Chronosync reconciled: {'✅' if cs_ok else '❌'}")
           except Exception:
               pass
+          # FIN summary
+          try:
+              frs = json.loads((repo/'out'/'fin_comm_rs.json').read_text())
+              lines.append(f"FIN R/S: commutator_norm={frs.get('commutator_norm')}")
+          except Exception:
+              lines.append('FIN R/S: summary n/a')
+          try:
+              fmi = json.loads((repo/'out'/'fin_mi.json').read_text())
+              mi_top = (fmi.get('top') or [])
+              mi_val = mi_top[0]['mi'] if mi_top else 'n/a'
+              lines.append(f"FIN MI: top={mi_val}")
+          except Exception:
+              lines.append('FIN MI: summary n/a')
           # Local gate ticks
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'

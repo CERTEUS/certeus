@@ -199,7 +199,7 @@ def _stable_index(key: str, mod: int) -> int:
 
 
 @router.post("/init_case", response_model=InitCaseResponse)
-async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
+async def init_case(req: InitCaseRequest, request: Request, response: Response) -> InitCaseResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -227,6 +227,10 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
     except Exception:
         pass
 
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return InitCaseResponse(ok=True, predistribution=predistribution)
 
 
@@ -383,6 +387,10 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         pass
 
+    try:
+        response.headers.setdefault("Cache-Control", "no-store")
+    except Exception:
+        pass
     return resp
 
 

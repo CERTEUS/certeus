@@ -28,9 +28,16 @@ if (Test-Path .\scripts\dev_env.ps1) { . .\scripts\dev_env.ps1 }
 if (Test-Path .\scripts\keys_dev.ps1) { pwsh -File .\scripts\keys_dev.ps1 | Out-Host }
 if (Test-Path .\scripts\env_load.ps1) { . .\scripts\env_load.ps1 }
 
+function Get-PyPath {
+  if (Test-Path .\.venv\Scripts\python.exe) { return (Resolve-Path .\.venv\Scripts\python.exe).Path }
+  try { $cmd = Get-Command python -ErrorAction Stop; return $cmd.Source } catch {}
+  $uv = Join-Path $env:USERPROFILE 'AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\python.exe'
+  if (Test-Path $uv) { return $uv }
+  throw 'Python not found (.venv/python/uv)'
+}
+
 function Start-Server {
-  $py = (Resolve-Path .\.venv\Scripts\python.exe).Path
-  if (-not (Test-Path $py)) { throw 'Python venv not found: .\\.venv\\Scripts\\python.exe' }
+  $py = Get-PyPath
   $args = @('-m','uvicorn','services.api_gateway.main:app','--host','127.0.0.1','--port','8000')
   $proc = Start-Process -FilePath $py -ArgumentList $args -PassThru -WindowStyle Hidden
   for ($i=0; $i -lt 120; $i++) {

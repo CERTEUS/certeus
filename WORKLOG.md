@@ -542,3 +542,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Endpoint: GET /v1/lexenith/casebook
   - - Testy: tests/services/test_lex_casebook.py
   - - Lint OK; 175 testów zielone
+- 2025-09-04 14:58:33Z [48793] (work/daily): W7 start: FIN R/S + Entanglement MI + PR lines; tests green
+  - API: /v1/fin/alpha/operators_rs (commutator R/S), /entanglement/mi (Gaussian MI)
+  - OPA: policies/finance/risk.rego, policies/finance/entanglement.rego
+  - ci-gates: FIN snapshots + PR lines + Quick Links
+  - Testy: 175 passed (zielone)
