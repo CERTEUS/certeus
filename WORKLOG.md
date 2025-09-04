@@ -243,3 +243,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: Canary Gate (progressive) + markers
   - ci-gates: RTBF smoke + DPIA summary + strict redaction clean
   - promote: triggered (self-hosted), monitoring to success
+- 2025-09-04 07:25:16Z [48793] (work/daily): release: SBOM+provenance keyless signing + assets
+  - - release.yml: cosign sign-blob + attach sbom/provenance to release
