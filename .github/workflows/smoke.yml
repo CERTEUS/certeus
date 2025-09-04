@@ -25,30 +25,7 @@ concurrency:
 env:
   PYTHON_VERSION: "3.11"
 
-jobs:
-  smoke:
-    if: ${{ vars.SMOKE_USE_GH_HOSTED != '1' }}
-    name: Smoke (${{ matrix.os }})
-    runs-on: [self-hosted, linux, docker, build]
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            slo_max_p95_ms: 300
-            smoke_max_fails: 2
-          - os: windows-latest
-            slo_max_p95_ms: 350
-            smoke_max_fails: 2
-
-    env:
-      SLO_MAX_P95_MS: ${{ matrix.slo_max_p95_ms }}
-      SMOKE_MAX_FAILS: ${{ matrix.smoke_max_fails }}
-
-    steps:
-      - name: 🔄 Checkout
+      - name: Paths filter (smoke-relevant)\n        id: changes\n        uses: dorny/paths-filter@v3\n        with:\n          filters: |\n            smoke:\n              - 'services/**'\n              - 'scripts/**'\n              - 'clients/web/**'\n              - 'docs/api/**'\n              - 'pyproject.toml'\n              - 'requirements.txt'\n      - name: 🔄 Checkout
         uses: actions/checkout@v4
 
       - name: 🐍 Setup Python ${{ env.PYTHON_VERSION }} (with pip cache)
@@ -196,18 +173,12 @@ jobs:
         shell: pwsh
         run: |
           py -3 -m venv .venv
-          .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator python-multipart z3-solver -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { .\.venv\Scripts\python.exe -m pip install -U prometheus-client openapi-spec-validator python-multipart z3-solver }
-
-      - name: ?? Run smoke (Ubuntu) with retry
-        if: matrix.os == 'ubuntu-latest'
+          .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator python-multipart z3-solver -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { .\.venv\Scripts\python.exe -m pip install -U prometheus-client openapi-spec-validator python-multipart z3-solver }\n      - name: Short-circuit (no relevant changes)\n        if: steps.changes.outputs.smoke != 'true'\n        run: echo 'No smoke-relevant changes; skipping heavy steps.'\n\n      - name: ?? Run smoke (Ubuntu) with retry\n        if: steps.changes.outputs.smoke == 'true'\n        if: matrix.os == 'ubuntu-latest'
         uses: nick-invision/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 2
-          command: bash ./scripts/smoke_api.sh
-
-      - name: ?? Run smoke (Windows) with retry
-        if: matrix.os == 'windows-latest'
+          command: bash ./scripts/smoke_api.sh\n      - name: ?? Run smoke (Windows) with retry\n        if: steps.changes.outputs.smoke == 'true'\n        if: matrix.os == 'windows-latest'
         uses: nick-invision/retry@v3
         with:
           timeout_minutes: 12
@@ -341,3 +312,6 @@ jobs:
             } catch (err) {
               core.warning(`Could not create PR comment: ${err?.message || err}`);
             }
+
+
+
