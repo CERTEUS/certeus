@@ -480,3 +480,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Metryki: certeus_devices_signed_total(device)
   - - Test: devices signing (weryfikacja sygnatury)
   - - Lint OK; 167 testów zielone
+- 2025-09-04 14:30:37Z [48793] (work/daily): PR: SLO Status section + public Grafana link; tests green
+  - ci-gates: SLO Status (p95/error-rate pass/fail) in PR summary
+  - Quick Links: added Grafana (public) https://www.certeus.pl/grafana
+  - Testy: 167 passed (zielone)
