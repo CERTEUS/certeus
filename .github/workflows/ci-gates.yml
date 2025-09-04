@@ -321,39 +321,6 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/openapi_contract_ok.txt
-          # Proof Gate related workflow ticks via GitHub API
-          try:
-              token = os.getenv('GITHUB_TOKEN')
-              repo_slug = os.getenv('GITHUB_REPOSITORY')
-              sha = os.getenv('GITHUB_SHA')
-              req = urllib.request.Request(
-                  f"https://api.github.com/repos/{repo_slug}/actions/runs?head_sha={sha}",
-                  headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
-              )
-              with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
-                  data = json.loads(resp.read().decode('utf-8'))
-                  runs = data.get('workflow_runs') or []
-                  want = {
-                      'Proof Gate': 'pg',
-                      'Gauge-Gate': 'gg',
-                      'Path-Coverage-Gate': 'pc',
-                      'Boundary-Rebuild-Gate': 'br',
-                      'asset-guard': 'ag',
-                  }
-                  status_map = {v: '❌' for v in want.values()}
-                  for r in runs:
-                      name = r.get('name')
-                      concl = r.get('conclusion')
-                      key = want.get(name)
-                      if key and concl:
-                          status_map[key] = '✅' if concl == 'success' else '❌'
-                  lines.append("Workflows: PG={} Gauge={} PathCov={} Boundary={} Assets={}".format(
-                      status_map['pg'], status_map['gg'], status_map['pc'], status_map['br'], status_map['ag']
-                  ))
-          except Exception:
-              lines.append('Workflows: (status not available)')
-          (repo/'out'/'ci_pr_comment.md').write_text('\n'.join(lines), encoding='utf-8')
-          PY
 
       - name: Comment PR with SLO/Smokes/Perf
         if: github.event_name == 'pull_request' && always()
@@ -423,4 +390,3 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
-
