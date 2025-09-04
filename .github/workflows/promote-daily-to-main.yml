@@ -46,7 +46,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Configure git user
-        shell: bash
+        shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
