@@ -47,3 +47,30 @@ jobs:
           name: canary-${{ github.sha }}
           path: out/canary.json
           if-no-files-found: warn
+      - name: Comment PR with Canary p95 summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '### Canary Gate Summary\n\n';
+            try {
+              const data = JSON.parse(fs.readFileSync('out/canary.json','utf8'));
+              const rows = Array.isArray(data.results) ? data.results : [];
+              if (rows.length) {
+                body += '| phase% | count | p95_ms | error_rate | ok |\n|---:|---:|---:|---:|:---:|\n';
+                for (const r of rows) {
+                  body += `| ${r.phase_pct} | ${r.count} | ${r.p95_ms?.toFixed?.(2) ?? r.p95_ms} | ${r.error_rate} | ${r.ok ? '✅' : '❌'} |\n`;
+                }
+              } else {
+                body += 'No results found in out/canary.json';
+              }
+            } catch (e) {
+              body += 'Could not parse out/canary.json';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

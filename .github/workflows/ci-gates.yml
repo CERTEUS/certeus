@@ -122,6 +122,17 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/supply_chain_ok.txt
+
+      - name: Require cosign attestations (optional)
+        env:
+          REQUIRE_COSIGN_ATTESTATIONS: ${{ vars.REQUIRE_COSIGN_ATTESTATIONS || '0' }}
+        run: |
+          if [ "${REQUIRE_COSIGN_ATTESTATIONS}" = "1" ]; then
+            echo "Requiring cosign attestations: sbom.json.sig, sbom.json.cert"
+            python scripts/supply_chain/verify_cosign_artifacts.py --require sbom.json.sig sbom.json.cert
+          else
+            echo "Cosign attestation requirement disabled (set vars.REQUIRE_COSIGN_ATTESTATIONS=1 to enforce)"
+          fi
       - name: Perf Smoke (W11)
         run: |
           python scripts/perf/quick_bench.py --iters 5 --p95-max-ms 250 --out out/perf_bench.json
