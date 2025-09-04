@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import sys
 import statistics
 import time
 from typing import Any
@@ -57,6 +58,10 @@ def _measure(client: TestClient, count: int) -> tuple[float, float, int]:
 
 
 def main() -> int:
+    # Ensure repository root in sys.path for local/CI execution
+    _repo = Path(__file__).resolve().parents[2]
+    if str(_repo) not in sys.path:
+        sys.path.insert(0, str(_repo))
     from services.api_gateway.main import app  # lazy import
 
     ap = argparse.ArgumentParser(description="Canary/progressive readiness gate")
