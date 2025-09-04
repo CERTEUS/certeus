@@ -27,6 +27,7 @@ env:
 
 jobs:
   smoke:
+    if: ${{ vars.SMOKE_USE_GH_HOSTED != '1' }}
     name: Smoke (${{ matrix.os }})
     runs-on: [self-hosted, linux, docker, build]
     timeout-minutes: 20
@@ -149,9 +150,131 @@ jobs:
           path: reports/smoke_summary.json
           if-no-files-found: warn
 
+  smoke_gh:
+    if: ${{ vars.SMOKE_USE_GH_HOSTED == '1' }}
+    name: Smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            slo_max_p95_ms: 300
+            smoke_max_fails: 2
+          - os: windows-latest
+            slo_max_p95_ms: 350
+            smoke_max_fails: 2
+
+    env:
+      SLO_MAX_P95_MS: ${{ matrix.slo_max_p95_ms }}
+      SMOKE_MAX_FAILS: ${{ matrix.smoke_max_fails }}
+
+    steps:
+      - name: ?? Checkout
+        uses: actions/checkout@v4
+
+      - name: ?? Setup Python ${{ env.PYTHON_VERSION }} (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            constraints/**
+
+      - name: ?? Create venv and install (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          python -m venv .venv
+          ./.venv/bin/python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator python-multipart z3-solver -c constraints/requirements-constraints.txt || ./.venv/bin/python -m pip install -U prometheus-client openapi-spec-validator python-multipart z3-solver
+
+      - name: ?? Create venv and install (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          py -3 -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator python-multipart z3-solver -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { .\.venv\Scripts\python.exe -m pip install -U prometheus-client openapi-spec-validator python-multipart z3-solver }
+
+      - name: ?? Run smoke (Ubuntu) with retry
+        if: matrix.os == 'ubuntu-latest'
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 2
+          command: bash ./scripts/smoke_api.sh
+
+      - name: ?? Run smoke (Windows) with retry
+        if: matrix.os == 'windows-latest'
+        uses: nick-invision/retry@v3
+        with:
+          timeout_minutes: 12
+          max_attempts: 2
+          shell: pwsh
+          command: pwsh -File .\scripts\smoke_api.ps1
+
+      - name: ?? Setup Node for Spectral
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: ?? Spectral lint OpenAPI spec
+        continue-on-error: true
+        run: |
+          npx -y @stoplight/spectral-cli lint -r .spectral.yaml -f json -o reports/spectral.json reports/openapi.json
+
+      - name: ?? Upload spectral report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spectral-${{ matrix.os }}-${{ github.sha }}
+          path: reports/spectral.json
+          if-no-files-found: warn
+
+      - name: ?? Append Spectral summary to job summary
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          OS: ${{ matrix.os }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'reports/spectral.json';
+            let issues = [];
+            if (fs.existsSync(path)) {
+              try { issues = JSON.parse(fs.readFileSync(path,'utf8')); } catch {}
+            }
+            const sevMap = {0:'error',1:'warn',2:'info',3:'hint'};
+            const counts = { error:0, warn:0, info:0, hint:0 };
+            const byRule = {};
+            for (const it of issues) {
+              const sev = typeof it.severity==='number' ? (sevMap[it.severity]||'info') : (it.severity||'info');
+              counts[sev] = (counts[sev]||0) + 1;
+              const code = it.code || 'unknown';
+              byRule[code] = (byRule[code]||0) + 1;
+            }
+            const top = Object.entries(byRule).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            let md = `### Spectral Summary (${process.env.OS})\n\n`;
+            md += `- errors: ${counts.error||0}, warnings: ${counts.warn||0}, info: ${counts.info||0}\n`;
+            if (top.length) {
+              md += `\n| Rule | Count |\n|---|---:|\n`;
+              for (const [rule,cnt] of top) md += `| ${rule} | ${cnt} |\n`;
+            }
+            await core.summary.addRaw(md).write();
+
+      - name: ?? Upload smoke summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-summary-${{ matrix.os }}-${{ github.sha }}
+          path: reports/smoke_summary.json
+          if-no-files-found: warn
+
   smoke-summary:
     name: Smoke PR Summary
-    needs: smoke
+    needs: [smoke, smoke_gh]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
