@@ -19,6 +19,7 @@ EN: FastAPI router for FIN tokens (request/allocate/status) — file-backed stat
 
 from __future__ import annotations
 
+# === IMPORTY / IMPORTS ===
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
+
+# === KONFIGURACJA / CONFIGURATION ===
 
 router = APIRouter(prefix="/v1/fin/tokens", tags=["billing"])
 
@@ -53,6 +56,9 @@ def _save(state: dict[str, Any]) -> None:
     p.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
+# === MODELE / MODELS ===
+
+
 class ReqIn(BaseModel):
     user_id: str = Field(min_length=1)
     amount: int = Field(gt=0)
@@ -76,6 +82,9 @@ class StatusOut(BaseModel):
     request_id: str
     status: str
     allocated_by: str | None = None
+
+
+# === LOGIKA / LOGIC ===
 
 
 @router.post("/request", response_model=ReqOut)
@@ -127,3 +136,8 @@ async def allocate(req: AllocIn, request: Request) -> StatusOut:
     state["requests"][req.request_id] = entry
     _save(state)
     return StatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
