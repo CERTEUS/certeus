@@ -376,6 +376,12 @@ Status: Bramki DP budget (stub, `STRICT_DP_BUDGET`) w Proof Gate; gotowe do rozs
 
 ### **TYDZIEŃ 13 — Devices v0.2**
 
+Status: v0.2 dostarczone (zielone testy i smoki CI; kontrakty OK).
+  - HDE (D61): /v1/devices/horizon_drive/plan — alternatywy + best_strategy (planner porównawczy)
+  - Q-Oracle (D62): /v1/devices/qoracle/expectation — heurystyki (risk_aversion, must_include)
+  - Entangler (D63): /v1/devices/entangle — parowa negatywność (metryki Prometheus)
+  - Chronosync (D64): /v1/devices/chronosync/reconcile — szkic protokołów i klauzul traktatu
+
 **D61 (S2)** HDE optymalizacja (koszt/krzywizna).
 
 * DOD: planner porównawczy.
@@ -581,4 +587,3 @@ Status: Bramki DP budget (stub, `STRICT_DP_BUDGET`) w Proof Gate; gotowe do rozs
 * **Proof‑Only I/O** — publikacja bez PCO jest niemożliwa technicznie.
 
 * **QTMP** — kolaps i nieoznaczoność jako pierwszoklasowe obywatele API.
-
