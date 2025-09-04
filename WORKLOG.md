@@ -461,3 +461,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Metryki: certeus_p2p_*
   - - Testy: tests/services/test_p2p_queue.py
   - - Lint OK; 159 testów zielone
+- 2025-09-04 14:18:22Z [48793] (work/daily): W5: KPI table in PR summary (enterprise snapshot); tests green
+  - ci-gates: KPI table (p95, gamma/uncaptured, tunneling p_low/p_high, corr, pri_L/T, HDE cost/kappa, Q-Oracle payoff/choice, Entangler neg)
+  - Testy: 162 passed (zielone)
+  - WORKLOG: aktualizacja po rozbudowie PR summary
