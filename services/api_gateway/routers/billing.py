@@ -19,6 +19,7 @@ EN: FastAPI router for Billing / Cost‑Tokens.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 import uuid
@@ -28,21 +29,30 @@ from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-_STATE_FILE = Path(__file__).resolve().parents[3] / "data" / "fin_tokens.json"
+_DEFAULT_STATE_FILE = Path(__file__).resolve().parents[3] / "data" / "fin_tokens.json"
+
+
+def _state_file() -> Path:
+    override = os.getenv("CERTEUS_TEST_STATE_PATH")
+    if override:
+        return Path(override)
+    return _DEFAULT_STATE_FILE
 
 
 def _load_state() -> dict[str, Any]:
-    if not _STATE_FILE.exists():
+    sf = _state_file()
+    if not sf.exists():
         return {"requests": {}}
     try:
-        return json.loads(_STATE_FILE.read_text(encoding="utf-8"))
+        return json.loads(sf.read_text(encoding="utf-8"))
     except Exception:
         return {"requests": {}}
 
 
 def _save_state(state: dict[str, Any]) -> None:
-    _STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    _STATE_FILE.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
+    sf = _state_file()
+    sf.parent.mkdir(parents=True, exist_ok=True)
+    sf.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 # === MODELE / MODELS ===
