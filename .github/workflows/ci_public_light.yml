@@ -51,7 +51,21 @@ jobs:
             echo "No public OpenAPI present; skipping Spectral"; \
           fi
       - name: Build docs (no deploy)
+        shell: bash
         run: |
+          set -euo pipefail
           python -m pip install -U pip wheel setuptools
           python -m pip install mkdocs mkdocs-material
+          # Auto-install common mkdocs plugins if referenced in mkdocs.yml
+          if [ -f mkdocs.yml ]; then
+            if grep -qE '^\s*plugins:\s*$' mkdocs.yml || grep -q 'sitemap' mkdocs.yml; then
+              python -m pip install 'mkdocs-sitemap-plugin' || python -m pip install 'mkdocs-sitemap'
+            fi
+            if grep -q 'minify' mkdocs.yml; then
+              python -m pip install 'mkdocs-minify-plugin'
+            fi
+            if grep -q 'redirects' mkdocs.yml; then
+              python -m pip install 'mkdocs-redirects'
+            fi
+          fi
           mkdocs build -d _site
