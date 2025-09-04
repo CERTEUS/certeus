@@ -1,0 +1,92 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/marketplace.html                   |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/marketplace.html                   |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Marketplace</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:980px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      table{width:100%;border-collapse:collapse}
+      th,td{border-bottom:1px solid #2a2d33;padding:8px 10px;text-align:left}
+      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
+      input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px;}
+      .tag{display:inline-block;margin-right:6px;margin-bottom:4px;padding:2px 6px;border-radius:8px;border:1px solid #2a2d33;background:#20242a;font-size:12px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Marketplace • Packs</h1>
+        <div class="row" style="margin-bottom:8px;">
+          <input id="q" placeholder="filtruj po nazwie/capability" />
+          <button class="btn" id="refresh">Odśwież</button>
+          <span class="muted">Liczba: <span id="count" class="pill">0</span></span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Nazwa</th>
+              <th>Wersja</th>
+              <th>ABI</th>
+              <th>Capabilities</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="muted">Tip: API <code>/v1/packs/</code> zwraca listę pakietów (name, version, abi, capabilities, enabled).</p>
+    </div>
+    <script>
+      async function fetchPacks(){
+        const r = await fetch('/v1/packs/');
+        if(!r.ok){ return []; }
+        return await r.json();
+      }
+      function render(packs){
+        const q = (document.getElementById('q').value||'').toLowerCase();
+        const filtered = packs.filter(p=>{
+          if(!q) return true;
+          const caps = (p.capabilities||[]).join(',');
+          return (p.name||'').toLowerCase().includes(q) || caps.toLowerCase().includes(q);
+        });
+        const tb = document.getElementById('rows');
+        tb.innerHTML = filtered.map(p=>{
+          const caps = (p.capabilities && p.capabilities.length) ? p.capabilities.map(c=>`<span class="tag">${c}</span>`).join('') : '<span class="muted">—</span>';
+          const status = p.enabled ? '<span class="pill">enabled</span>' : '<span class="pill">disabled</span>';
+          return `<tr>
+            <td>${p.name}</td>
+            <td>${p.version || '-'}</td>
+            <td><code>${p.abi}</code></td>
+            <td>${caps}</td>
+            <td>${status}</td>
+          </tr>`;
+        }).join('');
+        document.getElementById('count').textContent = String(filtered.length);
+      }
+      async function refresh(){ const packs = await fetchPacks(); render(packs); }
+      document.getElementById('refresh').addEventListener('click', refresh);
+      document.getElementById('q').addEventListener('input', refresh);
+      refresh();
+    </script>
+  </body>
+  </html>
+

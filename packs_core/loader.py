@@ -47,10 +47,10 @@ import yaml  # type: ignore
 @dataclass(slots=True)
 class PackInfo:
     name: str
-
     abi: str
-
     caps: list[str]
+    version: str | None = None
+    enabled: bool = True
 
 
 class PackLike(Protocol):
@@ -87,7 +87,9 @@ def discover() -> list[PackInfo]:
         module = str(data.get("module") or "")
         abi = f"python:{module}" if module else "python"
         caps = list(data.get("capabilities") or [])
-        infos.append(PackInfo(name=name, abi=abi, caps=caps))
+        version = str(data.get("version") or data.get("ver") or "") or None
+        enabled = bool(data.get("enabled", True))
+        infos.append(PackInfo(name=name, abi=abi, caps=caps, version=version, enabled=enabled))
     return infos
 
 

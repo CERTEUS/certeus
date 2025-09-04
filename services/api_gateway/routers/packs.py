@@ -54,8 +54,16 @@ router = APIRouter(prefix="/v1/packs", tags=["packs"])
 @router.get("/", summary="List available packs")
 async def list_packs() -> list[dict[str, Any]]:
     infos = discover()
-
-    return [{"name": i.name, "abi": i.abi, "capabilities": i.caps} for i in infos]
+    return [
+        {
+            "name": i.name,
+            "abi": i.abi,
+            "capabilities": i.caps,
+            "version": i.version,
+            "enabled": i.enabled,
+        }
+        for i in infos
+    ]
 
 
 @router.post("/handle", summary="Handle a request using a pack")

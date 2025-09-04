@@ -169,7 +169,29 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
 
     text = (req.question or req.objective or "").strip()
     L = max(1, len(text))
-    pA = min(0.8, 0.4 + (L % 10) * 0.02)
+    # Base heuristic from prompt length
+    pA_base = 0.4 + (L % 10) * 0.02  # in [0.4, 0.58]
+
+    # Lightweight adjustments from constraints and keywords
+    kw_bonus = 0.0
+    low = text.lower()
+    if "maximize" in low:
+        kw_bonus += 0.01
+    if "minimize" in low:
+        kw_bonus -= 0.01
+
+    c_bonus = 0.0
+    try:
+        cons = req.constraints or {}
+        numeric = [float(v) for v in cons.values() if isinstance(v, int | float)]
+        if numeric:
+            csum = sum(numeric)
+            # Center around ~100 and scale gently; clamp to ±0.05
+            c_bonus = max(-0.05, min(0.05, (csum - 100.0) / 1000.0))
+    except Exception:
+        c_bonus = 0.0
+
+    pA = max(0.1, min(0.8, pA_base + kw_bonus + c_bonus))
     pB = max(0.1, 1.0 - pA)
     dist = [{"outcome": "A", "p": round(pA, 3)}, {"outcome": "B", "p": round(pB, 3)}]
     choice = "A" if pA >= pB else "B"

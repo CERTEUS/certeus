@@ -12,6 +12,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-04 00:00:00Z [agent] (work/daily): QTMP cockpit — komutatory + sekwencje + dekoherencja
   - Quantum UI: heatmapa komutatorów (W/I/C/L/T), przyciski L→T/T→L, ustawienia kanału/gamma
   - API reuse: /v1/qtm/commutator, /v1/qtm/measure_sequence, /v1/qtm/decoherence; PCO widoczne w nagłówkach
+  - Dodano sekcję „History & Ledger” (ostatnie 5 zdarzeń + link do /v1/ledger/{case}/records)
 
 - 2025-09-02 00:00:00Z [agent] (work/daily): W5 D21–D25 — tunneling PCO + tests; CFE↔QTMP priorities/correlation; Quantum cockpit; README/AGENTS.
   - /v1/lexqft/tunnel PCO headers + ledger hash
@@ -143,3 +144,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - HDE optimizer; Q‑Oracle heurystyki; Entangler metryki; Chronosync szkic\n- ruff OK; pytest: 118 passed, 1 skipped (lokalnie)\n- weekly-promote: true
 - 2025-09-04 18:21:08Z [root] (work/daily): Tests: przekroczono 180 (190 passed) — macierz E2E v2
   - - Dodano parametryczne testy E2E (GET/POST/tunnel/entangle/qoracle/mailops)\n- Ruff OK; pytest: 190 passed, 1 skipped (lokalnie)\n- Bez zmian w logice usług; tylko testy
+- 2025-09-04 18:32:44Z [root] (work/daily): W13: Cockpit Marketplace (A6) — listing + packs API
+  - - UI: /app/public/marketplace.html (filtr, status enabled)\n- API: /v1/packs/ zwraca version+enabled\n- Lint+tests: 191 passed, 1 skipped (lokalnie)

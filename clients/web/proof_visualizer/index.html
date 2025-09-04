@@ -92,6 +92,32 @@
         background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
       }
 
+      /* Accessibility: visible focus indicators */
+      :focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+      }
+
+      /* Screen-reader only + focusable (skip link) */
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: var(--card);
+        border: 2px solid var(--ring);
+        border-radius: 8px;
+      }
+
       .container {
         max-width: 1180px;
         margin: 24px auto;
@@ -397,7 +423,8 @@
   </head>
 
   <body>
-    <div class="container">
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <div class="container" id="main" role="main">
       <!-- HEADER -->
       <div class="card" style="margin-bottom: 16px">
         <div class="row" style="align-items: center">

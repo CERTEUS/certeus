@@ -101,6 +101,7 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
     try:
         from core.pfs.uri import mail_attachment_uri
     except Exception:
+
         def mail_attachment_uri(mid: str, fn: str) -> str:
             """Fallback: build a basic ProofFS URI for an e-mail attachment."""
             return f"pfs://mail/{mid}/{fn}"

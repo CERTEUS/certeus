@@ -54,6 +54,48 @@
         </div>
         <div id="heat" class="grid"></div>
         <p class="muted">Coverage: <span id="gamma" class="pill">?</span> • Tunneling p: <span id="ptun" class="pill">?</span></p>
+
+        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+
+        <h2 style="margin:0 0 10px;font-size:18px">Commutator heatmap (W/I/C/L/T)</h2>
+        <div class="row">
+          <button id="refresh-comm" class="btn">Refresh heatmap</button>
+          <span class="muted">0 = commute • 1 = max</span>
+        </div>
+        <div id="comm-grid" class="grid" style="grid-template-columns:repeat(5, 1fr)"></div>
+
+        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+
+        <h2 style="margin:0 0 10px;font-size:18px">Sequence order (L→T vs T→L)</h2>
+        <div class="row">
+          <button id="seq-lt" class="btn">Measure L→T</button>
+          <button id="seq-tl" class="btn">Measure T→L</button>
+          <span class="muted">Steps:<span id="seq-steps" class="pill">-</span></span>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+
+        <h2 style="margin:0 0 10px;font-size:18px">Decoherence</h2>
+        <div class="row">
+          <select id="deco-ch">
+            <option value="dephasing" selected>dephasing</option>
+            <option value="depolarizing">depolarizing</option>
+            <option value="damping">damping</option>
+          </select>
+          <input id="deco-g" type="number" step="0.05" min="0" max="1" value="0.1" style="width:110px" />
+          <button id="apply-deco" class="btn">Apply</button>
+          <span class="muted">case scope:<span id="deco-case" class="pill">default</span></span>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+
+        <h2 style="margin:0 0 10px;font-size:18px">History & Ledger</h2>
+        <div class="row">
+          <button id="hist-refresh" class="btn">Refresh history</button>
+          <span class="muted">Last 5 events:<span id="hist-count" class="pill">0</span></span>
+          <a id="ledger-link" class="btn" href="#" target="_blank">Open ledger</a>
+        </div>
+        <div id="hist-list" style="margin-top:8px;font-size:13px;line-height:1.5"></div>
       </div>
     </div>
     <script>
@@ -62,13 +104,22 @@
       async function fetchJSON(url,opts){ const r = await fetch(url,opts); const j = await r.json(); return {ok:r.ok,data:j,headers:r.headers} }
       async function updateCoverage(){ const r = await fetchJSON('/v1/lexqft/coverage'); if(r.ok){ document.getElementById('gamma').textContent = r.data.coverage_gamma; } }
       async function updateTunnel(){ const r = await fetchJSON('/v1/lexqft/tunnel',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({evidence_energy: 1.1})}); if(r.ok){ document.getElementById('ptun').textContent = r.data.p_tunnel; } }
-      async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); } }
+      async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs, case: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); } }
+      async function refreshCommutators(){ const ops=['W','I','C','L','T']; const grid=document.getElementById('comm-grid'); grid.innerHTML=''; for(let i=0;i<ops.length;i++){ for(let j=0;j<ops.length;j++){ const r = await fetchJSON('/v1/qtm/commutator',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({A:ops[i],B:ops[j]})}); const v = r.ok ? (r.data?.value ?? 0) : 0; const d=document.createElement('div'); d.className='cell'; d.title = ops[i] + ' vs ' + ops[j] + ' = ' + v; d.style.background = `linear-gradient(0deg, rgba(242,200,204,${v}) 0%, rgba(32,36,42,1) 100%)`; grid.appendChild(d); } } }
+      async function measureSeq(order){ const cs = document.getElementById('case').value || 'LEX-001'; const ops = order==='LT' ? ['L','T'] : ['T','L']; const r = await fetchJSON('/v1/qtm/measure_sequence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case: cs, operators: ops})}); if(r.ok){ const steps = (r.data?.steps||[]).map(s=>s.operator+':'+s.verdict).join(' , '); document.getElementById('seq-steps').textContent = steps || '-'; } }
+      async function applyDeco(){ const cs = document.getElementById('case').value || 'LEX-001'; const ch = document.getElementById('deco-ch').value; const g = parseFloat(document.getElementById('deco-g').value||'0'); const r = await fetchJSON('/v1/qtm/decoherence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case: cs, channel: ch, gamma: g})}); if(r.ok){ document.getElementById('deco-case').textContent = r.data?.case || cs; } }
+      async function refreshHistory(){ const cs = document.getElementById('case').value||'LEX-001'; try{ const r = await fetch(`/v1/qtm/history/${encodeURIComponent(cs)}?limit=5&sort=desc`); if(r.ok){ const j = await r.json(); const hist = j.history||[]; document.getElementById('hist-count').textContent = String(hist.length); const el = document.getElementById('hist-list'); el.innerHTML = hist.map(h=>`<div class=\"muted\">${h.operator} → ${h.verdict} (p=${(h.p??'?')})</div>`).join(''); const a = document.getElementById('ledger-link'); a.href = `/v1/ledger/${encodeURIComponent(cs)}/records`; } }catch(e){} }
       async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); }
       async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
       document.getElementById('measure').addEventListener('click', doMeasure);
       document.getElementById('save').addEventListener('click', savePreset);
       document.getElementById('load').addEventListener('click', loadPreset);
-      loadPreset(); updateCoverage(); updateTunnel();
+      document.getElementById('refresh-comm').addEventListener('click', refreshCommutators);
+      document.getElementById('seq-lt').addEventListener('click', ()=>measureSeq('LT'));
+      document.getElementById('seq-tl').addEventListener('click', ()=>measureSeq('TL'));
+      document.getElementById('apply-deco').addEventListener('click', applyDeco);
+      document.getElementById('hist-refresh').addEventListener('click', refreshHistory);
+      loadPreset(); updateCoverage(); updateTunnel(); refreshCommutators(); refreshHistory();
     </script>
   </body>
   </html>
