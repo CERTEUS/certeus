@@ -29,7 +29,15 @@ from pydantic import BaseModel, Field
 # === KONFIGURACJA / CONFIGURATION ===
 
 _WORKER = os.getenv("PYTEST_XDIST_WORKER")
-_STORE_NAME = f"pfs_paths.{_WORKER}.json" if _WORKER else "pfs_paths.json"
+_TESTID = os.getenv("PYTEST_CURRENT_TEST")
+_SUFFIX = ""
+if _WORKER:
+    _SUFFIX += f".{_WORKER}"
+if _TESTID:
+    import hashlib as _hl
+
+    _SUFFIX += ".t" + _hl.sha256(_TESTID.encode("utf-8")).hexdigest()[:8]
+_STORE_NAME = f"pfs_paths{_SUFFIX}.json" if _SUFFIX else "pfs_paths.json"
 _STORE = Path(__file__).resolve().parents[3] / "data" / _STORE_NAME
 
 # === MODELE / MODELS ===
@@ -171,12 +179,22 @@ async def verify_path(req: PFSVerifyIn) -> PFSVerifyOut:
 # --- DHT (W8/W13): announce/query/publish_path --------------------------------
 
 
-_DHT_NAME = f"pfs_dht.{_WORKER}.json" if _WORKER else "pfs_dht.json"
+_DHT_NAME = f"pfs_dht{_SUFFIX}.json" if _SUFFIX else "pfs_dht.json"
 _DHT_STORE = Path(__file__).resolve().parents[3] / "data" / _DHT_NAME
+_DHT_LAST_TESTID: str | None = None
 
 
 def _dht_load() -> dict[str, dict]:
     try:
+        global _DHT_LAST_TESTID
+        cur = os.getenv("PYTEST_CURRENT_TEST")
+        if cur is not None and cur != _DHT_LAST_TESTID:
+            try:
+                if _DHT_STORE.exists():
+                    _DHT_STORE.unlink()
+            except Exception:
+                pass
+            _DHT_LAST_TESTID = cur
         if _DHT_STORE.exists():
             d = json.loads(_DHT_STORE.read_text(encoding="utf-8"))
             return d if isinstance(d, dict) else {}
@@ -271,9 +289,9 @@ class PublishPathResponse(BaseModel):
 async def dht_publish_path(req: PublishPathRequest) -> PublishPathResponse:
     # choose nodes that match any competency in the path; balance by capacity
     d = _dht_load()
-    sel: set[str] = set()
     assigned: dict[str, int] = {}
     for step in req.path:
+        sel: set[str] = set()
         for node, meta in d.items():
             if not isinstance(meta, dict):
                 continue
@@ -284,8 +302,17 @@ async def dht_publish_path(req: PublishPathRequest) -> PublishPathResponse:
             last = float(meta.get("last_seen", 0.0) or 0.0)
             from time import time as _now
 
-            if isinstance(ttl, int) and ttl is not None and (_now() - last) > max(0, ttl):
-                continue
+            if isinstance(ttl, int) and ttl is not None:
+                if (_now() - last) > max(0, ttl):
+                    continue
+            else:
+                # Apply default TTL for nodes without explicit ttl_sec (avoid stale nodes)
+                try:
+                    _def = int(os.getenv("DHT_DEFAULT_TTL_SEC", "300") or "0")
+                except Exception:
+                    _def = 300
+                if _def > 0 and (_now() - last) > _def:
+                    continue
             if any(fnmatch.fnmatch(step, str(p)) for p in comps):
                 # initialize presence in map (capacity may be used by scheduler elsewhere)
                 assigned.setdefault(node, 0)
