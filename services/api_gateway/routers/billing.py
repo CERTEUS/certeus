@@ -105,6 +105,16 @@ async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestO
     }
     state.setdefault("requests", {})[rid] = entry
     _save_state(state)
+    try:
+        from monitoring.metrics_slo import (
+            certeus_billing_token_pending,
+            certeus_billing_token_requests_total,
+        )
+
+        certeus_billing_token_requests_total.inc()
+        certeus_billing_token_pending.inc()
+    except Exception:
+        pass
     return TokenRequestOut(**entry)
 
 
@@ -124,6 +134,22 @@ async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatus
         entry["allocated_by"] = req.allocated_by
     state["requests"][req.request_id] = entry
     _save_state(state)
+    try:
+        from monitoring.metrics_slo import (
+            certeus_billing_token_allocations_total,
+            certeus_billing_token_pending,
+        )
+
+        certeus_billing_token_allocations_total.inc()
+        # Decrement pending if >0
+        try:
+            cur = certeus_billing_token_pending._value.get()  # type: ignore[attr-defined]
+            if cur > 0:
+                certeus_billing_token_pending.dec()
+        except Exception:
+            pass
+    except Exception:
+        pass
     return TokenStatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
 
 

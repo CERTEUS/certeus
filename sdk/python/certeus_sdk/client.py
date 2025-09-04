@@ -122,6 +122,37 @@ class CerteusClient:
     def qtm_state(self, case: str) -> SDKResponse:
         return self._get(f"/v1/qtm/state/{case}")
 
+    def qtm_operators(self) -> SDKResponse:
+        return self._get("/v1/qtm/operators")
+
+    def qtm_uncertainty(self) -> SDKResponse:
+        return self._get("/v1/qtm/uncertainty")
+
+    def qtm_decoherence(self, *, case: str | None, channel: str, gamma: float | None = None) -> SDKResponse:
+        payload: dict[str, Any] = {"channel": channel}
+        if case:
+            payload["case"] = case
+        if gamma is not None:
+            payload["gamma"] = float(gamma)
+        return self._post("/v1/qtm/decoherence", json=payload)
+
+    def qtm_preset_save(self, *, case: str, operator: str) -> SDKResponse:
+        return self._post("/v1/qtm/preset", json={"case": case, "operator": operator})
+
+    def qtm_preset_get(self, *, case: str) -> SDKResponse:
+        return self._get(f"/v1/qtm/preset/{case}")
+
+    def qtm_preset_list(self) -> SDKResponse:
+        return self._get("/v1/qtm/presets")
+
+    def qtm_preset_delete(self, *, case: str) -> SDKResponse:
+        r = self._s.delete(f"{self.base_url}/v1/qtm/preset/{case}")
+        try:
+            data = r.json()
+        except Exception:
+            data = None
+        return SDKResponse(ok=r.ok, status=r.status_code, data=data, pco_headers=self._extract_pco_headers(r.headers))
+
     # --- lexqft -------------------------------------------------------------
 
     def lexqft_coverage(self) -> SDKResponse:
@@ -132,6 +163,21 @@ class CerteusClient:
         if state_uri:
             payload["state_uri"] = state_uri
         return self._post("/v1/lexqft/tunnel", json=payload)
+
+    # --- Ledger -------------------------------------------------------------
+
+    def ledger_records(self, *, case_id: str) -> SDKResponse:
+        return self._get(f"/v1/ledger/{case_id}/records")
+
+    # --- ChatOps ------------------------------------------------------------
+
+    def chatops_command(self, *, cmd: str, args: dict | None = None, text_context: str | None = None) -> SDKResponse:
+        payload: dict[str, Any] = {"cmd": cmd}
+        if args is not None:
+            payload["args"] = args
+        if text_context:
+            payload["text_context"] = text_context
+        return self._post("/v1/chatops/command", json=payload)
 
 
 # === I/O / ENDPOINTS ===

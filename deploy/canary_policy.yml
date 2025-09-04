@@ -1,0 +1,24 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: deploy/canary_policy.yml                            |
+# | ROLE: Deploy policy manifest.                               |
+# | PLIK: deploy/canary_policy.yml                            |
+# | ROLA: Manifest polityki wdrożeniowej.                       |
+# +-------------------------------------------------------------+
+
+stages:
+  - percent: 5
+    max_p95_ms: 500
+    max_error_rate: 0.05
+  - percent: 25
+    max_p95_ms: 500
+    max_error_rate: 0.05
+  - percent: 100
+    max_p95_ms: 500
+    max_error_rate: 0.05
+
+notes: |
+  PL: Polityka progresywnego wdrożenia (canary → progressive).
+  EN: Progressive deployment policy (canary → progressive).
+

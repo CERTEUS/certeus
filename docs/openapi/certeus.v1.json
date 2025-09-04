@@ -1,0 +1,6636 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CERTEUS API Gateway",
+    "version": "1.0.0-rc.1",
+    "x-compat": {
+      "semver": "^1.0",
+      "notes": "Backwards-compatible additions only; breaking changes require MAJOR bump."
+    }
+  },
+  "paths": {
+    "/app/marketplace.html": {
+      "get": {
+        "summary": " Serve Marketplace",
+        "operationId": "_serve_marketplace_app_marketplace_html_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/connectors/fhir/reason": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Reason",
+        "operationId": "reason_v1_connectors_fhir_reason_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "type": "object",
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Reason V1 Connectors Fhir Reason Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ingest": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Ingest Document",
+        "description": "PL: Zwraca dwa deterministyczne fakty (z `fact_id`, `thesis`, `confidence_score`),\n\n    waliduje MIME/rozmiar i ustawia nagłówek łańcucha `X-CERTEUS-Ledger-Chain`.\n\n    Dodatkowo (nieinwazyjnie) umieszcza skrót OCR w nagłówku\n\n    `X-CERTEUS-OCR-Preview` dla PDF/obrazów.\n\nEN: Returns two deterministic facts (with `fact_id`, `thesis`, `confidence_score`),\n\n    validates MIME/size, and sets `X-CERTEUS-Ledger-Chain` header. Also (non-\n\n    invasive) puts OCR snippet into `X-CERTEUS-OCR-Preview` header for PDF/images.",
+        "operationId": "ingest_document_v1_ingest_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_ingest_document_v1_ingest_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Ingest Document V1 Ingest Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/analyze": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Analyze",
+        "description": "Minimalny stub E2E: przyjmuje PDF i zwraca wynik SAT z prostym modelem.\n\nZgodne z tests/e2e/test_e2e_pl_286kk_0001.py.",
+        "operationId": "analyze_v1_analyze_post",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_v1_analyze_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Analyze V1 Analyze Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sipp/snapshot/{act_id}": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get Snapshot",
+        "description": "Zwraca minimalny snapshot (dict), aby dozwolić klucz `_certeus`.",
+        "operationId": "get_snapshot_v1_sipp_snapshot__act_id__get",
+        "parameters": [
+          {
+            "name": "act_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Act Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Snapshot V1 Sipp Snapshot  Act Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sources/cache": {
+      "post": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Post Source Cache",
+        "operationId": "post_source_cache_v1_sources_cache_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceCacheRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceCacheResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/preview": {
+      "post": {
+        "summary": "Preview",
+        "description": "PL: Zwraca URL do podglądu pliku. Na razie zapisuje pod /static/previews/.\n\nEN: Returns a URL for preview. For now writes into /static/previews/.",
+        "operationId": "preview_v1_preview_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_preview_v1_preview_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pco/public/{rid}": {
+      "get": {
+        "tags": [
+          "pco"
+        ],
+        "summary": "Get Public Pco",
+        "description": "EN/PL: Returns public PCO; validates zero-PII, Merkle proof, and Ed25519 signature.",
+        "operationId": "get_public_pco_pco_public__rid__get",
+        "parameters": [
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPCO"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pco/bundle": {
+      "post": {
+        "tags": [
+          "pco"
+        ],
+        "summary": "Create Bundle",
+        "operationId": "create_bundle_v1_pco_bundle_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicBundleIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Create Bundle V1 Pco Bundle Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/export": {
+      "post": {
+        "tags": [
+          "export"
+        ],
+        "summary": "Export Endpoint",
+        "description": "PL: Generuje raport i zwraca ścieżkę + provenance (hash, timestamp, artifacts).\n\nEN: Generate report and return path + provenance (hash, timestamp, artifacts).",
+        "operationId": "export_endpoint_v1_export_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ledger/record-input": {
+      "post": {
+        "tags": [
+          "Ledger"
+        ],
+        "summary": "Record Input",
+        "description": "PL: Rejestruje nowy dokument w księdze (INPUT_INGESTION).\n\nEN: Records a new document in the ledger (INPUT_INGESTION).",
+        "operationId": "record_input_v1_ledger_record_input_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordInputRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordInputResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ledger/{case_id}/records": {
+      "get": {
+        "tags": [
+          "Ledger"
+        ],
+        "summary": "Get Records",
+        "description": "PL: Zwraca listę wpisów dla danego case_id.\n\nEN: Returns all entries for the given case_id.",
+        "operationId": "get_records_v1_ledger__case_id__records_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecordInputResponse"
+                  },
+                  "title": "Response Get Records V1 Ledger  Case Id  Records Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ledger/{case_id}/prove": {
+      "get": {
+        "tags": [
+          "Ledger"
+        ],
+        "summary": "Prove Case",
+        "description": "PL: Generuje i (jeśli możliwe) waliduje Provenance Receipt dla sprawy.\n\nEN: Generates and (if available) validates the Provenance Receipt for a case.",
+        "operationId": "prove_case_v1_ledger__case_id__prove_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Prove Case V1 Ledger  Case Id  Prove Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mismatch/tickets": {
+      "post": {
+        "tags": [
+          "mismatch"
+        ],
+        "summary": "Create Ticket",
+        "description": "PL: Tworzy nowy ticket niezgodności. EN: Creates a new mismatch ticket.",
+        "operationId": "create_ticket_mismatch_tickets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MismatchCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Create Ticket Mismatch Tickets Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/mismatch/tickets/{ticket_id}": {
+      "get": {
+        "tags": [
+          "mismatch"
+        ],
+        "summary": "Get Ticket",
+        "description": "PL: Pobiera ticket po jego ID. EN: Retrieves a ticket by its ID.",
+        "operationId": "get_ticket_mismatch_tickets__ticket_id__get",
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Ticket Mismatch Tickets  Ticket Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/boundary/status": {
+      "get": {
+        "tags": [
+          "boundary"
+        ],
+        "summary": "Get Status",
+        "operationId": "get_status_v1_boundary_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Status V1 Boundary Status Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/boundary/reconstruct": {
+      "post": {
+        "tags": [
+          "boundary"
+        ],
+        "summary": "Reconstruct Now",
+        "operationId": "reconstruct_now_v1_boundary_reconstruct_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Reconstruct Now V1 Boundary Reconstruct Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verify": {
+      "post": {
+        "tags": [
+          "Truth Engine"
+        ],
+        "summary": "Verify Formula",
+        "description": "PL: Weryfikuje formułę. Zwraca sat/unsat/unknown oraz artefakty (model/proof).\n\nEN: Verifies the formula. Returns sat/unsat/unknown and artifacts (model/proof).",
+        "operationId": "verify_formula_v1_verify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Verify Formula V1 Verify Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/curvature": {
+      "get": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Curvature",
+        "description": "PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max).",
+        "operationId": "curvature_v1_cfe_curvature_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurvatureResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/geodesic": {
+      "post": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Geodesic",
+        "operationId": "geodesic_v1_cfe_geodesic_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeodesicRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeodesicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/horizon": {
+      "post": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Horizon",
+        "operationId": "horizon_v1_cfe_horizon_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HorizonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorizonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/lensing": {
+      "get": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Lensing",
+        "operationId": "lensing_v1_cfe_lensing_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LensingResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/case/lock": {
+      "post": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Case Lock",
+        "operationId": "case_lock_v1_cfe_case_lock_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseActionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseActionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/case/recall": {
+      "post": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Case Recall",
+        "operationId": "case_recall_v1_cfe_case_recall_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseActionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseActionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cfe/case/revoke": {
+      "post": {
+        "tags": [
+          "CFE"
+        ],
+        "summary": "Case Revoke",
+        "operationId": "case_revoke_v1_cfe_case_revoke_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaseActionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseActionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/init_case": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Init Case",
+        "operationId": "init_case_v1_qtm_init_case_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitCaseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InitCaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/measure": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Measure",
+        "operationId": "measure_v1_qtm_measure_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/services__api_gateway__routers__qtm__MeasureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/services__api_gateway__routers__qtm__MeasureResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/measure_sequence": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Measure Sequence",
+        "operationId": "measure_sequence_v1_qtm_measure_sequence_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SequenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SequenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/state/{case}": {
+      "get": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Get State",
+        "operationId": "get_state_v1_qtm_state__case__get",
+        "parameters": [
+          {
+            "name": "case",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QtmStateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Delete State",
+        "operationId": "delete_state_v1_qtm_state__case__delete",
+        "parameters": [
+          {
+            "name": "case",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/history/{case}": {
+      "get": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Get History",
+        "operationId": "get_history_v1_qtm_history__case__get",
+        "parameters": [
+          {
+            "name": "case",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "operator",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Operator"
+            }
+          },
+          {
+            "name": "verdict",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Verdict"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc",
+              "title": "Sort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QtmHistoryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/operators": {
+      "get": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "List Operators",
+        "operationId": "list_operators_v1_qtm_operators_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorsOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/uncertainty": {
+      "get": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Uncertainty Bound",
+        "operationId": "uncertainty_bound_v1_qtm_uncertainty_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UncertaintyOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/state": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Set State",
+        "operationId": "set_state_v1_qtm_state_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetStateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QtmStateOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/expectation": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Expectation",
+        "operationId": "expectation_v1_qtm_expectation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpectationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpectationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/preset/{case}": {
+      "delete": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Delete Preset",
+        "operationId": "delete_preset_v1_qtm_preset__case__delete",
+        "parameters": [
+          {
+            "name": "case",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Get Preset",
+        "operationId": "get_preset_v1_qtm_preset__case__get",
+        "parameters": [
+          {
+            "name": "case",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/commutator": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Commutator",
+        "operationId": "commutator_v1_qtm_commutator_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommutatorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommutatorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/decoherence": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Set Decoherence",
+        "operationId": "set_decoherence_v1_qtm_decoherence_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecoherenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecoherenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/preset": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Save Preset",
+        "operationId": "save_preset_v1_qtm_preset_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresetIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/presets": {
+      "get": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "List Presets",
+        "operationId": "list_presets_v1_qtm_presets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PresetOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Presets V1 Qtm Presets Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/find_entanglement": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Find Entanglement",
+        "operationId": "find_entanglement_v1_qtm_find_entanglement_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FindEntanglementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FindEntanglementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/qtm/commutator_expectation": {
+      "post": {
+        "tags": [
+          "QTMP"
+        ],
+        "summary": "Commutator Expectation",
+        "operationId": "commutator_expectation_v1_qtm_commutator_expectation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommutatorExpRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommutatorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexenith/motion/generate": {
+      "post": {
+        "tags": [
+          "lexenith"
+        ],
+        "summary": "Motion Generate",
+        "operationId": "motion_generate_v1_lexenith_motion_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MotionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MotionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexenith/cldf/renormalize": {
+      "post": {
+        "tags": [
+          "lexenith"
+        ],
+        "summary": "Cldf Renormalize",
+        "operationId": "cldf_renormalize_v1_lexenith_cldf_renormalize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CLDFRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CLDFResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexenith/why_not/export": {
+      "post": {
+        "tags": [
+          "lexenith"
+        ],
+        "summary": "Why Not Export",
+        "operationId": "why_not_export_v1_lexenith_why_not_export_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhyNotRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhyNotResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/devices/horizon_drive/plan": {
+      "post": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Hde Plan",
+        "operationId": "hde_plan_v1_devices_horizon_drive_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HDEPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HDEPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/devices/qoracle/expectation": {
+      "post": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Qoracle Expectation",
+        "operationId": "qoracle_expectation_v1_devices_qoracle_expectation_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QOracleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QOracleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/devices/entangle": {
+      "post": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Entangle",
+        "operationId": "entangle_v1_devices_entangle_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntangleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntangleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/devices/chronosync/reconcile": {
+      "post": {
+        "tags": [
+          "devices"
+        ],
+        "summary": "Chronosync Reconcile",
+        "operationId": "chronosync_reconcile_v1_devices_chronosync_reconcile_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChronoSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChronoSyncResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dr/replay": {
+      "post": {
+        "tags": [
+          "DR"
+        ],
+        "summary": "Replay",
+        "operationId": "replay_v1_dr_replay_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dr/recall": {
+      "post": {
+        "tags": [
+          "DR"
+        ],
+        "summary": "Recall",
+        "operationId": "recall_v1_dr_recall_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecallResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dr/lock": {
+      "post": {
+        "tags": [
+          "DR"
+        ],
+        "summary": "Lock",
+        "operationId": "lock_v1_dr_lock_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LockResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dr/revoke": {
+      "post": {
+        "tags": [
+          "DR"
+        ],
+        "summary": "Revoke",
+        "operationId": "revoke_v1_dr_revoke_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/services__api_gateway__routers__dr__RevokeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/services__api_gateway__routers__dr__RevokeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/upn/register": {
+      "post": {
+        "tags": [
+          "UPN"
+        ],
+        "summary": "Register",
+        "operationId": "register_v1_upn_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/upn/revoke": {
+      "post": {
+        "tags": [
+          "UPN"
+        ],
+        "summary": "Revoke",
+        "operationId": "revoke_v1_upn_revoke_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/services__api_gateway__routers__upn__RevokeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/services__api_gateway__routers__upn__RevokeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexqft/coverage": {
+      "get": {
+        "tags": [
+          "lexqft"
+        ],
+        "summary": "Coverage",
+        "description": "PL/EN: Telemetria lexqft – gamma pokrycia (agregowana).",
+        "operationId": "coverage_v1_lexqft_coverage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverageResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexqft/tunnel": {
+      "post": {
+        "tags": [
+          "lexqft"
+        ],
+        "summary": "Tunnel",
+        "operationId": "tunnel_v1_lexqft_tunnel_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TunnelRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TunnelResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexqft/coverage/update": {
+      "post": {
+        "tags": [
+          "lexqft"
+        ],
+        "summary": "Coverage Update",
+        "description": "PL/EN: Ustaw (zastąp) wkłady ścieżek do pokrycia (gamma, wagi, uncaptured).",
+        "operationId": "coverage_update_v1_lexqft_coverage_update_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/CoverageItem"
+                },
+                "type": "array",
+                "title": "Items"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Coverage Update V1 Lexqft Coverage Update Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexqft/coverage/reset": {
+      "post": {
+        "tags": [
+          "lexqft"
+        ],
+        "summary": "Coverage Reset",
+        "description": "PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty).",
+        "operationId": "coverage_reset_v1_lexqft_coverage_reset_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Coverage Reset V1 Lexqft Coverage Reset Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/lexqft/coverage/state": {
+      "get": {
+        "tags": [
+          "lexqft"
+        ],
+        "summary": "Coverage State",
+        "description": "PL/EN: Zwraca stan agregatora: gamma i łączną uncaptured_mass (ważoną).",
+        "operationId": "coverage_state_v1_lexqft_coverage_state_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoverageState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chatops/command": {
+      "post": {
+        "tags": [
+          "ChatOps"
+        ],
+        "summary": "Command",
+        "operationId": "command_v1_chatops_command_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Command V1 Chatops Command Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mailops/ingest": {
+      "post": {
+        "tags": [
+          "MailOps"
+        ],
+        "summary": "Ingest Email",
+        "operationId": "ingest_email_v1_mailops_ingest_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngestEmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestEmailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ethics/equity_meter": {
+      "post": {
+        "tags": [
+          "ethics"
+        ],
+        "summary": "Equity Meter",
+        "operationId": "equity_meter_v1_ethics_equity_meter_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EquityMeterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquityMeterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ethics/double_verdict": {
+      "post": {
+        "tags": [
+          "ethics"
+        ],
+        "summary": "Double Verdict",
+        "operationId": "double_verdict_v1_ethics_double_verdict_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DoubleVerdictRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DoubleVerdictResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/alpha/measure": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Measure",
+        "operationId": "measure_v1_fin_alpha_measure_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/services__api_gateway__routers__fin__MeasureRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/services__api_gateway__routers__fin__MeasureResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/alpha/uncertainty": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Uncertainty",
+        "operationId": "uncertainty_v1_fin_alpha_uncertainty_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UncertaintyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/alpha/entanglements": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Entanglements",
+        "operationId": "entanglements_v1_fin_alpha_entanglements_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntanglementsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/alpha/operators/commutator": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Operators Commutator",
+        "description": "PL/EN: Zwraca normę komutatora [R,S] (tu: 1.0 ≠ 0).",
+        "operationId": "operators_commutator_v1_fin_alpha_operators_commutator_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "type": "object",
+                  "title": "Response Operators Commutator V1 Fin Alpha Operators Commutator Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/tokens/request": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Request Tokens",
+        "operationId": "request_tokens_v1_fin_tokens_request_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequestIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenRequestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/tokens/{request_id}": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Get Request Status",
+        "operationId": "get_request_status_v1_fin_tokens__request_id__get",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenStatusOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/fin/tokens/allocate": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Allocate Tokens",
+        "operationId": "allocate_tokens_v1_fin_tokens_allocate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenAllocateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenStatusOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/quota": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Quota",
+        "operationId": "quota_v1_billing_quota_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Quota V1 Billing Quota Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Set Quota Api",
+        "operationId": "set_quota_api_v1_billing_quota_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuotaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Set Quota Api V1 Billing Quota Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/allocate": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Allocate",
+        "operationId": "allocate_v1_billing_allocate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AllocateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Allocate V1 Billing Allocate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/refund": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "Refund",
+        "operationId": "refund_v1_billing_refund_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Refund V1 Billing Refund Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/": {
+      "get": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "List available packs",
+        "operationId": "list_packs_v1_packs__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response List Packs V1 Packs  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/install": {
+      "post": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "Install or upgrade a pack (signature required)",
+        "operationId": "install_pack_v1_packs_install_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Install Pack V1 Packs Install Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/enable": {
+      "post": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "Enable or disable a pack",
+        "operationId": "enable_pack_v1_packs_enable_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToggleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Enable Pack V1 Packs Enable Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/{name}": {
+      "get": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "Get pack details",
+        "description": "Zwraca szczegóły pakietu na podstawie manifestu plugin.yaml oraz overlayu enabled.\nReturns pack details based on plugin.yaml manifest and enabled overlay.",
+        "operationId": "get_pack_details_v1_packs__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Pack Details V1 Packs  Name  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/{name}/baseline": {
+      "get": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "Get ABI baseline JSON if present",
+        "operationId": "get_pack_baseline_v1_packs__name__baseline_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Pack Baseline V1 Packs  Name  Baseline Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/try": {
+      "post": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "Try invoking a pack (best-effort)",
+        "operationId": "try_pack_v1_packs_try_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Try Pack V1 Packs Try Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/packs/handle": {
+      "post": {
+        "tags": [
+          "packs"
+        ],
+        "summary": "Handle a request using a pack",
+        "operationId": "handle_v1_packs_handle_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Handle V1 Packs Handle Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pfs/list": {
+      "get": {
+        "tags": [
+          "ProofFS"
+        ],
+        "summary": "List Entries",
+        "operationId": "pfs_list_entries",
+        "parameters": [
+          {
+            "name": "prefix",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "pfs:// prefix",
+              "title": "Prefix"
+            },
+            "description": "pfs:// prefix"
+          },
+          {
+            "name": "recursive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "List recursively",
+              "default": false,
+              "title": "Recursive"
+            },
+            "description": "List recursively"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10000,
+              "minimum": 1,
+              "description": "Max entries to return",
+              "default": 1000,
+              "title": "Limit"
+            },
+            "description": "Max entries to return"
+          },
+          {
+            "name": "mime",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by simple mime/extension substring, e.g. 'pdf'",
+              "title": "Mime"
+            },
+            "description": "Filter by simple mime/extension substring, e.g. 'pdf'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Pfs List Entries"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pfs/exists": {
+      "get": {
+        "tags": [
+          "ProofFS"
+        ],
+        "summary": "Exists",
+        "operationId": "pfs_exists",
+        "parameters": [
+          {
+            "name": "uri",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "pfs:// URI",
+              "title": "Uri"
+            },
+            "description": "pfs:// URI"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Pfs Exists"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/.well-known/jwks.json": {
+      "get": {
+        "tags": [
+          "well-known"
+        ],
+        "summary": "Jwks",
+        "operationId": "jwks__well_known_jwks_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "tags": [
+          "metrics"
+        ],
+        "summary": "Metrics",
+        "operationId": "metrics_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "description": "PL: Liveness; EN: Liveness.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root Redirect",
+        "description": "PL: W DEV kierujemy na UI wizualizatora.\n\nEN: In DEV, redirect to the proof visualizer UI.",
+        "operationId": "root_redirect__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AllocIn": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "allocated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id"
+        ],
+        "title": "AllocIn"
+      },
+      "AllocateIn": {
+        "properties": {
+          "cost_units": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Cost Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cost_units"
+        ],
+        "title": "AllocateIn"
+      },
+      "AllocateRequest": {
+        "properties": {
+          "cost_units": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Cost Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cost_units"
+        ],
+        "title": "AllocateRequest"
+      },
+      "Attachment": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "content_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Type"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename"
+        ],
+        "title": "Attachment"
+      },
+      "Body_analyze_v1_analyze_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_analyze_v1_analyze_post"
+      },
+      "Body_ingest_document_v1_ingest_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_ingest_document_v1_ingest_post"
+      },
+      "Body_preview_v1_preview_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_preview_v1_preview_post"
+      },
+      "CLDFRequest": {
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationItem"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "damping": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Damping"
+          }
+        },
+        "type": "object",
+        "required": [
+          "citations"
+        ],
+        "title": "CLDFRequest"
+      },
+      "CLDFResponse": {
+        "properties": {
+          "citations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Citations"
+          },
+          "normalized": {
+            "type": "boolean",
+            "title": "Normalized"
+          }
+        },
+        "type": "object",
+        "required": [
+          "citations",
+          "normalized"
+        ],
+        "title": "CLDFResponse"
+      },
+      "CaseActionIn": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case"
+        ],
+        "title": "CaseActionIn"
+      },
+      "CaseActionOut": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "locked": {
+            "type": "boolean",
+            "title": "Locked"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "locked",
+          "action"
+        ],
+        "title": "CaseActionOut"
+      },
+      "ChronoSyncRequest": {
+        "properties": {
+          "coords": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Coords"
+          },
+          "pc_delta": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pc Delta"
+          },
+          "treaty_clause_skeleton": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Treaty Clause Skeleton"
+          },
+          "protocol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol",
+            "description": "Protocol tag (e.g., 'mediation.v1')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coords"
+        ],
+        "title": "ChronoSyncRequest"
+      },
+      "ChronoSyncResponse": {
+        "properties": {
+          "reconciled": {
+            "type": "boolean",
+            "title": "Reconciled"
+          },
+          "sketch": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Sketch"
+          },
+          "protocol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol"
+          },
+          "collisions_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collisions Count"
+          },
+          "mediated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mediated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reconciled",
+          "sketch"
+        ],
+        "title": "ChronoSyncResponse"
+      },
+      "CitationItem": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight",
+            "default": 1.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "CitationItem"
+      },
+      "CollapseLog": {
+        "properties": {
+          "sequence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Sequence"
+          },
+          "decoherence": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decoherence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sequence"
+        ],
+        "title": "CollapseLog"
+      },
+      "CommandRequest": {
+        "properties": {
+          "cmd": {
+            "type": "string",
+            "title": "Cmd"
+          },
+          "args": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args"
+          },
+          "text_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cmd"
+        ],
+        "title": "CommandRequest"
+      },
+      "CommutatorExpRequest": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "A": {
+            "type": "string",
+            "title": "A"
+          },
+          "B": {
+            "type": "string",
+            "title": "B"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "A",
+          "B"
+        ],
+        "title": "CommutatorExpRequest"
+      },
+      "CommutatorRequest": {
+        "properties": {
+          "A": {
+            "type": "string",
+            "title": "A"
+          },
+          "B": {
+            "type": "string",
+            "title": "B"
+          }
+        },
+        "type": "object",
+        "required": [
+          "A",
+          "B"
+        ],
+        "title": "CommutatorRequest"
+      },
+      "CommutatorResponse": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "CommutatorResponse"
+      },
+      "CoverageItem": {
+        "properties": {
+          "gamma": {
+            "type": "number",
+            "title": "Gamma"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight",
+            "default": 1.0
+          },
+          "uncaptured": {
+            "type": "number",
+            "title": "Uncaptured",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "gamma"
+        ],
+        "title": "CoverageItem"
+      },
+      "CoverageResponse": {
+        "properties": {
+          "coverage_gamma": {
+            "type": "number",
+            "title": "Coverage Gamma"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coverage_gamma"
+        ],
+        "title": "CoverageResponse"
+      },
+      "CoverageState": {
+        "properties": {
+          "coverage_gamma": {
+            "type": "number",
+            "title": "Coverage Gamma"
+          },
+          "uncaptured_mass": {
+            "type": "number",
+            "title": "Uncaptured Mass"
+          }
+        },
+        "type": "object",
+        "required": [
+          "coverage_gamma",
+          "uncaptured_mass"
+        ],
+        "title": "CoverageState"
+      },
+      "CurvatureResponse": {
+        "properties": {
+          "kappa_max": {
+            "type": "number",
+            "title": "Kappa Max"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kappa_max"
+        ],
+        "title": "CurvatureResponse"
+      },
+      "DecoherenceRequest": {
+        "properties": {
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case",
+            "description": "Case identifier or 'default'"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "description": "dephasing | depolarizing | damping"
+          },
+          "gamma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gamma",
+            "description": "Channel parameter (optional)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "channel"
+        ],
+        "title": "DecoherenceRequest"
+      },
+      "DecoherenceResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "gamma": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gamma"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "case",
+          "channel"
+        ],
+        "title": "DecoherenceResponse"
+      },
+      "DeleteResult": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok"
+        ],
+        "title": "DeleteResult"
+      },
+      "DoubleVerdictRequest": {
+        "properties": {
+          "W_litera": {
+            "type": "string",
+            "title": "W Litera"
+          },
+          "T_telos": {
+            "type": "string",
+            "title": "T Telos"
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "W_litera",
+          "T_telos"
+        ],
+        "title": "DoubleVerdictRequest"
+      },
+      "DoubleVerdictResponse": {
+        "properties": {
+          "verdicts": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Verdicts"
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdicts"
+        ],
+        "title": "DoubleVerdictResponse"
+      },
+      "EngineResult": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "time_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Ms"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "EngineResult"
+      },
+      "EntangleRequest": {
+        "properties": {
+          "variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Variables"
+          },
+          "target_negativity": {
+            "type": "number",
+            "title": "Target Negativity",
+            "default": 0.1
+          },
+          "scenario": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario",
+            "description": "Scenario label (e.g., 'pairwise', 'global')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variables"
+        ],
+        "title": "EntangleRequest"
+      },
+      "EntangleResponse": {
+        "properties": {
+          "certificate": {
+            "type": "string",
+            "title": "Certificate"
+          },
+          "achieved_negativity": {
+            "type": "number",
+            "title": "Achieved Negativity"
+          },
+          "scenario": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario"
+          },
+          "pairs": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "type": "number"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pairs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "certificate",
+          "achieved_negativity"
+        ],
+        "title": "EntangleResponse"
+      },
+      "EntanglementsResponse": {
+        "properties": {
+          "pairs": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Pairs"
+          },
+          "mi": {
+            "type": "number",
+            "title": "Mi"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pairs",
+          "mi"
+        ],
+        "title": "EntanglementsResponse"
+      },
+      "EquityMeterRequest": {
+        "properties": {
+          "distribution_a": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Distribution A"
+          },
+          "distribution_b": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Distribution B"
+          }
+        },
+        "type": "object",
+        "required": [
+          "distribution_a",
+          "distribution_b"
+        ],
+        "title": "EquityMeterRequest"
+      },
+      "EquityMeterResponse": {
+        "properties": {
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "deltas": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Deltas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "deltas"
+        ],
+        "title": "EquityMeterResponse"
+      },
+      "ExpectationOut": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "ExpectationOut"
+      },
+      "ExpectationRequest": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "operator": {
+            "type": "string",
+            "title": "Operator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "operator"
+        ],
+        "title": "ExpectationRequest"
+      },
+      "ExportPayload": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "title": "Case Id",
+            "description": "Public case id, e.g. 'pl-286kk-0001'"
+          },
+          "analysis_result": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Analysis Result"
+          },
+          "fmt": {
+            "type": "string",
+            "title": "Fmt",
+            "description": "Output format: report|file|docx|json (default: report)",
+            "default": "report"
+          },
+          "write_ledger": {
+            "type": "boolean",
+            "title": "Write Ledger",
+            "description": "If true, record provenance hash in Ledger",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id"
+        ],
+        "title": "ExportPayload"
+      },
+      "ExportResponse": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "provenance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "message"
+        ],
+        "title": "ExportResponse"
+      },
+      "FindEntanglementRequest": {
+        "properties": {
+          "variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Variables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variables"
+        ],
+        "title": "FindEntanglementRequest"
+      },
+      "FindEntanglementResponse": {
+        "properties": {
+          "pairs": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Pairs"
+          },
+          "mi": {
+            "type": "number",
+            "title": "Mi",
+            "default": 0.0
+          },
+          "negativity": {
+            "type": "number",
+            "title": "Negativity",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "pairs"
+        ],
+        "title": "FindEntanglementResponse"
+      },
+      "GeodesicRequest": {
+        "properties": {
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case",
+            "description": "Case identifier (optional)"
+          },
+          "facts": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facts"
+          },
+          "norms": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Norms"
+          }
+        },
+        "type": "object",
+        "title": "GeodesicRequest"
+      },
+      "GeodesicResponse": {
+        "properties": {
+          "path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Path"
+          },
+          "geodesic_action": {
+            "type": "number",
+            "title": "Geodesic Action"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "geodesic_action"
+        ],
+        "title": "GeodesicResponse"
+      },
+      "HDEPlanAlternative": {
+        "properties": {
+          "strategy": {
+            "type": "string",
+            "title": "Strategy"
+          },
+          "cost_tokens": {
+            "type": "integer",
+            "title": "Cost Tokens"
+          },
+          "expected_kappa": {
+            "type": "number",
+            "title": "Expected Kappa"
+          }
+        },
+        "type": "object",
+        "required": [
+          "strategy",
+          "cost_tokens",
+          "expected_kappa"
+        ],
+        "title": "HDEPlanAlternative"
+      },
+      "HDEPlanRequest": {
+        "properties": {
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case"
+          },
+          "target_horizon": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Horizon",
+            "description": "Desired horizon mass threshold",
+            "default": 0.2
+          }
+        },
+        "type": "object",
+        "title": "HDEPlanRequest"
+      },
+      "HDEPlanResponse": {
+        "properties": {
+          "evidence_plan": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence Plan"
+          },
+          "plan_of_evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Plan Of Evidence"
+          },
+          "cost_tokens": {
+            "type": "integer",
+            "title": "Cost Tokens"
+          },
+          "expected_kappa": {
+            "type": "number",
+            "title": "Expected Kappa"
+          },
+          "alternatives": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/HDEPlanAlternative"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alternatives"
+          },
+          "best_strategy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Strategy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evidence_plan",
+          "plan_of_evidence",
+          "cost_tokens",
+          "expected_kappa"
+        ],
+        "title": "HDEPlanResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HandleRequest": {
+        "properties": {
+          "pack": {
+            "type": "string",
+            "title": "Pack"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pack",
+          "kind"
+        ],
+        "title": "HandleRequest"
+      },
+      "HorizonRequest": {
+        "properties": {
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case"
+          },
+          "lock": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lock"
+          }
+        },
+        "type": "object",
+        "title": "HorizonRequest"
+      },
+      "HorizonResponse": {
+        "properties": {
+          "locked": {
+            "type": "boolean",
+            "title": "Locked"
+          },
+          "horizon_mass": {
+            "type": "number",
+            "title": "Horizon Mass"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locked",
+          "horizon_mass"
+        ],
+        "title": "HorizonResponse"
+      },
+      "IngestEmailRequest": {
+        "properties": {
+          "mail_id": {
+            "type": "string",
+            "title": "Mail Id"
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thread Id"
+          },
+          "from_addr": {
+            "type": "string",
+            "title": "From Addr"
+          },
+          "to": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "To"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "body_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body Text"
+          },
+          "spf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spf"
+          },
+          "dkim": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dkim"
+          },
+          "dmarc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dmarc"
+          },
+          "attachments": {
+            "items": {
+              "$ref": "#/components/schemas/Attachment"
+            },
+            "type": "array",
+            "title": "Attachments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mail_id",
+          "from_addr",
+          "to"
+        ],
+        "title": "IngestEmailRequest"
+      },
+      "IngestEmailResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "io": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Io"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "io"
+        ],
+        "title": "IngestEmailResponse"
+      },
+      "InitCaseRequest": {
+        "properties": {
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case",
+            "description": "Case identifier (optional)"
+          },
+          "state_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Uri"
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis",
+            "description": "Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']"
+          }
+        },
+        "type": "object",
+        "title": "InitCaseRequest"
+      },
+      "InitCaseResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "predistribution": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Predistribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "predistribution"
+        ],
+        "title": "InitCaseResponse"
+      },
+      "InstallRequest": {
+        "properties": {
+          "pack": {
+            "type": "string",
+            "title": "Pack"
+          },
+          "signature": {
+            "type": "string",
+            "title": "Signature"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pack",
+          "signature"
+        ],
+        "title": "InstallRequest"
+      },
+      "LensingResponse": {
+        "properties": {
+          "lensing_map": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Lensing Map"
+          },
+          "critical_precedents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Critical Precedents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lensing_map",
+          "critical_precedents"
+        ],
+        "title": "LensingResponse"
+      },
+      "LockRequest": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Case"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case"
+        ],
+        "title": "LockRequest"
+      },
+      "LockResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "lock_ref": {
+            "type": "string",
+            "title": "Lock Ref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "lock_ref"
+        ],
+        "title": "LockResponse"
+      },
+      "MerkleStep": {
+        "properties": {
+          "sibling": {
+            "type": "string",
+            "title": "Sibling"
+          },
+          "dir": {
+            "type": "string",
+            "title": "Dir"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sibling",
+          "dir"
+        ],
+        "title": "MerkleStep"
+      },
+      "MismatchCreateRequest": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "title": "Case Id"
+          },
+          "formula_str": {
+            "type": "string",
+            "title": "Formula Str"
+          },
+          "results": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/EngineResult"
+            },
+            "type": "object",
+            "title": "Results"
+          },
+          "formula_ast": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formula Ast"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TicketPriority"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "formula_str",
+          "results"
+        ],
+        "title": "MismatchCreateRequest"
+      },
+      "MotionRequest": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "title": "Case Id"
+          },
+          "pattern_id": {
+            "type": "string",
+            "pattern": "^(motion-dismiss|motion-summary)$",
+            "title": "Pattern Id"
+          },
+          "facts": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facts"
+          },
+          "citations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Citations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "pattern_id"
+        ],
+        "title": "MotionRequest"
+      },
+      "MotionResponse": {
+        "properties": {
+          "document": {
+            "type": "string",
+            "title": "Document"
+          },
+          "citations": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Citations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "document",
+          "citations"
+        ],
+        "title": "MotionResponse"
+      },
+      "OperatorsOut": {
+        "properties": {
+          "operators": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Operators"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operators"
+        ],
+        "title": "OperatorsOut"
+      },
+      "PresetIn": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Case"
+          },
+          "operator": {
+            "type": "string",
+            "maxLength": 1,
+            "minLength": 1,
+            "title": "Operator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "operator"
+        ],
+        "title": "PresetIn"
+      },
+      "PresetOut": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "operator": {
+            "type": "string",
+            "title": "Operator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "operator"
+        ],
+        "title": "PresetOut"
+      },
+      "PublicBundleIn": {
+        "properties": {
+          "rid": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Rid"
+          },
+          "smt2_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Smt2 Hash"
+          },
+          "lfsc": {
+            "type": "string",
+            "minLength": 2,
+            "title": "Lfsc"
+          },
+          "drat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drat"
+          },
+          "merkle_proof": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MerkleStep"
+                },
+                "type": "array"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merkle Proof"
+          },
+          "smt2": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Smt2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rid",
+          "smt2_hash",
+          "lfsc"
+        ],
+        "title": "PublicBundleIn"
+      },
+      "PublicPCO": {
+        "properties": {
+          "rid": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Rid"
+          },
+          "smt2_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Smt2 Hash"
+          },
+          "lfsc": {
+            "type": "string",
+            "minLength": 2,
+            "title": "Lfsc"
+          },
+          "drat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drat"
+          },
+          "merkle_proof": {
+            "items": {
+              "$ref": "#/components/schemas/MerkleStep"
+            },
+            "type": "array",
+            "title": "Merkle Proof"
+          },
+          "signature": {
+            "type": "string",
+            "minLength": 40,
+            "title": "Signature"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rid",
+          "smt2_hash",
+          "lfsc",
+          "signature"
+        ],
+        "title": "PublicPCO"
+      },
+      "QOracleRequest": {
+        "properties": {
+          "objective": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraints"
+          }
+        },
+        "type": "object",
+        "title": "QOracleRequest"
+      },
+      "QOracleResponse": {
+        "properties": {
+          "optimum": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Optimum"
+          },
+          "payoff": {
+            "type": "number",
+            "title": "Payoff"
+          },
+          "distribution": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Distribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "optimum",
+          "payoff",
+          "distribution"
+        ],
+        "title": "QOracleResponse"
+      },
+      "QtmHistoryEvent": {
+        "properties": {
+          "operator": {
+            "type": "string",
+            "title": "Operator"
+          },
+          "verdict": {
+            "type": "string",
+            "title": "Verdict"
+          },
+          "p": {
+            "type": "number",
+            "title": "P"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operator",
+          "verdict",
+          "p"
+        ],
+        "title": "QtmHistoryEvent"
+      },
+      "QtmHistoryOut": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/QtmHistoryEvent"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "history",
+          "total",
+          "offset",
+          "limit"
+        ],
+        "title": "QtmHistoryOut"
+      },
+      "QtmStateOut": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "psi": {
+            "type": "string",
+            "title": "Psi"
+          },
+          "basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Basis"
+          },
+          "predistribution": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Predistribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "psi",
+          "basis",
+          "predistribution"
+        ],
+        "title": "QtmStateOut"
+      },
+      "QuotaRequest": {
+        "properties": {
+          "tenant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant"
+          },
+          "units": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Units",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "QuotaRequest"
+      },
+      "RecallRequest": {
+        "properties": {
+          "upn": {
+            "type": "string",
+            "title": "Upn"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upn"
+        ],
+        "title": "RecallRequest"
+      },
+      "RecallResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "link"
+        ],
+        "title": "RecallResponse"
+      },
+      "RecordInputRequest": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Case Id",
+            "description": "PL: Id sprawy. / EN: Case identifier."
+          },
+          "document_hash": {
+            "type": "string",
+            "minLength": 7,
+            "title": "Document Hash",
+            "description": "PL: Np. 'sha256:<hex>'. / EN: e.g., 'sha256:<hex>'."
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "document_hash"
+        ],
+        "title": "RecordInputRequest",
+        "description": "PL: Wejście do zarejestrowania dokumentu.\n\nEN: Input to record a document ingestion."
+      },
+      "RecordInputResponse": {
+        "properties": {
+          "event_id": {
+            "type": "integer",
+            "title": "Event Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "case_id": {
+            "type": "string",
+            "title": "Case Id"
+          },
+          "document_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Hash"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "chain_prev": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chain Prev"
+          },
+          "chain_self": {
+            "type": "string",
+            "title": "Chain Self"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "type",
+          "case_id",
+          "document_hash",
+          "timestamp",
+          "chain_prev",
+          "chain_self"
+        ],
+        "title": "RecordInputResponse",
+        "description": "PL: Odpowiedź na zarejestrowanie dokumentu.\n\nEN: Response for recorded document ingestion."
+      },
+      "RefundIn": {
+        "properties": {
+          "units": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "units"
+        ],
+        "title": "RefundIn"
+      },
+      "RefundRequest": {
+        "properties": {
+          "units": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "units"
+        ],
+        "title": "RefundRequest"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "subject": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Subject"
+          },
+          "claims": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claims"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject"
+        ],
+        "title": "RegisterRequest"
+      },
+      "RegisterResponse": {
+        "properties": {
+          "upn": {
+            "type": "string",
+            "title": "Upn"
+          },
+          "ts": {
+            "type": "integer",
+            "title": "Ts"
+          },
+          "ledger_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ledger Ref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upn",
+          "ts"
+        ],
+        "title": "RegisterResponse"
+      },
+      "ReplayRequest": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "title": "Case"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "timestamp"
+        ],
+        "title": "ReplayRequest"
+      },
+      "ReplayResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "state_uri": {
+            "type": "string",
+            "title": "State Uri"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "state_uri"
+        ],
+        "title": "ReplayResponse"
+      },
+      "ReqIn": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "User Id"
+          },
+          "amount": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "amount"
+        ],
+        "title": "ReqIn"
+      },
+      "ReqOut": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "status",
+          "user_id",
+          "amount"
+        ],
+        "title": "ReqOut"
+      },
+      "SequenceRequest": {
+        "properties": {
+          "operators": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Operators"
+          },
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case"
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "no_collapse": {
+            "type": "boolean",
+            "title": "No Collapse",
+            "description": "If true, do not collapse after each step",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "operators"
+        ],
+        "title": "SequenceRequest"
+      },
+      "SequenceResponse": {
+        "properties": {
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/SequenceStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "final_latency_ms": {
+            "type": "number",
+            "title": "Final Latency Ms"
+          },
+          "uncertainty_bound": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Uncertainty Bound"
+          }
+        },
+        "type": "object",
+        "required": [
+          "steps",
+          "final_latency_ms",
+          "uncertainty_bound"
+        ],
+        "title": "SequenceResponse"
+      },
+      "SequenceStep": {
+        "properties": {
+          "operator": {
+            "type": "string",
+            "title": "Operator"
+          },
+          "verdict": {
+            "type": "string",
+            "title": "Verdict"
+          },
+          "p": {
+            "type": "number",
+            "title": "P"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operator",
+          "verdict",
+          "p"
+        ],
+        "title": "SequenceStep"
+      },
+      "SetStateRequest": {
+        "properties": {
+          "case": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Case"
+          },
+          "psi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Psi",
+            "description": "State URI or descriptor"
+          },
+          "basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Basis"
+          },
+          "probs": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Probs",
+            "description": "Probabilities aligned with basis; will be normalized"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "basis",
+          "probs"
+        ],
+        "title": "SetStateRequest"
+      },
+      "SourceCacheRequest": {
+        "properties": {
+          "uri": {
+            "type": "string",
+            "title": "Uri"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uri"
+        ],
+        "title": "SourceCacheRequest"
+      },
+      "SourceCacheResponse": {
+        "properties": {
+          "uri": {
+            "type": "string",
+            "title": "Uri"
+          },
+          "digest": {
+            "type": "string",
+            "title": "Digest"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "title": "Retrieved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uri",
+          "digest",
+          "path",
+          "retrieved_at"
+        ],
+        "title": "SourceCacheResponse"
+      },
+      "StatusOut": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "allocated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "status"
+        ],
+        "title": "StatusOut"
+      },
+      "TicketPriority": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ],
+        "title": "TicketPriority"
+      },
+      "ToggleRequest": {
+        "properties": {
+          "pack": {
+            "type": "string",
+            "title": "Pack"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pack",
+          "enabled"
+        ],
+        "title": "ToggleRequest"
+      },
+      "TokenAllocateIn": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "allocated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id"
+        ],
+        "title": "TokenAllocateIn"
+      },
+      "TokenRequestIn": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "User Id"
+          },
+          "amount": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Amount"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "amount"
+        ],
+        "title": "TokenRequestIn"
+      },
+      "TokenRequestOut": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "amount": {
+            "type": "integer",
+            "title": "Amount"
+          },
+          "purpose": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Purpose"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "status",
+          "user_id",
+          "amount"
+        ],
+        "title": "TokenRequestOut"
+      },
+      "TokenStatusOut": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "allocated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allocated By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "status"
+        ],
+        "title": "TokenStatusOut"
+      },
+      "TryRequest": {
+        "properties": {
+          "pack": {
+            "type": "string",
+            "title": "Pack"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pack"
+        ],
+        "title": "TryRequest"
+      },
+      "TunnelRequest": {
+        "properties": {
+          "state_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Uri"
+          },
+          "barrier_model": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Barrier Model"
+          },
+          "evidence_energy": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Evidence Energy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "evidence_energy"
+        ],
+        "title": "TunnelRequest"
+      },
+      "TunnelResponse": {
+        "properties": {
+          "p_tunnel": {
+            "type": "number",
+            "title": "P Tunnel"
+          },
+          "min_energy_to_cross": {
+            "type": "number",
+            "title": "Min Energy To Cross"
+          },
+          "path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Path"
+          }
+        },
+        "type": "object",
+        "required": [
+          "p_tunnel",
+          "min_energy_to_cross",
+          "path"
+        ],
+        "title": "TunnelResponse"
+      },
+      "UncertaintyOut": {
+        "properties": {
+          "lower_bound": {
+            "type": "number",
+            "title": "Lower Bound"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lower_bound"
+        ],
+        "title": "UncertaintyOut"
+      },
+      "UncertaintyResponse": {
+        "properties": {
+          "lower_bound": {
+            "type": "number",
+            "title": "Lower Bound"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lower_bound"
+        ],
+        "title": "UncertaintyResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VerificationRequest": {
+        "properties": {
+          "formula": {
+            "type": "string",
+            "title": "Formula"
+          },
+          "lang": {
+            "type": "string",
+            "title": "Lang",
+            "default": "smt2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "formula"
+        ],
+        "title": "VerificationRequest",
+        "description": "PL: Wejściowy DTO do weryfikacji (MVP: tylko 'smt2').\n\nEN: Input DTO for verification (MVP: 'smt2' only)."
+      },
+      "WhyNotRequest": {
+        "properties": {
+          "claim": {
+            "type": "string",
+            "title": "Claim"
+          },
+          "counter_arguments": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Counter Arguments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "claim",
+          "counter_arguments"
+        ],
+        "title": "WhyNotRequest"
+      },
+      "WhyNotResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "trace_uri": {
+            "type": "string",
+            "title": "Trace Uri"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "trace_uri"
+        ],
+        "title": "WhyNotResponse"
+      },
+      "services__api_gateway__routers__dr__RevokeRequest": {
+        "properties": {
+          "lock_ref": {
+            "type": "string",
+            "minLength": 3,
+            "title": "Lock Ref"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lock_ref"
+        ],
+        "title": "RevokeRequest"
+      },
+      "services__api_gateway__routers__dr__RevokeResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok"
+          },
+          "revoked": {
+            "type": "boolean",
+            "title": "Revoked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok",
+          "revoked"
+        ],
+        "title": "RevokeResponse"
+      },
+      "services__api_gateway__routers__fin__MeasureRequest": {
+        "properties": {
+          "signals": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signals"
+          }
+        },
+        "type": "object",
+        "title": "MeasureRequest"
+      },
+      "services__api_gateway__routers__fin__MeasureResponse": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "p": {
+            "type": "number",
+            "title": "P"
+          },
+          "pco": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pco"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "p"
+        ],
+        "title": "MeasureResponse"
+      },
+      "services__api_gateway__routers__qtm__MeasureRequest": {
+        "properties": {
+          "operator": {
+            "type": "string",
+            "title": "Operator",
+            "description": "One of W/I/C/L/T (domain-dependent)"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source",
+            "description": "ui | chatops:<cmd> | mail:<id>",
+            "default": "ui"
+          },
+          "case": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case",
+            "description": "Optional case identifier to bind decoherence/presets"
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operator"
+        ],
+        "title": "MeasureRequest"
+      },
+      "services__api_gateway__routers__qtm__MeasureResponse": {
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "title": "Verdict"
+          },
+          "p": {
+            "type": "number",
+            "title": "P"
+          },
+          "collapse_log": {
+            "$ref": "#/components/schemas/CollapseLog"
+          },
+          "uncertainty_bound": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Uncertainty Bound"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdict",
+          "p",
+          "collapse_log",
+          "uncertainty_bound",
+          "latency_ms"
+        ],
+        "title": "MeasureResponse"
+      },
+      "services__api_gateway__routers__upn__RevokeRequest": {
+        "properties": {
+          "upn": {
+            "type": "string",
+            "title": "Upn",
+            "description": "Identifier returned by /register"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upn"
+        ],
+        "title": "RevokeRequest"
+      },
+      "services__api_gateway__routers__upn__RevokeResponse": {
+        "properties": {
+          "upn": {
+            "type": "string",
+            "title": "Upn"
+          },
+          "revoked": {
+            "type": "boolean",
+            "title": "Revoked"
+          },
+          "merkle_proof": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Merkle Proof"
+          }
+        },
+        "type": "object",
+        "required": [
+          "upn",
+          "revoked",
+          "merkle_proof"
+        ],
+        "title": "RevokeResponse"
+      }
+    }
+  }
+}

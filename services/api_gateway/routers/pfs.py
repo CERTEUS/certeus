@@ -10,9 +10,9 @@
 # +-------------------------------------------------------------+
 
 """
-PL: Router ProofFS (listowanie zasobów). Prosty listing dla prefiksu pfs://.
+PL: Router ProofFS (listowanie zasobów, exists). Listing dla prefiksu pfs:// + exists dla pojedynczego URI.
 
-EN: ProofFS router (resource listing). Simple listing for pfs:// prefix.
+EN: ProofFS router (list and exists). Lists given pfs:// prefix and checks existence of a single URI.
 """
 
 # === IMPORTY / IMPORTS ===
@@ -39,12 +39,17 @@ def _root() -> Path:
     p = os.getenv(PFS_ROOT_ENV)
     if p:
         return Path(p)
-    # fallback: repo data dir
-    return Path(".").resolve() / "data" / "pfs"
+    # fallback: repo data dir (aligned with materialize default)
+    return Path(".").resolve() / "data" / "proof_fs"
 
 
-@router.get("/list")
-async def list_entries(prefix: str = Query(..., description="pfs:// prefix")) -> dict[str, Any]:
+@router.get("/list", operation_id="pfs_list_entries")
+async def list_entries(
+    prefix: str = Query(..., description="pfs:// prefix"),
+    recursive: bool = Query(False, description="List recursively"),
+    limit: int = Query(1000, ge=1, le=10000, description="Max entries to return"),
+    mime: str | None = Query(None, description="Filter by simple mime/extension substring, e.g. 'pdf'"),
+) -> dict[str, Any]:
     if not prefix.startswith("pfs://"):
         raise HTTPException(status_code=400, detail="prefix must start with pfs://")
     parts = prefix[len("pfs://") :].strip("/").split("/")
@@ -52,13 +57,21 @@ async def list_entries(prefix: str = Query(..., description="pfs:// prefix")) ->
     if not path.exists() or not path.is_dir():
         raise HTTPException(status_code=404, detail="prefix not found")
     entries: list[dict[str, Any]] = []
-    for p in sorted(path.iterdir()):
-        if p.is_file():
-            entries.append({"uri": f"{prefix}/{p.name}", "size": p.stat().st_size})
+    it = path.rglob("*") if recursive else path.iterdir()
+    flt = (mime or "").lower().strip() if mime else None
+    for p in sorted(it):
+        if not p.is_file():
+            continue
+        if flt and flt not in p.name.lower():
+            continue
+        rel = p.relative_to(path).as_posix()
+        entries.append({"uri": f"{prefix}/{rel}", "size": p.stat().st_size})
+        if len(entries) >= limit:
+            break
     return {"prefix": prefix, "entries": entries}
 
 
-@router.get("/exists")
+@router.get("/exists", operation_id="pfs_exists")
 async def exists(uri: str = Query(..., description="pfs:// URI")) -> dict[str, Any]:
     if not uri.startswith("pfs://"):
         raise HTTPException(status_code=400, detail="uri must start with pfs://")

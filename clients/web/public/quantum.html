@@ -39,7 +39,7 @@
   <body>
     <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
     <div class="container" id="main" role="main">
-      <div class="card">
+      <div class="card" role="region" aria-labelledby="title">
         <h1 id="title">Quantum • Operator Composer</h1>
         <div class="row">
           <select id="lang" aria-label="Language">
@@ -72,7 +72,8 @@
           <button id="refresh-comm" class="btn" data-i18n="refreshHeatmap">Refresh heatmap</button>
           <span class="muted" id="comm-legend">0 = commute • 1 = max</span>
         </div>
-        <div id="comm-grid" class="grid" style="grid-template-columns:repeat(5, 1fr)" aria-label="Commutator heatmap"></div>
+        <div id="comm-grid" class="grid" style="grid-template-columns:repeat(5, 1fr)" aria-label="Commutator heatmap" aria-describedby="desc-comm" tabindex="0"></div>
+        <span id="desc-comm" class="sr-only">Grid of 25 cells. Darker = commuting, lighter = higher non-commutation.</span>
 
         <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
 
@@ -84,7 +85,7 @@
         </div>
         <div class="row">
           <button id="seq-compare" class="btn" data-i18n="compareLT_TL">Compare L→T vs T→L</button>
-          <span class="muted" id="seq-compare-out">–</span>
+          <span class="muted" id="seq-compare-out" aria-live="polite">–</span>
         </div>
 
         <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
@@ -127,17 +128,18 @@
           <button id="pred-refresh" class="btn" data-i18n="refreshPred">Refresh predistribution</button>
           <span class="muted" id="pred-note">From /v1/qtm/state/{case}</span>
         </div>
-        <div id="pred-chart" class="bars" aria-label="Predistribution chart"></div>
+        <div id="pred-chart" class="bars" aria-label="Predistribution chart" aria-describedby="desc-pred" tabindex="0"></div>
+        <span id="desc-pred" class="sr-only">Bar chart where height corresponds to prior probability of each verdict state.</span>
       </div>
     </div>
     <script>
       // i18n strings
       const I18N = {
         pl: {
-          title: 'Quantum • Kompozytor Operatorów', measure: 'Pomiar', savePreset: 'Zapisz preset', loadPreset: 'Wczytaj preset', listPresets: 'Lista presetów', refreshHeatmap: 'Odśwież heatmapę', measureLT: 'Pomiar L→T', measureTL: 'Pomiar T→L', compareLT_TL: 'Porównaj L→T vs T→L', apply: 'Zastosuj', refreshHistory: 'Odśwież historię', openLedger: 'Otwórz ledger', refreshPresets: 'Odśwież presety', refreshPred: 'Odśwież predistribucję', ub: 'UB L_T:', collapse: 'Kolaps:', priorities: 'Priorytety:', steps: 'Kroki:', last5: 'Ostatnie 5 zdarzeń:', count: 'Liczba:'
+          title: 'Quantum • Kompozytor Operatorów', measure: 'Pomiar', savePreset: 'Zapisz preset', loadPreset: 'Wczytaj preset', listPresets: 'Lista presetów', refreshHeatmap: 'Odśwież heatmapę', measureLT: 'Pomiar L→T', measureTL: 'Pomiar T→L', compareLT_TL: 'Porównaj L→T vs T→L', apply: 'Zastosuj', refreshHistory: 'Odśwież historię', openLedger: 'Otwórz ledger', refreshPresets: 'Odśwież presety', refreshPred: 'Odśwież predistribucję', ub: 'UB L_T:', collapse: 'Kolaps:', priorities: 'Priorytety:', steps: 'Kroki:', last5: 'Ostatnie 5 zdarzeń:', count: 'Liczba:', casePh: 'id sprawy (LEX-001)'
         },
         en: {
-          title: 'Quantum • Operator Composer', measure: 'Measure', savePreset: 'Save preset', loadPreset: 'Load preset', listPresets: 'List presets', refreshHeatmap: 'Refresh heatmap', measureLT: 'Measure L→T', measureTL: 'Measure T→L', compareLT_TL: 'Compare L→T vs T→L', apply: 'Apply', refreshHistory: 'Refresh history', openLedger: 'Open ledger', refreshPresets: 'Refresh presets', refreshPred: 'Refresh predistribution', ub: 'UB L_T:', collapse: 'Collapse:', priorities: 'Priorities:', steps: 'Steps:', last5: 'Last 5 events:', count: 'Count:'
+          title: 'Quantum • Operator Composer', measure: 'Measure', savePreset: 'Save preset', loadPreset: 'Load preset', listPresets: 'List presets', refreshHeatmap: 'Refresh heatmap', measureLT: 'Measure L→T', measureTL: 'Measure T→L', compareLT_TL: 'Compare L→T vs T→L', apply: 'Apply', refreshHistory: 'Refresh history', openLedger: 'Open ledger', refreshPresets: 'Refresh presets', refreshPred: 'Refresh predistribution', ub: 'UB L_T:', collapse: 'Collapse:', priorities: 'Priorities:', steps: 'Steps:', last5: 'Last 5 events:', count: 'Count:', casePh: 'case id (LEX-001)'
         }
       };
       function setLang(lang){ try{ localStorage.setItem('certeus.lang', lang) }catch(e){}
@@ -151,6 +153,7 @@
         document.getElementById('steps-label').firstChild.nodeValue = t.steps;
         document.getElementById('last-events').firstChild.nodeValue = t.last5;
         document.getElementById('presets-count-label').firstChild.nodeValue = t.count;
+        document.getElementById('case').setAttribute('placeholder', t.casePh);
       }
       const key = 'certeus.quantum.preset';
       function paintHeat(v){ const grid = document.getElementById('heat'); grid.innerHTML=''; for(let i=0;i<100;i++){ const d=document.createElement('div'); d.className = 'cell ' + ((Math.random()+v)>1.0?'hot':'cold'); grid.appendChild(d);} }
@@ -190,4 +193,3 @@
     </script>
   </body>
   </html>
-

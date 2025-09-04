@@ -17,6 +17,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Ω‑Kernel: usuwanie U+FFFD → stabilny Gauge drift
   - Tests: 209 passed, 5 skipped; ruff OK
 
+- 2025-09-04 22:05:00Z [agent] (work/daily): W13 — ProofFS exists + Boundary Trend Gate (CI)
+  - API: /v1/pfs/exists?uri=pfs://… — sprawdzenie istnienia artefaktu (size/path)
+  - CI: Boundary Diff vs previous (report-only) + persist `ci/boundary_snapshot.json`
+  - Testy: 216 passed, 5 skipped; ruff OK
+
 - 2025-09-04 00:00:00Z [agent] (work/daily): QTMP cockpit — komutatory + sekwencje + dekoherencja
   - Quantum UI: heatmapa komutatorów (W/I/C/L/T), przyciski L→T/T→L, ustawienia kanału/gamma
   - API reuse: /v1/qtm/commutator, /v1/qtm/measure_sequence, /v1/qtm/decoherence; PCO widoczne w nagłówkach
@@ -240,3 +245,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - UI: Docs button → /docs/guides/packs_abi_semver.md\n- API: mount /docs as static (read-only)\n- Tests: 215 passed (lokalnie)\nweekly-promote: true
 - 2025-09-04 20:37:09Z [root] (work/daily): W17 (A8): Tenant SLO trend + Isolation; stabilize Billing/FIN tokens
   - - CI: tenant SLO trend gate vs ci-status + publish tenant_slo.json\n- Isolation: tenant isolation check gate (report-only)\n- Billing: /v1/billing/* stabilized; FIN tokens state path via CERTEUS_TEST_STATE_PATH; test reload-safe\n- Suite: 215 passed
+- 2025-09-04 21:02:56Z [48793] (work/daily): W14 D68–D69: Billing tokens API + 2 plugins
+  - - API: /v1/fin/tokens/{request,allocate,{id}} + state file; wired in app
+  - - Tests: tests/services/test_fin_tokens.py (request→allocate flow) — green
+  - - Marketplace: plugins/demo_billing_pl, plugins/demo_report_pl (register() handle) + manifests
+  - - Main: includes billing_api, billing_quota, and new tokens router; OpenAPI updated
+  - - pytest: 216 passed, 5 skipped; ruff OK
+- 2025-09-04 21:49:46Z [root] (work/daily): W14 (start): Domain Views (MED/SEC/CODE)
+  - - UI: /app/public/med.html, /sec.html, /code.html\n- SEC: probe /health headers + RL\n- Tests: 220 passed (lokalnie)

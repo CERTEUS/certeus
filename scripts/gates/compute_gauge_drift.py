@@ -48,6 +48,9 @@ def main() -> int:
     ap.add_argument("--out", required=True, help="Ścieżka pliku wynikowego JSON")
     ap.add_argument("--before-file", help="Opcjonalny plik 'before' do obliczeń Ω‑Kernel drift")
     ap.add_argument("--after-file", help="Opcjonalny plik 'after' do obliczeń Ω‑Kernel drift")
+    ap.add_argument("--max-jaccard", type=float, default=None, help="Maksymalny jaccard_drift (omega)")
+    ap.add_argument("--max-entropy", type=float, default=None, help="Maksymalny entropy_drift (omega)")
+    ap.add_argument("--max-entity-jaccard", type=float, default=None, help="Maksymalny entity_jaccard_drift (omega)")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -91,8 +94,9 @@ def main() -> int:
             compute_gauge_drift as _gauge,
         )
 
-        bef = _read_text(getattr(args, "before_file", None))
-        aft = _read_text(getattr(args, "after_file", None))
+        # Prefer files; fallback to env text
+        bef = _read_text(getattr(args, "before_file", None)) or os.getenv("OMEGA_BEFORE_TEXT", "")
+        aft = _read_text(getattr(args, "after_file", None)) or os.getenv("OMEGA_AFTER_TEXT", "")
         if bef or aft:
             gd = _gauge(bef, aft)
             ed = _entropy(bef, aft)
@@ -110,6 +114,42 @@ def main() -> int:
                 "entropy_drift": 0.0,
                 "entity_jaccard_drift": 0.0,
             }
+        # Optional thresholds (args/env); report-only unless ENFORCE_OMEGA_DRIFT=1
+        fail = False
+        thr_j = getattr(args, "max_jaccard", None)
+        thr_e = getattr(args, "max_entropy", None)
+        thr_n = getattr(args, "max_entity_jaccard", None)
+        # env fallbacks
+        if thr_j is None:
+            try:
+                thr_j = float(os.getenv("OMEGA_MAX_JACCARD", "")) if os.getenv("OMEGA_MAX_JACCARD") else None
+            except Exception:
+                thr_j = None
+        if thr_e is None:
+            try:
+                thr_e = float(os.getenv("OMEGA_MAX_ENTROPY", "")) if os.getenv("OMEGA_MAX_ENTROPY") else None
+            except Exception:
+                thr_e = None
+        if thr_n is None:
+            try:
+                thr_n = float(os.getenv("OMEGA_MAX_ENTITY_DRIFT", "")) if os.getenv("OMEGA_MAX_ENTITY_DRIFT") else None
+            except Exception:
+                thr_n = None
+        if bef or aft:
+            if thr_j is not None and payload["omega"]["jaccard_drift"] > thr_j:  # type: ignore[index]
+                print(f"Omega Gate: jaccard_drift {payload['omega']['jaccard_drift']} > {thr_j} (threshold)")
+                fail = True
+            if thr_e is not None and payload["omega"]["entropy_drift"] > thr_e:  # type: ignore[index]
+                print(f"Omega Gate: entropy_drift {payload['omega']['entropy_drift']} > {thr_e} (threshold)")
+                fail = True
+            if thr_n is not None and payload["omega"]["entity_jaccard_drift"] > thr_n:  # type: ignore[index]
+                print(
+                    f"Omega Gate: entity_jaccard_drift {payload['omega']['entity_jaccard_drift']} > {thr_n} (threshold)"
+                )
+                fail = True
+        if fail and (os.getenv("ENFORCE_OMEGA_DRIFT") or "").strip() in {"1", "true", "True"}:
+            out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            return 1
     except Exception:
         # keep payload minimal if imports fail
         pass

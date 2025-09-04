@@ -28,12 +28,7 @@ def test_fin_tokens_request_allocate(tmp_path: Path, monkeypatch) -> None:
     state = tmp_path / "fin_tokens.json"
     monkeypatch.setenv("CERTEUS_TEST_STATE_PATH", str(state))
 
-    # Force reload billing router to pick up env override if used
-    import importlib
-
-    import services.api_gateway.routers.billing as billing
-
-    importlib.reload(billing)
+    # Billing reads state path from env at call-time; no reload needed
 
     c = TestClient(app)
 

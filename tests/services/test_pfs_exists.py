@@ -50,6 +50,7 @@ def test_pfs_exists_endpoint() -> None:
         r2 = client.get("/v1/pfs/exists", params={"uri": "pfs://mail/MID/missing.txt"})
         assert r2.status_code == 200 and r2.json().get("exists") is False
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===

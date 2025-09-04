@@ -169,3 +169,12 @@ certeus_fin_entanglement_mi = Gauge(
     "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
 )
 certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
+
+# Billing: tokens requests/allocations and pending gauge
+certeus_billing_token_requests_total = Counter(
+    "certeus_billing_token_requests_total", "Billing tokens: requests created"
+)
+certeus_billing_token_allocations_total = Counter(
+    "certeus_billing_token_allocations_total", "Billing tokens: requests allocated"
+)
+certeus_billing_token_pending = Gauge("certeus_billing_token_pending", "Billing tokens: currently pending requests")

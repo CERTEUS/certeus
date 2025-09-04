@@ -118,6 +118,26 @@ Polityka SemVer dla packs: zobacz `docs/guides/packs_abi_semver.md`.
 1) A11y/i18n
    - Strony web mają skip‑link do `#main`, widoczne focusy; UI wspiera PL/EN (nagłówek `Accept-Language` + `?lang` → `Content-Language`).
 2) Billing & Cost‑tokens
+   - Sekwencja demo (PowerShell/bash):
+
+```
+# Billing (tenant quota + allocate + refund)
+$env:TENANT = 't-demo'
+curl.exe -s http://127.0.0.1:8000/v1/billing/quota -H "X-Tenant-ID: $env:TENANT"
+curl.exe -s -X POST http://127.0.0.1:8000/v1/billing/quota -H 'content-type: application/json' -d '{"tenant":"t-demo","units":3}'
+curl.exe -s -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: application/json' -H "X-Tenant-ID: $env:TENANT" -d '{"cost_units":2}'
+curl.exe -s -X POST http://127.0.0.1:8000/v1/billing/refund   -H 'content-type: application/json' -H "X-Tenant-ID: $env:TENANT" -d '{"units":1}'
+
+# Tokens request → allocate → status
+$rid = (curl.exe -s -X POST http://127.0.0.1:8000/v1/fin/tokens/request -H 'content-type: application/json' -d '{"user_id":"u123","amount":50,"purpose":"compute"}' | ConvertFrom-Json).request_id
+curl.exe -s http://127.0.0.1:8000/v1/fin/tokens/$rid
+curl.exe -s -X POST http://127.0.0.1:8000/v1/fin/tokens/allocate -H 'content-type: application/json' -d '{"request_id":"'$rid'","allocated_by":"ops"}'
+curl.exe -s http://127.0.0.1:8000/v1/fin/tokens/$rid
+
+# Packs — list and try
+curl.exe -s http://127.0.0.1:8000/v1/packs/
+curl.exe -s -X POST http://127.0.0.1:8000/v1/packs/try -H 'content-type: application/json' -d '{"pack":"demo_report_pl","kind":"summarize","payload":{"title":"My Report","items":[1,2,3,4]}}'
+```
    - Ustal limit: `POST /v1/billing/quota {tenant, units}` (demo‑admin)
    - Sprawdź balans: `GET /v1/billing/quota`
    - Rezerwuj: `POST /v1/billing/allocate {cost_units}` → `ALLOCATED` lub `PENDING`

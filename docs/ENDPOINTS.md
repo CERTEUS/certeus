@@ -161,3 +161,36 @@ curl -sS -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: app
 curl -sS -X POST http://127.0.0.1:8000/v1/billing/refund   -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"units":1}'
 ```
 ```
+
+### Packs — examples
+
+```
+# List packs
+curl -sS http://127.0.0.1:8000/v1/packs/
+
+# Try demo_report_pl
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/packs/try \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "pack": "demo_report_pl",
+        "kind": "summarize",
+        "payload": {"title": "My Report", "items": [1,2,3,4]}
+      }'
+```
+
+### Billing Tokens — examples
+
+```
+RID=$(curl -sS -X POST http://127.0.0.1:8000/v1/fin/tokens/request \
+  -H 'Content-Type: application/json' \
+  -d '{"user_id":"u123","amount":50,"purpose":"compute"}' | jq -r .request_id)
+
+curl -sS http://127.0.0.1:8000/v1/fin/tokens/$RID
+
+curl -sS -X POST http://127.0.0.1:8000/v1/fin/tokens/allocate \
+  -H 'Content-Type: application/json' \
+  -d '{"request_id":"'$RID'","allocated_by":"ops"}'
+
+curl -sS http://127.0.0.1:8000/v1/fin/tokens/$RID
+```

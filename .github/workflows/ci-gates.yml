@@ -225,6 +225,17 @@ jobs:
         run: |
           python scripts/validate_governance_consistency.py && echo ok > out/gov_ok.txt
 
+      - name: Omega Drift Gate (report-only)
+        continue-on-error: true
+        env:
+          OMEGA_BEFORE_TEXT: "Ustawa z dnia 20 lipca 2018 r."
+          OMEGA_AFTER_TEXT: "Ustawa z dnia 20 lipca 2018 r. – Prawo"
+          OMEGA_MAX_JACCARD: "0.4"
+          OMEGA_MAX_ENTROPY: "0.5"
+          OMEGA_MAX_ENTITY_DRIFT: "0.5"
+        run: |
+          python scripts/gates/compute_gauge_drift.py --out out/gauge.json || true
+
       - name: Marketplace Policy Gate (report-only)
         continue-on-error: true
         run: |
@@ -409,6 +420,11 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/openapi_get_sanity_ok.txt
+      - name: Canary Progressive Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/deploy/canary_progressive_gate.py || true
+          test -f out/canary_report.json && echo ok > out/canary_ok.txt || true
 
       - name: Comment PR with SLO/Smokes/Perf
         if: github.event_name == 'pull_request' && always()
