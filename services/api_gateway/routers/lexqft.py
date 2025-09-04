@@ -46,6 +46,11 @@ class TunnelRequest(BaseModel):
 
     evidence_energy: float = Field(ge=0)
 
+    dispute_profile: str | None = Field(
+        default=None,
+        description="Profil sporu: balanced | authority_bias | evidence_bias | asymmetric",
+    )
+
 
 class TunnelResponse(BaseModel):
     p_tunnel: float
@@ -131,6 +136,19 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
             V0 = None
             w = None
             m = None
+    # Apply dispute profile adjustments (deterministic)
+    dp = (req.dispute_profile or "").strip().lower()
+    if dp and (V0 is not None and w is not None and m is not None):
+        if dp in {"authority_bias", "authority", "auth"}:
+            w = float(w) * 1.5
+            V0 = float(V0) * 1.1
+        elif dp in {"evidence_bias", "evidence", "ev"}:
+            w = float(w) * 0.7
+            V0 = float(V0) * 0.95
+        elif dp in {"asymmetric", "asym"}:
+            if e < float(V0):
+                w = float(w) * 1.8
+        # balanced: no change
 
     if V0 is not None and w is not None and m is not None:
         # Clamp and compute
@@ -170,6 +188,28 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
         case_id = req.state_uri or "lexqft-case"
         ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
+    except Exception:
+        pass
+
+    # Persist path into PFS view (read-only API reads it)
+    try:
+        pfs_store = Path(__file__).resolve().parents[3] / "data" / "pfs_paths.json"
+        store: dict[str, list[dict]] = {}
+        if pfs_store.exists():
+            store = json.loads(pfs_store.read_text(encoding="utf-8"))  # type: ignore[assignment]
+            if not isinstance(store, dict):
+                store = {}
+        case_id = req.state_uri or "lexqft-case"
+        recs = store.get(case_id) if isinstance(store.get(case_id), list) else []
+        recs = list(recs)
+        recs.append({
+            "source": "lexqft.tunnel",
+            "p": float(resp.p_tunnel),
+            "path": path,
+        })
+        store[case_id] = recs
+        pfs_store.parent.mkdir(parents=True, exist_ok=True)
+        pfs_store.write_text(json.dumps(store, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception:
         pass
 

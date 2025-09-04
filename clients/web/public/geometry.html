@@ -66,6 +66,12 @@
       </div>
       <div class="card" style="margin-top:16px;">
         <h1>CFE • Lensing Map</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <label class="muted">Filter:</label>
+          <label><input type="checkbox" id="fK" checked /> K_</label>
+          <label><input type="checkbox" id="fIII" checked /> III_</label>
+          <label><input type="checkbox" id="fSN" checked /> SN_</label>
+        </div>
         <div id="lensingPanel"></div>
       </div>
     </div>
@@ -75,13 +81,19 @@
       function renderLensing(map){
         const panel = document.getElementById('lensingPanel');
         panel.innerHTML = '';
-        const entries = Object.entries(map||{}).sort((a,b)=>b[1]-a[1]);
+        const filt = {K:document.getElementById('fK').checked, III:document.getElementById('fIII').checked, SN:document.getElementById('fSN').checked};
+        const entries = Object.entries(map||{}).filter(([k,_])=>{
+          if(k.includes('precedent:K_')) return !!filt.K;
+          if(k.includes('precedent:III_')) return !!filt.III;
+          if(k.includes('precedent:SN_')) return !!filt.SN;
+          return true;
+        }).sort((a,b)=>b[1]-a[1]);
         for(const [k,v] of entries){
           const row = document.createElement('div');
           row.className='row';
           const lab = document.createElement('div'); lab.className='muted'; lab.style.minWidth='220px'; lab.textContent=k;
           const bar = document.createElement('div'); bar.style.flex='1'; bar.style.height='8px'; bar.style.background='#2a2d33'; bar.style.borderRadius='6px'; bar.style.position='relative';
-          const fill = document.createElement('div'); fill.style.height='100%'; fill.style.width=Math.round((v||0)*100)+'%'; fill.style.background='#3b82f6'; fill.style.borderRadius='6px';
+          const fill = document.createElement('div'); fill.style.height='100%'; fill.style.width=Math.round((v||0)*100)+'%'; fill.style.background='#3b82f6'; fill.style.borderRadius='6px'; fill.title = `${k}: ${(v||0).toFixed(3)}`;
           bar.appendChild(fill);
           const val = document.createElement('div'); val.className='pill'; val.textContent=(v||0).toFixed(3);
           row.appendChild(lab); row.appendChild(bar); row.appendChild(val);
@@ -156,6 +168,9 @@
       document.getElementById('geodesic').addEventListener('click', doGeodesic);
       document.getElementById('lock').addEventListener('click', doLock);
       document.getElementById('hstatus').addEventListener('click', doHStatus);
+      document.getElementById('fK').addEventListener('change', ()=>{ const mSpan = document.getElementById('lensing').textContent; });
+      document.getElementById('fIII').addEventListener('change', ()=>{ init(); });
+      document.getElementById('fSN').addEventListener('change', ()=>{ init(); });
       init();
     </script>
   </body>

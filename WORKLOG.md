@@ -511,3 +511,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: Devices ticks (HDE/Q-Oracle/Entangler/Chronosync) + SLO table
   - Quick Links + KPI + SLO consolidated
   - Testy: 168 passed (zielone)
+- 2025-09-04 14:44:44Z [agent] (work/daily): W5/W6: Devices UI + sequence compare visuals
+  - UI: karta Devices (HDE plan, Q‑Oracle, Entangler, Chronosync)
+  - Quantum: Compare Sequences z ΔUB + Sequence runner
+  - Docs: cURL sequence

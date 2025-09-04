@@ -65,12 +65,12 @@ curl -s -X POST http://127.0.0.1:8000/v1/pco/bundle \
 -d '{"rid":"'"$RID"'","smt2_hash":"'"$SMT"'","lfsc":"(lfsc proof)","merkle_proof":[]}' | jq .
 ```
 
-## CFE — Geodezje i Horyzont
+## CFE — Geodezje, Horyzont, Cache, Lensing
 
 - Telemetria krzywizny (kappa_max):
 
 ```
-curl -s http://127.0.0.1:8000/v1/cfe/curvature | jq .
+  curl -s http://127.0.0.1:8000/v1/cfe/curvature | jq .
 ```
 
 - Geodezyjny dowód (PCO w nagłówkach: X-CERTEUS-PCO-cfe.geodesic_action):
@@ -270,4 +270,19 @@ histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_tenant_bucket
 ```
 sum(rate(certeus_http_requests_total{status=~"5.."}[5m])) by (tenant)
 / sum(rate(certeus_http_requests_total[5m])) by (tenant)
+```
+- Rozgrzanie cache dla listy spraw (`/v1/cfe/cache/warm`):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/cfe/cache/warm \
+ -H 'Content-Type: application/json' \
+ -d '["LEX-001","LEX-002"]' | jq .
+```
+
+- Lensing z sygnałów FIN (`/v1/cfe/lensing/from_fin`):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/cfe/lensing/from_fin \
+ -H 'Content-Type: application/json' \
+ -d '{"signals":{"risk":0.2,"sentiment":0.6},"seed":"FIN-CASE-1"}' | jq .
 ```
