@@ -15,10 +15,13 @@ EN: Read-only ProofFS inspection: proof paths per case.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+import base64
 import fnmatch
+import hashlib
 import json
 from pathlib import Path
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
@@ -37,6 +40,29 @@ class PFSCaseResponse(BaseModel):
 class PFSInspectResponse(BaseModel):
     cases: list[str]
     counts: dict[str, int]
+
+
+class PFSSignIn(BaseModel):
+    case: str
+    path: list[str] = Field(min_length=1)
+    sk_b64url: str | None = None
+
+
+class PFSSignOut(BaseModel):
+    case: str
+    merkle_root: str
+    signature_b64: str | None = None
+
+
+class PFSVerifyIn(BaseModel):
+    case: str
+    path: list[str] = Field(min_length=1)
+    pk_b64url: str
+    signature_b64: str
+
+
+class PFSVerifyOut(BaseModel):
+    ok: bool
 
 
 # === LOGIKA / LOGIC ===
@@ -60,6 +86,29 @@ def _load() -> dict[str, list[dict]]:
     return {}
 
 
+def _b64u_decode(s: str) -> bytes:
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+
+def _b64u_encode(b: bytes) -> str:
+    return base64.urlsafe_b64encode(b).decode("ascii").rstrip("=")
+
+
+def _merkle_root(path: list[str]) -> str:
+    leaves = [hashlib.sha256(("leaf:" + str(x)).encode("utf-8")).digest() for x in path]
+    if not leaves:
+        return hashlib.sha256(b"").hexdigest()
+    cur = leaves
+    while len(cur) > 1:
+        nxt: list[bytes] = []
+        it = iter(cur)
+        for a in it:
+            b = next(it, a)
+            nxt.append(hashlib.sha256(a + b).digest())
+        cur = nxt
+    return cur[0].hex()
+
+
 @router.get("/inspect", response_model=PFSInspectResponse)
 async def inspect() -> PFSInspectResponse:
     data = _load()
@@ -81,6 +130,39 @@ async def case(case_id: str) -> PFSCaseResponse:
             # create a minimal placeholder so tests remain robust even if FS not yet flushed
             paths = []
     return PFSCaseResponse(case=case_id, paths=paths)
+
+
+@router.post("/sign_path", response_model=PFSSignOut)
+async def sign_path(req: PFSSignIn) -> PFSSignOut:
+    root = _merkle_root(req.path)
+    sig_b64: str | None = None
+    if req.sk_b64url:
+        sk = Ed25519PrivateKey.from_private_bytes(_b64u_decode(req.sk_b64url))
+        sig = sk.sign(bytes.fromhex(root))
+        sig_b64 = _b64u_encode(sig)
+    try:
+        data = _load()
+        recs = data.get(req.case) or []
+        recs = list(recs)
+        recs.append({"path": req.path, "merkle_root": root, "sig_b64": sig_b64 or ""})
+        data[req.case] = recs
+        _STORE.parent.mkdir(parents=True, exist_ok=True)
+        _STORE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+    return PFSSignOut(case=req.case, merkle_root=root, signature_b64=sig_b64)
+
+
+@router.post("/verify_path", response_model=PFSVerifyOut)
+async def verify_path(req: PFSVerifyIn) -> PFSVerifyOut:
+    root = _merkle_root(req.path)
+    try:
+        pk = Ed25519PublicKey.from_public_bytes(_b64u_decode(req.pk_b64url))
+        sig = _b64u_decode(req.signature_b64)
+        pk.verify(sig, bytes.fromhex(root))
+        return PFSVerifyOut(ok=True)
+    except Exception:
+        return PFSVerifyOut(ok=False)
 
 
 # --- DHT (W8/W13): announce/query/publish_path --------------------------------

@@ -1,0 +1,7 @@
+name: code_demo
+module: plugins.code_demo.src.main
+version: "0.1.0"
+capabilities:
+  - code
+  - static
+

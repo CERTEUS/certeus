@@ -138,6 +138,15 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
 
             resp.headers.setdefault("Referrer-Policy", "no-referrer")
 
+            # Enterprise hardening (safe, conservative defaults)
+            resp.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+            resp.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+            resp.headers.setdefault(
+                "Permissions-Policy",
+                "geolocation=(), microphone=(), camera=(), interest-cohort=()",
+            )
+            resp.headers.setdefault("X-Permitted-Cross-Domain-Policies", "none")
+
             return resp
 
     # 3) Simple per-IP rate limit (window 60s)

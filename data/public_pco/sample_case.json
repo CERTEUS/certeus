@@ -1,0 +1,14 @@
+{
+  "spec": "pco.v0.2",
+  "subject": "SAMPLE-CASE-001",
+  "claims": [
+    { "path": "/v1/qtm/measure", "verdict": "ALLOW", "p": 0.5 }
+  ],
+  "proof": {
+    "type": "hybrid",
+    "root": "0000000000000000000000000000000000000000000000000000000000000000",
+    "signatures": [],
+    "threshold": 0
+  }
+}
+

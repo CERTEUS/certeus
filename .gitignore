@@ -38,7 +38,9 @@ mirror_publish/
 mirror_work_repo/
 exports/
 data/law_cache/
+# data/public_pco public PCO files: keep a sample for CI gates
 data/public_pco/*.json
+!data/public_pco/sample_case.json
 data/lexqft_coverage_state.json
 static/previews/
 .devkeys/

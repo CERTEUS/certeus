@@ -1,0 +1,5 @@
+{
+  "trust_domain": "dev.certeus.internal",
+  "spiffe_id": "spiffe://dev.certeus.internal/services/api-gateway"
+}
+

@@ -257,7 +257,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: Lensing — filtry K_/III_/SN_ + tooltips (value)
   - Docs: curl_examples — `/v1/cfe/cache/warm`, `/v1/cfe/lensing/from_fin`
   - ProofFS: zapis ścieżek po `/v1/lexqft/tunnel` → `/v1/pfs/inspect` przechowuje case
-  - Testy: 178 passed, 1 skipped (lokalnie)
+  - Testy: 180 passed, 1 skipped (lokalnie)
   - Security: globalny `SEC_NO_STORE` middleware dla POST/PUT/PATCH/DELETE
   - Guide: `docs/guides/fin_to_cfe.md` (enterprise flow)
  - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
@@ -460,10 +460,17 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
    - Schemat: `schemas/certeus.provenance.v1.json` + walidator `scripts/validate_provenance.py`
    - CI: `.github/workflows/ci-gates.yml` — krok walidacji provenance
    - Runbook: `docs/runbooks/supply_chain.md`
- - 2025-09-04 15:45:00Z [A8] (work/daily): W3: Load‑shedding QTMP‑aware + testy
+- 2025-09-04 15:45:00Z [A8] (work/daily): W3: Load‑shedding QTMP‑aware + testy
    - Middleware: `monitoring/shedder.py` (SHED_ENABLE=1; SHED_TARGET_P95_MS; SHED_FORCE_RATE)
    - QTMP sygnał: integracja w `/v1/qtm/measure` → update_from_qtmp()
    - Metryki: `certeus_http_shed_total`; Test: `tests/services/test_shedder_adaptive.py`
+ - 2025-09-04 16:20:00Z [A8] (work/daily): W6–W12 rozszerzenia (report-only gates)
+   - W6: DPIA/DPA validator → `scripts/compliance/validate_dpia.py` (+ PR: missing counts)
+   - W7: Asset Integrity Gate → `scripts/gates/asset_integrity_gate.py` (+ sample PCO)
+   - W8: SPIFFE/SPIRE Gate → `scripts/security/spiffe_identity_gate.py` (+ `infra/spiffe/svid.json`)
+   - W9: KMS rotation Gate → `scripts/security/kms_rotation_gate.py` (+ `security/keys/metadata.json`)
+   - W10: TEE RA → `scripts/security/tee_ra_gate.py` (+ `infra/tee/attestation.json`; header in responses)
+   - W12: Legal Audit checklist + gate → `docs/compliance/legal_audit_checklist.md`, `scripts/compliance/legal_audit_gate.py`
 - 2025-09-04 13:50:36Z [48793] (work/daily): W5: FINENITH v1.0 (pilot) – paper trading + PnL
   - - Sandbox paper trading: open/order/positions/equity
   - - Metryki Prometheus: fin_paper_orders_total, fin_paper_equity

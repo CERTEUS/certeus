@@ -8,89 +8,81 @@
 | ROLA: Strona klienta web.                                   |
 +-------------------------------------------------------------+
 -->
-
 <!doctype html>
 <html lang="pl" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="CERTEUS LEXENITH: motions, CLDF renormalize, Why‑Not export." />
-    <meta property="og:title" content="CERTEUS — LEXENITH Cockpit" />
-    <meta property="og:description" content="Micro‑Court tools and citations" />
-    <meta property="og:type" content="website" />
     <title>CERTEUS • LEXENITH</title>
     <style>
       body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:980px;margin:24px auto;padding:0 16px}
+      .container{max-width:1080px;margin:24px auto;padding:0 16px}
       .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
       h1{margin:0 0 10px;font-size:22px}
       .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
       .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
       .btn:hover{background:#20242a}
       .muted{color:#9aa0a6}
-      textarea, input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
-      textarea{width:100%;height:100px}
-      pre{background:#20242a;border:1px solid #2a2d33;border-radius:8px;padding:8px;white-space:pre-wrap}
+      input,textarea{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
+      pre{background:#0f1115;border:1px solid #2a2d33;border-radius:10px;padding:10px;overflow:auto}
     </style>
   </head>
   <body>
     <div class="container">
       <div class="card">
-        <h1>Motion Generator</h1>
+        <h1>Micro‑Court / Motion</h1>
         <div class="row">
-          <label>Case <input id="case" value="LEX-001"/></label>
-          <label>Pattern <select id="pattern"><option>motion-dismiss</option><option>motion-summary</option></select></label>
+          <input id="mc-case" placeholder="case id (LEX-CASE-001)" />
+          <select id="mc-pattern"><option value="motion-dismiss">motion-dismiss</option><option value="motion-summary">motion-summary</option></select>
+          <button id="mc-lock" class="btn">Lock case</button>
+          <button id="mc-publish" class="btn">Publish</button>
         </div>
-        <label>Citations (one per line)</label>
-        <textarea id="cites"></textarea>
-        <label>Facts (JSON)</label>
-        <textarea id="facts">{"key":"value"}</textarea>
-        <button id="gen" class="btn">Generate</button>
-        <pre id="motion"></pre>
+        <div class="row" style="margin-top:8px;">
+          <textarea id="mc-facts" placeholder='facts JSON (e.g. {"A":true})' rows="3" cols="60"></textarea>
+          <input id="mc-cites" placeholder="citations (comma‑separated)" />
+          <button id="mc-generate" class="btn">Generate motion</button>
+        </div>
+        <pre id="mc-out" class="muted"></pre>
       </div>
-
       <div class="card">
-        <h1>CLDF Renormalize</h1>
-        <label>Citations (JSON array of {text,weight})</label>
-        <textarea id="cldf">[{"text":"Art. 5 k.c.","weight":1.0},{"text":"III 2020","weight":0.5}]</textarea>
-        <button id="renorm" class="btn">Renormalize</button>
-        <pre id="cldf_out"></pre>
+        <h1>CLDF — Renormalize</h1>
+        <div class="row">
+          <input id="cldf-cites" placeholder="citations (A;B;C)" />
+          <input id="cldf-weights" placeholder="weights (1;0.5;0.25)" />
+          <input id="cldf-damp" placeholder="damping (0..1)" />
+          <button id="cldf-run" class="btn">Renormalize</button>
+        </div>
+        <pre id="cldf-out" class="muted"></pre>
       </div>
-
       <div class="card">
-        <h1>Why‑Not Export</h1>
-        <label>Claim</label>
-        <input id="claim" value="Powództwo o zapłatę"/>
-        <label>Counter‑arguments (one per line)</label>
-        <textarea id="cargs">Brak legitymacji czynnej
-Nadmierne roszczenie</textarea>
-        <button id="export" class="btn">Export</button>
-        <pre id="wn_out"></pre>
+        <h1>Why‑Not (PCΔ) Export</h1>
+        <div class="row">
+          <input id="wn-claim" placeholder="claim" />
+          <input id="wn-counters" placeholder="counter‑arguments (A;B;C)" />
+          <button id="wn-run" class="btn">Export</button>
+          <span class="muted">trace:<span id="wn-trace" class="pill">-</span></span>
+        </div>
       </div>
     </div>
     <script>
-      async function gen(){
-        const caseId=document.getElementById('case').value; const pattern=document.getElementById('pattern').value;
-        const cites=document.getElementById('cites').value.split('
-').filter(Boolean);
-        let facts={}; try{facts=JSON.parse(document.getElementById('facts').value)}catch(e){}
-        const r = await fetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId,pattern_id:pattern,citations:cites,facts})});
-        document.getElementById('motion').textContent = JSON.stringify(await r.json(), null, 2);
-      }
-      async function renorm(){
-        let arr=[]; try{arr=JSON.parse(document.getElementById('cldf').value)}catch(e){}
-        const r = await fetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({citations:arr})});
-        document.getElementById('cldf_out').textContent = JSON.stringify(await r.json(), null, 2);
-      }
-      async function exportWN(){
-        const claim=document.getElementById('claim').value; const cargs=document.getElementById('cargs').value.split('
-').filter(Boolean);
-        const r = await fetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({claim:claim,counter_arguments:cargs})});
-        document.getElementById('wn_out').textContent = JSON.stringify(await r.json(), null, 2);
-      }
-      document.getElementById('gen').addEventListener('click', gen);
-      document.getElementById('renorm').addEventListener('click', renorm);
-      document.getElementById('export').addEventListener('click', exportWN);
+      async function jfetch(url, opts){ const r=await fetch(url, opts||{}); const t=await r.text(); try{ return {ok:r.ok, data: JSON.parse(t), headers:r.headers} }catch{ return {ok:r.ok, data:t, headers:r.headers} } }
+      function show(el, obj){ el.textContent = typeof obj==='string'? obj : JSON.stringify(obj, null, 2); }
+      document.getElementById('mc-lock').addEventListener('click', async()=>{
+        const cid=(document.getElementById('mc-case').value||'LEX-CASE-001').trim(); const r=await jfetch('/v1/lexenith/micro_court/lock',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({case_id:cid})}); show(document.getElementById('mc-out'), r.data);
+      });
+      document.getElementById('mc-publish').addEventListener('click', async()=>{
+        const cid=(document.getElementById('mc-case').value||'LEX-CASE-001').trim(); const r=await jfetch('/v1/lexenith/micro_court/publish',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({case_id:cid, footnotes:[]})}); show(document.getElementById('mc-out'), r.data);
+      });
+      document.getElementById('mc-generate').addEventListener('click', async()=>{
+        const cid=(document.getElementById('mc-case').value||'LEX-CASE-001').trim(); const pat=document.getElementById('mc-pattern').value; let facts={}; try{ facts=JSON.parse(document.getElementById('mc-facts').value||'{}'); }catch(e){} const cites=(document.getElementById('mc-cites').value||'').split(',').map(x=>x.trim()).filter(Boolean); const r=await jfetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({case_id:cid, pattern_id:pat, facts, citations:cites})}); show(document.getElementById('mc-out'), r.data);
+      });
+      document.getElementById('cldf-run').addEventListener('click', async()=>{
+        const labels=(document.getElementById('cldf-cites').value||'A;B;C').split(';').map(x=>x.trim()).filter(Boolean); const ws=(document.getElementById('cldf-weights').value||'1;0.5;0.25').split(';').map(x=>parseFloat(x)||0); const damping=parseFloat(document.getElementById('cldf-damp').value||'1'); const citations = labels.map((t,i)=>({text:t, weight: (ws[i]!==undefined? ws[i]: 1)})); const r=await jfetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({citations, damping})}); show(document.getElementById('cldf-out'), r.data);
+      });
+      document.getElementById('wn-run').addEventListener('click', async()=>{
+        const claim=(document.getElementById('wn-claim').value||'claim'); const counters=(document.getElementById('wn-counters').value||'A;B').split(';').map(x=>x.trim()).filter(Boolean); const r=await jfetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({claim, counter_arguments:counters})}); if(r.ok){ document.getElementById('wn-trace').textContent = r.data.trace_uri || '-'; }
+      });
     </script>
   </body>
   </html>
+

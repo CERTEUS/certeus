@@ -1,0 +1,7 @@
+name: sec_demo
+module: plugins.sec_demo.src.main
+version: "0.1.0"
+capabilities:
+  - sec
+  - risk
+

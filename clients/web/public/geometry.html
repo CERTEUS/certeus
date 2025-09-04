@@ -90,7 +90,9 @@
           grid.appendChild(d);
         }
       }
+      let _lastLensingMap = {};
       function renderLensing(map){
+        _lastLensingMap = map || {};
         const panel = document.getElementById('lensingPanel');
         panel.innerHTML = '';
         const filt = {K:document.getElementById('fK').checked, III:document.getElementById('fIII').checked, SN:document.getElementById('fSN').checked};
@@ -180,9 +182,10 @@
       document.getElementById('geodesic').addEventListener('click', doGeodesic);
       document.getElementById('lock').addEventListener('click', doLock);
       document.getElementById('hstatus').addEventListener('click', doHStatus);
-      document.getElementById('fK').addEventListener('change', ()=>{ const mSpan = document.getElementById('lensing').textContent; });
-      document.getElementById('fIII').addEventListener('change', ()=>{ init(); });
-      document.getElementById('fSN').addEventListener('change', ()=>{ init(); });
+      function rerenderLensing(){ renderLensing(_lastLensingMap); }
+      document.getElementById('fK').addEventListener('change', rerenderLensing);
+      document.getElementById('fIII').addEventListener('change', rerenderLensing);
+      document.getElementById('fSN').addEventListener('change', rerenderLensing);
       init();
     </script>
   </body>

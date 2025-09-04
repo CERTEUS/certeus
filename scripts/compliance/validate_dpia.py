@@ -46,8 +46,15 @@ REQ_DPA = [
 ]
 
 
+def _norm(s: str) -> str:
+    # Normalize various hyphens/dashes to ASCII hyphen and collapse spaces
+    for ch in ("\u2010", "\u2011", "\u2012", "\u2013", "\u2014", "\u2212"):
+        s = s.replace(ch, "-")
+    return s
+
+
 def _scan(path: Path, req: list[str]) -> dict[str, Any]:
-    text = path.read_text(encoding="utf-8") if path.exists() else ""
+    text = _norm(path.read_text(encoding="utf-8")) if path.exists() else ""
     found = {k: (k in text) for k in req}
     missing = [k for k, v in found.items() if not v]
     return {"path": str(path), "missing": missing, "ok": not missing}
