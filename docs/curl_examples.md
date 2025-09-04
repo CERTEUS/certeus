@@ -286,3 +286,33 @@ curl -s -X POST http://127.0.0.1:8000/v1/cfe/lensing/from_fin \
  -H 'Content-Type: application/json' \
  -d '{"signals":{"risk":0.2,"sentiment":0.6},"seed":"FIN-CASE-1"}' | jq .
 ```
+
+## Devices (W6)
+
+- HDE — plan:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/devices/horizon_drive/plan \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-001","target_horizon":0.25}' | jq .
+```
+
+- Q‑Oracle — expectation:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/devices/qoracle/expectation \
+ -H 'Content-Type: application/json' \
+ -d '{"objective":"maximize fairness","constraints":{"risk":0.6}}' | jq .
+```
+
+- Entangler — splątanie (nagłówek PCO):
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/devices/entangle \
+ -H 'Content-Type: application/json' \
+ -d '{"variables":["A","B","C"],"target_negativity":0.12}'
+```
+
+- Chronosync — reconcile:
+```
+curl -s -X POST http://127.0.0.1:8000/v1/devices/chronosync/reconcile \
+ -H 'Content-Type: application/json' \
+ -d '{"coords":{"t":0},"pc_delta":{}}' | jq .
+```
