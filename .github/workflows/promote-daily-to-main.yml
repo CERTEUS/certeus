@@ -85,11 +85,6 @@ jobs:
             }
             core.setOutput('promote', promote ? 'true' : 'false');
       # ci-gates conclusion is already 'success' by job condition above${insert}
-      - name: Set up Python
-        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - name: Append WORKLOG on work/daily (pre-merge)
         if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
         env:
@@ -98,11 +93,18 @@ jobs:
         shell: pwsh
         run: |
           git checkout work/daily
-          $SUMMARY = "auto-promote: ${env:SHA} (gates green)"
-          $DETAILS = "Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate`nActor: ${env:ACTOR}"
-          python scripts/worklog/update_worklog.py --summary "$SUMMARY" --details "$DETAILS"
+          $ts = [DateTime]::UtcNow.ToString('yyyy-MM-dd HH:mm:ssZ')
+          $branch = 'work/daily'
+          $summary = "auto-promote: ${env:SHA} (gates green)"
+          $details = @(
+            'Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate',
+            "Actor: ${env:ACTOR}"
+          ) -join "`n"
+          $entry = "- $ts [${env:ACTOR}] ($branch): $summary`n  - " + ($details -replace "`n","`n  - ") + "`n"
+          if (-not (Test-Path WORKLOG.md)) { "# CERTEUS - WORKLOG`n`n" | Out-File -FilePath WORKLOG.md -Encoding UTF8 }
+          Add-Content -Path WORKLOG.md -Value $entry -Encoding UTF8
           git add WORKLOG.md
-          git commit -m "chore(worklog): $SUMMARY" || exit 0
+          git commit -m "chore(worklog): $summary" || exit 0
           git push origin work/daily || exit 0
       - name: Fast-forward main to work/daily (if possible)
         if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
