@@ -146,3 +146,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Dodano parametryczne testy E2E (GET/POST/tunnel/entangle/qoracle/mailops)\n- Ruff OK; pytest: 190 passed, 1 skipped (lokalnie)\n- Bez zmian w logice usług; tylko testy
 - 2025-09-04 18:32:44Z [root] (work/daily): W13: Cockpit Marketplace (A6) — listing + packs API
   - - UI: /app/public/marketplace.html (filtr, status enabled)\n- API: /v1/packs/ zwraca version+enabled\n- Lint+tests: 191 passed, 1 skipped (lokalnie)
+- 2025-09-04 18:34:11Z [root] (work/daily): W13 (A8): Marketplace Policy Gate (licencje/podpisy/polityki)
+  - - Gate: scripts/gates/marketplace_policy_gate.py (report-only; ENFORCE_MARKETPLACE_POLICY=1 for hard fail)\n- Check: semver version, allowed license, signature presence (basic sanity)\n- Docs: docs/compliance/marketplace_policies.md\n- Tests: tests/policies/test_marketplace_policy_gate.py; suite green (191 passed)
