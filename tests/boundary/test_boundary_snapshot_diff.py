@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/boundary/test_boundary_snapshot_diff.py         |
+# | ROLE: Project test module.                                  |
+# | PLIK: tests/boundary/test_boundary_snapshot_diff.py         |
+# | ROLA: Moduł testów projektu.                                |
+# +-------------------------------------------------------------+
 
 """
 PL: Testy snapshot/diff Boundary na katalogach tymczasowych.

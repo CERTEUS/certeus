@@ -7,6 +7,18 @@
 - POST `/v1/sources/cache`: Cache a legal source (digest + path + retrieved_at).
 - POST `/v1/proofgate/publish`: Policy-based decision (PUBLISH/CONDITIONAL/PENDING/ABSTAIN).
 
+## Marketplace & Packs (T13)
+
+- Gate: Marketplace Policy (report‑only)
+  - `python scripts/gates/marketplace_policy_gate.py`
+  - Validates semver in `plugins/*/plugin.yaml`, license allowlist, signature metadata (if present).
+- Gate: Pack ABI/SemVer (report‑only)
+  - `python scripts/gates/pack_abi_semver_gate.py`
+  - Compares ABI descriptor to `abi_baseline.json`; on ABI change requires MAJOR bump (when enforcement enabled).
+- Baseline updater
+  - `python scripts/packs/update_abi_baselines.py`
+  - Creates/updates `plugins/<pack>/abi_baseline.json` from current module shape.
+
 See also `docs/openapi/certeus.v1.yaml` for full schemas and examples.
 
 - GET `/v1/lexqft/coverage`: Aggregated path coverage gamma (`coverage_gamma`).

@@ -170,6 +170,10 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
                 allowed = {f.name for f in fields(AbiDescriptor)}
                 prev_dict = {k: v for k, v in (raw or {}).items() if k in allowed}
                 prev = AbiDescriptor(**prev_dict)
+                if (os.getenv("DEBUG_PACK_ABI") or "").strip() in {"1", "true", "True"}:
+                    print("[DEBUG] prev desc:", asdict(prev))
+                if (os.getenv("DEBUG_PACK_ABI") or "").strip() in {"1", "true", "True"}:
+                    print("[DEBUG] cur  desc:", asdict(desc))
                 if _descriptor_changed(prev, desc):
                     # ABI changed — require major bump
                     major_cur = parts[0]

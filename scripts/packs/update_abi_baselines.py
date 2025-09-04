@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 try:
@@ -27,6 +28,9 @@ except Exception:  # pragma: no cover
     yaml = None  # type: ignore
 
 from dataclasses import asdict
+
+# Ensure repo-root on sys.path for sibling imports (see AGENTS hub notes)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # noqa: E402
 
 from scripts.gates.pack_abi_semver_gate import _abi_for_module  # reuse
 

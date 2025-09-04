@@ -111,13 +111,20 @@
     <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
     <main id="main" role="main">
     <div class="container">
+      <div class="row" style="justify-content:flex-end;margin-bottom:8px">
+        <label class="muted" for="lang">Lang</label>
+        <select id="lang" aria-label="Language select" class="btn">
+          <option value="pl" selected>PL</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
       <div class="card">
-        <h1>QTMP • Measurement cockpit</h1>
+        <h1 id="title-op">QTMP • Measurement cockpit</h1>
         <div class="row">
           <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
-          <button id="init" class="btn">Init case</button>
-          <button id="lt" class="btn">Measure L→T</button>
-          <button id="tl" class="btn">Measure T→L</button>
+          <button id="init" class="btn" data-i18n="init_case">Init case</button>
+          <button id="lt" class="btn" data-i18n="measure_lt">Measure L→T</button>
+          <button id="tl" class="btn" data-i18n="measure_tl">Measure T→L</button>
           <button id="lockDeco" class="btn">Decoherence: dephasing</button>
           <span id="status" class="muted"></span>
         </div>
@@ -196,6 +203,13 @@
         .getElementById("tl")
         .addEventListener("click", () => measure("TL"));
       document.getElementById("lockDeco").addEventListener("click", setDeco);
+      const I18N={
+        pl:{title_op:'QTMP • Kokpit pomiarowy',init_case:'Zainicjuj sprawę',measure_lt:'Pomiary L→T',measure_tl:'Pomiary T→L'},
+        en:{title_op:'QTMP • Measurement cockpit',init_case:'Init case',measure_lt:'Measure L→T',measure_tl:'Measure T→L'}
+      };
+      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return (p==='en'||p==='pl')?p:'pl'; }
+      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title-op').textContent=d.title_op; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
+      applyI18n();
     </script>
     <style>
       :focus-visible{outline:2px solid #8a8f98;outline-offset:2px}

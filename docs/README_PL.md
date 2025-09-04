@@ -94,3 +94,21 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
   - P95: powtórz smoke lokalnie i sprawdź `/metrics`; problemy zwykle wynikają z zimnego startu albo konfliktów portów.
   - Multipart: w Windows używamy `curl.exe -F ...` (Invoke-RestMethod bywa wrażliwy na boundary i typy MIME).
   - Tolerancja błędów: można ustawić `SMOKE_MAX_FAILS` (domyślnie 0) do tymczasowej tolerancji w DEV/CI.
+
+---
+
+## Demo T13 — Marketplace & Packs (ABI/SemVer)
+
+- Bramka Marketplace (report‑only): `python scripts/gates/marketplace_policy_gate.py`
+- Bramka ABI/SemVer (report‑only): `python scripts/gates/pack_abi_semver_gate.py`
+- Aktualizacja baseline ABI: `python scripts/packs/update_abi_baselines.py`
+
+Ścieżka deweloperska (skrót):
+
+1) Wprowadź zmianę w module pluginu (np. sygnatura `register`).
+2) Uruchom `python scripts/gates/pack_abi_semver_gate.py` — oczekiwane ostrzeżenie/violation przy braku bumpu MAJOR.
+3) Zrób bump MAJOR w `plugins/<name>/plugin.yaml` (`version: 2.0.0`).
+4) Zaktualizuj baseline: `python scripts/packs/update_abi_baselines.py`.
+5) Zweryfikuj w CI (ci‑gates publikuje wynik gate’ów jako komentarz w PR).
+
+Polityka SemVer dla packs: zobacz `docs/guides/packs_abi_semver.md`.

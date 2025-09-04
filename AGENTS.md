@@ -78,6 +78,17 @@ UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pe�
 - Gate’y informacyjne są PR‑only; wymagane checki: `Smoke (ubuntu/windows)`, `ci-gates`.
 - W trakcie tygodnia testujemy lokalnie (`ruff check`, `ruff format`, `pytest -q`) i naprawiamy u siebie.
 
+### Watcher CI (live podgląd workflowów)
+
+- Skrypt: `scripts/ci/watch_ci.ps1` — bezpieczny podgląd statusów GH Actions.
+- Token: bierze z `GITHUB_TOKEN` → `ADMIN_TOKEN` → `.devkeys/admin_token.txt` → `gh auth token`.
+- Snapshot (jednorazowo): `pwsh -File scripts/ci/watch_ci.ps1 -Once`
+- Live (co 30 s, gałąź `work/daily`):
+  - `pwsh -File scripts/ci/watch_ci.ps1 -Branch work/daily -Interval 30`
+- Tylko wybrany workflow (np. `ci-gates.yml`):
+  - `pwsh -File scripts/ci/watch_ci.ps1 -Branch work/daily -Workflow ci-gates.yml -Interval 30`
+- Skrypt nie wypisuje sekretów; nie logować tokenów w konsoli/PR.
+
 ### Procedura pracy (każda sesja)
 
 1) Lint + testy: `ruff check . --fix`, `ruff format .`, `pytest -q`.

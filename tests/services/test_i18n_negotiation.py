@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_i18n_negotiation.py               |
+# | ROLE: Project test module.                                  |
+# | PLIK: tests/services/test_i18n_negotiation.py               |
+# | ROLA: Moduł testów projektu.                                |
+# +-------------------------------------------------------------+
 
 """
 PL: Test i18n negocjacji języka — nagłówek `Accept-Language` i parametr `lang`

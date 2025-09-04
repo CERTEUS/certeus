@@ -1,0 +1,9 @@
+{
+  "__version__": "0.1.0",
+  "module": "plugins.lexlog_rules_pl.src.main",
+  "has_module_register": true,
+  "module_register_arity": 2,
+  "has_class_plugin": true,
+  "has_class_register": true,
+  "class_register_arity": 1
+}
