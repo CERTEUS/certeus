@@ -134,3 +134,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - out/openapi.json odświeżone
 - 2025-09-04 17:59:44Z [root] (work/daily): W13: Devices v0.2 — HDE optimizer + Q‑Oracle heurystyki + Entangler metryki + Chronosync szkic
   - - /v1/devices/horizon_drive/plan: alternatives + best_strategy\n- /v1/devices/qoracle/expectation: distribution + optimum\n- /v1/devices/entangle: negativity gauge\n- /v1/devices/chronosync/reconcile: treaty clause skeleton\n- Tests: devices v0.2 passing; SLO/Perf smokes green
+- 2025-09-04 18:01:53Z [root] (work/daily): [week-end] W13 zakończony: Devices v0.2 E2E zielone
+  - - HDE optimizer; Q‑Oracle heurystyki; Entangler metryki; Chronosync szkic\n- ruff OK; pytest: 118 passed, 1 skipped (lokalnie)\n- weekly-promote: true
