@@ -488,3 +488,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: karta Compare Sequences (A/B, no_collapse, ΔUB) + Sequence runner
   - Smoke: scripts/smokes/w4_sequence_demo.py
   - Testy: 167 passed, 1 skipped (izolowane)
+- 2025-09-04 14:36:53Z [48793] (work/daily): W10: TEE profil — RA sygnalizacja dla Devices
+  - - security/ra.py: RA fingerprint + enable via TEE_ENABLED
+  - - Devices: nagłówek X-CERTEUS-TEE-RA przy TEE_ENABLED=1
+  - - Metryki: certeus_tee_ra_attested_total(device)
+  - - Test: tests/services/test_devices_tee.py
+  - - Lint OK; 168 testów zielone
