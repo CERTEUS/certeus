@@ -15,13 +15,13 @@ EN: Week-7 demo — FIN endpoints: measure, entanglement/mi, simulate, pnl.
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from pathlib import Path as _P
+from pathlib import Path, Path as _P
 import sys as _sys
 
 _sys.path.insert(0, str(_P(__file__).resolve().parents[2]))  # noqa: E402
 
 from fastapi.testclient import TestClient  # noqa: E402
+
 from services.api_gateway.main import app  # noqa: E402
 
 
@@ -63,4 +63,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

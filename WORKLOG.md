@@ -554,3 +554,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - OPA: policies/finance/risk.rego, policies/finance/entanglement.rego
   - ci-gates: FIN snapshots + PR lines + Quick Links
   - Testy: 175 passed (zielone)
+- 2025-09-04 15:35:40Z [48793] (work/daily): W13: Marketplace & Billing — 2 public packs + allocate→publish
+  - - Packi: plugins/lex_casebook, plugins/fin_policy (manifesty + handle)
+  - - /v1/pfs: DHT announce/query/publish_path + case/inspect rozszerzony
+  - - ProofGate alias: allocate budżet (limits) przy publish
+  - - Testy: packs + allocate→publish; PFS DHT; wszystko zielone
+  - - Lint OK; 178 testów zielone
