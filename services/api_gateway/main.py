@@ -41,6 +41,7 @@ from core.version import __version__
 from monitoring.correlation import attach_correlation_middleware
 from monitoring.otel_setup import setup_fastapi_otel
 from monitoring.profiling import attach_profiling_middleware
+from monitoring.shedder import attach_shedder_middleware
 import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
@@ -164,6 +165,9 @@ attach_correlation_middleware(app)
 
 # Optional per-request profiler (PROFILE_HTTP=1)
 attach_profiling_middleware(app)
+
+# Adaptive load-shedding (enable with SHED_ENABLE=1)
+attach_shedder_middleware(app)
 
 # statyki
 

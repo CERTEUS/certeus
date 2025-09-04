@@ -320,6 +320,14 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         pass
 
+    # Update shedder with QTMP signal (latency + UB L_T)
+    try:
+        from monitoring.shedder import update_from_qtmp
+
+        update_from_qtmp(ub_lt=float(ub.get("L_T", 0.0)), collapse_latency_ms=float(latency_ms))
+    except Exception:
+        pass
+
     # Append to in-memory history for this case
     try:
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])

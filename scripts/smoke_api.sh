@@ -123,6 +123,9 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 hit GET /v1/cfe/lensing && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case); echo "[POST] /v1/qtm/init_case => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure); echo "[POST] /v1/qtm/measure => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"operator":"L","source":"smoke","case":"SMOKE-QTMP-1"}' http://127.0.0.1:8000/v1/qtm/measure); echo "[POST] /v1/qtm/measure (SMOKE-QTMP-1) => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+hit GET /v1/qtm/history/SMOKE-QTMP-1 && PASSES+=1 || FAILS+=1
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"variables":["RISK","SENTIMENT"]}' http://127.0.0.1:8000/v1/qtm/find_entanglement); echo "[POST] /v1/qtm/find_entanglement => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator); echo "[POST] /v1/qtm/commutator => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"variables":["A","B"]}' http://127.0.0.1:8000/v1/qtm/find_entanglement); echo "[POST] /v1/qtm/find_entanglement => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8000/v1/devices/horizon_drive/plan); echo "[POST] /v1/devices/horizon_drive/plan => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1

@@ -76,6 +76,8 @@ try {
   # QTMP
   $results += Hit 'POST' '/v1/qtm/init_case' '{"basis":["ALLOW","DENY","ABSTAIN"]}'
   $results += Hit 'POST' '/v1/qtm/measure' '{"operator":"W","source":"ui"}'
+  $results += Hit 'POST' '/v1/qtm/measure' '{"operator":"L","source":"smoke","case":"SMOKE-QTMP-1"}'
+  $results += Hit 'GET' '/v1/qtm/history/SMOKE-QTMP-1' $null
   $results += Hit 'POST' '/v1/qtm/commutator' '{"A":"X","B":"Y"}'
   $results += Hit 'POST' '/v1/qtm/find_entanglement' '{"variables":["A","B"]}'
 

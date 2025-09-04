@@ -74,6 +74,11 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
 
+# Virtual pairs / energy debt state (per case)
+_PAIRS_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_pairs_state.json"
+# case -> {"pairs": int, "energy_debt": float, "budget": float}
+_PAIRS: dict[str, dict[str, float | int]] = {}
+
 
 class CoverageResponse(BaseModel):
     coverage_gamma: float
@@ -167,6 +172,143 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         pass
 
     return resp
+
+
+# W3 — Virtual pairs & energy debt (budgeted)
+
+
+class PairsBudgetIn(BaseModel):
+    case: str
+    budget: float = Field(ge=0)
+
+
+class PairsSpawnIn(BaseModel):
+    case: str
+    pairs: int = Field(ge=1)
+    energy_per_pair: float = Field(ge=0)
+
+
+class PairsState(BaseModel):
+    case: str
+    pairs: int
+    energy_debt: float
+    budget: float
+    remaining: float
+
+
+def _pairs_load() -> None:
+    global _PAIRS
+    if _PAIRS:
+        return
+    try:
+        if _PAIRS_STORE.exists():
+            raw = json.loads(_PAIRS_STORE.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                _PAIRS = raw  # type: ignore[assignment]
+    except Exception:
+        _PAIRS = {}
+
+
+def _pairs_save() -> None:
+    try:
+        _PAIRS_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _PAIRS_STORE.write_text(json.dumps(_PAIRS, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+@router.post("/virtual_pairs/budget", response_model=PairsState)
+async def pairs_set_budget(req: PairsBudgetIn, request: Request) -> PairsState:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    _pairs_load()
+    st = _PAIRS.get(req.case) or {"pairs": 0, "energy_debt": 0.0, "budget": 0.0}
+    st["budget"] = float(req.budget)
+    _PAIRS[req.case] = st
+    _pairs_save()
+    remaining = float(st["budget"]) - float(st["energy_debt"])
+    try:
+        from monitoring.metrics_slo import certeus_lexqft_energy_debt
+
+        certeus_lexqft_energy_debt.labels(case=req.case).set(float(st["energy_debt"]))
+    except Exception:
+        pass
+    return PairsState(
+        case=req.case,
+        pairs=int(st["pairs"]),
+        energy_debt=float(st["energy_debt"]),
+        budget=float(st["budget"]),
+        remaining=max(0.0, float(remaining)),
+    )
+
+
+@router.post("/virtual_pairs/spawn", response_model=PairsState)
+async def pairs_spawn(req: PairsSpawnIn, request: Request, response: Response) -> PairsState:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=2)
+    _pairs_load()
+    st = _PAIRS.get(req.case) or {"pairs": 0, "energy_debt": 0.0, "budget": 100.0}
+    want = int(req.pairs)
+    cost = float(want) * float(req.energy_per_pair)
+    new_debt = float(st["energy_debt"]) + cost
+    budget = float(st.get("budget", 100.0))
+    if new_debt > budget + 1e-9:
+        # Over budget — refuse
+        response.status_code = 409
+    else:
+        st["pairs"] = int(st.get("pairs", 0)) + want
+        st["energy_debt"] = new_debt
+        _PAIRS[req.case] = st
+        _pairs_save()
+    try:
+        from monitoring.metrics_slo import certeus_lexqft_energy_debt
+
+        certeus_lexqft_energy_debt.labels(case=req.case).set(float(st["energy_debt"]))
+    except Exception:
+        pass
+    remaining = float(st.get("budget", 0.0)) - float(st["energy_debt"])
+    return PairsState(
+        case=req.case,
+        pairs=int(st.get("pairs", 0)),
+        energy_debt=float(st.get("energy_debt", 0.0)),
+        budget=float(st.get("budget", 0.0)),
+        remaining=max(0.0, float(remaining)),
+    )
+
+
+@router.get("/virtual_pairs/state", response_model=PairsState)
+async def pairs_state(case: str) -> PairsState:
+    _pairs_load()
+    st = _PAIRS.get(case) or {"pairs": 0, "energy_debt": 0.0, "budget": 0.0}
+    remaining = float(st.get("budget", 0.0)) - float(st.get("energy_debt", 0.0))
+    try:
+        from monitoring.metrics_slo import certeus_lexqft_energy_debt
+
+        certeus_lexqft_energy_debt.labels(case=case).set(float(st.get("energy_debt", 0.0)))
+    except Exception:
+        pass
+    return PairsState(
+        case=case,
+        pairs=int(st.get("pairs", 0)),
+        energy_debt=float(st.get("energy_debt", 0.0)),
+        budget=float(st.get("budget", 0.0)),
+        remaining=max(0.0, float(remaining)),
+    )
+
+
+@router.post("/virtual_pairs/reset")
+async def pairs_reset(case: str | None = None) -> dict:
+    """Resetuje stan wirtualnych par (dla case lub globalnie)."""
+    global _PAIRS
+    _pairs_load()
+    if case is None:
+        _PAIRS = {}
+    else:
+        _PAIRS.pop(case, None)
+    _pairs_save()
+    return {"ok": True}
 
 
 class CoverageItem(BaseModel):

@@ -59,6 +59,26 @@
         <div id="heat" class="grid"></div>
         <p class="muted">Coverage: <span id="gamma" class="pill">?</span> • Tunneling p: <span id="ptun" class="pill">?</span></p>
       </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Measurement Log</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="log-refresh" class="btn">Refresh log</button>
+          <span class="muted">last events for case: <span id="log-case" class="pill">-</span></span>
+        </div>
+        <table id="logtbl"><thead><tr><th>ts</th><th>operator</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Entanglement</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <input id="vars" placeholder="variables (np. RISK,SENTIMENT)" />
+          <button id="ent" class="btn">Find entanglement</button>
+          <span class="muted">MI:<span id="mi" class="pill">?</span></span>
+          <span class="muted">Negativity:<span id="neg" class="pill">?</span></span>
+        </div>
+        <table id="enttbl"><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>
+      </div>
     </div>
     <script>
       const key = 'certeus.quantum.preset';
@@ -69,10 +89,14 @@
       async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); } }
       async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); }
       async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
+      async function refreshLog(){ try{ const cs = document.getElementById('case').value || 'LEX-001'; document.getElementById('log-case').textContent = cs; const r = await fetchJSON(`/v1/qtm/history/${encodeURIComponent(cs)}?limit=20&sort=desc`); if(!r.ok) return; const tb = document.querySelector('#logtbl tbody'); tb.innerHTML=''; const items=(r.data?.history)||[]; for(const it of items){ const tr=document.createElement('tr'); const td=(v)=>{ const d=document.createElement('td'); d.textContent=v; return d; }; tr.appendChild(td(it.ts||'')); tr.appendChild(td(it.operator||'')); tr.appendChild(td(it.verdict||'')); tr.appendChild(td(typeof it.p==='number'? it.p.toFixed(3):'')); tb.appendChild(tr); } }catch(e){} }
+      async function findEnt(){ try{ const vs=(document.getElementById('vars').value||'RISK,SENTIMENT').split(',').map(x=>x.trim()).filter(Boolean); const r = await fetchJSON('/v1/qtm/find_entanglement',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({variables:vs})}); if(!r.ok) return; const tb=document.querySelector('#enttbl tbody'); tb.innerHTML=''; (r.data.pairs||[]).forEach(p=>{ const tr=document.createElement('tr'); const td=(v)=>{ const d=document.createElement('td'); d.textContent=v; return d; }; tr.appendChild(td(p[0]||'')); tr.appendChild(td(p[1]||'')); tb.appendChild(tr); }); document.getElementById('mi').textContent = (r.data.mi||0).toFixed(3); document.getElementById('neg').textContent = (r.data.negativity||0).toFixed(3); }catch(e){} }
       document.getElementById('measure').addEventListener('click', doMeasure);
       document.getElementById('save').addEventListener('click', savePreset);
       document.getElementById('load').addEventListener('click', loadPreset);
-      loadPreset(); updateCoverage(); updateTunnel();
+      document.getElementById('log-refresh').addEventListener('click', refreshLog);
+      document.getElementById('ent').addEventListener('click', findEnt);
+      loadPreset(); updateCoverage(); updateTunnel(); refreshLog(); findEnt();
     </script>
   </body>
   </html>

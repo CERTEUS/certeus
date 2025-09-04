@@ -203,10 +203,14 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Smoke: ChatOps cfe.geodesic 200 (e2e); MailOps ingest: nowy test (tests/services/test_mailops_smoke.py)
   - Telemetria: /v1/cfe/curvature i /v1/lexqft/coverage — nowy test (tests/services/test_telemetry_w1.py)
   - Lint: ruff fix (re‑exporty w services/cfe/__init__.py); ruff/format zielone
- - 2025-09-04 12:48:00Z [agent] (work/daily): W1 D5 — demo E2E + gates 4/4 OK (lokalnie)
+- 2025-09-04 12:48:00Z [agent] (work/daily): W1 D5 — demo E2E + gates 4/4 OK (lokalnie)
   - Skrypt: scripts/demos/run_w1_demo.py (ingest→analyze→ProofGate→Ledger)
   - ProofGate: real publish → ledger_ref OK; raport: reports/w1_demo.json
   - Gates: gauge/path_coverage/boundary OK (baseline report dla boundary)
+ - 2025-09-04 13:05:00Z [agent] (work/daily): W2 D6–D7 — Boundary recon + PNIP (strict) smoke
+  - Boundary: /v1/boundary/status + /reconstruct test (tests/services/test_boundary_endpoint.py)
+  - Boundary Gate: smoke ok/fail wariant (tests/gates/test_boundary_rebuild_gate_smoke.py)
+  - PNIP: moduł/strict testy obecne (test_pnip_strict/property) – weryfikacja lokalna
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -304,10 +308,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Lint: ruff check/format (F401 fix w services/cfe/__init__.py)
 - 2025-09-04 12:48:34Z [agent] (work/daily): Env + PNIP strict + Boundary smoke
   - Środowisko: .venv (Py 3.11), uv; deps (pytest/httpx/hypothesis/cryptography)
-  - Testy: 140 passed, 1 skipped; JUnit: reports/junit.xml
+  - Testy: 144 passed, 1 skipped; JUnit: reports/junit.xml
   - Security: rate-limit per-IP per-path; local.env.test (STRICT_PROOF_ONLY=0, RATE_LIMIT_PER_MIN=0)
   - PNIP: testy strict (400 + PCO) + włączenie route publish warunkowo
   - Boundary: scripts/smokes/boundary_smoke.py + bugfix gzip_ratio; zapis raportu do reports/
+  - Cockpit: Geometry (heatmapa Ricciego, lensing, lock) — link na landing
 - 2025-09-04 11:32:01Z [48793] (work/daily): W1: Devices HDE plan + LEX/FIN packs layout
   - - /v1/devices/horizon_drive/plan (bootstrap)
   - - Pakiet LEX: manifest pluginu
@@ -361,3 +366,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - FIN MI/RS metryki już w API (entanglements/measure)
   - - LEX Why‑Not export endpoint aktywny
   - - Lint (ruff) + 143 testów zielone
+- 2025-09-04 13:31:48Z [48793] (work/daily): W4: Devices v1.0 — HDE/Entangler tuning
+  - - HDE: wybór strategii vs target_horizon (aggressive ≥ 0.28)
+  - - Entangler: osiągana negativity zależna od liczby zmiennych
+  - - Lint OK; 146 testów zielone

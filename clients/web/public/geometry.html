@@ -46,6 +46,7 @@
           <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
           <button id="geodesic" class="btn">Compute geodesic</button>
           <button id="lock" class="btn">Lock horizon</button>
+          <button id="hstatus" class="btn">Refresh horizon</button>
           <span id="status" class="muted"></span>
           <a id="caseLink" href="#" target="_blank" class="muted">Open case</a>
         </div>
@@ -84,8 +85,17 @@
         document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
         document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
       }
+      async function doHStatus(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const r = await fetchJSON('/v1/cfe/horizon', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs})});
+        const locked = r.headers.get('X-CERTEUS-CFE-Locked') || 'false';
+        const mass = r.headers.get('X-CERTEUS-PCO-cfe.horizon_mass') || '0.0';
+        document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
+        document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
       document.getElementById('geodesic').addEventListener('click', doGeodesic);
       document.getElementById('lock').addEventListener('click', doLock);
+      document.getElementById('hstatus').addEventListener('click', doHStatus);
       init();
     </script>
   </body>

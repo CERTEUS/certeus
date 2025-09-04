@@ -147,7 +147,9 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         HDEPlanAlternative(strategy="balanced", cost_tokens=cost_bal, expected_kappa=kappa),
         HDEPlanAlternative(strategy="aggressive", cost_tokens=cost_aggr, expected_kappa=min(0.05, kappa * 1.1)),
     ]
-    best = min(alt, key=lambda x: (abs(target - 0.2) * 0.0 + x.cost_tokens)).strategy
+    # W4: decyzja strategii zależna od celu horyzontu — dla wyższych progów
+    # wybieramy wariant „aggressive”, inaczej „balanced” (deterministycznie).
+    best = "aggressive" if target >= 0.28 else "balanced"
     return HDEPlanResponse(
         evidence_plan=plan_balanced,
         plan_of_evidence=plan_balanced,
@@ -207,7 +209,11 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
         response.headers["X-CERTEUS-PCO-entangler.certificate"] = cert
     except Exception:
         pass
-    achieved = min(0.12, float(req.target_negativity))
+    # W4: osiągana negatywność zależy łagodnie od liczby zmiennych (więcej → trudniej)
+    nvars = max(1, len(req.variables))
+    base = min(0.12, float(req.target_negativity))
+    factor = max(0.5, 1.0 - 0.05 * max(0, nvars - 2))
+    achieved = min(0.12, max(0.0, base * factor))
     try:
         from monitoring.metrics_slo import Gauge
 
