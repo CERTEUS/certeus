@@ -71,6 +71,15 @@
       </div>
 
       <div class="card" style="margin-top:16px;">
+        <h1>Commutator Heatmap</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="comm-refresh" class="btn">Refresh heatmap</button>
+          <span class="muted">operators: <span class="pill">W/I/C/L/T</span></span>
+        </div>
+        <div id="comm" class="grid"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
         <h1>Entanglement</h1>
         <div class="row" style="margin-bottom:10px;">
           <input id="vars" placeholder="variables (np. RISK,SENTIMENT)" />
@@ -97,7 +106,27 @@
       document.getElementById('load').addEventListener('click', loadPreset);
       document.getElementById('log-refresh').addEventListener('click', refreshLog);
       document.getElementById('ent').addEventListener('click', findEnt);
-      loadPreset(); updateCoverage(); updateTunnel(); refreshLog(); findEnt();
+      async function refreshCommutator(){
+        const ops=['W','I','C','L','T'];
+        const grid=document.getElementById('comm'); grid.innerHTML='';
+        const cs = document.getElementById('case').value || 'LEX-001';
+        for(let i=0;i<ops.length;i++){
+          for(let j=0;j<ops.length;j++){
+            const A=ops[i], B=ops[j];
+            let val=0.0;
+            try{
+              const r = await fetch(`/v1/qtm/commutator`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({A,B})});
+              if(r.ok){ const body = await r.json(); val = Number(body.value||0); }
+            }catch(e){}
+            const d=document.createElement('div'); d.className='cell';
+            if(val>0.5) d.classList.add('hot'); else if(val<0.2) d.classList.add('cold');
+            d.title = `[${A},${B}]=${val.toFixed(3)}`;
+            grid.appendChild(d);
+          }
+        }
+      }
+      document.getElementById('comm-refresh').addEventListener('click', refreshCommutator);
+      loadPreset(); updateCoverage(); updateTunnel(); refreshLog(); findEnt(); refreshCommutator();
     </script>
   </body>
   </html>

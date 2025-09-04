@@ -60,15 +60,36 @@
         </div>
         <table id="covtbl"><thead><tr><th>gamma</th><th>weight</th><th>uncaptured</th></tr></thead><tbody></tbody></table>
       </div>
+      <div class="card" style="margin-top:16px;">
+        <h1>CFE • Lensing Map</h1>
+        <div id="lensingPanel"></div>
+      </div>
     </div>
     <script>
       async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
       function paintRicci(kappa){ const grid = document.getElementById('ricci'); grid.innerHTML=''; for(let i=0;i<100;i++){ const v = Math.random()*kappa*100; const d=document.createElement('div'); d.className='cell'; d.dataset.tip = `Ricci[${i}]=${v.toFixed(2)}`; if(v>0.5) d.dataset.v = '1'; grid.appendChild(d);} }
+      function renderLensing(map){
+        const panel = document.getElementById('lensingPanel');
+        panel.innerHTML = '';
+        const entries = Object.entries(map||{}).sort((a,b)=>b[1]-a[1]);
+        for(const [k,v] of entries){
+          const row = document.createElement('div');
+          row.className='row';
+          const lab = document.createElement('div'); lab.className='muted'; lab.style.minWidth='220px'; lab.textContent=k;
+          const bar = document.createElement('div'); bar.style.flex='1'; bar.style.height='8px'; bar.style.background='#2a2d33'; bar.style.borderRadius='6px'; bar.style.position='relative';
+          const fill = document.createElement('div'); fill.style.height='100%'; fill.style.width=Math.round((v||0)*100)+'%'; fill.style.background='#3b82f6'; fill.style.borderRadius='6px';
+          bar.appendChild(fill);
+          const val = document.createElement('div'); val.className='pill'; val.textContent=(v||0).toFixed(3);
+          row.appendChild(lab); row.appendChild(bar); row.appendChild(val);
+          panel.appendChild(row);
+        }
+      }
+
       async function init(){
         const cur = await fetchJSON('/v1/cfe/curvature');
         if(cur.ok){ document.getElementById('kappa').textContent = `kappa_max: ${cur.data.kappa_max}`; paintRicci(cur.data.kappa_max||0.01) }
         const lm = await fetchJSON('/v1/cfe/lensing');
-        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', ') }
+        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
       }
       async function doGeodesic(){
         const cs = document.getElementById('case').value || 'LEX-001';
@@ -76,6 +97,8 @@
         const act = r.headers.get('X-CERTEUS-PCO-cfe.geodesic_action');
         document.getElementById('status').textContent = r.ok ? `geodesic_action=${act}` : 'error';
         document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+        const lm = await fetchJSON(`/v1/cfe/lensing?case_id=${encodeURIComponent(cs)}`);
+        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
       }
       async function doLock(){
         const cs = document.getElementById('case').value || 'LEX-001';
@@ -84,6 +107,8 @@
         const mass = r.headers.get('X-CERTEUS-PCO-cfe.horizon_mass');
         document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
         document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+        const lm = await fetchJSON(`/v1/cfe/lensing?case_id=${encodeURIComponent(cs)}`);
+        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
       }
       async function doHStatus(){
         const cs = document.getElementById('case').value || 'LEX-001';
@@ -92,6 +117,8 @@
         const mass = r.headers.get('X-CERTEUS-PCO-cfe.horizon_mass') || '0.0';
         document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
         document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+        const lm = await fetchJSON(`/v1/cfe/lensing?case_id=${encodeURIComponent(cs)}`);
+        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
       }
       document.getElementById('geodesic').addEventListener('click', doGeodesic);
       document.getElementById('lock').addEventListener('click', doLock);

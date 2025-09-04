@@ -50,6 +50,7 @@ Open Cockpit UI:
 - Quantum: `/app/public/quantum.html`
  - ChatOps: `/app/public/chatops.html`
  - MailOps: `/app/public/mailops.html`
+ - FIN Dashboard: `/app/public/fin_dashboard.html`
 
 Smoke tests:
 

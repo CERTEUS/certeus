@@ -280,6 +280,19 @@ certeus_fin_paper_equity = Gauge(
     labelnames=("tenant",),
 )
 
+# P2P queue (W8)
+certeus_p2p_enqueued_total = Counter(
+    "certeus_p2p_enqueued_total",
+    "P2P enqueued jobs",
+    labelnames=("device",),
+)
+certeus_p2p_dequeued_total = Counter(
+    "certeus_p2p_dequeued_total",
+    "P2P dequeued jobs",
+    labelnames=("device",),
+)
+certeus_p2p_queue_depth = Gauge("certeus_p2p_queue_depth", "P2P queue depth")
+
 # LEX Pilot (W16): feedback counters and latest rating
 certeus_lex_pilot_feedback_total = Counter(
     "certeus_lex_pilot_feedback_total",

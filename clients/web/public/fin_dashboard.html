@@ -1,0 +1,77 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/fin_dashboard.html                |
+| ROLE: Web client page (FIN dashboard).                       |
+| PLIK: clients/web/public/fin_dashboard.html                |
+| ROLA: Strona web (FIN pulpit).                               |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="CERTEUS FIN dashboard: sentiment, risk, entanglement, simulation." />
+    <title>CERTEUS • FIN Dashboard</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:1080px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
+      input,select{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
+      table{width:100%;border-collapse:collapse}
+      th,td{padding:8px 10px;border-bottom:1px solid #2a2d33;text-align:left}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>FIN • Measure</h1>
+        <div class="row">
+          <label class="muted">risk<input id="risk" type="number" step="0.01" value="0.10"></label>
+          <label class="muted">sentiment<input id="sent" type="number" step="0.01" value="0.55"></label>
+          <button id="measure" class="btn">Measure</button>
+          <span class="muted">Outcome:<span id="outcome" class="pill">-</span></span>
+          <span class="muted">p:<span id="prob" class="pill">-</span></span>
+          <span class="muted">[R,S] norm:<span id="rsn" class="pill">-</span></span>
+        </div>
+      </div>
+      <div class="card">
+        <h1>Entanglements</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="ent" class="btn">Refresh</button>
+          <span class="muted">MI:<span id="mi" class="pill">?</span></span>
+        </div>
+        <table id="enttbl"><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h1>Simulation</h1>
+        <div class="row">
+          <select id="strat"><option value="qalpha-momentum">qalpha-momentum</option><option value="qalpha-arb">qalpha-arb</option></select>
+          <label class="muted">capital<input id="capital" type="number" step="1000" value="100000"></label>
+          <label class="muted">days<input id="days" type="number" step="1" value="30"></label>
+          <button id="sim" class="btn">Run</button>
+          <span class="muted">PnL:<span id="pnl" class="pill">-</span></span>
+        </div>
+      </div>
+    </div>
+    <script>
+      async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
+      async function doMeasure(){ const risk=parseFloat(document.getElementById('risk').value||'0')||0; const sent=parseFloat(document.getElementById('sent').value||'0')||0; const r = await fetchJSON('/v1/fin/alpha/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({signals:{risk, sentiment:sent}})}); if(r.ok){ document.getElementById('outcome').textContent = r.data.outcome; document.getElementById('prob').textContent = r.data.p; const rs = await fetchJSON('/v1/fin/alpha/operators/commutator'); if(rs.ok){ document.getElementById('rsn').textContent = rs.data.norm; } } }
+      async function refreshEnt(){ const r = await fetchJSON('/v1/fin/alpha/entanglements'); if(!r.ok) return; document.getElementById('mi').textContent = r.data.mi; const tb=document.querySelector('#enttbl tbody'); tb.innerHTML=''; (r.data.pairs||[]).forEach(p=>{ const tr=document.createElement('tr'); const td=(v)=>{ const d=document.createElement('td'); d.textContent=v; return d; }; tr.appendChild(td(p[0]||'')); tr.appendChild(td(p[1]||'')); tb.appendChild(tr); }); }
+      async function runSim(){ const strat=document.getElementById('strat').value; const capital=parseFloat(document.getElementById('capital').value||'100000'); const days=parseInt(document.getElementById('days').value||'30'); const r = await fetchJSON('/v1/fin/alpha/simulate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({strategy_id:strat, capital, horizon_days:days})}); if(r.ok){ const pnlAbs = (r.data.pnl_abs||0).toFixed(2); const pnlPct = ((r.data.pnl_pct||0)*100).toFixed(2)+'%'; document.getElementById('pnl').textContent = `${pnlAbs} (${pnlPct})`; } }
+      document.getElementById('measure').addEventListener('click', doMeasure);
+      document.getElementById('ent').addEventListener('click', refreshEnt);
+      document.getElementById('sim').addEventListener('click', runSim);
+      doMeasure(); refreshEnt();
+    </script>
+  </body>
+  </html>
+

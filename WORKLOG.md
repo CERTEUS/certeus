@@ -384,6 +384,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: linki Cockpit (Geometry/Quantum/Boundary/ChatOps/MailOps) na landing; Quantum: Measurement Log + Entanglement panel; Geometry: Refresh horizon
   - Runbook: docs/runbooks/w2_boundary_demo.md
   - Boundary UI polish: sort Δbits desc, highlight rows OK/FAIL; landing card „Boundary Status” (delta_bits, observed_at)
+  - FIN: dodano `clients/web/public/fin_dashboard.html` + link na landing
 - 2025-09-04 13:17:58Z [48793] (work/daily): W3: Geometry cockpit + CFE geodesic/horizon demo
   - CFE: /v1/cfe/geodesic (PCO header) i /v1/cfe/horizon (mass + lock)
   - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
@@ -445,3 +446,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Integracja: LEX Why‑Not → pfs://why-not/<hash> + inspect
   - - Testy: tests/services/test_pfs_inspect.py
   - - Lint OK; 158 testów zielone
+- 2025-09-04 14:13:41Z [48793] (work/daily): W5: Operator Composer demo + devices snapshots w PR; tests green
+  - Demo: scripts/smokes/w5_operator_composer_demo.py (preset enforced)
+  - Runbook: docs/runbooks/w5_operator_composer.md
+  - ci-gates: Q-Oracle/Entangler/HDE snapshots + PR lines
+  - Testy: 158 passed (zielone)

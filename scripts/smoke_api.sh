@@ -115,6 +115,7 @@ hit GET / && PASSES+=1 || FAILS+=1
 hit GET /metrics && PASSES+=1 || FAILS+=1
 hit GET /.well-known/jwks.json && PASSES+=1 || FAILS+=1
 hit GET /v1/packs/ && PASSES+=1 || FAILS+=1
+hit GET /v1/boundary/status && PASSES+=1 || FAILS+=1
 hit POST /v1/fin/alpha/measure '{"signals":{"risk":0.10,"sentiment":0.55}}' && PASSES+=1 || FAILS+=1
 hit GET /v1/fin/alpha/uncertainty && PASSES+=1 || FAILS+=1
 hit GET /v1/fin/alpha/entanglements && PASSES+=1 || FAILS+=1

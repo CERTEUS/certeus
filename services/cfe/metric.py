@@ -37,7 +37,9 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
+import os
 import random
+import time
 
 # === KONFIGURACJA / CONFIGURATION ===
 _DEFAULT_NODES = 28
@@ -168,10 +170,22 @@ def _build_legal_smallworld(n: int, seed: int) -> Graph:
 
 
 @lru_cache(maxsize=256)
-def _graph_for_case(case_id: str | None) -> Graph:
-    """Zwróć (i cache'uj) graf dla danego case_id (deterministyczny seed)."""
+def _graph_for_case_inner(case_id: str | None, epoch_key: int) -> Graph:
     seed = _seed_from_case(case_id)
     return _build_legal_smallworld(n=_DEFAULT_NODES, seed=seed)
+
+
+def _graph_for_case(case_id: str | None) -> Graph:
+    """Zwróć graf dla case_id z TTL cache sterowanym ENV `CFE_CACHE_TTL_SEC`.
+
+    TTL<=0 oznacza cache bezterminowy (pojedynczy `epoch_key=0`).
+    """
+    try:
+        ttl = int(os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+    except Exception:
+        ttl = 300
+    epoch_key = int(time.time() // max(1, ttl)) if ttl > 0 else 0
+    return _graph_for_case_inner(case_id, epoch_key)
 
 
 def _bfs_dist(g: Graph, src: int, targets: Iterable[int]) -> int:

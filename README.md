@@ -45,6 +45,7 @@ Przeglądaj w przeglądarce po uruchomieniu API:
 - Boundary (jeśli włączony): `http://127.0.0.1:8000/app/public/boundary.html`
  - ChatOps: `http://127.0.0.1:8000/app/public/chatops.html`
  - MailOps: `http://127.0.0.1:8000/app/public/mailops.html`
+  - FIN Dashboard: `http://127.0.0.1:8000/app/public/fin_dashboard.html`
 
 ## ChatOps / MailOps (cURL)
 

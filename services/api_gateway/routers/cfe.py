@@ -81,6 +81,11 @@ class LensingResponse(BaseModel):
     critical_precedents: list[str]
 
 
+class WarmCacheResponse(BaseModel):
+    warmed: int
+    ttl_sec: int | None = None
+
+
 # === LOGIKA / LOGIC ===
 
 # +=====================================================================+
@@ -129,11 +134,15 @@ async def geodesic(req: GeodesicRequest, request: Request, response: Response) -
 
     enforce_limits(request, cost_units=2)
 
-    # Placeholder: return deterministic stub values
+    # Real metric-based geodesic over case graph (lightweight)
+    try:
+        from services.cfe.metric import geodesic_for_case
 
-    path = ["premise:A", "premise:B", "inference:merge", "conclusion:C"]
-
-    action = 12.34
+        path, action = geodesic_for_case(req.case)
+    except Exception:
+        # Placeholder fallback (deterministic)
+        path = ["premise:A", "premise:B", "inference:merge", "conclusion:C"]
+        action = 12.34
 
     # PCO header for downstream proof-native flows
     try:
@@ -208,6 +217,28 @@ async def lensing(case_id: str | None = None) -> LensingResponse:
             lensing_map={"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
             critical_precedents=["precedent:K_2001"],
         )
+
+
+@router.post("/cache/warm", response_model=WarmCacheResponse)
+async def warm_cache(cases: list[str] | None = None) -> WarmCacheResponse:
+    """PL/EN: Rozgrzewa cache CFE dla listy case_id."""
+    warmed = 0
+    try:
+        from services.cfe import kappa_max_for_case
+
+        for cid in cases or []:
+            _ = kappa_max_for_case(cid)
+            warmed += 1
+    except Exception:
+        pass
+    # Report current TTL setting
+    try:
+        import os as _os
+
+        ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+    except Exception:
+        ttl = None
+    return WarmCacheResponse(warmed=warmed, ttl_sec=ttl)
 
 
 # === I/O / ENDPOINTS ===
