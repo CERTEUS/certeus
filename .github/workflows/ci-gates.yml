@@ -266,6 +266,18 @@ PY
           python scripts/security/kms_rotation_gate.py || true
           test -f out/kms_rotation.json && echo ok || true
 
+      - name: TEE RA Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/security/tee_ra_gate.py || true
+          test -f out/tee_ra.json && echo ok || true
+
+      - name: Legal Audit Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/compliance/legal_audit_gate.py || true
+          test -f out/legal_audit.json && echo ok || true
+
       - name: Upload perf report
         if: always()
         uses: actions/upload-artifact@v4
@@ -604,6 +616,10 @@ PY
           git fetch origin ci-status || true
           if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
             git show origin/ci-status:ci/perf_bench.json > out/prev_perf_bench.json 2>/dev/null || true
+            # Also fetch previous device snapshots for potential diff (optional)
+            for f in lexqft_coverage_state.json lexqft_tunnel.json cfe_qtmp.json hde_plan.json qoracle.json entangler.json chronosync.json fin_comm_rs.json fin_mi.json; do
+              git show origin/ci-status:ci/$f > out/prev_$f 2>/dev/null || true
+            done
           fi
           python - << 'PY'
           import json, os, pathlib, urllib.request
@@ -659,6 +675,15 @@ PY
           openapi_ok = (repo/'out'/'openapi_ok.txt').exists()
           gov_ok = (repo/'out'/'gov_ok.txt').exists()
           lines.append(f"Smokes: metrics={'✅' if metrics_ok else '❌'} openapi={'✅' if openapi_ok else '❌'} governance={'✅' if gov_ok else '❌'}")
+          # Policies (finance) presence tick
+          try:
+              import os
+              ok = all((repo/'policies'/'finance'/p).exists() for p in ('risk.rego','entanglement.rego'))
+              if ok:
+                  (repo/'out'/'fin_policies_ok.txt').write_text('ok', encoding='utf-8')
+              lines.append(f"FIN Policies: {'✅' if ok else '❌'}")
+          except Exception:
+              lines.append('FIN Policies: n/a')
           # LexQFT coverage summary
           try:
               cov = json.loads((repo/'out'/'lexqft_coverage_state.json').read_text())
@@ -834,6 +859,18 @@ PY
               lines.append(f"KMS: present={km.get('present')} mode={km.get('mode')}")
           except Exception:
               lines.append('KMS: n/a')
+          # TEE RA summary
+          try:
+              tr = json.loads((repo/'out'/'tee_ra.json').read_text())
+              lines.append(f"TEE RA: present={tr.get('present')} source={tr.get('source')}")
+          except Exception:
+              lines.append('TEE RA: n/a')
+          # Legal audit summary
+          try:
+              la = json.loads((repo/'out'/'legal_audit.json').read_text())
+              lines.append(f"Legal Audit: missing={len(la.get('missing', []))}")
+          except Exception:
+              lines.append('Legal Audit: n/a')
           # Correlation headers sample
           try:
               corr = (repo/'out'/'correlation.txt').read_text().strip()

@@ -75,6 +75,25 @@ def attach_correlation_middleware(app: FastAPI) -> None:
     header_in = os.getenv("CORRELATION_HEADER_IN", "X-Correlation-ID")
     header_out = os.getenv("CORRELATION_HEADER_OUT", "X-Correlation-ID")
 
+    # Try to load RA fingerprint once (TEE profile)
+    _ra_fp: str | None = None
+    try:
+        ra_env = os.getenv("TEE_RA_FINGERPRINT")
+        if ra_env:
+            _ra_fp = ra_env.strip()
+        else:
+            from pathlib import Path as _P  # local import
+
+            p = _P("infra/tee/attestation.json")
+            if p.exists():
+                import json as _json
+
+                js = _json.loads(p.read_text(encoding="utf-8"))
+                val = js.get("measurement") or js.get("mrenclave") or js.get("fingerprint") or ""
+                _ra_fp = str(val).strip() or None
+    except Exception:
+        _ra_fp = None
+
     @app.middleware("http")
     async def _correlation(  # type: ignore[override]
         request: Request, call_next: _t.Callable[[Request], Response]
@@ -120,6 +139,13 @@ def attach_correlation_middleware(app: FastAPI) -> None:
             response.headers.setdefault("X-CERTEUS-PCO-correlation.correlation_id", corr_id)
             if trace_id:
                 response.headers.setdefault("X-CERTEUS-PCO-correlation.trace_id", trace_id)
+        except Exception:
+            pass
+
+        # Optional: advertise TEE RA fingerprint (if provided), to be bound into PCO
+        try:
+            if _ra_fp:
+                response.headers.setdefault("X-CERTEUS-PCO-tee.ra.fingerprint", _ra_fp)
         except Exception:
             pass
 
