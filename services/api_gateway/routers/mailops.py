@@ -97,13 +97,28 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
 
     # Normalize into io.email.* fields
 
+    # Build attachments with ProofFS URIs
+    try:
+        from core.pfs.uri import mail_attachment_uri
+    except Exception:
+        mail_attachment_uri = lambda mid, fn: f"pfs://mail/{mid}/{fn}"
+
+    atts = []
+    for a in req.attachments:
+        d = a.model_dump()
+        try:
+            d["pfs_uri"] = mail_attachment_uri(req.mail_id, a.filename)
+        except Exception:
+            d["pfs_uri"] = f"pfs://mail/{req.mail_id}/{a.filename}"
+        atts.append(d)
+
     io_email = {
         "io.email.mail_id": req.mail_id,
         "io.email.thread_id": req.thread_id,
         "io.email.spf": req.spf,
         "io.email.dkim": req.dkim,
         "io.email.dmarc": req.dmarc,
-        "attachments": [a.model_dump() for a in req.attachments],
+        "attachments": atts,
     }
     # Record to Ledger as an input (io.email.* hash)
     try:
