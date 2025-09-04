@@ -119,7 +119,7 @@ router = APIRouter(prefix="/v1/devices", tags=["devices"])
 
 
 @router.post("/horizon_drive/plan", response_model=HDEPlanResponse)
-async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
+async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -> HDEPlanResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -150,7 +150,7 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
     # W4: decyzja strategii zależna od celu horyzontu — dla wyższych progów
     # wybieramy wariant „aggressive”, inaczej „balanced” (deterministycznie).
     best = "aggressive" if target >= 0.28 else "balanced"
-    return HDEPlanResponse(
+    result = HDEPlanResponse(
         evidence_plan=plan_balanced,
         plan_of_evidence=plan_balanced,
         cost_tokens=cost_bal,
@@ -158,13 +158,26 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         alternatives=alt,
         best_strategy=best,
     )
+    # W9: podpis urządzenia (opcjonalny; wymaga klucza ED25519 w ENV)
+    try:
+        import json as _json
+
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        sig = sign_payload(result.model_dump())
+        certeus_devices_signed_total.labels(device="hde").inc()
+        response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    return result
 
 
 # Quantum Oracle (QOC)
 
 
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
-async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleResponse:
+async def qoracle_expectation(req: QOracleRequest, request: Request, response: Response) -> QOracleResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -188,11 +201,24 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
     pB = max(0.1, 1.0 - pA)
     dist = [{"outcome": "A", "p": round(pA, 3)}, {"outcome": "B", "p": round(pB, 3)}]
     choice = "A" if pA >= pB else "B"
-    return QOracleResponse(
+    result = QOracleResponse(
         optimum={"choice": choice, "reason": text or "heuristic"},
         payoff=round(max(pA, pB), 3),
         distribution=dist,
     )
+    # W9: podpis i nagłówek
+    try:
+        import json as _json
+
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        sig = sign_payload(result.model_dump())
+        certeus_devices_signed_total.labels(device="qoracle").inc()
+        response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    return result
 
 
 # Entanglement Inducer (EI)
@@ -230,7 +256,20 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
             _devices_negativity.labels(var=v).set(achieved)
     except Exception:
         pass
-    return EntangleResponse(certificate=cert, achieved_negativity=achieved)
+    out = EntangleResponse(certificate=cert, achieved_negativity=achieved)
+    # W9: podpis + nagłówek
+    try:
+        import json as _json
+
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        sig = sign_payload(out.model_dump())
+        certeus_devices_signed_total.labels(device="entangler").inc()
+        response.headers["X-CERTEUS-SIG-device"] = _json.dumps(sig, separators=(",", ":"))
+    except Exception:
+        pass
+    return out
 
 
 # Chronosync (LCSI)
@@ -253,7 +292,17 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> Chro
         "treaty": req.treaty_clause_skeleton or {"clauses": default_clauses},
     }
 
-    return ChronoSyncResponse(reconciled=True, sketch=sketch)
+    out = ChronoSyncResponse(reconciled=True, sketch=sketch)
+    # W9: podpis (bez nagłówka)
+    try:
+        from monitoring.metrics_slo import certeus_devices_signed_total
+        from security.signing import sign_payload
+
+        _ = sign_payload(out.model_dump())
+        certeus_devices_signed_total.labels(device="chronosync").inc()
+    except Exception:
+        pass
+    return out
 
 
 # === I/O / ENDPOINTS ===

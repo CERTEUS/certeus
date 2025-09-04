@@ -108,7 +108,7 @@ class CurvatureResponse(BaseModel):
 
 
 @router.get("/curvature", response_model=CurvatureResponse)
-async def curvature(case_id: str | None = None) -> CurvatureResponse:
+async def curvature(case_id: str | None = None, response: Response | None = None) -> CurvatureResponse:
     """PL/EN: CFE telemetry — compute Ricci (approx Ollivier) kappa_max for case.
 
     case_id opcjonalny — determinuje ziarno grafu (metryka realna, ale lekka).
@@ -120,6 +120,17 @@ async def curvature(case_id: str | None = None) -> CurvatureResponse:
         summary = kappa_max_for_case(case_id)
         try:
             certeus_cfe_kappa_max.set(float(summary.kappa_max))
+        except Exception:
+            pass
+        # Cache headers
+        try:
+            import os as _os
+
+            ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+            if response is not None and ttl > 0:
+                response.headers.setdefault("Cache-Control", f"public, max-age={ttl}")
+            if response is not None:
+                response.headers.setdefault("X-CERTEUS-CFE-Cache-TTL", str(ttl))
         except Exception:
             pass
         return CurvatureResponse(kappa_max=summary.kappa_max)
@@ -136,9 +147,14 @@ async def geodesic(req: GeodesicRequest, request: Request, response: Response) -
 
     # Real metric-based geodesic over case graph (lightweight)
     try:
+        from monitoring.metrics_slo import certeus_cfe_geodesic_action
         from services.cfe.metric import geodesic_for_case
 
         path, action = geodesic_for_case(req.case)
+        try:
+            certeus_cfe_geodesic_action.observe(float(action))
+        except Exception:
+            pass
     except Exception:
         # Placeholder fallback (deterministic)
         path = ["premise:A", "premise:B", "inference:merge", "conclusion:C"]
@@ -176,9 +192,14 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
 
     # Compute mass (deterministic per case)
     try:
+        from monitoring.metrics_slo import certeus_cfe_horizon_mass
         from services.cfe.metric import horizon_mass_for_case
 
         mass = horizon_mass_for_case(req.case)
+        try:
+            certeus_cfe_horizon_mass.set(float(mass))
+        except Exception:
+            pass
     except Exception:
         mass = 0.15
 
@@ -204,12 +225,23 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing(case_id: str | None = None) -> LensingResponse:
+async def lensing(case_id: str | None = None, response: Response | None = None) -> LensingResponse:
     try:
         from services.cfe.metric import lensing_map_for_case
 
         m = lensing_map_for_case(case_id)
         crit = sorted(m, key=m.get, reverse=True)[:1]
+        # Cache headers
+        try:
+            import os as _os
+
+            ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+            if response is not None and ttl > 0:
+                response.headers.setdefault("Cache-Control", f"public, max-age={ttl}")
+            if response is not None:
+                response.headers.setdefault("X-CERTEUS-CFE-Cache-TTL", str(ttl))
+        except Exception:
+            pass
         return LensingResponse(lensing_map=m, critical_precedents=crit)
     except Exception:
         # Fallback placeholder

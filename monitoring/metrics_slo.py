@@ -123,6 +123,14 @@ certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
 # CFE: Ricci (kappa_max)
 certeus_cfe_kappa_max = Gauge("certeus_cfe_kappa_max", "CFE kappa_max curvature")
 
+# CFE: Geodesic action (hist) and Horizon mass (gauge)
+certeus_cfe_geodesic_action = Histogram(
+    "certeus_cfe_geodesic_action",
+    "CFE geodesic action",
+    buckets=(1, 2, 3, 5, 8, 13, 21, 34),
+)
+certeus_cfe_horizon_mass = Gauge("certeus_cfe_horizon_mass", "CFE horizon mass")
+
 # Histogram for compile/verification durations (ms)
 
 certeus_compile_duration_ms = Histogram(
@@ -292,6 +300,13 @@ certeus_p2p_dequeued_total = Counter(
     labelnames=("device",),
 )
 certeus_p2p_queue_depth = Gauge("certeus_p2p_queue_depth", "P2P queue depth")
+
+# Devices signatures (W9)
+certeus_devices_signed_total = Counter(
+    "certeus_devices_signed_total",
+    "Device outputs signed",
+    labelnames=("device",),
+)
 
 # LEX Pilot (W16): feedback counters and latest rating
 certeus_lex_pilot_feedback_total = Counter(

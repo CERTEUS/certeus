@@ -62,6 +62,18 @@
       </div>
 
       <div class="card" style="margin-top:16px;">
+        <h1>Sequence</h1>
+        <div class="row">
+          <input id="seq" placeholder="operators (np. L,T,W)" />
+          <label class="muted"><input type="checkbox" id="noCollapse"> no_collapse</label>
+          <button id="run-seq" class="btn">Run sequence</button>
+          <span class="muted">UB L_T:<span id="seq-ub" class="pill">?</span></span>
+          <span class="muted">Latency:<span id="seq-lat" class="pill">?</span></span>
+        </div>
+        <table id="seqtbl"><thead><tr><th>#</th><th>op</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
         <h1>Measurement Log</h1>
         <div class="row" style="margin-bottom:10px;">
           <button id="log-refresh" class="btn">Refresh log</button>
@@ -96,6 +108,19 @@
       async function fetchJSON(url,opts){ const r = await fetch(url,opts); const j = await r.json(); return {ok:r.ok,data:j,headers:r.headers} }
       async function updateCoverage(){ const r = await fetchJSON('/v1/lexqft/coverage'); if(r.ok){ document.getElementById('gamma').textContent = r.data.coverage_gamma; } }
       async function updateTunnel(){ const r = await fetchJSON('/v1/lexqft/tunnel',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({evidence_energy: 1.1})}); if(r.ok){ document.getElementById('ptun').textContent = r.data.p_tunnel; } }
+      async function runSequence(){
+        const cs = document.getElementById('case').value || 'LEX-001';
+        const raw = (document.getElementById('seq').value||'L,T,W').split(',').map(s=>s.trim()).filter(Boolean);
+        const noC = document.getElementById('noCollapse').checked;
+        const r = await fetchJSON('/v1/qtm/measure_sequence', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({operators: raw, case: cs, no_collapse: noC})});
+        const tb = document.querySelector('#seqtbl tbody'); tb.innerHTML='';
+        if(!r.ok) return;
+        (r.data.steps||[]).forEach((s,i)=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${i+1}</td><td>${s.operator}</td><td>${s.verdict}</td><td>${(s.p||0).toFixed(3)}</td>`; tb.appendChild(tr); });
+        const ub = (r.data.uncertainty_bound||{}).L_T ?? '?';
+        document.getElementById('seq-ub').textContent = ub;
+        document.getElementById('seq-lat').textContent = (r.data.final_latency_ms||0).toFixed(1)+'ms';
+        document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+      }
       async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs})}); if(r.ok){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); document.getElementById('qcaseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`; } }
       async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); }
       async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
@@ -106,6 +131,7 @@
       document.getElementById('load').addEventListener('click', loadPreset);
       document.getElementById('log-refresh').addEventListener('click', refreshLog);
       document.getElementById('ent').addEventListener('click', findEnt);
+      document.getElementById('run-seq').addEventListener('click', runSequence);
       async function refreshCommutator(){
         const ops=['W','I','C','L','T'];
         const grid=document.getElementById('comm'); grid.innerHTML='';

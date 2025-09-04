@@ -210,6 +210,19 @@ jobs:
           name: perf-bench-${{ github.sha }}
           path: out/perf_bench.json
 
+      - name: Upload snapshot artifacts (coverage/tunneling/corr/devices)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshots-${{ github.sha }}
+          path: |
+            out/lexqft_coverage_state.json
+            out/lexqft_tunnel.json
+            out/cfe_qtmp.json
+            out/hde_plan.json
+            out/qoracle.json
+            out/entangler.json
+
       - name: SLO Smoke (in-proc)
         env:
           SLO_MAX_P95_MS: "200"
@@ -718,6 +731,13 @@ jobs:
             if [ -f out/perf_bench.json ]; then
               cp -f out/perf_bench.json ci/perf_bench.json || true
             fi
+            # Persist latest snapshots for quick links in PR
+            for f in lexqft_coverage_state.json lexqft_tunnel.json cfe_qtmp.json hde_plan.json qoracle.json entangler.json; do
+              if [ -f "out/$f" ]; then
+                cp -f "out/$f" "ci/$f" || true
+                git add "ci/$f" || true
+              fi
+            done
             git add ci/status.json
             git add ci/perf_bench.json || true
             git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
@@ -733,3 +753,28 @@ jobs:
             echo "[ci-status] Failed to push after $max_attempts attempts"
             exit 1
           fi
+
+      - name: Comment PR with Quick Links
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = process.env.GITHUB_REPOSITORY;
+            const runId = process.env.GITHUB_RUN_ID || process.env.GITHUB_RUN_ID || process.env.GITHUB_RUN_NUMBER;
+            const baseCi = `https://github.com/${repo}/blob/ci-status/ci`;
+            const links = [
+              `- Coverage: ${baseCi}/lexqft_coverage_state.json`,
+              `- Tunneling: ${baseCi}/lexqft_tunnel.json`,
+              `- CFE↔QTMP corr/priorities: ${baseCi}/cfe_qtmp.json`,
+              `- HDE plan: ${baseCi}/hde_plan.json`,
+              `- Q-Oracle: ${baseCi}/qoracle.json`,
+              `- Entangler: ${baseCi}/entangler.json`,
+              `- CI Run Artifacts: https://github.com/${repo}/actions/runs/${{ github.run_id }}`,
+            ];
+            const body = ['### Quick Links', ...links].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

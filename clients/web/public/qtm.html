@@ -171,17 +171,31 @@
       }
       async function measure(op) {
         const cs = document.getElementById("case").value || "LEX-001";
-        const r = await fetchJSON("/v1/qtm/measure", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ operator: op, source: cs }),
-        });
-        const ub = r.data?.uncertainty_bound?.L_T ?? "?";
-        const ce = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+        let ub = '?';
+        let collapseText = '-';
+        // If operator represents a sequence (LT/TL), use measure_sequence for a nicer UI
+        if (op === 'LT' || op === 'TL') {
+          const r = await fetchJSON('/v1/qtm/measure_sequence', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ operators: op.split(''), case: cs })
+          });
+          if (r.ok) {
+            ub = r.data?.uncertainty_bound?.L_T ?? '?';
+            collapseText = (r.data?.steps || []).map(s => `${s.operator}:${s.verdict}@${(s.p||0).toFixed(2)}`).join(', ');
+          }
+        } else {
+          const r = await fetchJSON("/v1/qtm/measure", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ operator: op, source: cs }),
+          });
+          ub = r.data?.uncertainty_bound?.L_T ?? "?";
+          collapseText = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+        }
         document.getElementById("ub").textContent = ub;
-        document.getElementById("collapse").textContent = ce;
-        document.getElementById("caseLink").href =
-          `/v1/ledger/${encodeURIComponent(cs)}/records`;
+        document.getElementById("collapse").textContent = collapseText;
+        document.getElementById("caseLink").href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
         paintHeat(ub || 0.25);
       }
       async function setDeco() {

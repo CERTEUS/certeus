@@ -389,6 +389,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Runbook: docs/runbooks/w2_boundary_demo.md
   - Boundary UI polish: sort Δbits desc, highlight rows OK/FAIL; landing card „Boundary Status” (delta_bits, observed_at)
   - FIN: dodano `clients/web/public/fin_dashboard.html` + link na landing
+  - LEX: dodano `clients/web/public/lex_generator.html` (2 szablony + lock/publish) + link na landing
 - 2025-09-04 13:17:58Z [48793] (work/daily): W3: Geometry cockpit + CFE geodesic/horizon demo
   - CFE: /v1/cfe/geodesic (PCO header) i /v1/cfe/horizon (mass + lock)
   - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
@@ -465,3 +466,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: KPI table (p95, gamma/uncaptured, tunneling p_low/p_high, corr, pri_L/T, HDE cost/kappa, Q-Oracle payoff/choice, Entangler neg)
   - Testy: 162 passed (zielone)
   - WORKLOG: aktualizacja po rozbudowie PR summary
+- 2025-09-04 14:26:29Z [48793] (work/daily): PR summary: Quick Links + KPI table; tests green
+  - ci-gates: Quick Links (ci-status blobs + run artifacts)
+  - ci-gates: KPI table (p95/gamma/tunneling/corr/priorities/HDE/Q-Oracle/Entangler)
+  - Testy: 164 passed (zielone)

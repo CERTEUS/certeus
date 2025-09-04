@@ -71,10 +71,13 @@ def test_wkb_probability_monotonic_height(E: float, V01: float, V02: float) -> N
 
 def test_wkb_extremes_floor_and_cross() -> None:
     # Cross barrier: E>=V0 → p≈0.95
-    r = client.post("/v1/lexqft/tunnel", json={"evidence_energy": 1.1, "barrier_model": {"V0": 1.0, "w": 5.0, "m": 1.0}})
+    r = client.post(
+        "/v1/lexqft/tunnel", json={"evidence_energy": 1.1, "barrier_model": {"V0": 1.0, "w": 5.0, "m": 1.0}}
+    )
     assert r.status_code == 200 and float(r.json()["p_tunnel"]) >= 0.9
 
     # Very large barrier should not go below floor (0.0005)
-    r2 = client.post("/v1/lexqft/tunnel", json={"evidence_energy": 0.0, "barrier_model": {"V0": 5.0, "w": 50.0, "m": 10.0}})
+    r2 = client.post(
+        "/v1/lexqft/tunnel", json={"evidence_energy": 0.0, "barrier_model": {"V0": 5.0, "w": 50.0, "m": 10.0}}
+    )
     assert r2.status_code == 200 and float(r2.json()["p_tunnel"]) >= 0.0005
-

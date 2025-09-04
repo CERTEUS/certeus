@@ -362,3 +362,4 @@ if ($env:GITHUB_STEP_SUMMARY) {
 
 Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95 threshold_ms=$sloThresh max_fails=$maxFails")
 if ($fails -gt $maxFails) { exit 1 } else { exit 0 }
+

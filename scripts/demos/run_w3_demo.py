@@ -74,7 +74,7 @@ def run_demo() -> dict[str, Any]:
 
     sk = _gen_keys_env()
     token = _sign_ed25519_jws(sk, {"sub": "w3-demo", "iat": 0})
-    auth = {"Authorization": f"Bearer {token}"}
+    _ = token  # token available if needed for auth headers
 
     c = TestClient(app)
     case = "LEX-DEMO-W3"

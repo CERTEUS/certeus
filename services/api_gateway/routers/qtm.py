@@ -204,12 +204,9 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
 
     enforce_limits(request, cost_units=1)
 
-    # Pick basis: if not provided and operator known, default to operator eigen basis
+    # Pick basis: if not provided, default to canonical basis
     if req.basis is None:
-        if (emap := _operator_eigs().get(req.operator)) is not None:
-            basis = list(emap.keys())
-        else:
-            basis = ["ALLOW", "DENY", "ABSTAIN"]
+        basis = ["ALLOW", "DENY", "ABSTAIN"]
     else:
         basis = req.basis
 
