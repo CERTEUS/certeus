@@ -13,10 +13,16 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.2.3 or v0.0.0-dev)'
+        required: true
+        type: string
 
 jobs:
   build-and-push-images:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, docker, build]
     permissions:
       contents: read
       packages: write
@@ -31,7 +37,11 @@ jobs:
       - name: Extract tag
         id: vars
         run: |
-          ref='${GITHUB_REF_NAME}'
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ref='${{ github.event.inputs.tag }}'
+          else
+            ref='${GITHUB_REF_NAME}'
+          fi
           echo "tag=${ref}" >> $GITHUB_OUTPUT
           echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
       - name: Set up Docker Buildx
@@ -57,7 +67,7 @@ jobs:
             ghcr.io/${{ github.repository }}-proofgate:latest
             ghcr.io/${{ github.repository }}-proofgate:${{ steps.vars.outputs.sha }}
   create-release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, docker, build]
     needs: build-and-push-images
     permissions:
       contents: write
