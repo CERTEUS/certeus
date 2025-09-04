@@ -1,0 +1,9 @@
+[submodule "mirror_out_cli"]
+	path = mirror_out_cli
+	url = https://github.com/CERTEUS/certeus-public.git
+	ignore = all
+
+[submodule "mirror_work_repo"]
+	path = mirror_work_repo
+	url = https://github.com/CERTEUS/certeus-public.git
+	ignore = all

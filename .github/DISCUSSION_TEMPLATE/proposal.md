@@ -10,4 +10,3 @@ labels: ["type/proposal"]
 ### Design sketch
 
 ### Risks
-

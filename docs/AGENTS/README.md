@@ -117,15 +117,11 @@ UWAGA: Auto‑promocja następuje wyłącznie po zakończeniu tygodnia — commi
 - Commity: Conventional Commits (feat/fix/chore/docs/ci/perf…).
 - Gałęzie PR: `merge/daily-to-main-YYYYMMDD-HHMMSS` (automatyczne tworzenie do merge).
 - Tokeny: `.devkeys/admin_token.txt` (lokalnie; nie publikować), `GITHUB_TOKEN` w CI; nigdy nie wklejać do logów/PR.
-<<<<<<< HEAD
-
 ## Zasada niezmienna (Immutable Rule)
 
 "Publikuj wyłącznie to, co jest jawnie dozwolone przez obowiązującą allowlistę LITE; wszystko inne pozostaje prywatne, a każdy push respektuje bramki i ochronę gałęzi (bez wyjątków)."
 
 Praktyka:
-- Pracuj prywatnie (repo główne), testuj lokalnie/CI; publiczny mirror utrzymuj jako LITE‑surface (README, landing, assets, overview, lekkie CI).
-- Gdy masz wątpliwość – nie publikuj; dopisz do allowlisty wyłącznie po akceptacji i z pełną świadomością konsekwencji.
-- Nigdy nie omijaj gate’ów (gitleaks/policy‑scan/branch‑protection) i nie publikuj poza allowlistą.
-=======
->>>>>>> origin/main
+- Pracuj prywatnie (repo główne), testuj lokalnie/CI; publiczny mirror utrzymuj jako LITE-surface (README, landing, assets, overview, lekkie CI).
+- Gdy masz wątpliwość — nie publikuj; dopisz do allowlisty wyłącznie po akceptacji i z pełną świadomością konsekwencji.
+- Nigdy nie omijaj gate’ów (gitleaks/policy-scan/branch-protection) i nie publikuj poza allowlistą.
