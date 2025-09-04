@@ -18,7 +18,7 @@ on:
 jobs:
   mirror:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
-    runs-on: [self-hosted, linux, docker, build]
+    runs-on: self-hosted
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
