@@ -474,3 +474,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: Quick Links (ci-status blobs + run artifacts)
   - ci-gates: KPI table (p95/gamma/tunneling/corr/priorities/HDE/Q-Oracle/Entangler)
   - Testy: 164 passed (zielone)
+- 2025-09-04 14:29:42Z [48793] (work/daily): W9: PQ-crypto — Devices podpisują output + polityki kluczy packów
+  - - security/signing: Ed25519 podpis kanonicznego JSON (nagłówek)
+  - - Devices: HDE/Q‑Oracle/Entangler/Chronosync – podpis + metryki
+  - - Metryki: certeus_devices_signed_total(device)
+  - - Test: devices signing (weryfikacja sygnatury)
+  - - Lint OK; 167 testów zielone

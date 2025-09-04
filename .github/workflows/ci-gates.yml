@@ -542,8 +542,14 @@ jobs:
               er = float(slo.get('error_rate', 0.0))
               max_p95 = float(os.getenv('SLO_MAX_P95_MS', '300'))
               max_er = float(os.getenv('SLO_MAX_ERROR_RATE', '0.01'))
-              ok = (p95 <= max_p95) and (er <= max_er)
+              ok_p95 = p95 <= max_p95
+              ok_er = er <= max_er
+              ok = ok_p95 and ok_er
               lines.append(f"SLO: p95={p95:.2f} ms (<= {max_p95}), error_rate={er:.4f} (<= {max_er}) => {'✅' if ok else '❌'}")
+              lines.append('')
+              lines.append('### SLO Status')
+              lines.append(f"- p95: {p95:.2f} ms (<= {max_p95}) {'✅' if ok_p95 else '❌'}")
+              lines.append(f"- error_rate: {er:.4f} (<= {max_er}) {'✅' if ok_er else '❌'}")
           except Exception:
               lines.append('SLO: report not available')
           # Smokes
@@ -786,6 +792,7 @@ jobs:
               `- HDE plan: ${baseCi}/hde_plan.json`,
               `- Q-Oracle: ${baseCi}/qoracle.json`,
               `- Entangler: ${baseCi}/entangler.json`,
+              `- Grafana (public): https://www.certeus.pl/grafana`,
               `- CI Run Artifacts: https://github.com/${repo}/actions/runs/${{ github.run_id }}`,
             ];
             const body = ['### Quick Links', ...links].join('\n');

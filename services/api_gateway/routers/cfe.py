@@ -225,7 +225,7 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing(case_id: str | None = None, response: Response | None = None) -> LensingResponse:
+async def lensing(case_id: str | None = None, response: Response = None) -> LensingResponse:
     try:
         from services.cfe.metric import lensing_map_for_case
 
