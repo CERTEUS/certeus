@@ -25,7 +25,7 @@ EN: Property-based tests of QTM sequences — normalization and UB bounds.
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
-from hypothesis import given, settings, strategies as st
+from hypothesis import HealthCheck, given, settings, strategies as st
 from hypothesis.strategies import composite
 
 
@@ -50,7 +50,7 @@ def basis_and_dist(draw):
     return basis, dist
 
 
-@settings(max_examples=30)
+@settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
 @given(bd=basis_and_dist(), ops=ops_strategy)
 def test_qtm_sequence_property_holds(bd: tuple[list[str], list[float]], ops: list[str]) -> None:
     from services.api_gateway.main import app

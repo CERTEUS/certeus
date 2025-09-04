@@ -148,3 +148,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - UI: /app/public/marketplace.html (filtr, status enabled)\n- API: /v1/packs/ zwraca version+enabled\n- Lint+tests: 191 passed, 1 skipped (lokalnie)
 - 2025-09-04 18:34:11Z [root] (work/daily): W13 (A8): Marketplace Policy Gate (licencje/podpisy/polityki)
   - - Gate: scripts/gates/marketplace_policy_gate.py (report-only; ENFORCE_MARKETPLACE_POLICY=1 for hard fail)\n- Check: semver version, allowed license, signature presence (basic sanity)\n- Docs: docs/compliance/marketplace_policies.md\n- Tests: tests/policies/test_marketplace_policy_gate.py; suite green (191 passed)
+- 2025-09-04 18:34:35Z [48793] (work/daily): W13 D62–D64: Q-Oracle heurystyki + examples (lexqft/devices) + OpenAPI
+  - - devices.qoracle: pA uwzględnia constraints i keywords (małe biasy, clamp)
+  - - docs/ENDPOINTS.md: przykłady lexqft (coverage/tunnel), entangle, chronosync
+  - - OpenAPI odświeżone; ruff OK; pytest: 191 passed, 4 skipped
+- 2025-09-04 18:36:38Z [root] (work/daily): T14 D66 start: A11y baseline tests + checklist
+  - - tests/web/test_a11y_static_pages.py: meta/lang/title/h1/img-alt/link checks\n- docs/a11y_checklist.md: WCAG 2.2 AA baseline\n- Stabilizacja Hypothesis (too_slow) w QTM property\n- pytest: 191 passed, 4 skipped; ruff OK
