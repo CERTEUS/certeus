@@ -103,6 +103,18 @@ router = APIRouter(prefix="/v1/fin/alpha", tags=["finance"])
 _FIN_RUNS: dict[str, list[SimulateResponse]] = {}
 
 
+# Paper trading sandbox (per-tenant, prosta księga). W5 pilot.
+class _PaperState(BaseModel):
+    account_id: str = "default"
+    cash: float = 10000.0
+    position_qty: float = 0.0
+    last_price: float = 0.0
+    equity_curve: list[tuple[float, float]] = []  # (ts_epoch, equity)
+
+
+_FIN_PAPER: dict[str, _PaperState] = {}
+
+
 @router.post("/measure", response_model=MeasureResponse)
 async def measure(req: MeasureRequest, request: Request, response: Response) -> MeasureResponse:
     from services.api_gateway.limits import enforce_limits
@@ -286,6 +298,175 @@ async def pnl(request: Request) -> PnLResponse:
     tenant = get_tenant_id(request)
     runs = list(_FIN_RUNS.get(tenant, []))
     return PnLResponse(tenant=tenant, runs=runs)
+
+
+# --- W5: Paper trading sandbox ------------------------------------------------
+
+
+class PaperOpenRequest(BaseModel):
+    capital: float = 10_000.0
+    account_id: str | None = None
+
+
+class PaperOpenResponse(BaseModel):
+    ok: bool
+    account_id: str
+    capital_start: float
+
+
+class PaperOrderRequest(BaseModel):
+    account_id: str | None = None
+    side: str  # BUY or SELL
+    qty: float
+    price: float
+    symbol: str | None = None
+
+
+class PaperOrderResponse(BaseModel):
+    ok: bool
+    account_id: str
+    position: float
+    cash: float
+    last_price: float
+    equity: float
+    pco: dict | None = None
+
+
+class PaperPositionsResponse(BaseModel):
+    account_id: str
+    position: float
+    cash: float
+    last_price: float
+    equity: float
+
+
+class PaperEquityResponse(BaseModel):
+    account_id: str
+    series: list[tuple[float, float]]
+
+
+def _get_paper(tenant: str) -> _PaperState:
+    s = _FIN_PAPER.get(tenant)
+    if s is None:
+        s = _PaperState()
+        _FIN_PAPER[tenant] = s
+    return s
+
+
+@router.post("/paper/open", response_model=PaperOpenResponse)
+async def paper_open(req: PaperOpenRequest, request: Request) -> PaperOpenResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    tenant = get_tenant_id(request)
+    st = _get_paper(tenant)
+    st.cash = float(req.capital)
+    st.position_qty = 0.0
+    st.last_price = 0.0
+    st.account_id = req.account_id or "default"
+    st.equity_curve = []
+    return PaperOpenResponse(ok=True, account_id=st.account_id, capital_start=st.cash)
+
+
+@router.post("/paper/order", response_model=PaperOrderResponse)
+async def paper_order(req: PaperOrderRequest, request: Request, response: Response) -> PaperOrderResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    tenant = get_tenant_id(request)
+    st = _get_paper(tenant)
+    side = (req.side or "").upper()
+    qty = float(req.qty)
+    px = float(req.price)
+    if side not in {"BUY", "SELL"}:
+        side = "BUY"
+    if qty <= 0 or px <= 0:
+        qty = max(0.0, qty)
+        px = max(0.0, px)
+
+    # Aktualizacja stanu konta (bez prowizji/slippage — W5 pilot)
+    notional = qty * px
+    if side == "BUY":
+        st.cash -= notional
+        st.position_qty += qty
+    else:  # SELL
+        st.cash += notional
+        st.position_qty -= qty
+    st.last_price = px
+
+    # Equity i seria
+    equity = st.cash + st.position_qty * st.last_price
+    try:
+        import time
+
+        st.equity_curve.append((time.time(), float(equity)))
+    except Exception:
+        pass
+
+    # Metryki + PCO
+    try:
+        from monitoring.metrics_slo import certeus_fin_paper_equity, certeus_fin_paper_orders_total
+
+        certeus_fin_paper_orders_total.labels(tenant=tenant, side=side).inc()
+        certeus_fin_paper_equity.labels(tenant=tenant).set(float(equity))
+    except Exception:
+        pass
+    pco = {
+        "fin.alpha.paper.order": {
+            "tenant": tenant,
+            "account": st.account_id,
+            "side": side,
+            "qty": qty,
+            "price": px,
+            "position": round(st.position_qty, 6),
+            "cash": round(st.cash, 2),
+            "equity": round(equity, 2),
+        }
+    }
+    try:
+        import json as _json
+
+        response.headers["X-CERTEUS-PCO-fin.paper.order"] = _json.dumps(
+            pco["fin.alpha.paper.order"], separators=(",", ":")
+        )
+    except Exception:
+        pass
+    return PaperOrderResponse(
+        ok=True,
+        account_id=st.account_id,
+        position=round(st.position_qty, 6),
+        cash=round(st.cash, 2),
+        last_price=round(st.last_price, 6),
+        equity=round(equity, 2),
+        pco=pco,
+    )
+
+
+@router.get("/paper/positions", response_model=PaperPositionsResponse)
+async def paper_positions(request: Request) -> PaperPositionsResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    tenant = get_tenant_id(request)
+    st = _get_paper(tenant)
+    eq = st.cash + st.position_qty * st.last_price
+    return PaperPositionsResponse(
+        account_id=st.account_id,
+        position=round(st.position_qty, 6),
+        cash=round(st.cash, 2),
+        last_price=round(st.last_price, 6),
+        equity=round(eq, 2),
+    )
+
+
+@router.get("/paper/equity", response_model=PaperEquityResponse)
+async def paper_equity(request: Request) -> PaperEquityResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    tenant = get_tenant_id(request)
+    st = _get_paper(tenant)
+    return PaperEquityResponse(account_id=st.account_id, series=st.equity_curve)
 
 
 # === I/O / ENDPOINTS ===

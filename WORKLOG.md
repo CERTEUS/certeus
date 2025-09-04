@@ -361,7 +361,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Cookbook: docs/cookbooks/chatops_mailops.md; Runbook: docs/runbooks/w1_demo.md
   - Skrypty: scripts/demos/w1_demo.ps1, scripts/demos/w1_demo.sh; raport: reports/w1_demo.json
   - Smoki: dopisane MailOps ingest + historia QTMP (PS1/sh)
-  - UI: linki Cockpit (Geometry/Quantum/Boundary) na landing `clients/web/public/index.html`; Quantum: Measurement Log
+  - UI: linki Cockpit (Geometry/Quantum/Boundary/ChatOps/MailOps) na landing; Quantum: Measurement Log + Entanglement panel; Geometry: Refresh horizon
+  - Runbook: docs/runbooks/w2_boundary_demo.md
 - 2025-09-04 13:17:58Z [48793] (work/daily): W3: Geometry cockpit + CFE geodesic/horizon demo
   - CFE: /v1/cfe/geodesic (PCO header) i /v1/cfe/horizon (mass + lock)
   - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
@@ -381,3 +382,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Runbook: docs/runbooks/w4_qtmp_demo.md
   - PCO headers, UB L_T, Ledger wpisy (sequence+collapse_event)
   - Testy: 146 passed (zielone)
+- 2025-09-04 13:48:01Z [48793] (work/daily): W5: LexQFT tunnel+coverage demo + PR coverage snapshot
+  - Demo: scripts/smokes/w5_lexqft_demo.py (low vs high energy)
+  - ci-gates: coverage snapshot + PR summary line (gamma/uncaptured)
+  - Path-Coverage-Gate już działa; raport uzupełniony
+- 2025-09-04 13:50:36Z [48793] (work/daily): W5: FINENITH v1.0 (pilot) – paper trading + PnL
+  - - Sandbox paper trading: open/order/positions/equity
+  - - Metryki Prometheus: fin_paper_orders_total, fin_paper_equity
+  - - Testy: tests/services/test_fin_paper.py
+  - - Shedder: middleware zawsze podpięty (env‑toggled) — stabilność testów
+  - - Lint OK; 148 testów zielone

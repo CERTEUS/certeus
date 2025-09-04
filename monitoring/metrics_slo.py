@@ -268,6 +268,18 @@ certeus_fin_entanglement_mi = Gauge(
 )
 certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
 
+# FINENITH: paper trading (W5)
+certeus_fin_paper_orders_total = Counter(
+    "certeus_fin_paper_orders_total",
+    "FIN paper trading orders total",
+    labelnames=("tenant", "side"),
+)
+certeus_fin_paper_equity = Gauge(
+    "certeus_fin_paper_equity",
+    "FIN paper trading account equity",
+    labelnames=("tenant",),
+)
+
 # LEX Pilot (W16): feedback counters and latest rating
 certeus_lex_pilot_feedback_total = Counter(
     "certeus_lex_pilot_feedback_total",

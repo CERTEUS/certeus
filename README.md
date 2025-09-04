@@ -43,6 +43,8 @@ Przeglądaj w przeglądarce po uruchomieniu API:
 - Geometry: `http://127.0.0.1:8000/app/public/geometry.html`
 - Quantum: `http://127.0.0.1:8000/app/public/quantum.html`
 - Boundary (jeśli włączony): `http://127.0.0.1:8000/app/public/boundary.html`
+ - ChatOps: `http://127.0.0.1:8000/app/public/chatops.html`
+ - MailOps: `http://127.0.0.1:8000/app/public/mailops.html`
 
 ## ChatOps / MailOps (cURL)
 
@@ -92,4 +94,5 @@ Bez tokenu PCO wybrane ścieżki (np. POST `/v1/mailops/ingest`) zwrócą `403` 
 - API/OpenAPI: `docs/api/*`, runtime: `http://127.0.0.1:8000/docs`
 - Cockpit/operacje: `docs/cookbooks/chatops_mailops.md`
 - Agent Hub: `docs/AGENTS/README.md`
-
+ - Demo W1: `docs/runbooks/w1_demo.md`
+ - Demo W2 (Boundary): `docs/runbooks/w2_boundary_demo.md`

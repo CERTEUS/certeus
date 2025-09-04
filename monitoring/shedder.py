@@ -76,6 +76,14 @@ def _compute_shed_rate() -> float:
     # Env config
     target = float(os.getenv("SHED_TARGET_P95_MS", "250") or 250.0)
     max_rate = float(os.getenv("SHED_MAX_RATE", "0.5") or 0.5)
+    # Test override or emergency toggle
+    force = os.getenv("SHED_FORCE_RATE")
+    if force is not None:
+        try:
+            val = float(force)
+            return max(0.0, min(max_rate, val))
+        except Exception:
+            pass
     base = 0.0
     p95 = _current_worst_p95_ms()
     if p95 > target:
@@ -109,12 +117,17 @@ def _is_sheddable(path: str, method: str) -> bool:
 
 
 def attach_shedder_middleware(app: FastAPI) -> None:
-    if (os.getenv("SHED_ENABLE") or "").strip() not in {"1", "true", "True"}:
-        return
+    """Attach shedder middleware unconditionally; enable/disable via env per-request.
+
+    This avoids module import ordering issues in tests where env is set after the
+    app is imported. Overhead is negligible when disabled.
+    """
 
     @app.middleware("http")
     async def _shedder(request: Request, call_next: _t.Callable[[Request], Response]) -> Response:  # type: ignore[override]
         try:
+            if (os.getenv("SHED_ENABLE") or "").strip() not in {"1", "true", "True"}:
+                return await call_next(request)
             path = request.url.path
             method = request.method
             if _is_sheddable(path, method):
