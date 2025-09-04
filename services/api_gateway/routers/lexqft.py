@@ -42,7 +42,7 @@ from pydantic import BaseModel, Field
 class TunnelRequest(BaseModel):
     state_uri: str | None = None
 
-    barrier_model: dict | None = None
+    barrier_model: dict[str, float] | None = None
 
     evidence_energy: float = Field(ge=0)
 
@@ -109,16 +109,43 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
 
     enforce_limits(request, cost_units=2)
 
-    # Placeholder physics: if energy > 1.0, tunneling is almost certain.
+    # WKB-like approximation when barrier_model is present; otherwise fallback heuristic
+    e = float(req.evidence_energy)
+    V0: float | None = None
+    w: float | None = None
+    m: float | None = None
+    bm = req.barrier_model if isinstance(req.barrier_model, dict) else None
+    if bm is not None:
+        try:
+            V0 = float(bm.get("V0", bm.get("height", 0.8)))
+            w = float(bm.get("w", bm.get("width", 1.0)))
+            m = float(bm.get("m", bm.get("mass", 1.0)))
+        except Exception:
+            V0 = None
+            w = None
+            m = None
 
-    e = req.evidence_energy
+    if V0 is not None and w is not None and m is not None:
+        # Clamp and compute
+        import math as _math
 
-    p = 0.95 if e >= 1.0 else max(0.05, e * 0.6)
-
-    min_e = 0.8
+        V0 = max(0.0, float(V0))
+        w = max(0.0, float(w))
+        m = max(1e-9, float(m))
+        if e >= V0:
+            p = 0.95
+        else:
+            kappa = _math.sqrt(max(V0 - e, 0.0) * m)
+            p = _math.exp(-2.0 * w * kappa)
+            p = max(0.0005, min(0.95, float(p)))
+        min_e = float(V0)
+    else:
+        # Legacy heuristic: if energy > 1.0, tunneling is almost certain.
+        p = 0.95 if e >= 1.0 else max(0.05, e * 0.6)
+        min_e = 0.8
 
     path = ["start", "barrier", "post-barrier"] if p > 0.5 else ["start", "reflect"]
-    resp = TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
+    resp = TunnelResponse(p_tunnel=round(float(p), 6), min_energy_to_cross=float(min_e), path=path)
 
     # PCO headers: qlaw.tunneling.*
     try:

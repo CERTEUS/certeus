@@ -174,7 +174,7 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
             "bytes": total_bytes,
             "gzip_ratio": _gzip_ratio(str(stats).encode("utf-8"))
             if files == 0
-            else _gzip_ratio(b"0" * total_bytes // max(1, files)),
+            else _gzip_ratio(b"0" * (total_bytes // max(1, files))),
         }
 
     delta_bits = sum(bits_delta_map.values())

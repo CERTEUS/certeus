@@ -51,7 +51,11 @@ def main() -> int:
     script_path.write_text(SCRIPT, encoding="utf-8")
     try:
         proc = subprocess.run(
-            ["bpftrace", str(script_path)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, timeout=15
+            ["bpftrace", str(script_path)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=15,
         )
         print(proc.stdout)
     except subprocess.TimeoutExpired:

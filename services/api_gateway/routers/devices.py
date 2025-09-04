@@ -169,7 +169,20 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
 
     text = (req.question or req.objective or "").strip()
     L = max(1, len(text))
-    pA = min(0.8, 0.4 + (L % 10) * 0.02)
+    pA_base = min(0.8, 0.4 + (L % 10) * 0.02)
+    # W2: lekka korekta pod constraints (jeśli podane), deterministyczna i ograniczona
+    bias = 0.0
+    try:
+        cons = dict(req.constraints or {})
+        cons_l = {str(k).lower(): v for k, v in cons.items()}
+        if "maximize" in cons_l or "fairness" in cons_l or ("maximize fairness" in text.lower()):
+            bias += 0.03
+        risk_v = cons_l.get("risk")
+        if isinstance(risk_v, int | float) and float(risk_v) > 0.5:
+            bias -= 0.03
+    except Exception:
+        bias = 0.0
+    pA = max(0.1, min(0.9, pA_base + bias))
     pB = max(0.1, 1.0 - pA)
     dist = [{"outcome": "A", "p": round(pA, 3)}, {"outcome": "B", "p": round(pB, 3)}]
     choice = "A" if pA >= pB else "B"

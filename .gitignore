@@ -25,6 +25,9 @@ dist/
 build/
 venv/
 .venv/
+.venv_uv/
+.venv_cli/
+.venv*/
 
 # Local outputs/reports
 out/

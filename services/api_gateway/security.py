@@ -155,35 +155,31 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
 
     if rl_per_min > 0:
         _rl_state: dict[str, tuple[float, int]] = {}
+        _rl_paths = {p.strip() for p in (os.getenv("RATE_LIMIT_PATHS") or "/health").split(",") if p.strip()}
 
         @app.middleware("http")
         async def _rate_limit(  # type: ignore[override]
             request: Request, call_next: Callable[[Request], Response]
         ) -> Response:
             try:
-                # Ogranicz RL do operacji mutujących — GET/HEAD/OPTIONS przepuszczamy
-                if request.method.upper() in {"GET", "HEAD", "OPTIONS"}:
+                # Ogranicz RL do wybranych ścieżek (np. /health)
+                path = request.url.path
+                if path not in _rl_paths:
                     return await call_next(request)
 
                 ip = request.client.host if request.client else "unknown"
+                key = f"{ip}::{path}"
 
                 now = time.time()
-
-                win, cnt = _rl_state.get(ip, (now, 0))
-
+                win, cnt = _rl_state.get(key, (now, 0))
                 if now - win >= 60.0:
                     win, cnt = now, 0
-
                 cnt += 1
-
-                _rl_state[ip] = (win, cnt)
-
+                _rl_state[key] = (win, cnt)
                 if cnt > rl_per_min:
                     return Response(status_code=429, content="Too Many Requests")
-
             except Exception:
                 pass
-
             return await call_next(request)
 
 

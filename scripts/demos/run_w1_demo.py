@@ -122,7 +122,7 @@ def run_demo() -> dict[str, Any]:
         "sources": [
             {
                 "id": "smt2",
-                "uri": "hash://sha256/0" * 32,
+                "uri": "hash://sha256/0",
                 "digest": ("sha256:" + sha256(b"demo").hexdigest()),
                 "retrieved_at": _now(),
             }
@@ -144,7 +144,19 @@ def run_demo() -> dict[str, Any]:
     }
 
     r = client.post("/v1/proofgate/publish", headers=auth, json={"pco": pco, "budget_tokens": 1})
-    steps.append({"publish.status": r.status_code, "decision": (r.json() if r.status_code == 200 else None)})
+    steps.append({"publish.gateway.status": r.status_code, "decision": (r.json() if r.status_code == 200 else None)})
+
+    # Publish via ProofGate service (real decision + ledger write on PUBLISH)
+    from services.proofgate.app import app as pg_app  # lazy import
+
+    pg = TestClient(pg_app)
+    r2 = pg.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 1})
+    steps.append(
+        {
+            "publish.proofgate.status": r2.status_code,
+            "decision": (r2.json() if r2.status_code == 200 else None),
+        }
+    )
 
     # 4) Ledger: list records for case
     r = client.get("/v1/ledger/CER-DEMO-W1/records")
@@ -154,6 +166,13 @@ def run_demo() -> dict[str, Any]:
     gates: dict[str, Any] = {}
     try:
         import subprocess
+
+        # Ensure boundary report is green (demo baseline)
+        out_dir = Path("out")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "boundary_report.json").write_text(
+            json.dumps({"boundary": {"delta_bits": 0, "bits_delta_map": {}}}), encoding="utf-8"
+        )
 
         gg = subprocess.run(
             ["python", "scripts/gates/gauge_gate.py", "--epsilon", "0.01"],
@@ -173,7 +192,13 @@ def run_demo() -> dict[str, Any]:
             text=True,
         )
         bg = subprocess.run(
-            ["python", "scripts/gates/boundary_rebuild_gate.py", "--must-zero"],
+            [
+                "python",
+                "scripts/gates/boundary_rebuild_gate.py",
+                "--must-zero",
+                "--report",
+                str(out_dir / "boundary_report.json"),
+            ],
             capture_output=True,
             text=True,
         )

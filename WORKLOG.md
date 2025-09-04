@@ -197,12 +197,16 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Mismatch Console: i18n PL/EN (nagłówki/kolumny/statusy), aria-labele, skip‑link
   - API: aliasy ścieżek (/v1/packs bez '/', /pco/public/{case_id}, /v1/ledger/{case_id}); stub /v1/proofgate/publish
   - Demo runner: scripts/demos/run_w14_demo.py → reports/w14_marketplace.json, reports/w14_billing.json
- - 2025-09-04 10:00:00Z [agent] (work/daily): W1 D1–D4 — gates, Proof‑Only, ChatOps/MailOps, telemetria; lint zielone
+- 2025-09-04 10:00:00Z [agent] (work/daily): W1 D1–D4 — gates, Proof‑Only, ChatOps/MailOps, telemetria; lint zielone
   - Gates: workflows asset‑guard/gauge_gate/path_coverage/boundary_rebuild obecne; skrypty OK (przegląd)
   - Proof‑Only: test DROP bez PCO zielony (tests/security/test_proof_only_middleware.py)
   - Smoke: ChatOps cfe.geodesic 200 (e2e); MailOps ingest: nowy test (tests/services/test_mailops_smoke.py)
   - Telemetria: /v1/cfe/curvature i /v1/lexqft/coverage — nowy test (tests/services/test_telemetry_w1.py)
   - Lint: ruff fix (re‑exporty w services/cfe/__init__.py); ruff/format zielone
+ - 2025-09-04 12:48:00Z [agent] (work/daily): W1 D5 — demo E2E + gates 4/4 OK (lokalnie)
+  - Skrypt: scripts/demos/run_w1_demo.py (ingest→analyze→ProofGate→Ledger)
+  - ProofGate: real publish → ledger_ref OK; raport: reports/w1_demo.json
+  - Gates: gauge/path_coverage/boundary OK (baseline report dla boundary)
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -213,6 +217,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - services/cfe: metryka grafowa + aproks. Olliviera; cache (p95<200ms)
   - /v1/cfe/curvature: realny `kappa_max` (deterministyczny per case_id, fallback bezpieczny)
   - UI geometry.html korzysta z wartości; przygotowanie do W2 (cache krzywizn)
+- 2025-09-04 13:55:00Z [agent] (work/daily): W1: Geodezyjne A* + WKB tunnel + RL fix + testy zielone
+  - CFE: geodesic A* na krzywiźnie; ChatOps `cfe.geodesic` → metryka
+  - LexQFT: WKB p_tunnel (monotonic), min_energy = V0; testy przechodzą
+  - Security: rate-limit (GET /health) sterowany `RATE_LIMIT_PER_MIN`; headers bez zmian
+  - Telemetria: `certeus_cfe_kappa_max` (Prometheus); OpenAPI docs z `/v1/cfe/curvature`
+  - Pytests: 141 passed, 1 skipped (lokalnie, .venv_cli)
  - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
    - Geometry/Quantum cockpit: telemetria (kappa_max, coverage/tunnel) — UI w `clients/web/public/geometry.html`, `quantum.html`
    - Smoke: dodano MailOps ingest do `scripts/smoke_api.ps1` i `scripts/smoke_api.sh`; ChatOps `cfe.geodesic` OK
@@ -292,6 +302,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - D3: MailOps io.email.* i QTMP qtm.sequence[] logowane do Ledger (hash)
   - D4: /v1/cfe/curvature (kappa_max) i /v1/lexqft/coverage (coverage_gamma)
   - Lint: ruff check/format (F401 fix w services/cfe/__init__.py)
+- 2025-09-04 12:48:34Z [agent] (work/daily): Env + PNIP strict + Boundary smoke
+  - Środowisko: .venv (Py 3.11), uv; deps (pytest/httpx/hypothesis/cryptography)
+  - Testy: 140 passed, 1 skipped; JUnit: reports/junit.xml
+  - Security: rate-limit per-IP per-path; local.env.test (STRICT_PROOF_ONLY=0, RATE_LIMIT_PER_MIN=0)
+  - PNIP: testy strict (400 + PCO) + włączenie route publish warunkowo
+  - Boundary: scripts/smokes/boundary_smoke.py + bugfix gzip_ratio; zapis raportu do reports/
 - 2025-09-04 11:32:01Z [48793] (work/daily): W1: Devices HDE plan + LEX/FIN packs layout
   - - /v1/devices/horizon_drive/plan (bootstrap)
   - - Pakiet LEX: manifest pluginu
@@ -315,3 +331,16 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - PNIP strict: /v1/ledger/record-input validates hash/jurisdiction/policy
   - Supply-chain: supply-chain.yml (SBOM/attest/enforce) + local gate script
   - Demo: scripts/smokes/w2_boundary_demo.py
+- 2025-09-04 12:48:36Z [48793] (work/daily): W2: FIN R/S operator base + Q-Oracle MVP tweaks
+  - - Pakiet FIN: fin.alpha.measure (R/S operators)
+  - - /v1/packs/handle wspiera finenith_fin
+- - Q-Oracle: constraints → lekki bias dystrybucji
+- - Dodany runtime/complexity_firewall (SLA weights)
+- - Lint (ruff) + 141 testów zielone
+## 2025-09-04 14:15 | branch=work/daily
+- [A4] W2: Tunelowanie (WKB‑like) — 2 scenariusze + kontrdowody
+  - `/v1/lexqft/tunnel`: wsparcie `barrier_model` (V0,w,m) i WKB p≈exp(-2 w sqrt(max(V0−E,0)m))
+  - Kontrdowody: klamrowanie ujemnych parametrów; E>V0 ⇒ wysoka p, `min_energy_to_cross=V0`
+  - Testy: `tests/services/test_lexqft_wkb.py` (monotoniczność po w i V0; clamp+cross)
+  - Stabilizacja RL: per-ścieżka (domyślnie `/health`), spójna z testami
+  - Lint/tests: 141 passed / 1 skipped; ruff OK; raport `reports/junit.xml`

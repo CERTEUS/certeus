@@ -27,3 +27,29 @@ Welcome to the CERTEUS docs.
 
 - API: see API section (rendered from OpenAPI).
 - Observability: quickstart and dashboards.
+
+## Run Locally (Quickstart)
+
+```
+python -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip wheel setuptools fastapi uvicorn ruff pytest jsonschema cryptography
+python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+```
+
+Windows (PowerShell):
+
+```
+py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools fastapi uvicorn ruff pytest jsonschema cryptography
+.\.venv\Scripts\python.exe -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
+```
+
+Open Cockpit UI:
+
+- Geometry: `/app/public/geometry.html`
+- Quantum: `/app/public/quantum.html`
+
+Smoke tests:
+
+- PowerShell: `pwsh -File scripts/smoke_api.ps1`
+- Bash: `bash scripts/smoke_api.sh`
