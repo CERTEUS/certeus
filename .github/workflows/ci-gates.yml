@@ -208,6 +208,34 @@ jobs:
         run: |
           mkdir -p out && echo ok > out/perf_ok.txt
 
+      - name: Boundary report (compute + RTO)
+        continue-on-error: true
+        run: |
+          set -e
+          start_ts=$(python - <<'PY'
+import time; print(time.time())
+PY
+          )
+          python scripts/gates/compute_boundary_report.py --out out/boundary_report.json || true
+          end_ts=$(python - <<'PY'
+import time; print(time.time())
+PY
+          )
+          dur=$(python - <<PY
+import os
+try:
+  s=float(os.environ.get('start_ts','0'))
+  e=float(os.environ.get('end_ts','0'))
+  print(f"{(e-s):.3f}")
+except Exception:
+  print('0.000')
+PY
+          )
+          echo "$dur" > out/boundary_rto.txt
+          # Run gate in report-only mode (no fail in ci-gates)
+          python scripts/gates/boundary_rebuild_gate.py --must-zero || true
+          echo "Boundary compute RTO(s): $dur"
+
       - name: DP Policy Gate (OPA/Rego)
         continue-on-error: true
         run: |
@@ -579,6 +607,14 @@ jobs:
               lines.append(f"LexQFT: coverage_gamma={cov.get('coverage_gamma')} uncaptured_mass={cov.get('uncaptured_mass')}")
           except Exception:
               lines.append('LexQFT: coverage summary n/a')
+          # Boundary summary (delta_bits + RTO)
+          try:
+              bnd = json.loads((repo/'out'/'boundary_report.json').read_text()).get('boundary', {})
+              delta = bnd.get('delta_bits')
+              rto = (repo/'out'/'boundary_rto.txt').read_text().strip() if (repo/'out'/'boundary_rto.txt').exists() else 'n/a'
+              lines.append(f"Boundary: delta_bits={delta} RTO_s={rto}")
+          except Exception:
+              lines.append('Boundary: summary n/a')
           # LexQFT tunneling summary
           try:
               tun = json.loads((repo/'out'/'lexqft_tunnel.json').read_text())
@@ -652,6 +688,13 @@ jobs:
               pri = cq.get('priorities') if cq else {}
               lines.append(f"| pri_L | {pri.get('L', 'n/a')} |")
               lines.append(f"| pri_T | {pri.get('T', 'n/a')} |")
+              try:
+                  dL = float(pri.get('L', 1.0)) - 1.0
+                  dT = float(pri.get('T', 1.0)) - 1.0
+                  lines.append(f"| Δ pri_L vs 1.0 | {dL:+.3f} |")
+                  lines.append(f"| Δ pri_T vs 1.0 | {dT:+.3f} |")
+              except Exception:
+                  pass
               lines.append(f"| HDE cost_tokens | {hde.get('cost_tokens', 'n/a')} |")
               lines.append(f"| HDE expected_kappa | {hde.get('expected_kappa', 'n/a')} |")
               lines.append(f"| Q-Oracle payoff | {qo.get('payoff', 'n/a')} |")
