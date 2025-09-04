@@ -401,6 +401,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - FIN→coverage: `tests/services/test_lexqft_from_fin_properties.py` (zakresy + monotoniczność score)
   - Fix: CFE endpoints — Response jako dependency (bez union); ruff clean
   - Lint/tests: 168 passed / 1 skipped; `reports/junit.xml`
+## 2025-09-04 16:35 | branch=work/daily
+- [A4] W6+W7: sporne profile tunelowania + ProofFS RO
+  - W6: `/v1/lexqft/tunnel` z `dispute_profile` (balanced/authority_bias/evidence_bias/asymmetric) + testy
+  - W7: Read‑only ProofFS — `GET /v1/pfs/inspect`, `GET /v1/pfs/case/{case}`; zapis ścieżek przez lexqft
+  - Testy: `tests/services/test_lexqft_dispute.py`, `tests/services/test_pfs_inspect.py`
+  - Lint/tests: 175 passed / 1 skipped; `reports/junit.xml`
 ## 2025-09-04 14:30 | branch=work/daily
 - [A6] W1: Quickstart + Demo + Cockpit
   - README.md (Quickstart), docs/README_PL.md (rozszerzony Szybki Start), docs/index.md (Run locally), guides/dev-setup.md (krok po kroku)
