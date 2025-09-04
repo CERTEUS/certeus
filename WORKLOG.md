@@ -178,3 +178,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Testy: ruff OK; pytest: 198 passed, 4 skipped; a11y smoke zielony
 - 2025-09-04 19:15:45Z [root] (work/daily): W13: Marketplace — szczegóły pakietu (modal) + /v1/packs/{name}
   - - UI: panel detali (capabilities, manifest, status)\n- API: GET /v1/packs/{name} — manifest+meta\n- Testy: 199 passed (lokalnie)
+- 2025-09-04 19:15:50Z [root] (work/daily): W14 (A8): Compliance Mapping Gate (DPIA/ISO/SOC2) w CI
+  - - Gate: scripts/gates/compliance_mapping_gate.py (report-only; ENFORCE_COMPLIANCE_MAPPING=1 for hard fail)\n- CI: .github/workflows/ci-gates.yml — krok i tick w PR summary\n- Test: tests/policies/test_compliance_mapping_gate.py; suite 199 passed
