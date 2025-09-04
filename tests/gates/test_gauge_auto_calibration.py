@@ -77,4 +77,3 @@ def test_auto_epsilon_makes_gate_pass(tmp_path: Path) -> None:
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

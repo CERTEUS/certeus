@@ -27,6 +27,7 @@
       .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
       .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
       .btn:hover{background:#20242a}
+      .btn:focus, input:focus, .cell:focus{outline:2px solid #3b82f6; outline-offset:2px}
       .muted{color:#9aa0a6}
       .grid{display:grid;grid-template-columns:repeat(10, 1fr);gap:2px;margin-top:8px}
       .cell{width:18px;height:18px;background:#20242a;border-radius:2px;position:relative}
@@ -68,9 +69,9 @@
         <h1>CFE • Lensing Map</h1>
         <div class="row" style="margin-bottom:10px;">
           <label class="muted">Filter:</label>
-          <label><input type="checkbox" id="fK" checked /> K_</label>
-          <label><input type="checkbox" id="fIII" checked /> III_</label>
-          <label><input type="checkbox" id="fSN" checked /> SN_</label>
+          <label><input type="checkbox" id="fK" aria-label="Filter K_ precedents" checked /> K_</label>
+          <label><input type="checkbox" id="fIII" aria-label="Filter III_ precedents" checked /> III_</label>
+          <label><input type="checkbox" id="fSN" aria-label="Filter SN_ precedents" checked /> SN_</label>
         </div>
         <div id="lensingPanel"></div>
       </div>
@@ -186,6 +187,14 @@
       document.getElementById('fK').addEventListener('change', rerenderLensing);
       document.getElementById('fIII').addEventListener('change', rerenderLensing);
       document.getElementById('fSN').addEventListener('change', rerenderLensing);
+      // Keyboard shortcuts: 1->K_, 2->III_, 3->SN_
+      document.addEventListener('keydown', (e)=>{
+        const tag = (document.activeElement||{}).tagName || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.key==='1'){ const el=document.getElementById('fK'); el.checked=!el.checked; rerenderLensing(); }
+        if (e.key==='2'){ const el=document.getElementById('fIII'); el.checked=!el.checked; rerenderLensing(); }
+        if (e.key==='3'){ const el=document.getElementById('fSN'); el.checked=!el.checked; rerenderLensing(); }
+      });
       init();
     </script>
   </body>

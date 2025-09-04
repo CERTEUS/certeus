@@ -6,7 +6,7 @@
     "capacity": 10,
     "ttl_sec": 0,
     "health": "up",
-    "last_seen": 1757003386.4790263
+    "last_seen": 1757003359.1401763
   },
   "node-low": {
     "competencies": [
@@ -15,7 +15,7 @@
     "capacity": 1,
     "ttl_sec": 3600,
     "health": "up",
-    "last_seen": 1757003386.6056397
+    "last_seen": 1757003359.649191
   },
   "node-high": {
     "competencies": [
@@ -24,6 +24,6 @@
     "capacity": 3,
     "ttl_sec": 3600,
     "health": "up",
-    "last_seen": 1757003386.7059698
+    "last_seen": 1757003359.8822854
   }
 }

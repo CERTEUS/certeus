@@ -239,6 +239,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Gates: roles_policy_gate, security_bunker_gate, pqcrypto_gate; test PQ‑crypto smoke
   - Demo: scripts/demos/run_w9_demo.py → reports/w9_demo.json
   - Runbook: docs/runbooks/w9_demo.md
+ - 2025-09-04 17:20:00Z [agent] (work/daily): W10 — Observability & SRE
+  - Demo: scripts/demos/run_w10_demo.py (SLO measure+check, perf bench) → reports/w10_demo.json
+  - Runbook: docs/runbooks/w10_sre.md; potwierdzenie smokes /metrics i /openapi.json
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -601,7 +604,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Nagłówki: X-Idempotency-Status=new|reused; metryki certeus_idem_*
   - - Test: tests/services/test_devices_idempotency.py (budżet naliczany raz)
   - - Lint OK; 190 testów zielone
-- 2025-09-04 16:29:40Z [CERTEUS] (work/daily): auto-promote:  (gates green)
-  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
-  - Actor: CERTEUS
-
+- 2025-09-04 16:17:38Z [agent] (work/daily): W9 Security — PQ/TEE/Roles/DP gates + runbook
+  - Proof Gate: dodane kroki PQ-crypto/DP Budget (flagi repo vars)
+  - CI: UI Demos workflow (W4/W6/W7/W8 smoke raporty jako artefakty)
+  - Runbook: docs/runbooks/security_hardening.md
+- 2025-09-04 16:30:33Z [root] (work/daily): A1/W4: Gauge ε auto‑kalibracja + stabilizacja testów
+  - - scripts/gates/compute_gauge_epsilon.py + test_gauge_auto_calibration.py\n- QTM/PFS: izolacja storage per worker/test (xdist)\n- Hypothesis: globalny profil deadline=1000 (conftest)\n- Pełne testy: 190 passed, 1 skipped

@@ -1,0 +1,22 @@
+{
+  "node-A": {
+    "competencies": [
+      "lexqft.*",
+      "proof.*"
+    ],
+    "capacity": 2,
+    "ttl_sec": null,
+    "health": "up",
+    "last_seen": 1757003357.0262356
+  },
+  "node-B": {
+    "competencies": [
+      "cfe.geodesic",
+      "lexenith.*"
+    ],
+    "capacity": 1,
+    "ttl_sec": null,
+    "health": "up",
+    "last_seen": 1757003357.2972882
+  }
+}
