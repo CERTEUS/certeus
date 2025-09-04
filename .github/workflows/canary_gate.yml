@@ -32,7 +32,7 @@ jobs:
       - name: Install deps (minimal)
         run: |
           python -m pip install -U pip wheel setuptools
-          python -m pip install fastapi httpx uvicorn
+          python -m pip install fastapi httpx uvicorn cryptography jsonschema prometheus-client openapi-spec-validator python-multipart z3-solver
       - name: Run Canary Gate
         env:
           CANARY_COUNT: '60'

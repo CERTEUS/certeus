@@ -109,8 +109,8 @@ async def curvature(case_id: str | None = None) -> CurvatureResponse:
     case_id opcjonalny — determinuje ziarno grafu (metryka realna, ale lekka).
     """
     try:
-        from services.cfe import kappa_max_for_case
         from monitoring.metrics_slo import certeus_cfe_kappa_max
+        from services.cfe import kappa_max_for_case
 
         summary = kappa_max_for_case(case_id)
         try:
