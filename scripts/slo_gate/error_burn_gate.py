@@ -18,9 +18,12 @@ EN: SLO burn-rate gate — reads `out/endpoint_slo.json` and reports when
 
 from __future__ import annotations
 
+# === IMPORTY / IMPORTS ===
 import json
 import os
 from pathlib import Path
+
+# === LOGIKA / LOGIC ===
 
 
 def main() -> int:  # pragma: no cover
@@ -54,3 +57,7 @@ def main() -> int:  # pragma: no cover
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

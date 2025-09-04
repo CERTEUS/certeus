@@ -18,6 +18,7 @@ EN: Per-endpoint SLO smoke — measures p95 and error_rate for selected endpoint
 
 from __future__ import annotations
 
+# === IMPORTY / IMPORTS ===
 import argparse
 import json
 from pathlib import Path
@@ -27,6 +28,8 @@ from typing import Any
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
+
+# === LOGIKA / LOGIC ===
 
 
 def _p95(vals: list[float]) -> float:
@@ -89,3 +92,7 @@ def main() -> int:  # pragma: no cover (integration)
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
