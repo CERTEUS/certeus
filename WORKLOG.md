@@ -142,6 +142,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - CI: dodany krok Marketplace Policy Gate + Pack ABI/SemVer Gate (report‑only)
   - Testy: tests/gates/test_pack_abi_semver_gate.py (wykrywa zmianę ABI bez bump MAJOR)
   - Stan: ruff OK; pytest lokalnie: 198 passed, 4 skipped
+- 2025-09-04 21:45:00Z [agent] (work/daily): W14 A1 — Ω‑Kernel drift (entropy/NER), integracja z gate’em
+  - Omega: core/omega/transforms — compute_entropy_drift, compute_entity_drift; normalize; apply_transform
+  - Tests: tests/omega/test_transforms_invariants.py; tests/omega/test_transforms_entropy_entities.py
+  - Gate: scripts/gates/compute_gauge_drift.py — pola omega.{token_count_delta,jaccard_drift,entropy_drift,entity_jaccard_drift}
+  - ProofFS: materializacja załączników na flagę (MailOps) + router /v1/pfs (resolve/list)
+  - Docs: README demo T13 + guides (packs_abi_semver.md, domain_transforms.md)
+  - Stan: ruff OK; pytest lokalnie: 214 passed, 5 skipped
 - 2025-09-04 17:51:02Z [root] (work/daily): W13 start: Devices v0.2 — baseline zielona
   - - Lint+format: ruff OK\n- Testy: 118 passed, 1 skipped (lokalnie)\n- W13 (HDE/Q-Oracle/Entangle/Chronosync) sprawdzone kontraktowo
 - 2025-09-04 17:51:56Z [48793] (work/daily): W13: Devices v0.2 — API docs + lint/tests green

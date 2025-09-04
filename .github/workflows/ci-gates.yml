@@ -80,6 +80,19 @@ jobs:
         run: |
           python scripts/slo_gate/tenant_slo_sanity.py --tenants tenant-a tenant-b --iters 10 --out out/tenant_slo.json || true
           test -f out/tenant_slo.json && echo ok > out/tenant_slo_ok.txt || true
+      - name: Tenant SLO Trend Gate (report-only)
+        continue-on-error: true
+        run: |
+          set -e
+          git fetch origin ci-status || true
+          if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
+            git show origin/ci-status:ci/tenant_slo.json > out/prev_tenant_slo.json 2>/dev/null || true
+          fi
+          python scripts/slo_gate/tenant_slo_trend_gate.py || true
+      - name: Mark Tenant SLO Trend OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/tenant_slo_trend_ok.txt
       - name: Marketplace Policy Gate (report-only)
         continue-on-error: true
         run: |
@@ -433,11 +446,15 @@ jobs:
               "  \"updated_at\": \"${ts}\"" \
             '}' > ci/status.json
             # Persist latest perf bench for trend comparisons
-            if [ -f out/perf_bench.json ]; then
-              cp -f out/perf_bench.json ci/perf_bench.json || true
-            fi
-            git add ci/status.json
-            git add ci/perf_bench.json || true
+          if [ -f out/perf_bench.json ]; then
+            cp -f out/perf_bench.json ci/perf_bench.json || true
+          fi
+          if [ -f out/tenant_slo.json ]; then
+            cp -f out/tenant_slo.json ci/tenant_slo.json || true
+          fi
+          git add ci/status.json
+          git add ci/perf_bench.json || true
+          git add ci/tenant_slo.json || true
             git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
             if git push origin ci-status; then
               echo "[ci-status] Push OK"

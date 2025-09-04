@@ -112,3 +112,15 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
 5) Zweryfikuj w CI (ci‑gates publikuje wynik gate’ów jako komentarz w PR).
 
 Polityka SemVer dla packs: zobacz `docs/guides/packs_abi_semver.md`.
+
+## Demo T14 — Billing & A11y/i18n
+
+1) A11y/i18n
+   - Strony web mają skip‑link do `#main`, widoczne focusy; UI wspiera PL/EN (nagłówek `Accept-Language` + `?lang` → `Content-Language`).
+2) Billing & Cost‑tokens
+   - Ustal limit: `POST /v1/billing/quota {tenant, units}` (demo‑admin)
+   - Sprawdź balans: `GET /v1/billing/quota`
+   - Rezerwuj: `POST /v1/billing/allocate {cost_units}` → `ALLOCATED` lub `PENDING`
+   - Zwrot: `POST /v1/billing/refund {units}`
+3) Marketplace Install/Upgrade
+   - `POST /v1/packs/install {pack, signature, version?}` — zapisuje podpis i wersję zainstalowaną; UI: `/app/public/marketplace.html` (przycisk Install/Upgrade)

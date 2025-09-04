@@ -68,13 +68,15 @@
       <div class="card" id="details" style="display:none;">
         <h1>Szczegóły pakietu <span id="d-name" class="pill">–</span></h1>
         <p class="muted">Wersja: <span id="d-version" class="pill">–</span> ABI: <span id="d-abi" class="pill">–</span> Status: <span id="d-enabled" class="pill">–</span></p>
-        <p class="muted">SemVer: <span id="d-semver" class="pill">–</span> Baseline: <span id="d-baseline" class="pill">–</span></p>
+        <p class="muted">SemVer: <span id="d-semver" class="pill" title="SemVer format x.y.z">–</span> Baseline: <span id="d-baseline" class="pill" title="ABI baseline presence">–</span> <span class="muted" title="Legenda: SemVer=x.y.z; Baseline=abi_baseline.json w repo.">[?]</span></p>
         <div class="row" style="margin:8px 0;">
           <button class="btn" id="d-try">Try</button>
           <button class="btn" id="d-docs">Docs</button>
+          <button class="btn" id="d-baseline-btn">Show baseline</button>
         </div>
         <div id="d-caps"></div>
         <pre id="d-manifest" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:280px"></pre>
+        <pre id="d-baseline-json" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:220px;display:none"></pre>
         <pre id="d-result" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:220px;display:none"></pre>
       </div>
       <p class="muted">Tip: API <code>/v1/packs/</code> zwraca listę pakietów (name, version, abi, capabilities, enabled).</p>
@@ -87,6 +89,11 @@
       }
       async function fetchDetails(name){
         const r = await fetch(`/v1/packs/${encodeURIComponent(name)}`);
+        if(!r.ok){ return null }
+        return await r.json();
+      }
+      async function fetchBaseline(name){
+        const r = await fetch(`/v1/packs/${encodeURIComponent(name)}/baseline`);
         if(!r.ok){ return null }
         return await r.json();
       }
@@ -113,6 +120,13 @@
         };
         const docsBtn = document.getElementById('d-docs');
         docsBtn.onclick = ()=>{ card.scrollIntoView({behavior:'smooth'}); };
+        const baseBtn = document.getElementById('d-baseline-btn');
+        baseBtn.onclick = async ()=>{
+          const j = await fetchBaseline(d.name);
+          const el = document.getElementById('d-baseline-json');
+          if(j){ el.style.display=''; el.textContent = JSON.stringify(j, null, 2); el.scrollIntoView({behavior:'smooth'}); }
+          else { el.style.display=''; el.textContent = 'Baseline not found'; }
+        };
         card.style.display = '';
         card.scrollIntoView({behavior:'smooth'});
       }

@@ -3,76 +3,186 @@
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
-# | FILE: services/api_gateway/routers/billing.py              |
+# | FILE: services/api_gateway/routers/billing.py             |
 # | ROLE: Project module.                                       |
-# | PLIK: services/api_gateway/routers/billing.py              |
+# | PLIK: services/api_gateway/routers/billing.py             |
 # | ROLA: Moduł projektu.                                       |
 # +-------------------------------------------------------------+
 
 """
-
-PL: Router FastAPI dla Billing (quota/allocate/refund) — w oparciu o in-memory
-    bank jednostek w `services.api_gateway.limits`.
-
-EN: FastAPI router for Billing (quota/allocate/refund) — based on in-memory
-    token bank in `services.api_gateway.limits`.
-
+PL: Router FastAPI dla obszaru Billing / Cost‑Tokens.
+EN: FastAPI router for Billing / Cost‑Tokens.
 """
 
 # === IMPORTY / IMPORTS ===
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
-from pydantic import BaseModel, Field
+import json
+from pathlib import Path
+from typing import Any
+import uuid
 
-from services.api_gateway.limits import (
-    allocate_tenant_cost,
-    get_tenant_balance,
-    get_tenant_id,
-    refund_tenant_units,
-)
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
 
-router = APIRouter(prefix="/v1/billing", tags=["Billing"])
+_STATE_FILE = Path(__file__).resolve().parents[3] / "data" / "fin_tokens.json"
+
+
+def _load_state() -> dict[str, Any]:
+    if not _STATE_FILE.exists():
+        return {"requests": {}}
+    try:
+        return json.loads(_STATE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {"requests": {}}
+
+
+def _save_state(state: dict[str, Any]) -> None:
+    _STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _STATE_FILE.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 # === MODELE / MODELS ===
 
 
-class AllocateRequest(BaseModel):
-    cost_units: int = Field(..., ge=0)
+class TokenRequestIn(BaseModel):
+    user_id: str = Field(min_length=1)
+    amount: int = Field(gt=0)
+    purpose: str | None = None
 
 
-class RefundRequest(BaseModel):
-    units: int = Field(..., ge=0)
+class TokenRequestOut(BaseModel):
+    request_id: str
+    status: str
+    user_id: str
+    amount: int
+    purpose: str | None = None
+
+
+class TokenAllocateIn(BaseModel):
+    request_id: str
+    allocated_by: str | None = None
+
+
+class TokenStatusOut(BaseModel):
+    request_id: str
+    status: str
+    allocated_by: str | None = None
 
 
 # === LOGIKA / LOGIC ===
 
+router_tokens = APIRouter(prefix="/v1/fin/tokens", tags=["billing"])
+
+
+@router_tokens.post("/request", response_model=TokenRequestOut)
+async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestOut:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    state = _load_state()
+    rid = uuid.uuid4().hex
+    entry = {
+        "request_id": rid,
+        "status": "PENDING",
+        "user_id": req.user_id,
+        "amount": int(req.amount),
+        "purpose": req.purpose,
+        "allocated_by": None,
+    }
+    state.setdefault("requests", {})[rid] = entry
+    _save_state(state)
+    return TokenRequestOut(**entry)
+
+
+@router_tokens.post("/allocate", response_model=TokenStatusOut)
+async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatusOut:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    state = _load_state()
+    entry = state.get("requests", {}).get(req.request_id)
+    if not entry:
+        raise HTTPException(status_code=404, detail="unknown request_id")
+    if entry.get("status") == "ALLOCATED":
+        return TokenStatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
+    entry["status"] = "ALLOCATED"
+    if req.allocated_by:
+        entry["allocated_by"] = req.allocated_by
+    state["requests"][req.request_id] = entry
+    _save_state(state)
+    return TokenStatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
+
+
+@router_tokens.get("/{request_id}", response_model=TokenStatusOut)
+async def get_request_status(request_id: str, request: Request) -> TokenStatusOut:
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    state = _load_state()
+    entry = state.get("requests", {}).get(request_id)
+    if not entry:
+        raise HTTPException(status_code=404, detail="unknown request_id")
+    return TokenStatusOut(
+        request_id=request_id, status=str(entry.get("status")), allocated_by=entry.get("allocated_by")
+    )
+
+
+class QuotaRequest(BaseModel):
+    tenant: str | None = None
+    units: int = Field(ge=0, default=0)
+
+
+class AllocateRequest(BaseModel):
+    cost_units: int = Field(ge=0)
+
+
+class RefundRequest(BaseModel):
+    units: int = Field(ge=0)
+
+
+# Billing endpoints (per-tenant budgets)
+router = APIRouter(prefix="/v1/billing", tags=["billing"])
+
 
 @router.get("/quota")
-async def get_quota(request: Request) -> dict[str, int]:
+async def quota(request: Request) -> dict[str, Any]:
+    from services.api_gateway.limits import get_tenant_balance, get_tenant_id
+
     tenant = get_tenant_id(request)
-    return {"balance": int(get_tenant_balance(tenant))}
+    return {"tenant": tenant, "balance": get_tenant_balance(tenant)}
+
+
+@router.post("/quota")
+async def set_quota_api(req: QuotaRequest, request: Request) -> dict[str, Any]:
+    from services.api_gateway.limits import get_tenant_balance, get_tenant_id, set_tenant_quota
+
+    tenant = (req.tenant or get_tenant_id(request)).strip() or get_tenant_id(request)
+    set_tenant_quota(tenant, max(0, int(req.units)))
+    return {"ok": True, "tenant": tenant, "balance": get_tenant_balance(tenant)}
 
 
 @router.post("/allocate")
-async def allocate(req: AllocateRequest, request: Request) -> dict[str, str | int]:
+async def allocate(req: AllocateRequest, request: Request) -> dict[str, Any]:
+    from services.api_gateway.limits import allocate_tenant_cost, get_tenant_balance, get_tenant_id
+
     tenant = get_tenant_id(request)
+    if req.cost_units == 0:
+        return {"status": "ALLOCATED", "tenant": tenant, "balance": get_tenant_balance(tenant)}
     ok = allocate_tenant_cost(tenant, int(req.cost_units))
-    status = "ALLOCATED" if ok else "PENDING"
-    return {"status": status, "balance": int(get_tenant_balance(tenant))}
+    if not ok:
+        return {"status": "PENDING", "tenant": tenant, "balance": get_tenant_balance(tenant)}
+    return {"status": "ALLOCATED", "tenant": tenant, "balance": get_tenant_balance(tenant)}
 
 
 @router.post("/refund")
-async def refund(req: RefundRequest, request: Request) -> dict[str, int]:
+async def refund(req: RefundRequest, request: Request) -> dict[str, Any]:
+    from services.api_gateway.limits import get_tenant_balance, get_tenant_id, refund_tenant_units
+
     tenant = get_tenant_id(request)
-    bal = refund_tenant_units(tenant, int(req.units))
-    return {"balance": int(bal)}
-
-
-# === I/O / ENDPOINTS ===
-
-# === TESTY / TESTS ===
+    if req.units > 0:
+        refund_tenant_units(tenant, int(req.units))
+    return {"ok": True, "tenant": tenant, "balance": get_tenant_balance(tenant)}

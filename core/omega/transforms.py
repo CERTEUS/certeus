@@ -154,8 +154,31 @@ def _extract_entities(text: str) -> set[str]:
 
 
 def compute_entity_drift(before: str, after: str) -> EntityDrift:
-    eb = _extract_entities(before)
-    ea = _extract_entities(after)
+    """
+    Heurystyczny dryf „encji”: użyj sygnatur tokenów odpornych na diakrytykę/mojibake.
+    - liczby (≥2 cyfry) w całości,
+    - pozostałe tokeny: ASCII‑fold + pierwsze 5 znaków.
+    """
+
+    def _fold(s: str) -> str:
+        try:
+            import unicodedata as _ud  # local import to avoid global overhead
+        except Exception:  # pragma: no cover
+            return s
+        return "".join(ch for ch in _ud.normalize("NFKD", s) if not _ud.combining(ch))
+
+    def _sig(text: str) -> set[str]:
+        sig: set[str] = set()
+        for t in _tokenize(text):
+            t2 = _fold(t)
+            if t2.isdigit() and len(t2) >= 2:
+                sig.add(t2)
+            elif len(t2) >= 5:
+                sig.add(t2[:5])
+        return sig
+
+    eb = _sig(before)
+    ea = _sig(after)
     if not eb and not ea:
         return EntityDrift(entity_jaccard_drift=0.0)
     inter = len(eb & ea)
@@ -216,13 +239,3 @@ def apply_transform(text: str, transform: str = "identity", **params: Any) -> tu
 
 
 # === TESTY / TESTS ===
-def compute_entity_drift(before: str, after: str) -> EntityDrift:  # noqa: F811
-    """Final override: token-level proxy, robust to punctuation/case changes."""
-    sb = set(_tokenize(before))
-    sa = set(_tokenize(after))
-    if not sb and not sa:
-        return EntityDrift(entity_jaccard_drift=0.0)
-    inter = len(sb & sa)
-    union = len(sb | sa) or 1
-    j = 1.0 - (inter / union)
-    return EntityDrift(entity_jaccard_drift=round(j, 6))
