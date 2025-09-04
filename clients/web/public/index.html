@@ -51,6 +51,11 @@
           </p>
         </div>
         <div class="card">
+          <h2>Boundary Status</h2>
+          <p class="muted">delta_bits: <span id="b-delta">?</span> • observed_at: <span id="b-obs">?</span></p>
+          <p><a href="/app/public/boundary.html">Otwórz Boundary</a></p>
+        </div>
+        <div class="card">
           <h2>Quick checks</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <input id="tenant" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="X-Tenant-ID (np. acme)">
@@ -157,8 +162,9 @@
         document.getElementById('admSet').addEventListener('click', admSetTier);
         document.getElementById('admReload').addEventListener('click', admReload);
         document.getElementById('rid').addEventListener('input', updPCOLink);
+        async function refreshBoundary(){ const r=await jfetch('/v1/boundary/status'); if(r.ok){ document.getElementById('b-delta').textContent = r.data.delta_bits; const a=(r.data.anchors||{}).observed_at||''; document.getElementById('b-obs').textContent = a||'-'; } }
         updPCOLink();
-        refreshMetrics(); setInterval(refreshMetrics, 5000); refreshSeries(); setInterval(refreshSeries, 5000);
+        refreshMetrics(); setInterval(refreshMetrics, 5000); refreshSeries(); setInterval(refreshSeries, 5000); refreshBoundary(); setInterval(refreshBoundary, 10000);
         document.getElementById('mFilter').addEventListener('input', ()=>{ refreshMetrics(); refreshSeries(); });
       </script>
     </div>

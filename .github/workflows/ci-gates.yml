@@ -373,6 +373,36 @@ jobs:
               json.dump(body, f)
           print('hde cost_tokens=', body.get('cost_tokens'), 'expected_kappa=', body.get('expected_kappa'))
           PY
+      - name: Q-Oracle snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          r = c.post('/v1/devices/qoracle/expectation', json={'question':'maximize fairness', 'constraints': {'risk': 0.6}})
+          r.raise_for_status()
+          body = r.json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/qoracle.json','w',encoding='utf-8') as f:
+              json.dump(body, f)
+          print('qoracle payoff=', body.get('payoff'))
+          PY
+      - name: Entangler snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          r = c.post('/v1/devices/entangle', json={'variables':['A','B','C','D'], 'target_negativity': 0.12})
+          r.raise_for_status()
+          body = r.json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/entangler.json','w',encoding='utf-8') as f:
+              json.dump(body, f)
+          print('entangler achieved_negativity=', body.get('achieved_negativity'))
+          PY
       - name: Mark OpenAPI smoke OK
         if: success()
         run: |
@@ -495,6 +525,18 @@ jobs:
               lines.append(f"HDE: cost_tokens={hde.get('cost_tokens')} expected_kappa={hde.get('expected_kappa')}")
           except Exception:
               lines.append('HDE: plan summary n/a')
+          # Q-Oracle summary
+          try:
+              qo = json.loads((repo/'out'/'qoracle.json').read_text())
+              lines.append(f"Q-Oracle: payoff={qo.get('payoff')} choice={(qo.get('optimum') or {}).get('choice')}")
+          except Exception:
+              lines.append('Q-Oracle: summary n/a')
+          # Entangler summary
+          try:
+              ei = json.loads((repo/'out'/'entangler.json').read_text())
+              lines.append(f"Entangler: achieved_negativity={ei.get('achieved_negativity')}")
+          except Exception:
+              lines.append('Entangler: summary n/a')
           # Local gate ticks
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'

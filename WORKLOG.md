@@ -383,6 +383,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Smoki: dopisane MailOps ingest + historia QTMP (PS1/sh)
   - UI: linki Cockpit (Geometry/Quantum/Boundary/ChatOps/MailOps) na landing; Quantum: Measurement Log + Entanglement panel; Geometry: Refresh horizon
   - Runbook: docs/runbooks/w2_boundary_demo.md
+  - Boundary UI polish: sort Δbits desc, highlight rows OK/FAIL; landing card „Boundary Status” (delta_bits, observed_at)
 - 2025-09-04 13:17:58Z [48793] (work/daily): W3: Geometry cockpit + CFE geodesic/horizon demo
   - CFE: /v1/cfe/geodesic (PCO header) i /v1/cfe/horizon (mass + lock)
   - Geometry UI: heatmap Ricci + lensing + lock + link do Ledger
@@ -439,3 +440,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: CFE↔QTMP correlation snapshot + PR line (corr, L/T priorities)
   - ci-gates: HDE plan snapshot + PR line (cost_tokens, expected_kappa)
   - Testy: 155 passed (zielone)
+- 2025-09-04 14:11:07Z [48793] (work/daily): W7: ProofFS (PFS) integracja — LEX/FIN
+  - - Router: /v1/pfs/inspect (read-only)
+  - - Integracja: LEX Why‑Not → pfs://why-not/<hash> + inspect
+  - - Testy: tests/services/test_pfs_inspect.py
+  - - Lint OK; 158 testów zielone

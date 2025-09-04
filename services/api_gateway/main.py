@@ -58,6 +58,7 @@ import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
+import services.api_gateway.routers.pfs as pfs
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
@@ -297,6 +298,8 @@ app.include_router(billing.router)
 app.include_router(jwks_router)
 
 app.include_router(metrics.router)
+
+app.include_router(pfs.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------

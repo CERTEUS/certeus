@@ -67,6 +67,7 @@ try {
   $results += Hit 'GET' '/metrics' $null
   $results += Hit 'GET' '/.well-known/jwks.json' $null
   $results += Hit 'GET' '/v1/packs/' $null
+  $results += Hit 'GET' '/v1/boundary/status' $null
 
   # CFE
   $results += Hit 'POST' '/v1/cfe/geodesic' '{"case":"CER-SMOKE","facts":{},"norms":{}}'
