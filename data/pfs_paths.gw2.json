@@ -1,0 +1,88 @@
+{
+  "lexqft-case": [
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.187623,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.035202,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.111817,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.187623,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.035202,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "path": [
+        "start",
+        "reflect"
+      ]
+    },
+    {
+      "source": "lexqft.tunnel",
+      "p": 0.111817,
+      "path": [
+        "start",
+        "reflect"
+      ]
+    }
+  ]
+}
