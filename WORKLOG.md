@@ -392,3 +392,8 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Testy: tests/services/test_fin_paper.py
   - - Shedder: middleware zawsze podpięty (env‑toggled) — stabilność testów
   - - Lint OK; 148 testów zielone
+- 2025-09-04 13:54:32Z [48793] (work/daily): W5: ci-gates PR coverage summary + LexQFT demo; tests green
+  - ci-gates: coverage snapshot step + PR line (gamma/uncaptured)
+  - Demo: w5_lexqft_demo.py (low/high energy)
+  - Shedder: robust attach (env-read at request) — test ok
+  - Testy: 148 passed (zielone)
