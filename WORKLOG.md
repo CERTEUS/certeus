@@ -401,6 +401,14 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Demo: scripts/smokes/w5_lexqft_demo.py (low vs high energy)
   - ci-gates: coverage snapshot + PR summary line (gamma/uncaptured)
   - Path-Coverage-Gate już działa; raport uzupełniony
+ - 2025-09-04 15:00:00Z [A8] (work/daily): W2: Supply-chain (SBOM+provenance+enforce)
+   - Schemat: `schemas/certeus.provenance.v1.json` + walidator `scripts/validate_provenance.py`
+   - CI: `.github/workflows/ci-gates.yml` — krok walidacji provenance
+   - Runbook: `docs/runbooks/supply_chain.md`
+ - 2025-09-04 15:45:00Z [A8] (work/daily): W3: Load‑shedding QTMP‑aware + testy
+   - Middleware: `monitoring/shedder.py` (SHED_ENABLE=1; SHED_TARGET_P95_MS; SHED_FORCE_RATE)
+   - QTMP sygnał: integracja w `/v1/qtm/measure` → update_from_qtmp()
+   - Metryki: `certeus_http_shed_total`; Test: `tests/services/test_shedder_adaptive.py`
 - 2025-09-04 13:50:36Z [48793] (work/daily): W5: FINENITH v1.0 (pilot) – paper trading + PnL
   - - Sandbox paper trading: open/order/positions/equity
   - - Metryki Prometheus: fin_paper_orders_total, fin_paper_equity
