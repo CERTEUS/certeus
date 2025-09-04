@@ -274,6 +274,8 @@ PY
             out/qoracle.json
             out/entangler.json
             out/chronosync.json
+            out/fin_comm_rs.json
+            out/fin_mi.json
 
       - name: SLO Smoke (in-proc)
         env:
@@ -890,11 +892,12 @@ PY
             fi
             # Persist latest snapshots for quick links in PR
             for f in lexqft_coverage_state.json lexqft_tunnel.json cfe_qtmp.json hde_plan.json qoracle.json entangler.json chronosync.json; do
-              if [ -f "out/$f" ]; then
-                cp -f "out/$f" "ci/$f" || true
-                git add "ci/$f" || true
-              fi
-            done
+              for f in lexqft_coverage_state.json lexqft_tunnel.json cfe_qtmp.json hde_plan.json qoracle.json entangler.json chronosync.json fin_comm_rs.json fin_mi.json; do
+                if [ -f "out/$f" ]; then
+                  cp -f "out/$f" "ci/$f" || true
+                  git add "ci/$f" || true
+                fi
+              done
             git add ci/status.json
             git add ci/perf_bench.json || true
             git commit -m "ci: update status to ${{ job.status }} for ${{ github.sha }}" || echo "No changes"
@@ -919,7 +922,7 @@ PY
             const repo = process.env.GITHUB_REPOSITORY;
             const runId = process.env.GITHUB_RUN_ID || process.env.GITHUB_RUN_ID || process.env.GITHUB_RUN_NUMBER;
             const baseCi = `https://github.com/${repo}/blob/ci-status/ci`;
-            const links = [
+          const links = [
               `- Coverage: ${baseCi}/lexqft_coverage_state.json`,
               `- Tunneling: ${baseCi}/lexqft_tunnel.json`,
               `- CFE↔QTMP corr/priorities: ${baseCi}/cfe_qtmp.json`,
@@ -927,6 +930,8 @@ PY
               `- Q-Oracle: ${baseCi}/qoracle.json`,
               `- Entangler: ${baseCi}/entangler.json`,
               `- Chronosync: ${baseCi}/chronosync.json`,
+              `- FIN R/S: ${baseCi}/fin_comm_rs.json`,
+              `- FIN Entanglement MI: ${baseCi}/fin_mi.json`,
               `- Grafana (public): https://www.certeus.pl/grafana`,
               `- CI Run Artifacts: https://github.com/${repo}/actions/runs/${{ github.run_id }}`,
             ];
