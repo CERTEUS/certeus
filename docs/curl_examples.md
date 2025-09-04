@@ -65,6 +65,70 @@ curl -s -X POST http://127.0.0.1:8000/v1/pco/bundle \
 -d '{"rid":"'"$RID"'","smt2_hash":"'"$SMT"'","lfsc":"(lfsc proof)","merkle_proof":[]}' | jq .
 ```
 
+## CFE — Geodezje i Horyzont
+
+- Telemetria krzywizny (kappa_max):
+
+```
+curl -s http://127.0.0.1:8000/v1/cfe/curvature | jq .
+```
+
+- Geodezyjny dowód (PCO w nagłówkach: X-CERTEUS-PCO-cfe.geodesic_action):
+
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/cfe/geodesic \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-001","facts":{},"norms":{}}'
+```
+
+- Horyzont zdarzeń (lock) + masa (PCO w nagłówkach):
+
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/cfe/horizon \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-001","lock":true}'
+```
+
+## QTMP — Pomiary (v0.1)
+
+- Inicjalizacja stanu sprawy (predystrybucja):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/init_case \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-QTMP-1","basis":["ALLOW","DENY","ABSTAIN"],"state_uri":"psi://uniform"}' | jq .
+```
+
+- Pomiary (PCO: X-CERTEUS-PCO-qtm.collapse_event, X-CERTEUS-PCO-qtm.predistribution[]):
+
+```
+curl -i -s -X POST http://127.0.0.1:8000/v1/qtm/measure \
+ -H 'Content-Type: application/json' \
+ -d '{"operator":"L","source":"ui","case":"LEX-QTMP-1"}'
+```
+
+- Dekoherecja (kanał):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/decoherence \
+ -H 'Content-Type: application/json' \
+ -d '{"case":"LEX-QTMP-1","channel":"dephasing","gamma":0.2}' | jq .
+```
+
+- Komutator (MVP):
+
+```
+curl -s -X POST http://127.0.0.1:8000/v1/qtm/commutator \
+ -H 'Content-Type: application/json' \
+ -d '{"A":"L","B":"T"}' | jq .
+```
+
+- Granica nieoznaczoności (L_T):
+
+```
+curl -s http://127.0.0.1:8000/v1/qtm/uncertainty | jq .
+```
+
 ## Marketplace (podpisy i instalacja)
 
 - Lista wtyczek:
@@ -199,4 +263,3 @@ histogram_quantile(0.95, sum(rate(certeus_http_request_duration_ms_tenant_bucket
 sum(rate(certeus_http_requests_total{status=~"5.."}[5m])) by (tenant)
 / sum(rate(certeus_http_requests_total[5m])) by (tenant)
 ```
-

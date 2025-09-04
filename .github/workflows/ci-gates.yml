@@ -335,6 +335,44 @@ jobs:
             json.dump({'low': low, 'high': high}, f)
           print('p_low=', low.get('p_tunnel'), 'p_high=', high.get('p_tunnel'))
           PY
+      - name: CFE↔QTMP correlation snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          # Trigger a QTMP measure to emit correlation and priorities headers
+          resp = c.post('/v1/qtm/measure', json={'operator': 'LT', 'source': 'ci-corr'})
+          resp.raise_for_status()
+          hdr = resp.headers
+          corr = hdr.get('X-CERTEUS-PCO-correlation.cfe_qtmp')
+          pri_raw = hdr.get('X-CERTEUS-PCO-qtmp.priorities') or '{}'
+          try:
+              pri = json.loads(pri_raw)
+          except Exception:
+              pri = {}
+          out = {'corr': corr, 'priorities': pri}
+          os.makedirs('out', exist_ok=True)
+          with open('out/cfe_qtmp.json','w',encoding='utf-8') as f:
+              json.dump(out, f)
+          print('corr=', corr, 'priorities(L,T)=', pri.get('L'), pri.get('T'))
+          PY
+      - name: HDE plan snapshot (in-proc)
+        run: |
+          python - << 'PY'
+          import json, os
+          from fastapi.testclient import TestClient
+          from services.api_gateway.main import app
+          c = TestClient(app)
+          r = c.post('/v1/devices/horizon_drive/plan', json={'case':'ci-hde','target_horizon':0.2})
+          r.raise_for_status()
+          body = r.json()
+          os.makedirs('out', exist_ok=True)
+          with open('out/hde_plan.json','w',encoding='utf-8') as f:
+              json.dump(body, f)
+          print('hde cost_tokens=', body.get('cost_tokens'), 'expected_kappa=', body.get('expected_kappa'))
+          PY
       - name: Mark OpenAPI smoke OK
         if: success()
         run: |
@@ -443,6 +481,20 @@ jobs:
               lines.append(f"LexQFT: tunneling p_low={p_low} p_high={p_high}")
           except Exception:
               lines.append('LexQFT: tunneling summary n/a')
+          # CFE↔QTMP correlation
+          try:
+              cq = json.loads((repo/'out'/'cfe_qtmp.json').read_text())
+              corr = cq.get('corr')
+              pri = cq.get('priorities') or {}
+              lines.append(f"CFE↔QTMP: corr={corr} pri_L={pri.get('L')} pri_T={pri.get('T')}")
+          except Exception:
+              lines.append('CFE↔QTMP: correlation n/a')
+          # HDE plan summary
+          try:
+              hde = json.loads((repo/'out'/'hde_plan.json').read_text())
+              lines.append(f"HDE: cost_tokens={hde.get('cost_tokens')} expected_kappa={hde.get('expected_kappa')}")
+          except Exception:
+              lines.append('HDE: plan summary n/a')
           # Local gate ticks
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'

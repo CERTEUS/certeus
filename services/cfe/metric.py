@@ -167,6 +167,13 @@ def _build_legal_smallworld(n: int, seed: int) -> Graph:
     return g
 
 
+@lru_cache(maxsize=256)
+def _graph_for_case(case_id: str | None) -> Graph:
+    """Zwróć (i cache'uj) graf dla danego case_id (deterministyczny seed)."""
+    seed = _seed_from_case(case_id)
+    return _build_legal_smallworld(n=_DEFAULT_NODES, seed=seed)
+
+
 def _bfs_dist(g: Graph, src: int, targets: Iterable[int]) -> int:
     """Najmniejsza odległość od `src` do któregokolwiek z `targets` (BFS)."""
     target_set = set(targets)
@@ -240,17 +247,15 @@ def kappa_max_for_case(case_id: str | None) -> CurvatureSummary:
     Czas: ~1–5 ms dla n≈28 (lokalnie), wielokrotne wywołania → LRU cache.
     """
 
-    seed = _seed_from_case(case_id)
-    n = _DEFAULT_NODES
-    g = _build_legal_smallworld(n=n, seed=seed)
+    g = _graph_for_case(case_id)
     kmax = _kappa_max(g)
     return CurvatureSummary(kappa_max=round(kmax, 3))
 
 
 def geodesic_for_case(case_id: str | None) -> tuple[list[str], float]:
     """Geodezyjna ścieżka i akcja na grafie case (deterministycznie per case_id)."""
+    g = _graph_for_case(case_id)
     seed = _seed_from_case(case_id)
-    g = _build_legal_smallworld(n=_DEFAULT_NODES, seed=seed)
     src = int(seed % g.n)
     dst = int((src + (g.n // 2)) % g.n)
     idx_path, action = g.astar_path_and_action(src, dst)
@@ -263,8 +268,8 @@ def geodesic_for_case(case_id: str | None) -> tuple[list[str], float]:
 
 def horizon_mass_for_case(case_id: str | None) -> float:
     """Masa horyzontu z uśrednionej penalizacji (1-kappa) na geodezyjnej."""
+    g = _graph_for_case(case_id)
     seed = _seed_from_case(case_id)
-    g = _build_legal_smallworld(n=_DEFAULT_NODES, seed=seed)
     src = int(seed % g.n)
     dst = int((src + (g.n // 2)) % g.n)
     path, _ = g.astar_path_and_action(src, dst)

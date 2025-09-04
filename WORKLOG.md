@@ -210,7 +210,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
  - 2025-09-04 13:05:00Z [agent] (work/daily): W2 D6–D7 — Boundary recon + PNIP (strict) smoke
   - Boundary: /v1/boundary/status + /reconstruct test (tests/services/test_boundary_endpoint.py)
   - Boundary Gate: smoke ok/fail wariant (tests/gates/test_boundary_rebuild_gate_smoke.py)
-  - PNIP: moduł/strict testy obecne (test_pnip_strict/property) – weryfikacja lokalna
+ - PNIP: moduł/strict testy obecne (test_pnip_strict/property) – weryfikacja lokalna
+ - 2025-09-04 13:25:00Z [agent] (work/daily): W2 polish + W3 start — Gauge telemetry i CFE headers
+  - Boundary UI: kolorystyka Δbits + liczba shardów
+  - Supply-chain: lokalny SBOM stub (scripts/supply_chain/generate_sbom.py)
+  - Perf: W2 demo odpala quick_bench (p95) i zapisuje out/perf_bench.json
+  - W3: CFE geodesic/horizon — testy nagłówków PCO; Gauge Gate z telemetrią CFE
   - Marketplace UI: clients/web/public/marketplace.html (lista, verify, install)
   - Lint/test: 125 passed, 1 skipped; OpenAPI validator OK
 - 2025-09-03 19:40:00Z [agent] (work/daily): W14: Rozszerzenia Marketplace/Billing + landing + smokes
@@ -313,6 +318,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - PNIP: testy strict (400 + PCO) + włączenie route publish warunkowo
   - Boundary: scripts/smokes/boundary_smoke.py + bugfix gzip_ratio; zapis raportu do reports/
   - Cockpit: Geometry (heatmapa Ricciego, lensing, lock) — link na landing
+- 2025-09-04 13:05:00Z [agent] (work/daily): W3/W4 UI + Gauge PR + cURL
+  - Geometry: przyciski Recall/Revoke + refresh horizon status
+  - Gauge-Gate: komentarz PR z holonomy_drift
+  - cURL: dodane przykłady dla CFE (curvature/geodesic/horizon) i QTMP (init/measure/decoherence/commutator/uncertainty)
 - 2025-09-04 11:32:01Z [48793] (work/daily): W1: Devices HDE plan + LEX/FIN packs layout
   - - /v1/devices/horizon_drive/plan (bootstrap)
   - - Pakiet LEX: manifest pluginu
@@ -413,3 +422,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ci-gates: tunneling snapshot (low/high) + PR line
   - Testy: 152 passed (zielone)
   - Enterprise hygiene: PR summary bogatszy o LexQFT (gamma/uncaptured/tunneling)
+- 2025-09-04 14:07:33Z [48793] (work/daily): W5: PR summary CFE↔QTMP correlation + HDE plan; tests green
+  - ci-gates: CFE↔QTMP correlation snapshot + PR line (corr, L/T priorities)
+  - ci-gates: HDE plan snapshot + PR line (cost_tokens, expected_kappa)
+  - Testy: 155 passed (zielone)

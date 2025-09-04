@@ -456,6 +456,54 @@ async def coverage_reset(request: Request) -> dict:
     return {"ok": True}
 
 
+class FinSignalsIn(BaseModel):
+    signals: dict[str, float]
+    weight: float = 1.0
+    uncaptured_base: float = 0.1
+
+
+@router.post("/coverage/from_fin")
+async def coverage_from_fin(payload: FinSignalsIn, request: Request) -> dict:
+    """PL/EN: Zasil agregator coverage danymi FIN (risk/sentiment → gamma/uncaptured).
+
+    Heurystyka (W5):
+    - score = sentiment - risk (sumy po kluczach zawierających 'sent'/'risk')
+    - gamma = clamp(0.8 + 0.2*tanh(score), 0.6, 0.98)
+    - uncaptured = clamp(uncaptured_base - 0.15*tanh(score), 0.0, 0.2)
+    Aktualizuje `_COVERAGE_AGG` jako pojedynczy ważony wkład (zastąpienie).
+    """
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+    s = payload.signals or {}
+    risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
+    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
+
+    import math as _m
+
+    score = sent - risk
+    t = _m.tanh(score)
+    gamma = max(0.6, min(0.98, 0.8 + 0.2 * t))
+    unc = max(0.0, min(0.2, float(payload.uncaptured_base) - 0.15 * t))
+
+    global _COVERAGE_AGG
+    _COVERAGE_AGG = [(float(gamma), float(payload.weight), float(unc))]
+    try:
+        _COVERAGE_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
+    except Exception:
+        pass
+    # Emit metrics
+    try:
+        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma, certeus_lexqft_uncaptured_mass
+
+        certeus_lexqft_coverage_gamma.set(float(gamma))
+        certeus_lexqft_uncaptured_mass.set(float(unc))
+    except Exception:
+        pass
+    return {"ok": True, "gamma": round(gamma, 6), "uncaptured": round(unc, 6)}
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
