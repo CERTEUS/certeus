@@ -178,6 +178,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - A11y: skip‑link (#main), :focus‑visible, role=main; smoke: scripts/smokes/a11y_smoke.py
   - i18n: negocjacja `Accept-Language` + `lang` → `Content-Language` (middleware)
   - Testy: ruff OK; pytest: 198 passed, 4 skipped; a11y smoke zielony
+- 2025-09-04 23:00:00Z [agent] (work/daily): W14 D68 — Marketplace install/upgrade + podpis
+  - API: POST /v1/packs/install (signature, installed_version) + state overlay
+  - UI: marketplace.html – przycisk Install/Upgrade + znacznik signed
+  - Gate: marketplace_policy_gate — kompatybilny; manifests mają license
+  - Testy: 209 passed, 5 skipped; a11y smoke OK
 - 2025-09-04 19:15:45Z [root] (work/daily): W13: Marketplace — szczegóły pakietu (modal) + /v1/packs/{name}
   - - UI: panel detali (capabilities, manifest, status)\n- API: GET /v1/packs/{name} — manifest+meta\n- Testy: 199 passed (lokalnie)
 - 2025-09-04 19:15:50Z [root] (work/daily): W14 (A8): Compliance Mapping Gate (DPIA/ISO/SOC2) w CI
@@ -186,3 +191,16 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - GameDay DR: ci-gates step (dry-run) via scripts/dr/drill_boundary_failure.py; tick in PR summary\n- OpenAPI Contract Gate: scripts/gates/openapi_contract_gate.py (docs vs runtime subset); CI step + tick\n- PFS: /v1/pfs/list (stub) for ProofFS tests; omega transforms drift bounded\n- Suite: 209 passed, 5 skipped
 - 2025-09-04 19:29:50Z [root] (work/daily): W13: Marketplace — Try endpoint + SemVer/Baseline status
   - - API: POST /v1/packs/try (mini-registry; exporter/adapter)\n- Details: semver_ok + baseline_present\n- UI: Try/Docs w panelu szczegółów\n- Tests: 209 passed (lokalnie)
+- 2025-09-04 19:29:56Z [48793] (work/daily): W13: Entangler scenarios + Chronosync protocol/collisions; PFS router wired; Ω‑Kernel invariants fixed
+  - - devices: Entangle `scenario` + pairwise negativity in response (non-breaking)
+  - - devices: Chronosync `protocol`, `collisions_count`, `mediated` added (non-breaking)
+  - - api_gateway: wired /v1/pfs routes; OpenAPI regenerated
+  - - omega.transforms: Unicode-aware tokenize + bounded-drift jurisdiction_map
+  - - pytest: 209 passed, 5 skipped; ruff OK
+- 2025-09-04 19:38:55Z [root] (work/daily): T14 i18n/A11y domknięte end‑to‑end (PL/EN + ProofFS)
+  - - UI: selektor języka + tłumaczenia (geometry/qtm/marketplace/boundary/lexenith/alpha)\n- i18n middleware: Content-Language + testy PCO invariance (CFE/QTM/LexQFT)\n- ProofFS: router /v1/pfs/list + MailOps materialization (env‑driven)\n- Ω‑Kernel: normalize/tokenize tuned (Gauge drift)\n- pytest: 211 passed, 5 skipped; ruff OK
+- 2025-09-04 19:39:01Z [48793] (work/daily): W13+: Devices rozszerzenia + PFS router + Ω‑Kernel invariants; testy 211p
+  - - Entangler: scenario+pairs; Chronosync: protocol/collisions/mediated
+  - - API: /v1/pfs (resolve/list) włączone w app
+  - - Ω‑Kernel transforms: unicode tokenize + bounded drift; tests ok
+  - - E2E/services: nowe testy; OpenAPI odświeżone; ruff OK

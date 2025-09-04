@@ -297,6 +297,8 @@ app.include_router(pfs.router)
 
 app.include_router(pfs.router)
 
+app.include_router(pfs.router)
+
 app.include_router(jwks_router)
 
 app.include_router(metrics.router)
