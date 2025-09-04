@@ -257,7 +257,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - UI: Lensing — filtry K_/III_/SN_ + tooltips (value)
   - Docs: curl_examples — `/v1/cfe/cache/warm`, `/v1/cfe/lensing/from_fin`
   - ProofFS: zapis ścieżek po `/v1/lexqft/tunnel` → `/v1/pfs/inspect` przechowuje case
-  - Testy: 174 passed, 1 skipped (lokalnie)
+  - Testy: 178 passed, 1 skipped (lokalnie)
+  - Security: globalny `SEC_NO_STORE` middleware dla POST/PUT/PATCH/DELETE
+  - Guide: `docs/guides/fin_to_cfe.md` (enterprise flow)
  - 2025-09-04 09:00:00Z [agent] (work/daily): W1 (A6): Cockpit telemetry + ChatOps/MailOps smoke
    - Geometry/Quantum cockpit: telemetria (kappa_max, coverage/tunnel) — UI w `clients/web/public/geometry.html`, `quantum.html`
    - Smoke: dodano MailOps ingest do `scripts/smoke_api.ps1` i `scripts/smoke_api.sh`; ChatOps `cfe.geodesic` OK
@@ -566,3 +568,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - ProofGate alias: allocate budżet (limits) przy publish
   - - Testy: packs + allocate→publish; PFS DHT; wszystko zielone
   - - Lint OK; 178 testów zielone
+- 2025-09-04 15:52:47Z [root] (work/daily): A1/W2: Transformacja jurysdykcji + testy property
+  - - core/omega_jurisdiction.py: PL↔EU + holonomia\n- tests/truth/test_jurisdiction_transform_property.py: Hypothesis (roundtrip/identity)\n- Lint+tests: lokalnie zielone (subset)

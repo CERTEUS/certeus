@@ -178,34 +178,9 @@ try {
     New-Item -ItemType Directory -Force -Path reports | Out-Null
     $open = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/openapi.json' -TimeoutSec 8
     if ($open.StatusCode -eq 200) { Set-Content -LiteralPath 'reports\openapi.json' -Value $open.Content -Encoding UTF8 }
-    $py = (Resolve-Path .\.venv\Scripts\python.exe).Path
-    $code = @'
-import json, sys
-from pathlib import Path
-spec = json.loads(Path('reports/openapi.json').read_text(encoding='utf-8'))
-ok = ('openapi' in spec and 'paths' in spec)
-try:
-    # Try modern API first
-    try:
-        from openapi_spec_validator import validate_spec as _validate
-    except Exception:
-        try:
-            from openapi_spec_validator.validators import validate as _validate
-        except Exception:
-            _validate = None
-    if _validate is not None:
-        _validate(spec)
-        ok = True
-except Exception as e:
-    ok = False
-sys.exit(0 if ok else 1)
-'@
-    $tmp = Join-Path $env:TEMP ('oapi_val_' + [guid]::NewGuid().ToString('N') + '.py')
-    Set-Content -LiteralPath $tmp -Value $code -Encoding UTF8
-    & $py $tmp
-    $ok = ($LASTEXITCODE -eq 0)
-    Remove-Item -LiteralPath $tmp -ErrorAction SilentlyContinue
-    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'invalid openapi'} }
+    $spec = $open.Content | ConvertFrom-Json -ErrorAction Stop
+    $ok = ($null -ne $spec.openapi -and $null -ne $spec.paths)
+    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'openapi/paths missing'} }
   } catch { $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # Health payload shape

@@ -16,8 +16,16 @@
 param()
 $ErrorActionPreference = "Stop"
 New-Item -ItemType Directory -Force -Path .devkeys | Out-Null
-$py = "$PWD\.venv\Scripts\python.exe"
-if (!(Test-Path $py)) { throw "Python venv not found: $py" }
+# Resolve Python path: prefer local venv, fallback to uv-managed or PATH
+function Resolve-Py {
+  $local = Join-Path $PWD ".venv/\Scripts/python.exe"
+  if (Test-Path $local) { return (Resolve-Path $local).Path }
+  try { $cmd = Get-Command python -ErrorAction Stop; return $cmd.Source } catch {}
+  $uv = Join-Path $env:USERPROFILE 'AppData/\Roaming/\uv/\python/\cpython-3.11.9-windows-x86_64-none/\python.exe'
+  if (Test-Path $uv) { return $uv }
+  throw "Python not found: expected .venv or uv-managed python"
+}
+$py = Resolve-Py
 
 # Generate a dev Ed25519 private key using Python (cryptography)
 $code = @'
