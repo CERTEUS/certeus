@@ -29,6 +29,12 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
+
+# === LOGIKA / LOGIC ===
+
 # === LOGIKA / LOGIC ===
 
 
@@ -92,6 +98,10 @@ def main() -> int:  # pragma: no cover (integration)
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===
 
 # === I/O / ENDPOINTS ===
 
