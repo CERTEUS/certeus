@@ -48,6 +48,8 @@ Open Cockpit UI:
 
 - Geometry: `/app/public/geometry.html`
 - Quantum: `/app/public/quantum.html`
+ - ChatOps: `/app/public/chatops.html`
+ - MailOps: `/app/public/mailops.html`
 
 Smoke tests:
 

@@ -241,6 +241,21 @@ sys.exit(0 if ok else 1)
     $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/commutator#regression'; code=200; ok=$ok; msg=if($ok){'ok'}else{"value=$($comm.value)"} }
   } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/commutator#regression'; code=0; ok=$false; msg=$_.Exception.Message } }
 
+  # ChatOps response shape (geodesic_action numeric)
+  try {
+    $ch = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/chatops/command' -TimeoutSec 8 -ContentType 'application/json' -Body '{"cmd":"cfe.geodesic","args":{}}'
+    $x = $ch.result.geodesic_action
+    $ok = ($null -ne $x)
+    $results += [pscustomobject]@{ method='POST'; path='/v1/chatops/command#shape'; code=200; ok=$ok; msg=if($ok){'ok'}else{'missing geodesic_action'} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/chatops/command#shape'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # MailOps response shape (io.email.mail_id present)
+  try {
+    $mo = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/mailops/ingest' -TimeoutSec 8 -ContentType 'application/json' -Body '{"mail_id":"SMOKE-EMAIL-2","from_addr":"smoke@example.com","to":["ops@example.com"],"attachments":[]}'
+    $ok = ($mo.io.'io.email.mail_id' -is [string])
+    $results += [pscustomobject]@{ method='POST'; path='/v1/mailops/ingest#shape'; code=200; ok=$ok; msg=if($ok){'ok'}else{'missing io.email.mail_id'} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/mailops/ingest#shape'; code=0; ok=$false; msg=$_.Exception.Message } }
+
   # PCO public rid regression: equals requested rid
   try {
     $pub = Invoke-RestMethod -Uri ('http://127.0.0.1:8000/pco/public/' + $rid) -TimeoutSec 8

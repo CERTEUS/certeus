@@ -47,10 +47,35 @@ def main() -> int:
     )
     pnip_ok = (r.status_code == 400) and (r.json().get("detail", {}).get("error", {}).get("code") == "PNIP_INVALID")
 
+    # Quick perf bench (p95)
+    import json as _json
+    import subprocess
+
+    p = subprocess.run(
+        [
+            "python",
+            "scripts/perf/quick_bench.py",
+            "--iters",
+            "8",
+            "--p95-max-ms",
+            "300",
+            "--out",
+            "out/perf_bench.json",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    perf = {}
+    try:
+        perf = _json.loads(Path("out/perf_bench.json").read_text(encoding="utf-8"))
+    except Exception:
+        perf = {"error": "no-perf-report"}
+
     rep = {
         "boundary_status": b1,
         "boundary_reconstruct": b2,
         "pnip_strict_works": pnip_ok,
+        "perf": {"rc": p.returncode, "worst_p95_ms": perf.get("worst_p95_ms")},
     }
     Path("reports").mkdir(parents=True, exist_ok=True)
     Path("reports/w2_demo.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")

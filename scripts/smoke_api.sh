@@ -260,6 +260,20 @@ else
   FAILS=$((FAILS+1))
 fi
 
+# ChatOps response shape (geodesic_action numeric)
+if curl -s -H 'Content-Type: application/json' -d '{"cmd":"cfe.geodesic","args":{}}' http://127.0.0.1:8000/v1/chatops/command | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); x=(j.get("result") or {}).get("geodesic_action"); assert isinstance(x,(int,float)); print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
+
+# MailOps response shape (io.email.mail_id present)
+if curl -s -H 'Content-Type: application/json' -d '{"mail_id":"SMOKE-EMAIL-2","from_addr":"smoke@example.com","to":["ops@example.com"],"attachments":[]}' http://127.0.0.1:8000/v1/mailops/ingest | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); io=j.get("io") or {}; assert isinstance(io.get("io.email.mail_id"),str); print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
+
 # PCO signature b64url and ledger merkle_root hex
 if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python -c 'import sys,json,re; j=json.load(sys.stdin); sig=j.get("signature") or ""; ok=bool(re.match(r"^[A-Za-z0-9_-]+$", sig)) and ("=" not in sig); root=((j.get("ledger") or {}).get("merkle_root") or ""); ok = ok and (len(root)==64 and bool(re.match(r"^[0-9a-f]+$", root))); assert ok; print("ok")'; then
   PASSES=$((PASSES+1))

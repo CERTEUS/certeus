@@ -403,3 +403,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Demo: w5_lexqft_demo.py (low/high energy)
   - Shedder: robust attach (env-read at request) — test ok
   - Testy: 148 passed (zielone)
+- 2025-09-04 14:01:34Z [48793] (work/daily): W6: LEXENITH Micro‑Court lock→publish (PCO ścieżki)
+  - - /v1/lexenith/micro_court/lock oraz /publish
+  - - PCO ścieżki w nagłówku + zapis do Ledger (hash)
+  - - Metryki: certeus_lex_micro_court_locked_total/published_total
+  - - Testy: tests/services/test_lex_micro_court.py
+  - - Lint OK; 152 testów zielone

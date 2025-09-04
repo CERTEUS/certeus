@@ -144,6 +144,114 @@ async def why_not_export(req: WhyNotRequest, request: Request) -> WhyNotResponse
     return WhyNotResponse(ok=True, trace_uri=trace_uri)
 
 
+# --- W6: Micro‑Court — pipeline lock → publish (PCO ścieżki) ------------------
+
+
+class MicroCourtLockRequest(BaseModel):
+    case_id: str
+
+
+class MicroCourtLockResponse(BaseModel):
+    ok: bool
+    case_id: str
+    locked: bool
+    pco: dict | None = None
+
+
+class MicroCourtPublishRequest(BaseModel):
+    case_id: str
+    footnotes: list[str] | None = None
+
+
+class MicroCourtPublishResponse(BaseModel):
+    ok: bool
+    case_id: str
+    published: bool
+    path: list[dict[str, str]]
+    pco: dict | None = None
+
+
+_LOCKS: dict[str, bool] = {}
+
+
+@router.post("/micro_court/lock", response_model=MicroCourtLockResponse)
+async def micro_court_lock(req: MicroCourtLockRequest, request: Request, response: Response) -> MicroCourtLockResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=1)
+    case = req.case_id.strip()
+    _LOCKS[case] = True
+    tenant = get_tenant_id(request)
+
+    path_step = {"step": "lock", "by": tenant}
+    pco = {"lex.micro_court.path": [path_step]}
+
+    # Metryki + PCO nagłówek
+    try:
+        from monitoring.metrics_slo import certeus_lex_micro_court_locked_total
+
+        certeus_lex_micro_court_locked_total.labels(case=case, tenant=tenant).inc()
+    except Exception:
+        pass
+    try:
+        response.headers["X-CERTEUS-PCO-lex.micro_court"] = json.dumps(
+            pco["lex.micro_court.path"], separators=(",", ":")
+        )
+    except Exception:
+        pass
+    return MicroCourtLockResponse(ok=True, case_id=case, locked=True, pco=pco)
+
+
+@router.post("/micro_court/publish", response_model=MicroCourtPublishResponse)
+async def micro_court_publish(
+    req: MicroCourtPublishRequest, request: Request, response: Response
+) -> MicroCourtPublishResponse:
+    from services.api_gateway.limits import enforce_limits, get_tenant_id
+
+    enforce_limits(request, cost_units=2)
+    case = req.case_id.strip()
+    tenant = get_tenant_id(request)
+    locked = bool(_LOCKS.get(case, False))
+
+    # Konstruuj ścieżkę Micro‑Court: lock → publish (+footnotes)
+    path: list[dict[str, str]] = []
+    if locked:
+        path.append({"step": "lock", "by": tenant})
+    path.append({"step": "publish", "by": tenant})
+    for i, note in enumerate(req.footnotes or []):
+        try:
+            h = _hash_text(note)
+            path.append({"step": f"fn#{i + 1}", "hash": h})
+        except Exception:
+            pass
+
+    pco = {"lex.micro_court.path": path}
+
+    # Ledger zapis (hash PCO) – best‑effort
+    try:
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+        doc_hash = "sha256:" + compute_provenance_hash(pco, include_timestamp=False)
+        ledger_service.record_input(case_id=case, document_hash=doc_hash)
+    except Exception:
+        pass
+
+    # Metryki + PCO nagłówek
+    try:
+        from monitoring.metrics_slo import certeus_lex_micro_court_published_total
+
+        certeus_lex_micro_court_published_total.labels(case=case, tenant=tenant).inc()
+    except Exception:
+        pass
+    try:
+        response.headers["X-CERTEUS-PCO-lex.micro_court"] = json.dumps(
+            pco["lex.micro_court.path"], separators=(",", ":")
+        )
+    except Exception:
+        pass
+    return MicroCourtPublishResponse(ok=True, case_id=case, published=True, path=path, pco=pco)
+
+
 # --- Pilot W16: 3 sprawy E2E + feedback ---
 
 
