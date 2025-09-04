@@ -13,3 +13,32 @@ run-helper.cmd*
 _work/_tool/
 # Embedded checkout from runner
 _work/certeus/certeus/
+
+# Python/Build artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.hypothesis/
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# Local outputs/reports
+out/
+reports/
+site/
+mirror_pub_clone/
+mirror_publish/
+mirror_work_repo/
+exports/
+data/law_cache/
+data/public_pco/*.json
+
+# IDE/Env
+.vscode/
+.env
+.git-credentials
+node_modules
