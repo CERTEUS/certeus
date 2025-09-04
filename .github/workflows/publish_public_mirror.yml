@@ -16,7 +16,7 @@ on:
 jobs:
   mirror:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'work/daily') }}
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, docker, build]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -57,4 +57,3 @@ jobs:
           git remote remove origin || true
           git remote add origin "https://x-access-token:${PUBLIC_MIRROR_PAT}@github.com/CERTEUS/certeus-public.git"
           git push -f origin main
-
