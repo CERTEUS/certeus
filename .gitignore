@@ -48,3 +48,5 @@ static/previews/
 .env
 .git-credentials
 node_modules
+
+.venv_cli/
