@@ -60,4 +60,3 @@ def validate(spec: Any) -> None:
 
 
 __all__ = ["validate_spec", "validate"]
-

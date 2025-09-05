@@ -24,7 +24,6 @@ from pathlib import Path
 import re
 import sys
 
-
 # === LOGIKA / LOGIC ===
 
 LINK_PATTERN = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -80,7 +79,7 @@ def check_links(md_root: Path) -> int:
                     cand_index = cand / "index.md"
                     ok = cand_index.exists()
             if not ok:
-                missing.append(f"{f}:{m.start(1)+1} -> {target}")
+                missing.append(f"{f}:{m.start(1) + 1} -> {target}")
     if missing:
         sys.stderr.write("Broken local links found (first 50):\n")
         for entry in missing[:50]:
@@ -90,6 +89,7 @@ def check_links(md_root: Path) -> int:
 
 
 # === I/O / ENDPOINTS ===
+
 
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[2]
