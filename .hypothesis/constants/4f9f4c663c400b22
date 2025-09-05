@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\ledger.py
-# hypothesis_version: 6.138.14
-
-[404, 500, '/record-input', '/v1/ledger', '/{case_id}', '/{case_id}/prove', '/{case_id}/records', '0', '1', 'Ledger', 'STRICT_PNIP', 'True', 'case_id', 'chain_self', 'head', 'ledger_service', 'length', 'schemas', 'timestamp', 'true', 'type', 'utf-8']

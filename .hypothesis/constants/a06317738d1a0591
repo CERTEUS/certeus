@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\plugins\demo_billing_pl\src\main.py
-# hypothesis_version: 6.138.14
-
-[0.01, 'amount', 'ok', 'price_usd', 'quote', 'reason', 'request_id', 'verified_request', 'verify']

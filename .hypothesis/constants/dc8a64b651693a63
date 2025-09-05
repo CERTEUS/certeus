@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\pnip.py
-# hypothesis_version: 6.138.14
-
-[400, '-', '0', '0.2', ':', 'DEFAULT_JURIS_DOMAIN', 'ERROR', 'PL', 'PNIP_INVALID', 'X-Jurisdiction', 'X-Norm-Pack-ID', 'X-Policy-Pack-ID', 'code', 'context', 'document_hash', 'error', 'hash', 'id', 'message', 'meta', 'ok_hash', 'ok_jurisdiction', 'ok_policy', 'other', 'pco', 'pco-policy-pack', 'policies', 'policy_pack.yaml', 'sha256', 'sha256:', 'status', 'utf-8', 'version', 'x-jurisdiction', 'x-norm-pack-id', 'x-policy-pack-id']

@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/scripts/gates/pack_abi_semver_gate.py
-# hypothesis_version: 6.138.14
-
-[' -', '#', '\'"', '*/plugin.yaml', '.', '1', ':', 'Plugin', 'True', '__main__', '__version__', 'abi_baseline.json', 'module', 'name', 'plugins', 'register', 'true', 'utf-8', 'ver', 'version']

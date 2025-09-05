@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/api_gateway/routers/packs.py
-# hypothesis_version: 6.138.14
-
-[400, '/', '/handle', '/install', '/v1/packs', 'List available packs', 'abi', 'capabilities', 'name', 'ok', 'pack', 'packs', 'result', 'unknown', 'version']

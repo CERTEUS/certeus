@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/api_gateway/routers/well_known_jwks.py
-# hypothesis_version: 6.138.14
-
-[b'=', 500, '=', 'ED25519_PUBKEY_HEX', 'Ed25519', 'EdDSA', 'KEYS_BACKEND', 'OKP', 'alg', 'ascii', 'crv', 'keys', 'kid', 'kty', 'sig', 'use', 'well-known', 'x']

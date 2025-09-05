@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\plugins\packs_sec\src\main.py
-# hypothesis_version: 6.138.14
-
-['demo-policy', 'fmt', 'json', 'missing', 'name', 'ok', 'pco', 'policy', 'policy.audit', 'provided', 'reason', 'register_exporter', 'required', 'result', 'sec.audit.json', 'sec.policy.audit', 'sec_audit']

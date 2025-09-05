@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\cfe\metric.py
-# hypothesis_version: 6.138.14
-
-[0.0, 0.005, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.6, 0.95, 1.0, 128, 256, 300, 42405, 851618, '0', '300', 'CFE_CACHE_TTL_SEC', 'big', 'inf', 'utf-8']

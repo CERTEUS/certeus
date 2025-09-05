@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\upn.py
-# hypothesis_version: 6.138.14
-
-[404, '/register', '/revoke', '/v1/upn', '0', 'UPN', 'UPN not found', 'claims', 'path', 'revoked', 'root', 'subject', 'ts']

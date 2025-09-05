@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/api_gateway/routers/fin.py
-# hypothesis_version: 6.138.14
-
-[0.0, 0.05, 0.1, 0.12, 0.5, 0.95, 1.0, 10.0, ',', '/entanglements', '/measure', '/uncertainty', '/v1/fin/alpha', ':', 'BTC', 'BUY', 'ETH', 'FIN-ALPHA', 'GOLD', 'R', 'RISK', 'S', 'SELL', 'SENTIMENT', 'USD', 'cfe.geodesic_action', 'commutator_RS', 'consent://demo', 'consent_ref', 'dp_epsilon', 'fin.alpha.measure', 'finance', 'io.email.mail_id', 'lineage', 'norm', 'operators', 'outcome', 'p', 'risk', 'sent', 'sentiment', 'sha256:', 'signals']

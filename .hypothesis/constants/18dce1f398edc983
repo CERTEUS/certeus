@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\lexqft.py
-# hypothesis_version: 6.138.14
-
-[-2.0, 0.0, 1e-300, 1e-09, 0.0005, 0.02, 0.05, 0.1, 0.15, 0.2, 0.5, 0.6, 0.7, 0.8, 0.95, 0.953, 0.98, 1.0, 1.1, 1.5, 1.8, 100.0, 409, '/', '/coverage', '/coverage/from_fin', '/coverage/reset', '/coverage/state', '/coverage/update', '/renorm', '/tunnel', '/tunnel/stats', '/v1/lexqft', '/virtual_pairs/reset', '/virtual_pairs/spawn', '/virtual_pairs/state', 'Cache-Control', 'PYTEST_XDIST_WORKER', 'V0', 'Z', '_', 'asym', 'asymmetric', 'auth', 'authority', 'authority_bias', 'barrier', 'budget', 'count', 'data', 'energy_debt', 'ev', 'evidence', 'evidence_bias', 'gamma', 'height', 'last_ts', 'lexqft', 'lexqft-case', 'lexqft.tunnel', 'm', 'mass', 'min_energy', 'no-store', 'ok', 'p', 'pairs', 'path', 'pfs_paths.json', 'post-barrier', 'qlaw.tunneling', 'reflect', 'risk', 'sent', 'sentiment', 'sha256:', 'source', 'start', 'uncaptured', 'utf-8', 'w', 'width']

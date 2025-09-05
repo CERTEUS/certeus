@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\scripts\gates\openapi_contract_gate.py
-# hypothesis_version: 6.138.14
-
-[200, ' -', '.', '.yaml', '.yml', '/openapi.json', '1', 'True', '__main__', 'api', 'certeus.v1.yaml', 'docs', 'openapi', 'openapi.yaml', 'paths', 'true', 'utf-8']

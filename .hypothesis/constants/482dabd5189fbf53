@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\limits.py
-# hypothesis_version: 6.138.14
-
-[1.0, 2.0, 3.0, 200, 429, 10000, 250000, '1', 'BILLING_POLICY_FILE', 'True', 'X-Org-ID', 'X-Tenant-ID', 'anonymous', 'billing', 'burst', 'daily_quota', 'enforce_limits', 'enterprise', 'free', 'get_tenant_balance', 'get_tenant_id', 'persisted', 'policies.json', 'policy_path', 'pro', 'refund_tenant_units', 'runtime', 'set_tenant_quota', 'tenant', 'tenants', 'tier', 'tiers', 'true', 'utf-8']

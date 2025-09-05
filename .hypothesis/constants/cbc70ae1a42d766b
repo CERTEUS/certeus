@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/plugins/packs_code/src/main.py
-# hypothesis_version: 6.138.14
-
-['code', 'code.normalize.json', 'code.text.normalize', 'consent://demo', 'consent_ref', 'fmt', 'json', 'len', 'ok', 'pco', 'reason', 'register_exporter', 'result', 'text', 'text.normalize']

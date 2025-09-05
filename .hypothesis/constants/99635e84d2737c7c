@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\ledger_service\ledger.py
-# hypothesis_version: 6.138.14
-
-[',', ':', 'INPUT_INGESTION', 'Ledger', 'LedgerRecord', 'case_id', 'chain_prev', 'chain_self', 'chain_valid', 'count', 'created_at', 'document_hash', 'event_id', 'head', 'ledger_service', 'prev', 'timestamp', 'type', 'utf-8']

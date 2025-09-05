@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\devices.py
-# hypothesis_version: 6.138.14
-
-[-0.05, 0.0, 0.01, 0.012, 0.02, 0.05, 0.1, 0.12, 0.2, 0.25, 0.3, 0.4, 0.6, 0.8, 1.0, 1.1, 4.0, 100.0, 1000.0, 200, 280, '/entangle', '/horizon_drive/plan', '/qoracle/expectation', '/v1/devices', '/v1/devices/entangle', '0', '1', 'A', 'B', 'Idempotency-Key', 'X-Idempotency-Key', 'X-Idempotent-Replay', 'action', 'aggressive', 'arbitration', 'balanced', 'choice', 'clauses', 'coords', 'devices', 'expert_opinion', 'force_majeure', 'heuristic', 'lex-domain mediator', 'maximize', 'minimize', 'outcome', 'p', 'pc_delta', 'reason', 'request_affidavit', 'revision_window_days', 'stub-certificate', 'treaty', 'var', 'weight']

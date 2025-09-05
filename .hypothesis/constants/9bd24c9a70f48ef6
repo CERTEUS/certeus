@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/api_gateway/main.py
-# hypothesis_version: 6.138.14
-
-[1000.0, 307, '*', ',', '/', '/app', '/docs', '/health', '/openapi.json', '/redoc', '/static', 'ALLOW_ORIGINS', 'CERTEUS API Gateway', 'app', 'clients', 'file', 'http', 'ok', 'path', 'previews', 'route', 'static', 'status', 'status_code', 'version', 'web']

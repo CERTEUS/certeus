@@ -62,3 +62,8 @@ data/packs_state.json
 node_modules
 
 .venv_cli/
+.hypothesis/
+.python-version
+*_sed.ps1
+tmp_*.py
+

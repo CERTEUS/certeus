@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\metrics.py
-# hypothesis_version: 6.138.14
-
-[0.0, '/metrics', '/v1/metrics/omega', '/v1/metrics/series', '/v1/metrics/summary', 'Cache-Control', 'after', 'before', 'code', 'domain', 'domain_map', 'entity_jaccard_drift', 'entropy_drift', 'jaccard_drift', 'mapped', 'med', 'metrics', 'no-store', 'omega', 'omega_mapped', 'raw', 'sec', 'series', 'top_avg_ms', 'top_count', 'total_paths']

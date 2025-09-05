@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\plugins\sec_demo\src\main.py
-# hypothesis_version: 6.138.14
-
-['HIGH', 'LOW', 'MEDIUM', '_Pack', 'count', 'error', 'handle', 'ok', 'risk_grade', 'sec.risk.assess', 'sec/risk/assess', 'unsupported kind', 'vulns']

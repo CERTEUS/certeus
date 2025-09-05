@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\scripts\smokes\a11y_smoke.py
-# hypothesis_version: 6.138.14
-
-['*.html', '.', 'A11y: issues found:', '__main__', 'clients', 'ignore', 'public', 'utf-8', 'web']

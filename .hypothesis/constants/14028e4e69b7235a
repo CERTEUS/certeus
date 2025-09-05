@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/api_gateway/routers/pfs.py
-# hypothesis_version: 6.138.14
-
-[400, 404, '.', '/', '/exists', '/list', '/v1/pfs', 'PROOFS_FS_ROOT', 'ProofFS', 'data', 'entries', 'exists', 'path', 'pfs', 'pfs://', 'pfs:// URI', 'pfs:// prefix', 'pfs_exists', 'pfs_list_entries', 'prefix', 'prefix not found', 'size', 'uri']

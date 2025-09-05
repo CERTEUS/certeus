@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/proof_verifier/__init__.py
-# hypothesis_version: 6.138.14
-
-['verify_drat', 'verify_lfsc']

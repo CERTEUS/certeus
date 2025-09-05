@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\security\key_manager.py
-# hypothesis_version: 6.138.14
-
-[b'=', '/', '/v1/', '=', 'BEGIN', 'ED25519_PRIVKEY_PEM', 'ED25519_PUBKEY_HEX', 'KEYS_BACKEND', 'VAULT_ADDR', 'VAULT_SECRET_PATH', 'VAULT_TOKEN', 'X-Vault-Token', 'ascii', 'data', 'ed25519_privkey_pem', 'env', 'utf-8', 'vault']

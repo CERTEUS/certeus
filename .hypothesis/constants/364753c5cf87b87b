@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/exporter_service/__init__.py
-# hypothesis_version: 6.138.14
-
-['ExporterService', 'export_answer', 'export_answer_to_txt']

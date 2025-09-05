@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\monitoring\shedder.py
-# hypothesis_version: 6.138.14
-
-[0.0, 0.1, 0.35, 0.5, 1.0, 200.0, 250.0, 503, '/health', '/metrics', '/openapi.json', '/v1/cfe', '/v1/lexqft', '/v1/metrics', '/v1/qtm', '0', '0.5', '1', '250', 'GET', 'Retry-After', 'SHED_ENABLE', 'SHED_FORCE_RATE', 'SHED_MAX_RATE', 'SHED_TARGET_P95_MS', 'Service Busy (shed)', 'True', 'adaptive', 'anonymous', 'http', 'p95', 'qtmp_last_latency_ms', 'qtmp_last_ub_lt', 'series', 'true']

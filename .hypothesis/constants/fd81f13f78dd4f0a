@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/mismatch_service/models.py
-# hypothesis_version: 6.138.14
-
-[0.0, 1.0, ' vs ', 'No results', 'before', 'closed', 'critical', "e.g. 'z3', 'cvc5'", 'error', 'escalated', 'false_positive', 'float', 'formula_correction', 'high', 'human_override', 'known_limitation', 'low', 'medium', 'open', 'priority', 'resolved', 'results', 'sat', 'ser_json_timedelta', 'solver_update', 'status', 'timeout', 'under_review', 'unknown', 'unsat', 'use_enum_values']

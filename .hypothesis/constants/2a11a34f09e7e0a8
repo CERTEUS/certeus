@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\boundary.py
-# hypothesis_version: 6.138.14
-
-[1.0, '%Y-%m-%dT%H:%M:%SZ', './data/public_pco', '/reconstruct', '/status', '/v1/boundary', 'PROOF_BUNDLE_DIR', 'anchors', 'bits_delta_map', 'boundary', 'bytes', 'delta_bits', 'files', 'gzip_ratio', 'observed_at', 'shard-0', 'stats']

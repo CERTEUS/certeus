@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/services/api_gateway/routers/mailops.py
-# hypothesis_version: 6.138.14
-
-['/ingest', '/v1/mailops', 'MailOps', 'attachments', 'io.email.dkim', 'io.email.dmarc', 'io.email.mail_id', 'io.email.spf', 'io.email.thread_id', 'mail-case', 'pfs_uri', 'sha256:']

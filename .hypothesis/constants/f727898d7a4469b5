@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\main.py
-# hypothesis_version: 6.138.14
-
-[1000.0, 307, '*', ',', '-', '/', '/app', '/docs', '/health', '/openapi.json', '/redoc', '/static', 'ALLOW_ORIGINS', 'CERTEUS API Gateway', 'PUBLIC_BASE_URL', 'app', 'clients', 'clients/go/certeus', 'description', 'externalDocs', 'file', 'go', 'http', 'info', 'ok', 'path', 'previews', 'python', 'rc', 'route', 'semver', 'servers', 'stable', 'static', 'status', 'status_code', 'typescript', 'url', 'version', 'web', 'x-clients', 'x-compat', 'x-release']

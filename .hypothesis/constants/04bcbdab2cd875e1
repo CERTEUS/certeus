@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\billing.py
-# hypothesis_version: 6.138.14
-
-[1.0, 403, 1000, '/admin/reload', '/admin/set_tier', '/allocate', '/balance', '/estimate', '/policies', '/quota', '/recommendation', '/refund', '/tenant_tier', '/v1/billing', '1', 'Admin disabled', 'BILLING_ADMIN', 'Get current balance', 'Set tenant quota', 'True', 'action', 'balance', 'billing', 'daily_quota', 'days', 'estimated_units', 'free', 'ingest.upload', 'lexqft.tunnel', 'monthly_calls', 'name', 'proofgate.publish', 'qtm.decoherence', 'qtm.measure', 'recommended_tier', 'reloaded', 'required_daily_units', 'system.analyze', 'tenant', 'tenants', 'tier', 'tier_current', 'tiers', 'true', 'units_per_request', 'upgrade_needed']

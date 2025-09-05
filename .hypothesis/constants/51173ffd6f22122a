@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\preview.py
-# hypothesis_version: 6.138.14
-
-['/v1/preview', 'static/previews', 'upload.bin', 'url', 'wb']

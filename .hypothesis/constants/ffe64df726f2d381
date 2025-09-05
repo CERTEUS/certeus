@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\scripts\generate_proofs.py
-# hypothesis_version: 6.138.14
-
-[8192, '(assert true)', '(check-sat)', '(exit)', '(set-logic ALL)', '*', '--formats', '--mode', '--out', '--receipt', '--seed', '--with-inputs', '__main__', 'artifacts', 'created_at', 'cvc5', 'cvc5.lfsc', 'drat', 'format', 'generate_proofs', 'input', 'input.cnf', 'input.smt2', 'kind', 'lfsc', 'p cnf 1 0\n', 'path', 'proof', 'rb', 'receipt', 'sha256', 'simulate', 'store_true', 'stub', 'utf-8', 'version', 'wb', 'z3', 'z3.drat']

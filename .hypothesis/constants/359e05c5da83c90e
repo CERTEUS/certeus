@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/scripts/gates/compliance_mapping_gate.py
-# hypothesis_version: 6.138.14
-
-[' -', '.', '1', 'A.12', 'A.14', 'A.18', 'A.5', 'A.8', 'Compliance: WARNINGS', 'True', '__main__', 'availability', 'compliance', 'confidentiality', 'docs', 'dpia.md', 'ignore', 'lawful basis', 'minimization', 'purpose', 'risk', 'security', 'soc2_checklist.md', 'true', 'utf-8']

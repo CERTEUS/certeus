@@ -1,4 +1,0 @@
-# file: /mnt/f/projekty/certeus/monitoring/metrics_slo.py
-# hypothesis_version: 6.138.14
-
-[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1.0, 100, 200, 250, 500, 1000, 2500, 5000, 'ABSTAIN', 'Abstain rate', 'Brier score', 'CFE geodesic action', 'CFE horizon mass', 'CFE-QTMP correlation', 'CONDITIONAL', 'P2P dequeued jobs', 'P2P enqueued jobs', 'P2P queue depth', 'PENDING', 'PUBLISH', 'QTMP collapses total', 'QTMP history length', 'a', 'avg_ms', 'b', 'case', 'certeus_abstain_rate', 'certeus_brier', 'certeus_ece', 'certeus_qtm_ub_lt', 'count', 'device', 'endpoint', 'last_ms', 'method', 'operator', 'p95', 'path', 'points', 'reason', 'series', 'side', 'source', 'status', 'sum_ms', 'tenant', 'top_avg_ms', 'top_count', 'total_paths', 'verdict']

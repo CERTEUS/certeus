@@ -1,4 +1,0 @@
-# file: F:\projekty\certeus\services\api_gateway\routers\packs.py
-# hypothesis_version: 6.138.14
-
-[400, 404, 500, '*', '/', '/enable', '/handle', '/install', '/try', '/v1/packs', '/{name}', '/{name}/baseline', 'DEMO', 'DEMO-CASE', 'Get pack details', 'List available packs', 'PACKS_STATE_PATH', '^\\d+\\.\\d+\\.\\d+$', 'abi', 'abi_baseline.json', 'act_id', 'adapter', 'baseline not found', 'baseline_present', 'capabilities', 'case', 'case_id', 'data', 'demo', 'dest', 'enabled', 'exporter', 'fmt', 'from_version', 'installed_version', 'json', 'key', 'manifest', 'model', 'module', 'name', 'ok', 'out', 'out_dir', 'output_dir', 'pack', 'packs', 'packs_state.json', 'plugin.yaml', 'plugins', 'reason', 'register', 'result', 'semver_ok', 'signature', 'signature_present', 'status', 'to_version', 'type', 'used', 'utf-8', 'v1', 'v2', 'v_from', 'v_to', 'version']
