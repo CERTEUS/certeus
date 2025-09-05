@@ -150,3 +150,16 @@ jobs:
             } catch (e) {
               core.warning('Could not enable auto-merge: ' + (e?.message || e));
             }
+            // Attempt immediate merge if mergeable
+            try {
+              const details = await github.rest.pulls.get({ owner, repo, pull_number: pr.number });
+              const st = details.data.mergeable_state; // 'clean' when OK
+              if (st === 'clean' || st === 'has_hooks' || st === 'unstable') {
+                await github.rest.pulls.merge({ owner, repo, pull_number: pr.number, merge_method: 'squash' });
+                core.info('Merged PR work/daily -> main');
+              } else {
+                core.info('PR not mergeable yet (state='+st+'). Auto-merge will handle it once checks complete.');
+              }
+            } catch (e) {
+              core.warning('Could not merge PR directly: ' + (e?.message || e));
+            }

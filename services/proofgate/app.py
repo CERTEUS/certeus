@@ -47,6 +47,7 @@ except Exception:  # pragma: no cover - optional
     def verify_quorum(_obj):  # type: ignore
         return False
 
+
 try:  # optional: RA helpers for TEE status
     from security.ra import attestation_from_env, extract_fingerprint, verify_fingerprint
 except Exception:  # pragma: no cover - optional
