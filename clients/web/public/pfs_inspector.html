@@ -1,0 +1,64 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/pfs_inspector.html                 |
+| ROLE: ProofFS xattrs inspector                              |
+| PLIK: clients/web/public/pfs_inspector.html                 |
+| ROLA: Inspektor atrybutów ProofFS (PNIP/PCO)                |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • ProofFS Inspector</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0f1114;color:#f2f2f3}
+      .wrap{max-width:1100px;margin:24px auto;padding:0 12px}
+      .card{background:#151922;border:1px solid #232832;border-radius:12px;padding:12px;margin-bottom:12px}
+      input{background:#0f1114;border:1px solid #232832;border-radius:8px;color:#f2f2f3;padding:8px;min-width:360px}
+      .btn{padding:8px 12px;border:1px solid #232832;border-radius:8px;background:#1a1f29;color:#f2f2f3;cursor:pointer}
+      pre{background:#0f1114;border:1px solid #232832;border-radius:8px;padding:8px;overflow:auto}
+      .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+      .tag{display:inline-block;border:1px solid #232832;border-radius:6px;padding:2px 6px;background:#10141b}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>ProofFS Inspector</h1>
+        <div class="row">
+          <input id="uri" value="pfs://mail/Demo/hello.txt" placeholder="pfs://..."/>
+          <button id="materialize" class="btn">Materialize (stub)</button>
+          <button id="inspect" class="btn">Inspect xattrs</button>
+          <a id="share" class="btn" href="#">Share link</a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Summary</h2>
+        <div id="sum"></div>
+      </div>
+      <div class="card">
+        <h2>Xattrs</h2>
+        <pre id="xattrs"></pre>
+      </div>
+    </div>
+    <script>
+      const $=id=>document.getElementById(id);
+      async function j(method, url, body){ const opts={method}; if(body){opts.headers={'content-type':'application/json'}; opts.body=JSON.stringify(body);} const r=await fetch(url,opts); const t=await r.text(); let d=t; try{ d=JSON.parse(t)}catch{} return {ok:r.ok,data:d,status:r.status}; }
+      function q(k){ return new URLSearchParams(location.search).get(k)||''; }
+      function setShare(uri){ const url=new URL(location.href); url.searchParams.set('uri', uri); $("share").href=url.toString(); }
+      function fillSummary(obj){ const el=$("sum"); const e=obj||{}; el.innerHTML=''; const mk=v=>`<span class="tag">${v}</span>`; const items=[['exists', e.exists], ['size', e.size], ['path', e.path||'-']]; el.innerHTML=items.map(([k,v])=>`<div>${k}: ${mk(v)}</div>`).join(' '); }
+
+      async function doMaterialize(){ const uri=$("uri").value.trim(); if(!uri){return} const r=await j('POST','/v1/pfs/materialize',{uri}); if(!r.ok){ alert('Materialize failed: '+(r.data?.detail||r.status)); return; } await doInspect(); }
+      async function doInspect(){ const uri=$("uri").value.trim(); if(!uri){return} const ex=await j('GET',`/v1/pfs/exists?uri=${encodeURIComponent(uri)}`); if(ex.ok){ fillSummary(ex.data); } const r=await j('GET',`/v1/pfs/xattrs?uri=${encodeURIComponent(uri)}`); $("xattrs").textContent = r.ok ? JSON.stringify(r.data, null, 2) : `Error: ${r.status}`; setShare(uri); }
+
+      $("materialize").addEventListener('click', doMaterialize);
+      $("inspect").addEventListener('click', doInspect);
+      (function init(){ const u=q('uri'); if(u){ $("uri").value=u; } if(u){ doInspect(); } })();
+    </script>
+  </body>
+  </html>
+

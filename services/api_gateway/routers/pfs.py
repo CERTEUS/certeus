@@ -31,6 +31,10 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PublicKey,
 )
 from fastapi import APIRouter, HTTPException, Query
+from core.pfs.resolve import resolve_uri, resolve_prefix_dir
+from core.pfs.materialize import materialize_uri
+from core.pfs.xattrs import get_xattrs_for_uri
+from core.pfs.mount import mount_readonly, unmount
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -64,8 +68,11 @@ async def list_entries(
 ) -> dict[str, Any]:
     if not prefix.startswith("pfs://"):
         raise HTTPException(status_code=400, detail="prefix must start with pfs://")
-    parts = prefix[len("pfs://") :].strip("/").split("/")
-    path = _root().joinpath(*parts)
+    # reuse core resolver to avoid drift
+    try:
+        path = resolve_prefix_dir(prefix, _root())
+    except Exception as _e:
+        raise HTTPException(status_code=400, detail=str(_e)) from _e
     if not path.exists() or not path.is_dir():
         raise HTTPException(status_code=404, detail="prefix not found")
     entries: list[dict[str, Any]] = []
@@ -81,6 +88,57 @@ async def list_entries(
         if len(entries) >= limit:
             break
     return {"prefix": prefix, "entries": entries}
+
+
+@router.get("/xattrs", operation_id="pfs_get_xattrs")
+async def get_xattrs(uri: str = Query(..., description="pfs:// URI")) -> dict[str, Any]:
+    if not isinstance(uri, str) or not uri.startswith("pfs://"):
+        raise HTTPException(status_code=400, detail="uri must start with pfs://")
+    try:
+        x = get_xattrs_for_uri(uri)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="artifact not found")
+    except Exception as _e:
+        raise HTTPException(status_code=400, detail=str(_e)) from _e
+    return {"uri": uri, "xattrs": x}
+
+
+@router.post("/materialize", operation_id="pfs_materialize")
+async def materialize(body: dict[str, Any]) -> dict[str, Any]:
+    """PL/EN: Materialize a stub artifact for given pfs:// URI (dev/test only)."""
+    uri = str(body.get("uri") or "")
+    if not uri.startswith("pfs://"):
+        raise HTTPException(status_code=400, detail="uri must start with pfs://")
+    try:
+        p = materialize_uri(uri, meta=body.get("meta") or {})
+    except Exception as _e:
+        raise HTTPException(status_code=400, detail=str(_e)) from _e
+    # Return exists/xattrs for convenience
+    try:
+        x = get_xattrs_for_uri(uri)
+    except Exception:
+        x = None
+    return {"uri": uri, "path": str(p), "ok": True, "xattrs": x}
+
+
+@router.post("/mount", operation_id="pfs_mount_mock")
+async def mount(body: dict[str, Any] | None = None) -> dict[str, Any]:
+    """PL/EN: Mock mount ProofFS (no‑op) for e2e flows and UI demos."""
+    _ = body or {}
+    src = (_ or {}).get("root")
+    m = mount_readonly(src)
+    return {"mounted": True, "mount_id": m.mount_id, "mount_path": str(m.mount_path)}
+
+
+@router.post("/unmount", operation_id="pfs_unmount_mock")
+async def unmount_(body: dict[str, Any]) -> dict[str, Any]:
+    mid = str((body or {}).get("mount_id") or "")
+    if not mid:
+        raise HTTPException(status_code=400, detail="mount_id is required")
+    ok = unmount(mid)
+    if not ok:
+        raise HTTPException(status_code=404, detail="mount not found")
+    return {"unmounted": True, "mount_id": mid}
 
 
 @router.get("/exists", operation_id="pfs_exists")
