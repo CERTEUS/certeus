@@ -30,6 +30,10 @@ from __future__ import annotations
 
 import os
 from time import time
+import base64
+import json as _json
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
@@ -279,10 +283,6 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
             pass
     # Signing header (Ed25519) over canonical JSON of body
     try:
-        import base64
-        import json as _json
-        from cryptography.hazmat.primitives import serialization
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
         pem = os.getenv("ED25519_PRIVKEY_PEM") or ""
         if pem.strip():
