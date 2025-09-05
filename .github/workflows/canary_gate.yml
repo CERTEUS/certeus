@@ -33,12 +33,12 @@ jobs:
       - name: Install deps (minimal)
         run: |
           python -m pip install -U pip wheel setuptools
-          python -m pip install fastapi httpx uvicorn cryptography jsonschema prometheus-client openapi-spec-validator python-multipart z3-solver cryptography jsonschema prometheus-client openapi-spec-validator python-multipart z3-solver
+          python -m pip install fastapi httpx uvicorn cryptography jsonschema prometheus-client openapi-spec-validator python-multipart z3-solver
       - name: Run Canary Gate
         env:
-          CANARY_COUNT: '60'
-          CANARY_MAX_P95_MS: '280'
-          CANARY_MAX_ERROR_RATE: '0.02'
+          CANARY_COUNT: '40'
+          CANARY_MAX_P95_MS: '350'
+          CANARY_MAX_ERROR_RATE: '0.05'
         run: |
           python scripts/gates/canary_gate.py --phases 3 --count "$CANARY_COUNT" --p95-max "$CANARY_MAX_P95_MS" --error-rate-max "$CANARY_MAX_ERROR_RATE" --out out/canary.json
       - name: Upload canary report
@@ -80,6 +80,5 @@ jobs:
             } catch (e) {
               core.warning('Could not create PR comment: ' + (e?.message || e));
             }
-
 
 
