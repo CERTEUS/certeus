@@ -141,6 +141,12 @@ jobs:
           python scripts/gates/pco_validation_gate.py || true
           test -f out/pco_validation.json && echo ok > out/pco_validation_ok.txt || true
 
+      - name: SDK Contract Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/gates/sdk_contract_gate.py || true
+          test -f out/sdk_contract_ok.txt && echo ok > out/sdk_contract_ok.txt || true
+
       - name: Asset-Integrity Gate (enforce)
         run: |
           python scripts/gates/asset_integrity_gate.py

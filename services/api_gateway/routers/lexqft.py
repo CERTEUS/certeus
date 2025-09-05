@@ -528,9 +528,17 @@ async def renorm(body: RenormRequest) -> dict:
     if n == 0:
         return {"case": body.case, "dist": [], "entropy": 0.0}
 
-    EPS = 1e-308  # treat denormals as zero to keep scale invariance
+    # Treat extremely small weights as zero using a relative threshold to
+    # preserve scale invariance under positive scaling.
     vals = [max(0.0, float(it.authority)) for it in items]
-    vals = [v if v >= EPS else 0.0 for v in vals]
+    if vals:
+        maxv = max(vals)
+    else:
+        maxv = 0.0
+    REL_EPS = 1e-15
+    ABS_EPS = 0.0  # avoid introducing a fixed floor that breaks invariance
+    thr = max(ABS_EPS, maxv * REL_EPS)
+    vals = [v if v >= thr else 0.0 for v in vals]
     total = sum(vals)
 
     if total <= 0.0:
