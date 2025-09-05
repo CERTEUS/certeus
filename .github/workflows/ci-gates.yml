@@ -521,6 +521,7 @@ jobs:
 
       - name: Publish CI status to branch
         if: always()
+        continue-on-error: true
         run: |
           set -e
           git config user.name "github-actions[bot]"
@@ -580,6 +581,5 @@ jobs:
             fi
           done
           if [ $attempt -ge $max_attempts ]; then
-            echo "[ci-status] Failed to push after $max_attempts attempts"
-            exit 1
+            echo "[ci-status] Failed to push after $max_attempts attempts (non-fatal)"
           fi
