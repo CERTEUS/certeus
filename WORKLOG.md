@@ -431,3 +431,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Shedder: middleware adaptacyjny (ENV: SHED_ENABLE/SHED_FORCE_RATE/SHED_MAX_RATE) – testy 503/429 przechodzą.
   - Lint/tests: ruff OK; pytest: 340 passed, 5 skipped lokalnie; push na work/daily.
   - Nast.: poczekać na CI (Tests/UI Smoke/Canary-Gate/truth-gates) i auto-promocję do main.
+- 2025-09-05 15:36:35Z [root] (feat/ci-workflows-sanitize): A11: CI/Workflows sanitize
+  - - checki: Tests/UI Smoke/Canary‑Gate/truth‑gates\n- Python 3.11 + pip cache (spójnie)\n- smoke.yml: usunięto konflikt/markery\n- tests.yml: OpenAPI + Spectral (nieblokujące)\n- PR targets: +work/daily w PR-only\n- ci-gates.yml: BOM→LF\n- branch_protection.json: wymagane checki zaktualizowane
