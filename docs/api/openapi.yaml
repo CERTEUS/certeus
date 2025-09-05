@@ -373,12 +373,12 @@ paths:
       responses: { "200": { description: ok } }
   /v1/billing/admin/set_tier:
     post:
-      summary: Admin: set tenant tier (DEV)
+      summary: "Admin: set tenant tier (DEV)"
       tags: [Billing]
       responses: { "200": { description: ok } }
   /v1/billing/admin/reload:
     post:
-      summary: Admin: reload policies from file (DEV)
+      summary: "Admin: reload policies from file (DEV)"
       tags: [Billing]
       responses: { "200": { description: ok } }
   /v1/fin/tokens/request:
