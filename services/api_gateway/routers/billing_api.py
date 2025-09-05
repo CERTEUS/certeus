@@ -35,7 +35,11 @@ from services.api_gateway.limits import (
 
 
 class AllocateIn(BaseModel):
-    cost_units: int = Field(gt=0)
+    cost_units: int = Field(gt=0, alias="units")
+
+    model_config = {
+        "populate_by_name": True,
+    }
 
 
 class RefundIn(BaseModel):

@@ -10,19 +10,26 @@
 # +-------------------------------------------------------------+
 
 """
-PL: Router ProofFS (listowanie zasobów, exists). Listing dla prefiksu pfs:// + exists dla pojedynczego URI.
+PL: Router ProofFS: listowanie/exists oraz inspekcja ścieżek (z logu lexqft).
 
-EN: ProofFS router (list and exists). Lists given pfs:// prefix and checks existence of a single URI.
+EN: ProofFS router: list/exists and inspection of paths (from lexqft log).
 """
 
 # === IMPORTY / IMPORTS ===
 
 from __future__ import annotations
 
+import base64
+from hashlib import sha256
+import json
 import os
 from pathlib import Path
 from typing import Any
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
+)
 from fastapi import APIRouter, HTTPException, Query
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -42,6 +49,10 @@ def _root() -> Path:
         return Path(p)
     # fallback: repo data dir (aligned with materialize default)
     return Path(".").resolve() / "data" / "proof_fs"
+
+
+def _tunnel_log_path() -> Path:
+    return Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
 
 
 @router.get("/list", operation_id="pfs_list_entries")
@@ -87,6 +98,109 @@ async def exists(uri: str = Query(..., description="pfs:// URI")) -> dict[str, A
     return {"uri": uri, "exists": False, "size": None, "path": str(p)}
 
 
+@router.get("/case/{case}")
+async def case_paths(case: str) -> dict[str, Any]:
+    """PL/EN: Return paths recorded by lexqft tunnel log for the given case."""
+    log = _tunnel_log_path()
+    paths: list[list[str]] = []
+    try:
+        if log.exists():
+            for ln in log.read_text(encoding="utf-8").splitlines():
+                s = ln.strip()
+                if not s:
+                    continue
+                obj = json.loads(s)
+                if str(obj.get("case_id")) == case and isinstance(obj.get("path"), list):
+                    paths.append([str(x) for x in obj.get("path")])
+    except Exception:
+        paths = []
+    return {"case": case, "paths": paths}
+
+
+@router.get("/inspect")
+async def inspect() -> dict[str, Any]:
+    """PL/EN: List cases present in the lexqft tunnel log."""
+    log = _tunnel_log_path()
+    cases: set[str] = set()
+    try:
+        if log.exists():
+            for ln in log.read_text(encoding="utf-8").splitlines():
+                s = ln.strip()
+                if not s:
+                    continue
+                obj = json.loads(s)
+                cid = obj.get("case_id")
+                if isinstance(cid, str) and cid:
+                    cases.add(cid)
+    except Exception:
+        cases = set()
+    return {"cases": sorted(cases)}
+
+
+def _b64u_decode(s: str) -> bytes:
+    pad = "=" * (-len(s) % 4)
+    return base64.urlsafe_b64decode(s + pad)
+
+
+def _b64u_encode(b: bytes) -> str:
+    return base64.urlsafe_b64encode(b).decode("ascii").rstrip("=")
+
+
+def _merkle_root(path: list[str]) -> bytes:
+    if not path:
+        return sha256(b"").digest()
+    level = [sha256(str(x).encode("utf-8")).digest() for x in path]
+    while len(level) > 1:
+        nxt: list[bytes] = []
+        it = iter(level)
+        for a in it:
+            try:
+                b = next(it)
+            except StopIteration:
+                b = a
+            nxt.append(sha256(a + b).digest())
+        level = nxt
+    return level[0]
+
+
+@router.post("/sign_path")
+async def sign_path(body: dict) -> dict[str, Any]:
+    case = str(body.get("case") or "")
+    path = body.get("path") or []
+    sk_b64 = str(body.get("sk_b64url") or "")
+    if not isinstance(path, list) or not sk_b64:
+        raise HTTPException(status_code=400, detail="invalid payload")
+    root = _merkle_root([str(x) for x in path])
+    sk_raw = _b64u_decode(sk_b64)
+    try:
+        sk = Ed25519PrivateKey.from_private_bytes(sk_raw)
+    except Exception as _e:
+        raise HTTPException(status_code=400, detail="invalid secret key") from _e
+    sig = sk.sign(root)
+    return {"case": case, "signature_b64": _b64u_encode(sig)}
+
+
+@router.post("/verify_path")
+async def verify_path(body: dict) -> dict[str, Any]:
+    case = str(body.get("case") or "")
+    path = body.get("path") or []
+    pk_b64 = str(body.get("pk_b64url") or "")
+    sig_b64 = str(body.get("signature_b64") or "")
+    if not isinstance(path, list) or not pk_b64 or not sig_b64:
+        raise HTTPException(status_code=400, detail="invalid payload")
+    root = _merkle_root([str(x) for x in path])
+    pk_raw = _b64u_decode(pk_b64)
+    sig = _b64u_decode(sig_b64)
+    try:
+        pk = Ed25519PublicKey.from_public_bytes(pk_raw)
+        pk.verify(sig, root)
+        ok = True
+    except Exception:
+        ok = False
+    return {"case": case, "ok": bool(ok)}
+
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+

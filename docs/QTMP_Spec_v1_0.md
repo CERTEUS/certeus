@@ -51,11 +51,13 @@ Gdy \([\hat{L},\hat{T}] \neq 0\): im precyzyjniej „litera prawa”, tym bardzi
 Dwa (lub więcej) dowodów mogą tworzyć jeden, nierozerwalny stan kwantowy. Pomiar jednego natychmiast determinuje stan drugiego.
 
 - Przykładowy stan splątany dwóch dowodów A, B:
+
   ```latex
   $$
   \ket{\Psi_{AB}} = \tfrac{1}{\sqrt{2}}\big(\ket{0_A1_B} - \ket{1_A0_B}\big)
   $$
   ```
+
 - Mierniki splątania: **wzajemna informacja**, **negatywność** (N>0 ⇒ splątanie).
 
 ---
@@ -65,11 +67,13 @@ Dwa (lub więcej) dowodów mogą tworzyć jeden, nierozerwalny stan kwantowy. Po
 Interakcja z otoczeniem (akt obserwacji, decyzja sędziego) niszczy superpozycję (dekoherencja) i powoduje **kolaps funkcji falowej** do jednego, klasycznego werdyktu.
 
 - Proces pomiaru (Lüders / projekcyjny):
+
   ```latex
   $$
   \rho \;\longrightarrow\; \sum_i \hat{P}_i \, \rho \, \hat{P}_i^{\dagger},\qquad \hat{P}_i=\ket{i}\!\bra{i}
   $$
   ```
+
 - **Czas dekoherencji** = KPI: jak szybko sprawa „zastyga” w jednym rozwiązaniu.
 
 ---

@@ -173,7 +173,11 @@ class QuotaRequest(BaseModel):
 
 
 class AllocateRequest(BaseModel):
-    cost_units: int = Field(ge=0)
+    cost_units: int = Field(ge=0, alias="units")
+
+    model_config = {
+        "populate_by_name": True,
+    }
 
 
 class RefundRequest(BaseModel):

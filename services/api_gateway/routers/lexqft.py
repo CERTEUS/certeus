@@ -31,7 +31,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -47,6 +47,12 @@ class TunnelRequest(BaseModel):
     evidence_energy: float = Field(ge=0)
 
     counter_arguments: list[str] | None = None
+
+    # W6 dispute scenarios: optional profile influencing below-barrier probability
+    dispute_profile: str | None = Field(
+        default=None,
+        description="Dispute profile (authority_bias/balanced/evidence_bias/asymmetric)",
+    )
 
 
 class TunnelResponse(BaseModel):
@@ -153,24 +159,53 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
     # - If a barrier model is provided, use its energy as the threshold.
     # - Otherwise keep the legacy rule (>=1.0 almost certain).
 
-    e = req.evidence_energy
+    e = float(req.evidence_energy)
     min_e = 0.8
+    w = 1.0
+    v0 = None
     if isinstance(req.barrier_model, dict) and req.barrier_model:
         try:
+            # Height/width form
+            v0_raw = req.barrier_model.get("V0")
+            w_raw = req.barrier_model.get("w")
             be = req.barrier_model.get("energy") or req.barrier_model.get("barrier_energy")
-            if be is not None:
+            if v0_raw is not None:
+                v0 = max(0.0, float(v0_raw))
+                min_e = v0
+            if w_raw is not None:
+                w = max(0.0, float(w_raw)) or 0.0
+            if be is not None and v0 is None:
                 min_e = float(be)
         except Exception:
             pass
-        # Probability scales with ratio e/min_e until cap; 0.6 factor keeps
-        # continuity with previous heuristic.
+        # Base probability by ratio e/min_e
         if e >= float(min_e):
             p = 0.95
         else:
             denom = float(min_e) if float(min_e) > 1e-9 else 1.0
             p = max(0.05, (e / denom) * 0.6)
+            # WKB-like damping: wider barrier lowers p
+            if w > 0.0:
+                p = p / (1.0 + 0.5 * max(0.0, w - 1.0))
+            # Higher barrier (relative to 1.0) lowers p slightly
+            if v0 is not None:
+                p = p / (1.0 + 0.3 * max(0.0, v0 - 1.0))
     else:
         p = 0.95 if e >= 1.0 else max(0.05, e * 0.6)
+
+    # Dispute profiles adjustment for E < min_e to satisfy ordering expectations
+    try:
+        if e < float(min_e):
+            prof = (req.dispute_profile or "").strip().lower()
+            if prof == "authority_bias":
+                p = max(0.05, p * 0.9)
+            elif prof == "evidence_bias":
+                p = min(0.95, p * 1.15 + 0.02)
+            elif prof == "asymmetric":
+                p = max(0.05, p * 0.95)
+            # balanced -> no change
+    except Exception:
+        pass
 
     path = ["start", "barrier", "post-barrier"] if p > 0.5 else ["start", "reflect"]
     resp = TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
@@ -237,6 +272,12 @@ class CoverageItem(BaseModel):
     uncaptured: float = 0.0
 
 
+class FinCoverageIn(BaseModel):
+    signals: dict[str, float]
+    weight: float = 1.0
+    uncaptured_base: float = 0.1
+
+
 @router.post("/coverage/update")
 async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
     """PL/EN: Ustaw (zastąp) wkłady ścieżek do pokrycia (gamma, wagi, uncaptured)."""
@@ -268,6 +309,44 @@ async def coverage_reset(request: Request) -> dict:
     except Exception:
         pass
     return {"ok": True}
+
+
+@router.post("/coverage/from_fin")
+async def coverage_from_fin(body: FinCoverageIn, request: Request) -> dict:
+    """PL/EN: Wyznacz wkład do pokrycia na podstawie sygnałów FIN.
+
+    Heurystyka:
+    - gamma rośnie z sentymentem i maleje z ryzykiem;
+      gamma ~= 0.9 + 0.1*sent - 0.2*risk (clamp [0,0.99]).
+    - uncaptured: bazuje na uncaptured_base, redukowane przez sentyment i
+      zwiększane przez ryzyko (clamp [0,1]).
+    - wynik dopisywany do agregatora z wagą `weight`.
+    """
+    from services.api_gateway.limits import enforce_limits
+
+    enforce_limits(request, cost_units=1)
+
+    sig = {str(k).lower(): float(v) for k, v in (body.signals or {}).items()}
+    def _get(sig: dict[str, float], keys: list[str], default: float) -> float:
+        for k in keys:
+            if k in sig:
+                return float(sig[k])
+        return float(default)
+    sent = _get(sig, ["sentiment", "sent", "sent_score"], 0.5)
+    risk = _get(sig, ["risk", "risk_factor", "volatility"], 0.5)
+    # Score computed on raw inputs then clamped to [-1,1], finally mapped to [0,1]
+    score_raw = float(sent) - float(risk)
+    score = max(-1.0, min(1.0, score_raw))
+    score01 = (score + 1.0) / 2.0
+    # Gamma strictly increasing with score; bounded to [0.6, 0.98]
+    gamma = 0.6 + 0.38 * score01
+    gamma = max(0.6, min(0.98, float(gamma)))
+    # Uncaptured strictly decreasing with score; bounded to [0.0, 0.2]
+    unc = 0.2 * (1.0 - score01)
+    unc = max(0.0, min(0.2, float(unc)))
+
+    append_coverage_contribution(gamma=float(gamma), weight=float(body.weight), uncaptured=float(unc))
+    return {"gamma": round(float(gamma), 6), "uncaptured": round(float(unc), 6), "weight": float(body.weight)}
 
 
 # === I/O / ENDPOINTS ===
@@ -352,3 +431,101 @@ async def tunnel_stats() -> TunnelStats:
         return TunnelStats(count=int(count), last_ts=last_ts)
     except Exception:
         return TunnelStats(count=0, last_ts=None)
+
+# --- Virtual Pairs (energy budget / debt) -------------------------------------
+
+_VP_STATE: dict[str, dict[str, float | int]] = {}
+
+
+class VPBudgetIn(BaseModel):
+    case: str
+    budget: float
+
+
+class VPSpawnIn(BaseModel):
+    case: str
+    pairs: int
+    energy_per_pair: float
+
+
+@router.post("/virtual_pairs/reset")
+async def vp_reset() -> dict:
+    _VP_STATE.clear()
+    return {"ok": True}
+
+
+@router.post("/virtual_pairs/budget")
+async def vp_budget(body: VPBudgetIn) -> dict:
+    st = _VP_STATE.setdefault(str(body.case), {"budget": 0.0, "energy_debt": 0.0, "pairs": 0})
+    st["budget"] = float(max(0.0, body.budget))
+    st["energy_debt"] = float(st.get("energy_debt") or 0.0)
+    st["pairs"] = int(st.get("pairs") or 0)
+    return {"case": body.case, "budget": st["budget"], "energy_debt": st["energy_debt"]}
+
+
+@router.get("/virtual_pairs/state")
+async def vp_state(case: str) -> dict:
+    st = _VP_STATE.get(str(case)) or {"budget": 0.0, "energy_debt": 0.0, "pairs": 0}
+    remaining = float(st["budget"]) - float(st["energy_debt"])
+    return {
+        "case": case,
+        "pairs": int(st["pairs"]),
+        "energy_debt": float(st["energy_debt"]),
+        "budget": float(st["budget"]),
+        "remaining": float(remaining),
+    }
+
+
+
+
+@router.post("/virtual_pairs/spawn")
+async def vp_spawn(body: VPSpawnIn) -> dict:
+    st = _VP_STATE.setdefault(str(body.case), {"budget": 0.0, "energy_debt": 0.0, "pairs": 0})
+    energy = float(max(0.0, body.energy_per_pair)) * max(0, int(body.pairs))
+    remaining = float(st["budget"]) - float(st["energy_debt"])
+    if energy > remaining + 1e-12:
+        raise HTTPException(status_code=409, detail="over budget")
+    st["energy_debt"] = float(st["energy_debt"]) + energy
+    st["pairs"] = int(st.get("pairs") or 0) + max(0, int(body.pairs))
+    remaining = float(st["budget"]) - float(st["energy_debt"])
+    return {
+        "case": body.case,
+        "pairs": int(st["pairs"]),
+        "energy_debt": float(st["energy_debt"]),
+        "remaining": float(remaining),
+    }
+
+
+class RenormItemIn(BaseModel):
+    uid: str
+    authority: float
+
+
+class RenormItemOut(BaseModel):
+    uid: str
+    p: float
+
+
+class RenormRequest(BaseModel):
+    case: str | None = None
+    items: list[RenormItemIn]
+
+
+@router.post("/renorm")
+async def renorm(body: RenormRequest) -> dict:
+    """PL/EN: Renormalize authority weights to probability distribution.
+
+    - If the sum is zero/non-positive, return a uniform distribution.
+    - Otherwise p_i = authority_i / sum(authority).
+    """
+    items = list(body.items or [])
+    n = len(items)
+    total = sum(max(0.0, float(it.authority)) for it in items)
+    if n == 0:
+        return {"case": body.case, "dist": []}
+    if total <= 0.0:
+        p = 1.0 / n
+        dist = [RenormItemOut(uid=str(it.uid), p=p) for it in items]
+    else:
+        dist = [RenormItemOut(uid=str(it.uid), p=(max(0.0, float(it.authority)) / total)) for it in items]
+    return {"case": body.case, "dist": [d.model_dump() for d in dist]}

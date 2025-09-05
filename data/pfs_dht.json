@@ -25,5 +25,19 @@
     "ttl_sec": 3600,
     "health": "up",
     "last_seen": 1757003386.7059698
+  },
+  "node-A": {
+    "competencies": [
+      "lexqft.*",
+      "proof.*"
+    ],
+    "capacity": 2
+  },
+  "node-B": {
+    "competencies": [
+      "cfe.geodesic",
+      "lexenith.*"
+    ],
+    "capacity": 1
   }
 }

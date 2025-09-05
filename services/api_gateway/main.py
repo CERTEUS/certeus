@@ -72,6 +72,7 @@ import services.api_gateway.routers.upn as upn
 import services.api_gateway.routers.verify as verify
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
 from services.api_gateway.security import attach_proof_only_middleware
+from services.api_gateway.shedder import attach_shedder_middleware
 from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.registry import get_llm, get_preview
 
@@ -171,6 +172,7 @@ setup_fastapi_otel(app)
 
 # Optional: Rate-limit middleware (enable via RATE_LIMIT_QPS)
 attach_rate_limit_middleware(app)
+attach_shedder_middleware(app)
 
 # statyki
 

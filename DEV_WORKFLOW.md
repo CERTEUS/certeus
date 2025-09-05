@@ -1,11 +1,14 @@
-Developer Workflow (Public tests vs Private build)
+# Developer Workflow (Public tests vs Private build)
 
 UWAGA - Zasada niezmienna (Immutable Rule)
+
 - Publikujemy wyłącznie to, co jest jawnie dozwolone przez allowlistę LITE (mirror publiczny). Wszystko inne zostaje w repo prywatnym i przechodzi przez bramki (gitleaks/policy-scan/branch-protection) - bez wyjątków.
 - Pełen opis: zob. `docs/AGENTS/README.md` (sekcja: Zasada niezmienna/Immutable Rule).
 
 Checklist (release/publish)
+
 - [ ] Ustaw/zweryfikuj Social preview (og.png) w `CERTEUS/certeus-public` (Settings → General → Social preview).
+
 1) Work locally on branch `work/daily`.
 2) Before end of week (W13/W14): run local lint/tests; ensure green.
 3) Commit with weekly marker: include "[week-end]" or a trailer line `weekly-promote: true`.
@@ -20,5 +23,6 @@ Private-only build: `.github/workflows/build_private.yml` (runs when repo is pri
 Self-hosted runner: see `infra/runner/` (docker compose with ephemeral runner).
 
 PAT rotacja (przypominajka)
+
 - Personal Access Token (ADMIN_TOKEN) rotujemy co 30-90 dni.
 - Po rotacji zaktualizuj `.devkeys/admin_token.txt` lub odśwież `gh auth` (scope: repo/workflow).

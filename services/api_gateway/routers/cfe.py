@@ -41,6 +41,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
+import os
 from pydantic import BaseModel, Field
 
 from services.api_gateway.routers.cfe_config import current_lock_sets, get_lensing_map
@@ -87,6 +88,11 @@ class LensingResponse(BaseModel):
     domain: str | None = Field(default=None, description="Domain context (e.g., LEX/FIN/MED/SEC/CODE)")
 
 
+class LensingFromFinRequest(BaseModel):
+    signals: dict[str, float] = Field(default_factory=dict)
+    seed: str | None = None
+
+
 # === LOGIKA / LOGIC ===
 
 # +=====================================================================+
@@ -114,7 +120,7 @@ _CURV_TTL_S: float = 1.0
 
 
 @router.get("/curvature", response_model=CurvatureResponse)
-async def curvature() -> CurvatureResponse:
+async def curvature(response: Response) -> CurvatureResponse:
     """PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max).
 
     Lekki cache in‑memory (TTL=1 s) w celu ograniczenia kosztu serializacji
@@ -127,6 +133,13 @@ async def curvature() -> CurvatureResponse:
     if _CURV_CACHE_VALUE is not None and (now - _CURV_CACHE_TS) < _CURV_TTL_S:
         return _CURV_CACHE_VALUE
     val = CurvatureResponse(kappa_max=0.012)
+    # Cache headers from env TTL
+    try:
+        ttl = int(float(os.getenv("CFE_CACHE_TTL_SEC") or 60))
+        response.headers["Cache-Control"] = f"public, max-age={ttl}"
+        response.headers["X-CERTEUS-CFE-Cache-TTL"] = str(ttl)
+    except Exception:
+        pass
     _CURV_CACHE_VALUE = val
     _CURV_CACHE_TS = now
     return val
@@ -209,7 +222,7 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing(domain: str | None = None) -> LensingResponse:
+async def lensing(domain: str | None = None, response: Response = None) -> LensingResponse:
     """PL/EN: Domenowy lensing — mapa wpływów zależna od kontekstu.
 
     Parametr `domain` jest opcjonalny i pozwala na doprecyzowanie
@@ -218,7 +231,31 @@ async def lensing(domain: str | None = None) -> LensingResponse:
     """
 
     lm, crit, d = get_lensing_map(domain)
+    # Apply cache headers if response provided
+    try:
+        ttl = int(float(os.getenv("CFE_CACHE_TTL_SEC") or 60))
+        response.headers["Cache-Control"] = f"public, max-age={ttl}"
+        response.headers["X-CERTEUS-CFE-Cache-TTL"] = str(ttl)
+    except Exception:
+        pass
     return LensingResponse(lensing_map=lm, critical_precedents=crit, domain=d)
+
+
+@router.post("/lensing/from_fin", response_model=LensingResponse)
+async def lensing_from_fin(req: LensingFromFinRequest) -> LensingResponse:
+    """PL/EN: Buduje mapę lensingu z sygnałów FIN (prosty normalizator).
+
+    - Wejście: `signals` (nazwa->wartość), opcjonalny `seed` (ignorowany w stubie).
+    - Wyjście: LensingResponse z `domain="FIN"` oraz kluczem krytycznym jako max.
+    """
+    sig = {str(k): float(v) for k, v in (req.signals or {}).items()}
+    if not sig:
+        return LensingResponse(lensing_map={}, critical_precedents=[], domain="FIN")
+    # Normalizacja do [0,1] przez podział przez maksimum bezwzględne
+    max_abs = max(abs(v) for v in sig.values()) or 1.0
+    norm = {k: max(0.0, min(1.0, (v / max_abs) if max_abs else 0.0)) for k, v in sig.items()}
+    crit = [max(norm.items(), key=lambda kv: (kv[1], kv[0]))[0]] if norm else []
+    return LensingResponse(lensing_map=norm, critical_precedents=crit, domain="FIN")
 
 
 # === I/O / ENDPOINTS ===
@@ -275,3 +312,27 @@ async def case_revoke(req: CaseActionIn, request: Request, response: Response) -
     except Exception:
         pass
     return CaseActionOut(case=req.case, locked=False, action="revoke")
+
+
+@router.post("/cache/warm")
+async def cache_warm(cases: list[str] | None = None) -> dict[str, int | bool]:
+    """PL/EN: Lekki warm-up cache (curvature) + ewentualnie preload lensingu.
+
+    Parametr `cases` jest opcjonalny; zwracamy liczbę zadanych przypadków.
+    """
+    # Warm curvature cache
+    global _CURV_CACHE_VALUE, _CURV_CACHE_TS
+    _CURV_CACHE_VALUE = None
+    _CURV_CACHE_TS = 0.0
+    # Set once
+    try:
+        # prime the cache (dummy response for header setting not required here)
+        _ = await curvature(Response())  # type: ignore[misc]
+    except Exception:
+        pass
+    count = len(cases or [])
+    try:
+        ttl = int(float(os.getenv("CFE_CACHE_TTL_SEC") or 60))
+    except Exception:
+        ttl = 60
+    return {"ok": True, "warmed": int(count), "ttl_sec": ttl}

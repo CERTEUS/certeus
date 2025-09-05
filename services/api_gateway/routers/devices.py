@@ -284,7 +284,6 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
             pass
     # Signing header (Ed25519) over canonical JSON of body
     try:
-
         pem = os.getenv("ED25519_PRIVKEY_PEM") or ""
         if pem.strip():
             sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)

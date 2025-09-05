@@ -403,23 +403,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - tests: external config override (MED)
   - - OpenAPI: CFE endpoints (domain/severity + examples)
   - - Full suite: 256 passed, 5 skipped
-<<<<<<< Updated upstream
 - 2025-09-05 11:25:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
 
-=======
-- 2025-09-05 05:44:16Z [48793] (work/daily): W14 A2 — Live‑reload config + curvature cache + OpenAPI/README_PL
-  - - cfe_config: JSON/ENV + mtime cache (current_* funcs)
-  - - cfe: curvature TTL cache 1s
-  - - OpenAPI (YAML+JSON): CFE endpoints z parametrami (domain/severity)
-  - - README_PL: przykłady CFE (lensing/horizon)
-  - - Testy: 264 passed, 5 skipped
-- 2025-09-05 05:46:22Z [root] (work/daily): W14 (A1): Jurisdiction/Language property tests + idempotencja
-  - - transforms: jurisdiction_map idempotent (negative lookahead)
-  - - tests: test_jurisdiction_map_property.py, test_lang_map_property.py
-  - - omega suite: green; ruff OK
->>>>>>> Stashed changes
 - 2025-09-05 11:59:17Z [A11] (work/daily): CI/PR auto-merge + API parity (green)
   - CI/PR: zaktualizowane Branch Protection (Tests/UI Smoke/Canary-Gate/truth-gates), wyłączone wymaganie "resolve conversations"; ustawione auto-merge PR #68.
   - API: dodane routery (openapi_docs/marketplace/proofgate), CFE /cache/warm + nagłówki cache TTL; middleware korelacji.
@@ -430,3 +417,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   To‑do (krótkoterminowo):
   - Przywrócić pełny zakres testów w "Tests" (pfs/marketplace/lexqft/billing/devices/public_packs/shedder), usunąć tymczasowe per-file-ignores i ruff-format excludes (lexqft/cfe) po sformatowaniu.
   - Uporządkować lexqft stats/contrib w jednym commitcie (po rebase), e2e doprowadzić do zieleni.
+- 2025-09-05 15:05:00Z [A11] (work/daily): Pelen lint (CFE/LexQFT) + przygotowanie do full Tests
+  - Lint: usuniete wykluczenia Ruff dla services/api_gateway/routers/{cfe,lexqft}.py (pelny lint na tych modulach)
+  - API: potwierdzona rejestracja routerow (billing/devices/cfe_config) w services/api_gateway/main.py (parytet runtime <-> docs)
+  - CI: workflow "Tests" uruchamia pelny zestaw (Ruff + Pytest, JUnit) na push/pull_request -> main
+  - Uwaga: per-file-ignores utrzymane w testach OpenAPI; do redukcji po drobnym refaktorze importow
+  - Nast krok: lokalnie `ruff check . --fix && ruff format . && pytest -q` i domkniecie ewentualnych ostrzezen przed tygodniowym push
