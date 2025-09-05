@@ -308,7 +308,7 @@ async def lensing_from_fin(payload: LensingFromFinIn, response: Response) -> Len
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing(domain: str | None = None, response: Response | None = None) -> LensingResponse:
+async def lensing(domain: str | None = None, response: Response = None) -> LensingResponse:  # type: ignore[assignment]
     # Ensure cache headers are present based on CFE_CACHE_TTL_SEC
     try:
         import os as _os
