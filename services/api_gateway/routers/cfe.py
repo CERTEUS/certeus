@@ -115,6 +115,16 @@ class CurvatureResponse(BaseModel):
 
 @router.get("/curvature", response_model=CurvatureResponse)
 async def curvature(response: Response, case_id: str | None = None) -> CurvatureResponse:
+    # Ensure cache headers are present based on CFE_CACHE_TTL_SEC
+    try:
+        import os as _os
+        ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+        if response is not None and ttl > 0:
+            response.headers.setdefault("Cache-Control", f"public, max-age={ttl}")
+        if response is not None:
+            response.headers.setdefault("X-CERTEUS-CFE-Cache-TTL", str(ttl))
+    except Exception:
+        pass
     """PL/EN: CFE telemetry — compute Ricci (approx Ollivier) kappa_max for case.
 
     case_id opcjonalny — determinuje ziarno grafu (metryka realna, ale lekka).
@@ -298,7 +308,17 @@ async def lensing_from_fin(payload: LensingFromFinIn, response: Response) -> Len
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing(domain: str | None = None) -> LensingResponse:
+async def lensing(domain: str | None = None, response: Response | None = None) -> LensingResponse:
+    # Ensure cache headers are present based on CFE_CACHE_TTL_SEC
+    try:
+        import os as _os
+        ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+        if response is not None and ttl > 0:
+            response.headers.setdefault("Cache-Control", f"public, max-age={ttl}")
+        if response is not None:
+            response.headers.setdefault("X-CERTEUS-CFE-Cache-TTL", str(ttl))
+    except Exception:
+        pass
     """PL/EN: Domenowy lensing — mapa wpływów zależna od kontekstu.
 
     Parametr `domain` jest opcjonalny i pozwala na doprecyzowanie
@@ -311,6 +331,16 @@ async def lensing(domain: str | None = None) -> LensingResponse:
 
 
 # === I/O / ENDPOINTS ===
+
+@router.post("/cache/warm", response_model=WarmCacheResponse)
+async def cache_warm(payload: list[str] | None = None) -> WarmCacheResponse:
+    """No-op warm endpoint to establish caches and report TTL."""
+    try:
+        import os as _os
+        ttl = int(_os.getenv("CFE_CACHE_TTL_SEC", "300") or "0")
+    except Exception:
+        ttl = 0
+    return WarmCacheResponse(warmed=len(payload or []), ttl_sec=ttl)
 
 # === TESTY / TESTS ===
 
