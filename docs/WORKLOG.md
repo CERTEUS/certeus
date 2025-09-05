@@ -442,3 +442,19 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Ruff: lint+format zielone
 >>>>>>> origin/work/daily
 
+- 2025-09-05 17:07:28Z [A11] (main): Porządek + zielony CI + dokumentacja do docs/
+  - CI/Workflows: sanitacja ci-gates/smoke/tests (heredoc, znaki kontrolne, needs), unifikacja Python 3.11 + cache; wymagane checki: Tests/UI Smoke/Canary‑Gate/truth‑gates — zielone na PR i main.
+  - API/Tests: CFE (/cache/warm, /lensing/from_fin), LexQFT (dispute profiles, /coverage/from_fin, /renorm, /virtual_pairs), PFS (DHT TTL/capacity, /sign_path, /verify_path), Billing (alias units), Shedder (ENV) — full suite: 340 passed, 5 skipped.
+  - Docs: przeniesienie dokumentów do docs/ (CONTRIBUTING/DEV_WORKFLOW/GOVERNANCE/SECURITY/WORKLOG/Blueprint/Tree), pozostawione tylko README.md i AGENT.md w root; guard wewnętrznych dokumentów (pre‑commit + workflow) aktywny; .gitignore rozszerzony.
+  - Gałęzie: posprzątane zdalne (feat/*, work/a12-*); pozostały tylko main i work/daily (+ci-status); PR‑y zbiorcze scalone.
+  - Stan: main i work/daily — zielone; branch protection skonfigurowany; brak czerwonych bramek; openapi-pages publikuje.
+  - Braki vs Plan P0/P1:
+    * ProofFS 3× platformy: częściowo (API + sign/verify); brak macFUSE/Dokan, xattrs PNIP/PCO, mount/unmount UI, inspektor xattrs, Asset‑Integrity Gate (do dodania w CI).
+    * FROST 2‑z‑3 (ProofGate): brak (TODO: security/frost.py, enforce w publish + gate w CI).
+    * TEE/bunker/RA→PCO: częściowo (nagłówki TEE w devices); brak pełnej integracji w ProofGate i polityk bunkra.
+    * SYNAPSY P2P: szkielet p2p routera; brak transportu QUIC/Noise i SPIFFE/SPIRE.
+    * Supply‑chain enforce: brak enforce (mamy guard docs); TODO: SBOM/provenance + cosign enforce w ci-gates.
+    * SDK 2.0 (TS/Go): brak; TODO: kontrakty i smoke SDK.
+    * LEXENITH pipeline: częściowo; brak pełnego lock→motion→publish→Why‑Not z PCO ścieżki.
+    * FIN/LEX dashboardy: częściowo (SRE p95); brak dedykowanych paneli FIN/LEX.
+  - Zmiany w CI do dorobienia (A8): Asset‑Integrity Gate (enforce), FROST step w Proof Gate, P2P smoke, SDK Contract Gate, enforce supply‑chain flags.

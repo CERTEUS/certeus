@@ -101,9 +101,10 @@ jobs:
             "Actor: ${env:ACTOR}"
           ) -join "`n"
           $entry = "- $ts [${env:ACTOR}] ($branch): $summary`n  - " + ($details -replace "`n","`n  - ") + "`n"
-          if (-not (Test-Path WORKLOG.md)) { "# CERTEUS - WORKLOG`n`n" | Out-File -FilePath WORKLOG.md -Encoding UTF8 }
-          Add-Content -Path WORKLOG.md -Value $entry -Encoding UTF8
-          git add WORKLOG.md
+          $worklog = Join-Path 'docs' 'WORKLOG.md'
+          if (-not (Test-Path $worklog)) { "# CERTEUS - WORKLOG`n`n" | Out-File -FilePath $worklog -Encoding UTF8 }
+          Add-Content -Path $worklog -Value $entry -Encoding UTF8
+          git add $worklog
           git commit -m "chore(worklog): $summary" || exit 0
           git push origin work/daily || exit 0
       - name: Fast-forward main to work/daily (if possible)
@@ -149,4 +150,3 @@ jobs:
             } catch (e) {
               core.warning('Could not enable auto-merge: ' + (e?.message || e));
             }
-
