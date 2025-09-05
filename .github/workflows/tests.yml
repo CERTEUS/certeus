@@ -71,7 +71,7 @@ jobs:
       - name: 🔧 Sync dependencies (uv or pip fallback)
         run: |
           # Prefer uv; if it fails (np. chwilowy błąd indeksu) – fallback do pip
-          uv sync || python -m pip install -e ".[dev]"
+          uv sync --dev --all-extras || python -m pip install -e ".[dev]"
 
       - name: 🔎 Ruff (lint)
         run: |
