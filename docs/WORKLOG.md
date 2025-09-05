@@ -11,6 +11,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - CI: `scripts/gates/asset_integrity_gate.py` (enforce) + krok w `ci-gates.yml`
   - Testy: unit/integration/e2e dla xattrs i mount→inspect→unmount; kontrakt OpenAPI – zielony
 
+- 2025-09-05 20:15:00Z [A5] (work/daily): ProofGate — FROST 2‑z‑3 enforce + Gate
+  - Security: `security/frost.py` — quorum stub (aggregate/verify)
+  - ProofGate: publish egzekwuje quorum przy `REQUIRE_COSIGN_ATTESTATIONS=1` (domyślnie off)
+  - CI: `scripts/gates/proof_frost_enforce.py` (enforce) + krok w `ci-gates.yml`
+  - Testy: `tests/services/test_proofgate_frost_enforce.py` — PUBLISH gdy quorum, ABSTAIN bez quorum
+
 - 2025-09-05 06:50:00Z [A7] (work/daily): W14 — Domain Packs MVP (MED/SEC/CODE) + A4 green
   - Plugins: packs_med / packs_sec / packs_code (manifesty + register(api)/handle)
   - Marketplace: ABI baselines zaktualizowane (scripts/packs/update_abi_baselines.py)
@@ -468,4 +474,3 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-05 18:05:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
-
