@@ -24,13 +24,17 @@ EN: Validates OpenAPI spec (docs/api/openapi.yaml) using openapi-spec-validator.
 from __future__ import annotations
 
 try:  # support both legacy and modern versions
-    from openapi_spec_validator import validate_spec as _validate  # type: ignore[attr-defined]
+from openapi_spec_validator import validate_spec as _validate  # type: ignore[attr-defined]
 except Exception:  # pragma: no cover
     try:
         from openapi_spec_validator import validate as _validate  # type: ignore[attr-defined]
     except Exception:  # very new API shapes
         from openapi_spec_validator.validators import validate as _validate  # type: ignore
 import yaml
+import warnings
+
+# Silence deprecation warnings from openapi-spec-validator shortcuts
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # === KONFIGURACJA / CONFIGURATION ===
 
