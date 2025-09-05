@@ -68,12 +68,6 @@ class TunnelResponse(BaseModel):
 
 router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 
-# | FILE: services/api_gateway/routers/lexqft.py                        |
-
-# | ROLE: lexqft endpoints (evidence tunneling)                         |
-
-# +=====================================================================+
-
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
 _TUNNEL_LOG = Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
