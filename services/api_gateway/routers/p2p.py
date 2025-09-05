@@ -23,6 +23,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from runtime.p2p_queue import P2P_QUEUE
+from runtime.p2p_transport import echo_roundtrip
 from services.api_gateway.limits import enforce_limits, get_tenant_id
 
 # === MODELE / MODELS ===
@@ -92,6 +93,14 @@ async def dequeue_once(request: Request) -> JobStatusResponse:
     if not j:
         raise HTTPException(status_code=404, detail="no pending jobs")
     return JobStatusResponse(job_id=j.id, status=j.status, device=j.device, payload=j.payload)
+
+
+@router.get("/transport/echo")
+async def transport_echo(msg: str = "synapse") -> dict[str, object]:
+    """PL/EN: Echo-check the in-memory transport stub (report-only utility)."""
+    rep = echo_roundtrip(msg)
+    rep["message"] = msg
+    return rep
 
 
 # === I/O / ENDPOINTS ===

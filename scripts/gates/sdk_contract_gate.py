@@ -37,8 +37,8 @@ def _has_ts_sdk(repo: Path) -> bool:
     try:
         if t.exists():
             s = t.read_text(encoding="utf-8")
-            # minimal markers
-            return ("function pfsList" in s) and ("function pfsXattrs" in s)
+            # minimal markers (accept class methods or functions)
+            return ("pfsList(" in s) and ("pfsXattrs(" in s)
     except Exception:
         return False
     return False
