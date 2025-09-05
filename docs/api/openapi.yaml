@@ -333,6 +333,10 @@ paths:
       tags: [Marketplace]
       responses: { "200": { description: ok } }
   /v1/billing/quota:
+    get:
+      summary: Get tenant quota (cost tokens)
+      tags: [Billing]
+      responses: { "200": { description: ok } }
     post:
       summary: Set tenant quota (cost tokens)
       tags: [Billing]
@@ -346,6 +350,56 @@ paths:
     post:
       summary: Allocate units to current tenant (PENDING → allocate)
       tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/policies:
+    get:
+      summary: Get billing policies (tiers and tenants)
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/tenant_tier:
+    get:
+      summary: Resolve tenant tier
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/estimate:
+    post:
+      summary: Estimate cost units for action
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/recommendation:
+    get:
+      summary: Recommend tier based on action and volume
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/admin/set_tier:
+    post:
+      summary: "Admin: set tenant tier (DEV)"
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/billing/admin/reload:
+    post:
+      summary: "Admin: reload policies from file (DEV)"
+      tags: [Billing]
+      responses: { "200": { description: ok } }
+  /v1/fin/tokens/request:
+    post:
+      summary: Request tokens allocation (FIN)
+      tags: [Finance]
+      responses: { "200": { description: ok } }
+  /v1/fin/tokens/allocate:
+    post:
+      summary: Allocate requested tokens (FIN)
+      tags: [Finance]
+      responses: { "200": { description: ok } }
+  /v1/fin/tokens/{request_id}:
+    get:
+      summary: Get token request status (FIN)
+      tags: [Finance]
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema: { type: string }
       responses: { "200": { description: ok } }
   /v1/ledger/{case_id}/records:
     get:

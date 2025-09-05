@@ -486,6 +486,8 @@ python -m ruff check . --fix && python -m ruff format .
 python -m pytest -q --junitxml=reports/junit.xml
 ```
 
+Szczegóły i skróty: zob. `docs/runbooks/ci_local.md`.
+
 ## Proof‑Only I/O (opcjonalnie)
 
 Wymuś dowodową publikowalność dla wybranych ścieżek:

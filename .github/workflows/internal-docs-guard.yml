@@ -1,0 +1,23 @@
+name: internal-docs-guard
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - '**/*.md'
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run internal docs guard
+        run: |
+          python scripts/guards/internal_docs_guard.py

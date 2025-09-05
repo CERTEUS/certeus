@@ -9,12 +9,12 @@
 - Higiena: publikację poprzedza policy-scan, link-check i health.
 
 ## Co tu znajdziesz?
-- Overview API — kierunek (bez pełnej specyfikacji).
+- [API — overview](api/overview.md) — kierunek (bez pełnej specyfikacji).
 - PROVENANCE — z jakiego SHA i kiedy powstał mirror.
 - Roadmap — najbliższe kroki.
-- 90 dni — Final Status: docs/reports/90dni_final_status.md
-- 90 dni — Raport pokrycia: docs/reports/90dni_coverage_report.md
-- 90 dni — Status matrix: docs/reports/90dni_status_matrix.md
+- [90 dni — Final Status](reports/90dni_final_status.md)
+- [90 dni — Raport pokrycia](reports/90dni_coverage_report.md)
+- [90 dni — Status matrix](reports/90dni_status_matrix.md)
 
 ### Motto
 "Nie gonimy za szumem. Publikujemy to, co możemy podpisać." — Radosław Skarżycki / CERTEUS
