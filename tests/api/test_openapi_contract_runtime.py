@@ -21,8 +21,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import yaml
 import warnings
+import yaml
 
 # Suppress noisy FastAPI OpenAPI duplicate operation id warnings during schema build
 warnings.filterwarnings("ignore", message="Duplicate Operation ID*", category=UserWarning)

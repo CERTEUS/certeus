@@ -30,8 +30,8 @@ except Exception:  # pragma: no cover
         from openapi_spec_validator import validate as _validate  # type: ignore[attr-defined]
     except Exception:  # very new API shapes
         from openapi_spec_validator.validators import validate as _validate  # type: ignore
-import yaml
 import warnings
+import yaml
 
 # Silence deprecation warnings from openapi-spec-validator shortcuts
 warnings.filterwarnings("ignore", category=DeprecationWarning)
