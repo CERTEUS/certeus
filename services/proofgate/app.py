@@ -531,14 +531,30 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             decision = "ABSTAIN"
 
+    # Optionally embed TEE RA fingerprint into PCO (when bunker is on and attestation present)
+    pco_out = req.pco
+    if bunker_on and isinstance(req.pco, dict):
+        try:
+            att = attestation_from_env()
+            if att:
+                fp = extract_fingerprint(att).to_dict()
+                # Merge into tee block without overwriting explicit client-provided RA
+                tee = dict(req.pco.get("tee") or {})
+                tee.setdefault("attested", True)
+                tee.setdefault("ra", fp)
+                pco_out = dict(req.pco)
+                pco_out["tee"] = tee
+        except Exception:
+            pass
+
     ledger: str | None = None
 
     # On PUBLISH, persist a ledger event with a provenance hash of the PCO
 
     if decision == "PUBLISH":
-        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "")
+        case_id = str((pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or "")
 
-        doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+        doc_hash = compute_provenance_hash(pco_out, include_timestamp=False)
 
         rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
 
@@ -563,7 +579,7 @@ def publish(req: PublishRequest) -> PublishResponse:
     except Exception:
         pass
 
-    return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
+    return PublishResponse(status=decision, pco=pco_out, ledger_ref=ledger)
 
 
 # === I/O / ENDPOINTS ===
