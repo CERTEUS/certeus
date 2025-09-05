@@ -38,7 +38,6 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
-from monitoring.correlation import attach_correlation_middleware
 from monitoring.otel_setup import setup_fastapi_otel
 from services.api_gateway.rate_limit import attach_rate_limit_middleware
 import services.api_gateway.routers.billing as billing
@@ -60,12 +59,12 @@ except Exception:
 import services.api_gateway.routers.ledger as ledger
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
-import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
+import services.api_gateway.routers.pfs_dht as pfs_dht
 import services.api_gateway.routers.qoc as qoc
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
@@ -73,9 +72,7 @@ try:  # optional: avoid hard fail if core/pco deps are unavailable
 except Exception:
     pco_public = None  # type: ignore[assignment]
 import services.api_gateway.routers.lexenith as lexenith
-import services.api_gateway.routers.openapi_docs as openapi_docs
 import services.api_gateway.routers.preview as preview
-import services.api_gateway.routers.proofgate_gateway as proofgate_gateway
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
 import services.api_gateway.routers.upn as upn
@@ -236,22 +233,7 @@ async def _i18n_language_negotiator(request, call_next):  # type: ignore[no-rede
     return response
 
 
-# Request duration metrics middleware (Prometheus)
-@app.middleware("http")
-async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
-    import time
-
-    start = time.perf_counter()
-    response = await call_next(request)
-    dur_ms = (time.perf_counter() - start) * 1000.0
-    try:
-        path = request.url.path
-        method = request.method
-        status = str(response.status_code)
-        certeus_http_request_duration_ms.labels(path=path, method=method, status=status).observe(dur_ms)
-    except Exception:
-        pass
-    return response
+# Request duration metrics middleware — refined version is defined at the end of file
 
 
 # Cache OpenAPI JSON in-memory to reduce per-request overhead

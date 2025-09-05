@@ -31,7 +31,6 @@ Zwraca kod 0 (OK) lub 1 (naruszenia). Wypisuje listę problemów.
 from __future__ import annotations
 
 import ast
-import os
 from pathlib import Path
 import sys
 
@@ -108,22 +107,15 @@ def iter_files(patterns: list[str]) -> list[Path]:
             rel = p.relative_to(REPO).as_posix()
         except Exception:
             continue
-        # Skip vendor/venv before stat (avoid bad symlinks on Windows)
         if _should_skip(rel):
             continue
         try:
             if not p.is_file():
                 continue
-            for fn in filenames:
-                if not any(fn.endswith(suf) for suf in patterns):
-                    continue
-                p = Path(dirpath) / fn
-                try:
-                    if not p.is_file():
-                        continue
-                except OSError:
-                    continue
-                out.append(p)
+        except OSError:
+            continue
+        if any(rel.endswith(suf) for suf in patterns):
+            out.append(p)
     return out
 
 

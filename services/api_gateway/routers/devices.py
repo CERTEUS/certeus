@@ -35,12 +35,10 @@ from typing import Any
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
-from monitoring.metrics_slo import (
-    certeus_idem_new_total,
-    certeus_idem_reused_total,
-)
-from security.ra import ra_fingerprint, tee_enabled
+from monitoring.metrics_slo import certeus_idem_reused_total
 from services.api_gateway import idempotency as idem
+
+# Optional metrics & attestation (import lazily where used to avoid unused warnings)
 
 # === KONFIGURACJA / CONFIGURATION ===
 
