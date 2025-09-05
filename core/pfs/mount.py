@@ -40,7 +40,7 @@ def mount_readonly(source_root: str | os.PathLike[str] | None = None) -> MountIn
     """
     src = Path(source_root or os.getenv("PROOFS_FS_ROOT") or "data/proof_fs").resolve()
     src.mkdir(parents=True, exist_ok=True)
-    mid = f"mock-{os.getpid()}-{len(_REGISTRY)+1}"
+    mid = f"mock-{os.getpid()}-{len(_REGISTRY) + 1}"
     _REGISTRY[mid] = src
     return MountInfo(mount_id=mid, mount_path=src)
 

@@ -23,4 +23,3 @@ def mount_readonly(root: Path) -> FuseMount:  # pragma: no cover - stub
 
 def unmount(_m: FuseMount) -> None:  # pragma: no cover - stub
     return None
-

@@ -23,4 +23,3 @@ def mount_readonly(root: Path) -> DokanMount:  # pragma: no cover - stub
 
 def unmount(_m: DokanMount) -> None:  # pragma: no cover - stub
     return None
-

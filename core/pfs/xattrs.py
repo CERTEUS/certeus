@@ -128,4 +128,3 @@ def get_xattrs_for_uri(uri: str) -> dict[str, Any]:
     if not res.exists:
         raise FileNotFoundError(f"artifact not found: {uri}")
     return get_xattrs_for_path(res.path)
-

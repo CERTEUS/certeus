@@ -50,4 +50,3 @@ def test_pfs_mount_materialize_inspect_unmount_e2e() -> None:
         # unmount (mock)
         r4 = client.post("/v1/pfs/unmount", json={"mount_id": mid})
         assert r4.status_code == 200 and (r4.json().get("unmounted") is True)
-

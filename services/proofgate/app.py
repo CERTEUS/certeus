@@ -43,6 +43,7 @@ from services.ledger_service.ledger import compute_provenance_hash, ledger_servi
 try:  # optional: FROST aggregator
     from security.frost import verify_quorum
 except Exception:  # pragma: no cover - optional
+
     def verify_quorum(_obj):  # type: ignore
         return False
 

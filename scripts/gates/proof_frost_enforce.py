@@ -49,13 +49,13 @@ def main() -> None:
     # Case 1: missing quorum → ABSTAIN
     pco_bad = _base_ok_pco()
     r1 = client.post("/v1/proofgate/publish", json={"pco": pco_bad, "budget_tokens": 10})
-    ok1 = (r1.status_code == 200 and r1.json().get("status") == "ABSTAIN")
+    ok1 = r1.status_code == 200 and r1.json().get("status") == "ABSTAIN"
     # Case 2: quorum present → PUBLISH
     pco_ok = _base_ok_pco()
     fq = aggregate(["kidA", "kidB"], threshold=2, participants=3)
     pco_ok["cosign"] = fq.to_dict()
     r2 = client.post("/v1/proofgate/publish", json={"pco": pco_ok, "budget_tokens": 10})
-    ok2 = (r2.status_code == 200 and r2.json().get("status") == "PUBLISH")
+    ok2 = r2.status_code == 200 and r2.json().get("status") == "PUBLISH"
     report = {"missing_quorum_abstain": ok1, "with_quorum_publish": ok2}
     (out_dir / "proof_frost_enforce.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     if not (ok1 and ok2):
