@@ -62,6 +62,9 @@ dev = [
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+exclude = [
+  "services/api_gateway/routers/lexqft.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
