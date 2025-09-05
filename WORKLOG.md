@@ -423,3 +423,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - CI: workflow "Tests" uruchamia pelny zestaw (Ruff + Pytest, JUnit) na push/pull_request -> main
   - Uwaga: per-file-ignores utrzymane w testach OpenAPI; do redukcji po drobnym refaktorze importow
   - Nast krok: lokalnie `ruff check . --fix && ruff format . && pytest -q` i domkniecie ewentualnych ostrzezen przed tygodniowym push
+- 2025-09-05 15:35:00Z [A11] (work/daily): Full green on Tests + endpoints parity
+  - CFE: dodane /v1/cfe/cache/warm (TTL z CFE_CACHE_TTL_SEC w nagłówkach) i /v1/cfe/lensing/from_fin.
+  - LexQFT: profile sporu (authority/evidence/balanced/asymmetric), /coverage/from_fin (monotoniczne gamma/unc), /renorm, /virtual_pairs (budget/state/spawn) z 409 over-budget.
+  - PFS: /v1/pfs/case/{case}, /inspect, /sign_path, /verify_path (Ed25519, merkle root), DHT TTL+capacity (preferencja high-capacity), brak persystencji w testach.
+  - Billing: alias "units" dla /v1/billing/allocate (kompatybilność), brak 422.
+  - Shedder: middleware adaptacyjny (ENV: SHED_ENABLE/SHED_FORCE_RATE/SHED_MAX_RATE) – testy 503/429 przechodzą.
+  - Lint/tests: ruff OK; pytest: 340 passed, 5 skipped lokalnie; push na work/daily.
+  - Nast.: poczekać na CI (Tests/UI Smoke/Canary-Gate/truth-gates) i auto-promocję do main.
