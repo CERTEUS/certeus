@@ -277,6 +277,33 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
                 pass
         except Exception:
             pass
+    # Signing header (Ed25519) over canonical JSON of body
+    try:
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+        from cryptography.hazmat.primitives import serialization
+        import base64, json as _json
+
+        pem = os.getenv("ED25519_PRIVKEY_PEM") or ""
+        if pem.strip():
+            sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)
+            assert isinstance(sk, Ed25519PrivateKey)
+            body = out.model_dump()
+            canon = _json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            sig = sk.sign(canon)
+            sig_b64u = base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
+            meta = {"alg": "EdDSA", "sig": sig_b64u}
+            response.headers["X-CERTEUS-SIG-device"] = _json.dumps(meta)
+    except Exception:
+        pass
+    # TEE RA header (optional, when enabled)
+    try:
+        if (os.getenv("TEE_ENABLED") or "").strip() in {"1", "true", "True"}:
+            import json as _json
+
+            fp = os.getenv("ED25519_PUBKEY_HEX", "")[:16] or "tee-dev"
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps({"fingerprint": fp})
+    except Exception:
+        pass
     return out
 
 
@@ -362,6 +389,15 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
                 pass
         except Exception:
             pass
+    # TEE RA header (optional)
+    try:
+        if (os.getenv("TEE_ENABLED") or "").strip() in {"1", "true", "True"}:
+            import json as _json
+
+            fp = os.getenv("ED25519_PUBKEY_HEX", "")[:16] or "tee-dev"
+            response.headers["X-CERTEUS-TEE-RA"] = _json.dumps({"fingerprint": fp})
+    except Exception:
+        pass
     return out
 
 

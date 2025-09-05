@@ -222,3 +222,128 @@ async def refund(req: RefundRequest, request: Request) -> dict[str, Any]:
     if req.units > 0:
         refund_tenant_units(tenant, int(req.units))
     return {"ok": True, "tenant": tenant, "balance": get_tenant_balance(tenant)}
+
+
+# --------------------- Policies / Admin / Estimate ---------------------
+
+_POLICY_CACHE: dict[str, Any] | None = None
+
+
+def _policy_file_path() -> Path:
+    p = os.getenv("BILLING_POLICY_FILE")
+    return Path(p) if p else (Path(__file__).resolve().parents[3] / "data" / "billing_policy.json")
+
+
+def _load_policy() -> dict[str, Any]:
+    global _POLICY_CACHE
+    if _POLICY_CACHE is not None:
+        return _POLICY_CACHE
+    path = _policy_file_path()
+    if path.exists():
+        try:
+            _POLICY_CACHE = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(_POLICY_CACHE, dict):
+                return _POLICY_CACHE
+        except Exception:
+            _POLICY_CACHE = None
+    # default policy
+    default = {
+        "tiers": {
+            "free": {"daily_quota": 1000},
+            "pro": {"daily_quota": 100000},
+            "enterprise": {"daily_quota": 1000000},
+        },
+        "tenants": {},
+    }
+    _POLICY_CACHE = default
+    return default
+
+
+def _save_policy(pol: dict[str, Any]) -> None:
+    global _POLICY_CACHE
+    _POLICY_CACHE = pol
+    if (os.getenv("BILLING_POLICY_FILE_WRITE") or "").strip() in {"1", "true", "True"}:
+        path = _policy_file_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(pol, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+@router.get("/policies", summary="Get billing policies (tiers and tenants)")
+async def get_policies() -> dict[str, Any]:
+    return _load_policy()
+
+
+@router.get("/tenant_tier", summary="Resolve tenant tier")
+async def tenant_tier(request: Request) -> dict[str, str]:
+    from services.api_gateway.limits import get_tenant_id
+
+    pol = _load_policy()
+    tenant = get_tenant_id(request)
+    tier = pol.get("tenants", {}).get(tenant) or "free"
+    return {"tenant": tenant, "tier": tier}
+
+
+@router.post("/estimate", summary="Estimate cost units for action")
+async def estimate(body: dict[str, Any], request: Request) -> dict[str, Any]:
+    from services.api_gateway.limits import get_tenant_id
+
+    tenant = get_tenant_id(request)
+    action = str(body.get("action") or "").strip()
+    table = {"qtm.measure": 2}
+    units = int(table.get(action, 1))
+    return {"tenant": tenant, "action": action, "estimated_units": units}
+
+
+@router.get("/recommendation", summary="Recommend tier based on action and volume")
+async def recommendation(action: str, monthly: int = 0, days: int = 30) -> dict[str, Any]:
+    pol = _load_policy()
+    # progi proste: enterprise dla bardzo wysokiego wolumenu, pro dla średniego
+    rec = "free"
+    if monthly >= 100_000:
+        rec = "enterprise"
+    elif monthly >= 10_000:
+        rec = "pro"
+    return {"action": action, "recommended_tier": rec, "tiers": pol.get("tiers", {})}
+
+
+class SetTierIn(BaseModel):
+    tenant: str
+    tier: str
+    persist: bool | None = None
+
+
+def _require_admin() -> None:
+    if (os.getenv("BILLING_ADMIN") or "").strip() not in {"1", "true", "True"}:
+        raise HTTPException(status_code=403, detail="admin required")
+
+
+@router.post("/admin/set_tier", summary="Admin: set tenant tier (DEV)")
+async def admin_set_tier(body: SetTierIn) -> dict[str, Any]:
+    _require_admin()
+    pol = _load_policy()
+    tenants = pol.setdefault("tenants", {})
+    tenants[str(body.tenant)] = str(body.tier)
+    persisted = bool(body.persist) and (os.getenv("BILLING_POLICY_FILE_WRITE") or "").strip() in {"1", "true", "True"}
+    if persisted:
+        _save_policy(pol)
+    else:
+        # zapisz tylko w pamięci
+        _POLICY_CACHE = pol
+    return {"tenant": body.tenant, "tier": body.tier, "persisted": persisted}
+
+
+@router.post("/admin/reload", summary="Admin: reload policies from file (DEV)")
+async def admin_reload() -> dict[str, bool]:
+    _require_admin()
+    # Wymuś odczyt z pliku
+    path = _policy_file_path()
+    if not path.exists():
+        _save_policy(_load_policy())
+        return {"ok": True}
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(raw, dict):
+            _save_policy(raw)
+    except Exception:
+        pass
+    return {"ok": True}
