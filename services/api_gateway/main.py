@@ -236,7 +236,33 @@ async def _i18n_language_negotiator(request, call_next):  # type: ignore[no-rede
     return response
 
 
-# Request duration metrics middleware — refined version is defined at the end of file
+# Correlation ID middleware: attach per-request correlation and trace headers
+
+
+@app.middleware("http")
+async def _correlation_headers(request, call_next):  # type: ignore[no-redef]
+    try:
+        import uuid as _uuid
+
+        corr = request.headers.get("X-Correlation-ID") or _uuid.uuid4().hex
+        try:
+            request.state.correlation_id = corr  # type: ignore[attr-defined]
+        except Exception:
+            pass
+        response = await call_next(request)
+        try:
+            response.headers.setdefault("X-Correlation-ID", corr)
+            response.headers.setdefault("X-CERTEUS-PCO-correlation.correlation_id", corr)
+            # Optional simple trace id mirror
+            response.headers.setdefault("X-Trace-Id", corr)
+        except Exception:
+            pass
+        return response
+    except Exception:
+        return await call_next(request)
+
+
+# Request duration metrics middleware - refined version is defined at the end of file
 
 
 # Cache OpenAPI JSON in-memory to reduce per-request overhead
