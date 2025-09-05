@@ -1,31 +1,19 @@
 #!/usr/bin/env python3
-
 # +-------------------------------------------------------------+
-
 # |                          CERTEUS                            |
-
 # +-------------------------------------------------------------+
-
 # | FILE: services/api_gateway/routers/lexqft.py              |
-
 # | ROLE: Project module.                                       |
-
 # | PLIK: services/api_gateway/routers/lexqft.py              |
-
 # | ROLA: Moduł projektu.                                       |
-
 # +-------------------------------------------------------------+
-
 """
-
 PL: Router FastAPI dla obszaru lexqft / geometria sensu.
 
 EN: FastAPI router for lexqft / geometry of meaning.
-
 """
 
 # === IMPORTY / IMPORTS ===
-
 from __future__ import annotations
 
 import json
