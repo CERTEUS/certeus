@@ -10,8 +10,9 @@
 name: Boundary-Rebuild-Gate
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   boundary-rebuild:

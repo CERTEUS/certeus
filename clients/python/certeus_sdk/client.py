@@ -16,7 +16,8 @@ EN: Python SDK client — thin HTTP wrapper over CERTEUS API Gateway.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import requests
 
