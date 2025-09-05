@@ -25,6 +25,8 @@ import warnings
 import yaml
 from services.api_gateway.main import app
 
+from services.api_gateway.main import app
+
 # Suppress noisy FastAPI OpenAPI duplicate operation id warnings during schema build
 warnings.filterwarnings("ignore", message="Duplicate Operation ID*", category=UserWarning)
 
