@@ -32,6 +32,7 @@ from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
 
+
 def test_protected_post_requires_pco_token(monkeypatch) -> None:
     # Enforce Proof-Only I/O before app import
     monkeypatch.setenv("STRICT_PROOF_ONLY", "1")

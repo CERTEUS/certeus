@@ -33,6 +33,7 @@ PLUGIN_NAME: Final[str] = "lexlog_rules_pl"
 
 # === MODELE / MODELS ===
 
+
 class Plugin:
     """
 
@@ -75,6 +76,7 @@ class Plugin:
 
         _safe_register(api, self, PLUGIN_NAME)
 
+
 # === LOGIKA / LOGIC ===
 
 # +-------------------------------------------------------------+
@@ -90,6 +92,7 @@ class Plugin:
 # |              Sample plugin registering LEXLOG rules.        |
 
 # +-------------------------------------------------------------+
+
 
 def _safe_register(api: Any, plugin: Any, name: str) -> None:
     """
@@ -165,6 +168,7 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
     raise RuntimeError("No compatible registration hook or registry mapping found on Plugin API")
 
+
 def register(api: Any, name: str | None = None) -> None:
     """
 
@@ -179,6 +183,7 @@ def register(api: Any, name: str | None = None) -> None:
     plugin.setup()
 
     _safe_register(api, plugin, name or PLUGIN_NAME)
+
 
 # === I/O / ENDPOINTS ===
 

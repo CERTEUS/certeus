@@ -53,6 +53,7 @@ ROOTS = [
 
 # === LOGIKA / LOGIC ===
 
+
 def strip_legacy_block(text: str) -> tuple[str, bool]:
     lines = text.splitlines(keepends=True)
 
@@ -95,6 +96,7 @@ def strip_legacy_block(text: str) -> tuple[str, bool]:
 
     return "".join(lines), changed
 
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
 
@@ -119,6 +121,7 @@ def main() -> None:
                 print(f"[CLEANED] {f.relative_to(root)}")
 
     print(f"Done. Legacy headers removed: {total}")
+
 
 if __name__ == "__main__":
     main()

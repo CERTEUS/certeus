@@ -29,10 +29,10 @@ class _Pack:
         if kind == "case.summary":
             subj = str(payload.get("subject") or "MED-CASE")
             risk = float(payload.get("risk_index") or 0.1)
-            return {
-                "ok": True,
-                "med.case.summary": {"subject": subj, "risk_index": round(risk, 3)},
-            }
+            body = {"subject": subj, "risk_index": round(risk, 3)}
+            # Minimal PCO-like structure for packs
+            pco = {"med.case.summary": body}
+            return {"summary": body, "pco": pco}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 
 

@@ -70,6 +70,7 @@ FORBIDDEN_KEYS: set[str] = {
 
 # ----Bloki----- MODEL
 
+
 @dataclass(slots=True)
 class PublicPCO:
     rid: str

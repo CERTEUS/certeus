@@ -40,6 +40,7 @@ from pathlib import Path
 
 from services.lexlog_parser.parser import parse_lexlog
 
+
 def test_lexlog_parser_kk_lex() -> None:
     lex_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.lex"
 

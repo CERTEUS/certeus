@@ -63,6 +63,7 @@ from services.ingest_service.adapters.registry import get_ocr
 
 # === LOGIKA / LOGIC ===
 
+
 async def build_ocr_preview(
     blob: Blob,
     *,
@@ -112,6 +113,7 @@ async def build_ocr_preview(
 
     return {"ocr_preview": text}
 
+
 def merge_meta(original: dict[str, Any] | None, extra: dict[str, Any]) -> dict[str, Any]:
     """
 
@@ -128,6 +130,7 @@ def merge_meta(original: dict[str, Any] | None, extra: dict[str, Any]) -> dict[s
             base[k] = v
 
     return base
+
 
 # === I/O / ENDPOINTS ===
 

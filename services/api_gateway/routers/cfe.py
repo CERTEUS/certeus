@@ -43,11 +43,12 @@ from typing import Any
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
 
-from services.api_gateway.routers.cfe_config import DOMAINS_LOCK, SEVERITY_LOCK, get_lensing_map
+from services.api_gateway.routers.cfe_config import current_lock_sets, get_lensing_map
 
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
+
 
 class GeodesicRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
@@ -56,6 +57,7 @@ class GeodesicRequest(BaseModel):
 
     norms: dict[str, Any] | None = None
 
+
 class GeodesicResponse(BaseModel):
     path: list[str]
 
@@ -63,16 +65,19 @@ class GeodesicResponse(BaseModel):
 
     subject: str | None = None
 
+
 class HorizonRequest(BaseModel):
     case: str | None = None
     lock: bool | None = None
     domain: str | None = Field(default=None, description="Domain context (LEX/FIN/MED/SEC/CODE)")
     severity: str | None = Field(default=None, description="Heuristic severity (low/medium/high/critical)")
 
+
 class HorizonResponse(BaseModel):
     locked: bool
 
     horizon_mass: float
+
 
 class LensingResponse(BaseModel):
     lensing_map: dict[str, float]
@@ -80,6 +85,7 @@ class LensingResponse(BaseModel):
     critical_precedents: list[str]
 
     domain: str | None = Field(default=None, description="Domain context (e.g., LEX/FIN/MED/SEC/CODE)")
+
 
 # === LOGIKA / LOGIC ===
 
@@ -97,14 +103,17 @@ class LensingResponse(BaseModel):
 
 router = APIRouter(prefix="/v1/cfe", tags=["CFE"])
 
+
 class CurvatureResponse(BaseModel):
     kappa_max: float
+
 
 @router.get("/curvature", response_model=CurvatureResponse)
 async def curvature() -> CurvatureResponse:
     """PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max)."""
     # Stub: stała wartość, wykorzystywana przez gate'y/telemetrię
     return CurvatureResponse(kappa_max=0.012)
+
 
 @router.post("/geodesic", response_model=GeodesicResponse)
 async def geodesic(req: GeodesicRequest, request: Request, response: Response) -> GeodesicResponse:
@@ -136,6 +145,7 @@ async def geodesic(req: GeodesicRequest, request: Request, response: Response) -
 
     return GeodesicResponse(path=path, geodesic_action=action, subject=req.case)
 
+
 @router.post("/horizon", response_model=HorizonResponse)
 async def horizon(req: HorizonRequest, request: Request, response: Response) -> HorizonResponse:
     from services.api_gateway.limits import enforce_limits
@@ -150,7 +160,8 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
         # Domain-based heuristic by severity
         d = (req.domain or "").strip().upper()
         s = (req.severity or "").strip().lower()
-        if d in DOMAINS_LOCK and s in SEVERITY_LOCK:
+        _domains, _severities = current_lock_sets()
+        if d in _domains and s in _severities:
             return True
         # Legacy behavior: samples lock automatically
         if isinstance(req.case, str) and ("sample" in req.case.lower() or "przyklad" in req.case.lower()):
@@ -179,6 +190,7 @@ async def horizon(req: HorizonRequest, request: Request, response: Response) -> 
 
     return HorizonResponse(locked=locked, horizon_mass=0.15)
 
+
 @router.get("/lensing", response_model=LensingResponse)
 async def lensing(domain: str | None = None) -> LensingResponse:
     """PL/EN: Domenowy lensing — mapa wpływów zależna od kontekstu.
@@ -191,19 +203,23 @@ async def lensing(domain: str | None = None) -> LensingResponse:
     lm, crit, d = get_lensing_map(domain)
     return LensingResponse(lensing_map=lm, critical_precedents=crit, domain=d)
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
 
 _CASE_LOCKS: dict[str, bool] = {}
 
+
 class CaseActionIn(BaseModel):
     case: str
+
 
 class CaseActionOut(BaseModel):
     case: str
     locked: bool
     action: str
+
 
 @router.post("/case/lock", response_model=CaseActionOut)
 async def case_lock(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
@@ -217,6 +233,7 @@ async def case_lock(req: CaseActionIn, request: Request, response: Response) -> 
         pass
     return CaseActionOut(case=req.case, locked=True, action="lock")
 
+
 @router.post("/case/recall", response_model=CaseActionOut)
 async def case_recall(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
     from services.api_gateway.limits import enforce_limits
@@ -228,6 +245,7 @@ async def case_recall(req: CaseActionIn, request: Request, response: Response) -
     except Exception:
         pass
     return CaseActionOut(case=req.case, locked=True, action="recall")
+
 
 @router.post("/case/revoke", response_model=CaseActionOut)
 async def case_revoke(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:

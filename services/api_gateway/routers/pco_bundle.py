@@ -52,10 +52,12 @@ from services.proofgate.app import PublishRequest, PublishResponse, publish
 
 # === MODELE / MODELS ===
 
+
 class MerkleStep(BaseModel):
     sibling: str
 
     dir: str  # "L" | "R"
+
 
 class PublicBundleIn(BaseModel):
     rid: str = Field(..., min_length=1)
@@ -77,12 +79,15 @@ class PublicBundleIn(BaseModel):
 
         return v.lower()
 
+
 # === LOGIKA / LOGIC ===
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
+
 def _bundle_dir() -> Path:
     return Path(os.getenv("PROOF_BUNDLE_DIR") or "./data/public_pco")
+
 
 def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
     if raw is None:
@@ -119,6 +124,7 @@ def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
 
     raise HTTPException(status_code=400, detail="merkle_proof must be list or {path:[...] }")
 
+
 def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
     if not path:
         return leaf_hex.lower()
@@ -138,6 +144,7 @@ def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
             raise HTTPException(status_code=400, detail=f"Invalid merkle step.dir: {step.dir}")
 
     return cur.hex()
+
 
 def _load_private_key_from_pem() -> Ed25519PrivateKey:
     pem_env = os.getenv("ED25519_PRIVKEY_PEM")
@@ -162,10 +169,12 @@ def _load_private_key_from_pem() -> Ed25519PrivateKey:
 
     raise HTTPException(status_code=500, detail="Missing ED25519_PRIVKEY_PEM or *_PATH")
 
+
 def _pb_schema_path() -> Path:
     # routers/ -> api_gateway/ -> schemas/
 
     return Path(__file__).resolve().parents[1] / "schemas" / "proofbundle_v0.2.json"
+
 
 def _load_pb_schema() -> dict[str, Any]:
     p = _pb_schema_path()
@@ -176,13 +185,16 @@ def _load_pb_schema() -> dict[str, Any]:
     except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Cannot load ProofBundle schema: {e}") from e
 
+
 def _kid_from_pubkey(sk: Ed25519PrivateKey) -> str:
     pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
 
     return hashlib.sha256(pk).hexdigest()[:16]
 
+
 def _now_iso() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
 
 def _build_proofbundle(
     payload: PublicBundleIn,
@@ -276,7 +288,9 @@ def _build_proofbundle(
 
     return pb
 
+
 # === I/O / ENDPOINTS ===
+
 
 @router.post("/bundle")
 def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
@@ -419,5 +433,6 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
         "signature": signature_b64u,
         "public_path": str(out_path),
     }
+
 
 # === TESTY / TESTS ===

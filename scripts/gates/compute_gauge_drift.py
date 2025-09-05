@@ -34,6 +34,7 @@ import urllib.request
 
 # === LOGIKA / LOGIC ===
 
+
 def _read_text(p: str | None) -> str:
     if not p:
         return ""
@@ -41,6 +42,7 @@ def _read_text(p: str | None) -> str:
         return Path(p).read_text(encoding="utf-8")
     except Exception:
         return ""
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -53,9 +55,7 @@ def main() -> int:
     ap.add_argument("--max-entity-jaccard", type=float, default=None, help="Maksymalny entity_jaccard_drift (omega)")
     ap.add_argument("--domain", help="Opcjonalna domena dla domain_map: med|sec|code (raport‑only)")
     ap.add_argument("--max-jaccard-mapped", type=float, default=None, help="Maksymalny jaccard_drift (omega_mapped)")
-    ap.add_argument(
-        "--max-entropy-mapped", type=float, default=None, help="Maksymalny entropy_drift (omega_mapped)"
-    )
+    ap.add_argument("--max-entropy-mapped", type=float, default=None, help="Maksymalny entropy_drift (omega_mapped)")
     ap.add_argument(
         "--max-entity-jaccard-mapped", type=float, default=None, help="Maksymalny entity_jaccard_drift (omega_mapped)"
     )
@@ -167,14 +167,12 @@ def main() -> int:
                     except Exception:
                         thr_n2 = None
                 if thr_j2 is not None and payload["omega_mapped"]["jaccard_drift"] > thr_j2:  # type: ignore[index]
-                    print(
-                        f"Omega Mapped Gate: jaccard_drift {payload['omega_mapped']['jaccard_drift']} > {thr_j2} (threshold)"
-                    )
+                    jd = payload["omega_mapped"]["jaccard_drift"]  # type: ignore[index]
+                    print(f"Omega Mapped Gate: jaccard_drift {jd} > {thr_j2} (threshold)")
                     fail_mapped = True
                 if thr_e2 is not None and payload["omega_mapped"]["entropy_drift"] > thr_e2:  # type: ignore[index]
-                    print(
-                        f"Omega Mapped Gate: entropy_drift {payload['omega_mapped']['entropy_drift']} > {thr_e2} (threshold)"
-                    )
+                    edv = payload["omega_mapped"]["entropy_drift"]  # type: ignore[index]
+                    print(f"Omega Mapped Gate: entropy_drift {edv} > {thr_e2} (threshold)")
                     fail_mapped = True
                 if thr_n2 is not None and payload["omega_mapped"]["entity_jaccard_drift"] > thr_n2:  # type: ignore[index]
                     print(
@@ -235,6 +233,7 @@ def main() -> int:
 
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

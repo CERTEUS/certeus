@@ -47,6 +47,7 @@ from services.api_gateway.main import app
 
 # [BLOCK: TYPES]
 
+
 class ExportPayload(TypedDict):
     """PL: Struktura żądania dla /v1/export.
 
@@ -55,6 +56,7 @@ class ExportPayload(TypedDict):
     case_id: str
 
     analysis_result: dict[str, Any]
+
 
 # [BLOCK: CLIENT]
 
@@ -65,6 +67,7 @@ client = TestClient(app)
 # | TEST: /v1/export returns generated report path              |
 
 # +-------------------------------------------------------------+
+
 
 def test_export_endpoint_returns_path() -> None:
     # [BLOCK: ARRANGE]

@@ -10,6 +10,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Bramka [A4] Path‑Coverage: gamma=0.95, uncaptured=0.02 (OK)
   - Lint+tests: ruff OK; pytest: zielono (232 passed, 5 skipped)
 
+- 2025-09-05 07:15:00Z [A7] (work/daily): W14 — Devices idempotency + Packs signature check + testy
+  - Devices: X-Idempotency-Key na /v1/devices/* + nagłówek X-Idempotent-Replay
+  - Packs: /v1/packs/install wymaga podpisu hex(64+); przykłady w docs/ENDPOINTS.md
+  - Testy: tests/services/test_devices_idempotency.py dodane; suite: 245 passed, 5 skipped
+
 - 2025-09-05 00:06:00Z [A4] (work/daily): A4 — Path-Coverage format fix + Tunnel barrier_model
   - Gates: compute_truth_gates obsługuje zagnieżdżony JSON (coverage.{coverage_gamma,uncaptured_mass})
   - LexQFT: /v1/lexqft/tunnel przyjmuje barrier_model.energy i emituje PCO model_uri; scenariusz „reflect” przy niskiej energii
@@ -19,6 +24,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - QOC: /v1/qoc/vacuum_pairs (PCO: qoc.vacuum_pairs.rate) + /v1/qoc/energy_debt
   - FIN→LexQFT: /v1/fin/alpha/measure dokłada wkład do coverage (γ≈0.85+0.1·p, unc≈0.2·(1-p))
   - Testy: tests/services/test_qoc_vacuum_pairs.py, test_fin_feeds_lexqft_coverage.py — zielone
+
+- 2025-09-05 00:36:00Z [A4] (work/daily): A4 — LexQFT tunnel scenarios + kontrdowody + QOC metrics
+  - LexQFT: GET /v1/lexqft/tunnel/scenarios (thin/thick/stepped), log JSONL z kontr-dowodami
+  - QOC: metryka Prometheus `certeus_qoc_vacuum_rate`
+  - Testy: test_lexqft_tunnel_scenarios.py — zielone; full suite 256 passed
 
 - 2025-09-05 06:45:00Z [agent] (work/daily): W14 (A8) — CI porządki + Marketplace policy docs
   - CI: usunięto duplikację kroku "Marketplace Policy Gate (report-only)" w `.github/workflows/ci-gates.yml` (pozostaje jedna ścieżka z tickiem)
@@ -325,6 +335,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Dev: scripts/dev_env.sh/ps1 ustawia VALIDATE_PCO=1 (report-only)
   - CI: scripts/ci/load_env_defaults.py dopuszcza VALIDATE_PCO; .github/certeus.env.defaults=1
   - Docs: README „Konfiguracja/ENV” + Resources (schema link)
+
+- 2025-09-05 11:05:00Z [agent] (work/daily): W14 — PCO Validation Gate w CI + SEC‑PCO w ENDPOINTS
+  - CI: scripts/gates/pco_validation_gate.py (report-only) + krok w ci-gates; tick pco_validation_ok.txt
+  - Docs: docs/ENDPOINTS.md — sekcja „SEC‑PCO (extension) — sample” z ProofFS evidence (pfs://)
+  - Suite: 254 passed, 5 skipped; ruff OK
 - 2025-09-05 05:08:40Z [root] (work/daily): W15 (A6): DevEx Playground + Cockpit index
   - - Strona: /app/public/playground.html (try-now + copy curl/SDK + PCO headers)
   - - Indeks Cockpitu: /app/public/index.html z linkami (Geometry/Quantum/Boundary/Marketplace/ChatOps/MailOps/DevEx)
@@ -342,3 +357,21 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - cfe: lensing/horizon korzystają z configu
   - - README: przykłady domenowe CFE (lensing + horizon)
   - - Testy pełne: 245 passed, 5 skipped
+- 2025-09-05 05:26:57Z [root] (work/daily): W14 (A1): Progi mapped (report-only) + test gates
+  - - compute_gauge_drift: --max-*-mapped + ENFORCE_OMEGA_MAPPED opt-in
+  - - tests/gates/test_compute_gauge_drift_mapped.py: emit+thresholds (rc==0)
+  - - pytest full: 247 passed, 5 skipped
+- 2025-09-05 05:32:45Z [root] (work/daily): W14 (A1): Docs — Ω‑Kernel domain_map + runbook
+  - - docs/omega/domain_map.md: zasady/usage/inwarianty
+  - - docs/runbooks/gates_omega.md: compute_gauge_drift + progi mapped
+  - - pytest full: green; ruff OK
+- 2025-09-05 05:33:10Z [root] (work/daily): W14→W15 (A6): Export UI + Cockpit nav
+  - - Export UI: /app/public/export.html (szablony Motion/Appeal, report/file/json, PCO headers, copy curl)
+  - - Cockpit index: link do Export
+  - - Testy: a11y static pages OK (baseline)
+- 2025-09-05 05:35:38Z [48793] (work/daily): W14 A2 — Lensing config (ENV/JSON) + OpenAPI
+  - - cfe_config: ENV CERTEUS_CFE_LENSING_CONFIG + data/cfe_lensing.json
+  - - cfe: horizon lock uses current_lock_sets(); lensing uses current_lensing_weights()
+  - - tests: external config override (MED)
+  - - OpenAPI: CFE endpoints (domain/severity + examples)
+  - - Full suite: 256 passed, 5 skipped

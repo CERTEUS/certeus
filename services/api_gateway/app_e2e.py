@@ -40,6 +40,7 @@ from services.exporter_service.exporter import ExporterService
 
 # === MODELE / MODELS ===
 
+
 class SimpleFact(BaseModel):
     """Minimalny model wejściowy do E2E solve."""
 
@@ -50,6 +51,7 @@ class SimpleFact(BaseModel):
     export: bool = Field(False, description="Export report file after solve")
 
     force_mismatch: bool = Field(False, description="Flip Core-2 to trigger mismatch protocol (testing)")
+
 
 class SolveResponse(BaseModel):
     status: str
@@ -63,6 +65,7 @@ class SolveResponse(BaseModel):
     report_path: str | None = None
 
     version: str | None = None
+
 
 # === LOGIKA / LOGIC ===
 
@@ -94,9 +97,11 @@ _verifier = DualCoreVerifier()
 
 # ──────────────────────────────────────────────────────────────────────
 
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     return {"status": "ok", "services": ["verifier", "exporter"]}
+
 
 @app.post("/e2e/solve", response_model=SolveResponse)
 def e2e_solve(payload: SimpleFact) -> SolveResponse:
@@ -126,6 +131,7 @@ def e2e_solve(payload: SimpleFact) -> SolveResponse:
         report_path=report_path,
         version=result.get("version"),
     )
+
 
 # === I/O / ENDPOINTS ===
 

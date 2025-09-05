@@ -39,6 +39,7 @@ from services.mismatch_service.service import mismatch_service
 
 # === MODELE / MODELS ===
 
+
 class EngineResult(BaseModel):
     status: str
 
@@ -49,6 +50,7 @@ class EngineResult(BaseModel):
     error: str | None = None
 
     version: str | None = None
+
 
 class MismatchCreateRequest(BaseModel):
     case_id: str
@@ -61,11 +63,13 @@ class MismatchCreateRequest(BaseModel):
 
     priority: TicketPriority | None = Field(default=None)
 
+
 # === LOGIKA / LOGIC ===
 
 router = APIRouter(prefix="/mismatch", tags=["mismatch"])
 
 # === I/O / ENDPOINTS ===
+
 
 @router.post("/tickets")
 def create_ticket(req: MismatchCreateRequest) -> dict[str, Any]:
@@ -80,6 +84,7 @@ def create_ticket(req: MismatchCreateRequest) -> dict[str, Any]:
 
     return t.model_dump()
 
+
 @router.get("/tickets/{ticket_id}")
 def get_ticket(ticket_id: str) -> dict[str, Any]:
     """PL: Pobiera ticket po jego ID. EN: Retrieves a ticket by its ID."""
@@ -89,5 +94,6 @@ def get_ticket(ticket_id: str) -> dict[str, Any]:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
     return t.model_dump()
+
 
 # === TESTY / TESTS ===

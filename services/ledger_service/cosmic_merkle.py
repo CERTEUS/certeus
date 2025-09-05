@@ -47,6 +47,7 @@ from threading import RLock
 
 # --- blok --- Pomocnicze funkcje hashujące ------------------------------------
 
+
 def _h(x: str, y: str) -> str:
     """Hash two hex nodes (order-independent canonicalization)."""
 
@@ -58,12 +59,15 @@ def _h(x: str, y: str) -> str:
 
     return sha256(left + right).hexdigest()
 
+
 def _hh(x: bytes) -> str:
     """Hash raw bytes to hex."""
 
     return sha256(x).hexdigest()
 
+
 # --- blok --- Struktury danych -------------------------------------------------
+
 
 @dataclass(frozen=True)
 class MerklePathElem:
@@ -72,6 +76,7 @@ class MerklePathElem:
     sibling: str  # hex digest of sibling node
 
     position: str  # "L" or "R" (informative; verification uses canonical order)
+
 
 @dataclass(frozen=True)
 class MerkleReceipt:
@@ -83,7 +88,9 @@ class MerkleReceipt:
 
     leaf: str  # leaf = H(rid_hash || bundle_hash) as hex
 
+
 # --- blok --- Rdzeń drzewa Merkle ----------------------------------------------
+
 
 class CosmicMerkle:
     """
@@ -220,15 +227,19 @@ class CosmicMerkle:
 
         return cur == receipt.root
 
+
 # --- blok --- Facade (poziom modułu) -------------------------------------------
 
 _LEDGER = CosmicMerkle()
 
+
 def anchor_bundle(rid_hash: str, bundle_hash: str) -> MerkleReceipt:
     return _LEDGER.anchor_bundle(rid_hash, bundle_hash)
 
+
 def get_bundle_proof(rid_hash: str, bundle_hash: str) -> MerkleReceipt | None:
     return _LEDGER.get_bundle_proof(rid_hash, bundle_hash)
+
 
 def verify_proof(receipt: MerkleReceipt) -> bool:
     return CosmicMerkle.verify_proof(receipt)

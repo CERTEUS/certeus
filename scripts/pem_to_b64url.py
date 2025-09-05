@@ -68,6 +68,7 @@ from cryptography.hazmat.primitives import serialization
 
 # ----Bloki----- MAIN
 
+
 def main() -> None:
     ap = argparse.ArgumentParser()
 
@@ -87,6 +88,7 @@ def main() -> None:
     )
 
     print(base64.urlsafe_b64encode(b).rstrip(b"=").decode())
+
 
 if __name__ == "__main__":
     main()

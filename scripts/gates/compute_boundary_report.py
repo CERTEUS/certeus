@@ -29,6 +29,7 @@ from typing import Any
 
 from core.boundary.reconstruct import bulk_reconstruct
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=False, help="Ścieżka raportu JSON (domyślnie: out/boundary_report.json)")
@@ -49,6 +50,7 @@ def main() -> int:
     payload = {"boundary": rep}
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

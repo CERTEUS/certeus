@@ -40,6 +40,7 @@ router = APIRouter()
 
 STATIC_PREV.mkdir(parents=True, exist_ok=True)
 
+
 @router.post("/v1/preview")
 async def preview(file: Annotated[UploadFile, File(...)]) -> JSONResponse:
     """
@@ -66,6 +67,7 @@ async def preview(file: Annotated[UploadFile, File(...)]) -> JSONResponse:
         await file.close()
 
     return JSONResponse({"url": f"/static/previews/{safe_name}"})
+
 
 # === I/O / ENDPOINTS ===
 

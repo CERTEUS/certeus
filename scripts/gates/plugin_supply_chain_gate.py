@@ -36,13 +36,11 @@ try:  # optional YAML parser; fallback to naive
 except Exception:  # pragma: no cover
     yaml = None  # type: ignore
 
-
 # === KONFIGURACJA / CONFIGURATION ===
 
 SBOM_NAMES = ("sbom.json", "sbom.cdx.json")
 PROV_NAMES = ("provenance.json",)
 SIG_SUFFIXES = (".sig", ".cert")
-
 
 # === LOGIKA / LOGIC ===
 

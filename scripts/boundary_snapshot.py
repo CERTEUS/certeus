@@ -23,8 +23,10 @@ import os
 from pathlib import Path
 import sys
 
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
 
 def main() -> int:
     # Ensure repo-root on sys.path for local imports if executed as a script
@@ -51,6 +53,7 @@ def main() -> int:
     out.write_text(dumps_snapshot(snap), encoding="utf-8")
     print(f"Wrote snapshot: {out}")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -42,6 +42,7 @@ from typing import Any
 
 # === MODELE / MODELS ===
 
+
 @dataclass(slots=True)
 class ActSnapshot:
     act_id: str
@@ -62,7 +63,9 @@ class ActSnapshot:
 
     _certeus: dict[str, Any] = field(default_factory=dict)
 
+
 # === LOGIKA / LOGIC ===
+
 
 def _snapshot_for(act_id: str) -> ActSnapshot:
     text = (
@@ -87,6 +90,7 @@ def _snapshot_for(act_id: str) -> ActSnapshot:
         _certeus={"snapshot_timestamp_utc": now},
     )
 
+
 def index_act(act_id: str, out_dir: Path | None = None) -> Path:
     """Create a single JSON snapshot file and return its path."""
 
@@ -101,6 +105,7 @@ def index_act(act_id: str, out_dir: Path | None = None) -> Path:
     path.write_text(json.dumps(asdict(snap), ensure_ascii=False, indent=2), encoding="utf-8")
 
     return path
+
 
 # === I/O / ENDPOINTS ===
 

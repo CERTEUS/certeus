@@ -52,6 +52,7 @@ from pathlib import Path
 
 # ----Bloki----- MAIN
 
+
 def main() -> None:
     root = Path(os.getenv("PROOF_BUNDLE_DIR") or "./data/public_pco")
 
@@ -61,6 +62,7 @@ def main() -> None:
         p.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
         print(f"fixed: {p}")
+
 
 if __name__ == "__main__":
     main()

@@ -42,6 +42,7 @@ import re
 import subprocess
 from typing import Any
 
+
 @dataclass
 class VerificationResult:
     ok: bool
@@ -50,12 +51,15 @@ class VerificationResult:
 
     details: dict[str, Any]
 
+
 _LFSC_HEADER_RE = re.compile(r"\(\s*lfsc\b", re.IGNORECASE)
 
 _DRAT_HINT_RE = re.compile(r"^(p\s+drat|d\s+|\s*c\s*)", re.IGNORECASE | re.MULTILINE)
 
+
 def _sha256_hex(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
 
 def verify_lfsc(text: str) -> VerificationResult:
     data = text.encode("utf-8")
@@ -109,6 +113,7 @@ def verify_lfsc(text: str) -> VerificationResult:
     ok = bool(text.strip()) and bool(_LFSC_HEADER_RE.search(text))
 
     return VerificationResult(ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:lfsc-check"})
+
 
 def verify_drat(text: str) -> VerificationResult:
     if text is None:

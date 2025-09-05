@@ -24,8 +24,10 @@ from pathlib import Path
 import sys
 from typing import Any
 
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
+
 
 def diff_snapshots(base: dict[str, Any], head: dict[str, Any]) -> dict[str, Any]:
     b_shards = (base.get("shards") or {}) if isinstance(base, dict) else {}
@@ -53,6 +55,7 @@ def diff_snapshots(base: dict[str, Any], head: dict[str, Any]) -> dict[str, Any]
         "details": details,
     }
 
+
 def main() -> int:
     sys.path.insert(0, str(_repo_root()))  # noqa: E402
 
@@ -68,6 +71,7 @@ def main() -> int:
     print(json.dumps(out, indent=2))
     # Bezpiecznie zawsze 0; konsument może sprawdzić field "status"
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

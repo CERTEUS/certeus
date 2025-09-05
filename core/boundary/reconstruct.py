@@ -33,12 +33,15 @@ from core.pco.crypto import canonical_bundle_hash_hex, compute_leaf_hex
 
 # === MODELE / MODELS ===
 
+
 @dataclass
 class MerkleStep:
     sibling: str
     dir: str  # "L" | "R"
 
+
 # === LOGIKA / LOGIC ===
+
 
 def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
     if not path:
@@ -53,6 +56,7 @@ def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
         else:  # defensive
             raise ValueError(f"Invalid merkle step.dir: {step.dir}")
     return cur.hex()
+
 
 def _parse_merkle_path(raw: object) -> list[MerkleStep]:
     if raw is None:
@@ -75,6 +79,7 @@ def _parse_merkle_path(raw: object) -> list[MerkleStep]:
         return out
     raise ValueError("merkle_proof must be list or {path:[...]}")
 
+
 def _iter_shards(base_dir: Path) -> dict[str, Path]:
     """
     EN/PL: Return mapping of shard-id -> directory. If no subdirs present,
@@ -92,6 +97,7 @@ def _iter_shards(base_dir: Path) -> dict[str, Path]:
         shards[d.name] = d
     return shards
 
+
 def _gzip_ratio(data: bytes) -> float:
     try:
         comp = gzip.compress(data)
@@ -100,6 +106,7 @@ def _gzip_ratio(data: bytes) -> float:
         return max(0.0, min(1.0, len(comp) / len(data)))
     except Exception:
         return 1.0
+
 
 def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
     """
@@ -172,6 +179,7 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
 
     delta_bits = sum(bits_delta_map.values())
     return {"delta_bits": delta_bits, "bits_delta_map": bits_delta_map, "stats": stats}
+
 
 # === I/O / ENDPOINTS ===
 

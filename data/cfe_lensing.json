@@ -1,0 +1,14 @@
+{
+  "lensing": {
+    "LEX": {"precedent:K_2001": 0.42, "precedent:III_2020": 0.28},
+    "FIN": {"reg:MiFID2:best_execution": 0.31, "esma:guidelines": 0.24},
+    "MED": {"icd10:I21": 0.37, "icd10:E11": 0.22, "loinc:718-7": 0.18},
+    "SEC": {"nist:SP800-53:AC-2": 0.33, "iso27001:A.12": 0.26, "cwe:79": 0.19},
+    "CODE": {"cwe:79": 0.35, "owasp:top10:a03": 0.27, "rfc:9110": 0.14}
+  },
+  "lock": {
+    "domains": ["MED", "SEC", "CODE", "FIN"],
+    "severities": ["high", "critical"]
+  }
+}
+

@@ -56,12 +56,14 @@ import xml.etree.ElementTree as ET
 
 # +=====================================================================+
 
+
 def _read_json(p: Path):
     try:
         return json.loads(p.read_text(encoding="utf-8"))
 
     except Exception:
         return None
+
 
 def _parse_junit(p: Path) -> dict:
     if not p.exists():
@@ -92,6 +94,7 @@ def _parse_junit(p: Path) -> dict:
 
     except Exception:
         return {"total": 0, "failures": 1, "errors": 0, "skipped": 0}
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -184,6 +187,7 @@ def main() -> int:
     print(f"[truth-gates] wrote {out}")
 
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

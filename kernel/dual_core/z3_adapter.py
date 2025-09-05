@@ -41,6 +41,7 @@ from kernel.smt_translator import (
 
 # === MODELE / MODELS ===
 
+
 class Z3Adapter:
     """
 
@@ -81,11 +82,13 @@ class Z3Adapter:
 
         return result
 
+
 # === LOGIKA / LOGIC ===
 
 _Z3 = cast(Any, z3)
 
 logger = logging.getLogger(__name__)
+
 
 def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     """
@@ -106,6 +109,7 @@ def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
 
     return expr
+
 
 # === I/O / ENDPOINTS ===
 

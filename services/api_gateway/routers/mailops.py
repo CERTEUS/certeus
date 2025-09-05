@@ -40,12 +40,14 @@ from core.pfs.uri import mail_attachment_uri
 
 # === MODELE / MODELS ===
 
+
 class Attachment(BaseModel):
     filename: str
 
     content_type: str | None = None
 
     size: int = 0
+
 
 class IngestEmailRequest(BaseModel):
     mail_id: str
@@ -68,10 +70,12 @@ class IngestEmailRequest(BaseModel):
 
     attachments: list[Attachment] = Field(default_factory=list)
 
+
 class IngestEmailResponse(BaseModel):
     ok: bool
 
     io: dict
+
 
 # === LOGIKA / LOGIC ===
 
@@ -88,6 +92,7 @@ class IngestEmailResponse(BaseModel):
 # +=====================================================================+
 
 router = APIRouter(prefix="/v1/mailops", tags=["MailOps"])
+
 
 @router.post("/ingest", response_model=IngestEmailResponse)
 async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmailResponse:
@@ -141,6 +146,7 @@ async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmail
         pass
 
     return IngestEmailResponse(ok=True, io=io_email)
+
 
 # === I/O / ENDPOINTS ===
 

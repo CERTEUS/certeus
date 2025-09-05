@@ -90,20 +90,24 @@ DEFAULT_DIR: Final[str] = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
 
 # --- blok --- Hash utils -------------------------------------------------------
 
+
 def _hx_bytes(data: bytes) -> str:
     """sha256 -> hex."""
 
     return sha256(data).hexdigest()
+
 
 def _hx_text(text: str) -> str:
     """sha256(utf-8) -> hex."""
 
     return _hx_bytes(text.encode("utf-8"))
 
+
 def _is_hex64(s: str) -> bool:
     """Czy ciąg jest 64-znakowym heksadecymalnym ID (lowercase)."""
 
     return len(s) == 64 and all(c in "0123456789abcdef" for c in s)
+
 
 def _compute_leaf(rid_hex: str, smt2_hex: str) -> str:
     """
@@ -116,7 +120,9 @@ def _compute_leaf(rid_hex: str, smt2_hex: str) -> str:
 
     return _hx_text(rid_hex + smt2_hex)
 
+
 # --- blok --- Bundle build -----------------------------------------------------
+
 
 def _read_or_default(
     path: str | None,
@@ -155,6 +161,7 @@ def _read_or_default(
     text = default_text
 
     return text, _hx_text(text)
+
 
 def make_bundle(
     outdir: Path,
@@ -212,7 +219,9 @@ def make_bundle(
 
     return out_path
 
+
 # --- blok --- CLI --------------------------------------------------------------
+
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
@@ -243,6 +252,7 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--smt2-text", dest="smt2_text", default=None, help="Inline SMT2 text (overrides --smt2 file)")
 
     return p.parse_args()
+
 
 def main() -> int:
     args = _parse_args()
@@ -281,6 +291,7 @@ def main() -> int:
         print(f"[GET] http://127.0.0.1:8000/pco/public/{rid}")
 
     return 0
+
 
 # --- blok --- Entrypoint -------------------------------------------------------
 

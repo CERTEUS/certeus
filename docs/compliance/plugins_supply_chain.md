@@ -40,4 +40,3 @@ plugins/example_plugin/
 
 - Keep SBOM/provenance compatible with organization‑wide supply‑chain tooling (CycloneDX, SLSA, cosign).
 - Versioning: store artifacts per version or overwrite latest; the gate is filename‑agnostic.
-

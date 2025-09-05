@@ -13,4 +13,3 @@ license: MIT
 enabled: true
 module: plugins.packs_med.src.main
 register: register
-

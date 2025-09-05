@@ -40,6 +40,7 @@ DOCS_DIR = REPO_ROOT / "docs" / "openapi"
 
 # === LOGIKA / LOGIC ===
 
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
@@ -58,6 +59,7 @@ def main() -> int:
     (DOCS_DIR / "certeus.v1.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"OpenAPI written to {OUT_FILE}")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -34,6 +34,7 @@ from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
+
 def has_header(text: str, kind: str) -> bool:
     head = "\n".join(text.splitlines()[:10]).lower()
 
@@ -41,6 +42,7 @@ def has_header(text: str, kind: str) -> bool:
         return "certeus" in head and "file:" in head
 
     return "certeus" in head and "file:" in head
+
 
 def build_html_header(rel: str) -> str:
     return (
@@ -56,6 +58,7 @@ def build_html_header(rel: str) -> str:
         "-->\n"
     )
 
+
 def build_js_header(rel: str) -> str:
     return (
         "/*\n"
@@ -69,6 +72,7 @@ def build_js_header(rel: str) -> str:
         "+-------------------------------------------------------------+\n"
         "*/\n"
     )
+
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
@@ -107,6 +111,7 @@ def main() -> None:
             total += 1
 
     print(f"Done. Web files updated: {total}")
+
 
 if __name__ == "__main__":
     main()

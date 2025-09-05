@@ -14,6 +14,7 @@ EN: Property-based tests for Ω‑Kernel domain transforms.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from hypothesis import given, settings, strategies as st
@@ -53,7 +54,6 @@ MED_WORDS = [
     "terapie",
 ]
 
-
 SEC_WORDS = [
     "podatność",
     "podatnosc",
@@ -79,7 +79,6 @@ SEC_WORDS = [
     "exploit",
     "eksploit",
 ]
-
 
 CODE_WORDS = [
     "funkcja",
@@ -138,3 +137,38 @@ def test_domain_map_sample_synonym_resolution() -> None:
 
 
 # === TESTY / TESTS ===
+
+
+# Mixed with noise: ensure idempotence and token count invariants hold
+_NOISE_CHARS = st.characters(whitelist_categories=("Ll", "Lu"), min_codepoint=97, max_codepoint=122)
+_NOISE_WORDS = st.text(alphabet=_NOISE_CHARS, min_size=3, max_size=8)
+
+
+@settings(max_examples=25, deadline=None)
+@given(
+    st.lists(st.sampled_from(MED_WORDS), min_size=2, max_size=6),
+    st.lists(_NOISE_WORDS, min_size=1, max_size=4),
+)
+def test_domain_map_med_idempotent_with_noise(med: list[str], noise: list[str]) -> None:
+    words = med + noise
+    _idempotent("med", words)
+
+
+@settings(max_examples=25, deadline=None)
+@given(
+    st.lists(st.sampled_from(SEC_WORDS), min_size=2, max_size=6),
+    st.lists(_NOISE_WORDS, min_size=1, max_size=4),
+)
+def test_domain_map_sec_idempotent_with_noise(sec: list[str], noise: list[str]) -> None:
+    words = sec + noise
+    _idempotent("sec", words)
+
+
+@settings(max_examples=25, deadline=None)
+@given(
+    st.lists(st.sampled_from(CODE_WORDS), min_size=2, max_size=6),
+    st.lists(_NOISE_WORDS, min_size=1, max_size=4),
+)
+def test_domain_map_code_idempotent_with_noise(code: list[str], noise: list[str]) -> None:
+    words = code + noise
+    _idempotent("code", words)

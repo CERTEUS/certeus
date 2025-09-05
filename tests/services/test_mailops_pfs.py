@@ -21,6 +21,7 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+
 def test_mailops_ingest_returns_pfs_uri() -> None:
     client = TestClient(app)
     payload = {

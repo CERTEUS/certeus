@@ -37,10 +37,12 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+
 def _load_runtime_spec() -> dict[str, Any]:
     c = TestClient(app)
     r = c.get("/openapi.json")
     return r.json() if r.status_code == 200 else {}
+
 
 def _get_get_paths(spec: dict[str, Any]) -> list[str]:
     out: list[str] = []
@@ -53,6 +55,7 @@ def _get_get_paths(spec: dict[str, Any]) -> list[str]:
         if "get" in {k.lower() for k in ops.keys()} and "{" not in p and "}" not in p:
             out.append(str(p))
     return out
+
 
 def main() -> int:  # pragma: no cover
     spec = _load_runtime_spec()
@@ -71,6 +74,7 @@ def main() -> int:  # pragma: no cover
         return 1 if enforce else 0
     print(f"OpenAPI GET sanity: OK ({len(gets)} endpoints)")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

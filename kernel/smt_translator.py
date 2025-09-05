@@ -36,10 +36,12 @@ import z3  # type: ignore[reportMissingTypeStubs]
 
 # === MODELE / MODELS ===
 
+
 class VarNode(TypedDict):
     kind: Literal["var"]
 
     name: str
+
 
 class UnaryNode(TypedDict):
     kind: Literal["unary"]
@@ -47,6 +49,7 @@ class UnaryNode(TypedDict):
     op: Literal["NOT"]
 
     arg: Any
+
 
 class BinaryNode(TypedDict):
     kind: Literal["binary"]
@@ -57,12 +60,14 @@ class BinaryNode(TypedDict):
 
     right: Any
 
+
 class NaryNode(TypedDict):
     kind: Literal["nary"]
 
     op: Literal["AND", "OR", "XOR"]
 
     args: list[Any]
+
 
 # === LOGIKA / LOGIC ===
 
@@ -82,10 +87,12 @@ ASTNode = VarNode | UnaryNode | BinaryNode | NaryNode
 
 # ──────────────────────────────────────────────────────────────────────
 
+
 def _normalize(node: ASTNode | Mapping[str, Any]) -> ASTNode:
     """Allow Mapping (dict-like) in public API; normalize to plain dict."""
 
     return cast(ASTNode, dict(node)) if isinstance(node, Mapping) else node
+
 
 def validate_ast(node: ASTNode | Mapping[str, Any]) -> None:
     n0 = _normalize(node)
@@ -128,6 +135,7 @@ def validate_ast(node: ASTNode | Mapping[str, Any]) -> None:
     else:
         raise ValueError("Unknown AST kind")
 
+
 def _ensure_sym(symbols: dict[str, z3.ExprRef], name: str) -> z3.ExprRef:
     if name not in symbols:
         # In some local stubs BoolRef may not subclass ExprRef → cast to keep Pylance happy
@@ -135,6 +143,7 @@ def _ensure_sym(symbols: dict[str, z3.ExprRef], name: str) -> z3.ExprRef:
         symbols[name] = cast("z3.ExprRef", _Z3.Bool(name))
 
     return symbols[name]
+
 
 def _compile(node: ASTNode, symbols: dict[str, z3.ExprRef]) -> z3.ExprRef:
     k = node["kind"]
@@ -189,11 +198,13 @@ def _compile(node: ASTNode, symbols: dict[str, z3.ExprRef]) -> z3.ExprRef:
 
     raise AssertionError("unreachable")
 
+
 # ──────────────────────────────────────────────────────────────────────
 
 # Public API
 
 # ──────────────────────────────────────────────────────────────────────
+
 
 def compile_bool_ast(
     node: ASTNode | Mapping[str, Any],
@@ -211,6 +222,7 @@ def compile_bool_ast(
     expr = _compile(ast, symbols)
 
     return expr, symbols
+
 
 __all__ = [
     "VarNode",

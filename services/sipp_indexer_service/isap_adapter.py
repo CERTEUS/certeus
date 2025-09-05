@@ -39,6 +39,7 @@ from .models import LegalActSnapshot
 
 # === MODELE / MODELS ===
 
+
 class IsapAdapter:
     """
 
@@ -83,7 +84,9 @@ class IsapAdapter:
 
         return snapshot
 
+
 # === LOGIKA / LOGIC ===
+
 
 def _ascii_info(msg: str) -> None:
     try:
@@ -97,6 +100,7 @@ def _ascii_info(msg: str) -> None:
         s = msg.encode("ascii", "ignore").decode("ascii")
 
         print(f"[INFO] {s}")
+
 
 # === I/O / ENDPOINTS ===
 

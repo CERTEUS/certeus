@@ -32,6 +32,7 @@ try:
 except Exception:  # pragma: no cover
     yaml = None  # type: ignore
 
+
 def _load_docs_spec(repo: Path) -> dict:
     for p in (
         repo / "docs" / "openapi" / "certeus.v1.yaml",
@@ -46,6 +47,7 @@ def _load_docs_spec(repo: Path) -> dict:
                 return {}
     return {}
 
+
 def _normalize_paths(spec: dict) -> dict[str, Iterable[str]]:
     paths = spec.get("paths") or {}
     out: dict[str, Iterable[str]] = {}
@@ -57,6 +59,7 @@ def _normalize_paths(spec: dict) -> dict[str, Iterable[str]]:
         methods = [m.lower() for m in ops.keys() if isinstance(m, str)]
         out[str(p)] = sorted(set(methods))
     return out
+
 
 def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
     """PL/EN: (violations, warnings) — violations: endpoints present in runtime but missing in docs."""
@@ -96,6 +99,7 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
 
     return violations, warnings
 
+
 def main() -> int:  # pragma: no cover (integration)
     vio, warn = check()
     if warn:
@@ -114,6 +118,7 @@ def main() -> int:  # pragma: no cover (integration)
         f"{len(vio)} violations, {len(warn)} warnings"
     )
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

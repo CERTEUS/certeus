@@ -38,6 +38,7 @@ DEFAULT_MAX_BYTES = 10 * 1024 * 1024  # 10 MB
 
 # === MODELE / MODELS ===
 
+
 class OcrPipeline:
     """
 
@@ -101,6 +102,7 @@ class OcrPipeline:
                 },
             ],
         }
+
 
 # === LOGIKA / LOGIC ===
 

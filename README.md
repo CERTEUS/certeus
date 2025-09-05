@@ -183,6 +183,7 @@ $py = ".\.venv\Scripts\python.exe"
 - DevEx Playground: `http://127.0.0.1:8000/app/public/playground.html`
 - ChatOps: `http://127.0.0.1:8000/app/public/chatops.html`
 - MailOps: `http://127.0.0.1:8000/app/public/mailops.html`
+- Export: `http://127.0.0.1:8000/app/public/export.html`
 - Marketplace: `http://127.0.0.1:8000/app/public/marketplace.html`
 
 ### Dev stack (Docker Compose)

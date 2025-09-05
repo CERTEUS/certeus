@@ -42,10 +42,12 @@ _COUNTER = 1
 
 # === MODELE / MODELS ===
 
+
 class RegisterRequest(BaseModel):
     subject: dict[str, Any]
 
     claims: list[dict[str, Any]] | None = None
+
 
 class RegisterResponse(BaseModel):
     upn: str
@@ -54,10 +56,12 @@ class RegisterResponse(BaseModel):
 
     ledger_ref: str | None = None
 
+
 class RevokeRequest(BaseModel):
     upn: str = Field(description="Identifier returned by /register")
 
     reason: str | None = None
+
 
 class RevokeResponse(BaseModel):
     upn: str
@@ -65,6 +69,7 @@ class RevokeResponse(BaseModel):
     revoked: bool
 
     merkle_proof: dict[str, Any]
+
 
 # === LOGIKA / LOGIC ===
 
@@ -81,6 +86,7 @@ class RevokeResponse(BaseModel):
 # +=====================================================================+
 
 router = APIRouter(prefix="/v1/upn", tags=["UPN"])
+
 
 @router.post("/register", response_model=RegisterResponse)
 async def register(req: RegisterRequest, request: Request) -> RegisterResponse:
@@ -100,6 +106,7 @@ async def register(req: RegisterRequest, request: Request) -> RegisterResponse:
 
     return RegisterResponse(upn=upn, ts=ts, ledger_ref=None)
 
+
 @router.post("/revoke", response_model=RevokeResponse)
 async def revoke(req: RevokeRequest, request: Request) -> RevokeResponse:
     from services.api_gateway.limits import enforce_limits
@@ -118,6 +125,7 @@ async def revoke(req: RevokeRequest, request: Request) -> RevokeResponse:
     proof = {"path": [], "root": "0" * 64}
 
     return RevokeResponse(upn=req.upn, revoked=True, merkle_proof=proof)
+
 
 # === I/O / ENDPOINTS ===
 

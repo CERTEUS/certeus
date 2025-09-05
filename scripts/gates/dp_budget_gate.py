@@ -30,6 +30,7 @@ from typing import Any
 
 # === LOGIKA / LOGIC ===
 
+
 def _read() -> dict[str, Any]:
     try:
         raw = sys.stdin.read().strip()
@@ -39,8 +40,10 @@ def _read() -> dict[str, Any]:
         pass
     return {"budgets": [{"name": "alpha", "limit": 1.0, "used": 0.2}]}
 
+
 def _is_on(v: str | None) -> bool:
     return (v or "").strip().lower() in {"1", "true", "on", "yes"}
+
 
 def main() -> int:
     data = _read()
@@ -61,6 +64,7 @@ def main() -> int:
         return 1
     print("DP Budget Gate: OK")
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

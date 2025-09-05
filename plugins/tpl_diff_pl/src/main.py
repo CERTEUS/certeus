@@ -46,6 +46,7 @@ from datetime import datetime
 
 # +-------------------------------------------------------------+
 
+
 def _mock_diff(act_id: str, v_from: str, v_to: str):
     # Placeholder: returns a deterministic "diff" shape
 
@@ -60,12 +61,14 @@ def _mock_diff(act_id: str, v_from: str, v_to: str):
         "generated_at": datetime.utcnow().isoformat() + "Z",
     }
 
+
 def register(api):
     api.register_plugin("tpl_diff_pl", {"version": "0.1.0"})
 
     # Register as an adapter-like callable; convention: 'tpl.diff.pl'
 
     api.register_adapter("tpl.diff.pl", _mock_diff)
+
 
 # === I/O / ENDPOINTS ===
 

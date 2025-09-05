@@ -21,6 +21,7 @@ from core.omega.transforms import apply_transform, compute_gauge_drift
 
 # === TESTY / TESTS ===
 
+
 def test_lang_map_pl_en_pl_holonomy_low_drift() -> None:
     src = "Ustawa i rozporządzenie oraz Kodeks cywilny."
     en_txt, _ = apply_transform(src, "lang_map", src="pl", dst="en")

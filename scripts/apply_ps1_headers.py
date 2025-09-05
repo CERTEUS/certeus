@@ -36,10 +36,12 @@ ROOTS = ["scripts"]
 
 # === LOGIKA / LOGIC ===
 
+
 def has_header(text: str) -> bool:
     head = "\n".join(text.splitlines()[:10]).lower()
 
     return "certeus" in head and "file:" in head
+
 
 def build_header(rel: str) -> str:
     return (
@@ -52,6 +54,7 @@ def build_header(rel: str) -> str:
         "# | ROLA: Skrypt PowerShell.                                     |\n"
         "# +-------------------------------------------------------------+\n"
     )
+
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
@@ -81,6 +84,7 @@ def main() -> None:
             total += 1
 
     print(f"Done. PS1 files updated: {total}")
+
 
 if __name__ == "__main__":
     main()

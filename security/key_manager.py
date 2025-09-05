@@ -41,8 +41,10 @@ import os
 
 import requests
 
+
 def _b64u(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
+
 
 def load_ed25519_public_bytes() -> bytes:
     backend = os.getenv("KEYS_BACKEND", "env").lower()
@@ -89,6 +91,7 @@ def load_ed25519_public_bytes() -> bytes:
         return bytes.fromhex(hexv)
 
     raise RuntimeError("No public key configured")
+
 
 def load_ed25519_private_pem() -> str:
     backend = os.getenv("KEYS_BACKEND", "env").lower()

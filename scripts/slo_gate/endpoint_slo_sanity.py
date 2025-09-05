@@ -19,7 +19,6 @@ EN: Per-endpoint SLO smoke — measures p95 and error_rate for selected endpoint
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
-
 import argparse
 import json
 from pathlib import Path
@@ -38,12 +37,14 @@ from services.api_gateway.main import app
 
 # === LOGIKA / LOGIC ===
 
+
 def _p95(vals: list[float]) -> float:
     if not vals:
         return 0.0
     s = sorted(vals)
     k = max(0, min(len(s) - 1, int(0.95 * (len(s) - 1))))
     return s[k]
+
 
 def _call(c: TestClient, method: str, path: str, body: dict[str, Any] | None) -> tuple[float, bool]:
     t0 = time.perf_counter()
@@ -56,6 +57,7 @@ def _call(c: TestClient, method: str, path: str, body: dict[str, Any] | None) ->
     except Exception:
         ok = False
     return (time.perf_counter() - t0) * 1000.0, ok
+
 
 def main() -> int:  # pragma: no cover (integration)
     ap = argparse.ArgumentParser()
@@ -92,6 +94,7 @@ def main() -> int:  # pragma: no cover (integration)
     outp.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(f"Endpoint SLO: wrote {outp}")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

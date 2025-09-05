@@ -71,6 +71,14 @@ async def vacuum_pairs(req: VacuumPairsRequest, request: Request, response: Resp
     except Exception:
         pass
 
+    # Telemetry (Prometheus) — optional
+    try:
+        from monitoring.metrics_slo import certeus_qoc_vacuum_rate
+
+        certeus_qoc_vacuum_rate.set(float(rate))
+    except Exception:
+        pass
+
     return VacuumPairsResponse(pairs_count=pairs, rate=round(rate, 6))
 
 

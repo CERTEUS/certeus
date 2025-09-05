@@ -98,8 +98,10 @@ ENDPOINT_PATTERN = re.compile(r"^/pco/public/\{case_id\}$")
 
 # ----Bloki----- I/O
 
+
 def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
 
 def _read_yaml(path: Path) -> dict[str, Any]:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -109,7 +111,9 @@ def _read_yaml(path: Path) -> dict[str, Any]:
 
     return data
 
+
 # ----Bloki----- Dobór walidatora
+
 
 def _pick_validator(schema: dict[str, Any]):
     ident = str(schema.get("$schema", "")).lower()
@@ -122,7 +126,9 @@ def _pick_validator(schema: dict[str, Any]):
 
     return Draft202012Validator
 
+
 # ----Bloki----- Inwarianty
+
 
 def _ensure_no_pii(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
     lowered = {f.replace("?", "").lower() for f in fields}
@@ -139,6 +145,7 @@ def _ensure_no_pii(fields: list[str], ctx: str, messages: list[dict[str, Any]]) 
             }
         )
 
+
 def _check_required_fields(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
     s = set(x.replace("?", "") for x in fields)
 
@@ -153,6 +160,7 @@ def _check_required_fields(fields: list[str], ctx: str, messages: list[dict[str,
                 "detail": f"Missing required fields: {', '.join(missing)}",
             }
         )
+
 
 def _check_unknown_fields(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
     s = set(x.replace("?", "") for x in fields)
@@ -169,6 +177,7 @@ def _check_unknown_fields(fields: list[str], ctx: str, messages: list[dict[str, 
             }
         )
 
+
 def _check_endpoint_pattern(endpoint: str, ctx: str, messages: list[dict[str, Any]]) -> None:
     if not ENDPOINT_PATTERN.fullmatch(endpoint):
         messages.append(
@@ -179,6 +188,7 @@ def _check_endpoint_pattern(endpoint: str, ctx: str, messages: list[dict[str, An
                 "detail": f"Endpoint must match '^/pco/public/{{case_id}}$', got: {endpoint}",
             }
         )
+
 
 def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
     msgs: list[dict[str, Any]] = []
@@ -252,7 +262,9 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
 
     return msgs
 
+
 # ----Bloki----- CLI
+
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
@@ -272,6 +284,7 @@ def _parse_args() -> argparse.Namespace:
 
     return p.parse_args()
 
+
 def _emit_text(schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]) -> None:
     if use_cases:
         print("[use_cases] " + ", ".join(use_cases))
@@ -290,12 +303,15 @@ def _emit_text(schema_errors: list[str], messages: list[dict[str, Any]], use_cas
 
         print(f"[{lvl}] {code} @ {where}: {detail}")
 
+
 def _emit_json(schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]) -> None:
     out = {"use_cases": use_cases, "schema_errors": schema_errors, "messages": messages}
 
     print(json.dumps(out, ensure_ascii=False, indent=2))
 
+
 # ----Bloki----- MAIN
+
 
 def main() -> int:
     args = _parse_args()
@@ -344,6 +360,7 @@ def main() -> int:
         return 1
 
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

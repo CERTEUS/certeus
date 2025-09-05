@@ -30,6 +30,7 @@ DEFAULT_BASE_URL = "http://127.0.0.1:8000"
 
 # === MODELE / MODELS ===
 
+
 @dataclass(slots=True)
 class SDKResponse:
     ok: bool
@@ -37,7 +38,9 @@ class SDKResponse:
     data: Any
     pco_headers: dict[str, str]
 
+
 # === LOGIKA / LOGIC ===
+
 
 class CerteusClient:
     """
@@ -198,6 +201,7 @@ class CerteusClient:
         if text_context:
             payload["text_context"] = text_context
         return self._post("/v1/chatops/command", json=payload)
+
 
 # === I/O / ENDPOINTS ===
 

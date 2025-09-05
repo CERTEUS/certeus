@@ -42,6 +42,7 @@ DEFAULT_GOV_PACK = os.getenv("GOV_PACK") or str(
 
 # === LOGIKA / LOGIC ===
 
+
 def _read_input() -> dict[str, Any]:
     try:
         raw = sys.stdin.read().strip()
@@ -55,6 +56,7 @@ def _read_input() -> dict[str, Any]:
         "resource": {"kind": "pco", "case_id": "CER-LEX-99"},
     }
 
+
 def _load_governance() -> dict[str, Any] | None:
     if not yaml:
         return None
@@ -65,6 +67,7 @@ def _load_governance() -> dict[str, Any] | None:
         return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
     except Exception:
         return None
+
 
 def _allow_by_pack(role: str, action: str, resource_kind: str, scope: str | None) -> bool | None:
     pack = _load_governance()
@@ -82,6 +85,7 @@ def _allow_by_pack(role: str, action: str, resource_kind: str, scope: str | None
         return None
     return role in set(map(str, allowed_roles))
 
+
 def _allow(user_role: str, action: str, *, resource_kind: str, scope: str | None) -> bool:
     # Governance pack first (if present)
     by_pack = _allow_by_pack(user_role, action, resource_kind, scope)
@@ -98,6 +102,7 @@ def _allow(user_role: str, action: str, *, resource_kind: str, scope: str | None
         return user_role in {"ATC", "ASE"}
     # default deny for unknown actions
     return False
+
 
 def main() -> int:
     data = _read_input()
@@ -118,6 +123,7 @@ def main() -> int:
 
     print(f"Roles Gate: FAIL role {role} not permitted for {action}")
     return 1
+
 
 # === I/O / ENDPOINTS ===
 

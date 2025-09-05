@@ -33,6 +33,7 @@ from typing import Any, Literal
 
 # === MODELE / MODELS ===
 
+
 class PreSolveResult:
     """PL: Wynik fazy PRE. EN: PRE phase result."""
 
@@ -41,6 +42,7 @@ class PreSolveResult:
     reasons: dict[str, Any]
 
     plan: dict[str, Any]  # initial plan-of-evidence for non-PUBLISH
+
 
 # === LOGIKA / LOGIC ===
 
@@ -66,21 +68,25 @@ Decision = Literal["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
 
 Heat = Literal["HOT", "WARM", "COLD"]
 
+
 @dataclass(frozen=True)
 def evaluate_gop(ctx: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     """PL: Ocena GoP. EN: GoP evaluation."""
 
     return {"ok": True, "sources": ctx.get("sources_count", 0)}
 
+
 def evaluate_euq(ctx: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     """PL: Ocena EUQ (dolny przedział wiarygodności). EN: EUQ lower bound."""
 
     return {"lb": float(ctx.get("lb", 0.5))}
 
+
 def evaluate_ttde(ctx: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     """PL: Datowanie/wygaśnięcie. EN: Temporal validity/expiry."""
 
     return {"fresh": bool(ctx.get("fresh", True))}
+
 
 def classify_heat(
     gop: dict[str, Any],
@@ -106,6 +112,7 @@ def classify_heat(
 
     return "COLD"
 
+
 def pre_solve(ctx: dict[str, Any], policy_profile: str = "default") -> PreSolveResult:
     """PL: Wykonaj fazę PRE. EN: Execute PRE phase."""
 
@@ -129,6 +136,7 @@ def pre_solve(ctx: dict[str, Any], policy_profile: str = "default") -> PreSolveR
 
     return PreSolveResult(heat=heat, reasons=reasons, plan=plan)
 
+
 def evaluate_att(artifacts: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     """PL: Kontrprzykłady. EN: Adversarial tests."""
 
@@ -136,12 +144,14 @@ def evaluate_att(artifacts: dict[str, Any], policy: dict[str, Any]) -> dict[str,
 
     return {"passed": True, "missing_tests": []}
 
+
 def evaluate_mtv(artifacts: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     """PL: Samospójność. EN: Meta-theoretic validity."""
 
     # TODO: plug MTV results
 
     return {"contradiction": False, "self_inconsistency": False}
+
 
 def post_solve(
     artifacts: dict[str, Any],
@@ -164,6 +174,7 @@ def post_solve(
     plan = {"summary": "Need additional tests/evidence", "steps": att.get("missing_tests", [])}
 
     return "CONDITIONAL", {"plan": plan, "att": att, "mtv": mtv}
+
 
 # === I/O / ENDPOINTS ===
 

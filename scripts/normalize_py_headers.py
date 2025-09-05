@@ -50,6 +50,7 @@ ROOTS = [
 
 # === LOGIKA / LOGIC ===
 
+
 def detect_shebang_and_encoding(lines: list[str]) -> tuple[int, int]:
     """Return indices for shebang line and encoding cookie (0 or -1 if missing)."""
 
@@ -66,6 +67,7 @@ def detect_shebang_and_encoding(lines: list[str]) -> tuple[int, int]:
             break
 
     return shebang, enc
+
 
 def find_banner_block(lines: list[str]) -> tuple[int, int] | None:
     """Find CERTEUS banner block: start,end (inclusive-exclusive)."""
@@ -96,6 +98,7 @@ def find_banner_block(lines: list[str]) -> tuple[int, int] | None:
         j += 1
 
     return (start, j)
+
 
 def extract_docstring_block(text: str) -> tuple[tuple[int, int] | None, str | None]:
     """Return (start,end) line indices (inclusive) and docstring content (raw)."""
@@ -130,6 +133,7 @@ def extract_docstring_block(text: str) -> tuple[tuple[int, int] | None, str | No
 
     return (start, end), ds
 
+
 def build_default_docstring(rel: str) -> str:
     return (
         '"""\n'
@@ -137,6 +141,7 @@ def build_default_docstring(rel: str) -> str:
         f"EN: Module {rel} — please complete the functional description.\n"
         '"""\n'
     )
+
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
@@ -281,6 +286,7 @@ def main() -> None:
                 print(f"[NORMALIZED] {f.relative_to(root)}")
 
     print(f"Done. Python files normalized: {changed}")
+
 
 if __name__ == "__main__":
     main()

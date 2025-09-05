@@ -32,13 +32,16 @@ import yaml
 
 # === MODELE / MODELS ===
 
+
 class PNIP(BaseModel):
     document_hash: str = Field(..., min_length=7)
     juris_country: str = Field(..., min_length=2, max_length=2)
     juris_domain: str = Field(..., min_length=2, max_length=32)
     policy_pack_id: str = Field(..., min_length=3)
 
+
 # === LOGIKA / LOGIC ===
+
 
 def _policy_pack_id() -> str:
     # Read from policies/pco/policy_pack.yaml (meta.id)
@@ -49,6 +52,7 @@ def _policy_pack_id() -> str:
         return mid
     except Exception:
         return "pco-policy-pack"
+
 
 def _parse_jurisdiction(header_val: str | None) -> tuple[str, str]:
     # Format: "CC[:domain]" e.g., "PL" or "PL:finance"
@@ -70,6 +74,7 @@ def _parse_jurisdiction(header_val: str | None) -> tuple[str, str]:
         dom = default_domain
     return cc, dom
 
+
 def _validate_hash(h: str) -> bool:
     if not isinstance(h, str) or ":" not in h:
         return False
@@ -84,12 +89,14 @@ def _validate_hash(h: str) -> bool:
     except Exception:
         return False
 
+
 def make_pco_error(code: str, message: str, *, ctx: dict[str, Any] | None = None) -> dict[str, Any]:
     return {
         "version": "0.2",
         "status": "ERROR",
         "error": {"code": code, "message": message, "context": (ctx or {})},
     }
+
 
 def validate_pnip_request(request: Request, *, body: dict[str, Any] | None, strict: bool = False) -> PNIP | None:
     # Headers precedence, fallback to body keys
@@ -134,6 +141,7 @@ def validate_pnip_request(request: Request, *, body: dict[str, Any] | None, stri
         raise HTTPException(status_code=400, detail=err)
 
     return pnip if strict or ok_hash else None
+
 
 # === I/O / ENDPOINTS ===
 

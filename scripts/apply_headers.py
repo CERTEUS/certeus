@@ -66,6 +66,7 @@ SKIP_FILES = {
 
 # === Generator nagłówka ======================================= #
 
+
 def build_header(rel_path: str) -> str:
     """
 
@@ -86,6 +87,7 @@ def build_header(rel_path: str) -> str:
 
     return box
 
+
 # === Domyślny module docstring ================================ #
 
 DEFAULT_DOCSTRING = (
@@ -97,12 +99,14 @@ DEFAULT_DOCSTRING = (
 
 # === Wykrywanie istniejącego nagłówka/docstringa ============== #
 
+
 def has_header(text: str) -> bool:
     # szukamy znaku rozpoznawczego w pierwszych ~10 liniach
 
     head = "\n".join(text.splitlines()[:10])
 
     return "CERTEUS" in head and "FILE:" in head
+
 
 def has_module_docstring(text: str) -> bool:
     try:
@@ -115,7 +119,9 @@ def has_module_docstring(text: str) -> bool:
 
         return False
 
+
 # === Wstawianie nagłówka/docstringa =========================== #
+
 
 def ensure_header_and_docstring(path: Path, project_root: Path) -> bool:
     """
@@ -175,7 +181,9 @@ def ensure_header_and_docstring(path: Path, project_root: Path) -> bool:
 
     return changed
 
+
 # === Skan repo i przetwarzanie ================================ #
+
 
 def iter_python_files(root: Path, dirs: Iterable[str]) -> Iterable[Path]:
     for d in dirs:
@@ -190,6 +198,7 @@ def iter_python_files(root: Path, dirs: Iterable[str]) -> Iterable[Path]:
                 continue
             yield py
 
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]  # repo root
 
@@ -202,6 +211,7 @@ def main() -> None:
             print(f"[UPDATED] {py.relative_to(root)}")
 
     print(f"\nDone. Files updated: {changed_total}")
+
 
 if __name__ == "__main__":
     main()

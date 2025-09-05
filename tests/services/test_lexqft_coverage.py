@@ -25,6 +25,7 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
+
 def test_lexqft_coverage_default_and_update_roundtrip() -> None:
     # Reset any previous state
     client.post("/v1/lexqft/coverage/reset")

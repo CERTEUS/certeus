@@ -1,12 +1,30 @@
+#!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/policies/test_plugin_supply_chain_gate.py      |
+# | ROLE: Test module.                                         |
+# | PLIK: tests/policies/test_plugin_supply_chain_gate.py      |
+# | ROLA: Moduł testów.                                        |
+# +-------------------------------------------------------------+
+
 """
-Tests for Plugin Supply-Chain Gate (report-only by default).
+PL: Testy bramki łańcucha dostaw wtyczek (domyślnie report‑only).
+
+EN: Tests for Plugin Supply-Chain Gate (report-only by default).
 """
+
+# === IMPORTY / IMPORTS ===
 
 from __future__ import annotations
 
 from pathlib import Path
 
 from scripts.gates import plugin_supply_chain_gate as gate
+
+# === KONFIGURACJA / CONFIGURATION ===
+
+# === MODELE / MODELS ===
 
 
 def _write_plugin(tmp: Path, name: str, with_artifacts: bool = False) -> Path:
@@ -41,3 +59,10 @@ def test_gate_ok_when_artifacts_present(tmp_path: Path) -> None:
     assert vio == []
     # cosign optional → may still warn if not present
     assert warn == ["demo_ok: cosign signatures not found (optional: *.sig/*.cert)"]
+
+
+# === LOGIKA / LOGIC ===
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

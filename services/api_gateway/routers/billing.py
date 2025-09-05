@@ -31,11 +31,13 @@ from pydantic import BaseModel, Field
 
 _DEFAULT_STATE_FILE = Path(__file__).resolve().parents[3] / "data" / "fin_tokens.json"
 
+
 def _state_file() -> Path:
     override = os.getenv("CERTEUS_TEST_STATE_PATH")
     if override:
         return Path(override)
     return _DEFAULT_STATE_FILE
+
 
 def _load_state() -> dict[str, Any]:
     sf = _state_file()
@@ -46,17 +48,21 @@ def _load_state() -> dict[str, Any]:
     except Exception:
         return {"requests": {}}
 
+
 def _save_state(state: dict[str, Any]) -> None:
     sf = _state_file()
     sf.parent.mkdir(parents=True, exist_ok=True)
     sf.write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
+
 # === MODELE / MODELS ===
+
 
 class TokenRequestIn(BaseModel):
     user_id: str = Field(min_length=1)
     amount: int = Field(gt=0)
     purpose: str | None = None
+
 
 class TokenRequestOut(BaseModel):
     request_id: str
@@ -65,18 +71,22 @@ class TokenRequestOut(BaseModel):
     amount: int
     purpose: str | None = None
 
+
 class TokenAllocateIn(BaseModel):
     request_id: str
     allocated_by: str | None = None
+
 
 class TokenStatusOut(BaseModel):
     request_id: str
     status: str
     allocated_by: str | None = None
 
+
 # === LOGIKA / LOGIC ===
 
 router_tokens = APIRouter(prefix="/v1/fin/tokens", tags=["billing"])
+
 
 @router_tokens.post("/request", response_model=TokenRequestOut, operation_id="fin_request_tokens")
 async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestOut:
@@ -106,6 +116,7 @@ async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestO
     except Exception:
         pass
     return TokenRequestOut(**entry)
+
 
 @router_tokens.post("/allocate", response_model=TokenStatusOut, operation_id="fin_allocate_tokens")
 async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatusOut:
@@ -141,6 +152,7 @@ async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatus
         pass
     return TokenStatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
 
+
 @router_tokens.get("/{request_id}", response_model=TokenStatusOut, operation_id="fin_get_token_request_status")
 async def get_request_status(request_id: str, request: Request) -> TokenStatusOut:
     from services.api_gateway.limits import enforce_limits
@@ -154,18 +166,23 @@ async def get_request_status(request_id: str, request: Request) -> TokenStatusOu
         request_id=request_id, status=str(entry.get("status")), allocated_by=entry.get("allocated_by")
     )
 
+
 class QuotaRequest(BaseModel):
     tenant: str | None = None
     units: int = Field(ge=0, default=0)
 
+
 class AllocateRequest(BaseModel):
     cost_units: int = Field(ge=0)
+
 
 class RefundRequest(BaseModel):
     units: int = Field(ge=0)
 
+
 # Billing endpoints (per-tenant budgets)
 router = APIRouter(prefix="/v1/billing", tags=["billing"])
+
 
 @router.get("/quota", operation_id="billing_get_quota")
 async def quota(request: Request) -> dict[str, Any]:
@@ -174,6 +191,7 @@ async def quota(request: Request) -> dict[str, Any]:
     tenant = get_tenant_id(request)
     return {"tenant": tenant, "balance": get_tenant_balance(tenant)}
 
+
 @router.post("/quota", operation_id="billing_set_quota")
 async def set_quota_api(req: QuotaRequest, request: Request) -> dict[str, Any]:
     from services.api_gateway.limits import get_tenant_balance, get_tenant_id, set_tenant_quota
@@ -181,6 +199,7 @@ async def set_quota_api(req: QuotaRequest, request: Request) -> dict[str, Any]:
     tenant = (req.tenant or get_tenant_id(request)).strip() or get_tenant_id(request)
     set_tenant_quota(tenant, max(0, int(req.units)))
     return {"ok": True, "tenant": tenant, "balance": get_tenant_balance(tenant)}
+
 
 @router.post("/allocate", operation_id="billing_allocate_units")
 async def allocate(req: AllocateRequest, request: Request) -> dict[str, Any]:
@@ -193,6 +212,7 @@ async def allocate(req: AllocateRequest, request: Request) -> dict[str, Any]:
     if not ok:
         return {"status": "PENDING", "tenant": tenant, "balance": get_tenant_balance(tenant)}
     return {"status": "ALLOCATED", "tenant": tenant, "balance": get_tenant_balance(tenant)}
+
 
 @router.post("/refund", operation_id="billing_refund_units")
 async def refund(req: RefundRequest, request: Request) -> dict[str, Any]:

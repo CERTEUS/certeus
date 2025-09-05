@@ -38,6 +38,7 @@ from .smt_translator import compile_bool_ast, validate_ast
 
 # === MODELE / MODELS ===
 
+
 class E2EVerifier:
     """
 
@@ -116,6 +117,7 @@ class E2EVerifier:
         assertions = self._parse_smt2_assertions(smt2)
 
         return self.z3.solve(assertions)
+
 
 # === LOGIKA / LOGIC ===
 

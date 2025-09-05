@@ -44,6 +44,7 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
+
 def test_full_analysis_returns_sat():
     payload = ("dowody.pdf", io.BytesIO(b"fake bytes"), "application/pdf")
 

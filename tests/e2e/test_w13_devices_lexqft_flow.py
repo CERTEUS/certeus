@@ -32,6 +32,7 @@ from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
 
+
 def test_w13_devices_lexqft_flow() -> None:
     from services.api_gateway.main import app
 

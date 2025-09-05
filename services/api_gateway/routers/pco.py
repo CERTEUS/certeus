@@ -28,6 +28,7 @@ _VALIDATOR = Draft202012Validator(_PROOFBUNDLE_SCHEMA)
 
 # === LOGIKA / LOGIC ===
 
+
 async def _create_and_sign_bundle(bundle_request: dict) -> dict:
     """Stub: Logika tworzenia, walidacji, podpisywania i zapisu do ledger."""
     # 1. Walidacja ze schematem
@@ -52,13 +53,16 @@ async def _create_and_sign_bundle(bundle_request: dict) -> dict:
     bundle_request["version"] = "0.2"  # MOCK
     return bundle_request
 
+
 # === I/O / ENDPOINTS ===
+
 
 @router.post("/v1/pco/bundle", summary="Create and publish a ProofBundle")
 async def create_proof_bundle(bundle_request: dict[str, Any] = Body(...)):  # noqa: B008
     """Tworzy, waliduje, podpisuje i publikuje ProofBundle v0.2."""
     signed_bundle = await _create_and_sign_bundle(bundle_request)
     return signed_bundle
+
 
 @router.get("/pco/public/{case_id}", summary="Get public payload of a ProofBundle")
 async def get_public_proof_bundle(case_id: str):

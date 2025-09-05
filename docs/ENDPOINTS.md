@@ -32,6 +32,7 @@ See also `docs/openapi/certeus.v1.yaml` for full schemas and examples.
 - POST `/v1/lexqft/coverage/update`: Replace coverage contributions: `{gamma, weight, uncaptured}[]`.
 - POST `/v1/lexqft/coverage/reset`: Reset coverage aggregator (clears persisted state).
 - POST `/v1/lexqft/tunnel`: Tunneling heuristic; returns `{p_tunnel, min_energy_to_cross, path}` and emits PCO headers `X-CERTEUS-PCO-qlaw.tunneling.*`.
+  - GET `/v1/lexqft/tunnel/scenarios`: returns example barrier models `{model_id, energy, model_uri}` for quick trials.
 
 - POST `/v1/qoc/vacuum_pairs`: Vacuum virtual pairs (QOC); returns `{pairs_count, rate}` and emits PCO header `X-CERTEUS-PCO-qoc.vacuum_pairs.rate`.
 - POST `/v1/qoc/energy_debt`: Helper to calculate energy debt for a number of pairs: `{pairs_count, mean_energy}` → `{energy_debt}`.
@@ -168,6 +169,19 @@ curl -sS -X POST \
   -d '{"state_uri": "lexqft-case-1", "evidence_energy": 1.2}' -i | sed -n '1,20p'
 ```
 
+Z modelem bariery (`barrier_model.energy` oraz opcjonalnie `model_uri`):
+
+```
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/lexqft/tunnel \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "state_uri": "lexqft-case-1",
+        "evidence_energy": 1.0,
+        "barrier_model": {"energy": 1.5, "model_uri": "lexqft://barrier/demo"}
+      }' -i | sed -n '1,20p'
+```
+
 - QOC — vacuum pairs
 
 ```
@@ -180,6 +194,8 @@ curl -sS -X POST \
 - FIN→LexQFT coverage feed (implicit)
 
 Wywołanie `/v1/fin/alpha/measure` dokłada wkład do agregatora pokrycia (gamma/uncaptured) w lexqft, co zasila Path‑Coverage Gate danymi FIN.
+
+Log tunelowania (lekki): każde wywołanie `/v1/lexqft/tunnel` dopisuje wpis do `data/lexqft_tunnel_log.jsonl` z `{ts, case_id, barrier_energy, p_tunnel, path, counter_arguments[]}`.
 
 - Entangle — negativity certificate
 
@@ -262,6 +278,33 @@ curl -sS -X POST http://127.0.0.1:8000/v1/fin/tokens/allocate \
 
 curl -sS http://127.0.0.1:8000/v1/fin/tokens/$RID
 ```
+
+## SEC‑PCO (extension) — sample
+
+Minimal extension payload for security findings (validated when `VALIDATE_PCO=1`):
+
+```
+{
+  "security": {
+    "finding_id": "SEC-0001",
+    "severity": "HIGH",
+    "status": "OPEN",
+    "controls": ["ISO27001:A.12.6"],
+    "evidence": [
+      {
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "type": "artifact",
+        "uri": "pfs://mail/MSEC/rep.pdf"
+      }
+    ],
+    "cwe": ["CWE-79"],
+    "cve": ["CVE-2025-0001"],
+    "cvss": 8.2
+  }
+}
+```
+
+Schema: `schemas/security_pco_v0.1.json`. Evidence URIs use ProofFS (`pfs://…`) and can be checked via `/v1/pfs/exists`.
 
 ## CFE — Geometry of Meaning
 

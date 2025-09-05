@@ -21,17 +21,79 @@ paths:
     post:
       summary: Compute legal geodesic (CFE)
       tags: [CFE]
-      responses: { "200": { description: ok } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                case: { type: string, description: Optional case identifier }
+                facts: { type: object, additionalProperties: true }
+                norms: { type: object, additionalProperties: true }
+            examples:
+              example:
+                value: { case: "CER-LEX-7", facts: {}, norms: {} }
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path: { type: array, items: { type: string } }
+                  geodesic_action: { type: number }
+                  subject: { type: string, nullable: true }
   /v1/cfe/horizon:
     post:
       summary: Compute legal horizon (CFE)
       tags: [CFE]
-      responses: { "200": { description: ok } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                case: { type: string }
+                lock: { type: boolean }
+                domain:
+                  type: string
+                  enum: [LEX, FIN, MED, SEC, CODE]
+                  description: Optional domain context
+                severity:
+                  type: string
+                  enum: [low, medium, high, critical]
+                  description: Optional severity for heuristic lock
+            examples:
+              example:
+                value: { case: "MED-CASE-CRIT-1", domain: "MED", severity: "critical" }
+      responses:
+        "200": { description: ok }
   /v1/cfe/lensing:
     get:
       summary: Lensing map (CFE)
       tags: [CFE]
-      responses: { "200": { description: ok } }
+      parameters:
+        - in: query
+          name: domain
+          schema: { type: string, enum: [LEX, FIN, MED, SEC, CODE] }
+          required: false
+          description: Optional domain context
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lensing_map:
+                    type: object
+                    additionalProperties: { type: number }
+                  critical_precedents: { type: array, items: { type: string } }
+                  domain: { type: string }
   /v1/qtm/init_case:
     post:
       summary: Initialize QTMP case predistribution
@@ -90,12 +152,36 @@ paths:
     post:
       summary: Compute commutator (QTMP)
       tags: [QTMP]
-      responses: { "200": { description: ok } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QtmCommutatorRequest'
+      responses:
+        "200":
+          description: Value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmCommutatorResponse'
   /v1/qtm/find_entanglement:
     post:
       summary: Find variable entanglement
       tags: [QTMP]
-      responses: { "200": { description: ok } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QtmFindEntanglementRequest'
+      responses:
+        "200":
+          description: Entanglement pairs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmFindEntanglementResponse'
   /v1/qtm/measure_sequence:
     post:
       summary: Measure a sequence of operators (QTMP)
@@ -176,12 +262,44 @@ paths:
           name: case
           required: true
           schema: { type: string }
-      responses: { "200": { description: ok } }
+        - in: query
+          name: offset
+          required: false
+          schema: { type: integer, default: 0 }
+        - in: query
+          name: limit
+          required: false
+          schema: { type: integer, default: 100 }
+        - in: query
+          name: operator
+          required: false
+          schema: { type: string }
+        - in: query
+          name: verdict
+          required: false
+          schema: { type: string }
+        - in: query
+          name: sort
+          required: false
+          schema: { type: string, enum: [asc, desc], default: asc }
+      responses:
+        "200":
+          description: History
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmHistoryOut'
   /v1/qtm/operators:
     get:
       summary: List QTMP operators and eigenvalues
       tags: [QTMP]
-      responses: { "200": { description: ok } }
+      responses:
+        "200":
+          description: Operators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmOperatorsOut'
   /v1/qtm/uncertainty:
     get:
       summary: QTMP uncertainty lower bound (L_T)
@@ -192,8 +310,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties: { lower_bound: { type: number } }
+                $ref: '#/components/schemas/QtmUncertaintyOut'
   /v1/qtm/expectation:
     post:
       summary: Expectation value of operator for case
@@ -203,19 +320,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [case, operator]
-              properties:
-                case: { type: string }
-                operator: { type: string }
+              $ref: '#/components/schemas/QtmExpectationRequest'
       responses:
         "200":
           description: Expectation value
           content:
             application/json:
               schema:
-                type: object
-                properties: { value: { type: number } }
+                $ref: '#/components/schemas/QtmExpectationOut'
   /v1/qtm/decoherence:
     post:
       summary: Configure decoherence channel for case
@@ -225,12 +337,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [channel]
-              properties:
-                case: { type: string }
-                channel: { type: string, enum: [dephasing, depolarizing, damping] }
-                gamma: { type: number }
+              $ref: '#/components/schemas/QtmDecoherenceRequest'
             examples:
               example:
                 value: { case: "LEX-QTMP-1", channel: "dephasing", gamma: 0.2 }
@@ -240,8 +347,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties: { ok: { type: boolean }, case: { type: string }, channel: { type: string }, gamma: { type: number } }
+                $ref: '#/components/schemas/QtmDecoherenceResponse'
   /v1/qtm/commutator_expectation:
     post:
       summary: Expected commutator magnitude for case distribution
@@ -251,20 +357,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [case, A, B]
-              properties:
-                case: { type: string }
-                A: { type: string }
-                B: { type: string }
+              $ref: '#/components/schemas/QtmCommutatorExpRequest'
       responses:
         "200":
           description: Value
           content:
             application/json:
               schema:
-                type: object
-                properties: { value: { type: number } }
+                $ref: '#/components/schemas/QtmCommutatorResponse'
   /v1/qtm/preset:
     post:
       summary: Save Operator Composer preset for case
@@ -274,13 +374,14 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [case, operator]
-              properties:
-                case: { type: string }
-                operator: { type: string }
+              $ref: '#/components/schemas/QtmPresetIn'
       responses:
-        "200": { description: ok }
+        "200":
+          description: Preset saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmPresetOut'
   /v1/qtm/preset/{case}:
     get:
       summary: Get Operator Composer preset for case
@@ -290,7 +391,13 @@ paths:
           name: case
           required: true
           schema: { type: string }
-      responses: { "200": { description: ok } }
+      responses:
+        "200":
+          description: Preset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmPresetOut'
     delete:
       summary: Delete Operator Composer preset for case
       tags: [QTMP]
@@ -299,7 +406,13 @@ paths:
           name: case
           required: true
           schema: { type: string }
-      responses: { "200": { description: ok } }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmDeleteResult'
   /v1/qtm/presets:
     get:
       summary: List Operator Composer presets
@@ -572,3 +685,158 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
+    QtmMeasureRequest:
+      type: object
+      required: [operator]
+      properties:
+        operator: { type: string, description: "One of W/I/C/L/T" }
+        case: { type: string }
+        source: { type: string }
+        basis:
+          type: array
+          items: { type: string }
+    QtmMeasureResponse:
+      type: object
+      properties:
+        verdict: { type: string }
+        p: { type: number }
+        collapse_log: { type: object }
+        uncertainty_bound: { type: object }
+        latency_ms: { type: number }
+    QtmSequenceStep:
+      type: object
+      properties:
+        operator: { type: string }
+        verdict: { type: string }
+        p: { type: number }
+    QtmSequenceRequest:
+      type: object
+      required: [operators]
+      properties:
+        operators:
+          type: array
+          items: { type: string }
+        case: { type: string }
+        basis:
+          type: array
+          items: { type: string }
+        no_collapse: { type: boolean }
+    QtmSequenceResponse:
+      type: object
+      properties:
+        steps:
+          type: array
+          items: { $ref: '#/components/schemas/QtmSequenceStep' }
+        final_latency_ms: { type: number }
+        uncertainty_bound: { type: object }
+    QtmStateIn:
+      type: object
+      required: [case, basis, probs]
+      properties:
+        case: { type: string }
+        psi: { type: string }
+        basis:
+          type: array
+          items: { type: string }
+        probs:
+          type: array
+          items: { type: number }
+    QtmPredistribItem:
+      type: object
+      properties: { state: { type: string }, p: { type: number } }
+    QtmStateOut:
+      type: object
+      properties:
+        case: { type: string }
+        psi: { type: string }
+        basis:
+          type: array
+          items: { type: string }
+        predistribution:
+          type: array
+          items: { $ref: '#/components/schemas/QtmPredistribItem' }
+    QtmDeleteResult:
+      type: object
+      properties: { ok: { type: boolean } }
+    QtmHistoryEvent:
+      type: object
+      properties:
+        operator: { type: string }
+        verdict: { type: string }
+        p: { type: number }
+    QtmHistoryOut:
+      type: object
+      properties:
+        case: { type: string }
+        history:
+          type: array
+          items: { $ref: '#/components/schemas/QtmHistoryEvent' }
+        total: { type: integer }
+        offset: { type: integer }
+        limit: { type: integer }
+    QtmOperatorsOut:
+      type: object
+      properties:
+        operators:
+          type: object
+    QtmUncertaintyOut:
+      type: object
+      properties: { lower_bound: { type: number } }
+    QtmExpectationRequest:
+      type: object
+      required: [case, operator]
+      properties:
+        case: { type: string }
+        operator: { type: string }
+    QtmExpectationOut:
+      type: object
+      properties: { value: { type: number } }
+    QtmDecoherenceRequest:
+      type: object
+      required: [channel]
+      properties:
+        case: { type: string }
+        channel: { type: string, enum: [dephasing, depolarizing, damping] }
+        gamma: { type: number }
+    QtmDecoherenceResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        case: { type: string }
+        channel: { type: string }
+        gamma: { type: number }
+    QtmCommutatorRequest:
+      type: object
+      required: [A, B]
+      properties:
+        A: { type: string }
+        B: { type: string }
+    QtmCommutatorResponse:
+      type: object
+      properties: { value: { type: number } }
+    QtmCommutatorExpRequest:
+      type: object
+      required: [case, A, B]
+      properties:
+        case: { type: string }
+        A: { type: string }
+        B: { type: string }
+    QtmFindEntanglementRequest:
+      type: object
+      required: [variables]
+      properties:
+        variables:
+          type: array
+          items: { type: string }
+    QtmFindEntanglementResponse:
+      type: object
+      properties:
+        pairs:
+          type: array
+          items:
+            type: array
+            items: { type: string }
+            minItems: 2
+            maxItems: 2
+        mi: { type: number }
+        negativity: { type: number }

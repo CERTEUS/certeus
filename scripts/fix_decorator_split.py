@@ -36,6 +36,7 @@ SKIP_DIR_CONTAINS = (
     "/build/",
 )
 
+
 def fix_file(p: Path, *, check_only: bool = False) -> bool:
     text = p.read_text(encoding="utf-8", errors="ignore")
     lines = text.splitlines(keepends=True)
@@ -67,6 +68,7 @@ def fix_file(p: Path, *, check_only: bool = False) -> bool:
         p.write_text("".join(out), encoding="utf-8")
     return changed
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fix decorator splits and stray shebangs")
     parser.add_argument("--check", action="store_true", help="Report-only; do not modify files")
@@ -89,6 +91,7 @@ def main() -> None:
         print(f"Done. Would fix: {reported}")
     else:
         print(f"Done. Files fixed: {touched}")
+
 
 if __name__ == "__main__":
     main()

@@ -32,8 +32,10 @@ import sys
 
 # === TESTY / TESTS ===
 
+
 def _repo() -> Path:
     return Path(__file__).resolve().parents[2]
+
 
 def _run(payload: dict) -> int:
     proc = subprocess.run(
@@ -44,10 +46,12 @@ def _run(payload: dict) -> int:
     )
     return proc.returncode
 
+
 def test_roles_gate_pack_allows_publish_for_afv_in_lex() -> None:
     # Governance pack allows AFV to publish in lex domain
     payload = {"user": {"role": "AFV"}, "action": "publish", "resource": {"kind": "pco", "scope": "lex"}}
     assert _run(payload) == 0
+
 
 def test_roles_gate_denies_merge_for_non_privileged() -> None:
     for role in ["AFV", "AVR", "ATS"]:

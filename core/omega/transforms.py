@@ -147,10 +147,12 @@ _DOMAIN_MAPS: dict[str, dict[str, str]] = {
 
 # === MODELE / MODELS ===
 
+
 @dataclass(slots=True)
 class GaugeDrift:
     token_count_delta: int
     jaccard_drift: float  # 0.0 == identical, 1.0 == disjoint
+
 
 @dataclass(slots=True)
 class EntropyDrift:
@@ -158,11 +160,14 @@ class EntropyDrift:
     token_entropy_after: float
     entropy_drift: float  # absolute difference
 
+
 @dataclass(slots=True)
 class EntityDrift:
     entity_jaccard_drift: float  # 0.0 == identical entities, 1.0 == disjoint
 
+
 # === LOGIKA / LOGIC ===
+
 
 def _tokenize(text: str) -> list[str]:
     text = text.strip()
@@ -176,6 +181,7 @@ def _tokenize(text: str) -> list[str]:
     tokens = _TOKEN_RE.findall(text)
     toks = [t.lower() for t in tokens]
     return [_CANON_MAP.get(t, t) for t in toks]
+
 
 def compute_gauge_drift(before: str, after: str) -> GaugeDrift:
     """Compute simple drift metrics between two texts.
@@ -197,6 +203,7 @@ def compute_gauge_drift(before: str, after: str) -> GaugeDrift:
     drift = 1.0 - jaccard
     return GaugeDrift(token_count_delta=delta, jaccard_drift=round(drift, 6))
 
+
 def _token_entropy(tokens: list[str]) -> float:
     if not tokens:
         return 0.0
@@ -210,6 +217,7 @@ def _token_entropy(tokens: list[str]) -> float:
         ent -= p * math.log(p + 1e-12, 2)
     return ent
 
+
 def compute_entropy_drift(before: str, after: str) -> EntropyDrift:
     tb = _tokenize(before)
     ta = _tokenize(after)
@@ -218,6 +226,7 @@ def compute_entropy_drift(before: str, after: str) -> EntropyDrift:
     return EntropyDrift(
         token_entropy_before=round(eb, 6), token_entropy_after=round(ea, 6), entropy_drift=round(abs(ea - eb), 6)
     )
+
 
 def _extract_entities(text: str) -> set[str]:
     """Heuristic NER-like extraction robust to punctuation and casing.
@@ -233,6 +242,7 @@ def _extract_entities(text: str) -> set[str]:
         elif len(t) >= 3 and t not in stop:
             ents.add(t)
     return ents
+
 
 def compute_entity_drift(before: str, after: str) -> EntityDrift:
     """
@@ -267,6 +277,7 @@ def compute_entity_drift(before: str, after: str) -> EntityDrift:
     jd = 1.0 - (inter / union)
     return EntityDrift(entity_jaccard_drift=round(jd, 6))
 
+
 def normalize_text(text: str, lang: str = "pl") -> str:
     """Language‑aware light normalization (case, whitespace, quotes/dashes).
 
@@ -282,6 +293,7 @@ def normalize_text(text: str, lang: str = "pl") -> str:
     # lowercasing conservatively (Polish diacritics preserved)
     txt = txt.lower()
     return txt
+
 
 def apply_transform(text: str, transform: str = "identity", **params: Any) -> tuple[str, GaugeDrift]:
     """Apply a named transform and return (result, drift_metrics)."""
@@ -304,10 +316,12 @@ def apply_transform(text: str, transform: str = "identity", **params: Any) -> tu
         return out, compute_gauge_drift(text, out)
     if transform == "jurisdiction_map":
         # Heuristic mapping marker (keeps token sets closer): annotate known legal terms
+        # Idempotent: do not re-annotate tokens already marked with '§'
         keywords = ["ustawa", "rozporządzenie", "kodeks"]
         out = text
         for kw in keywords:
-            pat = rf"\b{re.escape(kw)}\b"
+            # negative lookahead to avoid double annotation
+            pat = rf"\b{re.escape(kw)}\b(?!§)"
             out = re.sub(pat, lambda m: m.group(0) + "§", out, flags=re.IGNORECASE)
         return out, compute_gauge_drift(text, out)
     if transform == "domain_map":
@@ -321,6 +335,7 @@ def apply_transform(text: str, transform: str = "identity", **params: Any) -> tu
         return out, compute_gauge_drift(text, out)
     # Unknown transform → no‑op
     return text, compute_gauge_drift(text, text)
+
 
 # === I/O / ENDPOINTS ===
 

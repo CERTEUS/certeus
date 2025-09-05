@@ -21,6 +21,7 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+
 def test_install_enable_list_and_details_roundtrip() -> None:
     c = TestClient(app)
     # List packs

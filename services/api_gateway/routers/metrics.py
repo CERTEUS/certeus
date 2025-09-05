@@ -38,6 +38,7 @@ router = APIRouter(prefix="", tags=["metrics"])
 
 # === I/O / ENDPOINTS ===
 
+
 @router.get("/metrics")
 def metrics() -> Response:
     # Use the default global registry
@@ -45,5 +46,6 @@ def metrics() -> Response:
     data = generate_latest()  # type: ignore[arg-type]
 
     return Response(content=data, media_type=CONTENT_TYPE_LATEST, headers={"Cache-Control": "no-store"})
+
 
 # === TESTY / TESTS ===

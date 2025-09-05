@@ -58,6 +58,7 @@ from starlette.requests import Request  # FastAPI re-exports this class
 
 from services.api_gateway.limits import enforce_limits, get_tenant_id, set_tenant_quota
 
+
 def _make_request(headers: dict[str, str] | None = None) -> Request:
     """
 
@@ -77,6 +78,7 @@ def _make_request(headers: dict[str, str] | None = None) -> Request:
 
     return Request(scope)  # type: ignore[arg-type]
 
+
 def test_get_tenant_id_header_and_fallback() -> None:
     """
 
@@ -93,6 +95,7 @@ def test_get_tenant_id_header_and_fallback() -> None:
     r2 = _make_request()
 
     assert get_tenant_id(r2) == "anonymous"
+
 
 def test_enforce_limits_success_and_exhaustion() -> None:
     """

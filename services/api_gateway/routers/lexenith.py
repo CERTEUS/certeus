@@ -31,35 +31,43 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
+
 class MotionRequest(BaseModel):
     case_id: str
     pattern_id: str = Field(pattern=r"^(motion-dismiss|motion-summary)$")
     facts: dict[str, Any] | None = None
     citations: list[str] = Field(default_factory=list)
 
+
 class MotionResponse(BaseModel):
     document: str
     citations: list[dict[str, str]]
+
 
 class CitationItem(BaseModel):
     text: str
     weight: float = 1.0
 
+
 class CLDFRequest(BaseModel):
     citations: list[CitationItem]
     damping: float | None = Field(default=None, ge=0.0, le=1.0)
+
 
 class CLDFResponse(BaseModel):
     citations: list[dict[str, Any]]
     normalized: bool
 
+
 class WhyNotRequest(BaseModel):
     claim: str
     counter_arguments: list[str]
 
+
 class WhyNotResponse(BaseModel):
     ok: bool
     trace_uri: str
+
 
 # === LOGIKA / LOGIC ===
 
@@ -76,8 +84,10 @@ _MOTIONS: dict[str, str] = {
     ),
 }
 
+
 def _hash_text(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
 
 @router.post("/motion/generate", response_model=MotionResponse)
 async def motion_generate(req: MotionRequest, request: Request, response: Response) -> MotionResponse:
@@ -103,6 +113,7 @@ async def motion_generate(req: MotionRequest, request: Request, response: Respon
 
     return MotionResponse(document=doc, citations=cites)
 
+
 @router.post("/cldf/renormalize", response_model=CLDFResponse)
 async def cldf_renormalize(req: CLDFRequest, request: Request) -> CLDFResponse:
     from services.api_gateway.limits import enforce_limits
@@ -120,6 +131,7 @@ async def cldf_renormalize(req: CLDFRequest, request: Request) -> CLDFResponse:
         out.append({"text": it.text, "hash": h, "authority_score": round(p, 6)})
     return CLDFResponse(citations=out, normalized=True)
 
+
 @router.post("/why_not/export", response_model=WhyNotResponse)
 async def why_not_export(req: WhyNotRequest, request: Request) -> WhyNotResponse:
     from services.api_gateway.limits import enforce_limits
@@ -130,6 +142,7 @@ async def why_not_export(req: WhyNotRequest, request: Request) -> WhyNotResponse
     h = _hash_text(json.dumps(payload, ensure_ascii=False, sort_keys=True))
     trace_uri = f"pfs://why-not/{h}"
     return WhyNotResponse(ok=True, trace_uri=trace_uri)
+
 
 # === I/O / ENDPOINTS ===
 

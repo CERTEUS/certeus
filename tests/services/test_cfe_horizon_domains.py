@@ -14,6 +14,7 @@ EN: Domain-aware heuristics tests for /v1/cfe/horizon (domain + severity).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

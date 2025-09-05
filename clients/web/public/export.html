@@ -1,0 +1,112 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/export.html                        |
+| ROLE: Export UI (LEX letters / reports).                    |
+| PLIK: clients/web/public/export.html                        |
+| ROLA: UI eksportu (pisma LEX / raporty).                    |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Export</title>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background: #111315; color: #f2f2f3; }
+      .container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+      .card { background: #181b20; border: 1px solid #2a2d33; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+      h1 { margin: 0 0 12px; font-size: 22px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      .muted { color: #9aa0a6; }
+      .pill { display: inline-block; padding: 4px 8px; border: 1px solid #2a2d33; border-radius: 999px; background: #20242a; }
+      input, select, textarea { background: #1a1c20; border: 1px solid #2a2d33; color: #f2f2f3; padding: 8px 10px; border-radius: 10px; }
+      input[type="text"] { width: 100%; }
+      textarea { width: 100%; min-height: 160px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .btn { background: #1a1c20; border: 1px solid #2a2d33; color: #f2f2f3; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+      .btn:hover { background: #20242a; }
+      pre { background: #0f1115; border: 1px solid #2a2d33; padding: 12px; border-radius: 8px; overflow: auto; max-height: 320px; }
+      nav a { color: #d5e3ff; text-decoration: none; margin-right: 8px; }
+      nav a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: space-between; align-items: baseline">
+          <nav aria-label="Nawigacja">
+            <a href="/app/public/index.html">Cockpit</a>
+            <a href="/app/public/marketplace.html">Marketplace</a>
+            <a href="/app/public/chatops.html">ChatOps</a>
+            <a href="/app/public/mailops.html">MailOps</a>
+          </nav>
+          <div class="row">
+            <label for="lang" class="muted">Lang</label>
+            <select id="lang" aria-label="Language select" class="btn"><option value="pl" selected>PL</option><option value="en">EN</option></select>
+          </div>
+        </div>
+        <div class="card">
+          <h1 id="title">Export • Pisma / Raport</h1>
+          <p id="subtitle" class="muted">Wybierz szablon, uzupełnij pola i wyeksportuj jako raport/plik/JSON.</p>
+          <div class="row">
+            <label for="case_id">case_id</label>
+            <input id="case_id" type="text" value="lex-case-001" />
+            <label for="fmt">format</label>
+            <select id="fmt"><option value="report" selected>report</option><option value="file">file (JSON)</option><option value="json">json (bez pliku)</option></select>
+            <label><input type="checkbox" id="ledger" /> <span class="muted">write_ledger</span></label>
+            <span class="muted"><span data-i18n="status">Status</span>: <span id="st" class="pill">-</span></span>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <label for="tpl">Szablon</label>
+            <select id="tpl" aria-label="Template select">
+              <option value="motion" selected>LEX: Wniosek / Motion</option>
+              <option value="appeal">LEX: Odwołanie / Appeal</option>
+              <option value="custom">Własny (custom)</option>
+            </select>
+            <button id="apply" class="btn">Zastosuj szablon</button>
+          </div>
+          <div style="margin-top:10px">
+            <label for="analysis">analysis_result (JSON)</label>
+            <textarea id="analysis" aria-label="analysis_result JSON"></textarea>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button id="run" class="btn" data-i18n="export">Eksportuj</button>
+            <button id="copyCurl" class="btn">Copy curl</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Wynik</h2>
+          <pre id="out" aria-live="polite"></pre>
+          <h2>PCO headers</h2>
+          <pre id="pco"></pre>
+        </div>
+      </div>
+    </main>
+    <script>
+      const I18N={ pl:{ title:'Export • Pisma / Raport', subtitle:'Wybierz szablon, uzupełnij pola i wyeksportuj jako raport/plik/JSON.', export:'Eksportuj', status:'Status' }, en:{ title:'Export • Letters / Report', subtitle:'Pick a template, fill fields and export as report/file/JSON.', export:'Export', status:'Status' } };
+      const TEMPLATES={
+        motion: { type:'lex.letter.motion', title:'Wniosek dowodowy', recipient:'Sąd Okręgowy w …', body:'Wnoszę o przeprowadzenie dowodu …', cites:['Dz.U. 2024 poz. …'], PCO_hint:'CLDF/LEX-FONTARIUS ready' },
+        appeal: { type:'lex.letter.appeal', title:'Odwołanie', recipient:'Sąd Apelacyjny w …', body:'Zaskarżam orzeczenie …', cites:['SN III CZP …'], PCO_hint:'hash-cytaty w PCO' },
+        custom: { note:'Edytuj własne pola JSON poniżej' }
+      };
+      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return p==='en'||p==='pl'?p:'pl'; }
+      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title').textContent=d.title; document.getElementById('subtitle').textContent=d.subtitle; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); }; }
+      function fillTemplate(){ const v=document.getElementById('tpl').value; const d=TEMPLATES[v]||{}; document.getElementById('analysis').value = JSON.stringify(d, null, 2); }
+      function buildBody(){ return { case_id: (document.getElementById('case_id').value||'case-x'), analysis_result: JSON.parse(document.getElementById('analysis').value||'{}'), fmt: document.getElementById('fmt').value, write_ledger: document.getElementById('ledger').checked }; }
+      function buildCurl(body){ const s=JSON.stringify(body); return `curl -sS -X POST http://127.0.0.1:8000/v1/export -H 'content-type: application/json' -d '${s.replace(/'/g, "'\\''")}'`; }
+      async function run(){ let body; try{ body=buildBody(); }catch(e){ alert('Błędny JSON w analysis_result'); return; } document.getElementById('st').textContent='…'; try{ const r=await fetch('/v1/export',{ method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body) }); const txt=await r.text(); document.getElementById('out').textContent=txt; const pco={}; (r.headers||new Headers()).forEach((v,k)=>{ if(k.toLowerCase().startsWith('x-certeus-pco-')) pco[k]=v; }); document.getElementById('pco').textContent=JSON.stringify(pco,null,2); document.getElementById('st').textContent=r.ok? 'OK':'ERR'; document.getElementById('copyCurl').onclick=()=>navigator.clipboard.writeText(buildCurl(body)); }catch(e){ document.getElementById('st').textContent='ERR'; document.getElementById('out').textContent=String(e); } }
+      applyI18n(); fillTemplate(); document.getElementById('apply').addEventListener('click', fillTemplate); document.getElementById('run').addEventListener('click', run);
+    </script>
+    <style>
+      :focus-visible { outline: 2px solid #8a8f98; outline-offset: 2px; }
+      .sr-only { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+      .sr-only-focusable:focus { position: static; width: auto; height: auto; padding: 8px 10px; margin: 6px; background: #181b20; border: 2px solid #8a8f98; border-radius: 8px; }
+    </style>
+  </body>
+</html>
+

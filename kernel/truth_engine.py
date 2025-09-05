@@ -38,8 +38,10 @@ from .mismatch_protocol import handle_mismatch  # ✅ import at top to avoid E40
 
 # === MODELE / MODELS ===
 
+
 class _Z3AdapterProto(Protocol):
     def solve(self, assertions: list[z3.ExprRef]) -> dict[str, Any]: ...
+
 
 class DualCoreVerifier:
     """Dual-Core verifier: Core-1(Z3) + Core-2(stub)."""
@@ -105,6 +107,7 @@ class DualCoreVerifier:
             )
 
         return result_z3
+
 
 # === LOGIKA / LOGIC ===
 

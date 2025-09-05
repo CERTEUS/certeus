@@ -29,6 +29,7 @@ from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
 
+
 def test_openapi_contains_key_endpoints() -> None:
     from services.api_gateway.main import app
 

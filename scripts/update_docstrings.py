@@ -56,6 +56,7 @@ PLACEHOLDER_TOKENS = (
 
 # === LOGIKA / LOGIC ===
 
+
 def _contains_placeholder(doc: str | None) -> bool:
     if not doc:
         return False
@@ -71,6 +72,7 @@ def _contains_placeholder(doc: str | None) -> bool:
         return True
 
     return any(tok.lower() in low for tok in PLACEHOLDER_TOKENS)
+
 
 def describe(rel: str) -> tuple[str, str]:
     r = rel.replace("\\", "/")
@@ -216,6 +218,7 @@ def describe(rel: str) -> tuple[str, str]:
         "CERTEUS project module (generic description).",
     )
 
+
 def replace_module_docstring(text: str, new_pl: str, new_en: str) -> str:
     """Replace the first module docstring if it matches placeholder."""
 
@@ -253,6 +256,7 @@ def replace_module_docstring(text: str, new_pl: str, new_en: str) -> str:
 
     return "".join(lines[:start] + [new_doc] + lines[end + 1 :])
 
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
 
@@ -281,6 +285,7 @@ def main() -> None:
                 print(f"[DOCSTRING] {rel}")
 
     print(f"Done. Updated docstrings: {updated}")
+
 
 if __name__ == "__main__":
     main()

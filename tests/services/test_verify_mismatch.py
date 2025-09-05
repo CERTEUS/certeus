@@ -30,6 +30,7 @@ from services.api_gateway.main import app
 
 # === TEST / TEST ===
 
+
 def test_verify_returns_409_on_mismatch(monkeypatch):
     """
 

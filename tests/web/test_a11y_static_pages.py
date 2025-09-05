@@ -28,6 +28,7 @@ import pytest
 
 PUB_DIR = Path(__file__).resolve().parents[3] / "clients" / "web" / "public"
 
+
 def _html_files() -> list[Path]:
     files: list[Path] = []
     for p in PUB_DIR.glob("*.html"):
@@ -35,6 +36,7 @@ def _html_files() -> list[Path]:
             continue
         files.append(p)
     return files
+
 
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_has_doctype_html_lang_title_viewport(path: Path) -> None:
@@ -49,6 +51,7 @@ def test_has_doctype_html_lang_title_viewport(path: Path) -> None:
     # viewport
     assert re.search(r"<meta[^>]+name=\"viewport\"", text, flags=re.IGNORECASE), "viewport meta required"
 
+
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_has_h1_and_links_have_text_or_label(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
@@ -62,11 +65,13 @@ def test_has_h1_and_links_have_text_or_label(path: Path) -> None:
             # Fallback: allow aria-label or title on <a>
             assert re.search(r"<a[^>]+(aria-label|title)=\"[^\"]+\"", text, flags=re.IGNORECASE)
 
+
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_has_language_selector(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     # expect a select#lang for i18n switching
     assert re.search(r"<select[^>]+id=\"lang\"", text, flags=re.IGNORECASE)
+
 
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_images_have_alt_when_present(path: Path) -> None:
@@ -74,6 +79,7 @@ def test_images_have_alt_when_present(path: Path) -> None:
     imgs = re.findall(r"<img\s+([^>]*?)>", text, flags=re.IGNORECASE)
     for attrs in imgs:
         assert re.search(r"\balt=\"[^\"]*\"", attrs, flags=re.IGNORECASE), "<img> must have alt attribute"
+
 
 # === I/O / ENDPOINTS ===
 

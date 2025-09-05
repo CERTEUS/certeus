@@ -30,6 +30,7 @@ from typing import Any
 
 # === LOGIKA / LOGIC ===
 
+
 def _read_or_default(input_path: str | None) -> dict[str, Any]:
     # Domyślne, przyjazne dla CI wartości
     default = {"gauge": {"holonomy_drift": 0.0}}
@@ -44,6 +45,7 @@ def _read_or_default(input_path: str | None) -> dict[str, Any]:
         # W CI preferujemy tolerować brak/niepoprawny plik i użyć domyślnych metryk
         return default
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--epsilon", type=float, required=True)
@@ -55,6 +57,7 @@ def main() -> int:
     ok = drift <= float(args.epsilon)
     print(f"Gauge holonomy_drift={drift} epsilon={args.epsilon} -> {'OK' if ok else 'FAIL'}")
     return 0 if ok else 1
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

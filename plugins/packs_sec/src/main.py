@@ -32,7 +32,9 @@ class _Pack:
             required = set(pol.get("required", []))
             provided = set(pol.get("provided", []))
             missing = sorted(list(required - provided))
-            return {"ok": not missing, "result": {"name": name, "missing": missing}}
+            result = {"name": name, "missing": missing, "ok": not missing}
+            pco = {"sec.policy.audit": result}
+            return {"result": result, "pco": pco}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 
 

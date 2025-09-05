@@ -36,6 +36,7 @@ client = TestClient(app)
 
 # === TESTY / TESTS ===
 
+
 def test_motion_generate_pco_header() -> None:
     r = client.post(
         "/v1/lexenith/motion/generate",
@@ -52,6 +53,7 @@ def test_motion_generate_pco_header() -> None:
     assert isinstance(body.get("document"), str)
     assert body.get("citations") and body["citations"][0]["hash"]
 
+
 def test_cldf_renormalize() -> None:
     arr = [
         {"text": "I CSK 123/20", "weight": 1.0},
@@ -64,6 +66,7 @@ def test_cldf_renormalize() -> None:
     cites = body.get("citations")
     assert isinstance(cites, list) and len(cites) == 2
     assert "authority_score" in cites[0]
+
 
 def test_why_not_export() -> None:
     r = client.post(

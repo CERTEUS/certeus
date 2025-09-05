@@ -44,6 +44,7 @@ from services.proofgate.app import app
 
 client = TestClient(app)
 
+
 def _minimal_pco(case_id: str, with_counsel: bool = True) -> dict:
     pco = {
         "case_id": case_id,
@@ -63,6 +64,7 @@ def _minimal_pco(case_id: str, with_counsel: bool = True) -> dict:
 
     return pco
 
+
 def test_publish_when_policy_and_budget_ok_and_counsel_present() -> None:
     pco = _minimal_pco("case-123", with_counsel=True)
 
@@ -80,6 +82,7 @@ def test_publish_when_policy_and_budget_ok_and_counsel_present() -> None:
 
     assert any(rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"] for rec in records)
 
+
 def test_abstain_when_missing_counsel_signature() -> None:
     pco = _minimal_pco("case-124", with_counsel=False)
 
@@ -88,6 +91,7 @@ def test_abstain_when_missing_counsel_signature() -> None:
     assert r.status_code == 200, r.text
 
     assert r.json()["status"] == "ABSTAIN"
+
 
 def test_abstain_when_sources_missing_digest_or_retrieved_at() -> None:
     pco = _minimal_pco("case-125", with_counsel=True)
@@ -100,6 +104,7 @@ def test_abstain_when_sources_missing_digest_or_retrieved_at() -> None:
 
     assert r.json()["status"] == "ABSTAIN"
 
+
 def test_abstain_when_solver_not_allowed() -> None:
     pco = _minimal_pco("case-126", with_counsel=True)
 
@@ -110,6 +115,7 @@ def test_abstain_when_solver_not_allowed() -> None:
     assert r.status_code == 200, r.text
 
     assert r.json()["status"] == "ABSTAIN"
+
 
 def test_abstain_when_any_risk_exceeds() -> None:
     pco = {
@@ -122,6 +128,7 @@ def test_abstain_when_any_risk_exceeds() -> None:
 
     assert r.json()["status"] == "ABSTAIN"
 
+
 def test_pending_when_no_budget_but_good_risk() -> None:
     pco = _minimal_pco("case-200", with_counsel=False)
 
@@ -130,6 +137,7 @@ def test_pending_when_no_budget_but_good_risk() -> None:
     assert r.status_code == 200, r.text
 
     assert r.json()["status"] == "PENDING"
+
 
 def test_conditional_when_missing_risk() -> None:
     pco = {"something_else": True}

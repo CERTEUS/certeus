@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from scripts.gates.marketplace_policy_gate import check
 
+
 def test_marketplace_policy_gate_runs() -> None:
     violations, warnings = check()
     assert isinstance(violations, list)

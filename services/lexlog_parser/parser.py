@@ -67,6 +67,7 @@ logger = logging.getLogger(__name__)
 
 # └─────────────────────────────────────────────────────────────────────┘
 
+
 @dataclass(frozen=True)
 class Define:
     """
@@ -89,6 +90,7 @@ class Define:
 
     type: str | None = None
 
+
 @dataclass(frozen=True)
 class Premise:
     """
@@ -110,6 +112,7 @@ class Premise:
     id: str
 
     title: str | None = None
+
 
 @dataclass(frozen=True)
 class RuleDecl:
@@ -137,6 +140,7 @@ class RuleDecl:
 
     conclusion: str | None = None
 
+
 @dataclass(frozen=True)
 class Conclusion:
     """
@@ -163,6 +167,7 @@ class Conclusion:
 
     assert_expr: str | None = None  # CRITICAL: Required by tests!
 
+
 @dataclass(frozen=True)
 class LexAst:
     """
@@ -183,6 +188,7 @@ class LexAst:
 
     conclusions: list[Conclusion] = field(default_factory=list)  # type: ignore[arg-type]
 
+
 # ┌─────────────────────────────────────────────────────────────────────┐
 
 # │                    CANONICAL ID NORMALIZATION                       │
@@ -200,6 +206,7 @@ _CANONICAL_ID_MAP: dict[str, str] = {
     "P_CEL_OSIAGNIECIA_KORZYSCI_MAJATKOWEJ": "P_CEL",
     "P_NIEKORZYSTNE_ROZPORZADZENIE_MIENIEM": "P_ROZPORZADZENIE",
 }
+
 
 def _canonicalize_id(identifier: str) -> str:
     """
@@ -223,6 +230,7 @@ def _canonicalize_id(identifier: str) -> str:
     cleaned = identifier.strip()
 
     return _CANONICAL_ID_MAP.get(cleaned, cleaned)
+
 
 # ┌─────────────────────────────────────────────────────────────────────┐
 
@@ -263,6 +271,7 @@ _PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.
 # │                      MAIN PARSING FUNCTION                          │
 
 # └─────────────────────────────────────────────────────────────────────┘
+
 
 def parse_lexlog(text: str) -> LexAst:
     """
@@ -429,11 +438,13 @@ def parse_lexlog(text: str) -> LexAst:
 
     return LexAst(defines=defines, premises=premises, rules=rules, conclusions=conclusions)
 
+
 # ┌─────────────────────────────────────────────────────────────────────┐
 
 # │                    LEGACY COMPATIBILITY STUB                        │
 
 # └─────────────────────────────────────────────────────────────────────┘
+
 
 class LexlogParser:
     """
@@ -526,6 +537,7 @@ class LexlogParser:
             return f"z3.And({', '.join(define_names)})"
 
         return "True"
+
 
 # ┌─────────────────────────────────────────────────────────────────────┐
 

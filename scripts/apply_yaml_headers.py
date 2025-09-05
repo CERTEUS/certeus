@@ -49,10 +49,12 @@ SKIP_DIR_CONTAINS = (
 
 # === LOGIKA / LOGIC ===
 
+
 def has_header(text: str) -> bool:
     head = "\n".join(text.splitlines()[:10]).lower()
 
     return "certeus" in head and "file:" in head
+
 
 def build_header(rel: str) -> str:
     return (
@@ -65,6 +67,7 @@ def build_header(rel: str) -> str:
         "# | ROLA: Manifest YAML projektu.                               |\n"
         "# +-------------------------------------------------------------+\n"
     )
+
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
@@ -89,6 +92,7 @@ def main() -> None:
             print(f"[UPDATED] {rel_print}")
 
     print(f"Done. YAML files updated: {total}")
+
 
 if __name__ == "__main__":
     main()

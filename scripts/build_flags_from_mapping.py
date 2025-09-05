@@ -51,6 +51,7 @@ from services.lexlog_parser.parser import parse_lexlog
 
 # === LOGIKA / LOGIC ===
 
+
 def _to_set(xs: object | None) -> set[str]:
     """
 
@@ -82,6 +83,7 @@ def _to_set(xs: object | None) -> set[str]:
 
     return out
 
+
 def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> str | None:
     """
 
@@ -101,6 +103,7 @@ def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> str | Non
             return rid
 
     return ids[0]
+
 
 def _call_evaluate(ast: Any, rule_id: str | None, flags: Mapping[str, bool], ctx: Any) -> Any:
     """
@@ -145,6 +148,7 @@ def _call_evaluate(ast: Any, rule_id: str | None, flags: Mapping[str, bool], ctx
         except TypeError:
             return evaluate_rule(ast, flags)  # type: ignore[misc]
 
+
 def _step(
     ast: Any, rule_id: str | None, flags: MutableMapping[str, bool], ctx: Any
 ) -> tuple[bool, set[str], set[str], Any]:
@@ -165,6 +169,7 @@ def _step(
     failing = _to_set(getattr(res, "failing_excludes", []) or [])
 
     return ok, missing, failing, res
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -251,6 +256,7 @@ def main() -> None:
     print("[OK] True:", sorted([k for k, v in flags.items() if v]))
 
     print("[OK] False:", sorted([k for k, v in flags.items() if not v]))
+
 
 if __name__ == "__main__":
     main()

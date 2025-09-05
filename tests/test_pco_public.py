@@ -62,11 +62,14 @@ client = TestClient(app)
 
 # ---Bloki----- POMOCNICZE
 
+
 def _b64u(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
 
+
 def _hex(s: str) -> str:
     return sha256(s.encode("utf-8")).hexdigest()
+
 
 def _bundle_hash_hex(smt2_hash: str, lfsc_text: str, drat_text: str | None = None) -> str:
     """Musi odzwierciedlać serwerowe _compute_bundle_hash_hex."""
@@ -80,7 +83,9 @@ def _bundle_hash_hex(smt2_hash: str, lfsc_text: str, drat_text: str | None = Non
 
     return sha256(blob).hexdigest()
 
+
 # ---Bloki----- TESTY
+
 
 def test_get_public_pco_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # GIVEN: środowisko i klucz testowy
@@ -142,6 +147,7 @@ def test_get_public_pco_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     assert "lfsc" in body
 
     assert "signature" in body
+
 
 def test_get_public_pco_validation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))

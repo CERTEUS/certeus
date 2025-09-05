@@ -29,7 +29,9 @@ class _Pack:
         if kind == "text.normalize":
             text = str(payload.get("text") or "")
             norm = " ".join(text.split())
-            return {"ok": True, "result": {"len": len(norm), "text": norm}}
+            result = {"len": len(norm), "text": norm}
+            pco = {"code.text.normalize": {"len": len(norm)}}
+            return {"result": result, "pco": pco}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 
 

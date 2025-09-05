@@ -124,6 +124,12 @@ jobs:
         run: |
           mkdir -p out && echo ok > out/marketplace_ok.txt
 
+      - name: PCO Validation Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/gates/pco_validation_gate.py || true
+          test -f out/pco_validation.json && echo ok > out/pco_validation_ok.txt || true
+
       - name: Plugin Supply-Chain Gate (report-only)
         continue-on-error: true
         run: |
@@ -494,7 +500,7 @@ jobs:
           def _tick(p: str) -> str:
               return '✅' if (repo/'out'/p).exists() else '❌'
           lines.append(f"Gates: style={_tick('style_ok.txt')} lint={_tick('lint_ok.txt')} tests={_tick('tests_ok.txt')} perf={_tick('perf_ok.txt')} slo={_tick('slo_ok.txt')}")
-          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')} • P2P={_tick('p2p_turbulence_ok.txt')} • TenantSLO={_tick('tenant_slo_ok.txt')} • EndpointSLO={_tick('endpoint_slo_ok.txt')} • Trend(Tenant)={_tick('tenant_slo_trend_ok.txt')} • Trend(Endpoint)={_tick('endpoint_slo_trend_ok.txt')} • Burn={_tick('burn_ok.txt')} • Canary={_tick('canary_ok.txt')} • OpenAPI(spec)={_tick('openapi_spec_ok.txt')} • OpenAPI(contract)={_tick('openapi_contract_ok.txt')} • OpenAPI(GET)={_tick('openapi_get_sanity_ok.txt')} • Spectral={_tick('openapi_spectral_ok.txt')}")
+          lines.append(f"Marketplace: policy={_tick('marketplace_ok.txt')} • PCOValidation={_tick('pco_validation_ok.txt')} • A11y={_tick('a11y_ok.txt')} • Compliance={_tick('compliance_ok.txt')} • GameDay={_tick('gameday_ok.txt')} • P2P={_tick('p2p_turbulence_ok.txt')} • TenantSLO={_tick('tenant_slo_ok.txt')} • EndpointSLO={_tick('endpoint_slo_ok.txt')} • Trend(Tenant)={_tick('tenant_slo_trend_ok.txt')} • Trend(Endpoint)={_tick('endpoint_slo_trend_ok.txt')} • Burn={_tick('burn_ok.txt')} • Canary={_tick('canary_ok.txt')} • OpenAPI(spec)={_tick('openapi_spec_ok.txt')} • OpenAPI(contract)={_tick('openapi_contract_ok.txt')} • OpenAPI(GET)={_tick('openapi_get_sanity_ok.txt')} • Spectral={_tick('openapi_spectral_ok.txt')}")
           (repo/'out'/'ci_pr_comment.md').write_text('\n'.join(lines), encoding='utf-8')
           PY
 

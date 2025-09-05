@@ -35,6 +35,7 @@ import re
 
 _SAFE_RE = re.compile(r"[^A-Za-z0-9._-]+")
 
+
 def _sanitize(s: str) -> str:
     """
     PL/EN: Replace disallowed characters with '-', keep alnum, dot, underscore and dash.
@@ -42,6 +43,7 @@ def _sanitize(s: str) -> str:
     s = s.strip()
     s = s.replace(" ", "-")
     return _SAFE_RE.sub("-", s)
+
 
 def mail_attachment_uri(mail_id: str, filename: str) -> str:
     """
@@ -51,6 +53,7 @@ def mail_attachment_uri(mail_id: str, filename: str) -> str:
     mid = _sanitize(mail_id or "mail")
     fname = _sanitize(filename or "file")
     return f"pfs://mail/{mid}/{fname}"
+
 
 # === I/O / ENDPOINTS ===
 

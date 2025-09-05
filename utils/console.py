@@ -71,6 +71,7 @@ from __future__ import annotations
 import sys
 from typing import Protocol, cast, runtime_checkable
 
+
 @runtime_checkable
 class StreamLike(Protocol):
     @property
@@ -82,6 +83,7 @@ class StreamLike(Protocol):
 
     def isatty(self) -> bool: ...
 
+
 def _normalize_stream(stream: StreamLike | None, *, fallback: object) -> StreamLike:
     """Return a non-None stream that satisfies StreamLike (runtime-checked)."""
 
@@ -91,6 +93,7 @@ def _normalize_stream(stream: StreamLike | None, *, fallback: object) -> StreamL
     # sys.stdout/sys.stderr spełniają protokół w runtime; rzutujemy jawnie.
 
     return cast(StreamLike, fallback)
+
 
 def ascii_safe(stream: StreamLike | None = None) -> bool:
     """
@@ -111,6 +114,7 @@ def ascii_safe(stream: StreamLike | None = None) -> bool:
     enc_low = enc.lower()
 
     return enc_low == "ascii" or enc_low.startswith("utf")
+
 
 def print_safe(text: str, stream: StreamLike | None = None) -> None:
     """
@@ -140,6 +144,7 @@ def print_safe(text: str, stream: StreamLike | None = None) -> None:
 
         return
 
+
 def _color(prefix: str, code: str, *, stream: StreamLike) -> str:
     """Koloruj prefiks tylko, jeśli TTY; inaczej zwróć zwykły tekst."""
 
@@ -148,6 +153,7 @@ def _color(prefix: str, code: str, *, stream: StreamLike) -> str:
 
     return f"{prefix} "
 
+
 def info(msg: str, stream: StreamLike | None = None) -> None:
     s = _normalize_stream(stream, fallback=sys.stdout)
 
@@ -155,12 +161,14 @@ def info(msg: str, stream: StreamLike | None = None) -> None:
 
     print_safe(prefix + msg, stream=s)
 
+
 def success(msg: str, stream: StreamLike | None = None) -> None:
     s = _normalize_stream(stream, fallback=sys.stdout)
 
     prefix = _color("[SUCCESS]", "92", stream=s)
 
     print_safe(prefix + msg, stream=s)
+
 
 def error(msg: str, stream: StreamLike | None = None) -> None:
     s = _normalize_stream(stream, fallback=sys.stderr)

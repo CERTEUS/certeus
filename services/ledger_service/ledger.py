@@ -45,6 +45,7 @@ from hashlib import sha256
 import json
 from typing import Any
 
+
 @dataclass
 class LedgerRecord:
     event_id: int
@@ -60,6 +61,7 @@ class LedgerRecord:
     chain_prev: str | None
 
     chain_self: str
+
 
 class Ledger:
     def __init__(self) -> None:
@@ -144,6 +146,7 @@ class Ledger:
             "chain_valid": True,
         }
 
+
 def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
     if not include_timestamp and "timestamp" in data:
         work = {k: v for k, v in data.items() if k != "timestamp"}
@@ -153,11 +156,14 @@ def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> 
 
     return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
+
 def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
     return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
 
+
 def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
     return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
+
 
 # Singleton (optional)
 

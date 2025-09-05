@@ -25,6 +25,7 @@ import json
 from pathlib import Path
 import time
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-rto-sec", type=int, default=1800)
@@ -64,6 +65,7 @@ def main() -> int:
         return 1
     print(f"DR Drill: OK rto={rto:.2f}s rpo={rpo:.0f}s")
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

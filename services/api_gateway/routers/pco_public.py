@@ -66,10 +66,12 @@ FORBIDDEN_KEYS = {
 
 # === MODELE / MODELS ===
 
+
 class MerkleStep(BaseModel):
     sibling: str  # hex
 
     dir: str  # "L" or "R"
+
 
 class PublicPCO(BaseModel):
     rid: str = Field(..., min_length=3)
@@ -91,6 +93,7 @@ class PublicPCO(BaseModel):
 
         return v.lower()
 
+
 # === LOGIKA / LOGIC ===
 
 DEFAULT_BUNDLE_DIR_FALLBACK = Path("./data/public_pco")
@@ -109,20 +112,24 @@ router = APIRouter(prefix="/pco/public", tags=["pco"])
 
 # tests/test_pco_public.py importuje te symbole z tego modułu
 
+
 def _hex(s: str) -> str:
     """SHA-256 hex of UTF-8 text (alias pod testy)."""
 
     return sha256_hex(s)
+
 
 def _b64u(data: bytes) -> str:
     """Base64URL bez '=' (alias pod testy)."""
 
     return b64u_encode(data)
 
+
 def _bundle_hash_hex(smt2_hash_hex: str, lfsc_text: str, drat_text: str | None = None) -> str:
     """Alias pod testy → wywołuje kanoniczną funkcję."""
 
     return canonical_bundle_hash_hex(smt2_hash_hex, lfsc_text, drat_text)
+
 
 def _canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
     """Alias pod testy → wywołuje kanoniczną funkcję."""
@@ -135,14 +142,17 @@ def _canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
         merkle_root_hex=merkle_root_hex,
     )
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 
 # zero-PII: prosta denylista kluczy
+
 
 def _bundle_dir() -> Path:
     """Resolve bundle dir at call time, honoring current ENV."""
 
     return Path(os.getenv("PROOF_BUNDLE_DIR") or DEFAULT_BUNDLE_DIR_FALLBACK)
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -152,8 +162,10 @@ def _bundle_dir() -> Path:
 
 # MERKLE helpers
 
+
 def _h(b: bytes) -> bytes:
     return hashlib.sha256(b).digest()
+
 
 def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
     # Pusta ścieżka ⇒ root == leaf (dokładnie jak w teście)
@@ -176,6 +188,7 @@ def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
             raise HTTPException(status_code=400, detail=f"Invalid merkle step.dir: {step.dir}")
 
     return cur.hex()
+
 
 def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
     """
@@ -232,12 +245,15 @@ def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
 
     raise HTTPException(status_code=400, detail="merkle_proof must be list or {path:[...] }")
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 
 # STORAGE
 
+
 def _bundle_path(rid: str) -> Path:
     return _bundle_dir() / f"{rid}.json"
+
 
 def _load_public_bundle_from_fs(rid: str) -> dict[str, Any]:
     p = _bundle_path(rid)
@@ -258,9 +274,11 @@ def _load_public_bundle_from_fs(rid: str) -> dict[str, Any]:
     except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Cannot read bundle: {e}") from e
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 
 # PII
+
 
 def _assert_no_pii(bundle: dict[str, Any]) -> None:
     bad = sorted(set(bundle.keys()) & FORBIDDEN_KEYS)
@@ -268,11 +286,13 @@ def _assert_no_pii(bundle: dict[str, Any]) -> None:
     if bad:
         raise HTTPException(status_code=422, detail=f"PII field(s) present: {bad}")
 
+
 # ──────────────────────────────────────────────────────────────────────────────
 
 # ENTRYPOINT
 
 # === I/O / ENDPOINTS ===
+
 
 @router.get("/{rid}", response_model=PublicPCO)
 def get_public_pco(rid: str, request: Request) -> PublicPCO:
@@ -321,5 +341,6 @@ def get_public_pco(rid: str, request: Request) -> PublicPCO:
     # Pydantic dodatkowo sanityzuje typy/formaty
 
     return PublicPCO(**{**pub, "merkle_proof": path})
+
 
 # === TESTY / TESTS ===

@@ -26,8 +26,10 @@ from typing import Any
 
 from .uri import _sanitize
 
+
 def _root_dir() -> Path:
     return Path(os.getenv("PROOFS_FS_ROOT") or "data/proof_fs").resolve()
+
 
 def materialize_mail_attachment(mail_id: str, filename: str, meta: dict[str, Any] | None = None) -> Path:
     """
@@ -49,6 +51,7 @@ def materialize_mail_attachment(mail_id: str, filename: str, meta: dict[str, Any
     # Idempotent write (overwrite ok for stub)
     p.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return p
+
 
 # === I/O / ENDPOINTS ===
 

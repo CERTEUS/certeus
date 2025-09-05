@@ -50,5 +50,6 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
+
 def test_smoke():
     assert 1 == 1

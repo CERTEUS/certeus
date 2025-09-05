@@ -70,6 +70,7 @@ if missing:
 
 # [BLOCK: VERIFY / WERYFIKUJ]
 
+
 def verify(path: Path, sha_path: Path) -> bool:
     recorded = sha_path.read_text(encoding="utf-8").strip().split()[0]
 
@@ -80,6 +81,7 @@ def verify(path: Path, sha_path: Path) -> bool:
     print(f"{path.name}: {'OK' if ok else 'MISMATCH'} (computed={computed}, recorded={recorded})")
 
     return ok
+
 
 ok1 = verify(d / "z3.drat", d / "z3.drat.sha256")
 

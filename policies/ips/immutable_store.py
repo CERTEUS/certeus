@@ -27,11 +27,13 @@ from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
 
+
 @dataclass(frozen=True)
 class PolicyRecord:
     hash_hex: str
     path: Path
     metadata: dict[str, str]
+
 
 class ImmutablePolicyStore:
     def __init__(self, root: Path) -> None:

@@ -46,10 +46,12 @@ MARKERS = [
 
 # === LOGIKA / LOGIC ===
 
+
 def has_any_marker(text: str) -> bool:
     head = "\n".join(text.splitlines()[:120])
 
     return "# === " in head
+
 
 def insert_after_banner(text: str) -> str | None:
     if has_any_marker(text):
@@ -79,6 +81,7 @@ def insert_after_banner(text: str) -> str | None:
 
     return new_text
 
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
 
@@ -103,6 +106,7 @@ def main() -> None:
                 print(f"[SECTIONS-SHELL] {f.relative_to(root)}")
 
     print(f"Done. Shell files updated: {updated}")
+
 
 if __name__ == "__main__":
     main()

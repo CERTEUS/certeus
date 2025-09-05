@@ -33,6 +33,7 @@ from services.api_gateway.main import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
 
+
 def main() -> int:
     client = TestClient(app)
     r = client.get("/metrics")
@@ -45,6 +46,7 @@ def main() -> int:
         return 1
     print("/metrics: OK")
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

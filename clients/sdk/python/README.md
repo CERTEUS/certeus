@@ -25,6 +25,6 @@ cli.close()
 ```
 
 Notes:
+
 - Uses `httpx` under the hood; set `X-Tenant-ID` header to select tenant.
 - See also `docs/openapi/certeus.v1.json` for full API.
-

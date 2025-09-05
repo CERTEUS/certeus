@@ -29,6 +29,7 @@ from services.proofgate.app import app
 
 # === LOGIKA / LOGIC ===
 
+
 def _pco(domain: str, case_prefix: str, roles: list[str]) -> dict[str, Any]:
     return {
         "domain": domain,
@@ -39,6 +40,7 @@ def _pco(domain: str, case_prefix: str, roles: list[str]) -> dict[str, Any]:
         "reproducibility": {"image": "img", "image_digest": "sha256:deadbeef", "seed": "42"},
         "signatures": [{"role": r} for r in roles],
     }
+
 
 def main() -> int:
     os.environ["FINE_GRAINED_ROLES"] = "1"
@@ -60,6 +62,7 @@ def main() -> int:
 
     print("ProofGate roles smoke: OK")
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

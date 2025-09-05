@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # noqa: E402
 
 from scripts.gates.pack_abi_semver_gate import _abi_for_module  # reuse
 
+
 def _load_manifest(p: Path) -> dict[str, Any]:
     if yaml is not None:
         try:
@@ -50,6 +51,7 @@ def _load_manifest(p: Path) -> dict[str, Any]:
         k, v = line.split(":", 1)
         out[k.strip()] = v.strip().strip("'\"")
     return out
+
 
 def main() -> int:
     root = Path(".").resolve()
@@ -73,6 +75,7 @@ def main() -> int:
         updated += 1
     print(f"ABI baselines updated: {updated}")
     return 0
+
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())

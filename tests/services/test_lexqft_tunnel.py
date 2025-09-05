@@ -25,6 +25,7 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
+
 def test_tunnel_default_high_energy_pass() -> None:
     r = client.post(
         "/v1/lexqft/tunnel",
@@ -37,6 +38,7 @@ def test_tunnel_default_high_energy_pass() -> None:
     # PCO headers present
     assert "X-CERTEUS-PCO-qlaw.tunneling.p" in r.headers
     assert "X-CERTEUS-PCO-qlaw.tunneling.min_energy" in r.headers
+
 
 def test_tunnel_with_barrier_energy_reflect_case() -> None:
     barrier_energy = 1.5

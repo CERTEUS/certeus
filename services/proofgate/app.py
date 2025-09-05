@@ -47,12 +47,14 @@ from services.ledger_service.ledger import (
 
 # === MODELE / MODELS ===
 
+
 class PublishRequest(BaseModel):
     pco: dict[str, Any] | None = Field(default=None, description="Proof-Carrying Object")
 
     policy: dict[str, Any] | None = None
 
     budget_tokens: int | None = None
+
 
 class PublishResponse(BaseModel):
     status: str
@@ -61,17 +63,21 @@ class PublishResponse(BaseModel):
 
     ledger_ref: str | None = None
 
+
 # === LOGIKA / LOGIC ===
 
 app = FastAPI(title="ProofGate", version=__version__)
 setup_fastapi_otel(app)
 
+
 @app.get("/healthz")
 def healthz() -> dict[str, Any]:
     return {"ok": True, "service": "proofgate-stub"}
 
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
 
 def _load_policy_pack() -> dict[str, Any]:
     p = _repo_root() / "policies" / "pco" / "policy_pack.yaml"
@@ -82,6 +88,7 @@ def _load_policy_pack() -> dict[str, Any]:
     except Exception:
         return {}
 
+
 def _load_governance_pack() -> dict[str, Any]:
     try:
         p = _repo_root() / "policies" / "governance" / "governance_pack.v0.1.yaml"
@@ -89,11 +96,13 @@ def _load_governance_pack() -> dict[str, Any]:
     except Exception:
         return {}
 
+
 def _load_json(path: Path) -> dict[str, Any]:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return {}
+
 
 def _validate_pco_extensions(pco: Mapping[str, Any]) -> list[str]:
     """PL/EN: Opcjonalna walidacja rozszerzeń PCO (report-only).
@@ -125,6 +134,7 @@ def _validate_pco_extensions(pco: Mapping[str, Any]) -> list[str]:
 
     return errs
 
+
 def _infer_domain(pco: Mapping[str, Any]) -> str:
     # Explicit field
     d = pco.get("domain") if isinstance(pco, Mapping) else None
@@ -146,16 +156,6 @@ def _infer_domain(pco: Mapping[str, Any]) -> str:
         return "lex"
     return "lex"
 
-def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
-    cur: Any = d
-
-    for k in path:
-        if not isinstance(cur, Mapping) or k not in cur:  # type: ignore[arg-type]
-            return default
-
-        cur = cur[k]  # type: ignore[index]
-
-    return cur
 
 def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
     cur: Any = d
@@ -167,6 +167,19 @@ def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
         cur = cur[k]  # type: ignore[index]
 
     return cur
+
+
+def _get(d: Mapping[str, Any], path: list[str], default: Any = None) -> Any:
+    cur: Any = d
+
+    for k in path:
+        if not isinstance(cur, Mapping) or k not in cur:  # type: ignore[arg-type]
+            return default
+
+        cur = cur[k]  # type: ignore[index]
+
+    return cur
+
 
 def _has_counsel_signature(pco: Mapping[str, Any]) -> bool:
     sigs = pco.get("signatures") if isinstance(pco, Mapping) else None
@@ -179,6 +192,7 @@ def _has_counsel_signature(pco: Mapping[str, Any]) -> bool:
             return True
 
     return False
+
 
 def _sources_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
     srcs = pco.get("sources") if isinstance(pco, Mapping) else None
@@ -197,6 +211,7 @@ def _sources_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
             return False
 
     return True
+
 
 def _derivations_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
     thr = _get(policy, ["publish_contract", "thresholds", "proofs"], {}) or {}
@@ -225,6 +240,7 @@ def _derivations_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
 
     return True
 
+
 def _repro_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
     req = bool(_get(policy, ["publish_contract", "thresholds", "reproducibility", "required"], False))
 
@@ -237,6 +253,7 @@ def _repro_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
         return False
 
     return all(isinstance(r.get(k), str) and r.get(k) for k in ("image", "image_digest", "seed"))
+
 
 def _evaluate_decision(pco: Mapping[str, Any], policy: Mapping[str, Any], budget_tokens: int | None) -> str:
     thr = _get(policy, ["publish_contract", "thresholds", "risk"], {}) or {}
@@ -284,6 +301,7 @@ def _evaluate_decision(pco: Mapping[str, Any], policy: Mapping[str, Any], budget
         return decision
 
     return "CONDITIONAL"
+
 
 @app.post("/v1/proofgate/publish", response_model=PublishResponse)
 def publish(req: PublishRequest) -> PublishResponse:
@@ -380,10 +398,12 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
 
+
 # === I/O / ENDPOINTS ===
 
 # Cache OpenAPI JSON in-memory to reduce overhead
 _openapi_schema_cache = None
+
 
 def _cached_openapi():  # type: ignore[override]
     global _openapi_schema_cache
@@ -395,6 +415,7 @@ def _cached_openapi():  # type: ignore[override]
         routes=app.routes,
     )
     return _openapi_schema_cache
+
 
 app.openapi = _cached_openapi  # type: ignore[assignment]
 

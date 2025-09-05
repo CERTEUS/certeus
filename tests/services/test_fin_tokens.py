@@ -21,6 +21,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+
 def test_fin_tokens_request_allocate(tmp_path: Path, monkeypatch) -> None:
     from services.api_gateway.main import app
 

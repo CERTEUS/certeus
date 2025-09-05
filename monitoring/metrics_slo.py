@@ -78,6 +78,7 @@ certeus_pending_total = Counter("certeus_pending_total", "Number of PENDING deci
 
 certeus_abstain_total = Counter("certeus_abstain_total", "Number of ABSTAIN decisions")
 
+
 def observe_decision(decision: str) -> None:
     """Increment counters and update abstain_rate gauge (lifetime ratio)."""
 
@@ -110,6 +111,7 @@ def observe_decision(decision: str) -> None:
 
     except Exception:
         pass
+
 
 # HTTP request duration (Gateway)
 
@@ -161,6 +163,9 @@ certeus_qtm_cfe_correlation = Gauge(
 # LexQFT: Coverage (gamma, uncaptured)
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
+
+# QOC: Vacuum pairs rate
+certeus_qoc_vacuum_rate = Gauge("certeus_qoc_vacuum_rate", "QOC vacuum pairs generation rate")
 
 # FINENITH: entanglement MI and commutator
 certeus_fin_entanglement_mi = Gauge(

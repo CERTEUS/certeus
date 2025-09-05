@@ -23,6 +23,7 @@ import sys  # noqa: E402
 
 # === LOGIKA / LOGIC ===
 
+
 def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     e = os.environ.copy()
     e.update(env)
@@ -33,12 +34,15 @@ def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
         env=e,
     )
 
+
 # === TESTY / TESTS ===
+
 
 def test_bunker_off_ok() -> None:
     res = run_gate({"BUNKER": "0", "PROOFGATE_BUNKER": "0"})
     assert res.returncode == 0, res.stderr or res.stdout
     assert "BUNKER=off" in (res.stdout + res.stderr)
+
 
 def test_bunker_on_with_attestation_ok() -> None:
     att = Path("security/bunker/attestation.json").resolve()
@@ -51,6 +55,7 @@ def test_bunker_on_with_attestation_ok() -> None:
     )
     assert res.returncode == 0, res.stderr or res.stdout
     assert "attested" in (res.stdout + res.stderr)
+
 
 def test_bunker_on_missing_attestation_fail() -> None:
     missing = Path("tmp/nonexistent/does_not_exist.json").resolve()

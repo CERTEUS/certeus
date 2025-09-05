@@ -44,6 +44,7 @@ import pytest
 from services.law_as_data.adapters.isap import extract_title, fetch_and_cache_isap
 from services.law_as_data.cache import FileCache
 
+
 class DummyResponse:
     def __init__(self, data: bytes) -> None:
         self._data = data
@@ -57,6 +58,7 @@ class DummyResponse:
     def __exit__(self, exc_type, exc, tb):
         return False
 
+
 @pytest.fixture()
 def dummy_urlopen(monkeypatch: pytest.MonkeyPatch):
     def _set(data: bytes) -> None:
@@ -69,10 +71,12 @@ def dummy_urlopen(monkeypatch: pytest.MonkeyPatch):
 
     return _set
 
+
 def test_extract_title() -> None:
     html = b"<html><head><title>Ustawa Testowa</title></head><body></body></html>"
 
     assert extract_title(html) == "Ustawa Testowa"
+
 
 def test_fetch_and_cache_isap_sets_title(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, dummy_urlopen) -> None:
     monkeypatch.setenv("LAW_CACHE_DIR", str(tmp_path))

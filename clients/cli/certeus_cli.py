@@ -65,9 +65,11 @@ from services.api_gateway.main import app  # noqa: E402
 
 # +-------------------------------------------------------------+
 
+
 def _cmd_version(_: argparse.Namespace) -> int:
     print(__version__)
     return 0
+
 
 def _cmd_openapi(args: argparse.Namespace) -> int:
     out_dir = REPO_ROOT / "out"
@@ -79,6 +81,7 @@ def _cmd_openapi(args: argparse.Namespace) -> int:
         print(out_file)
     return 0
 
+
 def _cmd_endpoints(_: argparse.Namespace) -> int:
     for route in app.routes:
         methods = getattr(route, "methods", None)
@@ -88,6 +91,7 @@ def _cmd_endpoints(_: argparse.Namespace) -> int:
             for m in sorted(methods):
                 print(f"{m:6s} {path} {name or ''}".rstrip())
     return 0
+
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="certeus", description="CERTEUS CLI")
@@ -105,6 +109,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     return int(args.func(args))
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -29,6 +29,7 @@ from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
 
+
 def test_qtm_sequence_uncertainty_and_probs_bounds() -> None:
     from services.api_gateway.main import app
 
@@ -47,6 +48,7 @@ def test_qtm_sequence_uncertainty_and_probs_bounds() -> None:
     ub = body.get("uncertainty_bound", {})
     val = float(ub.get("L_T", 0.0))
     assert 0.0 <= val <= 1.0
+
 
 def test_qtm_expectation_in_range() -> None:
     from services.api_gateway.main import app

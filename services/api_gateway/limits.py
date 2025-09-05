@@ -77,6 +77,7 @@ __all__ = [
 
 # In-memory MVP (można później podmienić na Redis/TokenBank)
 
+
 def get_tenant_id(req: Request) -> str:
     """
 
@@ -92,17 +93,20 @@ def get_tenant_id(req: Request) -> str:
 
     return tid
 
+
 def set_tenant_quota(tenant: str, units: int) -> None:
     """PL: Ustaw budżet jednostek dla tenant-a. EN: Set tenant budget."""
 
     with _LOCK:
         _TOKEN_BUDGETS[tenant] = max(0, int(units))
 
+
 def get_tenant_balance(tenant: str) -> int:
     """PL: Zwraca aktualny budżet tenant-a. EN: Return tenant's current budget."""
 
     with _LOCK:
         return _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET)
+
 
 def _charge(tenant: str, cost_units: int) -> bool:
     """PL: Pobierz z budżetu; True jeśli wystarczyło. EN: Charge budget."""
@@ -120,10 +124,12 @@ def _charge(tenant: str, cost_units: int) -> bool:
 
         return True
 
+
 def allocate_tenant_cost(tenant: str, cost_units: int) -> bool:
     """PL/EN: Try charge budget for tenant; returns True if allocated (balance decremented)."""
 
     return _charge(tenant, cost_units)
+
 
 def refund_tenant_units(tenant: str, units: int) -> int:
     """PL/EN: Refund units to tenant and return new balance."""
@@ -131,6 +137,7 @@ def refund_tenant_units(tenant: str, units: int) -> int:
     with _LOCK:
         _TOKEN_BUDGETS[tenant] = _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET) + max(0, int(units))
         return _TOKEN_BUDGETS[tenant]
+
 
 def enforce_limits(req: Request, *, cost_units: int = 1) -> None:
     """
@@ -149,6 +156,7 @@ def enforce_limits(req: Request, *, cost_units: int = 1) -> None:
 
     if not ok:
         raise HTTPException(status_code=429, detail="Rate/Budget limits exceeded")
+
 
 # === I/O / ENDPOINTS ===
 

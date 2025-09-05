@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+
 def test_billing_quota_allocate_refund_flow() -> None:
     from services.api_gateway.limits import set_tenant_quota
     from services.api_gateway.main import app

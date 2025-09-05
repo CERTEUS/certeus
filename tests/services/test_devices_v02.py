@@ -29,6 +29,7 @@ from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
 
+
 def test_hde_plan_alternatives_and_best() -> None:
     from services.api_gateway.main import app
 
@@ -42,6 +43,7 @@ def test_hde_plan_alternatives_and_best() -> None:
     assert isinstance(js.get("cost_tokens"), int)
     assert isinstance(js.get("expected_kappa"), float)
 
+
 def test_qoracle_generalized_question_distribution() -> None:
     from services.api_gateway.main import app
 
@@ -53,6 +55,7 @@ def test_qoracle_generalized_question_distribution() -> None:
     ps = [float(x["p"]) for x in js["distribution"]]
     assert all(0.0 <= p <= 1.0 for p in ps)
 
+
 def test_entangle_negativity_metric_and_bounds() -> None:
     from services.api_gateway.main import app
 
@@ -61,6 +64,7 @@ def test_entangle_negativity_metric_and_bounds() -> None:
     assert r.status_code == 200
     val = float(r.json().get("achieved_negativity", 0.0))
     assert 0.0 <= val <= 0.12
+
 
 def test_chronosync_default_clauses_present() -> None:
     from services.api_gateway.main import app

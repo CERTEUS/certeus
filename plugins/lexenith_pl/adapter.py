@@ -30,6 +30,7 @@ from typing import Any
 
 # === MODELE / MODELS ===
 
+
 class LexenithPLAdapter:  # (IDomainPlugin)
     """PL: Adapter PL. EN: Polish law adapter."""
 
@@ -52,6 +53,7 @@ class LexenithPLAdapter:  # (IDomainPlugin)
         """PL: Złóż reguły DSL (precedencja/temporalność). EN: Compose DSL rules."""
 
         return "RULES { /* LEXLOG rules go here */ }"
+
 
 # === LOGIKA / LOGIC ===
 

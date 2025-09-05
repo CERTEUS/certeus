@@ -38,9 +38,11 @@ MARKERS = (
     "# === TESTY / TESTS ===\n\n"
 )
 
+
 def needs_markers(text: str) -> bool:
     head = "\n".join(text.splitlines()[:200])
     return "# === " not in head
+
 
 def insert_after_docstring_or_banner(text: str) -> str:
     lines = text.splitlines(keepends=True)
@@ -64,6 +66,7 @@ def insert_after_docstring_or_banner(text: str) -> str:
     insert_at = i
     return "".join(lines[:insert_at] + [MARKERS] + lines[insert_at:])
 
+
 def main() -> None:
     updated = 0
     for p in ROOT.rglob("*.py"):
@@ -79,6 +82,7 @@ def main() -> None:
             updated += 1
             print(f"[FORCE-SECTIONS] {rel.lstrip('/')}")
     print(f"Done. Force sections updated: {updated}")
+
 
 if __name__ == "__main__":
     main()

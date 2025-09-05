@@ -57,6 +57,7 @@ import pytest
 
 from runtime.pco_encryptor import decrypt, encrypt, new_dek
 
+
 def test_round_trip_no_aad() -> None:
     """
 
@@ -71,6 +72,7 @@ def test_round_trip_no_aad() -> None:
     iv, ct, aad = encrypt(dek, b"lorem", b"")
 
     assert decrypt(dek, iv, ct, aad) == b"lorem"
+
 
 def test_round_trip_with_aad() -> None:
     """
@@ -88,6 +90,7 @@ def test_round_trip_with_aad() -> None:
     iv, ct, _ = encrypt(dek, b"ipsum", aad)
 
     assert decrypt(dek, iv, ct, aad) == b"ipsum"
+
 
 def test_wrong_aad_raises_invalid_tag() -> None:
     """

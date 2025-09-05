@@ -45,6 +45,7 @@ STORAGE_MODE = "memory"  # "file" w razie potrzeby
 
 # === MODELE / MODELS ===
 
+
 class MismatchService:
     def __init__(self, storage_mode: str = STORAGE_MODE) -> None:
         self.storage_mode = storage_mode
@@ -304,6 +305,7 @@ class MismatchService:
             "Registered resolution callback: %s",
             getattr(callback, "__name__", str(callback)),
         )
+
 
 # === LOGIKA / LOGIC ===
 

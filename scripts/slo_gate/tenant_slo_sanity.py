@@ -41,12 +41,14 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+
 def _p95(vals: list[float]) -> float:
     if not vals:
         return 0.0
     s = sorted(vals)
     k = max(0, min(len(s) - 1, int(0.95 * (len(s) - 1))))
     return s[k]
+
 
 def _exercise(c: TestClient, tenant: str, iters: int) -> tuple[float, float, int]:
     durs: list[float] = []
@@ -71,6 +73,7 @@ def _exercise(c: TestClient, tenant: str, iters: int) -> tuple[float, float, int
         if not ok:
             errors += 1
     return _p95(durs), errors / max(1, len(durs)), len(durs)
+
 
 def main() -> int:  # pragma: no cover (integration)
     ap = argparse.ArgumentParser()
@@ -99,6 +102,7 @@ def main() -> int:  # pragma: no cover (integration)
     )
     # report-only
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

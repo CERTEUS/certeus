@@ -41,6 +41,7 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
+
 def test_metrics_endpoint_available() -> None:
     client = TestClient(app)
 

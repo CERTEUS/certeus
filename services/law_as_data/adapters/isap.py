@@ -39,6 +39,7 @@ import re
 
 from ..cache import FileCache, cache_from_uri
 
+
 @dataclass
 class LawDocument:
     uri: str
@@ -49,7 +50,9 @@ class LawDocument:
 
     title: str | None = None
 
+
 _TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+
 
 def extract_title(html_bytes: bytes) -> str | None:
     try:
@@ -59,6 +62,7 @@ def extract_title(html_bytes: bytes) -> str | None:
 
     except Exception:
         return None
+
 
 def fetch_and_cache_isap(uri: str, cache: FileCache | None = None) -> LawDocument:
     cs = cache_from_uri(uri, cache)

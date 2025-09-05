@@ -80,6 +80,7 @@ _LLM: LLMAdapter | None = None
 
 # ------------------------------- Factories ----------------------------------
 
+
 def _make_drive() -> DriveAdapter:
     """
 
@@ -93,6 +94,7 @@ def _make_drive() -> DriveAdapter:
 
     return LocalDriveAdapter(base_dir=base_dir, base_url_prefix="/static")
 
+
 def _make_preview(drive: DriveAdapter) -> PreviewAdapter:
     """
 
@@ -103,6 +105,7 @@ def _make_preview(drive: DriveAdapter) -> PreviewAdapter:
     """
 
     return StubPreviewAdapter(cast(LocalDriveAdapter, drive))
+
 
 def _make_ocr() -> OCRAdapter:
     """
@@ -115,6 +118,7 @@ def _make_ocr() -> OCRAdapter:
 
     return StubOCRAdapter()
 
+
 def _make_llm() -> LLMAdapter:
     """
 
@@ -126,7 +130,9 @@ def _make_llm() -> LLMAdapter:
 
     return StubLLMAdapter(model_name="ALI-Stub-0")
 
+
 # -------------------------------- Getters -----------------------------------
+
 
 def get_drive() -> DriveAdapter:
     """PL/EN: Lazy singleton for DriveAdapter."""
@@ -138,6 +144,7 @@ def get_drive() -> DriveAdapter:
 
     return _DRIVE
 
+
 def get_preview() -> PreviewAdapter:
     """PL/EN: Lazy singleton for PreviewAdapter."""
 
@@ -147,6 +154,7 @@ def get_preview() -> PreviewAdapter:
         _PREVIEW = _make_preview(get_drive())
 
     return _PREVIEW
+
 
 def get_ocr() -> OCRAdapter:
     """PL/EN: Lazy singleton for OCRAdapter."""
@@ -158,6 +166,7 @@ def get_ocr() -> OCRAdapter:
 
     return _OCR
 
+
 def get_llm() -> LLMAdapter:
     """PL/EN: Lazy singleton for LLMAdapter."""
 
@@ -167,6 +176,7 @@ def get_llm() -> LLMAdapter:
         _LLM = _make_llm()
 
     return _LLM
+
 
 # === I/O / ENDPOINTS ===
 

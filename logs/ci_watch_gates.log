@@ -1,20 +1,20 @@
-[2025-09-04 21:54:35Z] CI status for CERTEUS/certeus@work/daily
+[2025-09-05 07:28:09Z] CI status for CERTEUS/certeus@work/daily
 
 [32;1mname    [0m[32;1m head_branch[0m[32;1m status   [0m[32;1m conclusion[0m[32;1m run_number[0m[32;1m head_sha                                [0m[32;1m created_at[0m
 [32;1m----    [0m [32;1m-----------[0m [32;1m------   [0m [32;1m----------[0m [32;1m----------[0m [32;1m--------                                [0m [32;1m----------[0m
+ci-gates work/daily  completed success           496 094621f7be6828158bc373c66e9a213a2d3dcfca 04.09.2025 22:06:41
+ci-gates work/daily  completed success           495 3f3602252dc658eb4d459e50dc075ebf46807ad1 04.09.2025 22:04:36
+ci-gates work/daily  completed failure           494 09d81d7aebccdaa2293c75fa1837c1368c18dce2 04.09.2025 22:03:36
+ci-gates work/daily  completed success           493 6cd7b13b8bdafe59c723f1fd29c4d93371da9d47 04.09.2025 20:32:46
+ci-gates work/daily  completed failure           492 0e302171910d19e36094a18868fb9a0e7bf6bc1e 04.09.2025 20:23:20
+ci-gates work/daily  completed success           491 ca1932117b41069852958c205d7a2b066263604b 04.09.2025 19:59:54
 ci-gates work/daily  completed success           490 ceedf72c67b3de1f04fe907b19973730114c9e9f 04.09.2025 19:49:33
 ci-gates work/daily  completed failure           489 fefc19c8331019b9938ec87d4a5e9f168a4c57f5 04.09.2025 19:42:21
 ci-gates work/daily  completed success           488 cc804229639cd5b37ca13aa920dc36cd0dd710da 04.09.2025 19:39:22
 ci-gates work/daily  completed success           487 07eb925542cbe2a52e31cd6fc84427b562076505 04.09.2025 19:38:31
-ci-gates work/daily  completed failure           486 4633614699cd4cbfb6311b3bccbb5c31d947528a 04.09.2025 19:29:58
-ci-gates work/daily  completed failure           485 0fd1f129828c5ce3993389f343079f87a0acdc20 04.09.2025 19:16:09
-ci-gates work/daily  completed success           484 ed7362782b0efe50778ef33bfdfa05e5dbceb51b 04.09.2025 19:08:45
-ci-gates work/daily  completed failure           483 99834838957f305bc0f419288e03ae9419eb2707 04.09.2025 19:06:44
-ci-gates work/daily  completed failure           482 52ead132234cbae397ffbb021a3041265bfa2cb0 04.09.2025 18:57:54
-ci-gates work/daily  completed failure           481 47e5074041eb33e4ed7a4780284895c035a2a26a 04.09.2025 18:57:09
 
-Summary: success=4 failure=6 in_progress=0
-Last job: ci-gates  success
+Summary: success=7 failure=3 in_progress=0
+Last job: ci-gates → success
 
 [32;1mname                                         [0m[32;1m conclusion[0m
 [32;1m----                                         [0m [32;1m----------[0m
@@ -31,8 +31,14 @@ Ruff Lint (no fix)                            success
 Mark Lint OK                                  success
 A11y Smoke (report-only)                      success
 Mark A11y OK                                  success
-GameDay DR (Boundary) - dry-run (report-only) success
+GameDay DR (Boundary) — dry-run (report-only) success
 P2P Turbulence Smoke (report-only)            success
+Tenant SLO Smoke (report-only)                success
+Endpoint SLO Smoke (report-only)              success
+Endpoint SLO Trend Gate (report-only)         success
+Burn-rate Gate (report-only)                  success
+Tenant SLO Trend Gate (report-only)           success
+Mark Tenant SLO Trend OK                      success
 Marketplace Policy Gate (report-only)         success
 Mark Marketplace OK                           success
 Compliance Mapping (report-only)              success
@@ -42,6 +48,7 @@ Gitleaks (secrets scan)                       success
 Tests                                         success
 Mark Tests OK                                 success
 Boundary Snapshot (artifact)                  success
+Boundary Diff vs previous (report-only)       success
 Upload boundary snapshot                      success
 Perf Smoke (W11)                              success
 Perf Regression Gate (<= +5% vs prev)         success
@@ -52,6 +59,7 @@ Mark SLO OK                                   success
 Setup OPA CLI                                 success
 OPA policy tests (roles)                      success
 Governance consistency (smoke)                success
+Omega Drift Gate (report-only)                success
 Marketplace Policy Gate (report-only)         success
 Pack ABI/SemVer Gate (report-only)            success
 Redaction Gate (informational)                success
@@ -65,6 +73,9 @@ Mark OpenAPI smoke OK                         success
 OpenAPI smoke (/openapi.json)                 success
 Comment PR with perf bench                    skipped
 Build PR comment summary                      skipped
+Generate OpenAPI (reports/openapi.json)       success
+Spectral Lint OpenAPI (report-only)           success
+Mark Spectral OK                              success
 Install OpenAPI validator                     success
 OpenAPI Spec Validate (report-only)           success
 Mark OpenAPI Spec Validate OK                 success
@@ -72,8 +83,11 @@ OpenAPI Contract (report-only)                success
 Mark OpenAPI Contract OK                      success
 OpenAPI GET Sanity (report-only)              success
 Mark OpenAPI GET Sanity OK                    success
+Canary Progressive Gate (report-only)         success
+Compose CI Summary                            success
 Comment PR with SLO/Smokes/Perf               skipped
 Publish CI status to branch                   success
 Post Set up Python                            success
 Post Run actions/checkout@v4                  success
 Complete job                                  success
+

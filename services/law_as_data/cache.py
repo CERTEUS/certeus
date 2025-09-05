@@ -44,8 +44,10 @@ import urllib.request
 
 from monitoring.metrics_slo import certeus_source_fetch_errors_total
 
+
 def compute_digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
 
 @dataclass
 class CachedSource:
@@ -56,6 +58,7 @@ class CachedSource:
     path: Path
 
     retrieved_at: str
+
 
 class FileCache:
     """
@@ -111,6 +114,7 @@ class FileCache:
             uri=raw["uri"], digest=raw["digest"], path=Path(raw["path"]), retrieved_at=raw["retrieved_at"]
         )
 
+
 def _fetch_uri(uri: str) -> bytes:
     try:
         with urllib.request.urlopen(uri) as resp:  # nosec - trusted adapter path only
@@ -124,6 +128,7 @@ def _fetch_uri(uri: str) -> bytes:
             pass
 
         raise
+
 
 def cache_from_uri(uri: str, cache: FileCache | None = None) -> CachedSource:
     c = cache or FileCache()

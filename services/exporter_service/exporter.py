@@ -46,6 +46,7 @@ Model: {model}
 
 # === MODELE / MODELS ===
 
+
 class ExporterService:
     def __init__(self, template_dir: str, output_dir: str) -> None:
         self.template_dir = Path(template_dir)
@@ -67,9 +68,11 @@ class ExporterService:
 
         return out
 
+
 # === LOGIKA / LOGIC ===
 
 # (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
+
 
 def export_answer_to_txt(answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False) -> str:
     p = Path(out_path)
@@ -79,6 +82,7 @@ def export_answer_to_txt(answer: Mapping[str, Any], *, out_path: str, create_led
     p.write_text(json.dumps(answer, indent=2, sort_keys=True), encoding="utf-8")
 
     return str(p)
+
 
 def export_answer(answer: Mapping[str, Any], *, fmt: str, output_dir: Path | None = None):
     """
@@ -115,6 +119,7 @@ def export_answer(answer: Mapping[str, Any], *, fmt: str, output_dir: Path | Non
         return p
 
     raise ValueError(f"Unsupported fmt: {fmt}")
+
 
 # === I/O / ENDPOINTS ===
 

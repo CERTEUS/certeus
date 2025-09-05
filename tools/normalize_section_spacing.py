@@ -47,6 +47,7 @@ SECTION_RE = re.compile(r"^#\s*===\s+.*?\s+===\s*$")
 
 # === LOGIKA / LOGIC ===
 
+
 def list_tracked_py_files(repo: Path) -> Iterable[Path]:
     try:
         # nosec B603: calls git with static args; not user-controlled
@@ -61,6 +62,7 @@ def list_tracked_py_files(repo: Path) -> Iterable[Path]:
             if any(seg in {".venv", "venv", "env", "site-packages"} for seg in p.parts):
                 continue
             yield p
+
 
 def normalize_text(text: str) -> str:
     lines = text.splitlines()
@@ -110,6 +112,7 @@ def normalize_text(text: str) -> str:
 
     return "\n".join(out) + "\n"
 
+
 def main(argv: list[str]) -> int:
     write = "--write" in argv
     check = "--check" in argv
@@ -133,6 +136,7 @@ def main(argv: list[str]) -> int:
     if write:
         print(f"Normalized {len(changed)} file(s)")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))

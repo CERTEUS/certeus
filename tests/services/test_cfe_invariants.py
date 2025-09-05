@@ -16,6 +16,7 @@ EN: CFE invariants: deterministic geodesic, lensing bounds,
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

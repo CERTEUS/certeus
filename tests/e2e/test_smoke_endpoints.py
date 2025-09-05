@@ -44,6 +44,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from fastapi.testclient import TestClient
 import pytest
 
+
 def _gen_ed25519() -> tuple[str, str]:
     sk = Ed25519PrivateKey.generate()
 
@@ -56,6 +57,7 @@ def _gen_ed25519() -> tuple[str, str]:
     pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
 
     return pem, pub.hex()
+
 
 @pytest.fixture(scope="module")
 def client(tmp_path_factory: pytest.TempPathFactory) -> TestClient:
@@ -80,6 +82,7 @@ def client(tmp_path_factory: pytest.TempPathFactory) -> TestClient:
     from services.api_gateway.main import app
 
     return TestClient(app)
+
 
 def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
     # health, root, metrics

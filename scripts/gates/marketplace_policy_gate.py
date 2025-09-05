@@ -53,6 +53,7 @@ SEMVER_RE = re.compile(
 
 # === LOGIKA / LOGIC ===
 
+
 def _naive_yaml(path: Path) -> dict[str, Any]:
     data: dict[str, Any] = {}
     for raw in path.read_text(encoding="utf-8").splitlines():
@@ -68,6 +69,7 @@ def _naive_yaml(path: Path) -> dict[str, Any]:
             data[key] = val
     return data
 
+
 def _load_manifest(p: Path) -> dict[str, Any]:
     if yaml is not None:
         try:
@@ -75,6 +77,7 @@ def _load_manifest(p: Path) -> dict[str, Any]:
         except Exception:
             return {}
     return _naive_yaml(p)
+
 
 def _iter_plugin_manifests(root: Path) -> Iterable[Path]:
     plugdir = root / "plugins"
@@ -86,11 +89,25 @@ def _iter_plugin_manifests(root: Path) -> Iterable[Path]:
             if man.exists():
                 yield man
 
+
 def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
     """PL/EN: Zwraca (violations, warnings) bez rzucania wyjątków."""
     root = Path(repo_root or ".").resolve()
     violations: list[str] = []
     warnings: list[str] = []
+    # Optional: read packs overlay state to correlate signature presence (advisory)
+    state_path = root / "data" / "packs_state.json"
+    try:
+        state = {}
+        if state_path.exists():
+            import json as _json
+
+            state = _json.loads(state_path.read_text(encoding="utf-8")) or {}
+            if not isinstance(state, dict):
+                state = {}
+    except Exception:
+        state = {}
+
     for man in _iter_plugin_manifests(root):
         m = _load_manifest(man)
         name = str(m.get("name") or "").strip()
@@ -118,7 +135,19 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
         else:
             warnings.append(f"{ctx}: signature not present (recommended)")
 
+        # If pack is enabled/installed in state and no signature recorded, add advisory
+        try:
+            entry = state.get(name) if isinstance(state, dict) else None
+            if isinstance(entry, dict):
+                enabled = bool(entry.get("enabled", False))
+                has_sig = bool(entry.get("signature"))
+                if enabled and not has_sig:
+                    warnings.append(f"{ctx}: enabled without installed signature (state overlay)")
+        except Exception:
+            pass
+
     return violations, warnings
+
 
 def main() -> int:
     vio, warn = check()
@@ -138,6 +167,7 @@ def main() -> int:
         f"{len(vio)} violations, {len(warn)} warnings"
     )
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

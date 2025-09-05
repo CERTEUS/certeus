@@ -26,6 +26,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from services.api_gateway.main import app  # noqa: E402
 
+
 def main() -> int:
     c = TestClient(app)
     r = c.post("/v1/qtm/init_case", json={"case": "SMOKE-QTMP", "basis": ["ALLOW", "DENY", "ABSTAIN"]})
@@ -38,6 +39,7 @@ def main() -> int:
     r4 = c.get("/v1/qtm/uncertainty")
     assert r4.status_code == 200
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -46,6 +46,7 @@ from fastapi.testclient import TestClient
 
 import services.api_gateway.main as api_main
 
+
 def test_health_ok() -> None:
     client = TestClient(api_main.app)
 
@@ -54,6 +55,7 @@ def test_health_ok() -> None:
     assert r.status_code == 200
 
     assert r.json().get("status") == "ok"
+
 
 def test_static_app_mount() -> None:
     client = TestClient(api_main.app)
@@ -64,6 +66,7 @@ def test_static_app_mount() -> None:
         200,
         404,
     )  # mount działa; plik może nie istnieć w teście CI
+
 
 def test_preview_upload_roundtrip(tmp_path: Path) -> None:
     client = TestClient(api_main.app)

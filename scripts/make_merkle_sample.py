@@ -72,10 +72,12 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey,
 
 # === MODELE / MODELS ===
 
+
 class MerkleStep(TypedDict):
     sibling: str  # hex
 
     dir: str  # 'L' | 'R'
+
 
 # === LOGIKA / LOGIC ===
 
@@ -85,14 +87,18 @@ DEFAULT_DIR = os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
 
 # ----Bloki----- POMOCNICZE
 
+
 def _hx_text(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
 
 def _is_hex64(x: str) -> bool:
     return isinstance(x, str) and len(x) == 64 and all(c in "0123456789abcdef" for c in x.lower())
 
+
 def sha256_hex_utf8(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
 
 def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
     payload = {"smt2_hash": pub["smt2_hash"], "lfsc_sha256": sha256_hex_utf8(pub["lfsc"])}
@@ -103,6 +109,7 @@ def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
     blob = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
     return hashlib.sha256(blob).hexdigest()
+
 
 def merkle_root_from_path(leaf_hex: str, path: Iterable[MerkleStep]) -> str:
     cur = bytes.fromhex(leaf_hex)
@@ -121,6 +128,7 @@ def merkle_root_from_path(leaf_hex: str, path: Iterable[MerkleStep]) -> str:
 
     return cur.hex()
 
+
 def canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
     parts = [
         hashlib.sha256(pub["rid"].encode("utf-8")).hexdigest(),
@@ -137,6 +145,7 @@ def canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
 
     return hashlib.sha256(msg).hexdigest()
 
+
 def ed25519_from_b64url(x_b64u: str) -> Ed25519PublicKey:
     pad = "=" * (-len(x_b64u) % 4)
 
@@ -144,7 +153,9 @@ def ed25519_from_b64url(x_b64u: str) -> Ed25519PublicKey:
 
     return Ed25519PublicKey.from_public_bytes(raw)
 
+
 # ----Bloki----- BUNDLE (demo)
+
 
 def make_bundle(
     outdir: Path,
@@ -238,7 +249,9 @@ def make_bundle(
 
     return out_path
 
+
 # --- blok --- CLI --------------------------------------------------------------
+
 
 def _parse_args() -> Any:
     p = ArgumentParser(description="Build demo public bundle (non-empty Merkle path) and sign it.")
@@ -264,6 +277,7 @@ def _parse_args() -> Any:
     p.add_argument("--smt2-text", dest="smt2_text", default=None, help="Inline SMT2 text (overrides --smt2 file)")
 
     return p.parse_args()
+
 
 def main() -> int:
     args = _parse_args()
@@ -302,6 +316,7 @@ def main() -> int:
         print(f"[GET] http://127.0.0.1:8000/pco/public/{rid}")
 
     return 0
+
 
 # --- blok --- Entrypoint -------------------------------------------------------
 

@@ -29,10 +29,12 @@ from billing.proof_token_bank import TokenBank
 
 # === LOGIKA / LOGIC ===
 
+
 def test_set_and_get_balance() -> None:
     bank = TokenBank()
     bank.set_quota("tenant-a", 10)
     assert bank.balance("tenant-a") == 10
+
 
 def test_charge_success_and_failure() -> None:
     bank = TokenBank()
@@ -43,6 +45,7 @@ def test_charge_success_and_failure() -> None:
     assert bank.charge("t", 3) is False
     assert bank.balance("t") == 2
 
+
 def test_refund_increases_balance() -> None:
     bank = TokenBank()
     bank.refund("t", 4)
@@ -50,10 +53,12 @@ def test_refund_increases_balance() -> None:
     bank.refund("t", 1)
     assert bank.balance("t") == 5
 
+
 def test_set_quota_clamps_negative() -> None:
     bank = TokenBank()
     bank.set_quota("t", -7)
     assert bank.balance("t") == 0
+
 
 @pytest.mark.parametrize("amount", [-5, 0])
 def test_refund_non_positive_is_noop(amount: int) -> None:
@@ -61,6 +66,7 @@ def test_refund_non_positive_is_noop(amount: int) -> None:
     bank.set_quota("t", 1)
     bank.refund("t", amount)
     assert bank.balance("t") == 1
+
 
 # === I/O / ENDPOINTS ===
 

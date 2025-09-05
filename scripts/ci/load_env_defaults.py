@@ -36,6 +36,7 @@ ALLOW = {
     "VALIDATE_PCO",
 }
 
+
 def main() -> int:
     repo = Path(__file__).resolve().parents[2]
     defaults = repo / ".github" / "certeus.env.defaults"
@@ -61,6 +62,7 @@ def main() -> int:
             for line in out:
                 fh.write(line + "\n")
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

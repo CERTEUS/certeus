@@ -38,6 +38,7 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
+
 class TunnelRequest(BaseModel):
     state_uri: str | None = None
 
@@ -45,12 +46,16 @@ class TunnelRequest(BaseModel):
 
     evidence_energy: float = Field(ge=0)
 
+    counter_arguments: list[str] | None = None
+
+
 class TunnelResponse(BaseModel):
     p_tunnel: float
 
     min_energy_to_cross: float
 
     path: list[str]
+
 
 # === LOGIKA / LOGIC ===
 
@@ -70,6 +75,8 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
+_TUNNEL_LOG = Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
+
 
 def _persist_coverage_state() -> None:
     try:
@@ -77,6 +84,7 @@ def _persist_coverage_state() -> None:
         _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
     except Exception:
         pass
+
 
 def append_coverage_contribution(gamma: float, weight: float = 1.0, uncaptured: float = 0.0) -> None:
     """PL/EN: Dodaj wkład do agregatora pokrycia i zapisz stan (bez FastAPI request).
@@ -87,8 +95,29 @@ def append_coverage_contribution(gamma: float, weight: float = 1.0, uncaptured: 
     _COVERAGE_AGG.append((float(gamma), float(weight), float(uncaptured)))
     _persist_coverage_state()
 
+
+class BarrierScenario(BaseModel):
+    model_id: str
+    energy: float
+    model_uri: str
+
+
+@router.get("/tunnel/scenarios", response_model=list[BarrierScenario])
+async def tunnel_scenarios() -> list[BarrierScenario]:
+    """PL/EN: Przykładowe modele bariery, do szybkich testów scenariuszy.
+
+    Nie jest to kontrakt fizyczny — jedynie katalog demonstracyjny modeli.
+    """
+    return [
+        BarrierScenario(model_id="thin", energy=0.8, model_uri="lexqft://barrier/thin"),
+        BarrierScenario(model_id="thick", energy=1.5, model_uri="lexqft://barrier/thick"),
+        BarrierScenario(model_id="stepped", energy=1.2, model_uri="lexqft://barrier/stepped"),
+    ]
+
+
 class CoverageResponse(BaseModel):
     coverage_gamma: float
+
 
 @router.get("/coverage", response_model=CoverageResponse)
 async def coverage() -> CoverageResponse:
@@ -112,6 +141,7 @@ async def coverage() -> CoverageResponse:
             pass
         return CoverageResponse(coverage_gamma=round(gamma, 6))
     return CoverageResponse(coverage_gamma=0.953)
+
 
 @router.post("/tunnel", response_model=TunnelResponse)
 async def tunnel(req: TunnelRequest, request: Request, response: Response) -> TunnelResponse:
@@ -173,12 +203,33 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
     except Exception:
         pass
 
+    # Append lightweight log entry (kontr-dowody, model, wynik)
+    try:
+        from datetime import datetime
+        import json as _json
+
+        entry = {
+            "ts": datetime.utcnow().isoformat() + "Z",
+            "case_id": req.state_uri or "lexqft-case",
+            "barrier_energy": float(min_e),
+            "p_tunnel": float(resp.p_tunnel),
+            "path": path,
+            "counter_arguments": req.counter_arguments or [],
+        }
+        _TUNNEL_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with _TUNNEL_LOG.open("a", encoding="utf-8") as fh:
+            fh.write(_json.dumps(entry, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
     return resp
+
 
 class CoverageItem(BaseModel):
     gamma: float
     weight: float = 1.0
     uncaptured: float = 0.0
+
 
 @router.post("/coverage/update")
 async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
@@ -196,6 +247,7 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
         pass
     return {"ok": True, "count": len(_COVERAGE_AGG)}
 
+
 @router.post("/coverage/reset")
 async def coverage_reset(request: Request) -> dict:
     """PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty)."""
@@ -211,13 +263,16 @@ async def coverage_reset(request: Request) -> dict:
         pass
     return {"ok": True}
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
 
+
 class CoverageState(BaseModel):
     coverage_gamma: float
     uncaptured_mass: float
+
 
 @router.get("/coverage/state", response_model=CoverageState)
 async def coverage_state() -> CoverageState:

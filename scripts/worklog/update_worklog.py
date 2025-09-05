@@ -22,6 +22,7 @@ from datetime import UTC, datetime
 import os
 from pathlib import Path
 
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--summary", required=True, help="One-line summary")
@@ -56,6 +57,7 @@ def main() -> int:
         f.write(content)
     print(f"Appended worklog entry to {p}")
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

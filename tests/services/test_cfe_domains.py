@@ -16,6 +16,7 @@ EN: CFE domain lensing tests: distinct maps for MED/SEC/CODE/FIN/LEX,
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

@@ -48,6 +48,7 @@ from jsonschema import Draft7Validator  # Only what we truly use
 
 SCHEMA_DIR = Path("schemas")
 
+
 def _check_quality(name: str, schema: dict[str, Any]) -> list[str]:
     """
 
@@ -83,6 +84,7 @@ def _check_quality(name: str, schema: dict[str, Any]) -> list[str]:
         errs.append("Root 'additionalProperties' should be false for stricter contracts")
 
     return errs
+
 
 def main() -> None:
     """
@@ -150,6 +152,7 @@ def main() -> None:
         raise SystemExit(1)
 
     print("\n🎉 All schemas are syntactically valid and passed quality checks!")
+
 
 if __name__ == "__main__":
     main()

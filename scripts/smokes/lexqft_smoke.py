@@ -27,6 +27,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from services.api_gateway.main import app  # noqa: E402
 
+
 def main() -> int:
     c = TestClient(app)
     c.post("/v1/lexqft/coverage/reset")
@@ -42,6 +43,7 @@ def main() -> int:
     assert 0.83 <= float(body.get("coverage_gamma", 0.0)) <= 0.84
     assert 0.08 <= float(body.get("uncaptured_mass", 0.0)) <= 0.09
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(main())

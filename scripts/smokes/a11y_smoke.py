@@ -30,6 +30,7 @@ _RE_VIEWPORT = re.compile(r"<meta[^>]*name=\"viewport\"", re.IGNORECASE)
 _RE_MAIN = re.compile(r"<(main|[^>]*role=\"main\")[^>]*>", re.IGNORECASE)
 _RE_SKIP = re.compile(r"<a[^>]*href=\"#main\"", re.IGNORECASE)
 
+
 def check_public_html(root: str | Path | None = None) -> tuple[dict[str, list[str]], int]:
     """PL/EN: Zwraca (issues_by_file, checked_count). Nie rzuca wyjątków."""
     repo = Path(root or ".").resolve()
@@ -55,6 +56,7 @@ def check_public_html(root: str | Path | None = None) -> tuple[dict[str, list[st
         checked += 1
     return issues, checked
 
+
 def main() -> int:  # pragma: no cover (integration)
     issues, checked = check_public_html()
     if checked == 0:
@@ -69,6 +71,7 @@ def main() -> int:  # pragma: no cover (integration)
         return 1
     print(f"A11y: OK ({checked} files)")
     return 0
+
 
 # === I/O / ENDPOINTS ===
 

@@ -43,6 +43,7 @@ from typing import Any, Protocol
 
 import yaml  # type: ignore
 
+
 @dataclass(slots=True)
 class PackInfo:
     name: str
@@ -51,11 +52,14 @@ class PackInfo:
     version: str | None = None
     enabled: bool = True
 
+
 class PackLike(Protocol):
     def handle(self, kind: str, payload: dict[str, Any]) -> Any: ...
 
+
 def _plugin_root() -> Path:
     return Path(__file__).resolve().parents[1] / "plugins"
+
 
 def _read_manifest(p: Path) -> dict[str, Any] | None:
     try:
@@ -65,6 +69,7 @@ def _read_manifest(p: Path) -> dict[str, Any] | None:
     except Exception:
         return None
     return None
+
 
 def discover() -> list[PackInfo]:
     """
@@ -86,6 +91,7 @@ def discover() -> list[PackInfo]:
         enabled = bool(data.get("enabled", True))
         infos.append(PackInfo(name=name, abi=abi, caps=caps, version=version, enabled=enabled))
     return infos
+
 
 def load(path: str) -> PackLike:  # noqa: A002 - zgodność z istniejącymi importami
     """

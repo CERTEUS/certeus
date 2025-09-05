@@ -45,16 +45,19 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
+
 class InitCaseRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
     state_uri: str | None = None
 
     basis: list[str] | None = Field(default=None, description="Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']")
 
+
 class InitCaseResponse(BaseModel):
     ok: bool
 
     predistribution: list[dict[str, Any]]
+
 
 class MeasureRequest(BaseModel):
     operator: str = Field(description="One of W/I/C/L/T (domain-dependent)")
@@ -62,10 +65,12 @@ class MeasureRequest(BaseModel):
     case: str | None = Field(default=None, description="Optional case identifier to bind decoherence/presets")
     basis: list[str] | None = None
 
+
 class CollapseLog(BaseModel):
     sequence: list[dict[str, Any]]
 
     decoherence: dict[str, Any] | None = None
+
 
 class MeasureResponse(BaseModel):
     verdict: str
@@ -78,32 +83,39 @@ class MeasureResponse(BaseModel):
 
     latency_ms: float
 
+
 class SequenceRequest(BaseModel):
     operators: list[str] = Field(..., min_items=1)
     case: str | None = Field(default=None)
     basis: list[str] | None = None
     no_collapse: bool = Field(default=False, description="If true, do not collapse after each step")
 
+
 class SequenceStep(BaseModel):
     operator: str
     verdict: str
     p: float
+
 
 class SequenceResponse(BaseModel):
     steps: list[SequenceStep]
     final_latency_ms: float
     uncertainty_bound: dict[str, float]
 
+
 class CommutatorRequest(BaseModel):
     A: str
 
     B: str
 
+
 class CommutatorResponse(BaseModel):
     value: float
 
+
 class FindEntanglementRequest(BaseModel):
     variables: list[str]
+
 
 class FindEntanglementResponse(BaseModel):
     pairs: list[tuple[str, str]]
@@ -111,6 +123,7 @@ class FindEntanglementResponse(BaseModel):
     mi: float = 0.0
 
     negativity: float = 0.0
+
 
 # === LOGIKA / LOGIC ===
 
@@ -133,9 +146,11 @@ CASE_GRAPH: dict[str, dict[str, Any]] = {}
 DECOHERENCE_REGISTRY: dict[str, dict[str, Any]] = {}
 _PRESET_STORE_PATH = Path(__file__).resolve().parents[3] / "data" / "qtm_presets.json"
 
+
 def _uniform_probs(basis: list[str]) -> list[float]:
     p = 1.0 / max(1, len(basis))
     return [round(p, 6) for _ in basis]
+
 
 def _basis_probs_for_case(case_id: str, basis: list[str]) -> list[float]:
     cg = CASE_GRAPH.get(case_id)
@@ -147,6 +162,7 @@ def _basis_probs_for_case(case_id: str, basis: list[str]) -> list[float]:
             probs = [round(x / s, 6) for x in probs]
             return probs
     return _uniform_probs(basis)
+
 
 def _apply_decoherence(probs: list[float], case_id: str, basis: list[str]) -> list[float]:
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default")
@@ -174,11 +190,13 @@ def _apply_decoherence(probs: list[float], case_id: str, basis: list[str]) -> li
     u = 1.0 / max(1, n)
     return [round((1.0 - gamma) * p + gamma * u, 6) for p in probs]
 
+
 def _stable_index(key: str, mod: int) -> int:
     if mod <= 0:
         return 0
     h = int.from_bytes(sha256(key.encode("utf-8")).digest()[:4], "big")
     return h % mod
+
 
 @router.post("/init_case", response_model=InitCaseResponse)
 async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
@@ -208,6 +226,7 @@ async def init_case(req: InitCaseRequest, request: Request) -> InitCaseResponse:
         pass
 
     return InitCaseResponse(ok=True, predistribution=predistribution)
+
 
 @router.post("/measure", response_model=MeasureResponse)
 async def measure(req: MeasureRequest, request: Request, response: Response) -> MeasureResponse:
@@ -356,6 +375,7 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     return resp
 
+
 @router.post("/measure_sequence", response_model=SequenceResponse)
 async def measure_sequence(req: SequenceRequest, request: Request, response: Response) -> SequenceResponse:
     from services.api_gateway.limits import enforce_limits
@@ -422,11 +442,13 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
         pass
     return SequenceResponse(steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub)
 
+
 class QtmStateOut(BaseModel):
     case: str
     psi: str
     basis: list[str]
     predistribution: list[dict[str, Any]]
+
 
 @router.get("/state/{case}", response_model=QtmStateOut)
 async def get_state(case: str) -> QtmStateOut:
@@ -440,10 +462,12 @@ async def get_state(case: str) -> QtmStateOut:
         predistribution=list(cg.get("predistribution", [])),
     )
 
+
 class QtmHistoryEvent(BaseModel):
     operator: str
     verdict: str
     p: float
+
 
 class QtmHistoryOut(BaseModel):
     case: str
@@ -451,6 +475,7 @@ class QtmHistoryOut(BaseModel):
     total: int
     offset: int
     limit: int
+
 
 @router.get("/history/{case}", response_model=QtmHistoryOut)
 async def get_history(
@@ -482,16 +507,20 @@ async def get_history(
     items = [QtmHistoryEvent(**e) for e in sliced]
     return QtmHistoryOut(case=case, history=items, total=total, offset=start, limit=lmt)
 
+
 class OperatorsOut(BaseModel):
     operators: dict[str, dict[str, float]]
+
 
 @router.get("/operators", response_model=OperatorsOut)
 async def list_operators() -> OperatorsOut:
     # Example eigenvalue maps; can be made dynamic per domain
     return OperatorsOut(operators=_operator_eigs())
 
+
 class UncertaintyOut(BaseModel):
     lower_bound: float
+
 
 @router.get("/uncertainty", response_model=UncertaintyOut)
 async def uncertainty_bound() -> UncertaintyOut:
@@ -505,6 +534,7 @@ async def uncertainty_bound() -> UncertaintyOut:
     lb = round(0.2 + min(0.2, kappa * 10.0), 3)
     return UncertaintyOut(lower_bound=lb)
 
+
 def _operator_eigs() -> dict[str, dict[str, float]]:
     return {
         "W": {"ALLOW": 1.0, "DENY": -1.0, "ABSTAIN": 0.0},
@@ -514,9 +544,11 @@ def _operator_eigs() -> dict[str, dict[str, float]]:
         "C": {"ALLOW": 0.0, "DENY": 1.0, "ABSTAIN": 0.5},
     }
 
+
 def _validate_operator(name: str) -> None:
     if name not in _operator_eigs().keys():
         raise HTTPException(status_code=400, detail=f"Unknown operator: {name}")
+
 
 def _validate_basis_for_operator(operator: str, basis: list[str]) -> None:
     eigs = _operator_eigs().get(operator)
@@ -526,11 +558,13 @@ def _validate_basis_for_operator(operator: str, basis: list[str]) -> None:
     if any(b not in keys for b in basis):
         raise HTTPException(status_code=400, detail=f"Basis not compatible with operator {operator}")
 
+
 class SetStateRequest(BaseModel):
     case: str = Field(..., min_length=1)
     psi: str | None = Field(default=None, description="State URI or descriptor")
     basis: list[str]
     probs: list[float] = Field(description="Probabilities aligned with basis; will be normalized")
+
 
 @router.post("/state", response_model=QtmStateOut)
 async def set_state(req: SetStateRequest) -> QtmStateOut:
@@ -550,12 +584,15 @@ async def set_state(req: SetStateRequest) -> QtmStateOut:
         case=req.case, psi=CASE_GRAPH[req.case]["psi"], basis=list(req.basis), predistribution=predistribution
     )
 
+
 class ExpectationRequest(BaseModel):
     case: str
     operator: str
 
+
 class ExpectationOut(BaseModel):
     value: float
+
 
 @router.post("/expectation", response_model=ExpectationOut)
 async def expectation(req: ExpectationRequest) -> ExpectationOut:
@@ -587,8 +624,10 @@ async def expectation(req: ExpectationRequest) -> ExpectationOut:
         pass
     return ExpectationOut(value=out)
 
+
 class DeleteResult(BaseModel):
     ok: bool
+
 
 @router.delete("/preset/{case}", response_model=DeleteResult)
 async def delete_preset(case: str) -> DeleteResult:
@@ -599,12 +638,14 @@ async def delete_preset(case: str) -> DeleteResult:
     _save_presets(presets)
     return DeleteResult(ok=True)
 
+
 @router.delete("/state/{case}", response_model=DeleteResult)
 async def delete_state(case: str) -> DeleteResult:
     if case not in CASE_GRAPH:
         raise HTTPException(status_code=404, detail="Case not found")
     CASE_GRAPH.pop(case, None)
     return DeleteResult(ok=True)
+
 
 def _fractional_commutator(a: str, b: str) -> float:
     if a == b:
@@ -626,6 +667,7 @@ def _fractional_commutator(a: str, b: str) -> float:
         return 0.0
     return round(min(1.0, num / den), 3)
 
+
 @router.post("/commutator", response_model=CommutatorResponse)
 async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResponse:
     from services.api_gateway.limits import enforce_limits
@@ -633,16 +675,19 @@ async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResp
     enforce_limits(request, cost_units=1)
     return CommutatorResponse(value=_fractional_commutator(req.A, req.B))
 
+
 class DecoherenceRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier or 'default'")
     channel: str = Field(description="dephasing | depolarizing | damping")
     gamma: float | None = Field(default=None, description="Channel parameter (optional)")
+
 
 class DecoherenceResponse(BaseModel):
     ok: bool
     case: str
     channel: str
     gamma: float | None = None
+
 
 @router.post("/decoherence", response_model=DecoherenceResponse)
 async def set_decoherence(req: DecoherenceRequest, request: Request) -> DecoherenceResponse:
@@ -660,7 +705,9 @@ async def set_decoherence(req: DecoherenceRequest, request: Request) -> Decohere
     DECOHERENCE_REGISTRY[case_id] = cfg
     return DecoherenceResponse(ok=True, case=case_id, channel=ch, gamma=req.gamma)
 
+
 # === LOGIKA / LOGIC ===
+
 
 def _load_presets() -> dict[str, str]:
     try:
@@ -672,6 +719,7 @@ def _load_presets() -> dict[str, str]:
         return {}
     return {}
 
+
 def _save_presets(d: dict[str, str]) -> None:
     try:
         import json as _json
@@ -681,13 +729,16 @@ def _save_presets(d: dict[str, str]) -> None:
     except Exception:
         pass
 
+
 class PresetIn(BaseModel):
     case: str = Field(..., min_length=1)
     operator: str = Field(..., min_length=1, max_length=1)
 
+
 class PresetOut(BaseModel):
     case: str
     operator: str
+
 
 @router.post("/preset", response_model=PresetOut)
 async def save_preset(p: PresetIn) -> PresetOut:
@@ -695,6 +746,7 @@ async def save_preset(p: PresetIn) -> PresetOut:
     presets[p.case] = p.operator
     _save_presets(presets)
     return PresetOut(case=p.case, operator=p.operator)
+
 
 @router.get("/preset/{case}", response_model=PresetOut)
 async def get_preset(case: str) -> PresetOut:
@@ -704,10 +756,12 @@ async def get_preset(case: str) -> PresetOut:
         raise HTTPException(status_code=404, detail="Preset not found")
     return PresetOut(case=case, operator=op)
 
+
 @router.get("/presets")
 async def list_presets() -> list[PresetOut]:
     presets = _load_presets()
     return [PresetOut(case=k, operator=v) for k, v in presets.items()]
+
 
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)
 async def find_entanglement(req: FindEntanglementRequest, request: Request) -> FindEntanglementResponse:
@@ -728,14 +782,17 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
 
     return FindEntanglementResponse(pairs=pairs, mi=0.05 if pairs else 0.0, negativity=0.03 if pairs else 0.0)
 
+
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+
 
 class CommutatorExpRequest(BaseModel):
     case: str
     A: str
     B: str
+
 
 @router.post("/commutator_expectation", response_model=CommutatorResponse)
 async def commutator_expectation(req: CommutatorExpRequest, request: Request) -> CommutatorResponse:

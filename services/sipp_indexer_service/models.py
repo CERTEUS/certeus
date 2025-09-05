@@ -34,6 +34,7 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
+
 class LegalActSnapshot(BaseModel):
     """
 
@@ -72,6 +73,7 @@ class LegalActSnapshot(BaseModel):
         ...,
         description="PL: Znacznik czasu wykonania migawki. EN: Timestamp of snapshot creation.",
     )
+
 
 # === LOGIKA / LOGIC ===
 

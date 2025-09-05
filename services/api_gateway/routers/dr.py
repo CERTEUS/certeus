@@ -35,38 +35,47 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
+
 class ReplayRequest(BaseModel):
     case: str
 
     timestamp: str
+
 
 class ReplayResponse(BaseModel):
     ok: bool
 
     state_uri: str
 
+
 class RecallRequest(BaseModel):
     upn: str
+
 
 class RecallResponse(BaseModel):
     ok: bool
 
     link: str
 
+
 class LockRequest(BaseModel):
     case: str = Field(..., min_length=1)
     reason: str | None = None
+
 
 class LockResponse(BaseModel):
     ok: bool
     lock_ref: str
 
+
 class RevokeRequest(BaseModel):
     lock_ref: str = Field(..., min_length=3)
+
 
 class RevokeResponse(BaseModel):
     ok: bool
     revoked: bool
+
 
 # === LOGIKA / LOGIC ===
 
@@ -84,6 +93,7 @@ class RevokeResponse(BaseModel):
 
 router = APIRouter(prefix="/v1/dr", tags=["DR"])
 
+
 @router.post("/replay", response_model=ReplayResponse)
 async def replay(req: ReplayRequest, request: Request) -> ReplayResponse:
     from services.api_gateway.limits import enforce_limits
@@ -92,6 +102,7 @@ async def replay(req: ReplayRequest, request: Request) -> ReplayResponse:
 
     return ReplayResponse(ok=True, state_uri=f"boundary://snapshot/{req.case}/{req.timestamp}")
 
+
 @router.post("/recall", response_model=RecallResponse)
 async def recall(req: RecallRequest, request: Request) -> RecallResponse:
     from services.api_gateway.limits import enforce_limits
@@ -99,6 +110,7 @@ async def recall(req: RecallRequest, request: Request) -> RecallResponse:
     enforce_limits(request, cost_units=1)
 
     return RecallResponse(ok=True, link=f"ledger://revocations/{req.upn}")
+
 
 @router.post("/lock", response_model=LockResponse)
 async def lock(req: LockRequest, request: Request, response: Response) -> LockResponse:
@@ -112,6 +124,7 @@ async def lock(req: LockRequest, request: Request, response: Response) -> LockRe
         pass
     return LockResponse(ok=True, lock_ref=lock_ref)
 
+
 @router.post("/revoke", response_model=RevokeResponse)
 async def revoke(req: RevokeRequest, request: Request, response: Response) -> RevokeResponse:
     from services.api_gateway.limits import enforce_limits
@@ -122,6 +135,7 @@ async def revoke(req: RevokeRequest, request: Request, response: Response) -> Re
     except Exception:
         pass
     return RevokeResponse(ok=True, revoked=True)
+
 
 # === I/O / ENDPOINTS ===
 

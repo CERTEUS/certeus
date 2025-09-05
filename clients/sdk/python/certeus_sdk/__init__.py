@@ -20,7 +20,6 @@ from __future__ import annotations
 from typing import Any
 
 # === IMPORTY / IMPORTS ===
-
 import httpx
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -28,6 +27,7 @@ import httpx
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
+
 
 class CerteusClient:
     def __init__(
@@ -136,6 +136,7 @@ class CerteusClient:
             self._client.close()
         except Exception:
             pass
+
 
 # === I/O / ENDPOINTS ===
 

@@ -53,6 +53,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 # +=====================================================================+
 
+
 def main() -> None:
     ap = ArgumentParser()
 
@@ -111,6 +112,7 @@ def main() -> None:
         )
 
         print(base64.urlsafe_b64encode(b).rstrip(b"=").decode())
+
 
 if __name__ == "__main__":
     main()

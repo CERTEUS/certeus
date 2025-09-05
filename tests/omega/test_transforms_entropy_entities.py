@@ -25,11 +25,13 @@ from core.omega.transforms import (
     normalize_text,
 )
 
+
 def test_entropy_drift_small_for_normalize() -> None:
     txt = '“Ustawa” z dnia 20 lipca 2018 r. – Prawo'
     out, _ = apply_transform(txt, "normalize", lang="pl")
     ent = compute_entropy_drift(txt, out)
     assert ent.entropy_drift <= 0.2
+
 
 def test_entity_drift_stable_on_punctuation_changes() -> None:
     before = 'Jan Kowalski 2020, Poznań — Polska.'

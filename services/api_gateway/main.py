@@ -129,6 +129,7 @@ CLIENTS_WEB.mkdir(parents=True, exist_ok=True)
 
 # --- blok --- Lifespan (inicjalizacja adapterów) -------------------------------
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -142,6 +143,7 @@ async def lifespan(app: FastAPI):
     _ = (get_preview(), get_llm())
 
     yield
+
 
 # --- blok --- Aplikacja i middleware -------------------------------------------
 
@@ -179,12 +181,14 @@ except Exception:
 # Backward-compat: serve marketplace.html from clients/web/public if not at root
 from fastapi.responses import FileResponse  # noqa: E402
 
+
 @app.get("/app/marketplace.html")
 def _serve_marketplace():
     cand = CLIENTS_WEB / "marketplace.html"
     if not cand.exists():
         cand = CLIENTS_WEB / "public" / "marketplace.html"
     return FileResponse(str(cand))
+
 
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
 
@@ -195,6 +199,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Simple i18n negotiation: query param `lang` overrides `Accept-Language`.
 # Sets `request.state.lang` and adds `Content-Language` response header.
@@ -224,6 +229,7 @@ async def _i18n_language_negotiator(request, call_next):  # type: ignore[no-rede
         pass
     return response
 
+
 # Request duration metrics middleware (Prometheus)
 @app.middleware("http")
 async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
@@ -241,8 +247,10 @@ async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
         pass
     return response
 
+
 # Cache OpenAPI JSON in-memory to reduce per-request overhead
 _openapi_schema_cache = None
+
 
 def _cached_openapi():  # type: ignore[override]
     global _openapi_schema_cache
@@ -254,6 +262,7 @@ def _cached_openapi():  # type: ignore[override]
         routes=app.routes,
     )
     return _openapi_schema_cache
+
 
 app.openapi = _cached_openapi  # type: ignore[assignment]
 
@@ -297,11 +306,13 @@ app.include_router(metrics.router)
 
 # --- blok --- Health i root redirect -------------------------------------------
 
+
 @app.get("/health")
 def health() -> dict[str, object]:
     """PL: Liveness; EN: Liveness."""
 
     return {"status": "ok", "version": APP_VERSION}
+
 
 @app.get("/")
 def root_redirect() -> RedirectResponse:
@@ -315,7 +326,9 @@ def root_redirect() -> RedirectResponse:
 
     return RedirectResponse(url="/app/proof_visualizer/index.html", status_code=307)
 
+
 # --- blok --- Pomocnicze -------------------------------------------------------
+
 
 def _make_blob(upload: UploadFile, data: bytes) -> Blob:
     """
@@ -332,7 +345,9 @@ def _make_blob(upload: UploadFile, data: bytes) -> Blob:
         data=data,
     )
 
+
 # --- blok --- Metrics middleware (request duration) -----------------------------
+
 
 @app.middleware("http")
 async def _metrics_timing(request, call_next):  # type: ignore[override]
@@ -357,6 +372,7 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
         pass
 
     return response
+
 
 # === I/O / ENDPOINTS ===
 

@@ -21,6 +21,7 @@ from scripts.gates.compliance_mapping_gate import check
 
 # === TESTY / TESTS ===
 
+
 def test_compliance_mapping_gate_runs() -> None:
     violations, warnings = check()
     assert isinstance(violations, list)

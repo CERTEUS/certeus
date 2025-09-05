@@ -28,6 +28,8 @@ EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 
 from __future__ import annotations
 
+import os
+from time import time
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
@@ -37,15 +39,18 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
+
 class HDEPlanRequest(BaseModel):
     case: str | None = None
 
     target_horizon: float | None = Field(default=0.2, description="Desired horizon mass threshold")
 
+
 class HDEPlanAlternative(BaseModel):
     strategy: str
     cost_tokens: int
     expected_kappa: float
+
 
 class HDEPlanResponse(BaseModel):
     evidence_plan: list[dict[str, Any]]
@@ -55,10 +60,12 @@ class HDEPlanResponse(BaseModel):
     alternatives: list[HDEPlanAlternative] | None = None
     best_strategy: str | None = None
 
+
 class QOracleRequest(BaseModel):
     objective: str | None = None
     question: str | None = None
     constraints: dict[str, Any] | None = None
+
 
 class QOracleResponse(BaseModel):
     optimum: dict[str, Any]
@@ -67,12 +74,14 @@ class QOracleResponse(BaseModel):
 
     distribution: list[dict[str, Any]]
 
+
 class EntangleRequest(BaseModel):
     variables: list[str]
 
     target_negativity: float = 0.1
 
     scenario: str | None = Field(default=None, description="Scenario label (e.g., 'pairwise', 'global')")
+
 
 class EntangleResponse(BaseModel):
     certificate: str
@@ -83,6 +92,7 @@ class EntangleResponse(BaseModel):
 
     pairs: list[dict[str, float]] | None = None
 
+
 class ChronoSyncRequest(BaseModel):
     coords: dict[str, Any]
 
@@ -91,6 +101,7 @@ class ChronoSyncRequest(BaseModel):
     treaty_clause_skeleton: dict[str, Any] | None = None
 
     protocol: str | None = Field(default=None, description="Protocol tag (e.g., 'mediation.v1')")
+
 
 class ChronoSyncResponse(BaseModel):
     reconciled: bool
@@ -102,6 +113,7 @@ class ChronoSyncResponse(BaseModel):
     collisions_count: int | None = None
 
     mediated: bool | None = None
+
 
 # === LOGIKA / LOGIC ===
 
@@ -120,26 +132,52 @@ class ChronoSyncResponse(BaseModel):
 router = APIRouter(prefix="/v1/devices", tags=["devices"])
 
 # Prosty store idempotency (in-proc). Klucz: path + Idempotency-Key
-_IDEMP_STORE: dict[str, dict[str, Any]] = {}
+_IDEMP_TTL_SEC = 300.0
+_IDEMP_STORE: dict[str, tuple[float, dict[str, Any]]] = {}
+
 
 def _get_idemp_key(request: Request) -> str | None:
     key = request.headers.get("X-Idempotency-Key") or request.headers.get("Idempotency-Key")
     key = (key or "").strip()
     return key or None
 
+
+def _ttl() -> float:
+    try:
+        v = float(os.getenv("IDEMP_TTL_SEC") or _IDEMP_TTL_SEC)
+        return max(0.0, v)
+    except Exception:
+        return _IDEMP_TTL_SEC
+
+
 def _cache_get(path: str, key: str) -> dict[str, Any] | None:
     try:
-        return _IDEMP_STORE.get(f"{path}::{key}")
+        k = f"{path}::{key}"
+        item = _IDEMP_STORE.get(k)
+        if not item:
+            return None
+        exp, payload = item
+        if exp < time():
+            # expired
+            try:
+                _IDEMP_STORE.pop(k, None)
+            except Exception:
+                pass
+            return None
+        return payload
     except Exception:
         return None
 
+
 def _cache_set(path: str, key: str, payload: dict[str, Any]) -> None:
     try:
-        _IDEMP_STORE[f"{path}::{key}"] = dict(payload)
+        _IDEMP_STORE[f"{path}::{key}"] = (time() + _ttl(), dict(payload))
     except Exception:
         pass
 
+
 # Horizon Drive Engine (HDE)
+
 
 @router.post("/horizon_drive/plan", response_model=HDEPlanResponse)
 async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -> HDEPlanResponse:
@@ -212,7 +250,9 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
             pass
     return out
 
+
 # Quantum Oracle (QOC)
+
 
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
 async def qoracle_expectation(req: QOracleRequest, request: Request, response: Response) -> QOracleResponse:
@@ -272,7 +312,9 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
             pass
     return out
 
+
 # Entanglement Inducer (EI)
+
 
 @router.post("/entangle", response_model=EntangleResponse)
 async def entangle(req: EntangleRequest, request: Request, response: Response) -> EntangleResponse:
@@ -333,7 +375,9 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
             pass
     return out
 
+
 # Chronosync (LCSI)
+
 
 @router.post("/chronosync/reconcile", response_model=ChronoSyncResponse)
 async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, response: Response) -> ChronoSyncResponse:
@@ -383,6 +427,7 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, respons
         except Exception:
             pass
     return out
+
 
 # === I/O / ENDPOINTS ===
 

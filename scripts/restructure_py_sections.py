@@ -65,6 +65,7 @@ MARKERS = [
 
 # === LOGIKA / LOGIC ===
 
+
 def get_span(node: ast.AST) -> tuple[int, int]:
     # Include decorators for FunctionDef so we don't leave orphan decorator lines
 
@@ -79,6 +80,7 @@ def get_span(node: ast.AST) -> tuple[int, int]:
 
     return (start_lineno - 1, end_lineno - 1)
 
+
 def is_enum_class(node: ast.ClassDef) -> bool:
     enum_bases = {"Enum", "IntEnum", "StrEnum"}
 
@@ -91,10 +93,12 @@ def is_enum_class(node: ast.ClassDef) -> bool:
 
     return False
 
+
 def is_model_class(node: ast.ClassDef) -> bool:
     # Traktuj wszystkie klasy jako modele (deklaracje) by były przed logiką/konfiguracją
 
     return True
+
 
 def _is_simple_literal(value: ast.AST) -> bool:
     """Return True for literals/containers only (no Calls/Names), safe for CONFIG."""
@@ -112,6 +116,7 @@ def _is_simple_literal(value: ast.AST) -> bool:
         return True
 
     return False
+
 
 def is_upper_name_target(node: ast.AST) -> bool:
     targets: list[str] = []
@@ -135,6 +140,7 @@ def is_upper_name_target(node: ast.AST) -> bool:
 
     return any(name.isupper() for name in targets) and _is_simple_literal(value)
 
+
 def is_endpoint_func(node: ast.FunctionDef) -> bool:
     for dec in node.decorator_list:
         # @router.get("/...") or @router.post ...
@@ -157,10 +163,12 @@ def is_endpoint_func(node: ast.FunctionDef) -> bool:
 
     return False
 
+
 def has_markers(text: str) -> bool:
     head = "\n".join(text.splitlines()[:200])
 
     return "# === IMPORTY / IMPORTS ===" in head
+
 
 def rebuild(text: str, rel: str) -> str | None:
     if not has_markers(text):
@@ -317,6 +325,7 @@ def rebuild(text: str, rel: str) -> str | None:
 
     return None
 
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
 
@@ -341,6 +350,7 @@ def main() -> None:
                 print(f"[RESTRUCTURED] {f.relative_to(root)}")
 
     print(f"Done. Files restructured: {changed}")
+
 
 if __name__ == "__main__":
     main()

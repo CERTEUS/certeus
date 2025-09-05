@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+
 def test_geodesic_sets_pco_and_writes_ledger() -> None:
     from services.api_gateway.main import app
     from services.ledger_service.ledger import ledger_service
@@ -31,6 +32,7 @@ def test_geodesic_sets_pco_and_writes_ledger() -> None:
     after = len(ledger_service.get_records_for_case(case_id=case))
     assert after == before + 1
 
+
 def test_horizon_sets_pco_and_writes_ledger() -> None:
     from services.api_gateway.main import app
     from services.ledger_service.ledger import ledger_service
@@ -43,6 +45,7 @@ def test_horizon_sets_pco_and_writes_ledger() -> None:
     assert r.headers.get("X-CERTEUS-PCO-cfe.horizon_mass") is not None
     after = len(ledger_service.get_records_for_case(case_id=case))
     assert after == before + 1
+
 
 # === I/O / ENDPOINTS ===
 

@@ -33,8 +33,10 @@ import sys
 
 # === TESTY / TESTS ===
 
+
 def _repo() -> Path:
     return Path(__file__).resolve().parents[2]
+
 
 def _run_gate(payload: dict, strict: bool) -> int:
     env = os.environ.copy()
@@ -49,6 +51,7 @@ def _run_gate(payload: dict, strict: bool) -> int:
     # Return code conveys detection/strict policy
     return proc.returncode
 
+
 def test_redaction_gate_detects_pii_and_enforces_strict() -> None:
     pii_payload = {"subject": {"name": "PESEL: 12345678901"}}
     # Non-strict: detection but exit 0
@@ -57,6 +60,7 @@ def test_redaction_gate_detects_pii_and_enforces_strict() -> None:
     # Strict: exit 1
     rc2 = _run_gate(pii_payload, strict=True)
     assert rc2 == 1
+
 
 def test_redaction_gate_ok_on_clean_payload() -> None:
     clean_payload = {"subject": {"name": "Jan TEST"}, "content": "Brak wrazliwych danych."}
