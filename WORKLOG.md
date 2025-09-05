@@ -431,6 +431,11 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Shedder: middleware adaptacyjny (ENV: SHED_ENABLE/SHED_FORCE_RATE/SHED_MAX_RATE) – testy 503/429 przechodzą.
   - Lint/tests: ruff OK; pytest: 340 passed, 5 skipped lokalnie; push na work/daily.
   - Nast.: poczekać na CI (Tests/UI Smoke/Canary-Gate/truth-gates) i auto-promocję do main.
+ 
+ - 2025-09-05 15:47:30Z [A15] (feat/docs-cleanup): Docs cleanup (Validate UI)
+   - MkDocs nav: API/Overview + OpenAPI; Runbooks/CI Local
+   - Runbook: docs/runbooks/ci_local.md; local link‑check script (scripts/tools/check_md_links.py)
+   - Linki: poprawki w docs/index.md oraz 404.md; `mkdocs build` OK
 - 2025-09-05 15:49:11Z [root] (work/daily): A14: PFS/Devices stability (TTL, idempotency)
   - - PFS DHT: TTL=0 exclude; capacity-aware assign
   - - Devices: X-Idempotency-TTL + replay metrics
