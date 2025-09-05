@@ -516,17 +516,30 @@ class RenormRequest(BaseModel):
 async def renorm(body: RenormRequest) -> dict:
     """PL/EN: Renormalize authority weights to probability distribution.
 
+    - Numerical stability: treat extremely small positives as zero to avoid
+      denormal underflow drift (scale invariance property).
     - If the sum is zero/non-positive, return a uniform distribution.
-    - Otherwise p_i = authority_i / sum(authority).
+    - Otherwise p_i = authority_i / sum(authority) (after clamping).
     """
+    import math as _math
+
     items = list(body.items or [])
     n = len(items)
-    total = sum(max(0.0, float(it.authority)) for it in items)
     if n == 0:
-        return {"case": body.case, "dist": []}
+        return {"case": body.case, "dist": [], "entropy": 0.0}
+
+    EPS = 1e-308  # treat denormals as zero to keep scale invariance
+    vals = [max(0.0, float(it.authority)) for it in items]
+    vals = [v if v >= EPS else 0.0 for v in vals]
+    total = sum(vals)
+
     if total <= 0.0:
         p = 1.0 / n
-        dist = [RenormItemOut(uid=str(it.uid), p=p) for it in items]
+        probs = [p] * n
     else:
-        dist = [RenormItemOut(uid=str(it.uid), p=(max(0.0, float(it.authority)) / total)) for it in items]
-    return {"case": body.case, "dist": [d.model_dump() for d in dist]}
+        probs = [v / total for v in vals]
+
+    dist = [RenormItemOut(uid=str(items[i].uid), p=probs[i]) for i in range(n)]
+    # Shannon entropy (nats); ignore p=0 terms
+    ent = -sum((p * _math.log(p)) for p in probs if p > 0.0)
+    return {"case": body.case, "dist": [d.model_dump() for d in dist], "entropy": float(ent)}
