@@ -375,3 +375,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - tests: external config override (MED)
   - - OpenAPI: CFE endpoints (domain/severity + examples)
   - - Full suite: 256 passed, 5 skipped
+- 2025-09-05 11:25:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
