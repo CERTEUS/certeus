@@ -89,7 +89,7 @@ jobs:
       - name: 🧪 Pytest (JUnit report)
         run: |
           mkdir -p "$(dirname "$PYTEST_JUNIT_XML")"
-          uv run pytest -q --junitxml="$PYTEST_JUNIT_XML"
+          python -m pytest -q --junitxml="$PYTEST_JUNIT_XML"
 
       - name: 📤 Upload test report
         if: always()
