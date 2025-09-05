@@ -458,3 +458,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
     * LEXENITH pipeline: częściowo; brak pełnego lock→motion→publish→Why‑Not z PCO ścieżki.
     * FIN/LEX dashboardy: częściowo (SRE p95); brak dedykowanych paneli FIN/LEX.
   - Zmiany w CI do dorobienia (A8): Asset‑Integrity Gate (enforce), FROST step w Proof Gate, P2P smoke, SDK Contract Gate, enforce supply‑chain flags.
+- 2025-09-05 18:05:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
