@@ -40,7 +40,8 @@ def _bool_env(name: str) -> bool:
 
 
 def main() -> int:
-    repo = Path(__file__).resolve().parents[2]
+    # Use current working directory as repository root to support sandboxed CI and tests
+    repo = Path(".").resolve()
     out = repo / "out"
     out.mkdir(parents=True, exist_ok=True)
 
