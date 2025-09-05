@@ -38,7 +38,6 @@ from __future__ import annotations
 
 from utils.console import ascii_safe, error, info, print_safe, success
 
-
 class _AsciiOnlyStream:
     """Tiny write-capturing stream that only accepts ASCII."""
 
@@ -71,12 +70,10 @@ class _AsciiOnlyStream:
     def isatty(self) -> bool:  # pragma: no cover
         return False
 
-
 def test_ascii_safe_true_for_ascii_stream() -> None:
     s = _AsciiOnlyStream()
 
     assert ascii_safe(s) is True
-
 
 def test_print_safe_replaces_non_ascii_on_ascii_stream() -> None:
     s = _AsciiOnlyStream()
@@ -96,7 +93,6 @@ def test_print_safe_replaces_non_ascii_on_ascii_stream() -> None:
     assert any(ord(ch) > 127 for ch in text)
 
     assert "?" in captured or captured != text
-
 
 def test_info_success_error_prefixes_ascii_stream() -> None:
     s = _AsciiOnlyStream()

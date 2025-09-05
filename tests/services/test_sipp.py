@@ -45,7 +45,6 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
-
 def test_get_snapshot_endpoint_success() -> None:
     act_id = "kk-art-286"
 
@@ -65,7 +64,6 @@ def test_get_snapshot_endpoint_success() -> None:
 
     assert "snapshot_timestamp" in data
 
-
 def test_get_snapshot_with_at_param() -> None:
     act_id = "kk-art-286"
 
@@ -80,7 +78,6 @@ def test_get_snapshot_with_at_param() -> None:
     # Stub ignores 'at', but API must accept the param gracefully.
 
     assert data["version_id"] == "2023-10-01"
-
 
 def test_index_isap_writes_snapshot_file(tmp_path: Path) -> None:
     from services.sipp_indexer_service.index_isap import index_act

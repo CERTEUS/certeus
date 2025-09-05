@@ -11,7 +11,7 @@ name: openapi-diff
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -22,4 +22,3 @@ jobs:
       - name: Diff placeholder
         run: |
           echo "OpenAPI diff placeholder"
-

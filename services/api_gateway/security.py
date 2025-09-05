@@ -56,7 +56,6 @@ from core.pco.crypto import b64u_decode, load_pubkey_bytes_from_env
 
 __all__ = ["attach_proof_only_middleware"]
 
-
 def attach_proof_only_middleware(app: FastAPI) -> None:
     # 1) Proof-only (optional)
 
@@ -182,7 +181,6 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
                 pass
 
             return await call_next(request)
-
 
 # === I/O / ENDPOINTS ===
 

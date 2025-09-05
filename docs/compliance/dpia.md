@@ -6,4 +6,3 @@
 - Storage: Private artifacts retained per Policy Pack; public payload retained 10y
 - Security: Ed25519 signatures, JWKS exposure, source digests, auditability
 - Risk mitigation: Abstain on unmet thresholds; human Counsel escalation path
-

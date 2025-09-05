@@ -113,14 +113,25 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/tenant_slo_trend_ok.txt
+
       - name: Marketplace Policy Gate (report-only)
         continue-on-error: true
         run: |
           python scripts/gates/marketplace_policy_gate.py || true
+
       - name: Mark Marketplace OK
         if: success()
         run: |
           mkdir -p out && echo ok > out/marketplace_ok.txt
+
+      - name: Plugin Supply-Chain Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/gates/plugin_supply_chain_gate.py || true
+      - name: Mark Plugin Supply-Chain OK
+        if: success()
+        run: |
+          mkdir -p out && echo ok > out/plugin_supply_ok.txt
       - name: Compliance Mapping (report-only)
         continue-on-error: true
         run: |
@@ -255,11 +266,6 @@ jobs:
           OMEGA_MAX_ENTITY_DRIFT: "0.5"
         run: |
           python scripts/gates/compute_gauge_drift.py --out out/gauge.json || true
-
-      - name: Marketplace Policy Gate (report-only)
-        continue-on-error: true
-        run: |
-          python scripts/gates/marketplace_policy_gate.py || true
 
       - name: Pack ABI/SemVer Gate (report-only)
         continue-on-error: true

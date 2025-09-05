@@ -33,7 +33,10 @@ See also `docs/openapi/certeus.v1.yaml` for full schemas and examples.
 - POST `/v1/lexqft/coverage/reset`: Reset coverage aggregator (clears persisted state).
 - POST `/v1/lexqft/tunnel`: Tunneling heuristic; returns `{p_tunnel, min_energy_to_cross, path}` and emits PCO headers `X-CERTEUS-PCO-qlaw.tunneling.*`.
 
-- POST `/v1/devices/horizon_drive/plan`: HDE planner; returns `plan_of_evidence`, `cost_tokens`, `expected_kappa`, and `alternatives[]` with `best_strategy`.
+- POST `/v1/qoc/vacuum_pairs`: Vacuum virtual pairs (QOC); returns `{pairs_count, rate}` and emits PCO header `X-CERTEUS-PCO-qoc.vacuum_pairs.rate`.
+- POST `/v1/qoc/energy_debt`: Helper to calculate energy debt for a number of pairs: `{pairs_count, mean_energy}` → `{energy_debt}`.
+
+- POST `/v1/devices/horizon_drive/plan`: HDE planner; returns `plan_of_evidence`, `cost_tokens`, `expected_kappa`, and `alternatives[]` with `best_strategy`. Supports idempotency via `X-Idempotency-Key`; replay flagged by `X-Idempotent-Replay: 1`.
 - POST `/v1/devices/qoracle/expectation`: Q‑Oracle expectation (heuristic distribution); returns `{optimum, payoff, distribution[]}`.
 - POST `/v1/devices/entangle`: Entangler; returns `{certificate, achieved_negativity}` and exposes negativity metrics per variable.
 - POST `/v1/devices/chronosync/reconcile`: Chronosync; returns `{reconciled, sketch}` with treaty clause skeleton.
@@ -106,6 +109,42 @@ Response (example):
 }
 ```
 
+- QTMP — measure, sequence, decoherence, presets
+
+```
+# Initialize case predistribution (optional)
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/qtm/init_case \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"demo-qtm-1","basis":["ALLOW","DENY","ABSTAIN"],"state_uri":"psi://uniform"}'
+
+# Configure decoherence for case
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/qtm/decoherence \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"demo-qtm-1","channel":"dephasing","gamma":0.2}'
+
+# Single measurement (PCO headers include collapse event/priorities)
+curl -i -sS -X POST \
+  http://127.0.0.1:8000/v1/qtm/measure \
+  -H 'Content-Type: application/json' \
+  -d '{"operator":"L","source":"ui","case":"demo-qtm-1"}' | sed -n '1,30p'
+
+# Sequence of operators
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/qtm/measure_sequence \
+  -H 'Content-Type: application/json' \
+  -d '{"operators":["L","T","W"],"case":"demo-qtm-1"}'
+
+# Preset preferred operator for a case
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/qtm/preset \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"demo-qtm-1","operator":"T"}'
+
+curl -sS http://127.0.0.1:8000/v1/qtm/presets
+```
+
 - lexqft — coverage update/state
 
 ```
@@ -128,6 +167,19 @@ curl -sS -X POST \
   -H 'Content-Type: application/json' \
   -d '{"state_uri": "lexqft-case-1", "evidence_energy": 1.2}' -i | sed -n '1,20p'
 ```
+
+- QOC — vacuum pairs
+
+```
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/qoc/vacuum_pairs \
+  -H 'Content-Type: application/json' \
+  -d '{"vacuum_energy": 2.0, "horizon_scale": 1.2}' -i | sed -n '1,20p'
+```
+
+- FIN→LexQFT coverage feed (implicit)
+
+Wywołanie `/v1/fin/alpha/measure` dokłada wkład do agregatora pokrycia (gamma/uncaptured) w lexqft, co zasila Path‑Coverage Gate danymi FIN.
 
 - Entangle — negativity certificate
 
@@ -153,13 +205,16 @@ curl -sS -X POST \
 - Billing — quota / allocate / refund
 
 ```
+
 TENANT=t-demo
 curl -sS http://127.0.0.1:8000/v1/billing/quota -H "X-Tenant-ID: $TENANT"
 curl -sS -X POST http://127.0.0.1:8000/v1/billing/quota -H 'content-type: application/json' -d '{"tenant":"t-demo","units":3}'
 curl -sS -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"cost_units":2}'
 curl -sS -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"cost_units":2}'
-curl -sS -X POST http://127.0.0.1:8000/v1/billing/refund   -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"units":1}'
+curl -sS -X POST http://127.0.0.1:8000/v1/billing/refund -H 'content-type: application/json' -H "X-Tenant-ID: $TENANT" -d '{"units":1}'
+
 ```
+
 ```
 
 ### Packs — examples
@@ -177,6 +232,19 @@ curl -sS -X POST \
         "kind": "summarize",
         "payload": {"title": "My Report", "items": [1,2,3,4]}
       }'
+
+# Install (requires hex(64+) signature)
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/packs/install \
+  -H 'Content-Type: application/json' \
+  -d '{"pack":"demo_billing_pl","signature":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":"1.0.0"}'
+
+# Idempotent Devices example
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/devices/horizon_drive/plan \
+  -H 'Content-Type: application/json' \
+  -H 'X-Idempotency-Key: demo-123' \
+  -d '{"target_horizon":0.25}' -i | sed -n '1,20p'
 ```
 
 ### Billing Tokens — examples
@@ -193,4 +261,22 @@ curl -sS -X POST http://127.0.0.1:8000/v1/fin/tokens/allocate \
   -d '{"request_id":"'$RID'","allocated_by":"ops"}'
 
 curl -sS http://127.0.0.1:8000/v1/fin/tokens/$RID
+```
+
+## CFE — Geometry of Meaning
+
+- GET `/v1/cfe/curvature`: telemetry stub `{kappa_max}` (feeds Gauge‑Gate)
+- POST `/v1/cfe/geodesic`: deterministic stub `{path[], geodesic_action, subject?}`; sets `X-CERTEUS-PCO-cfe.geodesic_action` and writes to Ledger
+- POST `/v1/cfe/horizon`: body `{case?, lock?, domain?, severity?}` → `{locked, horizon_mass}`; sets `X-CERTEUS-PCO-cfe.horizon_mass` and writes to Ledger. Heurystyka: `lock=true` lub (domain∈{MED/SEC/CODE/FIN} ∧ severity∈{high/critical}) lub `case` zawiera `sample/przyklad`.
+- GET `/v1/cfe/lensing?domain=LEX|FIN|MED|SEC|CODE`: domain‑aware influence map `{lensing_map{}, critical_precedents[], domain}`
+
+Examples:
+
+```
+curl -sS "http://127.0.0.1:8000/v1/cfe/lensing?domain=MED" | jq
+
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/cfe/horizon \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"MED-CASE-CRIT-1","domain":"MED","severity":"critical"}' -i | sed -n '1,20p'
 ```

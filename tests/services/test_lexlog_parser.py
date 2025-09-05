@@ -46,7 +46,6 @@ from services.lexlog_parser.parser import LexlogParser
 
 RULES = Path("packs/jurisdictions/PL/rules/kk.lex")
 
-
 def test_lexlog_parses_art_286_rule():
     text = RULES.read_text(encoding="utf-8")
 

@@ -59,7 +59,6 @@ SKIP_DIR_PREFIXES = (
     "mirror_",
 )
 
-
 def _should_skip(rel: str) -> bool:
     # Normalize to POSIX-style
     r = rel.replace("\\", "/")
@@ -75,7 +74,6 @@ def _should_skip(rel: str) -> bool:
     if "/site-packages/" in r or r.endswith("/site-packages") or "/dist-packages/" in r:
         return True
     return False
-
 
 def iter_files(patterns: list[str]) -> list[Path]:
     out: list[Path] = []
@@ -96,17 +94,14 @@ def iter_files(patterns: list[str]) -> list[Path]:
             out.append(p)
     return out
 
-
 def has_banner_head(text: str) -> bool:
     head = "\n".join(text.splitlines()[:80]).lower()
     return ("certeus" in head) and ("file:" in head)
-
 
 def has_sections_head(text: str) -> bool:
     head = "\n".join(text.splitlines()[:200])
 
     return "# === " in head
-
 
 def has_module_docstring(text: str) -> bool:
     try:
@@ -115,7 +110,6 @@ def has_module_docstring(text: str) -> bool:
     except Exception:
         # Do not block gate on docstring if parse fails (banner/sections remain enforced)
         return True
-
 
 def check_python() -> list[str]:
     errs: list[str] = []
@@ -171,7 +165,6 @@ def check_python() -> list[str]:
 
     return errs
 
-
 def check_textual(exts: list[str], label: str) -> list[str]:
     errs: list[str] = []
 
@@ -182,7 +175,6 @@ def check_textual(exts: list[str], label: str) -> list[str]:
             errs.append(f"[{label}][BANNER] {f.relative_to(REPO)}")
 
     return errs
-
 
 def main() -> int:
     issues: list[str] = []
@@ -210,7 +202,6 @@ def main() -> int:
     print("Premium Code Style: OK")
 
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -16,28 +16,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CERTEUS • Quantum</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:1080px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      .muted{color:#9aa0a6}
-      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
-      .grid{display:grid;grid-template-columns:repeat(10, 1fr);gap:2px;margin-top:8px}
-      .cell{width:18px;height:18px;background:#20242a;border-radius:2px}
-      .cell.hot{background:#f2c8cc}
-      .cell.cold{background:#c8f2d2}
-      input,select{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
-      .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-      .sr-only-focusable:active,.sr-only-focusable:focus{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto}
-      .bar{width:18px;border-radius:2px;background:linear-gradient(0deg,#8ab4f8 0%,#20242a 100%)}
-      .bars{display:flex;gap:6px;align-items:flex-end;min-height:110px}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 1080px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 2px;
+        margin-top: 8px;
+      }
+      .cell {
+        width: 18px;
+        height: 18px;
+        background: #20242a;
+        border-radius: 2px;
+      }
+      .cell.hot {
+        background: #f2c8cc;
+      }
+      .cell.cold {
+        background: #c8f2d2;
+      }
+      input,
+      select {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        border-radius: 10px;
+        color: #f2f2f3;
+        padding: 8px 10px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+      .sr-only-focusable:active,
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+      }
+      .bar {
+        width: 18px;
+        border-radius: 2px;
+        background: linear-gradient(0deg, #8ab4f8 0%, #20242a 100%);
+      }
+      .bars {
+        display: flex;
+        gap: 6px;
+        align-items: flex-end;
+        min-height: 110px;
+      }
     </style>
   </head>
   <body>
-    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
     <div class="container" id="main" role="main">
       <div class="card" role="region" aria-labelledby="title">
         <h1 id="title">Quantum • Operator Composer</h1>
@@ -46,7 +141,11 @@
             <option value="pl" selected>PL</option>
             <option value="en">EN</option>
           </select>
-          <input id="case" placeholder="case id (LEX-001)" aria-label="Case identifier" />
+          <input
+            id="case"
+            placeholder="case id (LEX-001)"
+            aria-label="Case identifier"
+          />
           <select id="op" aria-label="Operator">
             <option value="W">W</option>
             <option value="I">I</option>
@@ -55,141 +154,535 @@
             <option value="T">T</option>
           </select>
           <button id="measure" class="btn" data-i18n="measure">Measure</button>
-          <button id="save" class="btn" data-i18n="savePreset">Save preset</button>
-          <button id="load" class="btn" data-i18n="loadPreset">Load preset</button>
-          <button id="list-presets" class="btn" data-i18n="listPresets">List presets</button>
-          <span class="muted" id="ub-label">UB L_T:<span id="ub" class="pill" aria-live="polite">?</span></span>
-          <span class="muted" id="collapse-label">Collapse:<span id="collapse" class="pill" aria-live="polite">-</span></span>
-          <span class="muted" id="pri-label">Priorities:<span id="pri" class="pill" aria-live="polite">-</span></span>
+          <button id="save" class="btn" data-i18n="savePreset">
+            Save preset
+          </button>
+          <button id="load" class="btn" data-i18n="loadPreset">
+            Load preset
+          </button>
+          <button id="list-presets" class="btn" data-i18n="listPresets">
+            List presets
+          </button>
+          <span class="muted" id="ub-label"
+            >UB L_T:<span id="ub" class="pill" aria-live="polite">?</span></span
+          >
+          <span class="muted" id="collapse-label"
+            >Collapse:<span id="collapse" class="pill" aria-live="polite"
+              >-</span
+            ></span
+          >
+          <span class="muted" id="pri-label"
+            >Priorities:<span id="pri" class="pill" aria-live="polite"
+              >-</span
+            ></span
+          >
         </div>
         <div id="heat" class="grid" aria-label="UB heat"></div>
-        <p class="muted">Coverage: <span id="gamma" class="pill">?</span> • Tunneling p: <span id="ptun" class="pill">?</span></p>
+        <p class="muted">
+          Coverage: <span id="gamma" class="pill">?</span> • Tunneling p:
+          <span id="ptun" class="pill">?</span>
+        </p>
 
-        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+        <hr
+          style="border: none; border-top: 1px solid #2a2d33; margin: 16px 0"
+        />
 
-        <h2 id="comm-title" style="margin:0 0 10px;font-size:18px">Commutator heatmap (W/I/C/L/T)</h2>
+        <h2 id="comm-title" style="margin: 0 0 10px; font-size: 18px">
+          Commutator heatmap (W/I/C/L/T)
+        </h2>
         <div class="row">
-          <button id="refresh-comm" class="btn" data-i18n="refreshHeatmap">Refresh heatmap</button>
+          <button id="refresh-comm" class="btn" data-i18n="refreshHeatmap">
+            Refresh heatmap
+          </button>
           <span class="muted" id="comm-legend">0 = commute • 1 = max</span>
         </div>
-        <div id="comm-grid" class="grid" style="grid-template-columns:repeat(5, 1fr)" aria-label="Commutator heatmap" aria-describedby="desc-comm" tabindex="0"></div>
-        <span id="desc-comm" class="sr-only">Grid of 25 cells. Darker = commuting, lighter = higher non-commutation.</span>
+        <div
+          id="comm-grid"
+          class="grid"
+          style="grid-template-columns: repeat(5, 1fr)"
+          aria-label="Commutator heatmap"
+          aria-describedby="desc-comm"
+          tabindex="0"
+        ></div>
+        <span id="desc-comm" class="sr-only"
+          >Grid of 25 cells. Darker = commuting, lighter = higher
+          non-commutation.</span
+        >
 
-        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+        <hr
+          style="border: none; border-top: 1px solid #2a2d33; margin: 16px 0"
+        />
 
-        <h2 id="seq-title" style="margin:0 0 10px;font-size:18px">Sequence order (L→T vs T→L)</h2>
+        <h2 id="seq-title" style="margin: 0 0 10px; font-size: 18px">
+          Sequence order (L→T vs T→L)
+        </h2>
         <div class="row">
-          <button id="seq-lt" class="btn" data-i18n="measureLT">Measure L→T</button>
-          <button id="seq-tl" class="btn" data-i18n="measureTL">Measure T→L</button>
-          <span class="muted" id="steps-label">Steps:<span id="seq-steps" class="pill" aria-live="polite">-</span></span>
+          <button id="seq-lt" class="btn" data-i18n="measureLT">
+            Measure L→T
+          </button>
+          <button id="seq-tl" class="btn" data-i18n="measureTL">
+            Measure T→L
+          </button>
+          <span class="muted" id="steps-label"
+            >Steps:<span id="seq-steps" class="pill" aria-live="polite"
+              >-</span
+            ></span
+          >
         </div>
         <div class="row">
-          <button id="seq-compare" class="btn" data-i18n="compareLT_TL">Compare L→T vs T→L</button>
+          <button id="seq-compare" class="btn" data-i18n="compareLT_TL">
+            Compare L→T vs T→L
+          </button>
           <span class="muted" id="seq-compare-out" aria-live="polite">–</span>
         </div>
 
-        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+        <hr
+          style="border: none; border-top: 1px solid #2a2d33; margin: 16px 0"
+        />
 
-        <h2 id="deco-title" style="margin:0 0 10px;font-size:18px">Decoherence</h2>
+        <h2 id="deco-title" style="margin: 0 0 10px; font-size: 18px">
+          Decoherence
+        </h2>
         <div class="row">
           <select id="deco-ch" aria-label="Decoherence channel">
             <option value="dephasing" selected>dephasing</option>
             <option value="depolarizing">depolarizing</option>
             <option value="damping">damping</option>
           </select>
-          <input id="deco-g" type="number" step="0.05" min="0" max="1" value="0.1" style="width:110px" aria-label="Gamma" />
+          <input
+            id="deco-g"
+            type="number"
+            step="0.05"
+            min="0"
+            max="1"
+            value="0.1"
+            style="width: 110px"
+            aria-label="Gamma"
+          />
           <button id="apply-deco" class="btn" data-i18n="apply">Apply</button>
-          <span class="muted">case scope:<span id="deco-case" class="pill">default</span></span>
+          <span class="muted"
+            >case scope:<span id="deco-case" class="pill">default</span></span
+          >
         </div>
 
-        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+        <hr
+          style="border: none; border-top: 1px solid #2a2d33; margin: 16px 0"
+        />
 
-        <h2 id="history-title" style="margin:0 0 10px;font-size:18px">History & Ledger</h2>
+        <h2 id="history-title" style="margin: 0 0 10px; font-size: 18px">
+          History & Ledger
+        </h2>
         <div class="row">
-          <button id="hist-refresh" class="btn" data-i18n="refreshHistory">Refresh history</button>
-          <span class="muted" id="last-events">Last 5 events:<span id="hist-count" class="pill">0</span></span>
-          <a id="ledger-link" class="btn" href="#" target="_blank" rel="noopener" data-i18n="openLedger">Open ledger</a>
+          <button id="hist-refresh" class="btn" data-i18n="refreshHistory">
+            Refresh history
+          </button>
+          <span class="muted" id="last-events"
+            >Last 5 events:<span id="hist-count" class="pill">0</span></span
+          >
+          <a
+            id="ledger-link"
+            class="btn"
+            href="#"
+            target="_blank"
+            rel="noopener"
+            data-i18n="openLedger"
+            >Open ledger</a
+          >
         </div>
-        <div id="hist-list" style="margin-top:8px;font-size:13px;line-height:1.5"></div>
+        <div
+          id="hist-list"
+          style="margin-top: 8px; font-size: 13px; line-height: 1.5"
+        ></div>
 
-        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+        <hr
+          style="border: none; border-top: 1px solid #2a2d33; margin: 16px 0"
+        />
 
-        <h2 id="presets-title" style="margin:0 0 10px;font-size:18px">Presets</h2>
+        <h2 id="presets-title" style="margin: 0 0 10px; font-size: 18px">
+          Presets
+        </h2>
         <div class="row">
-          <button id="refresh-presets" class="btn" data-i18n="refreshPresets">Refresh presets</button>
-          <span class="muted" id="presets-count-label">Count:<span id="presets-count" class="pill">0</span></span>
+          <button id="refresh-presets" class="btn" data-i18n="refreshPresets">
+            Refresh presets
+          </button>
+          <span class="muted" id="presets-count-label"
+            >Count:<span id="presets-count" class="pill">0</span></span
+          >
         </div>
-        <div id="presets-list" style="margin-top:8px;font-size:13px;line-height:1.5"></div>
+        <div
+          id="presets-list"
+          style="margin-top: 8px; font-size: 13px; line-height: 1.5"
+        ></div>
 
-        <hr style="border:none;border-top:1px solid #2a2d33;margin:16px 0" />
+        <hr
+          style="border: none; border-top: 1px solid #2a2d33; margin: 16px 0"
+        />
 
-        <h2 id="pred-title" style="margin:0 0 10px;font-size:18px">Predistribution</h2>
+        <h2 id="pred-title" style="margin: 0 0 10px; font-size: 18px">
+          Predistribution
+        </h2>
         <div class="row">
-          <button id="pred-refresh" class="btn" data-i18n="refreshPred">Refresh predistribution</button>
+          <button id="pred-refresh" class="btn" data-i18n="refreshPred">
+            Refresh predistribution
+          </button>
           <span class="muted" id="pred-note">From /v1/qtm/state/{case}</span>
         </div>
-        <div id="pred-chart" class="bars" aria-label="Predistribution chart" aria-describedby="desc-pred" tabindex="0"></div>
-        <span id="desc-pred" class="sr-only">Bar chart where height corresponds to prior probability of each verdict state.</span>
+        <div
+          id="pred-chart"
+          class="bars"
+          aria-label="Predistribution chart"
+          aria-describedby="desc-pred"
+          tabindex="0"
+        ></div>
+        <span id="desc-pred" class="sr-only"
+          >Bar chart where height corresponds to prior probability of each
+          verdict state.</span
+        >
       </div>
     </div>
     <script>
       // i18n strings
       const I18N = {
         pl: {
-          title: 'Quantum • Kompozytor Operatorów', measure: 'Pomiar', savePreset: 'Zapisz preset', loadPreset: 'Wczytaj preset', listPresets: 'Lista presetów', refreshHeatmap: 'Odśwież heatmapę', measureLT: 'Pomiar L→T', measureTL: 'Pomiar T→L', compareLT_TL: 'Porównaj L→T vs T→L', apply: 'Zastosuj', refreshHistory: 'Odśwież historię', openLedger: 'Otwórz ledger', refreshPresets: 'Odśwież presety', refreshPred: 'Odśwież predistribucję', ub: 'UB L_T:', collapse: 'Kolaps:', priorities: 'Priorytety:', steps: 'Kroki:', last5: 'Ostatnie 5 zdarzeń:', count: 'Liczba:', casePh: 'id sprawy (LEX-001)'
+          title: "Quantum • Kompozytor Operatorów",
+          measure: "Pomiar",
+          savePreset: "Zapisz preset",
+          loadPreset: "Wczytaj preset",
+          listPresets: "Lista presetów",
+          refreshHeatmap: "Odśwież heatmapę",
+          measureLT: "Pomiar L→T",
+          measureTL: "Pomiar T→L",
+          compareLT_TL: "Porównaj L→T vs T→L",
+          apply: "Zastosuj",
+          refreshHistory: "Odśwież historię",
+          openLedger: "Otwórz ledger",
+          refreshPresets: "Odśwież presety",
+          refreshPred: "Odśwież predistribucję",
+          ub: "UB L_T:",
+          collapse: "Kolaps:",
+          priorities: "Priorytety:",
+          steps: "Kroki:",
+          last5: "Ostatnie 5 zdarzeń:",
+          count: "Liczba:",
+          casePh: "id sprawy (LEX-001)",
         },
         en: {
-          title: 'Quantum • Operator Composer', measure: 'Measure', savePreset: 'Save preset', loadPreset: 'Load preset', listPresets: 'List presets', refreshHeatmap: 'Refresh heatmap', measureLT: 'Measure L→T', measureTL: 'Measure T→L', compareLT_TL: 'Compare L→T vs T→L', apply: 'Apply', refreshHistory: 'Refresh history', openLedger: 'Open ledger', refreshPresets: 'Refresh presets', refreshPred: 'Refresh predistribution', ub: 'UB L_T:', collapse: 'Collapse:', priorities: 'Priorities:', steps: 'Steps:', last5: 'Last 5 events:', count: 'Count:', casePh: 'case id (LEX-001)'
-        }
+          title: "Quantum • Operator Composer",
+          measure: "Measure",
+          savePreset: "Save preset",
+          loadPreset: "Load preset",
+          listPresets: "List presets",
+          refreshHeatmap: "Refresh heatmap",
+          measureLT: "Measure L→T",
+          measureTL: "Measure T→L",
+          compareLT_TL: "Compare L→T vs T→L",
+          apply: "Apply",
+          refreshHistory: "Refresh history",
+          openLedger: "Open ledger",
+          refreshPresets: "Refresh presets",
+          refreshPred: "Refresh predistribution",
+          ub: "UB L_T:",
+          collapse: "Collapse:",
+          priorities: "Priorities:",
+          steps: "Steps:",
+          last5: "Last 5 events:",
+          count: "Count:",
+          casePh: "case id (LEX-001)",
+        },
       };
-      function setLang(lang){ try{ localStorage.setItem('certeus.lang', lang) }catch(e){}
-        document.documentElement.setAttribute('lang', lang);
-        const t = I18N[lang]||I18N.en;
-        document.getElementById('title').textContent = t.title;
-        document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(t[k]) el.textContent = t[k]; });
-        document.getElementById('ub-label').firstChild.nodeValue = t.ub;
-        document.getElementById('collapse-label').firstChild.nodeValue = t.collapse;
-        document.getElementById('pri-label').firstChild.nodeValue = t.priorities;
-        document.getElementById('steps-label').firstChild.nodeValue = t.steps;
-        document.getElementById('last-events').firstChild.nodeValue = t.last5;
-        document.getElementById('presets-count-label').firstChild.nodeValue = t.count;
-        document.getElementById('case').setAttribute('placeholder', t.casePh);
+      function setLang(lang) {
+        try {
+          localStorage.setItem("certeus.lang", lang);
+        } catch (e) {}
+        document.documentElement.setAttribute("lang", lang);
+        const t = I18N[lang] || I18N.en;
+        document.getElementById("title").textContent = t.title;
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const k = el.getAttribute("data-i18n");
+          if (t[k]) el.textContent = t[k];
+        });
+        document.getElementById("ub-label").firstChild.nodeValue = t.ub;
+        document.getElementById("collapse-label").firstChild.nodeValue =
+          t.collapse;
+        document.getElementById("pri-label").firstChild.nodeValue =
+          t.priorities;
+        document.getElementById("steps-label").firstChild.nodeValue = t.steps;
+        document.getElementById("last-events").firstChild.nodeValue = t.last5;
+        document.getElementById("presets-count-label").firstChild.nodeValue =
+          t.count;
+        document.getElementById("case").setAttribute("placeholder", t.casePh);
       }
-      const key = 'certeus.quantum.preset';
-      function paintHeat(v){ const grid = document.getElementById('heat'); grid.innerHTML=''; for(let i=0;i<100;i++){ const d=document.createElement('div'); d.className = 'cell ' + ((Math.random()+v)>1.0?'hot':'cold'); grid.appendChild(d);} }
-      async function fetchJSON(url,opts){ const r = await fetch(url,opts); let j=null; try{ j = await r.json(); }catch(e){} return {ok:r.ok,data:j,headers:r.headers} }
-      async function updateCoverage(){ const r = await fetchJSON('/v1/lexqft/coverage'); if(r.ok&&r.data){ document.getElementById('gamma').textContent = r.data.coverage_gamma; } }
-      async function updateTunnel(){ const r = await fetchJSON('/v1/lexqft/tunnel',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({evidence_energy: 1.1})}); if(r.ok&&r.data){ document.getElementById('ptun').textContent = r.data.p_tunnel; } }
-      async function doMeasure(){ const cs = document.getElementById('case').value || 'LEX-001'; const op = document.getElementById('op').value; const r = await fetchJSON('/v1/qtm/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operator:op, source: cs, case: cs})}); if(r.ok&&r.data){ const ub = r.data?.uncertainty_bound?.L_T ?? '?'; const ce = r.headers.get('X-CERTEUS-PCO-qtm.collapse_event')||'-'; const pri = r.headers.get('X-CERTEUS-PCO-qtmp.priorities')||'-'; document.getElementById('ub').textContent = ub; document.getElementById('collapse').textContent = ce; document.getElementById('pri').textContent = pri; paintHeat(ub||0.25); await refreshHistory(); await refreshPred(); } }
-      async function savePreset(){ const cs = document.getElementById('case').value||'LEX-001'; const op = document.getElementById('op').value; await fetch('/v1/qtm/preset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case:cs,operator:op})}); await listPresets(); }
-      async function loadPreset(){ try{ const cs = document.getElementById('case').value||'LEX-001'; const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`); if(r.ok){ const p = await r.json(); if(p.operator) document.getElementById('op').value = p.operator; } }catch(e){} }
-      async function refreshCommutators(){ const ops=['W','I','C','L','T']; const grid=document.getElementById('comm-grid'); grid.innerHTML=''; for(let i=0;i<ops.length;i++){ for(let j=0;j<ops.length;j++){ const r = await fetchJSON('/v1/qtm/commutator',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({A:ops[i],B:ops[j]})}); const v = r.ok ? (r.data?.value ?? 0) : 0; const d=document.createElement('div'); d.className='cell'; d.title = ops[i] + ' vs ' + ops[j] + ' = ' + v; d.style.background = `linear-gradient(0deg, rgba(242,200,204,${v}) 0%, rgba(32,36,42,1) 100%)`; grid.appendChild(d); } } }
-      async function measureSeq(order){ const cs = document.getElementById('case').value || 'LEX-001'; const ops = order==='LT' ? ['L','T'] : ['T','L']; const r = await fetchJSON('/v1/qtm/measure_sequence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case: cs, operators: ops})}); if(r.ok&&r.data){ const steps = (r.data?.steps||[]).map(s=>s.operator+':'+s.verdict).join(' , '); document.getElementById('seq-steps').textContent = steps || '-'; } }
-      async function compareSeq(){ const cs = document.getElementById('case').value || 'LEX-001'; const lt = await fetchJSON('/v1/qtm/measure_sequence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case: cs, operators: ['L','T']})}); const tl = await fetchJSON('/v1/qtm/measure_sequence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case: cs, operators: ['T','L']})}); const fmt = (r)=> (r.ok&&(r.data?.steps||[]).map(s=>s.operator+':'+s.verdict).join(' → ')) || '-'; document.getElementById('seq-compare-out').textContent = `L→T: ${fmt(lt)} | T→L: ${fmt(tl)}`; }
-      async function applyDeco(){ const cs = document.getElementById('case').value || 'LEX-001'; const ch = document.getElementById('deco-ch').value; const g = parseFloat(document.getElementById('deco-g').value||'0'); const r = await fetchJSON('/v1/qtm/decoherence',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case: cs, channel: ch, gamma: g})}); if(r.ok&&r.data){ document.getElementById('deco-case').textContent = r.data?.case || cs; } }
-      async function refreshHistory(){ const cs = document.getElementById('case').value||'LEX-001'; try{ const r = await fetch(`/v1/qtm/history/${encodeURIComponent(cs)}?limit=5&sort=desc`); if(r.ok){ const j = await r.json(); const hist = j.history||[]; document.getElementById('hist-count').textContent = String(hist.length); const el = document.getElementById('hist-list'); el.innerHTML = hist.map(h=>`<div class="muted">${h.operator} → ${h.verdict} (p=${(h.p??'?')})</div>`).join(''); const a = document.getElementById('ledger-link'); a.href = `/v1/ledger/${encodeURIComponent(cs)}/records`; } }catch(e){} }
-      async function listPresets(){ try{ const r = await fetch('/v1/qtm/presets'); if(r.ok){ const arr = await r.json(); const el = document.getElementById('presets-list'); document.getElementById('presets-count').textContent = String((arr||[]).length||0); el.innerHTML = (arr||[]).map(p=>`<div class="row" style="gap:8px;align-items:center;margin:4px 0"><span class="muted">${p.case}: ${p.operator}</span><button class="btn" onclick="deletePreset('${p.case}')">Delete</button></div>`).join(''); } }catch(e){} }
-      async function deletePreset(cs){ try{ const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`,{method:'DELETE'}); if(r.ok){ await listPresets(); } }catch(e){} }
-      async function refreshPred(){ const cs = document.getElementById('case').value||'LEX-001'; try{ const r = await fetch(`/v1/qtm/state/${encodeURIComponent(cs)}`); const chart = document.getElementById('pred-chart'); chart.innerHTML=''; if(r.ok){ const j = await r.json(); const basis = j.basis||[]; const pd = j.predistribution||[]; const rows = basis.map((b,i)=>({label:b, p: Number((pd[i]&&pd[i].p)||0)})); const maxH = 100; rows.forEach(row=>{ const d=document.createElement('div'); d.className='bar'; const h = Math.max(2, Math.round(maxH*row.p)); d.style.height = h+'px'; d.title = `${row.label}: ${row.p}`; chart.appendChild(d); }); } }catch(e){} }
+      const key = "certeus.quantum.preset";
+      function paintHeat(v) {
+        const grid = document.getElementById("heat");
+        grid.innerHTML = "";
+        for (let i = 0; i < 100; i++) {
+          const d = document.createElement("div");
+          d.className = "cell " + (Math.random() + v > 1.0 ? "hot" : "cold");
+          grid.appendChild(d);
+        }
+      }
+      async function fetchJSON(url, opts) {
+        const r = await fetch(url, opts);
+        let j = null;
+        try {
+          j = await r.json();
+        } catch (e) {}
+        return { ok: r.ok, data: j, headers: r.headers };
+      }
+      async function updateCoverage() {
+        const r = await fetchJSON("/v1/lexqft/coverage");
+        if (r.ok && r.data) {
+          document.getElementById("gamma").textContent = r.data.coverage_gamma;
+        }
+      }
+      async function updateTunnel() {
+        const r = await fetchJSON("/v1/lexqft/tunnel", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ evidence_energy: 1.1 }),
+        });
+        if (r.ok && r.data) {
+          document.getElementById("ptun").textContent = r.data.p_tunnel;
+        }
+      }
+      async function doMeasure() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const op = document.getElementById("op").value;
+        const r = await fetchJSON("/v1/qtm/measure", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ operator: op, source: cs, case: cs }),
+        });
+        if (r.ok && r.data) {
+          const ub = r.data?.uncertainty_bound?.L_T ?? "?";
+          const ce = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+          const pri = r.headers.get("X-CERTEUS-PCO-qtmp.priorities") || "-";
+          document.getElementById("ub").textContent = ub;
+          document.getElementById("collapse").textContent = ce;
+          document.getElementById("pri").textContent = pri;
+          paintHeat(ub || 0.25);
+          await refreshHistory();
+          await refreshPred();
+        }
+      }
+      async function savePreset() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const op = document.getElementById("op").value;
+        await fetch("/v1/qtm/preset", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, operator: op }),
+        });
+        await listPresets();
+      }
+      async function loadPreset() {
+        try {
+          const cs = document.getElementById("case").value || "LEX-001";
+          const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`);
+          if (r.ok) {
+            const p = await r.json();
+            if (p.operator) document.getElementById("op").value = p.operator;
+          }
+        } catch (e) {}
+      }
+      async function refreshCommutators() {
+        const ops = ["W", "I", "C", "L", "T"];
+        const grid = document.getElementById("comm-grid");
+        grid.innerHTML = "";
+        for (let i = 0; i < ops.length; i++) {
+          for (let j = 0; j < ops.length; j++) {
+            const r = await fetchJSON("/v1/qtm/commutator", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ A: ops[i], B: ops[j] }),
+            });
+            const v = r.ok ? (r.data?.value ?? 0) : 0;
+            const d = document.createElement("div");
+            d.className = "cell";
+            d.title = ops[i] + " vs " + ops[j] + " = " + v;
+            d.style.background = `linear-gradient(0deg, rgba(242,200,204,${v}) 0%, rgba(32,36,42,1) 100%)`;
+            grid.appendChild(d);
+          }
+        }
+      }
+      async function measureSeq(order) {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const ops = order === "LT" ? ["L", "T"] : ["T", "L"];
+        const r = await fetchJSON("/v1/qtm/measure_sequence", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, operators: ops }),
+        });
+        if (r.ok && r.data) {
+          const steps = (r.data?.steps || [])
+            .map((s) => s.operator + ":" + s.verdict)
+            .join(" , ");
+          document.getElementById("seq-steps").textContent = steps || "-";
+        }
+      }
+      async function compareSeq() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const lt = await fetchJSON("/v1/qtm/measure_sequence", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, operators: ["L", "T"] }),
+        });
+        const tl = await fetchJSON("/v1/qtm/measure_sequence", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, operators: ["T", "L"] }),
+        });
+        const fmt = (r) =>
+          (r.ok &&
+            (r.data?.steps || [])
+              .map((s) => s.operator + ":" + s.verdict)
+              .join(" → ")) ||
+          "-";
+        document.getElementById("seq-compare-out").textContent =
+          `L→T: ${fmt(lt)} | T→L: ${fmt(tl)}`;
+      }
+      async function applyDeco() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const ch = document.getElementById("deco-ch").value;
+        const g = parseFloat(document.getElementById("deco-g").value || "0");
+        const r = await fetchJSON("/v1/qtm/decoherence", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, channel: ch, gamma: g }),
+        });
+        if (r.ok && r.data) {
+          document.getElementById("deco-case").textContent = r.data?.case || cs;
+        }
+      }
+      async function refreshHistory() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        try {
+          const r = await fetch(
+            `/v1/qtm/history/${encodeURIComponent(cs)}?limit=5&sort=desc`,
+          );
+          if (r.ok) {
+            const j = await r.json();
+            const hist = j.history || [];
+            document.getElementById("hist-count").textContent = String(
+              hist.length,
+            );
+            const el = document.getElementById("hist-list");
+            el.innerHTML = hist
+              .map(
+                (h) =>
+                  `<div class="muted">${h.operator} → ${h.verdict} (p=${h.p ?? "?"})</div>`,
+              )
+              .join("");
+            const a = document.getElementById("ledger-link");
+            a.href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
+          }
+        } catch (e) {}
+      }
+      async function listPresets() {
+        try {
+          const r = await fetch("/v1/qtm/presets");
+          if (r.ok) {
+            const arr = await r.json();
+            const el = document.getElementById("presets-list");
+            document.getElementById("presets-count").textContent = String(
+              (arr || []).length || 0,
+            );
+            el.innerHTML = (arr || [])
+              .map(
+                (p) =>
+                  `<div class="row" style="gap:8px;align-items:center;margin:4px 0"><span class="muted">${p.case}: ${p.operator}</span><button class="btn" onclick="deletePreset('${p.case}')">Delete</button></div>`,
+              )
+              .join("");
+          }
+        } catch (e) {}
+      }
+      async function deletePreset(cs) {
+        try {
+          const r = await fetch(`/v1/qtm/preset/${encodeURIComponent(cs)}`, {
+            method: "DELETE",
+          });
+          if (r.ok) {
+            await listPresets();
+          }
+        } catch (e) {}
+      }
+      async function refreshPred() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        try {
+          const r = await fetch(`/v1/qtm/state/${encodeURIComponent(cs)}`);
+          const chart = document.getElementById("pred-chart");
+          chart.innerHTML = "";
+          if (r.ok) {
+            const j = await r.json();
+            const basis = j.basis || [];
+            const pd = j.predistribution || [];
+            const rows = basis.map((b, i) => ({
+              label: b,
+              p: Number((pd[i] && pd[i].p) || 0),
+            }));
+            const maxH = 100;
+            rows.forEach((row) => {
+              const d = document.createElement("div");
+              d.className = "bar";
+              const h = Math.max(2, Math.round(maxH * row.p));
+              d.style.height = h + "px";
+              d.title = `${row.label}: ${row.p}`;
+              chart.appendChild(d);
+            });
+          }
+        } catch (e) {}
+      }
 
       // Events
-      document.getElementById('measure').addEventListener('click', doMeasure);
-      document.getElementById('save').addEventListener('click', savePreset);
-      document.getElementById('load').addEventListener('click', loadPreset);
-      document.getElementById('list-presets').addEventListener('click', listPresets);
-      document.getElementById('refresh-comm').addEventListener('click', refreshCommutators);
-      document.getElementById('seq-lt').addEventListener('click', ()=>measureSeq('LT'));
-      document.getElementById('seq-tl').addEventListener('click', ()=>measureSeq('TL'));
-      document.getElementById('seq-compare').addEventListener('click', compareSeq);
-      document.getElementById('apply-deco').addEventListener('click', applyDeco);
-      document.getElementById('hist-refresh').addEventListener('click', refreshHistory);
-      document.getElementById('refresh-presets').addEventListener('click', listPresets);
-      document.getElementById('pred-refresh').addEventListener('click', refreshPred);
-      try{ const saved = localStorage.getItem('certeus.lang'); if(saved){ document.getElementById('lang').value = saved; } }catch(e){}
-      document.getElementById('lang').addEventListener('change', (e)=> setLang(e.target.value));
-      setLang(document.getElementById('lang').value);
+      document.getElementById("measure").addEventListener("click", doMeasure);
+      document.getElementById("save").addEventListener("click", savePreset);
+      document.getElementById("load").addEventListener("click", loadPreset);
+      document
+        .getElementById("list-presets")
+        .addEventListener("click", listPresets);
+      document
+        .getElementById("refresh-comm")
+        .addEventListener("click", refreshCommutators);
+      document
+        .getElementById("seq-lt")
+        .addEventListener("click", () => measureSeq("LT"));
+      document
+        .getElementById("seq-tl")
+        .addEventListener("click", () => measureSeq("TL"));
+      document
+        .getElementById("seq-compare")
+        .addEventListener("click", compareSeq);
+      document
+        .getElementById("apply-deco")
+        .addEventListener("click", applyDeco);
+      document
+        .getElementById("hist-refresh")
+        .addEventListener("click", refreshHistory);
+      document
+        .getElementById("refresh-presets")
+        .addEventListener("click", listPresets);
+      document
+        .getElementById("pred-refresh")
+        .addEventListener("click", refreshPred);
+      try {
+        const saved = localStorage.getItem("certeus.lang");
+        if (saved) {
+          document.getElementById("lang").value = saved;
+        }
+      } catch (e) {}
+      document
+        .getElementById("lang")
+        .addEventListener("change", (e) => setLang(e.target.value));
+      setLang(document.getElementById("lang").value);
       // Initial
-      loadPreset(); updateCoverage(); updateTunnel(); refreshCommutators(); refreshHistory(); listPresets(); refreshPred();
+      loadPreset();
+      updateCoverage();
+      updateTunnel();
+      refreshCommutators();
+      refreshHistory();
+      listPresets();
+      refreshPred();
     </script>
   </body>
-  </html>
+</html>

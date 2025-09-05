@@ -50,10 +50,8 @@ except Exception:  # pragma: no cover
 
 router = APIRouter(prefix="", tags=["well-known"])
 
-
 def _b64u(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
-
 
 def _load_pubkey_bytes() -> bytes:
     backend = os.getenv("KEYS_BACKEND")
@@ -75,15 +73,12 @@ def _load_pubkey_bytes() -> bytes:
 
     raise RuntimeError("Brak klucza publicznego: ustaw ED25519_PUBKEY_B64URL lub ED25519_PUBKEY_HEX")
 
-
 def _kid_from_key(pub: bytes) -> str:
     return hashlib.sha256(pub).hexdigest()[:16]
-
 
 # ----Bloki----- ENTRYPOINT
 
 # === I/O / ENDPOINTS ===
-
 
 @router.get("/.well-known/jwks.json")
 def jwks():
@@ -105,6 +100,5 @@ def jwks():
     }
 
     return {"keys": [jwk]}
-
 
 # === TESTY / TESTS ===

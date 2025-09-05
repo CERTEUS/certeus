@@ -23,11 +23,9 @@ import tempfile
 from core.boundary.snapshot import compute_snapshot
 from scripts.boundary_diff import diff_snapshots
 
-
 def _write(p: Path, data: bytes) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_bytes(data)
-
 
 def test_boundary_snapshot_and_diff_identical_then_different() -> None:
     with tempfile.TemporaryDirectory() as tmp:

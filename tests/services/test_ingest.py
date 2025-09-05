@@ -65,7 +65,6 @@ FileTuple = tuple[str, IO[bytes], str]
 
 LEDGER_HEADER: Literal["X-CERTEUS-Ledger-Chain"] = "X-CERTEUS-Ledger-Chain"
 
-
 def make_file(filename: str, content: bytes, mimetype: str) -> FileTuple:
     """
 
@@ -79,9 +78,7 @@ def make_file(filename: str, content: bytes, mimetype: str) -> FileTuple:
 
     return (filename, fileobj, mimetype)
 
-
 # [BLOCK: TEST • SUCCESS PATH]
-
 
 def test_ingest_document_endpoint_success() -> None:
     """
@@ -132,9 +129,7 @@ def test_ingest_document_endpoint_success() -> None:
 
     assert all(p.startswith("sha256:") for p in parts)
 
-
 # [BLOCK: TEST • MIME VALIDATION]
-
 
 def test_ingest_rejects_unsupported_mime() -> None:
     """
@@ -151,9 +146,7 @@ def test_ingest_rejects_unsupported_mime() -> None:
 
     assert resp.status_code == 415
 
-
 # [BLOCK: TEST • SIZE LIMIT]
-
 
 def test_ingest_rejects_too_large() -> None:
     """

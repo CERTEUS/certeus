@@ -35,7 +35,6 @@ from .complexity_firewall import parse_sla_weights
 
 SLA_W = parse_sla_weights()
 
-
 @dataclass(order=True)
 class _QItem:
     priority: int
@@ -45,7 +44,6 @@ class _QItem:
     heat: Heat = field(compare=False)
     payload: dict[str, Any] = field(compare=False)
     eta_hint: str = field(compare=False)
-
 
 class ProofQueue:
     """PL: Minimalna kolejka z wagami; FIFO w klasie. EN: Minimal weighted queue; FIFO per class."""
@@ -74,6 +72,5 @@ class ProofQueue:
     @property
     def depth(self) -> int:  # ruff: allow simple property
         return self._depth
-
 
 PROOF_QUEUE = ProofQueue()

@@ -53,15 +53,104 @@ _PUNCT_MAP = {
     "–": "-",
 }
 
+# Domain-specific light canonicalization maps (keep tokens stable)
+_DOMAIN_MAPS: dict[str, dict[str, str]] = {
+    # Healthcare/Medical (MED) — canonicalize forms in Polish (low drift)
+    "med": {
+        "leki": "lek",
+        "pacjenta": "pacjent",
+        "pacjentka": "pacjent",
+        "pacjenci": "pacjent",
+        "pacjentów": "pacjent",
+        "pacjentki": "pacjent",
+        # keep base terms as themselves to stabilize token sets
+        "lek": "lek",
+        "pacjent": "pacjent",
+        "dawka": "dawka",
+        "dawki": "dawka",
+        "dawkowanie": "dawka",
+        "choroba": "choroba",
+        "choroby": "choroba",
+        "objaw": "objaw",
+        "objawy": "objaw",
+        "diagnoza": "diagnoza",
+        "diagnostyka": "diagnoza",
+        "terapia": "terapia",
+        "terapie": "terapia",
+        "lekarz": "lekarz",
+        "doktor": "lekarz",
+        "dr": "lekarz",
+        "szpital": "szpital",
+    },
+    # Security (SEC) — unify diacritics and common nouns
+    "sec": {
+        # prefer forms with diacritics to minimize drift for PL texts
+        "podatnosc": "podatność",
+        "powaznosc": "poważność",
+        # base tokens
+        "podatność": "podatność",
+        "poważność": "poważność",
+        "cve": "cve",
+        "cwe": "cwe",
+        "cvss": "cvss",
+        "atak": "atak",
+        "ataki": "atak",
+        "ataków": "atak",
+        "wektor": "wektor",
+        "wektory": "wektor",
+        "łatka": "łatka",
+        "latka": "łatka",
+        "poprawka": "łatka",
+        "aktualizacja": "łatka",
+        "update": "łatka",
+        "patch": "łatka",
+        "eksploit": "eksploit",
+        "exploit": "eksploit",
+        "zagrożenie": "zagrożenie",
+        "zagrozenie": "zagrożenie",
+        "threat": "zagrożenie",
+        "ryzyko": "ryzyko",
+        "ryzyka": "ryzyko",
+        "krytycznosc": "poważność",
+        "krytyczność": "poważność",
+    },
+    # Software/Code (CODE) — unify diacritics and forms
+    "code": {
+        # prefer diacritics-preserving canonical forms
+        "modul": "moduł",
+        "blad": "błąd",
+        "wyjatek": "wyjątek",
+        # base tokens
+        "funkcja": "funkcja",
+        "metoda": "funkcja",
+        "metody": "funkcja",
+        "funkcje": "funkcja",
+        "klasa": "klasa",
+        "klasy": "klasa",
+        "moduł": "moduł",
+        "moduły": "moduł",
+        "pakiet": "pakiet",
+        "pakiety": "pakiet",
+        "biblioteka": "pakiet",
+        "library": "pakiet",
+        "import": "import",
+        "importy": "import",
+        "test": "test",
+        "testy": "test",
+        "błąd": "błąd",
+        "wyjątek": "wyjątek",
+        "bug": "błąd",
+        "error": "błąd",
+        "exception": "wyjątek",
+    },
+}
 
 # === MODELE / MODELS ===
-
 
 @dataclass(slots=True)
 class GaugeDrift:
     token_count_delta: int
     jaccard_drift: float  # 0.0 == identical, 1.0 == disjoint
-
 
 @dataclass(slots=True)
 class EntropyDrift:
@@ -69,14 +158,11 @@ class EntropyDrift:
     token_entropy_after: float
     entropy_drift: float  # absolute difference
 
-
 @dataclass(slots=True)
 class EntityDrift:
     entity_jaccard_drift: float  # 0.0 == identical entities, 1.0 == disjoint
 
-
 # === LOGIKA / LOGIC ===
-
 
 def _tokenize(text: str) -> list[str]:
     text = text.strip()
@@ -90,7 +176,6 @@ def _tokenize(text: str) -> list[str]:
     tokens = _TOKEN_RE.findall(text)
     toks = [t.lower() for t in tokens]
     return [_CANON_MAP.get(t, t) for t in toks]
-
 
 def compute_gauge_drift(before: str, after: str) -> GaugeDrift:
     """Compute simple drift metrics between two texts.
@@ -112,7 +197,6 @@ def compute_gauge_drift(before: str, after: str) -> GaugeDrift:
     drift = 1.0 - jaccard
     return GaugeDrift(token_count_delta=delta, jaccard_drift=round(drift, 6))
 
-
 def _token_entropy(tokens: list[str]) -> float:
     if not tokens:
         return 0.0
@@ -126,7 +210,6 @@ def _token_entropy(tokens: list[str]) -> float:
         ent -= p * math.log(p + 1e-12, 2)
     return ent
 
-
 def compute_entropy_drift(before: str, after: str) -> EntropyDrift:
     tb = _tokenize(before)
     ta = _tokenize(after)
@@ -135,7 +218,6 @@ def compute_entropy_drift(before: str, after: str) -> EntropyDrift:
     return EntropyDrift(
         token_entropy_before=round(eb, 6), token_entropy_after=round(ea, 6), entropy_drift=round(abs(ea - eb), 6)
     )
-
 
 def _extract_entities(text: str) -> set[str]:
     """Heuristic NER-like extraction robust to punctuation and casing.
@@ -151,7 +233,6 @@ def _extract_entities(text: str) -> set[str]:
         elif len(t) >= 3 and t not in stop:
             ents.add(t)
     return ents
-
 
 def compute_entity_drift(before: str, after: str) -> EntityDrift:
     """
@@ -186,7 +267,6 @@ def compute_entity_drift(before: str, after: str) -> EntityDrift:
     jd = 1.0 - (inter / union)
     return EntityDrift(entity_jaccard_drift=round(jd, 6))
 
-
 def normalize_text(text: str, lang: str = "pl") -> str:
     """Language‑aware light normalization (case, whitespace, quotes/dashes).
 
@@ -202,7 +282,6 @@ def normalize_text(text: str, lang: str = "pl") -> str:
     # lowercasing conservatively (Polish diacritics preserved)
     txt = txt.lower()
     return txt
-
 
 def apply_transform(text: str, transform: str = "identity", **params: Any) -> tuple[str, GaugeDrift]:
     """Apply a named transform and return (result, drift_metrics)."""
@@ -231,11 +310,18 @@ def apply_transform(text: str, transform: str = "identity", **params: Any) -> tu
             pat = rf"\b{re.escape(kw)}\b"
             out = re.sub(pat, lambda m: m.group(0) + "§", out, flags=re.IGNORECASE)
         return out, compute_gauge_drift(text, out)
+    if transform == "domain_map":
+        # Canonicalize domain-specific synonyms to a stable token set
+        domain = str(params.get("domain", "")).strip().lower()
+        mapping = _DOMAIN_MAPS.get(domain, {})
+        # include light normalization first to ensure deterministic casing/punctuation
+        out = normalize_text(text, lang=str(params.get("lang", "pl")))
+        for s, t in mapping.items():
+            out = re.sub(rf"\b{re.escape(s)}\b", t, out, flags=re.IGNORECASE)
+        return out, compute_gauge_drift(text, out)
     # Unknown transform → no‑op
     return text, compute_gauge_drift(text, text)
 
-
 # === I/O / ENDPOINTS ===
-
 
 # === TESTY / TESTS ===

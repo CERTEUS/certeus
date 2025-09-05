@@ -37,7 +37,6 @@ try:  # optional YAML parser; fallback to naive parser
 except Exception:  # pragma: no cover
     yaml = None  # type: ignore
 
-
 # === KONFIGURACJA / CONFIGURATION ===
 
 ALLOWED_LICENSES: set[str] = {
@@ -52,9 +51,7 @@ SEMVER_RE = re.compile(
     r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$"
 )
 
-
 # === LOGIKA / LOGIC ===
-
 
 def _naive_yaml(path: Path) -> dict[str, Any]:
     data: dict[str, Any] = {}
@@ -71,7 +68,6 @@ def _naive_yaml(path: Path) -> dict[str, Any]:
             data[key] = val
     return data
 
-
 def _load_manifest(p: Path) -> dict[str, Any]:
     if yaml is not None:
         try:
@@ -79,7 +75,6 @@ def _load_manifest(p: Path) -> dict[str, Any]:
         except Exception:
             return {}
     return _naive_yaml(p)
-
 
 def _iter_plugin_manifests(root: Path) -> Iterable[Path]:
     plugdir = root / "plugins"
@@ -90,7 +85,6 @@ def _iter_plugin_manifests(root: Path) -> Iterable[Path]:
             man = sub / "plugin.yaml"
             if man.exists():
                 yield man
-
 
 def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
     """PL/EN: Zwraca (violations, warnings) bez rzucania wyjątków."""
@@ -126,7 +120,6 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
 
     return violations, warnings
 
-
 def main() -> int:
     vio, warn = check()
     enforce = (os.getenv("ENFORCE_MARKETPLACE_POLICY") or "").strip() in {"1", "true", "True"}
@@ -145,7 +138,6 @@ def main() -> int:
         f"{len(vio)} violations, {len(warn)} warnings"
     )
     return 0
-
 
 # === I/O / ENDPOINTS ===
 

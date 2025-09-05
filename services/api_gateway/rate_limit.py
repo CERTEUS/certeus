@@ -16,6 +16,7 @@ EN: Lightweight per-tenant token-bucket middleware (optional RATE_LIMIT_QPS).
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 import os
 import time
 
@@ -23,7 +24,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 # === LOGIKA / LOGIC ===
-
 
 def attach_rate_limit_middleware(app: FastAPI) -> None:
     qps_env = (os.getenv("RATE_LIMIT_QPS") or "").strip()
@@ -53,7 +53,6 @@ def attach_rate_limit_middleware(app: FastAPI) -> None:
         except Exception:
             pass
         return await call_next(request)
-
 
 # === I/O / ENDPOINTS ===
 

@@ -15,12 +15,12 @@ EN: Property‑based (Hypothesis) tests for Ω‑Kernel invariants.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from hypothesis import given, settings, strategies as st
 
 from core.omega.transforms import compute_gauge_drift, normalize_text
-
 
 @settings(max_examples=25, deadline=None)
 @given(
@@ -35,9 +35,7 @@ def test_identity_is_stable(words: list[str]) -> None:
     d = compute_gauge_drift(txt, txt)
     assert d.jaccard_drift == 0.0 and d.token_count_delta == 0
 
-
 _PUNCT = [",", ".", ";", ":", "-", "—", "–", "(", ")", "[", "]", '"', "'", "/"]
-
 
 @settings(max_examples=25, deadline=None)
 @given(

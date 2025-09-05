@@ -13,6 +13,7 @@ EN: Smoke: measure_sequence and expectation based on state.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,7 +25,6 @@ sys.path.insert(0, str(REPO))  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from services.api_gateway.main import app  # noqa: E402
-
 
 def main() -> int:
     c = TestClient(app)
@@ -44,7 +44,6 @@ def main() -> int:
     assert r3.status_code == 200
     assert "value" in r3.json()
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

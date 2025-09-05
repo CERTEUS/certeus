@@ -22,7 +22,6 @@ from __future__ import annotations
 
 from scripts.smokes.a11y_smoke import check_public_html
 
-
 def test_a11y_smoke_runs() -> None:
     issues, checked = check_public_html()
     assert isinstance(issues, dict)

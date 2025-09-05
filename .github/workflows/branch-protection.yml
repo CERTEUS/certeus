@@ -18,11 +18,11 @@ on:
         required: true
       approvals:
         description: Required PR approvals (0 to self-merge)
-        default: '1'
+        default: "1"
         required: false
       disable:
         description: Disable branch protection entirely (true/false)
-        default: 'false'
+        default: "false"
         required: false
 
 permissions:

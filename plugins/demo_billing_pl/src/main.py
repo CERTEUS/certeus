@@ -20,7 +20,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 class _Pack:
     def handle(self, kind: str, payload: dict[str, Any]) -> dict[str, Any]:
         if kind == "verify":
@@ -32,10 +31,8 @@ class _Pack:
             return {"ok": True, "amount": amt, "price_usd": round(max(1, amt) * 0.01, 2)}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 
-
 def register():
     return _Pack()
-
 
 # === I/O / ENDPOINTS ===
 

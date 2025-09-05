@@ -1,10 +1,17 @@
 # +-------------------------------------------------------------+
-# |                          CERTEUS                            |
+
+# | CERTEUS |
+
 # +-------------------------------------------------------------+
-# | FILE: CONTRIBUTING.md                                      |
-# | ROLE: Project Markdown.                                      |
-# | PLIK: CONTRIBUTING.md                                      |
-# | ROLA: Dokument Markdown.                                      |
+
+# | FILE: CONTRIBUTING.md |
+
+# | ROLE: Project Markdown. |
+
+# | PLIK: CONTRIBUTING.md |
+
+# | ROLA: Dokument Markdown. |
+
 # +-------------------------------------------------------------+
 
 # Contributing

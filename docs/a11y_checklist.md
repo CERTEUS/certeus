@@ -15,4 +15,3 @@ CERTEUS — A11y Checklist (WCAG 2.2 AA baseline)
 - Klawiatura: elementy interaktywne fokusowalne (`tabindex` tylko gdy konieczne); brak pułapek fokusa (kontrola manualna).
 
 Raport: testy automatyczne pokrywają obecność i podstawy semantyki; pełny audyt kontrastu/klawiatury wykonywany manualnie (demo tygodnia).
-

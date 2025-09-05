@@ -55,7 +55,6 @@ FORBIDDEN_EXT = {".pem", ".key", ".der", ".pfx", ".p12"}
 
 # +=============================================================+
 
-
 def main(argv: list[str]) -> int:
     bad: list[str] = []
 
@@ -76,7 +75,6 @@ def main(argv: list[str]) -> int:
         return 1
 
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))

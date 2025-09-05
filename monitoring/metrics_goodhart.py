@@ -16,7 +16,6 @@ from prometheus_client import Counter
 truth_novel_case_rate = Counter("truth_novel_case_rate", "Novel case detections")
 truth_contradiction_rate = Counter("truth_contradiction_rate", "Contradictions detected")
 
-
 def observe_novel_case() -> None:
     """PL: Zgłoś nowy przypadek. EN: Report novel case."""
     # === IMPORTY / IMPORTS ===
@@ -27,7 +26,6 @@ def observe_novel_case() -> None:
     # === TESTY / TESTS ===
 
     truth_novel_case_rate.inc()
-
 
 def observe_contradiction() -> None:
     """PL: Zgłoś sprzeczność. EN: Report contradiction."""

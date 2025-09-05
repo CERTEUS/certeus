@@ -31,16 +31,13 @@ from typing import Any
 
 # === MODELE / MODELS ===
 
-
 @dataclass
 class ShardStats:
     files: int
     bytes: int
     digest_hex: str
 
-
 # === LOGIKA / LOGIC ===
-
 
 def _iter_shards(base_dir: Path) -> dict[str, Path]:
     try:
@@ -51,7 +48,6 @@ def _iter_shards(base_dir: Path) -> dict[str, Path]:
         return {"shard-0": base_dir}
     return {d.name: d for d in subs}
 
-
 def _file_digest_hex(p: Path) -> str:
     h = hashlib.sha256()
     with p.open("rb") as fh:
@@ -59,12 +55,10 @@ def _file_digest_hex(p: Path) -> str:
             h.update(chunk)
     return h.hexdigest()
 
-
 def _shard_digest_from_leafs(leaf_hex_list: list[str]) -> str:
     # Deterministic: sort hex strings, then hash their ASCII concatenation
     concat = "".join(sorted(leaf_hex_list)).encode("ascii")
     return hashlib.sha256(concat).hexdigest()
-
 
 def compute_shard_stats(dir_path: Path) -> ShardStats:
     files = 0
@@ -85,12 +79,10 @@ def compute_shard_stats(dir_path: Path) -> ShardStats:
     digest_hex = _shard_digest_from_leafs(leafs)
     return ShardStats(files=files, bytes=total_bytes, digest_hex=digest_hex)
 
-
 def _global_digest(shards: dict[str, ShardStats]) -> str:
     # Concatenate "shard-id:digest" in shard-id sorted order
     parts = [f"{sid}:{st.digest_hex}" for sid, st in sorted(shards.items())]
     return hashlib.sha256("".join(parts).encode("ascii")).hexdigest()
-
 
 def compute_snapshot(base_dir: str | Path) -> dict[str, Any]:
     """
@@ -119,10 +111,8 @@ def compute_snapshot(base_dir: str | Path) -> dict[str, Any]:
     }
     return out
 
-
 def dumps_snapshot(snapshot: dict[str, Any]) -> str:
     return json.dumps(snapshot, indent=2, sort_keys=True)
-
 
 # === I/O / ENDPOINTS ===
 

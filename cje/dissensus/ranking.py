@@ -50,6 +50,5 @@ EN: CERTEUS module – please complete the functional description.
 
 # +-------------------------------------------------------------+
 
-
 def rank(options):
     return sorted(options)

@@ -64,7 +64,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # === MODELE / MODELS ===
 
-
 class FactRole(str, Enum):
     """
 
@@ -81,7 +80,6 @@ class FactRole(str, Enum):
     # PL: dowód wpłaty / EN: proof of payment
 
     evidence_payment = "evidence_payment"
-
 
 class Fact(BaseModel):
     """
@@ -175,7 +173,6 @@ class Fact(BaseModel):
         le=1.0,
         description=("PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0]."),
     )
-
 
 # === LOGIKA / LOGIC ===
 

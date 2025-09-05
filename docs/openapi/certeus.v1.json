@@ -27,9 +27,7 @@
     },
     "/v1/connectors/fhir/reason": {
       "post": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Reason",
         "operationId": "reason_v1_connectors_fhir_reason_post",
         "requestBody": {
@@ -72,9 +70,7 @@
     },
     "/v1/ingest": {
       "post": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Ingest Document",
         "description": "PL: Zwraca dwa deterministyczne fakty (z `fact_id`, `thesis`, `confidence_score`),\n\n    waliduje MIME/rozmiar i ustawia nagłówek łańcucha `X-CERTEUS-Ledger-Chain`.\n\n    Dodatkowo (nieinwazyjnie) umieszcza skrót OCR w nagłówku\n\n    `X-CERTEUS-OCR-Preview` dla PDF/obrazów.\n\nEN: Returns two deterministic facts (with `fact_id`, `thesis`, `confidence_score`),\n\n    validates MIME/size, and sets `X-CERTEUS-Ledger-Chain` header. Also (non-\n\n    invasive) puts OCR snippet into `X-CERTEUS-OCR-Preview` header for PDF/images.",
         "operationId": "ingest_document_v1_ingest_post",
@@ -119,9 +115,7 @@
     },
     "/v1/analyze": {
       "post": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Analyze",
         "description": "Minimalny stub E2E: przyjmuje PDF i zwraca wynik SAT z prostym modelem.\n\nZgodne z tests/e2e/test_e2e_pl_286kk_0001.py.",
         "operationId": "analyze_v1_analyze_post",
@@ -174,9 +168,7 @@
     },
     "/v1/sipp/snapshot/{act_id}": {
       "get": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Get Snapshot",
         "description": "Zwraca minimalny snapshot (dict), aby dozwolić klucz `_certeus`.",
         "operationId": "get_snapshot_v1_sipp_snapshot__act_id__get",
@@ -219,9 +211,7 @@
     },
     "/v1/sources/cache": {
       "post": {
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "summary": "Post Source Cache",
         "operationId": "post_source_cache_v1_sources_cache_post",
         "requestBody": {
@@ -297,9 +287,7 @@
     },
     "/pco/public/{rid}": {
       "get": {
-        "tags": [
-          "pco"
-        ],
+        "tags": ["pco"],
         "summary": "Get Public Pco",
         "description": "EN/PL: Returns public PCO; validates zero-PII, Merkle proof, and Ed25519 signature.",
         "operationId": "get_public_pco_pco_public__rid__get",
@@ -340,9 +328,7 @@
     },
     "/v1/pco/bundle": {
       "post": {
-        "tags": [
-          "pco"
-        ],
+        "tags": ["pco"],
         "summary": "Create Bundle",
         "operationId": "create_bundle_v1_pco_bundle_post",
         "requestBody": {
@@ -383,9 +369,7 @@
     },
     "/v1/export": {
       "post": {
-        "tags": [
-          "export"
-        ],
+        "tags": ["export"],
         "summary": "Export Endpoint",
         "description": "PL: Generuje raport i zwraca ścieżkę + provenance (hash, timestamp, artifacts).\n\nEN: Generate report and return path + provenance (hash, timestamp, artifacts).",
         "operationId": "export_endpoint_v1_export_post",
@@ -425,9 +409,7 @@
     },
     "/v1/ledger/record-input": {
       "post": {
-        "tags": [
-          "Ledger"
-        ],
+        "tags": ["Ledger"],
         "summary": "Record Input",
         "description": "PL: Rejestruje nowy dokument w księdze (INPUT_INGESTION).\n\nEN: Records a new document in the ledger (INPUT_INGESTION).",
         "operationId": "record_input_v1_ledger_record_input_post",
@@ -467,9 +449,7 @@
     },
     "/v1/ledger/{case_id}/records": {
       "get": {
-        "tags": [
-          "Ledger"
-        ],
+        "tags": ["Ledger"],
         "summary": "Get Records",
         "description": "PL: Zwraca listę wpisów dla danego case_id.\n\nEN: Returns all entries for the given case_id.",
         "operationId": "get_records_v1_ledger__case_id__records_get",
@@ -514,9 +494,7 @@
     },
     "/v1/ledger/{case_id}/prove": {
       "get": {
-        "tags": [
-          "Ledger"
-        ],
+        "tags": ["Ledger"],
         "summary": "Prove Case",
         "description": "PL: Generuje i (jeśli możliwe) waliduje Provenance Receipt dla sprawy.\n\nEN: Generates and (if available) validates the Provenance Receipt for a case.",
         "operationId": "prove_case_v1_ledger__case_id__prove_get",
@@ -559,9 +537,7 @@
     },
     "/mismatch/tickets": {
       "post": {
-        "tags": [
-          "mismatch"
-        ],
+        "tags": ["mismatch"],
         "summary": "Create Ticket",
         "description": "PL: Tworzy nowy ticket niezgodności. EN: Creates a new mismatch ticket.",
         "operationId": "create_ticket_mismatch_tickets_post",
@@ -603,9 +579,7 @@
     },
     "/mismatch/tickets/{ticket_id}": {
       "get": {
-        "tags": [
-          "mismatch"
-        ],
+        "tags": ["mismatch"],
         "summary": "Get Ticket",
         "description": "PL: Pobiera ticket po jego ID. EN: Retrieves a ticket by its ID.",
         "operationId": "get_ticket_mismatch_tickets__ticket_id__get",
@@ -648,9 +622,7 @@
     },
     "/v1/boundary/status": {
       "get": {
-        "tags": [
-          "boundary"
-        ],
+        "tags": ["boundary"],
         "summary": "Get Status",
         "operationId": "get_status_v1_boundary_status_get",
         "responses": {
@@ -671,9 +643,7 @@
     },
     "/v1/boundary/reconstruct": {
       "post": {
-        "tags": [
-          "boundary"
-        ],
+        "tags": ["boundary"],
         "summary": "Reconstruct Now",
         "operationId": "reconstruct_now_v1_boundary_reconstruct_post",
         "responses": {
@@ -694,9 +664,7 @@
     },
     "/v1/verify": {
       "post": {
-        "tags": [
-          "Truth Engine"
-        ],
+        "tags": ["Truth Engine"],
         "summary": "Verify Formula",
         "description": "PL: Weryfikuje formułę. Zwraca sat/unsat/unknown oraz artefakty (model/proof).\n\nEN: Verifies the formula. Returns sat/unsat/unknown and artifacts (model/proof).",
         "operationId": "verify_formula_v1_verify_post",
@@ -738,9 +706,7 @@
     },
     "/v1/cfe/curvature": {
       "get": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Curvature",
         "description": "PL/EN: Telemetria CFE (stub) – maksymalna krzywizna (kappa_max).",
         "operationId": "curvature_v1_cfe_curvature_get",
@@ -760,9 +726,7 @@
     },
     "/v1/cfe/geodesic": {
       "post": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Geodesic",
         "operationId": "geodesic_v1_cfe_geodesic_post",
         "requestBody": {
@@ -801,9 +765,7 @@
     },
     "/v1/cfe/horizon": {
       "post": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Horizon",
         "operationId": "horizon_v1_cfe_horizon_post",
         "requestBody": {
@@ -842,9 +804,7 @@
     },
     "/v1/cfe/lensing": {
       "get": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Lensing",
         "operationId": "lensing_v1_cfe_lensing_get",
         "responses": {
@@ -863,9 +823,7 @@
     },
     "/v1/cfe/case/lock": {
       "post": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Case Lock",
         "operationId": "case_lock_v1_cfe_case_lock_post",
         "requestBody": {
@@ -904,9 +862,7 @@
     },
     "/v1/cfe/case/recall": {
       "post": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Case Recall",
         "operationId": "case_recall_v1_cfe_case_recall_post",
         "requestBody": {
@@ -945,9 +901,7 @@
     },
     "/v1/cfe/case/revoke": {
       "post": {
-        "tags": [
-          "CFE"
-        ],
+        "tags": ["CFE"],
         "summary": "Case Revoke",
         "operationId": "case_revoke_v1_cfe_case_revoke_post",
         "requestBody": {
@@ -986,9 +940,7 @@
     },
     "/v1/qtm/init_case": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Init Case",
         "operationId": "init_case_v1_qtm_init_case_post",
         "requestBody": {
@@ -1027,9 +979,7 @@
     },
     "/v1/qtm/measure": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Measure",
         "operationId": "measure_v1_qtm_measure_post",
         "requestBody": {
@@ -1068,9 +1018,7 @@
     },
     "/v1/qtm/measure_sequence": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Measure Sequence",
         "operationId": "measure_sequence_v1_qtm_measure_sequence_post",
         "requestBody": {
@@ -1109,9 +1057,7 @@
     },
     "/v1/qtm/state/{case}": {
       "get": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Get State",
         "operationId": "get_state_v1_qtm_state__case__get",
         "parameters": [
@@ -1149,9 +1095,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Delete State",
         "operationId": "delete_state_v1_qtm_state__case__delete",
         "parameters": [
@@ -1191,9 +1135,7 @@
     },
     "/v1/qtm/history/{case}": {
       "get": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Get History",
         "operationId": "get_history_v1_qtm_history__case__get",
         "parameters": [
@@ -1295,9 +1237,7 @@
     },
     "/v1/qtm/operators": {
       "get": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "List Operators",
         "operationId": "list_operators_v1_qtm_operators_get",
         "responses": {
@@ -1316,9 +1256,7 @@
     },
     "/v1/qtm/uncertainty": {
       "get": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Uncertainty Bound",
         "operationId": "uncertainty_bound_v1_qtm_uncertainty_get",
         "responses": {
@@ -1337,9 +1275,7 @@
     },
     "/v1/qtm/state": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Set State",
         "operationId": "set_state_v1_qtm_state_post",
         "requestBody": {
@@ -1378,9 +1314,7 @@
     },
     "/v1/qtm/expectation": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Expectation",
         "operationId": "expectation_v1_qtm_expectation_post",
         "requestBody": {
@@ -1419,9 +1353,7 @@
     },
     "/v1/qtm/preset/{case}": {
       "delete": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Delete Preset",
         "operationId": "delete_preset_v1_qtm_preset__case__delete",
         "parameters": [
@@ -1459,9 +1391,7 @@
         }
       },
       "get": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Get Preset",
         "operationId": "get_preset_v1_qtm_preset__case__get",
         "parameters": [
@@ -1501,9 +1431,7 @@
     },
     "/v1/qtm/commutator": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Commutator",
         "operationId": "commutator_v1_qtm_commutator_post",
         "requestBody": {
@@ -1542,9 +1470,7 @@
     },
     "/v1/qtm/decoherence": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Set Decoherence",
         "operationId": "set_decoherence_v1_qtm_decoherence_post",
         "requestBody": {
@@ -1583,9 +1509,7 @@
     },
     "/v1/qtm/preset": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Save Preset",
         "operationId": "save_preset_v1_qtm_preset_post",
         "requestBody": {
@@ -1624,9 +1548,7 @@
     },
     "/v1/qtm/presets": {
       "get": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "List Presets",
         "operationId": "list_presets_v1_qtm_presets_get",
         "responses": {
@@ -1649,9 +1571,7 @@
     },
     "/v1/qtm/find_entanglement": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Find Entanglement",
         "operationId": "find_entanglement_v1_qtm_find_entanglement_post",
         "requestBody": {
@@ -1690,9 +1610,7 @@
     },
     "/v1/qtm/commutator_expectation": {
       "post": {
-        "tags": [
-          "QTMP"
-        ],
+        "tags": ["QTMP"],
         "summary": "Commutator Expectation",
         "operationId": "commutator_expectation_v1_qtm_commutator_expectation_post",
         "requestBody": {
@@ -1731,9 +1649,7 @@
     },
     "/v1/lexenith/motion/generate": {
       "post": {
-        "tags": [
-          "lexenith"
-        ],
+        "tags": ["lexenith"],
         "summary": "Motion Generate",
         "operationId": "motion_generate_v1_lexenith_motion_generate_post",
         "requestBody": {
@@ -1772,9 +1688,7 @@
     },
     "/v1/lexenith/cldf/renormalize": {
       "post": {
-        "tags": [
-          "lexenith"
-        ],
+        "tags": ["lexenith"],
         "summary": "Cldf Renormalize",
         "operationId": "cldf_renormalize_v1_lexenith_cldf_renormalize_post",
         "requestBody": {
@@ -1813,9 +1727,7 @@
     },
     "/v1/lexenith/why_not/export": {
       "post": {
-        "tags": [
-          "lexenith"
-        ],
+        "tags": ["lexenith"],
         "summary": "Why Not Export",
         "operationId": "why_not_export_v1_lexenith_why_not_export_post",
         "requestBody": {
@@ -1854,9 +1766,7 @@
     },
     "/v1/devices/horizon_drive/plan": {
       "post": {
-        "tags": [
-          "devices"
-        ],
+        "tags": ["devices"],
         "summary": "Hde Plan",
         "operationId": "hde_plan_v1_devices_horizon_drive_plan_post",
         "requestBody": {
@@ -1895,9 +1805,7 @@
     },
     "/v1/devices/qoracle/expectation": {
       "post": {
-        "tags": [
-          "devices"
-        ],
+        "tags": ["devices"],
         "summary": "Qoracle Expectation",
         "operationId": "qoracle_expectation_v1_devices_qoracle_expectation_post",
         "requestBody": {
@@ -1936,9 +1844,7 @@
     },
     "/v1/devices/entangle": {
       "post": {
-        "tags": [
-          "devices"
-        ],
+        "tags": ["devices"],
         "summary": "Entangle",
         "operationId": "entangle_v1_devices_entangle_post",
         "requestBody": {
@@ -1977,9 +1883,7 @@
     },
     "/v1/devices/chronosync/reconcile": {
       "post": {
-        "tags": [
-          "devices"
-        ],
+        "tags": ["devices"],
         "summary": "Chronosync Reconcile",
         "operationId": "chronosync_reconcile_v1_devices_chronosync_reconcile_post",
         "requestBody": {
@@ -2018,9 +1922,7 @@
     },
     "/v1/dr/replay": {
       "post": {
-        "tags": [
-          "DR"
-        ],
+        "tags": ["DR"],
         "summary": "Replay",
         "operationId": "replay_v1_dr_replay_post",
         "requestBody": {
@@ -2059,9 +1961,7 @@
     },
     "/v1/dr/recall": {
       "post": {
-        "tags": [
-          "DR"
-        ],
+        "tags": ["DR"],
         "summary": "Recall",
         "operationId": "recall_v1_dr_recall_post",
         "requestBody": {
@@ -2100,9 +2000,7 @@
     },
     "/v1/dr/lock": {
       "post": {
-        "tags": [
-          "DR"
-        ],
+        "tags": ["DR"],
         "summary": "Lock",
         "operationId": "lock_v1_dr_lock_post",
         "requestBody": {
@@ -2141,9 +2039,7 @@
     },
     "/v1/dr/revoke": {
       "post": {
-        "tags": [
-          "DR"
-        ],
+        "tags": ["DR"],
         "summary": "Revoke",
         "operationId": "revoke_v1_dr_revoke_post",
         "requestBody": {
@@ -2182,9 +2078,7 @@
     },
     "/v1/upn/register": {
       "post": {
-        "tags": [
-          "UPN"
-        ],
+        "tags": ["UPN"],
         "summary": "Register",
         "operationId": "register_v1_upn_register_post",
         "requestBody": {
@@ -2223,9 +2117,7 @@
     },
     "/v1/upn/revoke": {
       "post": {
-        "tags": [
-          "UPN"
-        ],
+        "tags": ["UPN"],
         "summary": "Revoke",
         "operationId": "revoke_v1_upn_revoke_post",
         "requestBody": {
@@ -2264,9 +2156,7 @@
     },
     "/v1/lexqft/coverage": {
       "get": {
-        "tags": [
-          "lexqft"
-        ],
+        "tags": ["lexqft"],
         "summary": "Coverage",
         "description": "PL/EN: Telemetria lexqft – gamma pokrycia (agregowana).",
         "operationId": "coverage_v1_lexqft_coverage_get",
@@ -2286,9 +2176,7 @@
     },
     "/v1/lexqft/tunnel": {
       "post": {
-        "tags": [
-          "lexqft"
-        ],
+        "tags": ["lexqft"],
         "summary": "Tunnel",
         "operationId": "tunnel_v1_lexqft_tunnel_post",
         "requestBody": {
@@ -2327,9 +2215,7 @@
     },
     "/v1/lexqft/coverage/update": {
       "post": {
-        "tags": [
-          "lexqft"
-        ],
+        "tags": ["lexqft"],
         "summary": "Coverage Update",
         "description": "PL/EN: Ustaw (zastąp) wkłady ścieżek do pokrycia (gamma, wagi, uncaptured).",
         "operationId": "coverage_update_v1_lexqft_coverage_update_post",
@@ -2375,9 +2261,7 @@
     },
     "/v1/lexqft/coverage/reset": {
       "post": {
-        "tags": [
-          "lexqft"
-        ],
+        "tags": ["lexqft"],
         "summary": "Coverage Reset",
         "description": "PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty).",
         "operationId": "coverage_reset_v1_lexqft_coverage_reset_post",
@@ -2399,9 +2283,7 @@
     },
     "/v1/lexqft/coverage/state": {
       "get": {
-        "tags": [
-          "lexqft"
-        ],
+        "tags": ["lexqft"],
         "summary": "Coverage State",
         "description": "PL/EN: Zwraca stan agregatora: gamma i łączną uncaptured_mass (ważoną).",
         "operationId": "coverage_state_v1_lexqft_coverage_state_get",
@@ -2421,9 +2303,7 @@
     },
     "/v1/chatops/command": {
       "post": {
-        "tags": [
-          "ChatOps"
-        ],
+        "tags": ["ChatOps"],
         "summary": "Command",
         "operationId": "command_v1_chatops_command_post",
         "requestBody": {
@@ -2464,9 +2344,7 @@
     },
     "/v1/mailops/ingest": {
       "post": {
-        "tags": [
-          "MailOps"
-        ],
+        "tags": ["MailOps"],
         "summary": "Ingest Email",
         "operationId": "ingest_email_v1_mailops_ingest_post",
         "requestBody": {
@@ -2505,9 +2383,7 @@
     },
     "/v1/ethics/equity_meter": {
       "post": {
-        "tags": [
-          "ethics"
-        ],
+        "tags": ["ethics"],
         "summary": "Equity Meter",
         "operationId": "equity_meter_v1_ethics_equity_meter_post",
         "requestBody": {
@@ -2546,9 +2422,7 @@
     },
     "/v1/ethics/double_verdict": {
       "post": {
-        "tags": [
-          "ethics"
-        ],
+        "tags": ["ethics"],
         "summary": "Double Verdict",
         "operationId": "double_verdict_v1_ethics_double_verdict_post",
         "requestBody": {
@@ -2587,9 +2461,7 @@
     },
     "/v1/fin/alpha/measure": {
       "post": {
-        "tags": [
-          "finance"
-        ],
+        "tags": ["finance"],
         "summary": "Measure",
         "operationId": "measure_v1_fin_alpha_measure_post",
         "requestBody": {
@@ -2628,9 +2500,7 @@
     },
     "/v1/fin/alpha/uncertainty": {
       "get": {
-        "tags": [
-          "finance"
-        ],
+        "tags": ["finance"],
         "summary": "Uncertainty",
         "operationId": "uncertainty_v1_fin_alpha_uncertainty_get",
         "responses": {
@@ -2649,9 +2519,7 @@
     },
     "/v1/fin/alpha/entanglements": {
       "get": {
-        "tags": [
-          "finance"
-        ],
+        "tags": ["finance"],
         "summary": "Entanglements",
         "operationId": "entanglements_v1_fin_alpha_entanglements_get",
         "responses": {
@@ -2670,9 +2538,7 @@
     },
     "/v1/fin/alpha/operators/commutator": {
       "get": {
-        "tags": [
-          "finance"
-        ],
+        "tags": ["finance"],
         "summary": "Operators Commutator",
         "description": "PL/EN: Zwraca normę komutatora [R,S] (tu: 1.0 ≠ 0).",
         "operationId": "operators_commutator_v1_fin_alpha_operators_commutator_get",
@@ -2696,9 +2562,7 @@
     },
     "/v1/fin/tokens/request": {
       "post": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Request Tokens",
         "operationId": "request_tokens_v1_fin_tokens_request_post",
         "requestBody": {
@@ -2737,9 +2601,7 @@
     },
     "/v1/fin/tokens/{request_id}": {
       "get": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Get Request Status",
         "operationId": "get_request_status_v1_fin_tokens__request_id__get",
         "parameters": [
@@ -2779,9 +2641,7 @@
     },
     "/v1/fin/tokens/allocate": {
       "post": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Allocate Tokens",
         "operationId": "allocate_tokens_v1_fin_tokens_allocate_post",
         "requestBody": {
@@ -2820,9 +2680,7 @@
     },
     "/v1/billing/quota": {
       "get": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Quota",
         "operationId": "quota_v1_billing_quota_get",
         "responses": {
@@ -2841,9 +2699,7 @@
         }
       },
       "post": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Set Quota Api",
         "operationId": "set_quota_api_v1_billing_quota_post",
         "requestBody": {
@@ -2884,9 +2740,7 @@
     },
     "/v1/billing/allocate": {
       "post": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Allocate",
         "operationId": "allocate_v1_billing_allocate_post",
         "requestBody": {
@@ -2927,9 +2781,7 @@
     },
     "/v1/billing/refund": {
       "post": {
-        "tags": [
-          "billing"
-        ],
+        "tags": ["billing"],
         "summary": "Refund",
         "operationId": "refund_v1_billing_refund_post",
         "requestBody": {
@@ -2970,9 +2822,7 @@
     },
     "/v1/packs/": {
       "get": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "List available packs",
         "operationId": "list_packs_v1_packs__get",
         "responses": {
@@ -2996,9 +2846,7 @@
     },
     "/v1/packs/install": {
       "post": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "Install or upgrade a pack (signature required)",
         "operationId": "install_pack_v1_packs_install_post",
         "requestBody": {
@@ -3039,9 +2887,7 @@
     },
     "/v1/packs/enable": {
       "post": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "Enable or disable a pack",
         "operationId": "enable_pack_v1_packs_enable_post",
         "requestBody": {
@@ -3082,9 +2928,7 @@
     },
     "/v1/packs/{name}": {
       "get": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "Get pack details",
         "description": "Zwraca szczegóły pakietu na podstawie manifestu plugin.yaml oraz overlayu enabled.\nReturns pack details based on plugin.yaml manifest and enabled overlay.",
         "operationId": "get_pack_details_v1_packs__name__get",
@@ -3127,9 +2971,7 @@
     },
     "/v1/packs/{name}/baseline": {
       "get": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "Get ABI baseline JSON if present",
         "operationId": "get_pack_baseline_v1_packs__name__baseline_get",
         "parameters": [
@@ -3171,9 +3013,7 @@
     },
     "/v1/packs/try": {
       "post": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "Try invoking a pack (best-effort)",
         "operationId": "try_pack_v1_packs_try_post",
         "requestBody": {
@@ -3214,9 +3054,7 @@
     },
     "/v1/packs/handle": {
       "post": {
-        "tags": [
-          "packs"
-        ],
+        "tags": ["packs"],
         "summary": "Handle a request using a pack",
         "operationId": "handle_v1_packs_handle_post",
         "requestBody": {
@@ -3257,9 +3095,7 @@
     },
     "/v1/pfs/list": {
       "get": {
-        "tags": [
-          "ProofFS"
-        ],
+        "tags": ["ProofFS"],
         "summary": "List Entries",
         "operationId": "pfs_list_entries",
         "parameters": [
@@ -3347,9 +3183,7 @@
     },
     "/v1/pfs/exists": {
       "get": {
-        "tags": [
-          "ProofFS"
-        ],
+        "tags": ["ProofFS"],
         "summary": "Exists",
         "operationId": "pfs_exists",
         "parameters": [
@@ -3393,9 +3227,7 @@
     },
     "/.well-known/jwks.json": {
       "get": {
-        "tags": [
-          "well-known"
-        ],
+        "tags": ["well-known"],
         "summary": "Jwks",
         "operationId": "jwks__well_known_jwks_json_get",
         "responses": {
@@ -3412,9 +3244,7 @@
     },
     "/metrics": {
       "get": {
-        "tags": [
-          "metrics"
-        ],
+        "tags": ["metrics"],
         "summary": "Metrics",
         "operationId": "metrics_metrics_get",
         "responses": {
@@ -3489,9 +3319,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "request_id"
-        ],
+        "required": ["request_id"],
         "title": "AllocIn"
       },
       "AllocateIn": {
@@ -3503,9 +3331,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cost_units"
-        ],
+        "required": ["cost_units"],
         "title": "AllocateIn"
       },
       "AllocateRequest": {
@@ -3517,9 +3343,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cost_units"
-        ],
+        "required": ["cost_units"],
         "title": "AllocateRequest"
       },
       "Attachment": {
@@ -3546,9 +3370,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "filename"
-        ],
+        "required": ["filename"],
         "title": "Attachment"
       },
       "Body_analyze_v1_analyze_post": {
@@ -3560,9 +3382,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "file"
-        ],
+        "required": ["file"],
         "title": "Body_analyze_v1_analyze_post"
       },
       "Body_ingest_document_v1_ingest_post": {
@@ -3574,9 +3394,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "file"
-        ],
+        "required": ["file"],
         "title": "Body_ingest_document_v1_ingest_post"
       },
       "Body_preview_v1_preview_post": {
@@ -3588,9 +3406,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "file"
-        ],
+        "required": ["file"],
         "title": "Body_preview_v1_preview_post"
       },
       "CLDFRequest": {
@@ -3617,9 +3433,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "citations"
-        ],
+        "required": ["citations"],
         "title": "CLDFRequest"
       },
       "CLDFResponse": {
@@ -3638,10 +3452,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "citations",
-          "normalized"
-        ],
+        "required": ["citations", "normalized"],
         "title": "CLDFResponse"
       },
       "CaseActionIn": {
@@ -3652,9 +3463,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case"
-        ],
+        "required": ["case"],
         "title": "CaseActionIn"
       },
       "CaseActionOut": {
@@ -3673,11 +3482,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "locked",
-          "action"
-        ],
+        "required": ["case", "locked", "action"],
         "title": "CaseActionOut"
       },
       "ChronoSyncRequest": {
@@ -3725,9 +3530,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "coords"
-        ],
+        "required": ["coords"],
         "title": "ChronoSyncRequest"
       },
       "ChronoSyncResponse": {
@@ -3776,10 +3579,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "reconciled",
-          "sketch"
-        ],
+        "required": ["reconciled", "sketch"],
         "title": "ChronoSyncResponse"
       },
       "CitationItem": {
@@ -3795,9 +3595,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "text"
-        ],
+        "required": ["text"],
         "title": "CitationItem"
       },
       "CollapseLog": {
@@ -3824,9 +3622,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "sequence"
-        ],
+        "required": ["sequence"],
         "title": "CollapseLog"
       },
       "CommandRequest": {
@@ -3860,9 +3656,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cmd"
-        ],
+        "required": ["cmd"],
         "title": "CommandRequest"
       },
       "CommutatorExpRequest": {
@@ -3881,11 +3675,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "A",
-          "B"
-        ],
+        "required": ["case", "A", "B"],
         "title": "CommutatorExpRequest"
       },
       "CommutatorRequest": {
@@ -3900,10 +3690,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "A",
-          "B"
-        ],
+        "required": ["A", "B"],
         "title": "CommutatorRequest"
       },
       "CommutatorResponse": {
@@ -3914,9 +3701,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "title": "CommutatorResponse"
       },
       "CoverageItem": {
@@ -3937,9 +3722,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "gamma"
-        ],
+        "required": ["gamma"],
         "title": "CoverageItem"
       },
       "CoverageResponse": {
@@ -3950,9 +3733,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "coverage_gamma"
-        ],
+        "required": ["coverage_gamma"],
         "title": "CoverageResponse"
       },
       "CoverageState": {
@@ -3967,10 +3748,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "coverage_gamma",
-          "uncaptured_mass"
-        ],
+        "required": ["coverage_gamma", "uncaptured_mass"],
         "title": "CoverageState"
       },
       "CurvatureResponse": {
@@ -3981,9 +3759,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "kappa_max"
-        ],
+        "required": ["kappa_max"],
         "title": "CurvatureResponse"
       },
       "DecoherenceRequest": {
@@ -4019,9 +3795,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "channel"
-        ],
+        "required": ["channel"],
         "title": "DecoherenceRequest"
       },
       "DecoherenceResponse": {
@@ -4051,11 +3825,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "case",
-          "channel"
-        ],
+        "required": ["ok", "case", "channel"],
         "title": "DecoherenceResponse"
       },
       "DeleteResult": {
@@ -4066,9 +3836,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok"
-        ],
+        "required": ["ok"],
         "title": "DeleteResult"
       },
       "DoubleVerdictRequest": {
@@ -4094,10 +3862,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "W_litera",
-          "T_telos"
-        ],
+        "required": ["W_litera", "T_telos"],
         "title": "DoubleVerdictRequest"
       },
       "DoubleVerdictResponse": {
@@ -4120,9 +3885,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "verdicts"
-        ],
+        "required": ["verdicts"],
         "title": "DoubleVerdictResponse"
       },
       "EngineResult": {
@@ -4178,9 +3941,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "title": "EngineResult"
       },
       "EntangleRequest": {
@@ -4211,9 +3972,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "variables"
-        ],
+        "required": ["variables"],
         "title": "EntangleRequest"
       },
       "EntangleResponse": {
@@ -4256,10 +4015,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "certificate",
-          "achieved_negativity"
-        ],
+        "required": ["certificate", "achieved_negativity"],
         "title": "EntangleResponse"
       },
       "EntanglementsResponse": {
@@ -4287,10 +4043,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pairs",
-          "mi"
-        ],
+        "required": ["pairs", "mi"],
         "title": "EntanglementsResponse"
       },
       "EquityMeterRequest": {
@@ -4311,10 +4064,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "distribution_a",
-          "distribution_b"
-        ],
+        "required": ["distribution_a", "distribution_b"],
         "title": "EquityMeterRequest"
       },
       "EquityMeterResponse": {
@@ -4332,10 +4082,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "score",
-          "deltas"
-        ],
+        "required": ["score", "deltas"],
         "title": "EquityMeterResponse"
       },
       "ExpectationOut": {
@@ -4346,9 +4093,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "title": "ExpectationOut"
       },
       "ExpectationRequest": {
@@ -4363,10 +4108,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "operator"
-        ],
+        "required": ["case", "operator"],
         "title": "ExpectationRequest"
       },
       "ExportPayload": {
@@ -4395,9 +4137,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case_id"
-        ],
+        "required": ["case_id"],
         "title": "ExportPayload"
       },
       "ExportResponse": {
@@ -4424,10 +4164,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "path",
-          "message"
-        ],
+        "required": ["path", "message"],
         "title": "ExportResponse"
       },
       "FindEntanglementRequest": {
@@ -4441,9 +4178,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "variables"
-        ],
+        "required": ["variables"],
         "title": "FindEntanglementRequest"
       },
       "FindEntanglementResponse": {
@@ -4477,9 +4212,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pairs"
-        ],
+        "required": ["pairs"],
         "title": "FindEntanglementResponse"
       },
       "GeodesicRequest": {
@@ -4550,10 +4283,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "path",
-          "geodesic_action"
-        ],
+        "required": ["path", "geodesic_action"],
         "title": "GeodesicResponse"
       },
       "HDEPlanAlternative": {
@@ -4572,11 +4302,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "strategy",
-          "cost_tokens",
-          "expected_kappa"
-        ],
+        "required": ["strategy", "cost_tokens", "expected_kappa"],
         "title": "HDEPlanAlternative"
       },
       "HDEPlanRequest": {
@@ -4707,10 +4433,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pack",
-          "kind"
-        ],
+        "required": ["pack", "kind"],
         "title": "HandleRequest"
       },
       "HorizonRequest": {
@@ -4753,10 +4476,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "locked",
-          "horizon_mass"
-        ],
+        "required": ["locked", "horizon_mass"],
         "title": "HorizonResponse"
       },
       "IngestEmailRequest": {
@@ -4851,11 +4571,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "mail_id",
-          "from_addr",
-          "to"
-        ],
+        "required": ["mail_id", "from_addr", "to"],
         "title": "IngestEmailRequest"
       },
       "IngestEmailResponse": {
@@ -4871,10 +4587,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "io"
-        ],
+        "required": ["ok", "io"],
         "title": "IngestEmailResponse"
       },
       "InitCaseRequest": {
@@ -4937,10 +4650,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "predistribution"
-        ],
+        "required": ["ok", "predistribution"],
         "title": "InitCaseResponse"
       },
       "InstallRequest": {
@@ -4966,10 +4676,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pack",
-          "signature"
-        ],
+        "required": ["pack", "signature"],
         "title": "InstallRequest"
       },
       "LensingResponse": {
@@ -4990,10 +4697,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "lensing_map",
-          "critical_precedents"
-        ],
+        "required": ["lensing_map", "critical_precedents"],
         "title": "LensingResponse"
       },
       "LockRequest": {
@@ -5016,9 +4720,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case"
-        ],
+        "required": ["case"],
         "title": "LockRequest"
       },
       "LockResponse": {
@@ -5033,10 +4735,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "lock_ref"
-        ],
+        "required": ["ok", "lock_ref"],
         "title": "LockResponse"
       },
       "MerkleStep": {
@@ -5051,10 +4750,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "sibling",
-          "dir"
-        ],
+        "required": ["sibling", "dir"],
         "title": "MerkleStep"
       },
       "MismatchCreateRequest": {
@@ -5098,11 +4794,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case_id",
-          "formula_str",
-          "results"
-        ],
+        "required": ["case_id", "formula_str", "results"],
         "title": "MismatchCreateRequest"
       },
       "MotionRequest": {
@@ -5137,10 +4829,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case_id",
-          "pattern_id"
-        ],
+        "required": ["case_id", "pattern_id"],
         "title": "MotionRequest"
       },
       "MotionResponse": {
@@ -5161,10 +4850,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "document",
-          "citations"
-        ],
+        "required": ["document", "citations"],
         "title": "MotionResponse"
       },
       "OperatorsOut": {
@@ -5181,9 +4867,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "operators"
-        ],
+        "required": ["operators"],
         "title": "OperatorsOut"
       },
       "PresetIn": {
@@ -5201,10 +4885,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "operator"
-        ],
+        "required": ["case", "operator"],
         "title": "PresetIn"
       },
       "PresetOut": {
@@ -5219,10 +4900,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "operator"
-        ],
+        "required": ["case", "operator"],
         "title": "PresetOut"
       },
       "PublicBundleIn": {
@@ -5285,11 +4963,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "rid",
-          "smt2_hash",
-          "lfsc"
-        ],
+        "required": ["rid", "smt2_hash", "lfsc"],
         "title": "PublicBundleIn"
       },
       "PublicPCO": {
@@ -5335,12 +5009,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "rid",
-          "smt2_hash",
-          "lfsc",
-          "signature"
-        ],
+        "required": ["rid", "smt2_hash", "lfsc", "signature"],
         "title": "PublicPCO"
       },
       "QOracleRequest": {
@@ -5404,11 +5073,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "optimum",
-          "payoff",
-          "distribution"
-        ],
+        "required": ["optimum", "payoff", "distribution"],
         "title": "QOracleResponse"
       },
       "QtmHistoryEvent": {
@@ -5427,11 +5092,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "operator",
-          "verdict",
-          "p"
-        ],
+        "required": ["operator", "verdict", "p"],
         "title": "QtmHistoryEvent"
       },
       "QtmHistoryOut": {
@@ -5461,13 +5122,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "history",
-          "total",
-          "offset",
-          "limit"
-        ],
+        "required": ["case", "history", "total", "offset", "limit"],
         "title": "QtmHistoryOut"
       },
       "QtmStateOut": {
@@ -5497,12 +5152,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "psi",
-          "basis",
-          "predistribution"
-        ],
+        "required": ["case", "psi", "basis", "predistribution"],
         "title": "QtmStateOut"
       },
       "QuotaRequest": {
@@ -5536,9 +5186,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "upn"
-        ],
+        "required": ["upn"],
         "title": "RecallRequest"
       },
       "RecallResponse": {
@@ -5553,10 +5201,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "link"
-        ],
+        "required": ["ok", "link"],
         "title": "RecallResponse"
       },
       "RecordInputRequest": {
@@ -5575,10 +5220,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case_id",
-          "document_hash"
-        ],
+        "required": ["case_id", "document_hash"],
         "title": "RecordInputRequest",
         "description": "PL: Wejście do zarejestrowania dokumentu.\n\nEN: Input to record a document ingestion."
       },
@@ -5649,9 +5291,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "units"
-        ],
+        "required": ["units"],
         "title": "RefundIn"
       },
       "RefundRequest": {
@@ -5663,9 +5303,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "units"
-        ],
+        "required": ["units"],
         "title": "RefundRequest"
       },
       "RegisterRequest": {
@@ -5692,9 +5330,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "subject"
-        ],
+        "required": ["subject"],
         "title": "RegisterRequest"
       },
       "RegisterResponse": {
@@ -5720,10 +5356,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "upn",
-          "ts"
-        ],
+        "required": ["upn", "ts"],
         "title": "RegisterResponse"
       },
       "ReplayRequest": {
@@ -5738,10 +5371,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "timestamp"
-        ],
+        "required": ["case", "timestamp"],
         "title": "ReplayRequest"
       },
       "ReplayResponse": {
@@ -5756,10 +5386,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "state_uri"
-        ],
+        "required": ["ok", "state_uri"],
         "title": "ReplayResponse"
       },
       "ReqIn": {
@@ -5787,10 +5414,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "user_id",
-          "amount"
-        ],
+        "required": ["user_id", "amount"],
         "title": "ReqIn"
       },
       "ReqOut": {
@@ -5824,12 +5448,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "request_id",
-          "status",
-          "user_id",
-          "amount"
-        ],
+        "required": ["request_id", "status", "user_id", "amount"],
         "title": "ReqOut"
       },
       "SequenceRequest": {
@@ -5875,9 +5494,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "operators"
-        ],
+        "required": ["operators"],
         "title": "SequenceRequest"
       },
       "SequenceResponse": {
@@ -5902,11 +5519,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "steps",
-          "final_latency_ms",
-          "uncertainty_bound"
-        ],
+        "required": ["steps", "final_latency_ms", "uncertainty_bound"],
         "title": "SequenceResponse"
       },
       "SequenceStep": {
@@ -5925,11 +5538,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "operator",
-          "verdict",
-          "p"
-        ],
+        "required": ["operator", "verdict", "p"],
         "title": "SequenceStep"
       },
       "SetStateRequest": {
@@ -5968,11 +5577,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "case",
-          "basis",
-          "probs"
-        ],
+        "required": ["case", "basis", "probs"],
         "title": "SetStateRequest"
       },
       "SourceCacheRequest": {
@@ -5983,9 +5588,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "uri"
-        ],
+        "required": ["uri"],
         "title": "SourceCacheRequest"
       },
       "SourceCacheResponse": {
@@ -6008,12 +5611,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "uri",
-          "digest",
-          "path",
-          "retrieved_at"
-        ],
+        "required": ["uri", "digest", "path", "retrieved_at"],
         "title": "SourceCacheResponse"
       },
       "StatusOut": {
@@ -6039,20 +5637,12 @@
           }
         },
         "type": "object",
-        "required": [
-          "request_id",
-          "status"
-        ],
+        "required": ["request_id", "status"],
         "title": "StatusOut"
       },
       "TicketPriority": {
         "type": "string",
-        "enum": [
-          "low",
-          "medium",
-          "high",
-          "critical"
-        ],
+        "enum": ["low", "medium", "high", "critical"],
         "title": "TicketPriority"
       },
       "ToggleRequest": {
@@ -6067,10 +5657,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pack",
-          "enabled"
-        ],
+        "required": ["pack", "enabled"],
         "title": "ToggleRequest"
       },
       "TokenAllocateIn": {
@@ -6092,9 +5679,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "request_id"
-        ],
+        "required": ["request_id"],
         "title": "TokenAllocateIn"
       },
       "TokenRequestIn": {
@@ -6122,10 +5707,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "user_id",
-          "amount"
-        ],
+        "required": ["user_id", "amount"],
         "title": "TokenRequestIn"
       },
       "TokenRequestOut": {
@@ -6159,12 +5741,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "request_id",
-          "status",
-          "user_id",
-          "amount"
-        ],
+        "required": ["request_id", "status", "user_id", "amount"],
         "title": "TokenRequestOut"
       },
       "TokenStatusOut": {
@@ -6190,10 +5767,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "request_id",
-          "status"
-        ],
+        "required": ["request_id", "status"],
         "title": "TokenStatusOut"
       },
       "TryRequest": {
@@ -6227,9 +5801,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pack"
-        ],
+        "required": ["pack"],
         "title": "TryRequest"
       },
       "TunnelRequest": {
@@ -6264,9 +5836,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "evidence_energy"
-        ],
+        "required": ["evidence_energy"],
         "title": "TunnelRequest"
       },
       "TunnelResponse": {
@@ -6288,11 +5858,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "p_tunnel",
-          "min_energy_to_cross",
-          "path"
-        ],
+        "required": ["p_tunnel", "min_energy_to_cross", "path"],
         "title": "TunnelResponse"
       },
       "UncertaintyOut": {
@@ -6303,9 +5869,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "lower_bound"
-        ],
+        "required": ["lower_bound"],
         "title": "UncertaintyOut"
       },
       "UncertaintyResponse": {
@@ -6316,9 +5880,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "lower_bound"
-        ],
+        "required": ["lower_bound"],
         "title": "UncertaintyResponse"
       },
       "ValidationError": {
@@ -6347,11 +5909,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       },
       "VerificationRequest": {
@@ -6367,9 +5925,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "formula"
-        ],
+        "required": ["formula"],
         "title": "VerificationRequest",
         "description": "PL: Wejściowy DTO do weryfikacji (MVP: tylko 'smt2').\n\nEN: Input DTO for verification (MVP: 'smt2' only)."
       },
@@ -6388,10 +5944,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "claim",
-          "counter_arguments"
-        ],
+        "required": ["claim", "counter_arguments"],
         "title": "WhyNotRequest"
       },
       "WhyNotResponse": {
@@ -6406,10 +5959,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "trace_uri"
-        ],
+        "required": ["ok", "trace_uri"],
         "title": "WhyNotResponse"
       },
       "services__api_gateway__routers__dr__RevokeRequest": {
@@ -6421,9 +5971,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "lock_ref"
-        ],
+        "required": ["lock_ref"],
         "title": "RevokeRequest"
       },
       "services__api_gateway__routers__dr__RevokeResponse": {
@@ -6438,10 +5986,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok",
-          "revoked"
-        ],
+        "required": ["ok", "revoked"],
         "title": "RevokeResponse"
       },
       "services__api_gateway__routers__fin__MeasureRequest": {
@@ -6488,10 +6033,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "outcome",
-          "p"
-        ],
+        "required": ["outcome", "p"],
         "title": "MeasureResponse"
       },
       "services__api_gateway__routers__qtm__MeasureRequest": {
@@ -6542,9 +6084,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "operator"
-        ],
+        "required": ["operator"],
         "title": "MeasureRequest"
       },
       "services__api_gateway__routers__qtm__MeasureResponse": {
@@ -6602,9 +6142,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "upn"
-        ],
+        "required": ["upn"],
         "title": "RevokeRequest"
       },
       "services__api_gateway__routers__upn__RevokeResponse": {
@@ -6624,11 +6162,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "upn",
-          "revoked",
-          "merkle_proof"
-        ],
+        "required": ["upn", "revoked", "merkle_proof"],
         "title": "RevokeResponse"
       }
     }

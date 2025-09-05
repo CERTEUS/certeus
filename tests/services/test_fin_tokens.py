@@ -14,12 +14,12 @@ EN: Billing/Cost‑Tokens API tests: request → allocate.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
 
 from fastapi.testclient import TestClient
-
 
 def test_fin_tokens_request_allocate(tmp_path: Path, monkeypatch) -> None:
     from services.api_gateway.main import app

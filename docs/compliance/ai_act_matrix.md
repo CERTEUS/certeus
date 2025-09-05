@@ -5,4 +5,3 @@
 - Human oversight: Counsel sign-off required for PUBLISH/CONDITIONAL
 - Data governance: Sources with digests and offline cache
 - Transparency: Public payload and JWKS available
-

@@ -23,7 +23,6 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--require", nargs="+", default=["sbom.json.sig", "sbom.json.cert"], help="Files that must exist")
@@ -34,7 +33,6 @@ def main() -> int:
         return 1
     print("All required cosign attestations present.")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

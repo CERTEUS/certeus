@@ -12,4 +12,3 @@ version: 1.0.0
 license: MIT
 module: plugins.demo_billing_pl.src.main
 register: register
-

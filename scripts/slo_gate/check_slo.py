@@ -26,7 +26,6 @@ import json
 import os
 from pathlib import Path
 
-
 def main() -> int:
     p = Path(os.getenv("SLO_OUT", "out/slo.json"))
     data = json.loads(p.read_text(encoding="utf-8"))
@@ -37,7 +36,6 @@ def main() -> int:
     ok = (p95 <= max_p95) and (er <= max_err)
     print(f"SLO p95={p95:.2f}ms (<= {max_p95}) error_rate={er:.4f} (<= {max_err}) => {'OK' if ok else 'FAIL'}")
     return 0 if ok else 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

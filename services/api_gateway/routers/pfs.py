@@ -16,6 +16,7 @@ EN: ProofFS router (list and exists). Lists given pfs:// prefix and checks exist
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -34,14 +35,12 @@ PFS_ROOT_ENV = "PROOFS_FS_ROOT"
 
 router = APIRouter(prefix="/v1/pfs", tags=["ProofFS"])
 
-
 def _root() -> Path:
     p = os.getenv(PFS_ROOT_ENV)
     if p:
         return Path(p)
     # fallback: repo data dir (aligned with materialize default)
     return Path(".").resolve() / "data" / "proof_fs"
-
 
 @router.get("/list", operation_id="pfs_list_entries")
 async def list_entries(
@@ -70,7 +69,6 @@ async def list_entries(
             break
     return {"prefix": prefix, "entries": entries}
 
-
 @router.get("/exists", operation_id="pfs_exists")
 async def exists(uri: str = Query(..., description="pfs:// URI")) -> dict[str, Any]:
     if not uri.startswith("pfs://"):
@@ -84,7 +82,6 @@ async def exists(uri: str = Query(..., description="pfs:// URI")) -> dict[str, A
             size = None
         return {"uri": uri, "exists": True, "size": size, "path": str(p)}
     return {"uri": uri, "exists": False, "size": None, "path": str(p)}
-
 
 # === I/O / ENDPOINTS ===
 

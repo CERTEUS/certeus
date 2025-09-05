@@ -22,6 +22,7 @@ EN: Schema validation tests for example DPCO/MCO objects.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
@@ -31,10 +32,8 @@ from jsonschema import Draft7Validator
 
 # === TESTY / TESTS ===
 
-
 def _repo() -> Path:
     return Path(__file__).resolve().parents[2]
-
 
 def test_dpco_mco_schemas_validate_examples() -> None:
     # Load schemas

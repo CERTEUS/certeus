@@ -57,4 +57,3 @@ try {
     Write-Host "OK: zaktualizowano ~/.git-credentials i helper=store (GitHub)."
   }
 } catch { Write-Warning "GitHub git auth setup skipped: $($_.Exception.Message)" }
-

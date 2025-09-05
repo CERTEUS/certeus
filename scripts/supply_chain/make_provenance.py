@@ -26,7 +26,6 @@ from pathlib import Path
 import time
 from typing import Any
 
-
 def main() -> int:
     out = Path("out")
     out.mkdir(parents=True, exist_ok=True)
@@ -51,7 +50,6 @@ def main() -> int:
     (out / "provenance.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print("wrote out/provenance.json")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

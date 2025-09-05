@@ -42,7 +42,6 @@ from services.lexlog_parser.evaluator import choose_article_for_kk, evaluate_rul
 from services.lexlog_parser.mapping import load_mapping
 from services.lexlog_parser.parser import parse_lexlog
 
-
 def _load_kk_ast():
     lex_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.lex"
 
@@ -50,14 +49,12 @@ def _load_kk_ast():
 
     return parse_lexlog(content)
 
-
 def _load_ctx():
     map_path = Path("packs") / "jurisdictions" / "PL" / "rules" / "kk.mapping.json"
 
     assert map_path.exists(), "Missing kk.mapping.json"
 
     return load_mapping(map_path)
-
 
 def test_286_passes_when_wprowadzenie_true_and_excludes_false() -> None:
     ast = _load_kk_ast()
@@ -78,7 +75,6 @@ def test_286_passes_when_wprowadzenie_true_and_excludes_false() -> None:
     assert res.failing_excludes == []
 
     assert choose_article_for_kk(ast, flags, ctx) == "art286"
-
 
 def test_286_fails_when_excluded_flag_set() -> None:
     ast = _load_kk_ast()

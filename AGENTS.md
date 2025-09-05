@@ -100,10 +100,10 @@ UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pe�
 
 ### Procedura pracy (każda sesja)
 
-1) Lint + testy: `ruff check . --fix`, `ruff format .`, `pytest -q`.
-2) Push roboczy: `venv/bin/python scripts/git_push.py --to work/daily` (Windows: `.\.venv\Scripts\python.exe scripts\git_push.py --to work/daily`).
-3) CI uruchamia gate’y. Jeśli wszystkie zielone → auto‑promocja do `main`. Jeśli którekolwiek `failure` → automatyczne Issue; agent naprawia i ponawia push.
-4) Nigdy nie wklejamy tokenów do logów/PR; sekrety tylko w ENV lub w `.devkeys/*.txt` (ignorowane).
+1. Lint + testy: `ruff check . --fix`, `ruff format .`, `pytest -q`.
+2. Push roboczy: `venv/bin/python scripts/git_push.py --to work/daily` (Windows: `.\.venv\Scripts\python.exe scripts\git_push.py --to work/daily`).
+3. CI uruchamia gate’y. Jeśli wszystkie zielone → auto‑promocja do `main`. Jeśli którekolwiek `failure` → automatyczne Issue; agent naprawia i ponawia push.
+4. Nigdy nie wklejamy tokenów do logów/PR; sekrety tylko w ENV lub w `.devkeys/*.txt` (ignorowane).
 
 ### WORKLOG (dziennik prac)
 
@@ -119,24 +119,24 @@ UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pe�
 - Proof‑native: wejście PNIP i publikowalne wyjścia PCO są first‑class; nie logujemy sekretów; OTel w API (zob. 21.3–21.5).
 - Linty/testy: ruff/pytest są bramką jakości; agent uruchamia `ruff check . --fix`, `ruff format .`, `pytest` przed push.
 - Automatyzacja: w CI działa gate `scripts/check_premium_style.py` (wymusza banery/docstringi/sekcje). Workflow: `.github/workflows/ci-gates.yml`.
-- Idempotencja: skrypty pomocnicze (apply_headers/apply_*_headers) mogą być uruchamiane wielokrotnie; nie duplikują nagłówków.
-
+- Idempotencja: skrypty pomocnicze (apply*headers/apply*\*\_headers) mogą być uruchamiane wielokrotnie; nie duplikują nagłówków.
 
 ## Plan 90 dni (Roadmapa)
 
-- Dokument źródłowy:  — zawiera pełną mapę tygodni (18×5 dni).
+- Dokument źródłowy: — zawiera pełną mapę tygodni (18×5 dni).
 - Zasady:
   - Agent realizuje zadania tydzień po tygodniu, w kolejności i z DOD.
-  - Po każdym ukończonym zadaniu: update  (skrót + szczegóły), commit na  i monitorowanie gate’ów.
+  - Po każdym ukończonym zadaniu: update (skrót + szczegóły), commit na i monitorowanie gate’ów.
   - Po „zielonych” gate’ach commit automatycznie ląduje na .
   - Jeśli gate’y spadną: Gate‑Failure‑Notify otwiera Issue — agent naprawia i kontynuuje.
 - Minimalny SOP tygodnia:
-  - Przeczytaj zakres w  (np. Tydzień 7 — FINENITH v0.1),
+  - Przeczytaj zakres w (np. Tydzień 7 — FINENITH v0.1),
   - Dostarcz API/PCO/UI/gate’y z DOD,
   - Uzupełnij README (demo tygodnia) i AGENTS/WORKLOG,
-  - Wypchnij na  i potwierdź zielony stan.
+  - Wypchnij na i potwierdź zielony stan.
 
 ## Handoff / Stan prac (skrót)
+
 - Historia wyczyszczona (single‑root commit, 2025‑09‑02). Archiwa starej historii: `origin/archive/old-main-*`, `origin/archive/old-daily-*`.
 - Gałęzie: `main` = zielony; `work/daily` = zielony.
 - CI/PR podsumowanie: ci‑gates publikuje komentarz z tickami (style/lint/tests/perf/slo/smokes) + statusy workflowów (Proof Gate / Gauge / Path‑Coverage / Boundary / asset‑guard) oraz trendem perf p95.

@@ -13,11 +13,11 @@ meta:
   description: "Skeleton: role/action matrix per domain"
 
 roles:
-  - AFV  # auditor/verifier
-  - ASE  # security/engineering
-  - ATC  # change control
-  - ATS  # steering
-  - AVR  # reviewer
+  - AFV # auditor/verifier
+  - ASE # security/engineering
+  - ATC # change control
+  - ATS # steering
+  - AVR # reviewer
 
 actions:
   - read
@@ -32,31 +32,30 @@ domains:
   lex:
     resources: [pco, policy, config]
     allow:
-      read:    [AFV, ASE, ATC, ATS, AVR]
+      read: [AFV, ASE, ATC, ATS, AVR]
       publish: [AFV, ATC]
       approve: [AFV, AVR]
-      revoke:  [ATC]
-      merge:   [ATC, ASE]
+      revoke: [ATC]
+      merge: [ATC, ASE]
       manage_policy: [ASE]
-      manage_keys:   []
+      manage_keys: []
   fin:
     resources: [pco, policy, config]
     allow:
-      read:    [AFV, ASE, ATC, ATS, AVR]
+      read: [AFV, ASE, ATC, ATS, AVR]
       publish: [AFV, ATC]
       approve: [AFV, AVR]
-      revoke:  [ATC]
-      merge:   [ATC, ASE]
+      revoke: [ATC]
+      merge: [ATC, ASE]
       manage_policy: [ASE]
-      manage_keys:   []
+      manage_keys: []
   sec:
     resources: [keys, policy, config]
     allow:
-      read:    [AFV, ASE, ATC, ATS, AVR]
+      read: [AFV, ASE, ATC, ATS, AVR]
       publish: []
       approve: [ASE]
-      revoke:  [ATC]
-      merge:   [ATC, ASE]
+      revoke: [ATC]
+      merge: [ATC, ASE]
       manage_policy: [ASE]
-      manage_keys:   [ASE]
-
+      manage_keys: [ASE]

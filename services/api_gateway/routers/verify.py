@@ -38,7 +38,6 @@ from kernel.truth_engine import DualCoreVerifier
 
 # === MODELE / MODELS ===
 
-
 class VerificationRequest(BaseModel):
     """
 
@@ -52,7 +51,6 @@ class VerificationRequest(BaseModel):
 
     lang: str = "smt2"
 
-
 # === LOGIKA / LOGIC ===
 
 router = APIRouter(prefix="/v1", tags=["Truth Engine"])
@@ -60,7 +58,6 @@ router = APIRouter(prefix="/v1", tags=["Truth Engine"])
 _verifier = DualCoreVerifier()
 
 # === I/O / ENDPOINTS ===
-
 
 @router.post("/verify")
 def verify_formula(req: VerificationRequest) -> dict[str, Any]:
@@ -88,6 +85,5 @@ def verify_formula(req: VerificationRequest) -> dict[str, Any]:
 
     except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Unexpected error: {e}") from e
-
 
 # === TESTY / TESTS ===

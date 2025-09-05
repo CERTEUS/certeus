@@ -40,10 +40,8 @@ from hashlib import sha256
 
 from services.ledger_service.cosmic_merkle import anchor_bundle, get_bundle_proof, verify_proof
 
-
 def _hx(s: str) -> str:
     return sha256(s.encode("utf-8")).hexdigest()
-
 
 def test_anchor_and_verify_roundtrip() -> None:
     rid = _hx("rid-1")

@@ -102,7 +102,6 @@ from typing import Any, Literal, Protocol
 
 # ----------------------------- Common DTOs ----------------------------------
 
-
 @dataclass(slots=True)
 class Blob:
     """
@@ -118,7 +117,6 @@ class Blob:
     content_type: str
 
     data: bytes
-
 
 @dataclass(slots=True)
 class PreviewRequest:
@@ -137,7 +135,6 @@ class PreviewRequest:
     target_format: str = "application/pdf"
 
     deterministic: bool = True
-
 
 @dataclass(slots=True)
 class PreviewResult:
@@ -159,7 +156,6 @@ class PreviewResult:
 
     meta: Mapping[str, Any] = field(default_factory=dict)
 
-
 @dataclass(slots=True)
 class OCRPage:
     """
@@ -179,7 +175,6 @@ class OCRPage:
     height_px: int | None = None
 
     meta: Mapping[str, Any] = field(default_factory=dict)
-
 
 @dataclass(slots=True)
 class OCRRequest:
@@ -201,7 +196,6 @@ class OCRRequest:
 
     case_id: str | None = None
 
-
 @dataclass(slots=True)
 class DriveSaveResult:
     """
@@ -222,7 +216,6 @@ class DriveSaveResult:
 
     meta: Mapping[str, Any] = field(default_factory=dict)
 
-
 @dataclass(slots=True)
 class Attachment:
     """
@@ -240,7 +233,6 @@ class Attachment:
     content: str | bytes
 
     content_type: str | None = None
-
 
 @dataclass(slots=True)
 class LLMRequest:
@@ -264,7 +256,6 @@ class LLMRequest:
 
     max_tokens: int | None = None
 
-
 @dataclass(slots=True)
 class LLMResponse:
     """
@@ -287,32 +278,24 @@ class LLMResponse:
 
     error: str | None = None
 
-
 # ------------------------------- Errors -------------------------------------
-
 
 class AdapterError(RuntimeError):
     """PL: Błąd ogólny adapterów. EN: Generic adapters error."""
 
-
 class PreviewError(AdapterError):
     """PL/EN: Preview adapter error."""
-
 
 class OCRError(AdapterError):
     """PL/EN: OCR adapter error."""
 
-
 class DriveError(AdapterError):
     """PL/EN: Drive/storage adapter error."""
-
 
 class LLMError(AdapterError):
     """PL/EN: LLM adapter error."""
 
-
 # ------------------------------ Interfaces ----------------------------------
-
 
 class PreviewAdapter(Protocol):
     """
@@ -348,7 +331,6 @@ class PreviewAdapter(Protocol):
 
         ...
 
-
 class OCRAdapter(Protocol):
     """
 
@@ -382,7 +364,6 @@ class OCRAdapter(Protocol):
         """PL/EN: Extract text pages from the blob (PDF/image)."""
 
         ...
-
 
 class DriveAdapter(Protocol):
     """
@@ -436,7 +417,6 @@ class DriveAdapter(Protocol):
 
         ...
 
-
 class LLMAdapter(Protocol):
     """
 
@@ -467,9 +447,7 @@ class LLMAdapter(Protocol):
 
         ...
 
-
 # ----------------------------- Helper Contracts -----------------------------
-
 
 def infer_extension(content_type: str, fallback: str = ".bin") -> str:
     """
@@ -490,7 +468,6 @@ def infer_extension(content_type: str, fallback: str = ".bin") -> str:
     }
 
     return mapping.get(content_type.lower(), fallback)
-
 
 __all__ = [
     "Blob",

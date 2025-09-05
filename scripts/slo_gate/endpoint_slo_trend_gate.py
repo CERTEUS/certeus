@@ -21,19 +21,18 @@ EN: Per-endpoint SLO trend gate — compares `out/endpoint_slo.json` with
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 import json
 import os
 from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
-
 def _read(p: Path) -> dict[str, dict[str, float]]:
     try:
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception:
         return {}
-
 
 def main() -> int:  # pragma: no cover
     repo = Path(".").resolve()
@@ -61,7 +60,6 @@ def main() -> int:  # pragma: no cover
     else:
         print("Endpoint SLO trend: OK")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

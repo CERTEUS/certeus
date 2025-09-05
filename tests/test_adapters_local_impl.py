@@ -60,7 +60,6 @@ from services.ingest_service.adapters.local_impl import (
     StubPreviewAdapter,
 )
 
-
 @pytest.mark.asyncio
 async def test_drive_roundtrip(tmp_path: Path) -> None:
     drive = LocalDriveAdapter(base_dir=tmp_path / "static", base_url_prefix="/static")
@@ -78,7 +77,6 @@ async def test_drive_roundtrip(tmp_path: Path) -> None:
     url = await drive.url_for(saved.file_id)
 
     assert url and url.startswith("/static/")
-
 
 @pytest.mark.asyncio
 async def test_preview_stub_docx_to_pdf(tmp_path: Path) -> None:
@@ -112,7 +110,6 @@ async def test_preview_stub_docx_to_pdf(tmp_path: Path) -> None:
 
     assert (tmp_path / "static" / path_rel).exists()
 
-
 @pytest.mark.asyncio
 async def test_ocr_stub_returns_page() -> None:
     ocr = StubOCRAdapter()
@@ -128,7 +125,6 @@ async def test_ocr_stub_returns_page() -> None:
     assert pages[0].index == 0
 
     assert "filename=scan.png" in pages[0].text
-
 
 @pytest.mark.asyncio
 async def test_llm_stub_deterministic() -> None:

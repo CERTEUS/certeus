@@ -22,5 +22,3 @@ $py = "$PWD\.venv\Scripts\python.exe"
 # Wymagania: aktywny venv (.venv) i zależności (fastapi, uvicorn, python-multipart)
 Write-Host "Start serwera: http://127.0.0.1:8000" -ForegroundColor Yellow
 & $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
-
-

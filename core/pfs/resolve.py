@@ -26,7 +26,6 @@ from .uri import _sanitize
 
 # === MODELE / MODELS ===
 
-
 @dataclass
 class ResolveResult:
     uri: str
@@ -34,13 +33,10 @@ class ResolveResult:
     exists: bool
     size: int | None = None
 
-
 # === LOGIKA / LOGIC ===
-
 
 def _root_dir() -> Path:
     return Path(os.getenv("PROOFS_FS_ROOT") or "data/proof_fs").resolve()
-
 
 def resolve_uri(uri: str, root: Path | None = None) -> ResolveResult:
     if not isinstance(uri, str) or not uri.startswith("pfs://"):
@@ -57,7 +53,6 @@ def resolve_uri(uri: str, root: Path | None = None) -> ResolveResult:
     size: int | None = file_path.stat().st_size if exists else None
     return ResolveResult(uri=uri, path=file_path, exists=exists, size=size)
 
-
 def resolve_prefix_dir(prefix: str, root: Path | None = None) -> Path:
     """
     PL/EN: Resolve a ProofFS prefix (pfs://<...>/) into a directory path under root.
@@ -73,7 +68,6 @@ def resolve_prefix_dir(prefix: str, root: Path | None = None) -> Path:
     base = root or _root_dir()
     p = base.joinpath(*safe_parts)
     return p if p.is_dir() else p.parent
-
 
 # === I/O / ENDPOINTS ===
 

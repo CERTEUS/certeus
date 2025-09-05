@@ -39,10 +39,8 @@ from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
-
 def _is_on(val: str | None) -> bool:
     return (val or "").strip().lower() in {"1", "true", "on", "yes"}
-
 
 def _bunker_ready(repo_root: Path) -> bool:
     # Forced fail (diagnostic)
@@ -81,7 +79,6 @@ def _bunker_ready(repo_root: Path) -> bool:
             continue
     return False
 
-
 def _write_summary(text: str) -> None:
     p = os.getenv("GITHUB_STEP_SUMMARY")
     if not p:
@@ -91,7 +88,6 @@ def _write_summary(text: str) -> None:
             f.write(text.rstrip() + "\n")
     except Exception:
         pass
-
 
 def main() -> int:
     repo = Path(__file__).resolve().parents[2]
@@ -114,7 +110,6 @@ def main() -> int:
 
     print("Security Bunker Gate: FAIL (BUNKER=on, not attested)")
     return 1
-
 
 # === I/O / ENDPOINTS ===
 

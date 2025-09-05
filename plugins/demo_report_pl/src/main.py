@@ -20,7 +20,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 class _Pack:
     def handle(self, kind: str, payload: dict[str, Any]) -> dict[str, Any]:
         if kind == "summarize":
@@ -34,10 +33,8 @@ class _Pack:
             }
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 
-
 def register():
     return _Pack()
-
 
 # === I/O / ENDPOINTS ===
 

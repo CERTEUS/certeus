@@ -43,7 +43,6 @@ ENDPOINTS = [
     ("GET", "/metrics"),
 ]
 
-
 def _time_endpoint(client: TestClient, method: str, path: str, n: int) -> list[float]:
     durs: list[float] = []
     for _ in range(n):
@@ -55,7 +54,6 @@ def _time_endpoint(client: TestClient, method: str, path: str, n: int) -> list[f
         r.raise_for_status()
         durs.append((time.perf_counter() - t0) * 1000.0)
     return durs
-
 
 def _warm_up(client: TestClient, rounds: int = 3) -> None:
     """PL/EN: Rozgrzewka: pierwsze wywołania mogą budować cache/struktury.
@@ -74,7 +72,6 @@ def _warm_up(client: TestClient, rounds: int = 3) -> None:
                     client.request(method, path)
                 except Exception:
                     pass
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -118,7 +115,6 @@ def main() -> int:
         return 1
     print(f"Perf bench: OK worst p95={worst_p95:.2f} ms <= {args.p95_max_ms} ms")
     return 0
-
 
 # === I/O / ENDPOINTS ===
 

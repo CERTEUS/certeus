@@ -22,6 +22,7 @@ EN: PII redaction gate per policies/pco/policy_pack.yaml.
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 import argparse
 import json
 import os
@@ -33,7 +34,6 @@ import yaml
 
 # === LOGIKA / LOGIC ===
 
-
 def _load_patterns() -> list[str]:
     try:
         root = Path(__file__).resolve().parents[2]
@@ -43,7 +43,6 @@ def _load_patterns() -> list[str]:
         return [str(x) for x in patt]
     except Exception:
         return []
-
 
 def _scan(obj: Any, patterns: list[re.Pattern[str]], hits: list[str], path: str = "$") -> None:
     if isinstance(obj, dict):
@@ -57,7 +56,6 @@ def _scan(obj: Any, patterns: list[re.Pattern[str]], hits: list[str], path: str 
             if rx.search(obj):
                 hits.append(path)
                 break
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -91,7 +89,6 @@ def main() -> int:
     print(f"[redaction] PII detected at: {sorted(set(hits))}")
     strict = (os.getenv("STRICT_REDACTION") or "0").strip() in {"1", "true", "True"}
     return 1 if strict else 0
-
 
 if __name__ == "__main__":  # === I/O / ENDPOINTS === / === TESTY / TESTS ===
     raise SystemExit(main())

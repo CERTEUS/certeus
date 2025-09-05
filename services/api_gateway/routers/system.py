@@ -41,7 +41,6 @@ from services.ingest_service.adapters.ocr_injector import build_ocr_preview
 
 # === MODELE / MODELS ===
 
-
 class IngestResult(BaseModel):
     kind: str = Field(default="fact")
 
@@ -53,10 +52,8 @@ class IngestResult(BaseModel):
 
     fact_id: str
 
-
 class SourceCacheRequest(BaseModel):
     uri: str
-
 
 class SourceCacheResponse(BaseModel):
     uri: str
@@ -66,7 +63,6 @@ class SourceCacheResponse(BaseModel):
     path: str
 
     retrieved_at: str
-
 
 # === LOGIKA / LOGIC ===
 
@@ -81,7 +77,6 @@ router.include_router(fhir_router)
 # /v1/ingest
 
 # ---------------------------------------------------------------------
-
 
 @router.post("/v1/ingest")
 async def ingest_document(
@@ -194,7 +189,6 @@ async def ingest_document(
 
     return facts
 
-
 # ---------------------------------------------------------------------
 
 # /v1/sources/cache
@@ -207,7 +201,6 @@ async def ingest_document(
 # /v1/analyze
 
 # ---------------------------------------------------------------------
-
 
 @router.post("/v1/analyze")
 async def analyze(request: Request, case_id: str, file: Annotated[UploadFile, File(...)]) -> dict[str, Any]:
@@ -232,13 +225,11 @@ async def analyze(request: Request, case_id: str, file: Annotated[UploadFile, Fi
         "analysis_result": {"status": "sat", "model": "[x=True]"},
     }
 
-
 # ---------------------------------------------------------------------
 
 # /v1/sipp/snapshot/{act_id}
 
 # ---------------------------------------------------------------------
-
 
 @router.get("/v1/sipp/snapshot/{act_id}")
 async def get_snapshot(act_id: str) -> dict[str, Any]:
@@ -265,14 +256,11 @@ async def get_snapshot(act_id: str) -> dict[str, Any]:
         "_certeus": {"snapshot_timestamp_utc": snap_ts},
     }
 
-
 # === I/O / ENDPOINTS ===
-
 
 @router.post("/v1/sources/cache", response_model=SourceCacheResponse)
 def post_source_cache(req: SourceCacheRequest) -> SourceCacheResponse:
     return cache_source(req)
-
 
 def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
     """
@@ -286,6 +274,5 @@ def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
     cs = cache_from_uri(req.uri)
 
     return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
-
 
 # === TESTY / TESTS ===

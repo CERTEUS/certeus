@@ -1,0 +1,125 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/playground.html                    |
+| ROLE: DevEx Playground (try-now + copy snippets).           |
+| PLIK: clients/web/public/playground.html                    |
+| ROLA: DevEx Playground (wypróbuj + kopiuj przykłady).       |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • DevEx Playground</title>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background: #111315; color: #f2f2f3; }
+      .container { max-width: 1080px; margin: 24px auto; padding: 0 16px; }
+      .card { background: #181b20; border: 1px solid #2a2d33; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+      h1 { margin: 0 0 12px; font-size: 22px; }
+      h2 { margin: 0 0 10px; font-size: 18px; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+      .muted { color: #9aa0a6; }
+      .pill { display: inline-block; padding: 4px 8px; border: 1px solid #2a2d33; border-radius: 999px; background: #20242a; }
+      input, select, textarea { background: #1a1c20; border: 1px solid #2a2d33; color: #f2f2f3; padding: 8px 10px; border-radius: 10px; }
+      textarea { width: 100%; min-height: 140px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .btn { background: #1a1c20; border: 1px solid #2a2d33; color: #f2f2f3; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+      .btn:hover { background: #20242a; }
+      pre { background: #0f1115; border: 1px solid #2a2d33; padding: 12px; border-radius: 8px; overflow: auto; max-height: 320px; }
+      .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+      @media (min-width: 960px) { .grid { grid-template-columns: 1.2fr 0.8fr; } }
+      nav a { color: #d5e3ff; text-decoration: none; margin-right: 8px; }
+      nav a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: space-between; align-items: baseline">
+          <nav aria-label="Nawigacja">
+            <a href="/app/public/geometry.html">Geometry</a>
+            <a href="/app/public/qtm.html">Quantum</a>
+            <a href="/app/public/boundary.html">Boundary</a>
+            <a href="/app/public/marketplace.html">Marketplace</a>
+            <a href="/app/public/chatops.html">ChatOps</a>
+            <a href="/app/public/mailops.html">MailOps</a>
+          </nav>
+          <div class="row">
+            <label for="lang" class="muted">Lang</label>
+            <select id="lang" aria-label="Language select" class="btn"><option value="pl" selected>PL</option><option value="en">EN</option></select>
+          </div>
+        </div>
+        <div class="card">
+          <h1 id="title">DevEx Playground • wypróbuj API</h1>
+          <p id="subtitle" class="muted">Wybierz endpoint, edytuj body i uruchom. Skopiuj curl/SDK.</p>
+          <div class="grid">
+            <div>
+              <div class="row">
+                <label for="endpoint">Endpoint</label>
+                <select id="endpoint" aria-label="Endpoint select" style="min-width: 340px">
+                  <option value="GET /health">GET /health</option>
+                  <option value="GET /v1/lexqft/coverage">GET /v1/lexqft/coverage</option>
+                  <option value="POST /v1/lexqft/tunnel">POST /v1/lexqft/tunnel</option>
+                  <option value="POST /v1/qtm/measure">POST /v1/qtm/measure</option>
+                  <option value="POST /v1/packs/enable">POST /v1/packs/enable</option>
+                  <option value="POST /v1/chatops/command">POST /v1/chatops/command</option>
+                  <option value="POST /v1/mailops/ingest">POST /v1/mailops/ingest</option>
+                </select>
+                <span class="muted"><span data-i18n="status">Status</span>: <span id="st" class="pill">-</span></span>
+              </div>
+              <div style="margin-top:10px">
+                <label for="body">Body (JSON)</label>
+                <textarea id="body" aria-label="Body JSON"></textarea>
+              </div>
+              <div class="row" style="margin-top:10px">
+                <button id="run" class="btn" data-i18n="run">Uruchom</button>
+                <button id="copyCurl" class="btn">Copy curl</button>
+                <button id="copySdk" class="btn">Copy Python SDK</button>
+              </div>
+            </div>
+            <div>
+              <h2>Wynik</h2>
+              <pre id="out" aria-live="polite"></pre>
+              <h2>PCO headers</h2>
+              <pre id="pco"></pre>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Przykłady</h2>
+          <pre id="examples"></pre>
+        </div>
+      </div>
+    </main>
+    <script>
+      const I18N={pl:{title:'DevEx Playground • wypróbuj API', subtitle:'Wybierz endpoint, edytuj body i uruchom. Skopiuj curl/SDK.', run:'Uruchom', status:'Status'}, en:{title:'DevEx Playground • try API', subtitle:'Pick endpoint, edit body and run. Copy curl/SDK.', run:'Run', status:'Status'}};
+      const EXAMPLES={
+        'GET /health':'',
+        'GET /v1/lexqft/coverage':'',
+        'POST /v1/lexqft/tunnel': JSON.stringify({ evidence_energy: 1.2 }, null, 2),
+        'POST /v1/qtm/measure': JSON.stringify({ operator: 'W', source: 'devex' }, null, 2),
+        'POST /v1/packs/enable': JSON.stringify({ pack: 'demo_report_pl', enabled: true }, null, 2),
+        'POST /v1/chatops/command': JSON.stringify({ cmd: 'qtm.measure', args: { operator: 'W', case: 'devex' } }, null, 2),
+        'POST /v1/mailops/ingest': JSON.stringify({ mail_id: 'devex-mail-1', thread_id: 'devex-thread', from_addr: 'alice@example.com', to: ['bob@example.com'], subject: 'Dowód', body_text: 'Hello', attachments: [{ filename:'plik.txt', content_type:'text/plain', size:10 }] }, null, 2)
+      };
+      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return p==='en'||p==='pl'?p:'pl'; }
+      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title').textContent=d.title; document.getElementById('subtitle').textContent=d.subtitle; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); }; }
+      function initExamples(){ const sel=document.getElementById('endpoint'); const body=document.getElementById('body'); const ex=EXAMPLES[sel.value]||''; body.value=ex; document.getElementById('examples').textContent = `Przykład body dla ${sel.value}:\n\n${ex||'(brak body)'}`; }
+      function buildCurl(url, method, body){ const hasBody = !!body && method!=='GET'; const data = hasBody? ` -H 'content-type: application/json' -d '${JSON.stringify(JSON.parse(body)).replace(/'/g, "'\\''")}'` : ''; return `curl -sS -X ${method} http://127.0.0.1:8000${url}${data}`; }
+      function buildSdk(url, method, body){ return `# pseudo-code using certeus_sdk\nfrom certeus_sdk import CerteusClient\ncli=CerteusClient('http://127.0.0.1:8000')\nresp=cli.request('${method}','${url}', body=${body? JSON.stringify(JSON.parse(body), null, 0): 'None'})\nprint(resp)`; }
+      function parseSel(val){ const [m,u]=val.split(' '); return { method:m, url:u }; }
+      async function run(){ const sel=document.getElementById('endpoint'); const {method, url}=parseSel(sel.value); const bodyTxt=document.getElementById('body').value; const opt={ method, headers:{} }; if(method!=='GET' && bodyTxt.trim()){ opt.headers['content-type']='application/json'; opt.body = bodyTxt; } document.getElementById('st').textContent='…'; try{ const r = await fetch(url, opt); const txt = await r.text(); document.getElementById('out').textContent = txt; const pco={}; (r.headers||new Headers()).forEach((v,k)=>{ if(k.toLowerCase().startsWith('x-certeus-pco-')) pco[k]=v; }); document.getElementById('pco').textContent = JSON.stringify(pco,null,2); document.getElementById('st').textContent = r.ok? 'OK':'ERR'; const curl = buildCurl(url, method, bodyTxt); const sdk = buildSdk(url, method, bodyTxt); document.getElementById('copyCurl').onclick=()=>navigator.clipboard.writeText(curl); document.getElementById('copySdk').onclick=()=>navigator.clipboard.writeText(sdk); }catch(e){ document.getElementById('st').textContent='ERR'; document.getElementById('out').textContent=String(e); } }
+      applyI18n(); initExamples(); document.getElementById('endpoint').addEventListener('change', initExamples); document.getElementById('run').addEventListener('click', run);
+    </script>
+    <style>
+      :focus-visible { outline: 2px solid #8a8f98; outline-offset: 2px; }
+      .sr-only { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+      .sr-only-focusable:focus { position: static; width: auto; height: auto; padding: 8px 10px; margin: 6px; background: #181b20; border: 2px solid #8a8f98; border-radius: 8px; }
+    </style>
+  </body>
+  </html>
+

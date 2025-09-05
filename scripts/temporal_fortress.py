@@ -50,14 +50,12 @@ TTL_DAYS: dict[str, int] = {"prawo": 365, "med": 90, "fin": 7}
 
 # +=====================================================================+
 
-
 def due(domain: str, last_proof_at: datetime) -> bool:
     """PL: Czy wygasło TTL? EN: TTL expired?"""
 
     days = TTL_DAYS.get(domain, 365)
 
     return datetime.now(UTC) - last_proof_at > timedelta(days=days)
-
 
 def run() -> None:
     """PL: Znajdź kapsuły do re-proof i zleć zadania. EN: Enqueue due re-proofs."""
@@ -67,7 +65,6 @@ def run() -> None:
     # Keeping architecture unchanged.
 
     return
-
 
 # === I/O / ENDPOINTS ===
 

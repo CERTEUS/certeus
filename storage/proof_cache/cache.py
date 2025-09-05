@@ -18,6 +18,7 @@ EN: Module for computing cache keys for PCO.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import hashlib
@@ -30,11 +31,9 @@ import time
 
 # === LOGIKA / LOGIC ===
 
-
 def time_bucket(now: float, seconds: int = 21600) -> str:
     """PL: Wiadro czasowe 6h. EN: 6-hour time bucket."""
     return str(int(math.floor(now / seconds)))
-
 
 def cache_key(
     ruleset_hash: str,
@@ -50,7 +49,6 @@ def cache_key(
     tb = time_bucket(now)
     raw = "|".join([ruleset_hash, query_hash, ctx_hash, jurisdiction, norm_pack_id, tb])
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-
 
 # === I/O / ENDPOINTS ===
 

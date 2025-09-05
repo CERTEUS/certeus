@@ -33,8 +33,8 @@ ALLOW = {
     "PQCRYPTO_REQUIRE",
     "PQCRYPTO_READY",
     "STRICT_DP_BUDGET",
+    "VALIDATE_PCO",
 }
-
 
 def main() -> int:
     repo = Path(__file__).resolve().parents[2]
@@ -61,7 +61,6 @@ def main() -> int:
             for line in out:
                 fh.write(line + "\n")
     return 0
-
 
 # === I/O / ENDPOINTS ===
 

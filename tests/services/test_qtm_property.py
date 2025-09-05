@@ -22,20 +22,18 @@ EN: Property-based tests of QTM sequences — normalization and UB bounds.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
 from hypothesis import HealthCheck, given, settings, strategies as st
 from hypothesis.strategies import composite
 
-
 def _norm(dist: list[float]) -> list[float]:
     s = sum(max(0.0, x) for x in dist) or 1.0
     return [max(0.0, x) / s for x in dist]
 
-
 ops_strategy = st.lists(st.sampled_from(["L", "T", "W", "I", "C"]), min_size=1, max_size=5)
-
 
 @composite
 def basis_and_dist(draw):
@@ -48,7 +46,6 @@ def basis_and_dist(draw):
         ).filter(lambda xs: sum(xs) > 0)
     )
     return basis, dist
-
 
 @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
 @given(bd=basis_and_dist(), ops=ops_strategy)

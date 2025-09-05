@@ -53,7 +53,6 @@ RULES_PATH = Path("packs/jurisdictions/PL/rules/kk.lex")
 
 MAP_PATH = Path("packs/jurisdictions/PL/rules/kk.mapping.json")
 
-
 def main() -> None:
     ap = argparse.ArgumentParser()
 
@@ -103,7 +102,6 @@ def main() -> None:
 
         if failing:
             print("  failing_excludes:", sorted(failing))
-
 
 if __name__ == "__main__":
     main()

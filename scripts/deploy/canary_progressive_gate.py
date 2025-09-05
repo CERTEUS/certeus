@@ -21,6 +21,7 @@ EN: Progressive deployment gate (report‑only). Reads `deploy/canary_policy.yml
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 import json
 from pathlib import Path
 from typing import Any
@@ -36,14 +37,12 @@ from services.api_gateway.main import app
 
 # === LOGIKA / LOGIC ===
 
-
 def _p95(vals: list[float]) -> float:
     if not vals:
         return 0.0
     s = sorted(vals)
     k = max(0, min(len(s) - 1, int(0.95 * (len(s) - 1))))
     return s[k]
-
 
 def _exercise(iters: int = 20) -> tuple[float, float]:
     import random
@@ -72,7 +71,6 @@ def _exercise(iters: int = 20) -> tuple[float, float]:
         if not ok:
             errors += 1
     return _p95(durs), errors / max(1, len(durs))
-
 
 def main() -> int:  # pragma: no cover (integration)
     repo = Path(".").resolve()
@@ -107,7 +105,6 @@ def main() -> int:  # pragma: no cover (integration)
     outp.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print("Canary: report written to", outp)
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -40,6 +40,7 @@ from fastapi.staticfiles import StaticFiles
 from core.version import __version__
 from monitoring.metrics_slo import certeus_http_request_duration_ms
 from monitoring.otel_setup import setup_fastapi_otel
+from services.api_gateway.rate_limit import attach_rate_limit_middleware
 import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.billing_api as billing_api
 import services.api_gateway.routers.billing_quota as billing_quota
@@ -51,7 +52,11 @@ import services.api_gateway.routers.dr as dr
 import services.api_gateway.routers.ethics as ethics
 import services.api_gateway.routers.export as export
 import services.api_gateway.routers.fin as fin
-import services.api_gateway.routers.fin_tokens_api as fin_tokens_api
+
+try:  # optional legacy alias; may be absent in some trees
+    import services.api_gateway.routers.fin_tokens_api as fin_tokens_api  # type: ignore
+except Exception:
+    fin_tokens_api = None  # type: ignore[assignment]
 import services.api_gateway.routers.ledger as ledger
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
@@ -59,6 +64,7 @@ import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
+import services.api_gateway.routers.qoc as qoc
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
@@ -123,7 +129,6 @@ CLIENTS_WEB.mkdir(parents=True, exist_ok=True)
 
 # --- blok --- Lifespan (inicjalizacja adapterów) -------------------------------
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -137,7 +142,6 @@ async def lifespan(app: FastAPI):
     _ = (get_preview(), get_llm())
 
     yield
-
 
 # --- blok --- Aplikacja i middleware -------------------------------------------
 
@@ -157,6 +161,9 @@ attach_proof_only_middleware(app)
 # Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
 setup_fastapi_otel(app)
 
+# Optional: Rate-limit middleware (enable via RATE_LIMIT_QPS)
+attach_rate_limit_middleware(app)
+
 # statyki
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -172,14 +179,12 @@ except Exception:
 # Backward-compat: serve marketplace.html from clients/web/public if not at root
 from fastapi.responses import FileResponse  # noqa: E402
 
-
 @app.get("/app/marketplace.html")
 def _serve_marketplace():
     cand = CLIENTS_WEB / "marketplace.html"
     if not cand.exists():
         cand = CLIENTS_WEB / "public" / "marketplace.html"
     return FileResponse(str(cand))
-
 
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
 
@@ -190,7 +195,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Simple i18n negotiation: query param `lang` overrides `Accept-Language`.
 # Sets `request.state.lang` and adds `Content-Language` response header.
@@ -220,7 +224,6 @@ async def _i18n_language_negotiator(request, call_next):  # type: ignore[no-rede
         pass
     return response
 
-
 # Request duration metrics middleware (Prometheus)
 @app.middleware("http")
 async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
@@ -238,10 +241,8 @@ async def _metrics_timing(request, call_next):  # type: ignore[no-redef]
         pass
     return response
 
-
 # Cache OpenAPI JSON in-memory to reduce per-request overhead
 _openapi_schema_cache = None
-
 
 def _cached_openapi():  # type: ignore[override]
     global _openapi_schema_cache
@@ -253,7 +254,6 @@ def _cached_openapi():  # type: ignore[override]
         routes=app.routes,
     )
     return _openapi_schema_cache
-
 
 app.openapi = _cached_openapi  # type: ignore[assignment]
 
@@ -277,11 +277,13 @@ app.include_router(devices.router)
 app.include_router(dr.router)
 app.include_router(upn.router)
 app.include_router(lexqft.router)
+app.include_router(qoc.router)
 app.include_router(chatops.router)
 app.include_router(mailops.router)
 app.include_router(ethics.router)
 app.include_router(fin.router)
-app.include_router(fin_tokens_api.router)
+if fin_tokens_api is not None:
+    app.include_router(fin_tokens_api.router)
 app.include_router(billing.router_tokens)
 app.include_router(billing.router)
 app.include_router(billing_quota.router)
@@ -293,16 +295,13 @@ app.include_router(pfs.router)
 app.include_router(jwks_router)
 app.include_router(metrics.router)
 
-
 # --- blok --- Health i root redirect -------------------------------------------
-
 
 @app.get("/health")
 def health() -> dict[str, object]:
     """PL: Liveness; EN: Liveness."""
 
     return {"status": "ok", "version": APP_VERSION}
-
 
 @app.get("/")
 def root_redirect() -> RedirectResponse:
@@ -316,9 +315,7 @@ def root_redirect() -> RedirectResponse:
 
     return RedirectResponse(url="/app/proof_visualizer/index.html", status_code=307)
 
-
 # --- blok --- Pomocnicze -------------------------------------------------------
-
 
 def _make_blob(upload: UploadFile, data: bytes) -> Blob:
     """
@@ -335,9 +332,7 @@ def _make_blob(upload: UploadFile, data: bytes) -> Blob:
         data=data,
     )
 
-
 # --- blok --- Metrics middleware (request duration) -----------------------------
-
 
 @app.middleware("http")
 async def _metrics_timing(request, call_next):  # type: ignore[override]
@@ -362,7 +357,6 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
         pass
 
     return response
-
 
 # === I/O / ENDPOINTS ===
 

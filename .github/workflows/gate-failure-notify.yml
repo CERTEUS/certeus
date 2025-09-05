@@ -52,4 +52,3 @@ jobs:
           else
             gh issue comment "$NUM" -b "$BODY" || true
           fi
-

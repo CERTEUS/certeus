@@ -16,6 +16,7 @@ EN: Tests for Operator Composer presets API: save/get/list.
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
@@ -31,7 +32,6 @@ client = TestClient(app)
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-
 
 def test_qtm_preset_save_get_list_roundtrip() -> None:
     case_id = "LEX-TEST-PRESET"

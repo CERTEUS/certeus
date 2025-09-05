@@ -36,15 +36,12 @@ import yaml  # type: ignore
 
 # === LOGIKA / LOGIC ===
 
-
 def _repo() -> Path:
     # File is at repo_root/scripts/validate_governance_consistency.py → parents[1] == repo_root
     return Path(__file__).resolve().parents[1]
 
-
 def _load_pack(p: Path) -> dict[str, Any]:
     return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-
 
 def _parse_rego_sets(p: Path) -> tuple[set[str], set[str]]:
     text = p.read_text(encoding="utf-8")
@@ -62,7 +59,6 @@ def _parse_rego_sets(p: Path) -> tuple[set[str], set[str]]:
 
     return _split(roles), _split(actions)
 
-
 def _run_gate(payload: dict[str, Any], env: dict[str, str] | None = None) -> int:
     e = os.environ.copy()
     e.update(env or {})
@@ -74,7 +70,6 @@ def _run_gate(payload: dict[str, Any], env: dict[str, str] | None = None) -> int
         env=e,
     )
     return proc.returncode
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -116,7 +111,6 @@ def main() -> int:
                     return 2
     print("Governance consistency: OK")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

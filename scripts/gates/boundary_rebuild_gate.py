@@ -26,7 +26,6 @@ import json
 import os
 from pathlib import Path
 
-
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--report", required=False, help="Raport JSON z compute_boundary_report")
@@ -68,7 +67,6 @@ def main() -> int:
     ok = ((delta_bits == 0) and per_shard_ok) if strict else ((delta_bits <= 0) and per_shard_ok)
     print(f"Boundary delta_bits={delta_bits} per_shard_ok={per_shard_ok} strict={strict} -> {'OK' if ok else 'FAIL'}")
     return 0 if ok else 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

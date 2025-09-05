@@ -15,6 +15,7 @@ EN: Minimal HTTP client for CERTEUS (QTMP and lexqft). Uses `requests` only.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -27,9 +28,7 @@ import requests
 
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
 
-
 # === MODELE / MODELS ===
-
 
 @dataclass(slots=True)
 class SDKResponse:
@@ -38,9 +37,7 @@ class SDKResponse:
     data: Any
     pco_headers: dict[str, str]
 
-
 # === LOGIKA / LOGIC ===
-
 
 class CerteusClient:
     """
@@ -122,6 +119,14 @@ class CerteusClient:
     def qtm_state(self, case: str) -> SDKResponse:
         return self._get(f"/v1/qtm/state/{case}")
 
+    def qtm_state_delete(self, *, case: str) -> SDKResponse:
+        r = self._s.delete(f"{self.base_url}/v1/qtm/state/{case}")
+        try:
+            data = r.json()
+        except Exception:
+            data = None
+        return SDKResponse(ok=r.ok, status=r.status_code, data=data, pco_headers=self._extract_pco_headers(r.headers))
+
     def qtm_operators(self) -> SDKResponse:
         return self._get("/v1/qtm/operators")
 
@@ -135,6 +140,21 @@ class CerteusClient:
         if gamma is not None:
             payload["gamma"] = float(gamma)
         return self._post("/v1/qtm/decoherence", json=payload)
+
+    def qtm_history(self, *, case: str) -> SDKResponse:
+        return self._get(f"/v1/qtm/history/{case}")
+
+    def qtm_commutator(self, *, A: str, B: str) -> SDKResponse:
+        return self._post("/v1/qtm/commutator", json={"A": A, "B": B})
+
+    def qtm_commutator_expectation(self, *, case: str, A: str, B: str) -> SDKResponse:
+        return self._post("/v1/qtm/commutator_expectation", json={"case": case, "A": A, "B": B})
+
+    def qtm_expectation(self, *, case: str, operator: str) -> SDKResponse:
+        return self._post("/v1/qtm/expectation", json={"case": case, "operator": operator})
+
+    def qtm_find_entanglement(self, *, variables: list[str]) -> SDKResponse:
+        return self._post("/v1/qtm/find_entanglement", json={"variables": variables})
 
     def qtm_preset_save(self, *, case: str, operator: str) -> SDKResponse:
         return self._post("/v1/qtm/preset", json={"case": case, "operator": operator})
@@ -178,7 +198,6 @@ class CerteusClient:
         if text_context:
             payload["text_context"] = text_context
         return self._post("/v1/chatops/command", json=payload)
-
 
 # === I/O / ENDPOINTS ===
 

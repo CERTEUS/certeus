@@ -50,21 +50,16 @@ EN: Package initializer.
 
 from typing import Any
 
-
 class ExprRef: ...
-
 
 class BoolRef(ExprRef): ...
 
-
 class CheckSatResult: ...
-
 
 class AstVector:
     def __len__(self) -> int: ...
 
     def __getitem__(self, i: int) -> ExprRef: ...
-
 
 class Solver:
     def add(self, *args: Any) -> None: ...
@@ -73,33 +68,23 @@ class Solver:
 
     def model(self) -> Any: ...
 
-
 def Bool(name: str, ctx: Any | None = None) -> BoolRef: ...
-
 
 def BoolVal(val: Any, ctx: Any | None = None) -> BoolRef: ...
 
-
 def And(*args: Any) -> ExprRef: ...
-
 
 def Or(*args: Any) -> ExprRef: ...
 
-
 def Not(a: Any) -> ExprRef: ...
-
 
 def Implies(a: Any, b: Any) -> ExprRef: ...
 
-
 def Xor(*args: Any) -> ExprRef: ...
-
 
 def parse_smt2_string(s: str, decls: Any | None = None) -> AstVector: ...
 
-
 def get_version_string() -> str: ...
-
 
 sat: CheckSatResult
 

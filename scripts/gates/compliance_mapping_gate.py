@@ -26,11 +26,9 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-
 def _contains_all(text: str, needles: list[str]) -> bool:
     t = text.lower()
     return all(n.lower() in t for n in needles)
-
 
 def check(root: str | Path | None = None) -> tuple[list[str], list[str]]:
     """PL/EN: Zwraca (violations, warnings)."""
@@ -67,7 +65,6 @@ def check(root: str | Path | None = None) -> tuple[list[str], list[str]]:
 
     return vio, warn
 
-
 def main() -> int:  # pragma: no cover (integration)
     vio, warn = check()
     if warn:
@@ -86,7 +83,6 @@ def main() -> int:  # pragma: no cover (integration)
         f"{len(vio)} violations, {len(warn)} warnings"
     )
     return 0
-
 
 # === I/O / ENDPOINTS ===
 

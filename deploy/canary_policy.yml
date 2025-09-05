@@ -21,4 +21,3 @@ stages:
 notes: |
   PL: Polityka progresywnego wdrożenia (canary → progressive).
   EN: Progressive deployment policy (canary → progressive).
-

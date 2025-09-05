@@ -75,4 +75,3 @@ Write-Host "[bootstrap] OK: environment ready (.venv_cli)"
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
-

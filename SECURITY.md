@@ -41,4 +41,3 @@ Zależy nam na bezpieczeństwie użytkowników i danych. Poniżej zasady, wymaga
 ### Incydenty
 
 - Zgłaszaj niezwłocznie; dołącz logi/artefakty (PCO), zrzuty czasowe (Boundary snapshot). Triage wg powagi (p1/p2/p3) i publikacja poprawek/porad.
-

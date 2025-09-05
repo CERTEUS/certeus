@@ -54,7 +54,6 @@ router = APIRouter()
 
 # === I/O / ENDPOINTS ===
 
-
 @router.post("/defx/reason")
 def reason(
     body: dict[str, Any],
@@ -134,6 +133,5 @@ def reason(
         resp["pco.plan"] = meta.get("plan", {})
 
     return resp
-
 
 # === TESTY / TESTS ===

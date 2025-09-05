@@ -13,4 +13,3 @@ flowchart TD
   G -- yes --> H[Ledger record + PCO headers]
   G -- no --> I[ABSTAIN / PENDING]
 ```
-

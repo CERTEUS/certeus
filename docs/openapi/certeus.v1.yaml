@@ -36,12 +36,56 @@ paths:
     post:
       summary: Initialize QTMP case predistribution
       tags: [QTMP]
-      responses: { "200": { description: ok } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                case: { type: string }
+                state_uri: { type: string }
+                basis:
+                  type: array
+                  items: { type: string }
+            examples:
+              example:
+                summary: Minimal
+                value: { case: "LEX-QTMP-1", basis: ["ALLOW","DENY","ABSTAIN"], state_uri: "psi://uniform" }
+      responses:
+        "200":
+          description: Predistribution created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  predistribution:
+                    type: array
+                    items:
+                      type: object
+                      properties: { state: { type: string }, p: { type: number } }
   /v1/qtm/measure:
     post:
       summary: Perform QTMP measurement
       tags: [QTMP]
-      responses: { "200": { description: ok } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QtmMeasureRequest'
+            examples:
+              example:
+                value: { operator: "L", case: "LEX-QTMP-1", source: "ui" }
+      responses:
+        "200":
+          description: Measurement result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmMeasureResponse'
   /v1/qtm/commutator:
     post:
       summary: Compute commutator (QTMP)
@@ -50,6 +94,215 @@ paths:
   /v1/qtm/find_entanglement:
     post:
       summary: Find variable entanglement
+      tags: [QTMP]
+      responses: { "200": { description: ok } }
+  /v1/qtm/measure_sequence:
+    post:
+      summary: Measure a sequence of operators (QTMP)
+      tags: [QTMP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QtmSequenceRequest'
+            examples:
+              example:
+                value: { operators: ["L","T","W"], case: "LEX-QTMP-1" }
+      responses:
+        "200":
+          description: Sequence result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmSequenceResponse'
+  /v1/qtm/state:
+    post:
+      summary: Set QTMP state (basis + probabilities)
+      tags: [QTMP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QtmStateIn'
+            examples:
+              example:
+                value: { case: "LEX-QTMP-1", basis: ["ALLOW","DENY","ABSTAIN"], probs: [0.5,0.3,0.2] }
+      responses:
+        "200":
+          description: State set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmStateOut'
+  /v1/qtm/state/{case}:
+    get:
+      summary: Get QTMP state for case
+      tags: [QTMP]
+      parameters:
+        - in: path
+          name: case
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: State
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmStateOut'
+    delete:
+      summary: Delete QTMP state for case
+      tags: [QTMP]
+      parameters:
+        - in: path
+          name: case
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QtmDeleteResult'
+  /v1/qtm/history/{case}:
+    get:
+      summary: Get QTMP measurement history for case
+      tags: [QTMP]
+      parameters:
+        - in: path
+          name: case
+          required: true
+          schema: { type: string }
+      responses: { "200": { description: ok } }
+  /v1/qtm/operators:
+    get:
+      summary: List QTMP operators and eigenvalues
+      tags: [QTMP]
+      responses: { "200": { description: ok } }
+  /v1/qtm/uncertainty:
+    get:
+      summary: QTMP uncertainty lower bound (L_T)
+      tags: [QTMP]
+      responses:
+        "200":
+          description: Lower bound
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { lower_bound: { type: number } }
+  /v1/qtm/expectation:
+    post:
+      summary: Expectation value of operator for case
+      tags: [QTMP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [case, operator]
+              properties:
+                case: { type: string }
+                operator: { type: string }
+      responses:
+        "200":
+          description: Expectation value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { value: { type: number } }
+  /v1/qtm/decoherence:
+    post:
+      summary: Configure decoherence channel for case
+      tags: [QTMP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [channel]
+              properties:
+                case: { type: string }
+                channel: { type: string, enum: [dephasing, depolarizing, damping] }
+                gamma: { type: number }
+            examples:
+              example:
+                value: { case: "LEX-QTMP-1", channel: "dephasing", gamma: 0.2 }
+      responses:
+        "200":
+          description: Configuration set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { ok: { type: boolean }, case: { type: string }, channel: { type: string }, gamma: { type: number } }
+  /v1/qtm/commutator_expectation:
+    post:
+      summary: Expected commutator magnitude for case distribution
+      tags: [QTMP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [case, A, B]
+              properties:
+                case: { type: string }
+                A: { type: string }
+                B: { type: string }
+      responses:
+        "200":
+          description: Value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { value: { type: number } }
+  /v1/qtm/preset:
+    post:
+      summary: Save Operator Composer preset for case
+      tags: [QTMP]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [case, operator]
+              properties:
+                case: { type: string }
+                operator: { type: string }
+      responses:
+        "200": { description: ok }
+  /v1/qtm/preset/{case}:
+    get:
+      summary: Get Operator Composer preset for case
+      tags: [QTMP]
+      parameters:
+        - in: path
+          name: case
+          required: true
+          schema: { type: string }
+      responses: { "200": { description: ok } }
+    delete:
+      summary: Delete Operator Composer preset for case
+      tags: [QTMP]
+      parameters:
+        - in: path
+          name: case
+          required: true
+          schema: { type: string }
+      responses: { "200": { description: ok } }
+  /v1/qtm/presets:
+    get:
+      summary: List Operator Composer presets
       tags: [QTMP]
       responses: { "200": { description: ok } }
   /v1/devices/horizon_drive/plan:
@@ -319,4 +572,3 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
-

@@ -44,7 +44,6 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from security.key_manager import load_ed25519_private_pem, load_ed25519_public_bytes
 
-
 def test_key_manager_env_fallback(monkeypatch):
     sk = Ed25519PrivateKey.generate()
 

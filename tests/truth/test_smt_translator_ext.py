@@ -51,14 +51,11 @@ from kernel.smt_translator import (
 
 # ----------------------------------------------------------------------
 
-
 def v(name: str) -> ASTNode:
     return {"kind": "var", "name": name}  # type: ignore[typeddict-item]
 
-
 def not_(arg: ASTNode) -> ASTNode:
     return {"kind": "unary", "op": "NOT", "arg": arg}  # type: ignore[typeddict-item]
-
 
 def bin_(op: str, left: ASTNode, right: ASTNode) -> ASTNode:
     return {  # type: ignore[typeddict-item]
@@ -68,7 +65,6 @@ def bin_(op: str, left: ASTNode, right: ASTNode) -> ASTNode:
         "right": right,
     }
 
-
 def nary_(op: str, *args: ASTNode) -> ASTNode:
     return {  # type: ignore[typeddict-item]
         "kind": "nary",
@@ -76,13 +72,11 @@ def nary_(op: str, *args: ASTNode) -> ASTNode:
         "args": list(args),
     }
 
-
 # ----------------------------------------------------------------------
 
 # Tests
 
 # ----------------------------------------------------------------------
-
 
 def test_validate_accepts_minimal_var_and_unary_and_binary():
     ast1: ASTNode = v("a")
@@ -96,7 +90,6 @@ def test_validate_accepts_minimal_var_and_unary_and_binary():
     ast3: ASTNode = bin_("AND", v("a"), v("b"))
 
     validate_ast(ast3)  # should not raise
-
 
 def test_validate_rejects_invalid_ops():
     bad_unary = {"kind": "unary", "op": "NEG", "arg": v("a")}  # type: ignore[typeddict-item]
@@ -114,7 +107,6 @@ def test_validate_rejects_invalid_ops():
     with pytest.raises(ValueError):
         validate_ast(bad_nary)
 
-
 def test_compile_populates_symbol_table_for_vars():
     ast = bin_("OR", v("x"), not_(v("y")))
 
@@ -123,7 +115,6 @@ def test_compile_populates_symbol_table_for_vars():
     assert isinstance(symbols, dict)
 
     assert set(symbols.keys()) == {"x", "y"}
-
 
 def test_compile_handles_nary_nodes():
     ast = nary_("AND", v("p"), v("q"), not_(v("r")))

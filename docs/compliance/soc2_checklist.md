@@ -7,7 +7,7 @@
 - Confidentiality: Redaction Gate, zero-PII public payload policy
 
 Evidence pointers:
-- scripts/gates/security_bunker_gate.py, roles_policy_gate.py, redaction_gate.py
-- scripts/slo_gate/*, scripts/dr/*
-- policies/pco/policy_pack.yaml (redaction rules)
 
+- scripts/gates/security_bunker_gate.py, roles_policy_gate.py, redaction_gate.py
+- scripts/slo*gate/*, scripts/dr/\_
+- policies/pco/policy_pack.yaml (redaction rules)

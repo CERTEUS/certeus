@@ -31,7 +31,6 @@ from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
-
 def main() -> int:
     enforce = (os.getenv("SUPPLY_CHAIN_ENFORCE") or "0").strip() in {"1", "true", "True"}
     repo = Path(__file__).resolve().parents[2]
@@ -47,7 +46,6 @@ def main() -> int:
         return 1
     print("supply-chain: INFO (no sbom/artifact; enforcement disabled)")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

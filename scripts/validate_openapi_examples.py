@@ -15,15 +15,14 @@ PL: Waliduje, że OpenAPI zawiera kluczowe endpointy oraz podstawowe przykłady
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "out" / "openapi.json"
 
-
 # === LOGIKA / LOGIC ===
-
 
 def main() -> int:
     if not SPEC.exists():
@@ -44,7 +43,6 @@ def main() -> int:
         return 2
     print("OpenAPI contains required paths (D71 OK)")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

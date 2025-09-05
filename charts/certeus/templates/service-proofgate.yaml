@@ -20,4 +20,3 @@ spec:
     - name: http
       port: {{ .Values.proofgate.service.port }}
       targetPort: http
-

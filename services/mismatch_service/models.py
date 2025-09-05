@@ -31,7 +31,6 @@ from pydantic import BaseModel, Field, field_validator
 
 # === MODELE / MODELS ===
 
-
 class TicketStatus(str, Enum):
     OPEN = "open"
 
@@ -43,7 +42,6 @@ class TicketStatus(str, Enum):
 
     CLOSED = "closed"
 
-
 class TicketPriority(str, Enum):
     LOW = "low"
 
@@ -52,7 +50,6 @@ class TicketPriority(str, Enum):
     HIGH = "high"
 
     CRITICAL = "critical"
-
 
 class ResolutionType(str, Enum):
     HUMAN_OVERRIDE = "human_override"
@@ -64,7 +61,6 @@ class ResolutionType(str, Enum):
     FALSE_POSITIVE = "false_positive"
 
     KNOWN_LIMITATION = "known_limitation"
-
 
 class SolverResult(BaseModel):
     solver_name: str = Field(..., description="e.g. 'z3', 'cvc5'")
@@ -90,7 +86,6 @@ class SolverResult(BaseModel):
             raise ValueError(f"Invalid status: {v}. Must be one of {valid}")
 
         return vv
-
 
 class MismatchTicket(BaseModel):
     ticket_id: str
@@ -171,7 +166,6 @@ class MismatchTicket(BaseModel):
 
         return " vs ".join(parts)
 
-
 class TicketResolution(BaseModel):
     ticket_id: str
 
@@ -188,7 +182,6 @@ class TicketResolution(BaseModel):
     solver_update_info: dict[str, Any] | None = None
 
     formula_correction: str | None = None
-
 
 class TicketStatistics(BaseModel):
     total_tickets: int = 0
@@ -210,7 +203,6 @@ class TicketStatistics(BaseModel):
     by_resolution_type: dict[str, int] = Field(default_factory=dict)
 
     by_solver: dict[str, int] = Field(default_factory=dict)
-
 
 # === LOGIKA / LOGIC ===
 

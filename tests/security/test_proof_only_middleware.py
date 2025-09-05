@@ -22,6 +22,7 @@ EN: Ensures Proof-Only middleware requires a PCO token.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import importlib
@@ -30,7 +31,6 @@ import sys
 from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
-
 
 def test_protected_post_requires_pco_token(monkeypatch) -> None:
     # Enforce Proof-Only I/O before app import

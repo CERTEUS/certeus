@@ -15,6 +15,7 @@ EN: Python SDK for CERTEUS (MVP): synchronous client for QTMP and lexqft.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from .client import CerteusClient, SDKResponse

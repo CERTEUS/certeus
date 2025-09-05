@@ -105,19 +105,19 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
 
 Ścieżka deweloperska (skrót):
 
-1) Wprowadź zmianę w module pluginu (np. sygnatura `register`).
-2) Uruchom `python scripts/gates/pack_abi_semver_gate.py` — oczekiwane ostrzeżenie/violation przy braku bumpu MAJOR.
-3) Zrób bump MAJOR w `plugins/<name>/plugin.yaml` (`version: 2.0.0`).
-4) Zaktualizuj baseline: `python scripts/packs/update_abi_baselines.py`.
-5) Zweryfikuj w CI (ci‑gates publikuje wynik gate’ów jako komentarz w PR).
+1. Wprowadź zmianę w module pluginu (np. sygnatura `register`).
+2. Uruchom `python scripts/gates/pack_abi_semver_gate.py` — oczekiwane ostrzeżenie/violation przy braku bumpu MAJOR.
+3. Zrób bump MAJOR w `plugins/<name>/plugin.yaml` (`version: 2.0.0`).
+4. Zaktualizuj baseline: `python scripts/packs/update_abi_baselines.py`.
+5. Zweryfikuj w CI (ci‑gates publikuje wynik gate’ów jako komentarz w PR).
 
 Polityka SemVer dla packs: zobacz `docs/guides/packs_abi_semver.md`.
 
 ## Demo T14 — Billing & A11y/i18n
 
-1) A11y/i18n
+1. A11y/i18n
    - Strony web mają skip‑link do `#main`, widoczne focusy; UI wspiera PL/EN (nagłówek `Accept-Language` + `?lang` → `Content-Language`).
-2) Billing & Cost‑tokens
+2. Billing & Cost‑tokens
    - Sekwencja demo (PowerShell/bash):
 
 ```
@@ -138,9 +138,11 @@ curl.exe -s http://127.0.0.1:8000/v1/fin/tokens/$rid
 curl.exe -s http://127.0.0.1:8000/v1/packs/
 curl.exe -s -X POST http://127.0.0.1:8000/v1/packs/try -H 'content-type: application/json' -d '{"pack":"demo_report_pl","kind":"summarize","payload":{"title":"My Report","items":[1,2,3,4]}}'
 ```
-   - Ustal limit: `POST /v1/billing/quota {tenant, units}` (demo‑admin)
-   - Sprawdź balans: `GET /v1/billing/quota`
-   - Rezerwuj: `POST /v1/billing/allocate {cost_units}` → `ALLOCATED` lub `PENDING`
-   - Zwrot: `POST /v1/billing/refund {units}`
-3) Marketplace Install/Upgrade
+
+- Ustal limit: `POST /v1/billing/quota {tenant, units}` (demo‑admin)
+- Sprawdź balans: `GET /v1/billing/quota`
+- Rezerwuj: `POST /v1/billing/allocate {cost_units}` → `ALLOCATED` lub `PENDING`
+- Zwrot: `POST /v1/billing/refund {units}`
+
+3. Marketplace Install/Upgrade
    - `POST /v1/packs/install {pack, signature, version?}` — zapisuje podpis i wersję zainstalowaną; UI: `/app/public/marketplace.html` (przycisk Install/Upgrade)

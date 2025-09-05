@@ -38,7 +38,6 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
-
 class TunnelRequest(BaseModel):
     state_uri: str | None = None
 
@@ -46,14 +45,12 @@ class TunnelRequest(BaseModel):
 
     evidence_energy: float = Field(ge=0)
 
-
 class TunnelResponse(BaseModel):
     p_tunnel: float
 
     min_energy_to_cross: float
 
     path: list[str]
-
 
 # === LOGIKA / LOGIC ===
 
@@ -74,10 +71,24 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
 
+def _persist_coverage_state() -> None:
+    try:
+        _COVERAGE_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
+    except Exception:
+        pass
+
+def append_coverage_contribution(gamma: float, weight: float = 1.0, uncaptured: float = 0.0) -> None:
+    """PL/EN: Dodaj wkład do agregatora pokrycia i zapisz stan (bez FastAPI request).
+
+    Safe to import and call from other routers (e.g., FIN) to feed coverage.
+    """
+    global _COVERAGE_AGG
+    _COVERAGE_AGG.append((float(gamma), float(weight), float(uncaptured)))
+    _persist_coverage_state()
 
 class CoverageResponse(BaseModel):
     coverage_gamma: float
-
 
 @router.get("/coverage", response_model=CoverageResponse)
 async def coverage() -> CoverageResponse:
@@ -102,20 +113,34 @@ async def coverage() -> CoverageResponse:
         return CoverageResponse(coverage_gamma=round(gamma, 6))
     return CoverageResponse(coverage_gamma=0.953)
 
-
 @router.post("/tunnel", response_model=TunnelResponse)
 async def tunnel(req: TunnelRequest, request: Request, response: Response) -> TunnelResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
 
-    # Placeholder physics: if energy > 1.0, tunneling is almost certain.
+    # Placeholder physics:
+    # - If a barrier model is provided, use its energy as the threshold.
+    # - Otherwise keep the legacy rule (>=1.0 almost certain).
 
     e = req.evidence_energy
-
-    p = 0.95 if e >= 1.0 else max(0.05, e * 0.6)
-
     min_e = 0.8
+    if isinstance(req.barrier_model, dict) and req.barrier_model:
+        try:
+            be = req.barrier_model.get("energy") or req.barrier_model.get("barrier_energy")
+            if be is not None:
+                min_e = float(be)
+        except Exception:
+            pass
+        # Probability scales with ratio e/min_e until cap; 0.6 factor keeps
+        # continuity with previous heuristic.
+        if e >= float(min_e):
+            p = 0.95
+        else:
+            denom = float(min_e) if float(min_e) > 1e-9 else 1.0
+            p = max(0.05, (e / denom) * 0.6)
+    else:
+        p = 0.95 if e >= 1.0 else max(0.05, e * 0.6)
 
     path = ["start", "barrier", "post-barrier"] if p > 0.5 else ["start", "reflect"]
     resp = TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
@@ -125,6 +150,15 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         response.headers["X-CERTEUS-PCO-qlaw.tunneling.p"] = str(resp.p_tunnel)
         response.headers["X-CERTEUS-PCO-qlaw.tunneling.path"] = "/".join(path)
         response.headers["X-CERTEUS-PCO-qlaw.tunneling.min_energy"] = str(min_e)
+        try:
+            # Optional model URI passthrough
+            model_uri = None
+            if isinstance(req.barrier_model, dict):
+                model_uri = req.barrier_model.get("model_uri") or req.barrier_model.get("uri")
+            if model_uri:
+                response.headers["X-CERTEUS-PCO-qlaw.tunneling.model_uri"] = str(model_uri)
+        except Exception:
+            pass
     except Exception:
         pass
 
@@ -141,12 +175,10 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
 
     return resp
 
-
 class CoverageItem(BaseModel):
     gamma: float
     weight: float = 1.0
     uncaptured: float = 0.0
-
 
 @router.post("/coverage/update")
 async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
@@ -164,7 +196,6 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
         pass
     return {"ok": True, "count": len(_COVERAGE_AGG)}
 
-
 @router.post("/coverage/reset")
 async def coverage_reset(request: Request) -> dict:
     """PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty)."""
@@ -180,16 +211,13 @@ async def coverage_reset(request: Request) -> dict:
         pass
     return {"ok": True}
 
-
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
 
-
 class CoverageState(BaseModel):
     coverage_gamma: float
     uncaptured_mass: float
-
 
 @router.get("/coverage/state", response_model=CoverageState)
 async def coverage_state() -> CoverageState:

@@ -30,7 +30,6 @@ from services.api_gateway.main import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
 
-
 def main() -> int:
     c = TestClient(app)
     r = c.get("/openapi.json")
@@ -47,7 +46,6 @@ def main() -> int:
         return 1
     print("OpenAPI smoke: OK")
     return 0
-
 
 # === I/O / ENDPOINTS ===
 

@@ -49,7 +49,6 @@ import sys
 
 # ==============================================================
 
-
 def _read_head(path: Path, head_lines: int = 30) -> str:
     """Read only the first N lines of the file for header detection."""
 
@@ -70,7 +69,6 @@ def _read_head(path: Path, head_lines: int = 30) -> str:
     except Exception:
         return ""
 
-
 def _has_module_docstring(full_text: str) -> bool:
     """Parse AST and check for module docstring presence."""
 
@@ -81,7 +79,6 @@ def _has_module_docstring(full_text: str) -> bool:
 
     except Exception:
         return False
-
 
 def _has_certeus_header(head_text: str) -> bool:
     """
@@ -111,13 +108,11 @@ def _has_certeus_header(head_text: str) -> bool:
 
     return False
 
-
 # ==============================================================
 
 # == BLOCK: main check routine                                  =
 
 # ==============================================================
-
 
 def check_files(paths: Iterable[Path]) -> int:
     """
@@ -163,13 +158,11 @@ def check_files(paths: Iterable[Path]) -> int:
 
     return 0 if missing == 0 else 1
 
-
 # ==============================================================
 
 # == BLOCK: CLI entrypoint                                      =
 
 # ==============================================================
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -183,7 +176,6 @@ def main() -> int:
     paths = [Path(f) for f in args.files]
 
     return check_files(paths)
-
 
 if __name__ == "__main__":
     sys.exit(main())

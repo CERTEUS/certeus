@@ -35,10 +35,8 @@ from pydantic import BaseModel
 
 # === MODELE / MODELS ===
 
-
 class MeasureRequest(BaseModel):
     signals: dict[str, float] | None = None
-
 
 class MeasureResponse(BaseModel):
     outcome: str
@@ -47,16 +45,13 @@ class MeasureResponse(BaseModel):
 
     pco: dict | None = None
 
-
 class UncertaintyResponse(BaseModel):
     lower_bound: float
-
 
 class EntanglementsResponse(BaseModel):
     pairs: list[tuple[str, str]]
 
     mi: float
-
 
 # === LOGIKA / LOGIC ===
 
@@ -73,7 +68,6 @@ class EntanglementsResponse(BaseModel):
 # +=====================================================================+
 
 router = APIRouter(prefix="/v1/fin/alpha", tags=["finance"])
-
 
 @router.post("/measure", response_model=MeasureResponse)
 async def measure(req: MeasureRequest, request: Request, response: Response) -> MeasureResponse:
@@ -105,6 +99,17 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         }
     }
 
+    # Feed LexQFT Path-Coverage with FIN signal (γ from p, uncaptured from 1-p)
+    try:
+        # Simple mapping: gamma in ~[0.85, 0.95], uncaptured small when confident
+        gamma = max(0.0, min(0.99, 0.85 + 0.1 * p))
+        unc = max(0.0, min(0.5, 0.2 * (1.0 - p)))
+        from services.api_gateway.routers.lexqft import append_coverage_contribution
+
+        append_coverage_contribution(gamma=gamma, weight=1.0, uncaptured=unc)
+    except Exception:
+        pass
+
     # Emit PCO header + metrics + ledger hash
     try:
         import json as _json
@@ -128,7 +133,6 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     return MeasureResponse(outcome=outcome, p=round(p, 6), pco=pco)
 
-
 @router.get("/uncertainty", response_model=UncertaintyResponse)
 async def uncertainty(request: Request) -> UncertaintyResponse:
     from services.api_gateway.limits import enforce_limits
@@ -136,7 +140,6 @@ async def uncertainty(request: Request) -> UncertaintyResponse:
     enforce_limits(request, cost_units=1)
 
     return UncertaintyResponse(lower_bound=0.1)
-
 
 @router.get("/entanglements", response_model=EntanglementsResponse)
 async def entanglements(request: Request) -> EntanglementsResponse:
@@ -155,7 +158,6 @@ async def entanglements(request: Request) -> EntanglementsResponse:
         pass
     return EntanglementsResponse(pairs=pairs, mi=mi)
 
-
 @router.get("/operators/commutator")
 async def operators_commutator() -> dict[str, float]:
     """PL/EN: Zwraca normę komutatora [R,S] (tu: 1.0 ≠ 0)."""
@@ -166,7 +168,6 @@ async def operators_commutator() -> dict[str, float]:
     except Exception:
         pass
     return {"norm": 1.0}
-
 
 # === I/O / ENDPOINTS ===
 

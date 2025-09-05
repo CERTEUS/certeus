@@ -27,10 +27,8 @@ from pathlib import Path
 import subprocess
 import urllib.request
 
-
 def _run(cmd: list[str]) -> None:
     subprocess.run(cmd, check=True)
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -133,7 +131,6 @@ def main() -> int:
         except Exception:
             pass
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

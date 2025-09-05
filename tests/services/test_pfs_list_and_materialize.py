@@ -24,7 +24,6 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
-
 def test_pfs_list_returns_entries(monkeypatch) -> None:
     client = TestClient(app)
     with client:
@@ -59,7 +58,6 @@ def test_pfs_list_returns_entries(monkeypatch) -> None:
         assert r2.status_code == 200
         uris2 = {e["uri"] for e in r2.json().get("entries", [])}
         assert "pfs://mail/MID/sub/c.pdf" in uris2 and "pfs://mail/MID/a.txt" not in uris2
-
 
 def test_mailops_ingest_materializes_when_flag(monkeypatch) -> None:
     client = TestClient(app)

@@ -13,7 +13,9 @@ from __future__ import annotations
 # | PLIK: tests/services/test_proofgate_roles_enforcement.py   |
 # | ROLA: Testy sprawdzeń ról w ProofGate wg Governance         |
 # +-------------------------------------------------------------+
+
 # === IMPORTY / IMPORTS ===
+
 import os  # noqa: E402
 
 from fastapi.testclient import TestClient  # noqa: E402
@@ -21,7 +23,6 @@ from fastapi.testclient import TestClient  # noqa: E402
 from services.proofgate.app import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
-
 
 def _minimal_ok_pco(domain: str, case_prefix: str) -> dict:
     case = f"CER-{case_prefix}-TEST"
@@ -35,9 +36,7 @@ def _minimal_ok_pco(domain: str, case_prefix: str) -> dict:
         "signatures": [{"role": "counsel"}, {"role": "AFV"}],
     }
 
-
 # === TESTY / TESTS ===
-
 
 def test_publish_denied_for_sec_domain_even_with_afv() -> None:
     # Governance: sec.publish is [] (empty) → ABSTAIN
@@ -51,7 +50,6 @@ def test_publish_denied_for_sec_domain_even_with_afv() -> None:
         assert body["status"] == "ABSTAIN"
     finally:
         os.environ.pop("FINE_GRAINED_ROLES", None)
-
 
 def test_publish_allowed_for_lex_with_afv_and_counsel() -> None:
     os.environ["FINE_GRAINED_ROLES"] = "1"

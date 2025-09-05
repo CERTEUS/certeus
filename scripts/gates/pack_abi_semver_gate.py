@@ -23,6 +23,7 @@ EN: ABI/SemVer gate for Domain Packs (plugins/*/plugin.yaml).
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields
@@ -40,9 +41,7 @@ try:
 except Exception:  # pragma: no cover
     yaml = None  # type: ignore
 
-
 # === MODELE / MODELS ===
-
 
 @dataclass(slots=True)
 class AbiDescriptor:
@@ -53,9 +52,7 @@ class AbiDescriptor:
     has_class_register: bool
     class_register_arity: int | None
 
-
 # === LOGIKA / LOGIC ===
-
 
 def _load_manifest(p: Path) -> dict[str, Any]:
     if yaml is not None:
@@ -74,14 +71,12 @@ def _load_manifest(p: Path) -> dict[str, Any]:
         out[k.strip()] = v.strip().strip("'\"")
     return out
 
-
 def _semver_parts(s: str) -> tuple[int, int, int] | None:
     try:
         major, minor, patch = s.split(".")
         return int(major), int(minor), int(patch)
     except Exception:
         return None
-
 
 def _abi_for_module(mod_path: str) -> AbiDescriptor:
     has_mod_reg = False
@@ -138,10 +133,8 @@ def _abi_for_module(mod_path: str) -> AbiDescriptor:
         class_register_arity=cls_reg_arity,
     )
 
-
 def _descriptor_changed(prev: AbiDescriptor, cur: AbiDescriptor) -> bool:
     return asdict(prev) != asdict(cur)
-
 
 def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
     root = Path(repo_root or ".").resolve()
@@ -194,7 +187,6 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
             warnings.append(f"{ctx}: no abi_baseline.json; run update_abi_baselines.py to create baseline")
     return violations, warnings
 
-
 def main() -> int:
     vio, warn = check()
     if warn:
@@ -214,8 +206,8 @@ def main() -> int:
     )
     return 0
 
-
 # === I/O / ENDPOINTS ===
+
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
 

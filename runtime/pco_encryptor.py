@@ -40,7 +40,6 @@ from os import urandom
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM  # type: ignore
 
-
 def new_dek() -> bytes:
     """
 
@@ -51,7 +50,6 @@ def new_dek() -> bytes:
     """
 
     return urandom(32)
-
 
 def encrypt(dek: bytes, plaintext: bytes, aad: bytes = b"") -> tuple[bytes, bytes, bytes]:
     """
@@ -67,7 +65,6 @@ def encrypt(dek: bytes, plaintext: bytes, aad: bytes = b"") -> tuple[bytes, byte
     ct = AESGCM(dek).encrypt(iv, plaintext, aad)
 
     return iv, ct, aad
-
 
 def decrypt(dek: bytes, iv: bytes, ct: bytes, aad: bytes = b"") -> bytes:
     """

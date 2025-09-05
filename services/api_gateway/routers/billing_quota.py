@@ -37,41 +37,33 @@ from services.api_gateway.limits import (
 
 router = APIRouter(prefix="/v1/billing", tags=["Billing"])
 
-
 # === MODELE / MODELS ===
-
 
 class AllocateRequest(BaseModel):
     cost_units: int = Field(..., ge=0)
 
-
 class RefundRequest(BaseModel):
     units: int = Field(..., ge=0)
 
-
 # === LOGIKA / LOGIC ===
 
-
-@router.get("/quota")
+@router.get("/quota", operation_id="billing_quota_get")
 async def get_quota(request: Request) -> dict[str, int]:
     tenant = get_tenant_id(request)
     return {"balance": int(get_tenant_balance(tenant))}
 
-
-@router.post("/allocate")
+@router.post("/allocate", operation_id="billing_quota_allocate")
 async def allocate(req: AllocateRequest, request: Request) -> dict[str, str | int]:
     tenant = get_tenant_id(request)
     ok = allocate_tenant_cost(tenant, int(req.cost_units))
     status = "ALLOCATED" if ok else "PENDING"
     return {"status": status, "balance": int(get_tenant_balance(tenant))}
 
-
-@router.post("/refund")
+@router.post("/refund", operation_id="billing_quota_refund")
 async def refund(req: RefundRequest, request: Request) -> dict[str, int]:
     tenant = get_tenant_id(request)
     bal = refund_tenant_units(tenant, int(req.units))
     return {"balance": int(bal)}
-
 
 # === I/O / ENDPOINTS ===
 

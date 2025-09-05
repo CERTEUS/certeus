@@ -16,23 +16,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CERTEUS • LEXENITH</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:980px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      .muted{color:#9aa0a6}
-      textarea, input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
-      textarea{width:100%;height:100px}
-      pre{background:#20242a;border:1px solid #2a2d33;border-radius:8px;padding:8px;white-space:pre-wrap}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      textarea,
+      input {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        border-radius: 10px;
+        color: #f2f2f3;
+        padding: 8px 10px;
+      }
+      textarea {
+        width: 100%;
+        height: 100px;
+      }
+      pre {
+        background: #20242a;
+        border: 1px solid #2a2d33;
+        border-radius: 8px;
+        padding: 8px;
+        white-space: pre-wrap;
+      }
     </style>
   </head>
   <body>
-    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
     <div class="container" id="main" role="main">
-      <div class="row" style="justify-content:flex-end;margin-bottom:8px">
+      <div class="row" style="justify-content: flex-end; margin-bottom: 8px">
         <label class="muted" for="lang">Lang</label>
         <select id="lang" aria-label="Language select" class="btn">
           <option value="pl" selected>PL</option>
@@ -42,8 +100,14 @@
       <div class="card">
         <h1 id="title-mg">Motion Generator</h1>
         <div class="row">
-          <label>Case <input id="case" value="LEX-001"/></label>
-          <label>Pattern <select id="pattern"><option>motion-dismiss</option><option>motion-summary</option></select></label>
+          <label>Case <input id="case" value="LEX-001" /></label>
+          <label
+            >Pattern
+            <select id="pattern">
+              <option>motion-dismiss</option>
+              <option>motion-summary</option>
+            </select></label
+          >
         </div>
         <label>Citations (one per line)</label>
         <textarea id="cites"></textarea>
@@ -56,54 +120,79 @@
       <div class="card">
         <h1 id="title-cldf">CLDF Renormalize</h1>
         <label>Citations (JSON array of {text,weight})</label>
-        <textarea id="cldf">[{"text":"Art. 5 k.c.","weight":1.0},{"text":"III 2020","weight":0.5}]</textarea>
-        <button id="renorm" class="btn" data-i18n="renormalize">Renormalize</button>
+        <textarea id="cldf">
+[{"text":"Art. 5 k.c.","weight":1.0},{"text":"III 2020","weight":0.5}]</textarea
+        >
+        <button id="renorm" class="btn" data-i18n="renormalize">
+          Renormalize
+        </button>
         <pre id="cldf_out"></pre>
       </div>
 
       <div class="card">
         <h1 id="title-wn">Why‑Not Export</h1>
         <label>Claim</label>
-        <input id="claim" value="Powództwo o zapłatę"/>
+        <input id="claim" value="Powództwo o zapłatę" />
         <label>Counter‑arguments (one per line)</label>
-        <textarea id="cargs">Brak legitymacji czynnej
-Nadmierne roszczenie</textarea>
+        <textarea id="cargs">
+Brak legitymacji czynnej
+Nadmierne roszczenie</textarea
+        >
         <button id="export" class="btn" data-i18n="export">Export</button>
         <pre id="wn_out"></pre>
       </div>
     </div>
     <script>
-      async function gen(){
-        const caseId=document.getElementById('case').value; const pattern=document.getElementById('pattern').value;
-        const cites=document.getElementById('cites').value.split('
-').filter(Boolean);
-        let facts={}; try{facts=JSON.parse(document.getElementById('facts').value)}catch(e){}
-        const r = await fetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId,pattern_id:pattern,citations:cites,facts})});
-        document.getElementById('motion').textContent = JSON.stringify(await r.json(), null, 2);
-      }
-      async function renorm(){
-        let arr=[]; try{arr=JSON.parse(document.getElementById('cldf').value)}catch(e){}
-        const r = await fetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({citations:arr})});
-        document.getElementById('cldf_out').textContent = JSON.stringify(await r.json(), null, 2);
-      }
-      async function exportWN(){
-        const claim=document.getElementById('claim').value; const cargs=document.getElementById('cargs').value.split('
-').filter(Boolean);
-        const r = await fetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({claim:claim,counter_arguments:cargs})});
-        document.getElementById('wn_out').textContent = JSON.stringify(await r.json(), null, 2);
-      }
-      document.getElementById('gen').addEventListener('click', gen);
-      document.getElementById('renorm').addEventListener('click', renorm);
-      document.getElementById('export').addEventListener('click', exportWN);
-      const I18N={ pl:{title_mg:'Generator pism',generate:'Generuj',title_cldf:'CLDF Renormalizacja',renormalize:'Renormalizuj',title_wn:'Why‑Not Eksport',export:'Eksportuj'}, en:{title_mg:'Motion Generator',generate:'Generate',title_cldf:'CLDF Renormalize',renormalize:'Renormalize',title_wn:'Why‑Not Export',export:'Export'} };
-      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return (p==='en'||p==='pl')?p:'pl'; }
-      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title-mg').textContent=d.title_mg; document.getElementById('title-cldf').textContent=d.title_cldf; document.getElementById('title-wn').textContent=d.title_wn; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
-      applyI18n();
+            async function gen(){
+              const caseId=document.getElementById('case').value; const pattern=document.getElementById('pattern').value;
+              const cites=document.getElementById('cites').value.split('
+      ').filter(Boolean);
+              let facts={}; try{facts=JSON.parse(document.getElementById('facts').value)}catch(e){}
+              const r = await fetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId,pattern_id:pattern,citations:cites,facts})});
+              document.getElementById('motion').textContent = JSON.stringify(await r.json(), null, 2);
+            }
+            async function renorm(){
+              let arr=[]; try{arr=JSON.parse(document.getElementById('cldf').value)}catch(e){}
+              const r = await fetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({citations:arr})});
+              document.getElementById('cldf_out').textContent = JSON.stringify(await r.json(), null, 2);
+            }
+            async function exportWN(){
+              const claim=document.getElementById('claim').value; const cargs=document.getElementById('cargs').value.split('
+      ').filter(Boolean);
+              const r = await fetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({claim:claim,counter_arguments:cargs})});
+              document.getElementById('wn_out').textContent = JSON.stringify(await r.json(), null, 2);
+            }
+            document.getElementById('gen').addEventListener('click', gen);
+            document.getElementById('renorm').addEventListener('click', renorm);
+            document.getElementById('export').addEventListener('click', exportWN);
+            const I18N={ pl:{title_mg:'Generator pism',generate:'Generuj',title_cldf:'CLDF Renormalizacja',renormalize:'Renormalizuj',title_wn:'Why‑Not Eksport',export:'Eksportuj'}, en:{title_mg:'Motion Generator',generate:'Generate',title_cldf:'CLDF Renormalize',renormalize:'Renormalize',title_wn:'Why‑Not Export',export:'Export'} };
+            function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return (p==='en'||p==='pl')?p:'pl'; }
+            function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title-mg').textContent=d.title_mg; document.getElementById('title-cldf').textContent=d.title_cldf; document.getElementById('title-wn').textContent=d.title_wn; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
+            applyI18n();
     </script>
     <style>
-      :focus-visible{outline:2px solid #8a8f98;outline-offset:2px}
-      .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
-      .sr-only-focusable:focus{position:static;width:auto;height:auto;padding:8px 10px;margin:6px;background:#181b20;border:2px solid #8a8f98;border-radius:8px}
+      :focus-visible {
+        outline: 2px solid #8a8f98;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #181b20;
+        border: 2px solid #8a8f98;
+        border-radius: 8px;
+      }
     </style>
   </body>
-  </html>
+</html>

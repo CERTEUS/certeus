@@ -42,7 +42,6 @@ except Exception:  # pragma: no cover
     validate_spec = None  # type: ignore
     read_yaml_file = None  # type: ignore
 
-
 def _load_docs_spec(repo: Path) -> tuple[dict[str, Any], str]:
     for p in (
         repo / "docs" / "openapi" / "certeus.v1.yaml",
@@ -57,7 +56,6 @@ def _load_docs_spec(repo: Path) -> tuple[dict[str, Any], str]:
                 return {}, str(p)
     return {}, "<none>"
 
-
 def _load_runtime_spec() -> dict[str, Any]:
     try:
         from fastapi.testclient import TestClient
@@ -69,7 +67,6 @@ def _load_runtime_spec() -> dict[str, Any]:
         return r.json() if r.status_code == 200 else {}
     except Exception:
         return {}
-
 
 def main() -> int:  # pragma: no cover
     repo = Path(".").resolve()
@@ -104,7 +101,6 @@ def main() -> int:  # pragma: no cover
         return 1
     print(f"OpenAPI validate: {'OK (report-only)' if not enforce else ('FAIL' if vio else 'OK')}")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

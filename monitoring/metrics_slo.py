@@ -78,7 +78,6 @@ certeus_pending_total = Counter("certeus_pending_total", "Number of PENDING deci
 
 certeus_abstain_total = Counter("certeus_abstain_total", "Number of ABSTAIN decisions")
 
-
 def observe_decision(decision: str) -> None:
     """Increment counters and update abstain_rate gauge (lifetime ratio)."""
 
@@ -111,7 +110,6 @@ def observe_decision(decision: str) -> None:
 
     except Exception:
         pass
-
 
 # HTTP request duration (Gateway)
 

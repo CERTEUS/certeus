@@ -4,6 +4,46 @@
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
 
+- 2025-09-05 06:50:00Z [A7] (work/daily): W14 — Domain Packs MVP (MED/SEC/CODE) + A4 green
+  - Plugins: packs_med / packs_sec / packs_code (manifesty + register(api)/handle)
+  - Marketplace: ABI baselines zaktualizowane (scripts/packs/update_abi_baselines.py)
+  - Bramka [A4] Path‑Coverage: gamma=0.95, uncaptured=0.02 (OK)
+  - Lint+tests: ruff OK; pytest: zielono (232 passed, 5 skipped)
+
+- 2025-09-05 00:06:00Z [A4] (work/daily): A4 — Path-Coverage format fix + Tunnel barrier_model
+  - Gates: compute_truth_gates obsługuje zagnieżdżony JSON (coverage.{coverage_gamma,uncaptured_mass})
+  - LexQFT: /v1/lexqft/tunnel przyjmuje barrier_model.energy i emituje PCO model_uri; scenariusz „reflect” przy niskiej energii
+  - Testy: dodano tests/services/test_lexqft_tunnel.py; pokrycie lexqft coverage/tunnel zielone lokalnie
+
+- 2025-09-05 00:20:00Z [A4] (work/daily): A4 — QOC vacuum_pairs + FIN→LexQFT coverage feed
+  - QOC: /v1/qoc/vacuum_pairs (PCO: qoc.vacuum_pairs.rate) + /v1/qoc/energy_debt
+  - FIN→LexQFT: /v1/fin/alpha/measure dokłada wkład do coverage (γ≈0.85+0.1·p, unc≈0.2·(1-p))
+  - Testy: tests/services/test_qoc_vacuum_pairs.py, test_fin_feeds_lexqft_coverage.py — zielone
+
+- 2025-09-05 06:45:00Z [agent] (work/daily): W14 (A8) — CI porządki + Marketplace policy docs
+  - CI: usunięto duplikację kroku "Marketplace Policy Gate (report-only)" w `.github/workflows/ci-gates.yml` (pozostaje jedna ścieżka z tickiem)
+  - Docs: doprecyzowano `docs/compliance/marketplace_policies.md` (wymóg `name`, pojedyncza egzekucja w CI)
+  - Handoff: dodano sekcję W14 (A8) i następne kroki
+  - Gate: dodano `scripts/gates/plugin_supply_chain_gate.py` + krok w `ci-gates` (report-only) + tik `out/plugin_supply_ok.txt`
+  - Testy: `tests/policies/test_plugin_supply_chain_gate.py` (2 passed)
+
+- 2025-09-05 07:05:00Z [agent] (work/daily): W14 (A8) — Runbook + szablony SBOM/Provenance
+  - Docs: `docs/runbooks/ci_enforce_flags.md` + linki w `docs/AGENTS/README.md` i `README.md` (Runbooks/Bezpieczeństwo)
+  - Plugins: przykładowe artefakty supply_chain dla `plugins/demo_report_pl/` (sbom-1.0.0.json, provenance-1.0.0.json)
+  - CI: Plugin Supply‑Chain Gate pozostaje report-only (inne pluginy nadal zgłoszą brak SBOM/provenance — zgodnie z planem)
+
+- 2025-09-05 00:10:00Z [A3] (work/daily): W15 — QTMP OpenAPI domknięte + init_case fix + przykłady
+  - OpenAPI: dodano brakujące ścieżki QTMP (measure_sequence/state/preset/decoherence/operators/uncertainty/...)
+  - QTMP: naprawiono /v1/qtm/init_case (bez referencji do nieistniejącego operatora)
+  - Docs: ENDPOINTS.md — przykłady cURL dla QTMP (measure/sequence/decoherence/presets)
+  - Lint/Testy: ruff OK; pytest uruchomiony (3 fail w A1 domain_map — poza zakresem A3)
+
+- 2025-09-05 00:25:00Z [A3] (work/daily): W15 — SDK QTMP uzupełnione + Quickstart
+  - SDK (python): dodane metody qtm_history/qtm_state_delete/qtm_commutator/qtm_commutator_expectation/qtm_expectation/qtm_find_entanglement
+  - Quickstart: docs/SDK_PY_QUICKSTART.md rozszerzony o przykłady (commutator, expectation, history/state)
+  - OpenAPI: requestBody/response z przykładem dla QTMP (measure/sequence/state/decoherence/...)
+  - Lint: ruff OK; test kontraktu OpenAPI zielony; A1 drift testy do właściciela A1
+
 - 2025-09-04 20:10:00Z [agent] (work/daily): W13 — ProofFS I/O (stub) + MailOps pfs:// URIs
   - MailOps: /v1/mailops/ingest wzbogacony o pfs://mail/<mail_id>/<filename> dla załączników
   - Core: helper core/pfs/uri.py (sanityzacja i budowa URI)
@@ -83,13 +123,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - CI: ci-gates metrics smoke + perf smoke (p95)
   - - Scripts: perf/quick_bench.py; smokes/metrics_smoke.py
 - 2025-09-02 11:37:27Z [48793] (work/daily): W11 start: OpenAPI cache + SLO smoke + dashboard panel
- - 2025-09-02 12:05:00Z [agent] (work/daily): Stabilize ci-gates perf, minor hygiene
-   - perf: warm-up in scripts/perf/quick_bench.py (flakiness fix on GH runners)
-   - qtm: add fallback preset key; misc whitespace/ruff cleanups
-   - gitignore: ignore out/ and lexqft coverage state
-  - - Perf: cache OpenAPI JSON in memory (faster /openapi.json)
-  - - CI: SLO smoke in ci-gates
-  - - Grafana: Top p95 by path panel
+- 2025-09-02 12:05:00Z [agent] (work/daily): Stabilize ci-gates perf, minor hygiene
+  - perf: warm-up in scripts/perf/quick_bench.py (flakiness fix on GH runners)
+  - qtm: add fallback preset key; misc whitespace/ruff cleanups
+  - gitignore: ignore out/ and lexqft coverage state
+- - Perf: cache OpenAPI JSON in memory (faster /openapi.json)
+- - CI: SLO smoke in ci-gates
+- - Grafana: Top p95 by path panel
 - 2025-09-02 11:41:35Z [48793] (work/daily): ProofGate smoke + OpenAPI cache; CI health check added
   - - ProofGate: cached openapi() for perf
   - - Smoke: in-proc /healthz step in Proof Gate workflow
@@ -114,9 +154,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-02 13:55:40Z [48793] (work/daily): CI cleanup: gates via ci-gates only; green daily
   - - Made Gauge/Path/Boundary non-blocking\n- Added OpenAPI generator\n- Supply-chain SBOM upload hardened
 - 2025-09-02 14:19:21Z [48793] (work/daily): Repo hygiene: remove backups/tmp; PR comment perms fixed
-  - - Enabled PR comment permissions; ci-gates green\n- Deleted: security.py.bak, stray docs snippet, tmp/* artifacts
+  - - Enabled PR comment permissions; ci-gates green\n- Deleted: security.py.bak, stray docs snippet, tmp/\* artifacts
 - 2025-09-02 14:31:50Z [48793] (work/daily): History reset: single clean base commit on main+daily
-  - - Archived old history: archive/old-main-*, archive/old-daily-*\n- Force-pushed clean root commit; CI green path preserved
+  - - Archived old history: archive/old-main-_, archive/old-daily-_\n- Force-pushed clean root commit; CI green path preserved
 - 2025-09-02 14:43:15Z [48793] (work/daily): Branch Protection: require ci-gates + Smoke; docs updated
   - - Updated AGENTS/HANDOFF with clean history + archives\n- Branch protection contexts: ci-gates, Smoke (ubuntu/windows)
 - 2025-09-02 15:13:38Z [48793] (work/daily): Pre-commit hooks: Conventional Commits + section spacing
@@ -143,7 +183,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Testy/lint: ruff OK; pytest: 119 passed, 1 skipped lokalnie
 - 2025-09-04 20:35:00Z [agent] (work/daily): W13 — Packs ABI/SemVer gate + testy kontraktowe
   - Gate: scripts/gates/pack_abi_semver_gate.py (report‑only w ci-gates)
-  - Helper: scripts/packs/update_abi_baselines.py (tworzy plugins/*/abi_baseline.json)
+  - Helper: scripts/packs/update_abi_baselines.py (tworzy plugins/\*/abi_baseline.json)
   - CI: dodany krok Marketplace Policy Gate + Pack ABI/SemVer Gate (report‑only)
   - Testy: tests/gates/test_pack_abi_semver_gate.py (wykrywa zmianę ABI bez bump MAJOR)
   - Stan: ruff OK; pytest lokalnie: 198 passed, 4 skipped
@@ -183,7 +223,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-04 18:36:38Z [root] (work/daily): T14 D66 start: A11y baseline tests + checklist
   - - tests/web/test_a11y_static_pages.py: meta/lang/title/h1/img-alt/link checks\n- docs/a11y_checklist.md: WCAG 2.2 AA baseline\n- Stabilizacja Hypothesis (too_slow) w QTM property\n- pytest: 191 passed, 4 skipped; ruff OK
 - 2025-09-04 18:56:21Z [root] (work/daily): W13 (A8): CI — Marketplace Policy Gate dodany do ci-gates (report-only)
-  - - Workflow: .github/workflows/ci-gates.yml (krok + tick w PR summary)\n- Plugin manifests: license: MIT dodane (plugins/*/plugin.yaml)\n- Tests: full suite 198 passed
+  - - Workflow: .github/workflows/ci-gates.yml (krok + tick w PR summary)\n- Plugin manifests: license: MIT dodane (plugins/\*/plugin.yaml)\n- Tests: full suite 198 passed
 - 2025-09-04 18:57:19Z [48793] (work/daily): W13: E2E flow (lexqft+Devices) + fix ABI gate reload
   - - tests/e2e/test_w13_devices_lexqft_flow.py: jeden przepływ HDE→Q-Oracle→Entangle→Chronosync→Tunnel
   - - scripts/gates/pack_abi_semver_gate.py: reload modułu dla poprawnej detekcji zmian ABI
@@ -244,10 +284,13 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-04 20:31:53Z [root] (work/daily): W13: Marketplace — Docs link + /docs mount [week-end]
   - - UI: Docs button → /docs/guides/packs_abi_semver.md\n- API: mount /docs as static (read-only)\n- Tests: 215 passed (lokalnie)\nweekly-promote: true
 - 2025-09-04 20:37:09Z [root] (work/daily): W17 (A8): Tenant SLO trend + Isolation; stabilize Billing/FIN tokens
-  - - CI: tenant SLO trend gate vs ci-status + publish tenant_slo.json\n- Isolation: tenant isolation check gate (report-only)\n- Billing: /v1/billing/* stabilized; FIN tokens state path via CERTEUS_TEST_STATE_PATH; test reload-safe\n- Suite: 215 passed
+  - - CI: tenant SLO trend gate vs ci-status + publish tenant_slo.json\n- Isolation: tenant isolation check gate (report-only)\n- Billing: /v1/billing/\* stabilized; FIN tokens state path via CERTEUS_TEST_STATE_PATH; test reload-safe\n- Suite: 215 passed
 - 2025-09-04 21:02:56Z [48793] (work/daily): W14 D68–D69: Billing tokens API + 2 plugins
   - - API: /v1/fin/tokens/{request,allocate,{id}} + state file; wired in app
   - - Tests: tests/services/test_fin_tokens.py (request→allocate flow) — green
+      \n+- 2025-09-05 10:15:00Z [agent] (work/daily): W14 — SEC‑PCO schema v0.1 + test walidacji
+  - Schemat: schemas/security_pco_v0.1.json (finding/severity/evidence/controls/CWE/CVE/CVSS/attestation)
+  - Test: tests/schemas/test_security_pco_schema.py; ruff OK; pytest green (229 passed)
   - - Marketplace: plugins/demo_billing_pl, plugins/demo_report_pl (register() handle) + manifests
   - - Main: includes billing_api, billing_quota, and new tokens router; OpenAPI updated
   - - pytest: 216 passed, 5 skipped; ruff OK
@@ -255,3 +298,47 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - UI: /app/public/med.html, /sec.html, /code.html\n- SEC: probe /health headers + RL\n- Tests: 220 passed (lokalnie)
 - 2025-09-04 21:49:56Z [root] (work/daily): W18 (A8): Canary Progressive Gate + Postmortem Template
   - - Policy: deploy/canary_policy.yml; Gate: scripts/deploy/canary_progressive_gate.py (report-only)\n- CI: step added with canary_ok.txt tick; generates out/canary_report.json\n- Docs: docs/runbooks/postmortem_template.md\n- Suite: 220 passed
+- 2025-09-05 04:44:13Z [root] (work/daily): W14 (A1): Ω‑Kernel — domain_map (MED/SEC/CODE) + testy Gauge
+  - - core/omega/transforms: domain_map (low-drift, PL-canonical)
+  - - tests/omega/test_domain_map.py: bounded drift for med/sec/code
+  - - pytest omega: green; ruff OK
+- 2025-09-05 04:44:17Z [48793] (work/daily): W14 A2 — Domenowy lensing CFE + testy
+  - - /v1/cfe/lensing?domain=LEX|FIN|MED|SEC|CODE
+  - - Testy: test_cfe_domains.py (granice, klucze domen)
+  - - Docs: ENDPOINTS.md sekcja CFE
+- 2025-09-05 04:51:01Z [root] (work/daily): W14 (A6): Cockpit — ChatOps UI + MailOps ingest UI
+  - - Strony: /app/chatops.html i /app/mailops.html (a11y/i18n)
+  - - ChatOps: POST /v1/chatops/command (qtm.measure/cfe.geodesic/lexqft.tunnel) — wynik + PCO
+  - - MailOps: POST /v1/mailops/ingest — formularz meta + attachments (pfs:// URIs) + copy curl
+  - - Testy: a11y static (baseline) przechodzą; brak zmian w backendzie
+- 2025-09-05 04:54:50Z [48793] (work/daily): W14 A2 — Horizon: heurystyka domenowa + testy
+  - - /v1/cfe/horizon: body {case?, lock?, domain?, severity?}
+  - - Heurystyka: lock=true || (domain∈{MED/SEC/CODE/FIN} ∧ severity∈{high/critical}) || case zawiera sample/przyklad
+  - - Testy: test_cfe_horizon_domains.py (MED critical lock; FIN low no-lock)
+  - - Docs: ENDPOINTS.md — sekcja CFE
+
+- 2025-09-05 10:32:00Z [agent] (work/daily): W14 — ProofFS smoke dla SEC evidence URIs
+  - Test: tests/services/test_sec_pco_evidence_pfs.py — pfs://mail/MSEC/rep.pdf exists
+  - Suite: 233 passed, 5 skipped; ostrzeżenia nieblokujące (OpenAPI operationId duplikaty w billing)
+
+- 2025-09-05 10:45:00Z [agent] (work/daily): W14 — VALIDATE_PCO w dev/CI + README link
+  - Dev: scripts/dev_env.sh/ps1 ustawia VALIDATE_PCO=1 (report-only)
+  - CI: scripts/ci/load_env_defaults.py dopuszcza VALIDATE_PCO; .github/certeus.env.defaults=1
+  - Docs: README „Konfiguracja/ENV” + Resources (schema link)
+- 2025-09-05 05:08:40Z [root] (work/daily): W15 (A6): DevEx Playground + Cockpit index
+  - - Strona: /app/public/playground.html (try-now + copy curl/SDK + PCO headers)
+  - - Indeks Cockpitu: /app/public/index.html z linkami (Geometry/Quantum/Boundary/Marketplace/ChatOps/MailOps/DevEx)
+  - - Testy: A11y baseline dla statyk (bez regresji)
+- 2025-09-05 05:08:52Z [root] (work/daily): W14 (A1): Rozszerzenie Ω‑Kernel domain_map (MED/SEC/CODE) + property tests
+  - - core/omega/transforms: więcej synonimów i fleksji (PL‑canonical)
+  - - tests/omega/test_domain_map_property.py: idempotencja + token_count invariants
+  - - pytest omega: green; ruff OK
+- 2025-09-05 05:12:21Z [root] (work/daily): W14 (A1): compute_gauge_drift — tryb domenowy (report-only)
+  - - scripts/gates/compute_gauge_drift.py: --domain/OMEGA_DOMAIN → omega_mapped
+  - - Zgodność z Gauge Gate (bez zmian wejścia)
+  - - pytest gates: green; ruff OK
+- 2025-09-05 05:19:19Z [48793] (work/daily): W14 A2 — Centralny config CFE + README
+  - - cfe_config: domenowe wagi lensingu + progi lock
+  - - cfe: lensing/horizon korzystają z configu
+  - - README: przykłady domenowe CFE (lensing + horizon)
+  - - Testy pełne: 245 passed, 5 skipped

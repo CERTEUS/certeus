@@ -48,7 +48,6 @@ from services.ledger_service.ledger import (
     verify_provenance_hash,
 )
 
-
 def test_export_and_hash(tmp_path: Path):
     answer = {
         "case_id": "pl-001",

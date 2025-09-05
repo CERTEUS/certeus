@@ -50,10 +50,8 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
-
 def _b64u(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
-
 
 def test_post_pco_bundle_builds_valid_proofbundle(tmp_path: Path, monkeypatch) -> None:
     # Arrange: set bundle dir and signing key

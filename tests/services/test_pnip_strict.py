@@ -22,12 +22,12 @@ EN: Strict PNIP tests — invalid hash and policy result in 400.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
 # === TESTY / TESTS ===
-
 
 def test_publish_reason_pnip_strict_invalid_returns_400(monkeypatch) -> None:
     # STRICT_PNIP on

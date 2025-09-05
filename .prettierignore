@@ -1,21 +1,14 @@
-# katalogi narzędziowe / cache
-node_modules/
-dist/
-build/
-.venv/
-.cache/
-coverage/
+# Ignore Helm charts: Prettier YAML parser can’t handle Go templates
+charts/**
+docs/openapi/**
+WORKLOG.md
+data/qtm_presets.json
 
-# nasze artefakty/prowizorki
-proof_artifacts/
-ingest_repo/
-
-# mapy/snapshots/bundle
-**/*.map
-**/*.min.js
-**/*.bundle.js
-**/*.snap
-
-# logi/locki
-*.log
-*.lock
+# Ignore generated or vendor-like areas (kept tidy via other tools)
+.venv/**
+node_modules/**
+dist/**
+build/**
+coverage/**
+proof_artifacts/**
+ingest_repo/**

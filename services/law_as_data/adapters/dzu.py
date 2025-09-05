@@ -33,7 +33,6 @@ from ..cache import FileCache, cache_from_uri
 
 # === MODELE / MODELS ===
 
-
 class DzULawDocument:
     uri: str
 
@@ -43,11 +42,9 @@ class DzULawDocument:
 
     title: str | None = None
 
-
 # === LOGIKA / LOGIC ===
 
 _TITLE_RE = re.compile(r"<title>(.*?)</title>", re.IGNORECASE | re.DOTALL)
-
 
 @dataclass
 def extract_title(html_bytes: bytes) -> str | None:
@@ -58,7 +55,6 @@ def extract_title(html_bytes: bytes) -> str | None:
 
     except Exception:
         return None
-
 
 def fetch_and_cache_dzu(uri: str, cache: FileCache | None = None) -> DzULawDocument:
     cs = cache_from_uri(uri, cache)
@@ -72,7 +68,6 @@ def fetch_and_cache_dzu(uri: str, cache: FileCache | None = None) -> DzULawDocum
         title = None
 
     return DzULawDocument(uri=cs.uri, digest=cs.digest, path=str(cs.path), title=title)
-
 
 # === I/O / ENDPOINTS ===
 

@@ -10,7 +10,7 @@
 name: asset-guard
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 jobs:
   check-assets:

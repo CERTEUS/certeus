@@ -34,6 +34,7 @@
   - High `certeus_abstain_rate`: inspect proof verification failures, budget tokens, SLO thresholds
   - Source fetch errors: check network, adapter retries, LAW_CACHE_DIR
   - JWKS errors: verify key backend envs, Vault token/URL
+
 ## DEV Stack (docker-compose)
 
 - Start stack:
@@ -55,4 +56,3 @@ Grafana login (DEV): user `admin`, password `admin` (anonymous access also enabl
 - HTTP p95 latency (ms) by status: isolates high latency per status class (useful for 4xx/5xx hotspots).
 - HTTP RPS by path/method/status: throughput and error mix across routes.
 - HTTP 5xx rate (req/s): global failure rate; must be ≈ 0.
-

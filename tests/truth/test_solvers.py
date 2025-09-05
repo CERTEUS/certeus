@@ -58,7 +58,6 @@ import pytest
 # Direct import from module – more stable than subprocess
 from scripts.generate_proofs import generate_proofs
 
-
 @pytest.mark.parametrize(
     "formats,mode,expected_files",
     [
@@ -105,7 +104,6 @@ def test_generate_proofs_function_creates_expected_artifacts(
                 size: int = p.stat().st_size
 
                 assert size > 0, f"PL: Pusty plik: {p} | EN: Empty file: {p}"
-
 
 @pytest.mark.skipif(
     shutil.which("uv") is None or platform.system().lower().startswith("win"),

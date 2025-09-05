@@ -16,6 +16,7 @@ EN: Parameterized E2E matrix tests for main API endpoints,
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import os
@@ -27,7 +28,6 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from fastapi.testclient import TestClient
 import pytest
 
-
 def _gen_ed25519() -> tuple[str, str]:
     sk = Ed25519PrivateKey.generate()
     pem = sk.private_bytes(
@@ -37,7 +37,6 @@ def _gen_ed25519() -> tuple[str, str]:
     ).decode("utf-8")
     pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
     return pem, pub.hex()
-
 
 @pytest.fixture(scope="module")
 def client(tmp_path_factory: pytest.TempPathFactory) -> TestClient:
@@ -55,7 +54,6 @@ def client(tmp_path_factory: pytest.TempPathFactory) -> TestClient:
 
     return TestClient(app)
 
-
 # === KONFIGURACJA / CONFIGURATION ===
 
 GET_ENDPOINTS = [
@@ -67,7 +65,6 @@ GET_ENDPOINTS = [
     "/v1/cfe/lensing",
     "/v1/lexqft/coverage",
 ]
-
 
 POST_JSON_ENDPOINTS: list[tuple[str, dict[str, Any]]] = [
     ("/v1/cfe/geodesic", {"case": "CER-M", "facts": {}, "norms": {}}),
@@ -92,15 +89,12 @@ POST_JSON_ENDPOINTS: list[tuple[str, dict[str, Any]]] = [
     ("/v1/ledger/record-input", {"case_id": "CER-1", "document_hash": "sha256:" + ("0" * 64)}),
 ]
 
-
 # === LOGIKA / LOGIC ===
-
 
 @pytest.mark.parametrize("path", GET_ENDPOINTS, ids=[p for p in GET_ENDPOINTS])
 def test_get_endpoints_respond_2xx(client: TestClient, path: str) -> None:
     r = client.get(path)
     assert 200 <= r.status_code < 300
-
 
 @pytest.mark.parametrize(
     "path,payload",
@@ -110,7 +104,6 @@ def test_get_endpoints_respond_2xx(client: TestClient, path: str) -> None:
 def test_post_endpoints_json_2xx(client: TestClient, path: str, payload: dict[str, Any] | list[dict[str, Any]]) -> None:
     r = client.post(path, json=payload)
     assert 200 <= r.status_code < 300
-
 
 def test_post_preview_and_ingest_minimal_pdf(client: TestClient, tmp_path: Path) -> None:
     # Preview
@@ -125,7 +118,6 @@ def test_post_preview_and_ingest_minimal_pdf(client: TestClient, tmp_path: Path)
     ra = client.post("/v1/analyze?case_id=CER-M", files=files_pdf)
     assert 200 <= ra.status_code < 300
 
-
 @pytest.mark.parametrize("e", [0.0, 0.2, 0.6, 1.0, 2.0], ids=lambda x: f"E={x}")
 def test_lexqft_tunnel_energy_bounds(client: TestClient, e: float) -> None:
     r = client.post("/v1/lexqft/tunnel", json={"evidence_energy": e})
@@ -133,7 +125,6 @@ def test_lexqft_tunnel_energy_bounds(client: TestClient, e: float) -> None:
     js = r.json()
     p = float(js.get("p_tunnel", -1))
     assert 0.0 <= p <= 0.95
-
 
 @pytest.mark.parametrize(
     "neg,vars_",
@@ -150,7 +141,6 @@ def test_devices_entangle_negativity_bounds(client: TestClient, neg: float, vars
     assert r.status_code == 200
     val = float(r.json().get("achieved_negativity", 0.0))
     assert 0.0 <= val <= 0.12
-
 
 @pytest.mark.parametrize(
     "question",
@@ -184,7 +174,6 @@ def test_devices_qoracle_various_questions(client: TestClient, question: str) ->
     js = r.json()
     assert "optimum" in js and isinstance(js.get("distribution"), list)
 
-
 @pytest.mark.parametrize(
     "op,src",
     [
@@ -203,7 +192,6 @@ def test_devices_qoracle_various_questions(client: TestClient, question: str) ->
 def test_qtm_measure_various_operators(client: TestClient, op: str, src: str) -> None:
     r = client.post("/v1/qtm/measure", json={"operator": op, "source": src})
     assert r.status_code == 200
-
 
 @pytest.mark.parametrize(
     "spf,dkim,dmarc,att_count",
@@ -238,7 +226,6 @@ def test_mailops_ingest_variants(
     assert js.get("ok") is True
     io = js.get("io", {})
     assert isinstance(io.get("attachments"), list)
-
 
 # === I/O / ENDPOINTS ===
 

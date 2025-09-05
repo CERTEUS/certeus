@@ -13,4 +13,3 @@ if ($blocked.Count -gt 0) {
   Write-Error "Zablokowano commit tajnych plików: $($blocked -join ', ')"
   exit 1
 }
-

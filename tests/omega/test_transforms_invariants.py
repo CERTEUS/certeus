@@ -15,12 +15,12 @@ EN: Gauge invariants tests for Ω‑Kernel transformations.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from core.omega.transforms import apply_transform, compute_gauge_drift, normalize_text
 
 # === TESTY / TESTS ===
-
 
 def test_identity_no_drift() -> None:
     txt = "Ustawa z dnia 20 lipca 2018 r. — Prawo"
@@ -29,7 +29,6 @@ def test_identity_no_drift() -> None:
     assert drift.token_count_delta == 0
     assert drift.jaccard_drift == 0.0
 
-
 def test_normalize_low_drift() -> None:
     txt = '“Ustawa” z dnia 20 lipca 2018 r. – Prawo'
     out = normalize_text(txt, lang="pl")
@@ -37,7 +36,6 @@ def test_normalize_low_drift() -> None:
     # Normalizacja nie zmienia znacząco zbioru tokenów
     assert drift.jaccard_drift <= 0.05
     assert drift.token_count_delta <= 1
-
 
 def test_jurisdiction_map_drift_bounded() -> None:
     txt = "Ta ustawa i rozporządzenie oraz Kodeks cywilny."

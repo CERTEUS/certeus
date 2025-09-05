@@ -97,7 +97,6 @@ from .contracts import (
 
 # === MODELE / MODELS ===
 
-
 class LocalDriveAdapter(DriveAdapter):
     """
 
@@ -166,7 +165,6 @@ class LocalDriveAdapter(DriveAdapter):
         rel = Path(file_id)
 
         return f"{self.base_url_prefix}/{rel.as_posix()}"
-
 
 class StubPreviewAdapter(PreviewAdapter):
     """
@@ -244,7 +242,6 @@ class StubPreviewAdapter(PreviewAdapter):
         except Exception as e:
             raise PreviewError("StubPreviewAdapter.generate failed") from e
 
-
 class StubOCRAdapter(OCRAdapter):
     """
 
@@ -266,7 +263,6 @@ class StubOCRAdapter(OCRAdapter):
 
         except Exception as e:
             raise OCRError("StubOCRAdapter.extract failed") from e
-
 
 class StubLLMAdapter(LLMAdapter):
     """
@@ -317,11 +313,9 @@ class StubLLMAdapter(LLMAdapter):
         except Exception as e:
             raise DriveError("StubLLMAdapter.analyze failed") from e
 
-
 # === LOGIKA / LOGIC ===
 
 # ------------------------------ Helpers -------------------------------------
-
 
 def _stable_hexdigest(*parts: str | bytes) -> str:
     """PL/EN: Deterministic short sha256 hex."""
@@ -336,10 +330,8 @@ def _stable_hexdigest(*parts: str | bytes) -> str:
 
     return h.hexdigest()[:24]
 
-
 def _ensure_dir(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-
 
 # --------------------------- LocalDriveAdapter ------------------------------
 

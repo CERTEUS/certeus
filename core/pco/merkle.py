@@ -45,23 +45,18 @@ from typing import Any, Literal
 
 Dir = Literal["L", "R"]
 
-
 @dataclass(frozen=True, slots=True)
 class MerkleStep:
     sibling: str  # hex
 
     dir: Dir  # "L" | "R"
 
-
 # ----Bloki----- HASH
-
 
 def _h(b: bytes) -> bytes:
     return hashlib.sha256(b).digest()
 
-
 # ----Bloki----- MERKLE
-
 
 def parse_merkle_proof(raw: Any) -> list[MerkleStep]:
     """
@@ -106,7 +101,6 @@ def parse_merkle_proof(raw: Any) -> list[MerkleStep]:
         return out
 
     raise ValueError("merkle_proof must be list or {path:[.]}")
-
 
 def apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
     cur = bytes.fromhex(leaf_hex)

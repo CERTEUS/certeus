@@ -9,7 +9,7 @@
 - A.18 Compliance: DPIA (docs/compliance/dpia.md), redaction, PNIP validation
 
 Evidence pointers:
-- Workflows: .github/workflows/*
-- Logs/Artifacts: ci-gates outputs (out/*), perf-bench artifact
-- Policies: policies/*
 
+- Workflows: .github/workflows/\*
+- Logs/Artifacts: ci-gates outputs (out/\*), perf-bench artifact
+- Policies: policies/\*

@@ -41,7 +41,6 @@ import tempfile
 
 from services.exporter_service import ExporterService
 
-
 def test_export_report_creates_file_with_replaced_content():
     with tempfile.TemporaryDirectory() as tmpdir:
         outdir = Path(tmpdir) / "out"

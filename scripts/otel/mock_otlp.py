@@ -24,7 +24,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 import time
 
-
 class _Handler(BaseHTTPRequestHandler):  # pragma: no cover - simple stub
     def do_POST(self):  # noqa: N802
         if self.path == "/v1/traces":
@@ -38,7 +37,6 @@ class _Handler(BaseHTTPRequestHandler):  # pragma: no cover - simple stub
 
     def log_message(self, fmt, *args):  # quiet
         return
-
 
 def main() -> int:
     host, port = "127.0.0.1", 4318
@@ -55,7 +53,6 @@ def main() -> int:
         pass
     httpd.shutdown()
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -32,7 +32,6 @@ from scripts.gates.openapi_contract_gate import check
 
 # === TESTY / TESTS ===
 
-
 def test_openapi_contract_gate_runs() -> None:
     vio, warn = check()
     assert isinstance(vio, list)

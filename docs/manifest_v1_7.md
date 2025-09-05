@@ -1,8 +1,8 @@
 # ┌──────────────────────────────────────────────────────────────┐
 
-# │                           CERTEUS                           │
+# │ CERTEUS │
 
-# │            Proof‑native AI for Law • Evidence OS            │
+# │ Proof‑native AI for Law • Evidence OS │
 
 # └──────────────────────────────────────────────────────────────┘
 
@@ -10,18 +10,18 @@
 
 > Uwaga: dokument badawczy. Źródłem prawdy pozostaje `docs/manifest.md` (v1.5 Immutable).
 
-**Opis (PL):** Kanoniczny manifest systemu CERTEUS, gotowy „pod ukończenie”. Zawiera normy (MUST/SHOULD), kontrakt publikacji (PCO), schemat **ProofBundle v0.2**, progi **SLO‑Gate**, zasady **Law‑as‑Data**, redakcję PII, zgodność **AI Act/RODO**, reprodukowalność, bezpieczeństwo, API i Definition of Done.  
+**Opis (PL):** Kanoniczny manifest systemu CERTEUS, gotowy „pod ukończenie”. Zawiera normy (MUST/SHOULD), kontrakt publikacji (PCO), schemat **ProofBundle v0.2**, progi **SLO‑Gate**, zasady **Law‑as‑Data**, redakcję PII, zgodność **AI Act/RODO**, reprodukowalność, bezpieczeństwo, API i Definition of Done.
 **Description (EN):** Canonical CERTEUS manifest, release‑ready. Includes RFC2119 terms, PCO publication contract, **ProofBundle v0.2** schema, **SLO‑Gate** thresholds, **Law‑as‑Data** rules, PII redaction, **AI Act/GDPR** compliance, reproducibility, security, APIs, and Definition of Done.
 
-**Plik | File:** `docs/manifest.md`  
-**Autor | Author:** Radosław Skarżycki (Radziu)  
-**Wersja | Version:** 1.7  
-**Data | Date:** 2025‑08‑31T00:00:00Z  
-**Licencja | License:** MIT  
-**Repo:** CERTEUS  
+**Plik | File:** `docs/manifest.md`
+**Autor | Author:** Radosław Skarżycki (Radziu)
+**Wersja | Version:** 1.7
+**Data | Date:** 2025‑08‑31T00:00:00Z
+**Licencja | License:** MIT
+**Repo:** CERTEUS
 **Status:** **Immutable Core** (zmiany tylko poprzez inkrement wersji)
 
-> **Motto:** *Dowód, nie opinia.*  
+> **Motto:** _Dowód, nie opinia._
 > **Zasada rdzenia:** Rdzeń jest **niezmienialny** (PCO/Boundary/ProofGate/Truth Engine). Wszystko inne to **wtyczki** i **polityki**.
 
 ---
@@ -34,7 +34,7 @@
 
 ## 1) Cel i zakres
 
-System **proof‑native** do tworzenia, weryfikacji i publikacji artefaktów dowodowych dla pism i decyzji prawnych. Rdzeń obejmuje: **Truth Engine**, **ProofGate**, **PCO‑Ledger**, **Boundary**. Manifest określa *normy produktu*, nie marketing.
+System **proof‑native** do tworzenia, weryfikacji i publikacji artefaktów dowodowych dla pism i decyzji prawnych. Rdzeń obejmuje: **Truth Engine**, **ProofGate**, **PCO‑Ledger**, **Boundary**. Manifest określa _normy produktu_, nie marketing.
 
 ---
 
@@ -45,7 +45,7 @@ System **proof‑native** do tworzenia, weryfikacji i publikacji artefaktów dow
 - **PCO‑Ledger** — finalność wpisów, **Merkle‑root**, podpisy **Ed25519**; payload publiczny bez PII.
 - **Boundary** — granica domenowa (compliance, redakcja PII, law‑as‑data, audyt, klucze, JWKS).
 - **Continuity/Context Forge (cfpack)** — deterministyczne pakiety kontekstu; **Domain Packs** (prawo/finanse/kod/sec/med).
-- **Fizyka sensu** (*CFE/lexqft/QTMP*) — warstwa modelowa; *tu jedynie interfejsy i artefakty, bez metafizyki*.
+- **Fizyka sensu** (_CFE/lexqft/QTMP_) — warstwa modelowa; _tu jedynie interfejsy i artefakty, bez metafizyki_.
 
 > **Absolut:** Każdy artefakt, który przechodzi przez ProofGate, musi być ujęty w **ProofBundle** i podlegać polityce **PCO**.
 
@@ -73,8 +73,8 @@ System **proof‑native** do tworzenia, weryfikacji i publikacji artefaktów dow
 
 **Cel:** Jeden, sądownie strawny pakiet dowodowy dołączany do pisma.
 
-**Ścieżka schematu (MUST):** `services/api_gateway/schemas/proofbundle_v0.2.json`  
-**Endpoint (MUST):** `POST /v1/pco/bundle` ⇒ zwraca podpisany **ProofBundle** (Ed25519), wpis do `PCO‑Ledger`.  
+**Ścieżka schematu (MUST):** `services/api_gateway/schemas/proofbundle_v0.2.json`
+**Endpoint (MUST):** `POST /v1/pco/bundle` ⇒ zwraca podpisany **ProofBundle** (Ed25519), wpis do `PCO‑Ledger`.
 **Publiczny odczyt (MUST):** `GET /pco/public/{case_id}` ⇒ payload bez PII, JWKS pod `/.well-known/jwks.json`.
 
 ### 4.1 Wymagane pola (normatyw)
@@ -122,7 +122,7 @@ Pełny JSON Schema — **Aneks B**.
 
 ## 7) Zgodność – AI Act (UE) i RODO
 
-- **Klasa ryzyka (MUST):** zastosowania w wymiarze sprawiedliwości ⇒ *high‑risk*.
+- **Klasa ryzyka (MUST):** zastosowania w wymiarze sprawiedliwości ⇒ _high‑risk_.
 - **Wymogi (MUST):** data governance, traceability, logging, human oversight (counsel), robustness, accuracy (SLO‑Gate).
 - **DPIA (SHOULD):** ocena skutków dla ochrony danych.
 
@@ -156,7 +156,7 @@ Pełny JSON Schema — **Aneks B**.
 - `POST /v1/pco/bundle` — tworzy i publikuje ProofBundle.
 - `GET /pco/public/{case_id}` — zwraca public payload ProofBundle.
 - `GET /.well-known/jwks.json` — klucze publiczne.
-*(OpenAPI: `docs/openapi/certeus.v1.yaml`, MUST zawierać schematy ProofBundle i przykłady odpowiedzi.)*
+  _(OpenAPI: `docs/openapi/certeus.v1.yaml`, MUST zawierać schematy ProofBundle i przykłady odpowiedzi.)_
 
 ---
 
@@ -266,8 +266,8 @@ publish_contract:
       digest_required: true
       offline_cache_required: true
     proofs:
-      formats_allowed: ["DRAT","LRAT","LFSC"]
-      solver_allowed: ["z3","cvc5"]
+      formats_allowed: ["DRAT", "LRAT", "LFSC"]
+      solver_allowed: ["z3", "cvc5"]
       verification_required: true
 
 checks:
@@ -293,8 +293,8 @@ abstain_rules:
 
 roles:
   producer: { can_sign: true }
-  auditor:  { can_sign: true }
-  counsel:  { can_sign: true, required_for: ["PUBLISH","CONDITIONAL"] }
+  auditor: { can_sign: true }
+  counsel: { can_sign: true, required_for: ["PUBLISH", "CONDITIONAL"] }
 
 ledger:
   backend: "pco_ledger_v1"
@@ -324,52 +324,167 @@ compliance:
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "CERTEUS ProofBundle v0.2",
   "type": "object",
-  "required": ["version","case_id","created_at","jurisdiction","claims","sources","risk","signatures","reproducibility","status"],
+  "required": [
+    "version",
+    "case_id",
+    "created_at",
+    "jurisdiction",
+    "claims",
+    "sources",
+    "risk",
+    "signatures",
+    "reproducibility",
+    "status"
+  ],
   "properties": {
     "version": { "type": "string", "const": "0.2" },
     "case_id": { "type": "string", "minLength": 1 },
     "created_at": { "type": "string", "format": "date-time" },
     "jurisdiction": {
       "type": "object",
-      "required": ["country","domain"],
+      "required": ["country", "domain"],
       "properties": {
         "country": { "type": "string" },
-        "domain":  { "type": "string", "enum": ["civil","criminal","commercial","administrative","labor","other"] }
-      }
-    },
-    "claims": {
-      "type": "array", "minItems": 1,
-      "items": {"type":"object","required":["id","text","legal_basis"],
-        "properties": {
-          "id": {"type":"string"},
-          "text": {"type":"string"},
-          "legal_basis": {"type":"object","required":["statutes","cases"],
-            "properties": {
-              "statutes": {"type":"array","items":{"type":"string"}},
-              "cases": {"type":"array","items":{"type":"string"}}
-            }
-          },
-          "evidence_refs": {"type":"array","items":{"type":"string"}}
+        "domain": {
+          "type": "string",
+          "enum": [
+            "civil",
+            "criminal",
+            "commercial",
+            "administrative",
+            "labor",
+            "other"
+          ]
         }
       }
     },
-    "sources": {"type":"array","items": {"type":"object","required":["id","uri","digest","retrieved_at"],
-      "properties": {"id":{"type":"string"},"uri":{"type":"string"},"digest":{"type":"string"},"retrieved_at":{"type":"string","format":"date-time"},"license":{"type":"string"}}}},
-    "derivations": {"type":"array","items": {"type":"object","required":["claim_id","solver","proof_format","artifact_digest"],
-      "properties": {"claim_id":{"type":"string"},"solver":{"type":"string","enum":["z3","cvc5","other"]},"proof_format":{"type":"string","enum":["DRAT","LRAT","LFSC","AIGER","OTHER"]},"artifact_digest":{"type":"string"},"verifier_cmd":{"type":"string"}}}},
-    "computations": {"type":"array","items": {"type":"object","required":["name","artifact_digest"],
-      "properties": {"name":{"type":"string"},"artifact_digest":{"type":"string"},"notebook_cells":{"type":"integer"}}}},
-    "risk": {"type":"object","required":["ece","brier","p95_latency_ms","abstain_rate"],
-      "properties": {"ece":{"type":"number","minimum":0},"brier":{"type":"number","minimum":0},"p95_latency_ms":{"type":"number","minimum":0},"abstain_rate":{"type":"number","minimum":0,"maximum":1}}},
-    "ledger": {"type":"object","properties": {"pco_tx_id":{"type":"string"},"merkle_root":{"type":"string"}}},
-    "signatures": {"type":"array","minItems":1,
-      "items":{"type":"object","required":["role","alg","signature","key_id"],
-        "properties": {"role":{"type":"string","enum":["producer","auditor","counsel","court","insurer"]},"alg":{"type":"string","enum":["ed25519","p256","p384","rsa"]},"key_id":{"type":"string"},"signature":{"type":"string"}}}},
-    "reproducibility": {"type":"object","required":["image","image_digest","seed"],
-      "properties": {"image":{"type":"string"},"image_digest":{"type":"string"},"seed":{"type":"string"},"env":{"type":"object"}}},
-    "attachments": {"type":"array","items": {"type":"object","required":["name","mime","digest"],
-      "properties": {"name":{"type":"string"},"mime":{"type":"string"},"digest":{"type":"string"}}}},
-    "status": { "type":"string","enum":["PUBLISH","CONDITIONAL","PENDING","ABSTAIN"] }
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "legal_basis"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "legal_basis": {
+            "type": "object",
+            "required": ["statutes", "cases"],
+            "properties": {
+              "statutes": { "type": "array", "items": { "type": "string" } },
+              "cases": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "uri", "digest", "retrieved_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "uri": { "type": "string" },
+          "digest": { "type": "string" },
+          "retrieved_at": { "type": "string", "format": "date-time" },
+          "license": { "type": "string" }
+        }
+      }
+    },
+    "derivations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "solver", "proof_format", "artifact_digest"],
+        "properties": {
+          "claim_id": { "type": "string" },
+          "solver": { "type": "string", "enum": ["z3", "cvc5", "other"] },
+          "proof_format": {
+            "type": "string",
+            "enum": ["DRAT", "LRAT", "LFSC", "AIGER", "OTHER"]
+          },
+          "artifact_digest": { "type": "string" },
+          "verifier_cmd": { "type": "string" }
+        }
+      }
+    },
+    "computations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "artifact_digest"],
+        "properties": {
+          "name": { "type": "string" },
+          "artifact_digest": { "type": "string" },
+          "notebook_cells": { "type": "integer" }
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": ["ece", "brier", "p95_latency_ms", "abstain_rate"],
+      "properties": {
+        "ece": { "type": "number", "minimum": 0 },
+        "brier": { "type": "number", "minimum": 0 },
+        "p95_latency_ms": { "type": "number", "minimum": 0 },
+        "abstain_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "properties": {
+        "pco_tx_id": { "type": "string" },
+        "merkle_root": { "type": "string" }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "alg", "signature", "key_id"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["producer", "auditor", "counsel", "court", "insurer"]
+          },
+          "alg": {
+            "type": "string",
+            "enum": ["ed25519", "p256", "p384", "rsa"]
+          },
+          "key_id": { "type": "string" },
+          "signature": { "type": "string" }
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["image", "image_digest", "seed"],
+      "properties": {
+        "image": { "type": "string" },
+        "image_digest": { "type": "string" },
+        "seed": { "type": "string" },
+        "env": { "type": "object" }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "mime", "digest"],
+        "properties": {
+          "name": { "type": "string" },
+          "mime": { "type": "string" },
+          "digest": { "type": "string" }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
+    }
   }
 }
 ```
@@ -413,4 +528,3 @@ gate_decision:
     else_if_any_alert_critical: "ABSTAIN"
     else: "CONDITIONAL"
 ```
-

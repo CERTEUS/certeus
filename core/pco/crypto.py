@@ -46,10 +46,8 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 
 # ----Bloki----- B64URL
 
-
 def b64u_encode(data: bytes) -> str:
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
-
 
 def b64u_decode(s: str) -> bytes:
     s = s.strip()
@@ -58,9 +56,7 @@ def b64u_decode(s: str) -> bytes:
 
     return base64.urlsafe_b64decode(s.encode("ascii"))
 
-
 # ----Bloki----- HASH
-
 
 def sha256_hex(data: bytes | str) -> str:
     if isinstance(data, str):
@@ -68,14 +64,11 @@ def sha256_hex(data: bytes | str) -> str:
 
     return hashlib.sha256(data).hexdigest()
 
-
 def _lfsc_sha256(lfsc_text: str) -> str:
     return sha256_hex(lfsc_text)
 
-
 def _drat_sha256_maybe(drat_text: str | None) -> str | None:
     return None if drat_text is None else sha256_hex(drat_text)
-
 
 def canonical_bundle_hash_hex(
     smt2_hash_hex: str,
@@ -104,7 +97,6 @@ def canonical_bundle_hash_hex(
 
     return sha256_hex(blob)
 
-
 def compute_leaf_hex(rid: str, bundle_hash_hex: str) -> str:
     """
 
@@ -117,7 +109,6 @@ def compute_leaf_hex(rid: str, bundle_hash_hex: str) -> str:
     bundle_hash = bytes.fromhex(bundle_hash_hex)
 
     return hashlib.sha256(rid_hash + bundle_hash).hexdigest()
-
 
 def canonical_digest_hex(
     *,
@@ -164,9 +155,7 @@ def canonical_digest_hex(
 
     return sha256_hex(data)
 
-
 # ----Bloki----- Ed25519
-
 
 def ed25519_sign_b64u(private_key_bytes: bytes, msg_hex: str) -> str:
     sk = Ed25519PrivateKey.from_private_bytes(private_key_bytes)
@@ -175,14 +164,12 @@ def ed25519_sign_b64u(private_key_bytes: bytes, msg_hex: str) -> str:
 
     return b64u_encode(sig)
 
-
 def ed25519_verify_b64u(public_key_bytes: bytes, signature_b64u: str, msg_hex: str) -> None:
     pk = Ed25519PublicKey.from_public_bytes(public_key_bytes)
 
     # raises InvalidSignature on failure
 
     pk.verify(b64u_decode(signature_b64u), bytes.fromhex(msg_hex))
-
 
 def _is_ed25519_jwk(k: dict[str, Any], kid: str | None = None) -> bool:
     """Czy wpis JWK to OKP/Ed25519 z opcjonalnym dopasowaniem kid i z kluczem 'x'."""
@@ -191,7 +178,6 @@ def _is_ed25519_jwk(k: dict[str, Any], kid: str | None = None) -> bool:
         return False
 
     return k.get("kty") == "OKP" and k.get("crv") == "Ed25519" and "x" in k
-
 
 def load_pubkey_bytes_from_env() -> bytes:
     """
@@ -243,7 +229,6 @@ def load_pubkey_bytes_from_env() -> bytes:
         "Set PCO_JWKS_B64URL+PCO_ACTIVE_KID or ED25519_PUBKEY_HEX or "
         "ED25519_PUBKEY_B64URL."
     )
-
 
 # === I/O / ENDPOINTS ===
 

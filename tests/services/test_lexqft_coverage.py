@@ -16,6 +16,7 @@ EN: Tests for LexQFT coverage aggregator: default /coverage,
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
@@ -23,7 +24,6 @@ from fastapi.testclient import TestClient
 from services.api_gateway.main import app
 
 client = TestClient(app)
-
 
 def test_lexqft_coverage_default_and_update_roundtrip() -> None:
     # Reset any previous state

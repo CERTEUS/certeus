@@ -42,7 +42,6 @@ import requests
 
 BASE = os.getenv("CER_BASE", "http://127.0.0.1:8000").rstrip("/")
 
-
 def _wait(url: str, timeout: float = 30.0) -> None:
     t0 = time.time()
 
@@ -60,10 +59,8 @@ def _wait(url: str, timeout: float = 30.0) -> None:
 
     raise RuntimeError(f"Service at {url} not ready")
 
-
 def _rid(prefix: str = "case") -> str:
     return f"{prefix}-" + "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
-
 
 def main() -> int:
     try:
@@ -139,7 +136,6 @@ def main() -> int:
         print(f"SMOKE FAILED: {e}")
 
         return 1
-
 
 if __name__ == "__main__":
     sys.exit(main())

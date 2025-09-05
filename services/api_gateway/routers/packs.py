@@ -42,7 +42,6 @@ from services.api_gateway.limits import enforce_limits
 
 # === MODELE / MODELS ===
 
-
 class HandleRequest(BaseModel):
     pack: str
 
@@ -50,24 +49,20 @@ class HandleRequest(BaseModel):
 
     payload: dict[str, Any] | None = None
 
-
 # === LOGIKA / LOGIC ===
 
 router = APIRouter(prefix="/v1/packs", tags=["packs"])
-
 
 def _repo_root() -> Path:
     from pathlib import Path as _P
 
     return _P(__file__).resolve().parents[3]
 
-
 def _state_path() -> Path:
     p = os.getenv("PACKS_STATE_PATH")
     if p:
         return Path(p)
     return _repo_root() / "data" / "packs_state.json"
-
 
 def _load_state() -> dict[str, dict[str, Any]]:
     try:
@@ -89,12 +84,10 @@ def _load_state() -> dict[str, dict[str, Any]]:
         return {}
     return {}
 
-
 def _save_state(state: dict[str, dict[str, Any]]) -> None:
     sp = _state_path()
     sp.parent.mkdir(parents=True, exist_ok=True)
     sp.write_text(json.dumps(state, indent=2, sort_keys=True), encoding="utf-8")
-
 
 @router.get("/", summary="List available packs")
 async def list_packs() -> list[dict[str, Any]]:
@@ -113,17 +106,14 @@ async def list_packs() -> list[dict[str, Any]]:
         for i in infos
     ]
 
-
 class ToggleRequest(BaseModel):
     pack: str
     enabled: bool
-
 
 class InstallRequest(BaseModel):
     pack: str
     signature: str
     version: str | None = None
-
 
 @router.post("/install", summary="Install or upgrade a pack (signature required)")
 async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
@@ -134,9 +124,12 @@ async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
     if req.pack not in names:
         raise HTTPException(status_code=404, detail=f"unknown pack: {req.pack}")
 
+    import re as _re
+
     sig = (req.signature or "").strip()
-    if len(sig) < 40:
-        raise HTTPException(status_code=400, detail="invalid signature: too short")
+    # Require at least 64 hex chars (report-only semantics preserved for tests using 'a'*64/'A'*64)
+    if not _re.fullmatch(r"[0-9a-fA-F]{64,}", sig):
+        raise HTTPException(status_code=400, detail="invalid signature: expected hex(64+) string")
 
     # Persist signature and installed_version in state
     state = _load_state()
@@ -148,7 +141,6 @@ async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
     _save_state(state)
 
     return {"ok": True, "pack": req.pack, "signature": True, "installed_version": cur.get("installed_version")}
-
 
 @router.post("/enable", summary="Enable or disable a pack")
 async def enable_pack(req: ToggleRequest, request: Request) -> dict[str, Any]:
@@ -165,7 +157,6 @@ async def enable_pack(req: ToggleRequest, request: Request) -> dict[str, Any]:
     state[req.pack] = cur
     _save_state(state)
     return {"ok": True, "pack": req.pack, "enabled": bool(req.enabled)}
-
 
 @router.get("/{name}", summary="Get pack details")
 async def get_pack_details(name: str) -> dict[str, Any]:
@@ -205,7 +196,6 @@ async def get_pack_details(name: str) -> dict[str, Any]:
         "signature_present": bool(overrides.get(info.name, {}).get("signature")),
     }
 
-
 @router.get("/{name}/baseline", summary="Get ABI baseline JSON if present")
 async def get_pack_baseline(name: str) -> dict[str, Any]:
     infos = {i.name: i for i in discover()}
@@ -219,12 +209,10 @@ async def get_pack_baseline(name: str) -> dict[str, Any]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"cannot read baseline: {e}") from e
 
-
 class TryRequest(BaseModel):
     pack: str
     kind: str | None = None
     payload: dict[str, Any] | None = None
-
 
 class _MiniAPI:
     def __init__(self) -> None:
@@ -241,7 +229,6 @@ class _MiniAPI:
     def register_exporter(self, key: str, fn: Any) -> None:
         self.exporters[key] = fn
 
-
 def _module_path_for(name: str) -> str | None:
     p = _repo_root() / "plugins" / name / "plugin.yaml"
     if not p.exists():
@@ -254,7 +241,6 @@ def _module_path_for(name: str) -> str | None:
         return mod or None
     except Exception:
         return None
-
 
 @router.post("/try", summary="Try invoking a pack (best-effort)")
 async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
@@ -320,7 +306,6 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
 
     return {"ok": False, "reason": "no exporters/adapters registered"}
 
-
 @router.post("/handle", summary="Handle a request using a pack")
 async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
     enforce_limits(request, cost_units=1)
@@ -334,7 +319,6 @@ async def handle(req: HandleRequest, request: Request) -> dict[str, Any]:
 
     except Exception as e:  # nosec - błąd pakietu mapujemy na 400
         raise HTTPException(status_code=400, detail=f"pack handle error: {e}") from e
-
 
 # === I/O / ENDPOINTS ===
 

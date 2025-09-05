@@ -43,6 +43,7 @@ EN: CERTEUS module – please complete the functional description.
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 import json
 from pathlib import Path
 from typing import Any, Final, Protocol
@@ -61,7 +62,6 @@ SCHEMA_DIR: Final[Path] = Path("schemas")
 
 # === PROTOKÓŁ WALIDATORA / VALIDATOR PROTOCOL ===
 
-
 class _ValidatorProtocol(Protocol):
     """
 
@@ -72,7 +72,6 @@ class _ValidatorProtocol(Protocol):
     """
 
     def validate(self, instance: Any) -> None: ...
-
 
 def load_schema(name: str) -> Schema:
     """
@@ -92,7 +91,6 @@ def load_schema(name: str) -> Schema:
 
     return schema
 
-
 def assert_valid(instance: JSONObj, schema: Schema) -> None:
     """
 
@@ -105,7 +103,6 @@ def assert_valid(instance: JSONObj, schema: Schema) -> None:
     validator: _ValidatorProtocol = Draft7Validator(schema, format_checker=FormatChecker())  # type: ignore[assignment]
 
     validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
-
 
 def assert_invalid(instance: JSONObj, schema: Schema) -> None:
     """
@@ -121,27 +118,21 @@ def assert_invalid(instance: JSONObj, schema: Schema) -> None:
     with pytest.raises(ValidationError):
         validator.validate(instance)  # pyright: ignore[reportUnknownMemberType]
 
-
 # === FIXTURE’Y / FIXTURES ===
-
 
 @pytest.fixture(scope="module")
 def S_PROVENANCE() -> Schema:
     return load_schema("provenance_receipt_v1.json")
 
-
 @pytest.fixture(scope="module")
 def S_ANSWER() -> Schema:
     return load_schema("answer_contract_v1.json")
-
 
 @pytest.fixture(scope="module")
 def S_PCA2() -> Schema:
     return load_schema("pca2_v1.json")
 
-
 # === TESTY: PROVENANCE ===
-
 
 def test_provenance_valid(S_PROVENANCE: Schema) -> None:
     ok: JSONObj = {
@@ -160,7 +151,6 @@ def test_provenance_valid(S_PROVENANCE: Schema) -> None:
 
     assert_valid(ok, S_PROVENANCE)
 
-
 def test_provenance_invalid_missing_required(S_PROVENANCE: Schema) -> None:
     bad: JSONObj = {
         "inputs": {"lexlog_rule_version": "x", "assumptions_hash": "f" * 64},
@@ -172,9 +162,7 @@ def test_provenance_invalid_missing_required(S_PROVENANCE: Schema) -> None:
 
     assert_invalid(bad, S_PROVENANCE)
 
-
 # === TESTY: ANSWER CONTRACT ===
-
 
 def test_answer_valid(S_ANSWER: Schema) -> None:
     ok: JSONObj = {
@@ -202,7 +190,6 @@ def test_answer_valid(S_ANSWER: Schema) -> None:
 
     assert_valid(ok, S_ANSWER)
 
-
 def test_answer_invalid_confidence_range(S_ANSWER: Schema) -> None:
     bad: JSONObj = {
         "answer_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
@@ -216,9 +203,7 @@ def test_answer_invalid_confidence_range(S_ANSWER: Schema) -> None:
 
     assert_invalid(bad, S_ANSWER)
 
-
 # === TESTY: PCA² ===
-
 
 def test_pca2_valid(S_PCA2: Schema) -> None:
     ok: JSONObj = {
@@ -247,7 +232,6 @@ def test_pca2_valid(S_PCA2: Schema) -> None:
     }
 
     assert_valid(ok, S_PCA2)
-
 
 def test_pca2_invalid_status(S_PCA2: Schema) -> None:
     bad: JSONObj = {"case_id": "X", "overall_status": "unknown"}

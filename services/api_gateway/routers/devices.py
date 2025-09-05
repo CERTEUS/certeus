@@ -37,18 +37,15 @@ from pydantic import BaseModel, Field
 
 # === MODELE / MODELS ===
 
-
 class HDEPlanRequest(BaseModel):
     case: str | None = None
 
     target_horizon: float | None = Field(default=0.2, description="Desired horizon mass threshold")
 
-
 class HDEPlanAlternative(BaseModel):
     strategy: str
     cost_tokens: int
     expected_kappa: float
-
 
 class HDEPlanResponse(BaseModel):
     evidence_plan: list[dict[str, Any]]
@@ -58,12 +55,10 @@ class HDEPlanResponse(BaseModel):
     alternatives: list[HDEPlanAlternative] | None = None
     best_strategy: str | None = None
 
-
 class QOracleRequest(BaseModel):
     objective: str | None = None
     question: str | None = None
     constraints: dict[str, Any] | None = None
-
 
 class QOracleResponse(BaseModel):
     optimum: dict[str, Any]
@@ -72,14 +67,12 @@ class QOracleResponse(BaseModel):
 
     distribution: list[dict[str, Any]]
 
-
 class EntangleRequest(BaseModel):
     variables: list[str]
 
     target_negativity: float = 0.1
 
     scenario: str | None = Field(default=None, description="Scenario label (e.g., 'pairwise', 'global')")
-
 
 class EntangleResponse(BaseModel):
     certificate: str
@@ -90,7 +83,6 @@ class EntangleResponse(BaseModel):
 
     pairs: list[dict[str, float]] | None = None
 
-
 class ChronoSyncRequest(BaseModel):
     coords: dict[str, Any]
 
@@ -99,7 +91,6 @@ class ChronoSyncRequest(BaseModel):
     treaty_clause_skeleton: dict[str, Any] | None = None
 
     protocol: str | None = Field(default=None, description="Protocol tag (e.g., 'mediation.v1')")
-
 
 class ChronoSyncResponse(BaseModel):
     reconciled: bool
@@ -111,7 +102,6 @@ class ChronoSyncResponse(BaseModel):
     collisions_count: int | None = None
 
     mediated: bool | None = None
-
 
 # === LOGIKA / LOGIC ===
 
@@ -129,14 +119,44 @@ class ChronoSyncResponse(BaseModel):
 
 router = APIRouter(prefix="/v1/devices", tags=["devices"])
 
+# Prosty store idempotency (in-proc). Klucz: path + Idempotency-Key
+_IDEMP_STORE: dict[str, dict[str, Any]] = {}
+
+def _get_idemp_key(request: Request) -> str | None:
+    key = request.headers.get("X-Idempotency-Key") or request.headers.get("Idempotency-Key")
+    key = (key or "").strip()
+    return key or None
+
+def _cache_get(path: str, key: str) -> dict[str, Any] | None:
+    try:
+        return _IDEMP_STORE.get(f"{path}::{key}")
+    except Exception:
+        return None
+
+def _cache_set(path: str, key: str, payload: dict[str, Any]) -> None:
+    try:
+        _IDEMP_STORE[f"{path}::{key}"] = dict(payload)
+    except Exception:
+        pass
+
 # Horizon Drive Engine (HDE)
 
-
 @router.post("/horizon_drive/plan", response_model=HDEPlanResponse)
-async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
+async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -> HDEPlanResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
+
+    # Idempotency check
+    _k = _get_idemp_key(request)
+    if _k:
+        cached = _cache_get("/v1/devices/horizon_drive/plan", _k)
+        if cached is not None:
+            try:
+                response.headers["X-Idempotent-Replay"] = "1"
+            except Exception:
+                pass
+            return HDEPlanResponse(**cached)
 
     plan_balanced = [
         {"action": "collect_email_evidence", "weight": 0.4},
@@ -176,7 +196,7 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         return (1.0 - weight_target) * cost_norm + weight_target * shortfall
 
     best = min(alt, key=_score).strategy
-    return HDEPlanResponse(
+    out = HDEPlanResponse(
         evidence_plan=plan_balanced,
         plan_of_evidence=plan_balanced,
         cost_tokens=cost_bal,
@@ -184,16 +204,32 @@ async def hde_plan(_req: HDEPlanRequest, request: Request) -> HDEPlanResponse:
         alternatives=alt,
         best_strategy=best,
     )
-
+    if _k:
+        _cache_set("/v1/devices/horizon_drive/plan", _k, out.model_dump())
+        try:
+            response.headers["X-Idempotent-Replay"] = "0"
+        except Exception:
+            pass
+    return out
 
 # Quantum Oracle (QOC)
 
-
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
-async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleResponse:
+async def qoracle_expectation(req: QOracleRequest, request: Request, response: Response) -> QOracleResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
+
+    # Idempotency check
+    _k = _get_idemp_key(request)
+    if _k:
+        cached = _cache_get("/v1/devices/qoracle/expectation", _k)
+        if cached is not None:
+            try:
+                response.headers["X-Idempotent-Replay"] = "1"
+            except Exception:
+                pass
+            return QOracleResponse(**cached)
 
     text = (req.question or req.objective or "").strip()
     L = max(1, len(text))
@@ -223,21 +259,37 @@ async def qoracle_expectation(req: QOracleRequest, request: Request) -> QOracleR
     pB = max(0.1, 1.0 - pA)
     dist = [{"outcome": "A", "p": round(pA, 3)}, {"outcome": "B", "p": round(pB, 3)}]
     choice = "A" if pA >= pB else "B"
-    return QOracleResponse(
+    out = QOracleResponse(
         optimum={"choice": choice, "reason": text or "heuristic"},
         payoff=round(max(pA, pB), 3),
         distribution=dist,
     )
-
+    if _k:
+        _cache_set("/v1/devices/qoracle/expectation", _k, out.model_dump())
+        try:
+            response.headers["X-Idempotent-Replay"] = "0"
+        except Exception:
+            pass
+    return out
 
 # Entanglement Inducer (EI)
-
 
 @router.post("/entangle", response_model=EntangleResponse)
 async def entangle(req: EntangleRequest, request: Request, response: Response) -> EntangleResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
+
+    # Idempotency check
+    _k = _get_idemp_key(request)
+    if _k:
+        cached = _cache_get("/v1/devices/entangle", _k)
+        if cached is not None:
+            try:
+                response.headers["X-Idempotent-Replay"] = "1"
+            except Exception:
+                pass
+            return EntangleResponse(**cached)
 
     cert = "stub-certificate"
     try:
@@ -267,22 +319,38 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
             _devices_negativity.labels(var=v).set(achieved)
     except Exception:
         pass
-    return EntangleResponse(
+    out = EntangleResponse(
         certificate=cert,
         achieved_negativity=achieved,
         scenario=req.scenario,
         pairs=pairs,
     )
-
+    if _k:
+        _cache_set("/v1/devices/entangle", _k, out.model_dump())
+        try:
+            response.headers["X-Idempotent-Replay"] = "0"
+        except Exception:
+            pass
+    return out
 
 # Chronosync (LCSI)
 
-
 @router.post("/chronosync/reconcile", response_model=ChronoSyncResponse)
-async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> ChronoSyncResponse:
+async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, response: Response) -> ChronoSyncResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
+
+    # Idempotency check
+    _k = _get_idemp_key(request)
+    if _k:
+        cached = _cache_get("/v1/devices/chronosync/reconcile", _k)
+        if cached is not None:
+            try:
+                response.headers["X-Idempotent-Replay"] = "1"
+            except Exception:
+                pass
+            return ChronoSyncResponse(**cached)
 
     default_clauses = {
         "arbitration": "lex-domain mediator",
@@ -301,14 +369,20 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request) -> Chro
         "pc_delta": req.pc_delta or {},
         "treaty": req.treaty_clause_skeleton or {"clauses": default_clauses},
     }
-    return ChronoSyncResponse(
+    out = ChronoSyncResponse(
         reconciled=True,
         sketch=sketch,
         protocol=req.protocol,
         collisions_count=collisions,
         mediated=collisions > 0,
     )
-
+    if _k:
+        _cache_set("/v1/devices/chronosync/reconcile", _k, out.model_dump())
+        try:
+            response.headers["X-Idempotent-Replay"] = "0"
+        except Exception:
+            pass
+    return out
 
 # === I/O / ENDPOINTS ===
 

@@ -154,12 +154,10 @@ DEFAULT_EXCLUDE_GLOBS = [
     "sample.pdf",
 ]
 
-
 @dataclass(frozen=True)
 class FileEntry:
     rel_path: str
     size: int
-
 
 def _has_git(root: Path) -> bool:
     """Return True if git is available and repo has a .git directory."""
@@ -175,7 +173,6 @@ def _has_git(root: Path) -> bool:
         return True
     except Exception:
         return False
-
 
 def git_ls_visible_files(root: Path, verbose: bool) -> list[Path]:
     """
@@ -202,7 +199,6 @@ def git_ls_visible_files(root: Path, verbose: bool) -> list[Path]:
         print(f"[git] ls-files: {len(files)} files in {dt:.0f} ms")
     return files
 
-
 def is_probably_binary(path: Path) -> bool:
     """Heuristic: extension + NUL sniff."""
     if path.suffix.lower() in BINARY_EXTENSIONS:
@@ -216,7 +212,6 @@ def is_probably_binary(path: Path) -> bool:
         return True
     return False
 
-
 def read_text_safely(path: Path) -> str:
     """Read text with tolerant encodings."""
     for enc in ("utf-8", "utf-8-sig", "latin-1"):
@@ -226,7 +221,6 @@ def read_text_safely(path: Path) -> str:
             continue
     with path.open("r", encoding="utf-8", errors="ignore") as f:
         return f.read()
-
 
 def iter_files_via_git(
     root: Path,
@@ -256,7 +250,6 @@ def iter_files_via_git(
         yield FileEntry(rel_path=rel, size=size)
     if verbose:
         print(f"[scan] total accepted files: {total}")
-
 
 def iter_files_no_git(
     root: Path,
@@ -288,7 +281,6 @@ def iter_files_no_git(
     if verbose:
         print(f"[scan-nogit] total accepted files: {total}")
 
-
 def safe_boundary(text: str, start: int, search_window: int = 1200) -> int:
     """Find safe chunk boundary near `start`."""
     n = len(text)
@@ -319,7 +311,6 @@ def safe_boundary(text: str, start: int, search_window: int = 1200) -> int:
         return nl_b
     return min(start, n)
 
-
 def chunk_text(text: str, max_chars: int, overlap: int, safe: bool) -> list[str]:
     """Split text into chunks, optionally using safe boundaries."""
     chunks: list[str] = []
@@ -339,14 +330,11 @@ def chunk_text(text: str, max_chars: int, overlap: int, safe: bool) -> list[str]
         i = max(end - overlap, 0)
     return chunks
 
-
 def file_header(rel_path: str) -> str:
     return f"\n\n===== FILE: {rel_path} =====\n```text\n"
 
-
 def file_footer() -> str:
     return "\n```\n"
-
 
 def pack_preamble() -> str:
     lines = [
@@ -359,9 +347,7 @@ def pack_preamble() -> str:
     ]
     return "".join(lines)
 
-
 # ===== NEW: full repo inventory (dirs+files) for machines & human tree =====
-
 
 def _sha256_file(path: Path) -> str:
     """Streamed SHA-256 to avoid loading big files into memory."""
@@ -375,7 +361,6 @@ def _sha256_file(path: Path) -> str:
         h.update(b"[UNREADABLE]")
         h.update(str(path).encode("utf-8", "ignore"))
     return h.hexdigest()
-
 
 def collect_repo_inventory(root: Path) -> dict[str, Any]:
     """
@@ -415,7 +400,6 @@ def collect_repo_inventory(root: Path) -> dict[str, Any]:
     dirs = sorted(set(dirs))
     files.sort(key=lambda x: x["path"])
     return {"dirs": dirs, "files": files}
-
 
 def write_repo_tree_md(root: Path, out_dir: Path) -> Path:
     """
@@ -461,9 +445,7 @@ def write_repo_tree_md(root: Path, out_dir: Path) -> Path:
     md_path.write_text(sio.getvalue(), encoding="utf-8")
     return md_path
 
-
 # ===== END NEW =====
-
 
 def write_packs(
     root: Path,
@@ -578,7 +560,6 @@ def write_packs(
 
     return pack_paths, manifest
 
-
 def build(
     src: Path,
     out_dir: Path,
@@ -617,7 +598,6 @@ def build(
 
     return pack_paths, manifest
 
-
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description=(
@@ -635,7 +615,6 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     ap.add_argument("--git-ls-files", action="store_true", help="force using git ls-files (if repo)")
     ap.add_argument("--verbose", action="store_true", help="print progress")
     return ap.parse_args(argv)
-
 
 def main(argv: Sequence[str] | None = None) -> int:
     ns = parse_args(sys.argv[1:] if argv is None else argv)
@@ -669,7 +648,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Chars:  {manifest['totals']['chars']}")
     print(f"Took:   {time.time() - t0:.1f}s")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

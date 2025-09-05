@@ -20,6 +20,7 @@ EN: Checks per-tenant isolation for Billing API: operations on TENANT-A do not
 from __future__ import annotations
 
 # === IMPORTY / IMPORTS ===
+
 from fastapi.testclient import TestClient
 
 from services.api_gateway.limits import set_tenant_quota
@@ -30,7 +31,6 @@ from services.api_gateway.main import app
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 def main() -> int:  # pragma: no cover (integration)
     c = TestClient(app)
@@ -54,7 +54,6 @@ def main() -> int:  # pragma: no cover (integration)
 
     print(f"Tenant isolation: {'OK' if ok else 'WARN'}")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

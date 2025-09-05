@@ -11,7 +11,6 @@
 
 from __future__ import annotations
 
-
 class TokenBank:
     def __init__(self) -> None:
         self._bal: dict[str, int] = {}
@@ -31,7 +30,6 @@ class TokenBank:
 
     def balance(self, tenant: str) -> int:
         return self._bal.get(tenant, 0)
-
 
 # === IMPORTY / IMPORTS ===
 

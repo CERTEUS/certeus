@@ -32,7 +32,6 @@ import urllib.request
 
 # === LOGIKA / LOGIC ===
 
-
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--flags", help="Ścieżka do pliku flag (opcjonalne)")
@@ -60,7 +59,6 @@ def main() -> int:
                 pass
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

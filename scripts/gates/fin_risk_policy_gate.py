@@ -28,7 +28,6 @@ import json
 import sys
 from typing import Any
 
-
 def _read_input() -> dict[str, Any]:
     try:
         data = sys.stdin.read().strip()
@@ -38,7 +37,6 @@ def _read_input() -> dict[str, Any]:
         pass
     # defaults
     return {"signals": {"risk": 0.5, "sentiment": 0.6}, "dp_epsilon": 0.3}
-
 
 def main() -> int:
     inp = _read_input()
@@ -64,7 +62,6 @@ def main() -> int:
 
     print("FIN Risk Gate: OK")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

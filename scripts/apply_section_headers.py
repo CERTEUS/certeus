@@ -74,12 +74,10 @@ MARKERS = [
 
 # === LOGIKA / LOGIC ===
 
-
 def has_any_marker(text: str) -> bool:
     head = "\n".join(text.splitlines()[:120])
 
     return "# === " in head
-
 
 def find_docstring_span(text: str) -> tuple[int, int] | None:
     try:
@@ -105,7 +103,6 @@ def find_docstring_span(text: str) -> tuple[int, int] | None:
         return (start, end)
 
     return None
-
 
 def ensure_markers(text: str, rel: str) -> str | None:
     if has_any_marker(text):
@@ -141,7 +138,6 @@ def ensure_markers(text: str, rel: str) -> str | None:
 
     return "".join(new_lines)
 
-
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
 
@@ -166,7 +162,6 @@ def main() -> None:
                 print(f"[SECTIONS] {f.relative_to(root)}")
 
     print(f"Done. Files updated: {updated}")
-
 
 if __name__ == "__main__":
     main()

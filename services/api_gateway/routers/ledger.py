@@ -49,14 +49,12 @@ import services.ledger_service.ledger as ledger_mod  # noqa: F401
 
 # --- Protocol to satisfy type checker (methods used by this router) ---
 
-
 class LedgerLike(Protocol):
     def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]: ...
 
     def get_records_for_case(self, *, case_id: str) -> list[dict[str, Any]]: ...
 
     def build_provenance_receipt(self, *, case_id: str) -> dict[str, Any]: ...
-
 
 # Prefer existing singleton; else instantiate a fresh Ledger from the module.
 
@@ -103,7 +101,6 @@ if Draft7Validator is not None:
 
 # === MODELS ===
 
-
 class RecordInputRequest(BaseModel):
     """
 
@@ -120,7 +117,6 @@ class RecordInputRequest(BaseModel):
         min_length=7,
         description="PL: Np. 'sha256:<hex>'. / EN: e.g., 'sha256:<hex>'.",
     )
-
 
 class RecordInputResponse(BaseModel):
     """
@@ -145,9 +141,7 @@ class RecordInputResponse(BaseModel):
 
     chain_self: str
 
-
 # === ENDPOINTS ===
-
 
 @router.post("/record-input", response_model=RecordInputResponse, tags=["Ledger"])
 def record_input(payload: RecordInputRequest, request: Request) -> RecordInputResponse:
@@ -176,7 +170,6 @@ def record_input(payload: RecordInputRequest, request: Request) -> RecordInputRe
 
     return RecordInputResponse(**result)
 
-
 @router.get("/{case_id}/records", tags=["Ledger"])
 def get_records(case_id: str) -> list[RecordInputResponse]:
     """
@@ -190,7 +183,6 @@ def get_records(case_id: str) -> list[RecordInputResponse]:
     items = ledger_service.get_records_for_case(case_id=case_id)
 
     return [RecordInputResponse(**it) for it in items]
-
 
 @router.get("/{case_id}/prove", tags=["Ledger"])
 def prove_case(case_id: str) -> dict[str, Any]:

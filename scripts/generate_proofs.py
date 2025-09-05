@@ -102,7 +102,6 @@ RECEIPT_FILE: Final[str] = "provenance_receipt_v1.json"
 
 # === LOGGING (PL/EN) =========================================== #
 
-
 def _lazy_console():
     """
 
@@ -130,9 +129,7 @@ def _lazy_console():
 
         return _info, _success, _error
 
-
 # === HELPERS / POMOCNICZE ===================================== #
-
 
 def _write_text(path: Path, content: str) -> None:
     """
@@ -147,13 +144,11 @@ def _write_text(path: Path, content: str) -> None:
 
     path.write_text(content, encoding="utf-8", newline="\n")
 
-
 def _write_bytes(path: Path, data: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(path, "wb") as f:
         f.write(data)
-
 
 def _sha256_hex(path: Path) -> str:
     h = hashlib.sha256()
@@ -164,12 +159,10 @@ def _sha256_hex(path: Path) -> str:
 
     return h.hexdigest()
 
-
 def _rand_token(n: int = 24) -> str:
     alphabet = string.ascii_letters + string.digits
 
     return "".join(random.choices(alphabet, k=n))
-
 
 def _normalize_formats(formats: list[str] | None) -> list[str]:
     if not formats:
@@ -185,9 +178,7 @@ def _normalize_formats(formats: list[str] | None) -> list[str]:
 
     return out
 
-
 # === DATA / DANE =============================================== #
-
 
 @dataclass
 class Generated:
@@ -207,9 +198,7 @@ class Generated:
 
     sha256: str
 
-
 # === CORE / LOGIKA ============================================= #
-
 
 def _emit_proof_file(fmt: str, out_dir: Path, mode: str, seed: int | None) -> Path:
     """
@@ -247,7 +236,6 @@ def _emit_proof_file(fmt: str, out_dir: Path, mode: str, seed: int | None) -> Pa
         raise ValueError(f"Unknown mode: {mode}")
 
     return dst
-
 
 def _emit_inputs(out_dir: Path, smt2: bool, cnf: bool) -> list[Path]:
     """
@@ -288,7 +276,6 @@ def _emit_inputs(out_dir: Path, smt2: bool, cnf: bool) -> list[Path]:
 
     return created
 
-
 def _emit_receipt(out_dir: Path, items: list[Generated]) -> Path:
     """
 
@@ -319,7 +306,6 @@ def _emit_receipt(out_dir: Path, items: list[Generated]) -> Path:
     _write_text(dst, json.dumps(manifest, ensure_ascii=False, indent=2))
 
     return dst
-
 
 def generate_proofs(
     out: Path,
@@ -424,9 +410,7 @@ def generate_proofs(
 
     return [it.path for it in created]
 
-
 # === CLI ======================================================= #
-
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -477,7 +461,6 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
     return p
 
-
 def main(argv: Iterable[str] | None = None) -> int:
     log_info, _log_success, log_error = _lazy_console()
 
@@ -504,7 +487,6 @@ def main(argv: Iterable[str] | None = None) -> int:
         log_error(f"Generation failed: {exc}")
 
         return 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

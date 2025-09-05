@@ -44,7 +44,6 @@ EN: SMT solver adapter (proofs/translation).
 
 # +-------------------------------------------------------------+
 
-
 def solve(assumptions):
     # stub for CVC5 integration
 
@@ -53,7 +52,6 @@ def solve(assumptions):
         "unsat_core": ["a1", "a3"],
         "proof_path": "proof-artifacts/cvc5.lfsc",
     }
-
 
 # === I/O / ENDPOINTS ===
 

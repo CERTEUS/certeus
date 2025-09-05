@@ -10,8 +10,10 @@
 """
 
 PL: Stub obliczenia holonomii sensu (Gauge). Zapisuje JSON z metrykami.
+    Obsługa trybu domenowego (MED/SEC/CODE) z `domain_map` (raport‑only).
 
 EN: Gauge holonomy stub computation. Writes out a JSON with metrics.
+    Supports domain mode (MED/SEC/CODE) via `domain_map` (report‑only).
 
 """
 
@@ -32,7 +34,6 @@ import urllib.request
 
 # === LOGIKA / LOGIC ===
 
-
 def _read_text(p: str | None) -> str:
     if not p:
         return ""
@@ -40,7 +41,6 @@ def _read_text(p: str | None) -> str:
         return Path(p).read_text(encoding="utf-8")
     except Exception:
         return ""
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -51,6 +51,14 @@ def main() -> int:
     ap.add_argument("--max-jaccard", type=float, default=None, help="Maksymalny jaccard_drift (omega)")
     ap.add_argument("--max-entropy", type=float, default=None, help="Maksymalny entropy_drift (omega)")
     ap.add_argument("--max-entity-jaccard", type=float, default=None, help="Maksymalny entity_jaccard_drift (omega)")
+    ap.add_argument("--domain", help="Opcjonalna domena dla domain_map: med|sec|code (raport‑only)")
+    ap.add_argument("--max-jaccard-mapped", type=float, default=None, help="Maksymalny jaccard_drift (omega_mapped)")
+    ap.add_argument(
+        "--max-entropy-mapped", type=float, default=None, help="Maksymalny entropy_drift (omega_mapped)"
+    )
+    ap.add_argument(
+        "--max-entity-jaccard-mapped", type=float, default=None, help="Maksymalny entity_jaccard_drift (omega_mapped)"
+    )
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -89,6 +97,7 @@ def main() -> int:
 
         _sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # repo‑root
         from core.omega.transforms import (
+            apply_transform as _apply,
             compute_entity_drift as _entities,
             compute_entropy_drift as _entropy,
             compute_gauge_drift as _gauge,
@@ -107,6 +116,76 @@ def main() -> int:
                 "entropy_drift": ed.entropy_drift,
                 "entity_jaccard_drift": nd.entity_jaccard_drift,
             }
+            # Optional domain mapping (report-only): compute metrics after domain_map
+            dom = (getattr(args, "domain", None) or os.getenv("OMEGA_DOMAIN") or "").strip().lower()
+            if dom in {"med", "sec", "code"}:
+                bef_m, _ = _apply(bef, "domain_map", domain=dom)
+                aft_m, _ = _apply(aft, "domain_map", domain=dom)
+                gd2 = _gauge(bef_m, aft_m)
+                ed2 = _entropy(bef_m, aft_m)
+                nd2 = _entities(bef_m, aft_m)
+                payload["omega_mapped"] = {
+                    "domain": dom,
+                    "token_count_delta": gd2.token_count_delta,
+                    "jaccard_drift": gd2.jaccard_drift,
+                    "entropy_drift": ed2.entropy_drift,
+                    "entity_jaccard_drift": nd2.entity_jaccard_drift,
+                }
+                # Optional thresholds for mapped metrics (report-only by default)
+                fail_mapped = False
+                thr_j2 = getattr(args, "max_jaccard_mapped", None)
+                thr_e2 = getattr(args, "max_entropy_mapped", None)
+                thr_n2 = getattr(args, "max_entity_jaccard_mapped", None)
+                # env fallbacks
+                import os as _os
+
+                if thr_j2 is None:
+                    try:
+                        thr_j2 = (
+                            float(_os.getenv("OMEGA_MAX_JACCARD_MAPPED", ""))
+                            if _os.getenv("OMEGA_MAX_JACCARD_MAPPED")
+                            else None
+                        )
+                    except Exception:
+                        thr_j2 = None
+                if thr_e2 is None:
+                    try:
+                        thr_e2 = (
+                            float(_os.getenv("OMEGA_MAX_ENTROPY_MAPPED", ""))
+                            if _os.getenv("OMEGA_MAX_ENTROPY_MAPPED")
+                            else None
+                        )
+                    except Exception:
+                        thr_e2 = None
+                if thr_n2 is None:
+                    try:
+                        thr_n2 = (
+                            float(_os.getenv("OMEGA_MAX_ENTITY_DRIFT_MAPPED", ""))
+                            if _os.getenv("OMEGA_MAX_ENTITY_DRIFT_MAPPED")
+                            else None
+                        )
+                    except Exception:
+                        thr_n2 = None
+                if thr_j2 is not None and payload["omega_mapped"]["jaccard_drift"] > thr_j2:  # type: ignore[index]
+                    print(
+                        f"Omega Mapped Gate: jaccard_drift {payload['omega_mapped']['jaccard_drift']} > {thr_j2} (threshold)"
+                    )
+                    fail_mapped = True
+                if thr_e2 is not None and payload["omega_mapped"]["entropy_drift"] > thr_e2:  # type: ignore[index]
+                    print(
+                        f"Omega Mapped Gate: entropy_drift {payload['omega_mapped']['entropy_drift']} > {thr_e2} (threshold)"
+                    )
+                    fail_mapped = True
+                if thr_n2 is not None and payload["omega_mapped"]["entity_jaccard_drift"] > thr_n2:  # type: ignore[index]
+                    print(
+                        "Omega Mapped Gate: entity_jaccard_drift "
+                        f"{payload['omega_mapped']['entity_jaccard_drift']} > {thr_n2} (threshold)"
+                    )
+                    fail_mapped = True
+                # Only enforce fail if explicit opt-in
+                if fail_mapped and (_os.getenv("ENFORCE_OMEGA_MAPPED") or "").strip() in {"1", "true", "True"}:
+                    out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+                    return 1
         else:
             payload["omega"] = {
                 "token_count_delta": 0,
@@ -156,7 +235,6 @@ def main() -> int:
 
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

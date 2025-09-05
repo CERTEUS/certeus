@@ -47,7 +47,6 @@ router = APIRouter(prefix="", tags=["export"])
 
 # === MODELS / MODELE ===
 
-
 class ExportPayload(BaseModel):
     case_id: str = Field(..., description="Public case id, e.g. 'pl-286kk-0001'")
 
@@ -60,7 +59,6 @@ class ExportPayload(BaseModel):
 
     write_ledger: bool = Field(default=False, description="If true, record provenance hash in Ledger")
 
-
 class ExportResponse(BaseModel):
     path: str
 
@@ -68,9 +66,7 @@ class ExportResponse(BaseModel):
 
     provenance: dict[str, Any] | None = None  # optional to keep tests happy
 
-
 # === HELPERS ===
-
 
 def _hash_file_sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -81,10 +77,8 @@ def _hash_file_sha256(path: Path) -> str:
 
     return h.hexdigest()
 
-
 def _now_iso_utc() -> str:
     return datetime.now(UTC).isoformat()
-
 
 def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Path) -> Path:
     """
@@ -123,9 +117,7 @@ def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Pat
 
     return path
 
-
 # === ENDPOINT ===
-
 
 @router.post("/v1/export", response_model=ExportResponse)
 def export_endpoint(payload: ExportPayload, response: Response) -> ExportResponse:

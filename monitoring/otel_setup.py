@@ -23,7 +23,6 @@ from __future__ import annotations
 import os
 from typing import Any
 
-
 def setup_fastapi_otel(app: Any) -> None:
     if (os.getenv("OTEL_ENABLED") or "").strip() not in {"1", "true", "True"}:
         return
@@ -51,7 +50,6 @@ def setup_fastapi_otel(app: Any) -> None:
         # best-effort; lack of OTel deps should not break app
         return
 
-
 def set_span_attrs(attrs: dict[str, Any]) -> None:
     try:
         from opentelemetry import trace  # type: ignore
@@ -64,7 +62,6 @@ def set_span_attrs(attrs: dict[str, Any]) -> None:
                 continue
     except Exception:
         pass
-
 
 # === I/O / ENDPOINTS ===
 

@@ -9,11 +9,10 @@
 
 apiVersion: 1
 providers:
-  - name: 'CERTEUS Dashboards'
+  - name: "CERTEUS Dashboards"
     orgId: 1
-    folder: ''
+    folder: ""
     type: file
     disableDeletion: false
     options:
       path: /var/lib/grafana/dashboards
-

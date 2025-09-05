@@ -14,12 +14,12 @@ EN: Language holonomy test for lang_map (PL↔EN) in Ω‑Kernel.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from core.omega.transforms import apply_transform, compute_gauge_drift
 
 # === TESTY / TESTS ===
-
 
 def test_lang_map_pl_en_pl_holonomy_low_drift() -> None:
     src = "Ustawa i rozporządzenie oraz Kodeks cywilny."

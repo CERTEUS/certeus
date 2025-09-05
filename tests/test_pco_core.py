@@ -56,10 +56,8 @@ from core.pco import (
     ed25519_verify_b64u,
 )
 
-
 def _hex(s: str) -> str:
     return sha256(s.encode("utf-8")).hexdigest()
-
 
 def test_kernel_bundle_hash_and_leaf() -> None:
     smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
@@ -75,7 +73,6 @@ def test_kernel_bundle_hash_and_leaf() -> None:
     assert len(bundle_hash) == 64
 
     assert len(leaf) == 64
-
 
 def test_kernel_canonical_digest_and_sig() -> None:
     sk = Ed25519PrivateKey.generate()
@@ -99,7 +96,6 @@ def test_kernel_canonical_digest_and_sig() -> None:
     sig = sk.sign(bytes.fromhex(digest))
 
     ed25519_verify_b64u(pk, __import__("base64").urlsafe_b64encode(sig).rstrip(b"=").decode(), digest)
-
 
 def test_kernel_build_and_verify() -> None:
     sk = Ed25519PrivateKey.generate()

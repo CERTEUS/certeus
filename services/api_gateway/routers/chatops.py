@@ -35,14 +35,12 @@ from pydantic import BaseModel
 
 # === MODELE / MODELS ===
 
-
 class CommandRequest(BaseModel):
     cmd: str
 
     args: dict | None = None
 
     text_context: str | None = None
-
 
 # === LOGIKA / LOGIC ===
 
@@ -59,7 +57,6 @@ class CommandRequest(BaseModel):
 # +=====================================================================+
 
 router = APIRouter(prefix="/v1/chatops", tags=["ChatOps"])
-
 
 @router.post("/command")
 async def command(req: CommandRequest, request: Request) -> dict:
@@ -98,7 +95,6 @@ async def command(req: CommandRequest, request: Request) -> dict:
         return {"dispatched": req.cmd, "result": {"p_tunnel": 0.7, "min_energy_to_cross": 0.8}}
 
     raise HTTPException(status_code=400, detail="Unknown or unsupported command")
-
 
 # === I/O / ENDPOINTS ===
 

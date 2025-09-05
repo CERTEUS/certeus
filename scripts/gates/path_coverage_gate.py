@@ -30,7 +30,6 @@ from typing import Any
 
 # === LOGIKA / LOGIC ===
 
-
 def _read_or_default(input_path: str | None) -> dict[str, Any]:
     # Domyślne, przyjazne dla CI wartości
     default = {"coverage": {"coverage_gamma": 0.95, "uncaptured_mass": 0.02}}
@@ -44,7 +43,6 @@ def _read_or_default(input_path: str | None) -> dict[str, Any]:
     except Exception:
         # W CI preferujemy tolerować brak/niepoprawny plik i użyć domyślnych metryk
         return default
-
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -70,7 +68,6 @@ def main() -> int:
     status = "OK" if ok else "FAIL"
     print(f"Path coverage: gamma={gamma} (min={min_gamma}), uncaptured={unc} (max={max_unc}) -> {status}")
     return 0 if ok else 1
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -14,10 +14,10 @@ EN: Billing API tests: quota/allocate/refund and PENDING → ALLOCATED flow.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
-
 
 def test_billing_quota_allocate_refund_flow() -> None:
     from services.api_gateway.limits import set_tenant_quota

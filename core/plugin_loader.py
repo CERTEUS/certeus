@@ -70,7 +70,6 @@ PLUGINS_DIR = REPO_ROOT / "plugins"
 
 #   w braku: class Plugin z metodą register(api)
 
-
 @dataclass(frozen=True, slots=True)
 class PluginSpec:
     name: str
@@ -82,7 +81,6 @@ class PluginSpec:
     enabled: bool = True
 
     version: str | None = None
-
 
 def _parse_plugin_yaml(path: Path) -> PluginSpec | None:
     """PL: Parsuje plugin.yaml → PluginSpec. EN: Parse plugin.yaml → PluginSpec."""
@@ -128,7 +126,6 @@ def _parse_plugin_yaml(path: Path) -> PluginSpec | None:
 
     return PluginSpec(name=name, module=module, register=register, enabled=enabled, version=version)
 
-
 def _discover_plugins(base_dir: Path = PLUGINS_DIR) -> list[PluginSpec]:
     """PL: Znajdź wszystkie plugin.yaml. EN: Find all plugin.yaml files."""
 
@@ -152,12 +149,10 @@ def _discover_plugins(base_dir: Path = PLUGINS_DIR) -> list[PluginSpec]:
 
     return specs
 
-
 def _import_module(module_path: str) -> Any:
     """PL/EN: Import by module path (importlib)."""
 
     return importlib.import_module(module_path)
-
 
 def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
     """
@@ -218,7 +213,6 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
 
     return None
 
-
 def load_all_plugins(api: Any) -> list[str]:
     """
 
@@ -255,9 +249,7 @@ def load_all_plugins(api: Any) -> list[str]:
 
     return loaded
 
-
 # --- Helpery do introspekcji punktu rejestracji pluginu / Plugin registration helpers ---
-
 
 def has_register(candidate: Any) -> bool:
     """
@@ -295,7 +287,6 @@ def has_register(candidate: Any) -> bool:
 
     except Exception:
         return False
-
 
 # Zadeklaruj publiczny interfejs modułu / Public module API
 

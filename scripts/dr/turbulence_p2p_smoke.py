@@ -31,14 +31,12 @@ from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
 
-
 def _p95(vals: list[float]) -> float:
     if not vals:
         return 0.0
     s = sorted(vals)
     k = max(0, min(len(s) - 1, int(0.95 * (len(s) - 1))))
     return s[k]
-
 
 def run_turbulence(iters: int = 30) -> tuple[dict[str, Any], float, float]:
     c = TestClient(app)
@@ -67,7 +65,6 @@ def run_turbulence(iters: int = 30) -> tuple[dict[str, Any], float, float]:
     erate = errors / max(1, len(durs))
     return {"count": len(durs), "p95_ms": round(p95, 2), "error_rate": round(erate, 4)}, p95, erate
 
-
 def main() -> int:  # pragma: no cover (integration)
     ap = argparse.ArgumentParser()
     ap.add_argument("--iters", type=int, default=30)
@@ -88,7 +85,6 @@ def main() -> int:  # pragma: no cover (integration)
     )
     # report-only: return 0 always in CI; use env to enforce if needed later
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

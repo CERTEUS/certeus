@@ -13,6 +13,7 @@ EN: Quick smoke test: init_case, measure, operators, uncertainty.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,7 +25,6 @@ sys.path.insert(0, str(REPO))  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from services.api_gateway.main import app  # noqa: E402
-
 
 def main() -> int:
     c = TestClient(app)
@@ -38,7 +38,6 @@ def main() -> int:
     r4 = c.get("/v1/qtm/uncertainty")
     assert r4.status_code == 200
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

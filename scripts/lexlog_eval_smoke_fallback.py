@@ -42,7 +42,6 @@ import sys
 
 FLAGS_PATH = os.path.join("packs", "jurisdictions", "PL", "flags", "lexenith_results_latest.json")
 
-
 def main():
     print("[INFO] Building flags from mapping for R_286_OSZUSTWO...")
 
@@ -62,7 +61,6 @@ def main():
         [sys.executable, "scripts/lexlog_eval_smoke.py", "--flags", FLAGS_PATH],
         check=True,
     )
-
 
 if __name__ == "__main__":
     main()

@@ -33,13 +33,11 @@ from pathlib import Path
 
 # === LOGIKA / LOGIC ===
 
-
 def _read_json(p: Path) -> dict:
     try:
         return json.loads(p.read_text(encoding="utf-8"))
     except Exception:
         return {}
-
 
 def main() -> int:  # pragma: no cover
     repo = Path(".").resolve()
@@ -67,7 +65,6 @@ def main() -> int:  # pragma: no cover
     else:
         print("Tenant SLO trend: OK")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

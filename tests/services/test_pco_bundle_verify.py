@@ -48,7 +48,6 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
-
 def _pem(sk: Ed25519PrivateKey) -> str:
     return (
         sk.private_bytes(
@@ -59,7 +58,6 @@ def _pem(sk: Ed25519PrivateKey) -> str:
         .decode("utf-8")
         .strip()
     )
-
 
 def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
@@ -86,7 +84,6 @@ def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatc
     # With stricter ProofGate checks, missing counsel/signatures may yield ABSTAIN
 
     assert saved.get("status") in {"PENDING", "CONDITIONAL", "PUBLISH", "ABSTAIN"}
-
 
 def test_pco_bundle_verification_failure_sets_abstain(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))

@@ -34,12 +34,10 @@ from importlib import import_module
 
 # === LOGIKA / LOGIC ===
 
-
 def main() -> None:
     mod = import_module("scripts.apply_headers")
 
     mod.main()
-
 
 if __name__ == "__main__":
     main()

@@ -15,7 +15,6 @@ from typing import Literal
 
 Heat = Literal["HOT", "WARM", "COLD"]
 
-
 def estimate_heat(ctx: dict[str, object]) -> Heat:
     """PL: Wyznacz klasę HEAT. EN: Derive HEAT class."""
     # === IMPORTY / IMPORTS ===

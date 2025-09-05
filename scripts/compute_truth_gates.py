@@ -56,14 +56,12 @@ import xml.etree.ElementTree as ET
 
 # +=====================================================================+
 
-
 def _read_json(p: Path):
     try:
         return json.loads(p.read_text(encoding="utf-8"))
 
     except Exception:
         return None
-
 
 def _parse_junit(p: Path) -> dict:
     if not p.exists():
@@ -95,7 +93,6 @@ def _parse_junit(p: Path) -> dict:
     except Exception:
         return {"total": 0, "failures": 1, "errors": 0, "skipped": 0}
 
-
 def main() -> int:
     ap = argparse.ArgumentParser()
 
@@ -114,6 +111,11 @@ def main() -> int:
     gauge = _read_json(Path("out/gauge.json")) or {}
 
     cov = _read_json(Path("out/lexqft_coverage.json")) or {}
+    # Accept both flat and nested {"coverage": {...}} formats
+    if isinstance(cov, dict) and "coverage" in cov and isinstance(cov.get("coverage"), dict):
+        _cov = cov.get("coverage") or {}
+    else:
+        _cov = cov or {}
 
     boundary = _read_json(Path("out/boundary_report.json")) or {}
 
@@ -139,9 +141,9 @@ def main() -> int:
 
     gauge_ok = float(((gauge or {}).get("gauge", {}) or {}).get("holonomy_drift", 1.0)) <= eps
 
-    cov_gamma = float((cov or {}).get("coverage_gamma", 0.0))
+    cov_gamma = float((_cov or {}).get("coverage_gamma", 0.0))
 
-    cov_unc = float((cov or {}).get("uncaptured_mass", 1.0))
+    cov_unc = float((_cov or {}).get("uncaptured_mass", 1.0))
 
     cov_ok = (cov_gamma >= cov_min) and (cov_unc <= unc_max)
 
@@ -151,7 +153,7 @@ def main() -> int:
         "status": "PASS" if (tests_ok and gauge_ok and cov_ok and bdy_ok) else "FAIL",
         "tests": junit,
         "gauge": gauge,
-        "path_coverage": cov,
+        "path_coverage": {"coverage_gamma": cov_gamma, "uncaptured_mass": cov_unc},
         "boundary": boundary,
     }
 
@@ -182,7 +184,6 @@ def main() -> int:
     print(f"[truth-gates] wrote {out}")
 
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -45,7 +45,6 @@ from services.api_gateway.main import app
 
 client = TestClient(app)
 
-
 def test_ledger_record_and_prove() -> None:
     case_id = "case-ledger-01"
 

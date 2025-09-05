@@ -105,16 +105,13 @@ EN: {en_desc}
 
 DOCSTRING_NEAR_TOP_RE = re.compile(r'(?ms)^\s*(["\'])\1\1(?P<body>.*?)(\1\1\1)\s*')
 
-
 def needs_banner(text: str) -> bool:
     return not text.lstrip().startswith("# +=====================================================================")
-
 
 def needs_docstring(text: str) -> bool:
     head = "\n".join(text.splitlines()[:25])
 
     return DOCSTRING_NEAR_TOP_RE.match(head) is None
-
 
 def make_descriptions(p: Path) -> tuple[str, str]:
     name = str(p).replace("\\", "/")
@@ -156,7 +153,6 @@ def make_descriptions(p: Path) -> tuple[str, str]:
         return ("Adapter dla Z3 i zależności SMT.", "Adapter for Z3 and SMT.")
 
     return ("Moduł systemu CERTEUS.", "CERTEUS system module.")
-
 
 def inject_header_and_docstring(path: Path) -> bool:
     text = path.read_text(encoding="utf-8")
@@ -265,7 +261,6 @@ def inject_header_and_docstring(path: Path) -> bool:
 
     return updated
 
-
 def main() -> None:
     repo = Path(".").resolve()
 
@@ -288,7 +283,6 @@ def main() -> None:
             print(f"[ok  ] {rel}")
 
     print(f"\nDone. Updated: {len(touched)} file(s).")
-
 
 if __name__ == "__main__":
     main()

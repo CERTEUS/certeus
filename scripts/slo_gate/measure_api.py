@@ -41,7 +41,6 @@ from services.api_gateway.main import app  # noqa: E402
 
 # === LOGIKA / LOGIC ===
 
-
 def _measure(client: TestClient, *, n: int) -> tuple[list[float], int]:
     lat_ms: list[float] = []
     errors = 0
@@ -54,7 +53,6 @@ def _measure(client: TestClient, *, n: int) -> tuple[list[float], int]:
         if r.status_code >= 400:
             errors += 1
     return lat_ms, errors
-
 
 def main() -> int:
     count = int(os.getenv("SLO_MEASURE_COUNT", "60") or "60")
@@ -71,7 +69,6 @@ def main() -> int:
     out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(json.dumps(payload))
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

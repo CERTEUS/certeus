@@ -45,7 +45,6 @@ import pytest
 
 from services.law_as_data.cache import FileCache, cache_from_uri
 
-
 class DummyResponse:
     def __init__(self, data: bytes) -> None:
         self._data = data
@@ -59,7 +58,6 @@ class DummyResponse:
     def __exit__(self, exc_type, exc, tb):
         return False
 
-
 @pytest.fixture()
 def dummy_urlopen(monkeypatch: pytest.MonkeyPatch) -> Callable[[bytes], None]:
     def _set(data: bytes) -> None:
@@ -71,7 +69,6 @@ def dummy_urlopen(monkeypatch: pytest.MonkeyPatch) -> Callable[[bytes], None]:
         monkeypatch.setattr(_ur, "urlopen", _urlopen, raising=True)
 
     return _set
-
 
 def test_cache_from_uri_writes_blob_and_index(tmp_path: Path, dummy_urlopen) -> None:
     dummy_urlopen(b"USTAWA: TEST")

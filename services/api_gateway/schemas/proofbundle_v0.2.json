@@ -30,10 +30,7 @@
     },
     "jurisdiction": {
       "type": "object",
-      "required": [
-        "country",
-        "domain"
-      ],
+      "required": ["country", "domain"],
       "properties": {
         "country": {
           "type": "string"
@@ -56,11 +53,7 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "text",
-          "legal_basis"
-        ],
+        "required": ["id", "text", "legal_basis"],
         "properties": {
           "id": {
             "type": "string"
@@ -70,10 +63,7 @@
           },
           "legal_basis": {
             "type": "object",
-            "required": [
-              "statutes",
-              "cases"
-            ],
+            "required": ["statutes", "cases"],
             "properties": {
               "statutes": {
                 "type": "array",
@@ -102,12 +92,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "uri",
-          "digest",
-          "retrieved_at"
-        ],
+        "required": ["id", "uri", "digest", "retrieved_at"],
         "properties": {
           "id": {
             "type": "string"
@@ -132,33 +117,18 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "claim_id",
-          "solver",
-          "proof_format",
-          "artifact_digest"
-        ],
+        "required": ["claim_id", "solver", "proof_format", "artifact_digest"],
         "properties": {
           "claim_id": {
             "type": "string"
           },
           "solver": {
             "type": "string",
-            "enum": [
-              "z3",
-              "cvc5",
-              "other"
-            ]
+            "enum": ["z3", "cvc5", "other"]
           },
           "proof_format": {
             "type": "string",
-            "enum": [
-              "DRAT",
-              "LRAT",
-              "LFSC",
-              "AIGER",
-              "OTHER"
-            ]
+            "enum": ["DRAT", "LRAT", "LFSC", "AIGER", "OTHER"]
           },
           "artifact_digest": {
             "type": "string"
@@ -173,10 +143,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "artifact_digest"
-        ],
+        "required": ["name", "artifact_digest"],
         "properties": {
           "name": {
             "type": "string"
@@ -192,12 +159,7 @@
     },
     "risk": {
       "type": "object",
-      "required": [
-        "ece",
-        "brier",
-        "p95_latency_ms",
-        "abstain_rate"
-      ],
+      "required": ["ece", "brier", "p95_latency_ms", "abstain_rate"],
       "properties": {
         "ece": {
           "type": "number",
@@ -234,31 +196,15 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": [
-          "role",
-          "alg",
-          "signature",
-          "key_id"
-        ],
+        "required": ["role", "alg", "signature", "key_id"],
         "properties": {
           "role": {
             "type": "string",
-            "enum": [
-              "producer",
-              "auditor",
-              "counsel",
-              "court",
-              "insurer"
-            ]
+            "enum": ["producer", "auditor", "counsel", "court", "insurer"]
           },
           "alg": {
             "type": "string",
-            "enum": [
-              "ed25519",
-              "p256",
-              "p384",
-              "rsa"
-            ]
+            "enum": ["ed25519", "p256", "p384", "rsa"]
           },
           "key_id": {
             "type": "string"
@@ -271,11 +217,7 @@
     },
     "reproducibility": {
       "type": "object",
-      "required": [
-        "image",
-        "image_digest",
-        "seed"
-      ],
+      "required": ["image", "image_digest", "seed"],
       "properties": {
         "image": {
           "type": "string"
@@ -295,11 +237,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "name",
-          "mime",
-          "digest"
-        ],
+        "required": ["name", "mime", "digest"],
         "properties": {
           "name": {
             "type": "string"
@@ -315,12 +253,7 @@
     },
     "status": {
       "type": "string",
-      "enum": [
-        "PUBLISH",
-        "CONDITIONAL",
-        "PENDING",
-        "ABSTAIN"
-      ]
+      "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN"]
     }
   }
 }

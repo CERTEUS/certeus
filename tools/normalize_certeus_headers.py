@@ -112,7 +112,6 @@ DATE_LINE_RE = re.compile(r"# \|\s*DATE:\s*(?P<date>.*?)\s*\|")
 
 TRIPLE_QUOTE_RE = re.compile(r'(?ms)^\s*(?P<q>"""|\'\'\')(?P<body>.*?)(?P=q)\s*')
 
-
 def iter_py_files(root: Path) -> Iterable[Path]:
     for p in root.glob(PY_GLOB):
         if any(part in EXCLUDE_DIRS for part in p.parts):
@@ -121,7 +120,6 @@ def iter_py_files(root: Path) -> Iterable[Path]:
         if p.is_file():
             yield p
 
-
 def extract_banner_date(block: str) -> str | None:
     m = DATE_LINE_RE.search(block)
 
@@ -129,7 +127,6 @@ def extract_banner_date(block: str) -> str | None:
         return m.group("date").strip()
 
     return None
-
 
 def remove_all_banners(text: str) -> tuple[str, str | None]:
     """Remove all CERTEUS banner blocks. Return (text_wo_banners, first_date_if_any)."""
@@ -150,7 +147,6 @@ def remove_all_banners(text: str) -> tuple[str, str | None]:
 
     return new_text, first_date
 
-
 def split_shebang_encoding(text: str) -> tuple[str, str]:
     """Return (prefix, rest) where prefix includes shebang/encoding lines."""
 
@@ -166,14 +162,12 @@ def split_shebang_encoding(text: str) -> tuple[str, str]:
 
     return "".join(lines[:idx]), "".join(lines[idx:])
 
-
 def build_banner(module_path: str, date_str: str) -> str:
     line_module = f"# | MODULE:  {module_path:<{CANONICAL_WIDTH}}|"
 
     line_date = f"# | DATE:    {date_str:<{CANONICAL_WIDTH}}|"
 
     return "\n".join([BORDER, CERTEUS_LINE, BORDER, line_module, line_date, BORDER]) + "\n\n"
-
 
 def has_module_docstring_near_top(text_after_banner: str) -> tuple[bool, int, int]:
     """
@@ -215,7 +209,6 @@ def has_module_docstring_near_top(text_after_banner: str) -> tuple[bool, int, in
         return True, start, end
 
     return False, -1, -1
-
 
 def ensure_single_docstring(text_after_banner: str, module_path: str) -> str:
     """
@@ -264,7 +257,6 @@ def ensure_single_docstring(text_after_banner: str, module_path: str) -> str:
 
     return doc + text_after_banner
 
-
 def make_descriptions(module_path: str) -> tuple[str, str]:
     name = module_path
 
@@ -305,7 +297,6 @@ def make_descriptions(module_path: str) -> tuple[str, str]:
         return ("Adapter dla Z3 i zależności SMT.", "Adapter for Z3 and SMT.")
 
     return ("Moduł systemu CERTEUS.", "CERTEUS system module.")
-
 
 def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
     """
@@ -356,7 +347,6 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
 
     return False
 
-
 def main() -> None:
     ap = argparse.ArgumentParser(description="Normalize CERTEUS banners and module docstrings across repository.")
 
@@ -399,7 +389,6 @@ def main() -> None:
             pass
 
     print(f"\nDone. Scanned: {total} file(s), updated: {changed} file(s).")
-
 
 if __name__ == "__main__":
     main()

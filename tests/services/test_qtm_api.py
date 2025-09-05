@@ -14,6 +14,7 @@ EN: Tests for core QTMP endpoints (measurement, presets, commutator, decoherence
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
@@ -27,7 +28,6 @@ client = TestClient(app)
 # === MODELE / MODELS ===
 
 # === LOGIKA / LOGIC ===
-
 
 def test_qtm_init_case_uniform_predistribution() -> None:
     r = client.post(
@@ -43,7 +43,6 @@ def test_qtm_init_case_uniform_predistribution() -> None:
     assert all(0.0 < p <= 1.0 for p in probs)
     assert round(sum(probs), 6) in (1.0, 0.999999, 1.000001)
 
-
 def test_qtm_measure_headers_and_fields() -> None:
     # set decoherence for this case
     client.post("/v1/qtm/decoherence", json={"case": "ui", "channel": "dephasing", "gamma": 0.1})
@@ -57,7 +56,6 @@ def test_qtm_measure_headers_and_fields() -> None:
     assert "X-CERTEUS-PCO-qtm.collapse_event" in hdrs
     assert "X-CERTEUS-PCO-qtmp.priorities" in hdrs
 
-
 def test_qtm_measure_uses_preset_operator_if_available() -> None:
     case_id = "LEX-QTMP-PRESET-FALLBACK"
     client.post("/v1/qtm/preset", json={"case": case_id, "operator": "T"})
@@ -67,7 +65,6 @@ def test_qtm_measure_uses_preset_operator_if_available() -> None:
     # very small parser to avoid json import; string contains operator":"T"
     assert '"operator":"T"' in hdr
 
-
 def test_qtm_state_endpoint_after_init() -> None:
     case_id = "LEX-QTMP-STATE-1"
     client.post("/v1/qtm/init_case", json={"case": case_id, "basis": ["ALLOW", "DENY"]})
@@ -75,7 +72,6 @@ def test_qtm_state_endpoint_after_init() -> None:
     assert r.status_code == 200
     body = r.json()
     assert body["case"] == case_id and body["basis"] == ["ALLOW", "DENY"]
-
 
 def test_qtm_operators_and_uncertainty_endpoints() -> None:
     r_ops = client.get("/v1/qtm/operators")
@@ -87,7 +83,6 @@ def test_qtm_operators_and_uncertainty_endpoints() -> None:
     assert r_ub.status_code == 200
     lb = float(r_ub.json().get("lower_bound", 0.0))
     assert 0.0 < lb <= 1.0
-
 
 def test_qtm_decoherence_gamma_uniformizes_probabilities() -> None:
     case_id = "LEX-QTMP-GAMMA"
@@ -110,7 +105,6 @@ def test_qtm_decoherence_gamma_uniformizes_probabilities() -> None:
     # Expect close to 1/3
     assert abs(p - (1.0 / 3.0)) < 1e-6
 
-
 def test_qtm_measure_sequence_runs_and_sets_pco_header() -> None:
     case_id = "LEX-QTMP-SEQUENCE"
     r = client.post(
@@ -131,7 +125,6 @@ def test_qtm_measure_sequence_runs_and_sets_pco_header() -> None:
     else:
         seq = _json.loads(r.headers.get("X-CERTEUS-PCO-qtm.sequence", "[]"))
         assert len(seq) >= 3
-
 
 def test_qtm_preset_delete_and_state_delete() -> None:
     case_id = "LEX-QTMP-DEL"
@@ -154,7 +147,6 @@ def test_qtm_preset_delete_and_state_delete() -> None:
     r_state = client.get(f"/v1/qtm/state/{case_id}")
     assert r_state.status_code == 404
 
-
 def test_qtm_commutator_simple_rule() -> None:
     r_eq = client.post("/v1/qtm/commutator", json={"A": "L", "B": "L"})
     r_ne = client.post("/v1/qtm/commutator", json={"A": "L", "B": "T"})
@@ -163,7 +155,6 @@ def test_qtm_commutator_simple_rule() -> None:
     v = float(r_ne.json()["value"])
     assert 0.0 < v <= 1.0
 
-
 def test_qtm_find_entanglement_pairs() -> None:
     r = client.post("/v1/qtm/find_entanglement", json={"variables": ["a", "b", "c", "d", "e"]})
     assert r.status_code == 200
@@ -171,7 +162,6 @@ def test_qtm_find_entanglement_pairs() -> None:
     assert body["pairs"] == [["a", "b"], ["c", "d"]]
     assert 0.0 <= body["mi"] <= 1.0
     assert 0.0 <= body["negativity"] <= 1.0
-
 
 # === I/O / ENDPOINTS ===
 

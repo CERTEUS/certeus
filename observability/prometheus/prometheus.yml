@@ -15,10 +15,9 @@ rule_files:
   - /etc/prometheus/recording_rules.yml
 
 scrape_configs:
-  - job_name: 'api_gateway'
+  - job_name: "api_gateway"
     static_configs:
-      - targets: ['api:8000']
-  - job_name: 'proofgate'
+      - targets: ["api:8000"]
+  - job_name: "proofgate"
     static_configs:
-      - targets: ['proofgate:8081']
-
+      - targets: ["proofgate:8081"]

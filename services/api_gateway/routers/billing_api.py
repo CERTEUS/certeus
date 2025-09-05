@@ -16,6 +16,7 @@ EN: FastAPI router — Billing (quota/allocate/refund) backed by limits hook.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -32,41 +33,34 @@ from services.api_gateway.limits import (
 
 # === MODELE / MODELS ===
 
-
 class AllocateIn(BaseModel):
     cost_units: int = Field(gt=0)
 
-
 class RefundIn(BaseModel):
     units: int = Field(gt=0)
-
 
 # === LOGIKA / LOGIC ===
 
 router = APIRouter(prefix="/v1/billing", tags=["billing"])
 
-
-@router.get("/quota")
+@router.get("/quota", operation_id="billing_api_get_quota")
 async def get_quota(request: Request) -> dict[str, int | str]:
     tenant = get_tenant_id(request)
     bal = get_tenant_balance(tenant)
     return {"tenant": tenant, "balance": int(bal)}
 
-
-@router.post("/allocate")
+@router.post("/allocate", operation_id="billing_api_allocate")
 async def allocate(request: Request, body: AllocateIn) -> dict[str, str | int]:
     tenant = get_tenant_id(request)
     ok = allocate_tenant_cost(tenant, int(body.cost_units))
     status = "ALLOCATED" if ok else "PENDING"
     return {"tenant": tenant, "status": status}
 
-
-@router.post("/refund")
+@router.post("/refund", operation_id="billing_api_refund")
 async def refund(request: Request, body: RefundIn) -> dict[str, int | str]:
     tenant = get_tenant_id(request)
     bal = refund_tenant_units(tenant, int(body.units))
     return {"tenant": tenant, "balance": int(bal)}
-
 
 # === I/O / ENDPOINTS ===
 

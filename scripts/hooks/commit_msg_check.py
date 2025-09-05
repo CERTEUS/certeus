@@ -22,6 +22,7 @@ EN: Simple Conventional Commits validator for commit messages.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -29,6 +30,7 @@ import re
 import sys
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ALLOWED = {
     "feat",
     "fix",
@@ -44,11 +46,10 @@ ALLOWED = {
 }
 HEADER_RE = re.compile(r"^(?P<type>[a-z]+)(\([^)]+\))?(!)?:\s(?P<subject>.+)$")
 
-
 # === MODELE / MODELS ===
 
-
 # === LOGIKA / LOGIC ===
+
 def validate(message: str) -> tuple[bool, str | None]:
     lines = [ln for ln in message.splitlines() if ln.strip() != ""]
     if not lines:
@@ -64,7 +65,6 @@ def validate(message: str) -> tuple[bool, str | None]:
     if len(subject) > 72:
         return False, "Subject too long (>72 chars)"
     return True, None
-
 
 def main(argv: list[str]) -> int:
     if not argv:
@@ -86,7 +86,6 @@ def main(argv: list[str]) -> int:
         print("  chore(ci): enable ci-gates as required check", file=sys.stderr)
         return 1
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))

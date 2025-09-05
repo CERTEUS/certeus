@@ -15,6 +15,7 @@ EN: Contract tests for ABI/SemVer gate for Domain Packs.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -22,11 +23,9 @@ from pathlib import Path
 from scripts.gates.pack_abi_semver_gate import check
 from scripts.packs.update_abi_baselines import main as update_baselines
 
-
 def _write(p: Path, content: str) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding="utf-8")
-
 
 def test_pack_abi_semver_gate_detects_abi_change_requires_major(tmp_path: Path, monkeypatch) -> None:
     # Prepare a temporary plugin structure

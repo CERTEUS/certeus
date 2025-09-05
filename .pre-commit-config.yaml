@@ -30,7 +30,7 @@ repos:
       - id: prettier
         additional_dependencies: ["prettier@4.0.0-alpha.8"]
         files: "\\.(js|jsx|ts|tsx|css|scss|html|json|md|yml|yaml)$"
-        exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/|\\.snap$|\\.min\\.(js|css)$)"
+        exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/|^charts/|^docs/openapi/|\\.snap$|\\.min\\.(js|css)$)"
 
   # --- Standardowe hooki (z v6, bez „deprecated stages”) ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -39,6 +39,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: detect-private-key
+        exclude: "^tests/security/test_key_manager.py$"
       - id: check-added-large-files
         args: ["--maxkb=5120"]
 

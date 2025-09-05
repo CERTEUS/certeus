@@ -86,11 +86,10 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 
 ---
 
-
-
 ## 60 seconds: run and check
 
 - Linux/macOS
+
 ```
 python -m venv .venv && source .venv/bin/activate
 source ./scripts/dev_env.sh
@@ -101,6 +100,7 @@ curl -s http://127.0.0.1:8000/health
 ```
 
 - Windows (PowerShell)
+
 ```
 py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
 $py = ".\\.venv\\Scripts\\python.exe"
@@ -110,9 +110,11 @@ $py = ".\\.venv\\Scripts\\python.exe"
 # in another terminal
 curl.exe -s http://127.0.0.1:8000/health
 ```
+
 ## 60 sekund: uruchom i sprawdź
 
 - Linux/macOS
+
 ```
 python -m venv .venv && source .venv/bin/activate
 source ./scripts/dev_env.sh
@@ -123,6 +125,7 @@ curl -s http://127.0.0.1:8000/health
 ```
 
 - Windows (PowerShell)
+
 ```
 py -3.11 -m venv .venv; .\\.venv\\Scripts\\Activate.ps1
 $py = ".\\.venv\\Scripts\\python.exe"
@@ -132,6 +135,7 @@ $py = ".\\.venv\\Scripts\\python.exe"
 # w drugim oknie
 curl.exe -s http://127.0.0.1:8000/health
 ```
+
 ## Szybki start (Dev/SRE/Audytor)
 
 > Ustal bazowy adres usług:
@@ -173,6 +177,14 @@ $py = ".\.venv\Scripts\python.exe"
 & $py -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 ```
 
+### Cockpit (Dev) — szybkie linki
+
+- Cockpit Index: `http://127.0.0.1:8000/app/public/index.html`
+- DevEx Playground: `http://127.0.0.1:8000/app/public/playground.html`
+- ChatOps: `http://127.0.0.1:8000/app/public/chatops.html`
+- MailOps: `http://127.0.0.1:8000/app/public/mailops.html`
+- Marketplace: `http://127.0.0.1:8000/app/public/marketplace.html`
+
 ### Dev stack (Docker Compose)
 
 ```bash
@@ -182,7 +194,6 @@ make down-stack  # zatrzymaj stack
 ```
 
 Grafana: http://localhost:3000 (admin/admin), Prometheus: http://localhost:9090.
-
 
 ### SRE (k8s)
 
@@ -254,6 +265,19 @@ curl -sX POST "$CER_BASE/v1/cfe/geodesic" -d '{"case":"CER-LEX-7"}' | jq
 curl -sX POST "$CER_BASE/v1/cfe/horizon" -d '{"case":"CER-LEX-7"}' | jq
 ```
 
+#### CFE — przykłady domenowe
+
+```bash
+# Lensing (MED)
+curl -sS "$CER_BASE/v1/cfe/lensing?domain=MED" | jq
+
+# Horizon z heurystyką domenową (MED + critical => lock)
+curl -sS -X POST \
+  "$CER_BASE/v1/cfe/horizon" \
+  -H 'Content-Type: application/json' \
+  -d '{"case":"MED-CASE-CRIT-1","domain":"MED","severity":"critical"}' | jq
+```
+
 ### Finanse (FINENITH „Quantum Alpha”)
 
 ```bash
@@ -313,6 +337,7 @@ POST /v1/devices/horizon_drive/plan # plan dowodów do horyzontu (HDE)
 - **TEE (Bunkier)**: TDX/SEV-SNP/SGX + attestation w ProofGate
 - **SLSA 3+ / in-toto / SBOM CycloneDX / cosign / trivy**
 - **OPA/Rego**: polityki dostępu, role **AFV/ASE/ATC/ATS/AVR**
+- **Plugin Supply‑Chain Gate**: report‑only w CI (`scripts/gates/plugin_supply_chain_gate.py`), wymagania: `docs/compliance/plugins_supply_chain.md` (enforce przez `ENFORCE_PLUGIN_SUPPLY=1`).
 
 ---
 
@@ -324,7 +349,7 @@ docker compose -f infra/docker-compose.monitoring.yml up -d
 ```
 
 - OTel tracing, eBPF profiling, Pyroscope/Parca
-- Runbooks: `docs/runbooks/` - Boundary stuck, Gauge drift, PCO revoke
+- Runbooks: `docs/runbooks/` — Boundary stuck, Gauge drift, PCO revoke; CI enforce flags: `docs/runbooks/ci_enforce_flags.md`
 
 ## Operational Playbook
 
@@ -369,6 +394,7 @@ docker compose -f infra/docker-compose.monitoring.yml up -d
   - `POST /v1/fin/alpha/measure` (signals), `GET /v1/fin/alpha/uncertainty`, `GET /v1/fin/alpha/entanglements`.
 
 Runbooki:
+
 - Bunkier/TEE: `docs/runbooks/security_bunker.md`
 - Role/Governance: `docs/runbooks/roles_governance.md`
 
@@ -401,6 +427,7 @@ Zobacz `docs/diagrams.md` — Boundary snapshot/diff oraz pipeline Proof Gate (C
 - `STRICT_DP_BUDGET`: włącza egzekwowanie budżetów DP (ε) w bramce `dp_budget_gate.py`.
 
 CI integracja:
+
 - Proof Gate uruchamia kroki „Security Bunker Gate” i „Roles Policy Gate”. Repo‑variables `BUNKER`, `PROOFGATE_BUNKER`, `PQCRYPTO_READY` sterują zachowaniem.
 
 ---
@@ -455,6 +482,7 @@ CI integracja:
 - SLO: `SLO_MAX_P95_MS` (250), `SLO_MAX_ERROR_RATE` (0.005).
 - Boundary verify: `PCO_JWKS_B64URL` lub `ED25519_PUBKEY_B64URL`, opcjonalnie `PROOF_BUNDLE_DIR` (domyślnie `data/public_pco`).
 - Adresy: `CER_BASE=http://localhost:8000` (Gateway), ProofGate domyślnie `:8085`.
+- ProofGate walidacja PCO (report-only): `VALIDATE_PCO=1` — włącza walidację rozszerzeń PCO (np. SEC‑PCO) w ProofGate bez wpływu na decyzję (loguje ostrzeżenia).
 
 Pełna lista: `docs/configuration.md` (w przygotowaniu).
 
@@ -525,6 +553,7 @@ Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/re
 - Endpoints overview: `docs/ENDPOINTS.md`
 - cURL examples: `docs/curl_examples.md`
 - OpenAPI spec: `docs/openapi/certeus.v1.yaml`
+- SEC‑PCO schema: `schemas/security_pco_v0.1.json`
 - Operations runbook: `docs/runbooks/operations.md`
 - Key management (ENV/Vault): `docs/security/key_management.md`
 - Proof verification: `docs/verification.md`
@@ -532,10 +561,11 @@ Naruszyłeś niezmienniczość sensu przy transformacjach (język/jurysdykcja/re
 - Prometheus recording rules: `observability/prometheus/recording_rules.yml`
 - Grafana SLO dashboard: `observability/grafana/certeus-slo-dashboard.json`
 - Supply-chain CI: `.github/workflows/supply-chain.yml`
- - Release guide: `docs/RELEASE.md`
- - Helm chart: `charts/certeus/`
+- Release guide: `docs/RELEASE.md`
+- Helm chart: `charts/certeus/`
 
 ## Production Hardening (quick notes)
+
 - CORS: set `ALLOW_ORIGINS` to a comma‑separated allowlist (avoid `*` in production).
 - Security headers: keep `SEC_HEADERS=1`; configure `CSP` and `HSTS_MAX_AGE` to match your domain and TLS posture.
 - Rate limiting: enable `RATE_LIMIT_PER_MIN` for burst protection at the gateway.
@@ -558,9 +588,6 @@ Pełny przewodnik PL (bez artefaktów kodowania): `docs/README_PL.md`
 ## Licencja
 
 MIT © 2025 CERTEUS Contributors
-
-
-
 
 ---
 
@@ -592,6 +619,7 @@ Dodaj w repo (Settings → Secrets and variables → Actions → Variables):
 - `FINE_GRAINED_ROLES=1` — wymusza w ProofGate sprawdzanie ról (AFV/ASE/ATC/ATS/AVR) przy publish/conditional.
 
 Uwaga: krok CI „Security Bunker Gate” honoruje również ścieżki override (do testów/CI):
+
 - `BUNKER_ATTESTATION_PATH` — ścieżka do pliku JSON z atestem (jeśli ustawiona, tylko ona jest sprawdzana),
 - `BUNKER_MARKER_PATH` — alternatywny marker gotowości (dowolny istniejący plik).
 
@@ -600,58 +628,67 @@ Uwaga: krok CI „Security Bunker Gate” honoruje również ścieżki override 
 
 ## Demo tygodnia — Quantum Alpha
 
-1) Otwórz cockpit: .
-2) Ustaw risk/sent i kliknij Measure — zobacz outcome/p, timeline aktualizuje się.
-3) PCO: nagłówek  (JSON parametry pomiaru/operatory/commutator).
-4) Dashboardy: SLO (latencja per path), panel „FIN entanglement MI (by pair)”.
+1. Otwórz cockpit: .
+2. Ustaw risk/sent i kliknij Measure — zobacz outcome/p, timeline aktualizuje się.
+3. PCO: nagłówek (JSON parametry pomiaru/operatory/commutator).
+4. Dashboardy: SLO (latencja per path), panel „FIN entanglement MI (by pair)”.
 
 ## Demo tygodnia — SRE Dashboard (W10)
 
-1) Uruchom stack lub lokalny Gateway i Prometheus/Grafanę.
-2) Wejdź na `/metrics` (Prometheus exposition) i sprawdź histogram `certeus_http_request_duration_ms`.
-3) Otwórz Grafanę i zaimportuj dashboard `observability/grafana/certeus-sre-dashboard.json`.
-4) Obserwuj p95 latencję i error‑rate (5m/1h). Alerty przykładowe w `observability/prometheus/alert_rules_w10.yml`.
+1. Uruchom stack lub lokalny Gateway i Prometheus/Grafanę.
+2. Wejdź na `/metrics` (Prometheus exposition) i sprawdź histogram `certeus_http_request_duration_ms`.
+3. Otwórz Grafanę i zaimportuj dashboard `observability/grafana/certeus-sre-dashboard.json`.
+4. Obserwuj p95 latencję i error‑rate (5m/1h). Alerty przykładowe w `observability/prometheus/alert_rules_w10.yml`.
 
 Uwaga (OTel): ustaw `OTEL_ENABLED=1` oraz `OTEL_EXPORTER_OTLP_ENDPOINT` (np. `http://localhost:4318`) by wysyłać ślady. Opcjonalnie `OTEL_SERVICE_NAME`.
 
 ## Demo tygodnia — HDE wygrany case
 
-1) Zaplanuj HDE (plan dowodów):
+1. Zaplanuj HDE (plan dowodów):
+
 ```
 curl -sX POST "$CER_BASE/v1/devices/horizon_drive/plan" \
   -H 'Content-Type: application/json' \
   -d '{"case":"CER-LEX-99","budget_tokens":120}' | jq
 ```
+
 Oczekiwane: plan_of_evidence[] z kosztami i referencjami PFS.
 
-2) Zablokuj horyzont w sprawie (lock):
+2. Zablokuj horyzont w sprawie (lock):
+
 ```
 curl -sX POST "$CER_BASE/v1/dr/lock" -H 'Content-Type: application/json' \
   -d '{"case":"CER-LEX-99","reason":"publish motion"}' | jq -r
 ```
+
 PCO: nagłówek `X-CERTEUS-PCO-dr.lock` (Proof‑Only). Zwraca `{ok, lock_ref}`.
 
-3) Wygeneruj pismo (LEXENITH Motion):
+3. Wygeneruj pismo (LEXENITH Motion):
+
 ```
 curl -sX POST "$CER_BASE/v1/lexenith/motion/generate" \
   -H 'Content-Type: application/json' \
   -d '{"case":"CER-LEX-99","pattern":"brief:standard"}' | jq
 ```
+
 Oczekiwane: dwa wzorce pism, PCO z hash/URI cytatów.
 
-4) Opcjonalnie: eksport ścieżki Why‑Not:
+4. Opcjonalnie: eksport ścieżki Why‑Not:
+
 ```
 curl -sX POST "$CER_BASE/v1/lexenith/why_not/export" \
   -H 'Content-Type: application/json' \
   -d '{"case":"CER-LEX-99"}' | jq -r '.why_not.trace_uri'
 ```
+
 Zwraca `pfs://why-not/<hash>` do audytu kontr‑argumentów.
 
-5) Publikacja do Ledger (ProofGate):
+5. Publikacja do Ledger (ProofGate):
+
 ```
 curl -sX POST "$CER_BASE/v1/proofgate/publish" \
   -H 'Content-Type: application/json' \
   -d '{"pco": {"case_id":"CER-LEX-99","risk":{"ece":0.01,"brier":0.05,"abstain_rate":0.1},"tee":{"attested":false}}, "budget_tokens": 10 }' | jq
 ```
-Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
 
+Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.

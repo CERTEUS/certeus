@@ -59,10 +59,8 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 # ----Bloki----- FUNKCJE
 
-
 def sha256_hex_utf8(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
-
 
 def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
     payload = {"smt2_hash": pub["smt2_hash"], "lfsc_sha256": sha256_hex_utf8(pub["lfsc"])}
@@ -73,7 +71,6 @@ def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
     blob = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
     return hashlib.sha256(blob).hexdigest()
-
 
 def canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
     parts = [
@@ -91,9 +88,7 @@ def canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
 
     return hashlib.sha256(msg).hexdigest()
 
-
 # ----Bloki----- MAIN
-
 
 def main() -> None:
     ap = ArgumentParser(description="Sign public PCO bundle (Ed25519 detached signature).")
@@ -138,7 +133,6 @@ def main() -> None:
     bundle_path.write_text(json.dumps(pub, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"OK: signed {bundle_path}")
-
 
 if __name__ == "__main__":
     main()

@@ -43,7 +43,6 @@ EN: Module test suite (unit/integration).
 from services.mismatch_service.models import ResolutionType, TicketResolution
 from services.mismatch_service.service import MismatchService
 
-
 def test_create_and_resolve_ticket():
     svc = MismatchService()
 

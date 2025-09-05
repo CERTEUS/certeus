@@ -16,138 +16,330 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CERTEUS • Marketplace</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:980px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      .muted{color:#9aa0a6}
-      table{width:100%;border-collapse:collapse}
-      th,td{border-bottom:1px solid #2a2d33;padding:8px 10px;text-align:left}
-      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
-      input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px;}
-      .tag{display:inline-block;margin-right:6px;margin-bottom:4px;padding:2px 6px;border-radius:8px;border:1px solid #2a2d33;background:#20242a;font-size:12px}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #2a2d33;
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
+      input {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        border-radius: 10px;
+        color: #f2f2f3;
+        padding: 8px 10px;
+      }
+      .tag {
+        display: inline-block;
+        margin-right: 6px;
+        margin-bottom: 4px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        border: 1px solid #2a2d33;
+        background: #20242a;
+        font-size: 12px;
+      }
     </style>
   </head>
   <body>
-    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
     <main id="main" role="main">
-    <div class="container">
-      <div class="row" style="justify-content:flex-end;margin-bottom:8px">
-        <label class="muted" for="lang">Lang</label>
-        <select id="lang" aria-label="Language select" class="btn">
-          <option value="pl" selected>PL</option>
-          <option value="en">EN</option>
-        </select>
-      </div>
-      <div class="card">
-        <h1 id="title-mp">Marketplace • Packs</h1>
-        <div class="row" style="margin-bottom:8px;">
-          <input id="q" placeholder="filtruj po nazwie/capability" />
-          <button class="btn" id="refresh" data-i18n="refresh">Odśwież</button>
-          <span class="muted"><span data-i18n="count_label">Liczba</span>: <span id="count" class="pill">0</span></span>
+      <div class="container">
+        <div class="row" style="justify-content: flex-end; margin-bottom: 8px">
+          <label class="muted" for="lang">Lang</label>
+          <select id="lang" aria-label="Language select" class="btn">
+            <option value="pl" selected>PL</option>
+            <option value="en">EN</option>
+          </select>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Nazwa</th>
-              <th>Wersja</th>
-              <th>ABI</th>
-              <th>Capabilities</th>
-              <th>Status</th>
-              <th>Install</th>
-              <th>Akcja</th>
-              <th>Szczegóły</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
-      <div class="card" id="details" style="display:none;">
-        <h1>Szczegóły pakietu <span id="d-name" class="pill">–</span></h1>
-        <p class="muted">Wersja: <span id="d-version" class="pill">–</span> ABI: <span id="d-abi" class="pill">–</span> Status: <span id="d-enabled" class="pill">–</span></p>
-        <p class="muted">SemVer: <span id="d-semver" class="pill" title="SemVer format x.y.z">–</span> Baseline: <span id="d-baseline" class="pill" title="ABI baseline presence">–</span> <span class="muted" title="Legenda: SemVer=x.y.z; Baseline=abi_baseline.json w repo.">[?]</span></p>
-        <div class="row" style="margin:8px 0;">
-          <button class="btn" id="d-try">Try</button>
-          <button class="btn" id="d-docs">Docs</button>
-          <button class="btn" id="d-baseline-btn">Show baseline</button>
+        <div class="card">
+          <h1 id="title-mp">Marketplace • Packs</h1>
+          <div class="row" style="margin-bottom: 8px">
+            <input id="q" placeholder="filtruj po nazwie/capability" />
+            <button class="btn" id="refresh" data-i18n="refresh">
+              Odśwież
+            </button>
+            <span class="muted"
+              ><span data-i18n="count_label">Liczba</span>:
+              <span id="count" class="pill">0</span></span
+            >
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nazwa</th>
+                <th>Wersja</th>
+                <th>ABI</th>
+                <th>Capabilities</th>
+                <th>Status</th>
+                <th>Install</th>
+                <th>Akcja</th>
+                <th>Szczegóły</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
         </div>
-        <div id="d-caps"></div>
-        <pre id="d-manifest" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:280px"></pre>
-        <pre id="d-baseline-json" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:220px;display:none"></pre>
-        <pre id="d-result" style="background:#0f1115;border:1px solid #2a2d33;padding:12px;border-radius:8px;overflow:auto;max-height:220px;display:none"></pre>
+        <div class="card" id="details" style="display: none">
+          <h1>Szczegóły pakietu <span id="d-name" class="pill">–</span></h1>
+          <p class="muted">
+            Wersja: <span id="d-version" class="pill">–</span> ABI:
+            <span id="d-abi" class="pill">–</span> Status:
+            <span id="d-enabled" class="pill">–</span>
+          </p>
+          <p class="muted">
+            SemVer:
+            <span id="d-semver" class="pill" title="SemVer format x.y.z"
+              >–</span
+            >
+            Baseline:
+            <span id="d-baseline" class="pill" title="ABI baseline presence"
+              >–</span
+            >
+            <span
+              class="muted"
+              title="Legenda: SemVer=x.y.z; Baseline=abi_baseline.json w repo."
+              >[?]</span
+            >
+          </p>
+          <div class="row" style="margin: 8px 0">
+            <button class="btn" id="d-try">Try</button>
+            <button class="btn" id="d-docs">Docs</button>
+            <button class="btn" id="d-baseline-btn">Show baseline</button>
+          </div>
+          <div id="d-caps"></div>
+          <div class="row" style="margin: 8px 0">
+            <button class="btn" id="copyCurl">Copy curl</button>
+            <button class="btn" id="copySdk">Copy Python SDK</button>
+          </div>
+          <pre
+            id="d-manifest"
+            style="
+              background: #0f1115;
+              border: 1px solid #2a2d33;
+              padding: 12px;
+              border-radius: 8px;
+              overflow: auto;
+              max-height: 280px;
+            "
+          ></pre>
+          <pre
+            id="d-baseline-json"
+            style="
+              background: #0f1115;
+              border: 1px solid #2a2d33;
+              padding: 12px;
+              border-radius: 8px;
+              overflow: auto;
+              max-height: 220px;
+              display: none;
+            "
+          ></pre>
+          <pre
+            id="d-result"
+            style="
+              background: #0f1115;
+              border: 1px solid #2a2d33;
+              padding: 12px;
+              border-radius: 8px;
+              overflow: auto;
+              max-height: 220px;
+              display: none;
+            "
+          ></pre>
+        </div>
+        <p class="muted">
+          Tip: API <code>/v1/packs/</code> zwraca listę pakietów (name, version,
+          abi, capabilities, enabled).
+        </p>
       </div>
-      <p class="muted">Tip: API <code>/v1/packs/</code> zwraca listę pakietów (name, version, abi, capabilities, enabled).</p>
-    </div>
-    <script>
-      async function fetchPacks(){
-        const r = await fetch('/v1/packs/');
-        if(!r.ok){ return []; }
-        return await r.json();
-      }
-      async function fetchDetails(name){
-        const r = await fetch(`/v1/packs/${encodeURIComponent(name)}`);
-        if(!r.ok){ return null }
-        return await r.json();
-      }
-      async function fetchBaseline(name){
-        const r = await fetch(`/v1/packs/${encodeURIComponent(name)}/baseline`);
-        if(!r.ok){ return null }
-        return await r.json();
-      }
-      function showDetails(d){
-        const card = document.getElementById('details');
-        document.getElementById('d-name').textContent = d.name||'-';
-        document.getElementById('d-version').textContent = d.version||'-';
-        document.getElementById('d-abi').textContent = d.abi||'-';
-        document.getElementById('d-enabled').textContent = d.enabled ? 'enabled' : 'disabled';
-        document.getElementById('d-semver').textContent = d.status && d.status.semver_ok ? 'ok' : 'invalid';
-        document.getElementById('d-baseline').textContent = d.status && d.status.baseline_present ? 'present' : 'missing';
-        const caps = (d.capabilities||[]).map(c=>`<span class="tag">${c}</span>`).join('') || '<span class="muted">—</span>';
-        document.getElementById('d-caps').innerHTML = caps;
-        document.getElementById('d-manifest').textContent = JSON.stringify(d.manifest||{}, null, 2);
-        const res = document.getElementById('d-result'); res.style.display='none'; res.textContent='';
-        const tryBtn = document.getElementById('d-try');
-        tryBtn.onclick = async ()=>{
-          tryBtn.disabled = true;
-          try{
-            const r = await fetch('/v1/packs/try',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({pack:d.name})});
-            const j = await r.json(); res.style.display=''; res.textContent = JSON.stringify(j, null, 2);
-          }catch(_){ res.style.display=''; res.textContent='Error'; }
-          finally{ tryBtn.disabled = false; }
-        };
-        const docsBtn = document.getElementById('d-docs');
-        docsBtn.onclick = ()=>{ window.open('/docs/guides/packs_abi_semver.md','_blank'); };
-        const baseBtn = document.getElementById('d-baseline-btn');
-        baseBtn.onclick = async ()=>{
-          const j = await fetchBaseline(d.name);
-          const el = document.getElementById('d-baseline-json');
-          if(j){ el.style.display=''; el.textContent = JSON.stringify(j, null, 2); el.scrollIntoView({behavior:'smooth'}); }
-          else { el.style.display=''; el.textContent = 'Baseline not found'; }
-        };
-        card.style.display = '';
-        card.scrollIntoView({behavior:'smooth'});
-      }
-      function render(packs){
-        const q = (document.getElementById('q').value||'').toLowerCase();
-        const filtered = packs.filter(p=>{
-          if(!q) return true;
-          const caps = (p.capabilities||[]).join(',');
-          return (p.name||'').toLowerCase().includes(q) || caps.toLowerCase().includes(q);
-        });
-        const tb = document.getElementById('rows');
-        tb.innerHTML = filtered.map(p=>{
-          const caps = (p.capabilities && p.capabilities.length) ? p.capabilities.map(c=>`<span class="tag">${c}</span>`).join('') : '<span class="muted">—</span>';
-          const status = p.enabled ? '<span class="pill">enabled</span>' : '<span class="pill">disabled</span>';
-          const install = `${p.installed_version?`<span class=\"pill\">${p.installed_version}</span>`:'-'} ${p.signature?'<span class=\"pill\">signed</span>':''}`;
-          const btn = `<button class=\"btn toggle\" data-pack=\"${p.name}\" data-enabled=\"${p.enabled ? '1':'0'}\">${p.enabled?'Disable':'Enable'}</button>`;
-          const inst = `<button class=\"btn install\" data-pack=\"${p.name}\">${p.version? 'Upgrade':'Install'}</button>`;
-          const det = `<button class=\"btn details\" data-pack=\"${p.name}\">Details</button>`;
-          return `<tr>
+      <script>
+        async function fetchPacks() {
+          const r = await fetch("/v1/packs/");
+          if (!r.ok) {
+            return [];
+          }
+          return await r.json();
+        }
+        async function fetchDetails(name) {
+          const r = await fetch(`/v1/packs/${encodeURIComponent(name)}`);
+          if (!r.ok) {
+            return null;
+          }
+          return await r.json();
+        }
+        async function fetchBaseline(name) {
+          const r = await fetch(
+            `/v1/packs/${encodeURIComponent(name)}/baseline`,
+          );
+          if (!r.ok) {
+            return null;
+          }
+          return await r.json();
+        }
+        function showDetails(d) {
+          const card = document.getElementById("details");
+          document.getElementById("d-name").textContent = d.name || "-";
+          document.getElementById("d-version").textContent = d.version || "-";
+          document.getElementById("d-abi").textContent = d.abi || "-";
+          document.getElementById("d-enabled").textContent = d.enabled
+            ? "enabled"
+            : "disabled";
+          document.getElementById("d-semver").textContent =
+            d.status && d.status.semver_ok ? "ok" : "invalid";
+          document.getElementById("d-baseline").textContent =
+            d.status && d.status.baseline_present ? "present" : "missing";
+          const caps =
+            (d.capabilities || [])
+              .map((c) => `<span class="tag">${c}</span>`)
+              .join("") || '<span class="muted">—</span>';
+          document.getElementById("d-caps").innerHTML = caps;
+          document.getElementById("d-manifest").textContent = JSON.stringify(
+            d.manifest || {},
+            null,
+            2,
+          );
+          const res = document.getElementById("d-result");
+          res.style.display = "none";
+          res.textContent = "";
+          const tryBtn = document.getElementById("d-try");
+          tryBtn.onclick = async () => {
+            tryBtn.disabled = true;
+            try {
+              const r = await fetch("/v1/packs/try", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ pack: d.name }),
+              });
+              const j = await r.json();
+              res.style.display = "";
+              res.textContent = JSON.stringify(j, null, 2);
+            } catch (_) {
+              res.style.display = "";
+              res.textContent = "Error";
+            } finally {
+              tryBtn.disabled = false;
+            }
+          };
+          const docsBtn = document.getElementById("d-docs");
+          docsBtn.onclick = () => {
+            window.open("/docs/guides/packs_abi_semver.md", "_blank");
+          };
+          const baseBtn = document.getElementById("d-baseline-btn");
+          baseBtn.onclick = async () => {
+            const j = await fetchBaseline(d.name);
+            const el = document.getElementById("d-baseline-json");
+            if (j) {
+              el.style.display = "";
+              el.textContent = JSON.stringify(j, null, 2);
+              el.scrollIntoView({ behavior: "smooth" });
+            } else {
+              el.style.display = "";
+              el.textContent = "Baseline not found";
+            }
+          };
+          card.style.display = "";
+          card.scrollIntoView({ behavior: "smooth" });
+          // copy snippets
+          const name = d.name;
+          const curl = `curl -sS -X POST http://127.0.0.1:8000/v1/packs/enable -H 'content-type: application/json' -d '{"pack":"${name}","enabled":true}'`;
+          const sdk = `from certeus_sdk import CerteusClient\ncli=CerteusClient('http://127.0.0.1:8000'); cli.packs_enable('${name}', True)`;
+          document.getElementById("copyCurl").onclick = () =>
+            navigator.clipboard.writeText(curl);
+          document.getElementById("copySdk").onclick = () =>
+            navigator.clipboard.writeText(sdk);
+        }
+        function render(packs) {
+          const q = (document.getElementById("q").value || "").toLowerCase();
+          const filtered = packs.filter((p) => {
+            if (!q) return true;
+            const caps = (p.capabilities || []).join(",");
+            return (
+              (p.name || "").toLowerCase().includes(q) ||
+              caps.toLowerCase().includes(q)
+            );
+          });
+          const tb = document.getElementById("rows");
+          tb.innerHTML = filtered
+            .map((p) => {
+              const caps =
+                p.capabilities && p.capabilities.length
+                  ? p.capabilities
+                      .map((c) => `<span class="tag">${c}</span>`)
+                      .join("")
+                  : '<span class="muted">—</span>';
+              const status = p.enabled
+                ? '<span class="pill">enabled</span>'
+                : '<span class="pill">disabled</span>';
+              const install = `${p.installed_version ? `<span class=\"pill\">${p.installed_version}</span>` : "-"} ${p.signature ? '<span class=\"pill\">signed</span>' : ""}`;
+              const btn = `<button class=\"btn toggle\" data-pack=\"${p.name}\" data-enabled=\"${p.enabled ? "1" : "0"}\">${p.enabled ? "Disable" : "Enable"}</button>`;
+              const inst = `<button class=\"btn install\" data-pack=\"${p.name}\">${p.version ? "Upgrade" : "Install"}</button>`;
+              const det = `<button class=\"btn details\" data-pack=\"${p.name}\">Details</button>`;
+              return `<tr>
             <td>${p.name}</td>
-            <td>${p.version || '-'}</td>
+            <td>${p.version || "-"}</td>
             <td><code>${p.abi}</code></td>
             <td>${caps}</td>
             <td>${status}</td>
@@ -155,50 +347,132 @@
             <td>${btn} ${inst}</td>
             <td>${det}</td>
           </tr>`;
-        }).join('');
-        document.getElementById('count').textContent = String(filtered.length);
-        Array.from(document.querySelectorAll('button.toggle')).forEach(btn=>{
-          btn.addEventListener('click', async (e)=>{
-            const el = e.currentTarget; const name = el.getAttribute('data-pack'); const enabled = el.getAttribute('data-enabled')==='1';
-            try{
-              const r = await fetch('/v1/packs/enable',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pack:name, enabled:!enabled})});
-              if(r.ok){ await refresh(); }
-            }catch(_){/* noop */}
+            })
+            .join("");
+          document.getElementById("count").textContent = String(
+            filtered.length,
+          );
+          Array.from(document.querySelectorAll("button.toggle")).forEach(
+            (btn) => {
+              btn.addEventListener("click", async (e) => {
+                const el = e.currentTarget;
+                const name = el.getAttribute("data-pack");
+                const enabled = el.getAttribute("data-enabled") === "1";
+                try {
+                  const r = await fetch("/v1/packs/enable", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({ pack: name, enabled: !enabled }),
+                  });
+                  if (r.ok) {
+                    await refresh();
+                  }
+                } catch (_) {
+                  /* noop */
+                }
+              });
+            },
+          );
+          Array.from(document.querySelectorAll("button.install")).forEach(
+            (btn) => {
+              btn.addEventListener("click", async (e) => {
+                const el = e.currentTarget;
+                const name = el.getAttribute("data-pack");
+                const sig = window.prompt("Podaj podpis (signature):");
+                if (!sig) return;
+                try {
+                  const r = await fetch("/v1/packs/install", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({ pack: name, signature: sig }),
+                  });
+                  if (r.ok) {
+                    await refresh();
+                  }
+                } catch (_) {
+                  /* noop */
+                }
+              });
+            },
+          );
+          Array.from(document.querySelectorAll("button.details")).forEach(
+            (btn) => {
+              btn.addEventListener("click", async (e) => {
+                const name = e.currentTarget.getAttribute("data-pack");
+                const d = await fetchDetails(name);
+                if (d) {
+                  showDetails(d);
+                }
+              });
+            },
+          );
+        }
+        async function refresh() {
+          const packs = await fetchPacks();
+          render(packs);
+        }
+        document.getElementById("refresh").addEventListener("click", refresh);
+        const I18N = {
+          pl: {
+            title: "Marketplace • Pakiety",
+            refresh: "Odśwież",
+            count_label: "Liczba",
+          },
+          en: {
+            title: "Marketplace • Packs",
+            refresh: "Refresh",
+            count_label: "Count",
+          },
+        };
+        function getLang() {
+          const u = new URL(location.href);
+          const p = (u.searchParams.get("lang") || "").toLowerCase();
+          return p === "en" || p === "pl" ? p : "pl";
+        }
+        function applyI18n() {
+          const lang = getLang();
+          const d = I18N[lang] || I18N.pl;
+          document.getElementById("title-mp").textContent = d.title;
+          document.querySelectorAll("[data-i18n]").forEach((el) => {
+            const k = el.getAttribute("data-i18n");
+            if (d[k]) el.textContent = d[k];
           });
-        });
-        Array.from(document.querySelectorAll('button.install')).forEach(btn=>{
-          btn.addEventListener('click', async (e)=>{
-            const el = e.currentTarget; const name = el.getAttribute('data-pack');
-            const sig = window.prompt('Podaj podpis (signature):');
-            if(!sig) return;
-            try{
-              const r = await fetch('/v1/packs/install',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pack:name, signature:sig})});
-              if(r.ok){ await refresh(); }
-            }catch(_){/* noop */}
-          });
-        });
-        Array.from(document.querySelectorAll('button.details')).forEach(btn=>{
-          btn.addEventListener('click', async (e)=>{
-            const name = e.currentTarget.getAttribute('data-pack');
-            const d = await fetchDetails(name);
-            if(d){ showDetails(d); }
-          });
-        });
-      }
-      async function refresh(){ const packs = await fetchPacks(); render(packs); }
-      document.getElementById('refresh').addEventListener('click', refresh);
-      const I18N={ pl:{title:'Marketplace • Pakiety',refresh:'Odśwież',count_label:'Liczba'}, en:{title:'Marketplace • Packs',refresh:'Refresh',count_label:'Count'} };
-      function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return (p==='en'||p==='pl')?p:'pl'; }
-      function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title-mp').textContent=d.title; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
-      applyI18n();
-      document.getElementById('q').addEventListener('input', refresh);
-      refresh();
-    </script>
-    <style>
-      :focus-visible{outline:2px solid #8a8f98;outline-offset:2px}
-      .sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
-      .sr-only-focusable:focus{position:static;width:auto;height:auto;padding:8px 10px;margin:6px;background:#181b20;border:2px solid #8a8f98;border-radius:8px}
-    </style>
+          const sel = document.getElementById("lang");
+          sel.value = lang;
+          sel.onchange = () => {
+            const url = new URL(location.href);
+            url.searchParams.set("lang", sel.value);
+            location.href = url.toString();
+          };
+        }
+        applyI18n();
+        document.getElementById("q").addEventListener("input", refresh);
+        refresh();
+      </script>
+      <style>
+        :focus-visible {
+          outline: 2px solid #8a8f98;
+          outline-offset: 2px;
+        }
+        .sr-only {
+          position: absolute;
+          left: -10000px;
+          top: auto;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+        }
+        .sr-only-focusable:focus {
+          position: static;
+          width: auto;
+          height: auto;
+          padding: 8px 10px;
+          margin: 6px;
+          background: #181b20;
+          border: 2px solid #8a8f98;
+          border-radius: 8px;
+        }
+      </style>
     </main>
   </body>
-  </html>
+</html>

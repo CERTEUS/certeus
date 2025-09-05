@@ -43,7 +43,6 @@ from hashlib import sha256
 import json
 from typing import Any
 
-
 def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> bytes:
     if not include_timestamp and "timestamp" in data:
         work = {k: v for k, v in data.items() if k != "timestamp"}
@@ -53,14 +52,11 @@ def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> 
 
     return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
-
 def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
     return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
 
-
 def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
     return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
-
 
 class LedgerRecord:
     """
@@ -116,7 +112,6 @@ class LedgerRecord:
     @property
     def hash(self) -> str | None:  # noqa: D401
         return self.document_hash
-
 
 class Ledger:
     def __init__(self) -> None:
@@ -208,7 +203,6 @@ class Ledger:
             for r in self._events
             if r.case_id == case_id
         ]
-
 
 # pojedyncza instancja do użycia przez routery
 
