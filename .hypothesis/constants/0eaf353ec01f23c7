@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\utils\console.py
+# hypothesis_version: 6.138.14
+
+['91', '92', '94', '[ERROR]', '[INFO]', '[SUCCESS]', 'ascii', 'encoding', 'isatty', 'replace', 'utf']

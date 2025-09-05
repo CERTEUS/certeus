@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\mismatch_service\service.py
+# hypothesis_version: 6.138.14
+
+[3600.0, '=', 'MM-*.json', '__name__', 'error', 'file', 'memory', 'model', 'status', 'time_ms', 'unknown', 'utf-8', 'version', 'w']

@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\devices.py
+# hypothesis_version: 6.138.14
+
+[0.0, 0.012, 0.02, 0.03, 0.05, 0.1, 0.12, 0.2, 0.28, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0, 1.1, 200, 280, ',', '/entangle', '/horizon_drive/plan', '/qoracle/expectation', '/v1/devices', ':', 'A', 'B', 'Idempotency-Key', 'X-CERTEUS-SIG-device', 'X-CERTEUS-TEE-RA', 'X-Idempotency-Status', 'action', 'aggressive', 'arbitration', 'balanced', 'choice', 'chronosync', 'clauses', 'coords', 'devices', 'devices.chronosync', 'devices.entangle', 'devices.hde.plan', 'entangler', 'expert_opinion', 'fairness', 'force_majeure', 'hde', 'heuristic', 'lex-domain mediator', 'maximize', 'maximize fairness', 'new', 'outcome', 'p', 'pc_delta', 'qoracle', 'reason', 'request_affidavit', 'reused', 'revision_window_days', 'risk', 'stub-certificate', 'treaty', 'var', 'weight']

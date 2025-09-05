@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\scripts\gates\plugin_supply_chain_gate.py
+# hypothesis_version: 6.138.14
+
+[' -', '"\'', '#', '.', '.cert', '.sig', '1', ':', 'True', '__main__', 'name', 'plugin.yaml', 'plugins', 'provenance*.json', 'provenance.json', 'sbom*.json', 'sbom.cdx.json', 'sbom.json', 'supply_chain', 'true', 'utf-8']

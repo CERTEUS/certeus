@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\rate_limit.py
+# hypothesis_version: 6.138.14
+
+[1.0, 429, 'RATE_LIMIT_BURST', 'RATE_LIMIT_QPS', 'Rate limit exceeded', 'X-Org-ID', 'X-Tenant-ID', 'anonymous', 'detail', 'http']

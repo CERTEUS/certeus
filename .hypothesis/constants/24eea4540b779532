@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\scripts\packs\update_abi_baselines.py
+# hypothesis_version: 6.138.14
+
+['#', '\'"', '*/plugin.yaml', '.', ':', '__main__', '__version__', 'abi_baseline.json', 'module', 'name', 'plugins', 'utf-8', 'ver', 'version']

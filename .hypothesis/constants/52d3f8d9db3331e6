@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\security\ra.py
+# hypothesis_version: 6.138.14
+
+[',', '1', ':', 'BUNKER', 'SIMULATED', 'TEE-STUB', 'TEE_ATTESTATION_JSON', 'TEE_ENABLED', 'True', 'attestation.json', 'attester', 'bunker', 'fingerprint', 'local', 'platform', 'provider', 'quote', 'true', 'ts', 'utf-8', '{']

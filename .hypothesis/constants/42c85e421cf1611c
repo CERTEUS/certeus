@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\scripts\boundary_diff.py
+# hypothesis_version: 6.138.14
+
+['DIFFERENT', 'IDENTICAL', '__main__', 'base', 'bytes', 'changed', 'details', 'digest', 'files', 'global', 'global_digest', 'head', 'shards', 'status', 'utf-8']

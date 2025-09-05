@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\lexenith.py
+# hypothesis_version: 6.138.14
+
+[0.0, 1.0, '\n\nFakty (skrót):\n', ',', '/casebook', '/cldf/renormalize', '/micro_court/lock', '/micro_court/publish', '/motion/generate', '/pilot/cases', '/pilot/feedback', '/v1/lexenith', '/why_not/export', ':', 'IN_PROGRESS', 'LEX-PILOT-001', 'LEX-PILOT-002', 'LEX-PILOT-003', 'authority_score', 'by', 'case', 'case_id', 'claim', 'counter_arguments', 'hash', 'lex.micro_court.path', 'lexenith', 'lock', 'motion-dismiss', 'motion-summary', 'path', 'publish', 'rating', 'sha256:', 'step', 'tenant', 'text', 'uri', 'utf-8']

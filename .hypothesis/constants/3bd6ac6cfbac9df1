@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\law_as_data\adapters\isap.py
+# hypothesis_version: 6.138.14
+
+['<title>(.*?)</title>', 'ignore', 'utf-8']

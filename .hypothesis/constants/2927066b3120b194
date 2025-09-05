@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\cfe.py
+# hypothesis_version: 6.138.14
+
+[-1.0, 0.0, 0.012, 0.05, 0.15, 0.28, 0.4, 0.42, 0.6, 1.0, 12.34, '/cache/warm', '/case/lock', '/case/recall', '/case/revoke', '/curvature', '/geodesic', '/horizon', '/lensing', '/lensing/from_fin', '/v1/cfe', '0', '300', 'CFE', 'CFE_CACHE_TTL_SEC', 'Cache-Control', 'X-CERTEUS-CFE-Locked', 'cfe-case', 'cfe.geodesic_action', 'cfe.horizon_mass', 'cfe.locked', 'conclusion:C', 'false', 'inference:merge', 'lock', 'no-store', 'precedent:III_2020', 'precedent:K_2001', 'premise:A', 'premise:B', 'przyklad', 'recall', 'revoke', 'risk', 'sample', 'score', 'sent', 'sentiment', 'sha256:', 'true']

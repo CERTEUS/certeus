@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/services/api_gateway/limits.py
+# hypothesis_version: 6.138.14
+
+[429, 10000, 'X-Org-ID', 'X-Tenant-ID', 'allocate_tenant_cost', 'anonymous', 'enforce_limits', 'get_tenant_balance', 'get_tenant_id', 'refund_tenant_units', 'set_tenant_quota']

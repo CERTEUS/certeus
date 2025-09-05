@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\scripts\gates\marketplace_policy_gate.py
+# hypothesis_version: 6.138.14
+
+[' -', '"\'', '#', '.', '1', ':', 'Apache-2.0', 'BSD-2-Clause', 'BSD-3-Clause', 'MIT', 'True', '__main__', 'licence', 'license', 'name', 'plugin.yaml', 'plugins', 'signature', 'true', 'utf-8', 'version']

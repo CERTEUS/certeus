@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\system.py
+# hypothesis_version: 6.138.14
+
+[0.98, 0.99, 160, 413, 415, 1024, '/v1/analyze', '/v1/ingest', '/v1/sources/cache', '2023-10-01', ';', 'File too large', 'TAK', '[x=True]', '_certeus', 'act_id', 'analysis_result', 'application/pdf', 'at', 'case_id', 'claim_contract_date', 'confidence_score', 'document.pdf', 'evidence_payment', 'fact', 'fact-', 'fact_id', 'kind', 'model', 'ocr_preview', 'role', 'sat', 'seconds', 'sha256:', 'snapshot_timestamp', 'source', 'source_url', 'status', 'system', 'text', 'text_sha256', 'thesis', 'title', 'utf-8', 'value', 'version_id']

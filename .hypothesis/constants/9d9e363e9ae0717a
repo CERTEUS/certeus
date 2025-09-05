@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\billing.py
+# hypothesis_version: 6.138.14
+
+[404, '/allocate', '/quota', '/refund', '/request', '/v1/billing', '/v1/fin/tokens', '/{request_id}', 'ALLOCATED', 'PENDING', 'allocated_by', 'amount', 'balance', 'billing', 'billing_get_quota', 'billing_refund_units', 'billing_set_quota', 'data', 'fin_allocate_tokens', 'fin_request_tokens', 'fin_tokens.json', 'ok', 'purpose', 'request_id', 'requests', 'status', 'tenant', 'unknown request_id', 'user_id', 'utf-8']

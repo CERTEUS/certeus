@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/services/api_gateway/routers/packs.py
+# hypothesis_version: 6.138.14
+
+[400, 404, '/', '/handle', '/install', '/v1/packs', '/{name}', 'Get pack details', 'List available packs', 'PACKS_STATE_PATH', '[0-9a-fA-F]{64,}', '^\\d+\\.\\d+\\.\\d+$', 'abi', 'abi_baseline.json', 'baseline_present', 'capabilities', 'data', 'enabled', 'installed_version', 'manifest', 'name', 'ok', 'pack', 'packs', 'packs_state.json', 'plugin.yaml', 'plugins', 'result', 'semver_ok', 'signature', 'status', 'utf-8', 'version']

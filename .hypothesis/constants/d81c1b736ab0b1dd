@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\pfs.py
+# hypothesis_version: 6.138.14
+
+[0.0, 300, '.t', '/case/{case_id}', '/dht/announce', '/dht/publish_path', '/dht/query', '/inspect', '/sign_path', '/v1/pfs', '/verify_path', '0', '300', '=', 'DHT_DEFAULT_TTL_SEC', 'PYTEST_CURRENT_TEST', 'PYTEST_XDIST_WORKER', 'ProofFS', 'ascii', 'capacity', 'competencies', 'data', 'health', 'last_seen', 'leaf:', 'merkle_root', 'path', 'pfs', 'pfs_dht.json', 'pfs_paths.json', 'sig_b64', 'source', 'ttl_sec', 'up', 'utf-8']

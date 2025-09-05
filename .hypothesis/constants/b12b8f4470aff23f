@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/core/omega/transforms.py
+# hypothesis_version: 6.138.14
+
+[0.0, 1e-12, 1.0, '"', '-', 'NFKD', '\\s+', '\\w+', 'act', 'atak', 'blad', 'błąd', 'choroba', 'code', 'cve', 'cvss', 'cwe', 'dawka', 'diagnoza', 'domain', 'domain_map', 'dst', 'en', 'funkcja', 'funkcje', 'i', 'identity', 'import', 'jurisdiction_map', 'klasa', 'kodeks', 'lang', 'lang_map', 'lek', 'leki', 'med', 'modul', 'moduł', 'normalize', 'objaw', 'oraz', 'pacjent', 'pacjenta', 'pakiet', 'pl', 'podatnosc', 'podatność', 'powaznosc', 'poważność', 'r', 'regulation', 'rozporządzenie', 'sec', 'src', 'terapia', 'test', 'ustawa', 'w', 'wektor', 'wyjatek', 'wyjątek', 'z', '§', '–', '—', '�']

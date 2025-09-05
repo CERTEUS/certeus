@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\core\plugin_loader.py
+# hypothesis_version: 6.138.14
+
+['#', '\'"', ':', 'CERTEUS_PLUGINS_DIR', 'Plugin', 'PluginSpec', 'add', 'attach', 'certeus.plugins', 'enabled', 'has_register', 'load_all_plugins', 'module', 'name', 'plugin.yaml', 'plugins', 'register', 'utf-8', 'version']

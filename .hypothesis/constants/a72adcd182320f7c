@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/services/ingest_service/adapters/local_impl.py
+# hypothesis_version: 6.138.14
+
+['/', '/static', 'ALI-Stub-0', 'StubLLMAdapter', 'adapter', 'application/pdf', 'attachments', 'det', 'deterministic', 'general', 'ignore', 'latin-1', 'missing', 'note', 'ok', 'prompt_len', 'request', 'satisfied', 'source_content_type', 'static', 'stub', 'stub preview', 'stub:analyze', 'stub:done', 'stub:init', 'summary', 'uploads', 'utf-8']

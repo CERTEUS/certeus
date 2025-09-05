@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/scripts/gates/marketplace_policy_gate.py
+# hypothesis_version: 6.138.14
+
+['"\'', '#', ':', 'data', 'enabled', 'installed_version', 'packs_state.json', 'plugin.yaml', 'plugins', 'signature:', 'utf-8', 'version:']

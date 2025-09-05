@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\plugins\packs_med\src\main.py
+# hypothesis_version: 6.138.14
+
+[0.1, 0.2, 'MED-CASE', 'case.summary', 'consent://demo', 'consent_ref', 'dp_epsilon', 'fmt', 'json', 'med', 'med.case.summary', 'med.report.json', 'ok', 'pco', 'reason', 'register_exporter', 'risk_index', 'subject', 'summary']

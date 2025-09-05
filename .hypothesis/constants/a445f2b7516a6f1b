@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\security.py
+# hypothesis_version: 6.138.14
+
+[b'"EdDSA"', b'EdDSA', 60.0, 403, 429, '.', '/v1/export', '/v1/mailops/ingest', '/v1/pco/bundle', '0', '1', '31536000', 'Authorization', 'CSP', 'DENY', 'DROP: proof-required', 'HSTS_MAX_AGE', 'POST', 'RATE_LIMIT_PER_MIN', 'Referrer-Policy', 'SEC_HEADERS', 'STRICT_PROOF_ONLY', 'Too Many Requests', 'X-Frame-Options', 'X-PCO-Token', 'ascii', 'authorization', 'bearer ', 'http', 'no-referrer', 'nosniff', 'proofgate', 'unknown', 'x-pco-token']

@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\core\boundary\snapshot.py
+# hypothesis_version: 6.138.14
+
+[8192, '*', '0', 'ascii', 'bytes', 'digest', 'files', 'global_digest', 'rb', 'shard-0', 'shards']

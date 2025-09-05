@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/services/api_gateway/routers/lexqft.py
+# hypothesis_version: 6.138.14
+
+[0.0, 1e-09, 0.02, 0.05, 0.5, 0.6, 0.8, 0.95, 0.953, 1.0, 1.2, 1.5, '/', '/coverage', '/coverage/reset', '/coverage/state', '/coverage/update', '/tunnel', '/tunnel/scenarios', '/tunnel/stats', '/v1/lexqft', 'Z', 'a', 'barrier', 'barrier_energy', 'case_id', 'count', 'counter_arguments', 'data', 'energy', 'lexqft', 'lexqft-case', 'min_energy', 'model_uri', 'ok', 'p', 'p_tunnel', 'path', 'post-barrier', 'qlaw.tunneling', 'r', 'reflect', 'sha256:', 'start', 'stepped', 'thick', 'thin', 'ts', 'uri', 'utf-8']

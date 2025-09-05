@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\export.py
+# hypothesis_version: 6.138.14
+
+[400, 1024, '/v1/export', 'JSON returned', 'artifact', 'artifacts', 'case', 'case_id required', 'docx', 'export', 'exports', 'file', 'fmt', 'hash', 'hash_sha256', 'json', 'rb', 'report', 'sha256:', 'timestamp', 'timestamp_utc', 'utf-8']

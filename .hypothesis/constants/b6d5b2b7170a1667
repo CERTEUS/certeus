@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\monitoring\profiling.py
+# hypothesis_version: 6.138.14
+
+[1000.0, '/', '/app', '/static', '1', '50', 'PROFILE_HTTP', 'PROFILE_OUT', 'PROFILE_THRESHOLD_MS', 'True', 'X-Profile-Saved', '_', 'http', 'out/profiles', 'root', 'true']

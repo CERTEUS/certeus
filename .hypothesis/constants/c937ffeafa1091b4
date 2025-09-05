@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\marketplace.py
+# hypothesis_version: 6.138.14
+
+[b'=', 400, 403, 404, 500, '/dry_run', '/install', '/plugins', '/pubkey', '/sign_manifest', '/v1/marketplace', '/verify_manifest', '1', 'Detached signature', 'Invalid path', 'Invalid plugin name', 'Invalid signature', 'Not found', 'Signing disabled', 'True', '[A-Za-z0-9_-]{1,64}', 'ascii', 'errors', 'invalid_name', 'invalid_path', 'invalid_signature', 'invalid_yaml', 'manifest_yaml', 'marketplace', 'missing_module', 'module', 'name', 'ok', 'path', 'plugin.yaml', 'plugins', 'signature', 'signature:', 'signature_b64url', 'true', 'utf-8', 'version', 'would_write_path']

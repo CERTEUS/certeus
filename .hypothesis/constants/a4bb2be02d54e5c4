@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\main.py
+# hypothesis_version: 6.138.14
+
+[1000.0, 307, '*', ',', '/', '/app', '/docs', '/health', '/openapi.json', '/redoc', '/static', 'ALLOW_ORIGINS', 'CERTEUS API Gateway', 'Content-Language', 'accept-language', 'app', 'clients', 'en', 'file', 'http', 'lang', 'ok', 'path', 'pl', 'previews', 'route', 'static', 'status', 'status_code', 'version', 'web']

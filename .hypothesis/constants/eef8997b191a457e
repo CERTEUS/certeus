@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/kernel/truth_engine.py
+# hypothesis_version: 6.138.14
+
+[1000.0, 'cvc5_stub', 'error', 'get_version_string', 'model', 'sat', 'smt2', 'status', 'temp-case-id', 'time_ms', 'unknown', 'unsat', 'version', 'z3']

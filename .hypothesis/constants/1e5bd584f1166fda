@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/services/api_gateway/routers/billing_quota.py
+# hypothesis_version: 6.138.14
+
+['/allocate', '/quota', '/refund', '/v1/billing', 'ALLOCATED', 'Billing', 'PENDING', 'balance', 'billing_quota_get', 'billing_quota_refund', 'status']

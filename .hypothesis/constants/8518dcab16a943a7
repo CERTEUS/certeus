@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\core\omega\transforms.py
+# hypothesis_version: 6.138.14
+
+[0.0, 1.0, '"', '-', '\\s+', '\\w+', 'act', 'code', 'identity', 'jurisdiction_map', 'kodeks', 'lang', 'normalize', 'pl', 'regulation', 'rozporządzenie', 'ustawa', '§', '–', '—', '�']

@@ -1,0 +1,4 @@
+# file: /mnt/f/projekty/certeus/clients/python/certeus_sdk/client.py
+# hypothesis_version: 6.138.14
+
+[0.2, 15.0, '/', '/health', '/openapi.json', '/v1/billing/allocate', '/v1/billing/balance', '/v1/billing/quota', '/v1/billing/refund', '/v1/pco/bundle', '/v1/preview', 'Idempotency-Key', 'X-Tenant-ID', 'drat', 'file', 'lfsc', 'merkle_proof', 'rb', 'rid', 'smt2', 'smt2_hash', 'tenant', 'units']
