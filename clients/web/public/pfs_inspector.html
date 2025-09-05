@@ -39,6 +39,7 @@
       <div class="card">
         <h2>Summary</h2>
         <div id="sum"></div>
+        <div id="tee_status" class="row"></div>
       </div>
       <div class="card">
         <h2>Xattrs</h2>
@@ -54,11 +55,11 @@
 
       async function doMaterialize(){ const uri=$("uri").value.trim(); if(!uri){return} const r=await j('POST','/v1/pfs/materialize',{uri}); if(!r.ok){ alert('Materialize failed: '+(r.data?.detail||r.status)); return; } await doInspect(); }
       async function doInspect(){ const uri=$("uri").value.trim(); if(!uri){return} const ex=await j('GET',`/v1/pfs/exists?uri=${encodeURIComponent(uri)}`); if(ex.ok){ fillSummary(ex.data); } const r=await j('GET',`/v1/pfs/xattrs?uri=${encodeURIComponent(uri)}`); $("xattrs").textContent = r.ok ? JSON.stringify(r.data, null, 2) : `Error: ${r.status}`; setShare(uri); }
+      async function teeStatus(){ try{ const r=await fetch('/v1/tee/status'); if(!r.ok) return; const s=await r.json(); const el=$("tee_status"); el.innerHTML=''; const mk=(k,v)=>{ const sp=document.createElement('span'); sp.className='tag'; sp.textContent=`${k}: ${v}`; return sp; }; el.appendChild(mk('bunker', s.bunker_on?'on':'off')); el.appendChild(mk('attested', s.attested?'yes':'no')); if(s.ra && (s.ra.vendor||s.ra.product)){ el.appendChild(mk('TEE', (s.ra.vendor||'')+'/'+(s.ra.product||''))); } }catch{} }
 
       $("materialize").addEventListener('click', doMaterialize);
       $("inspect").addEventListener('click', doInspect);
-      (function init(){ const u=q('uri'); if(u){ $("uri").value=u; } if(u){ doInspect(); } })();
+      (function init(){ const u=q('uri'); if(u){ $("uri").value=u; } if(u){ doInspect(); } teeStatus(); })();
     </script>
   </body>
   </html>
-

@@ -47,6 +47,23 @@ except Exception:  # pragma: no cover - optional
     def verify_quorum(_obj):  # type: ignore
         return False
 
+try:  # optional: RA helpers for TEE status
+    from security.ra import attestation_from_env, extract_fingerprint, verify_fingerprint
+except Exception:  # pragma: no cover - optional
+
+    def attestation_from_env():  # type: ignore
+        return None
+
+    def extract_fingerprint(_obj):  # type: ignore
+        class _FP:
+            def to_dict(self):
+                return {}
+
+        return _FP()
+
+    def verify_fingerprint(_obj):  # type: ignore
+        return False
+
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
@@ -97,6 +114,31 @@ setup_fastapi_otel(app)
 @app.get("/healthz")
 def healthz() -> dict[str, Any]:
     return {"ok": True, "service": "proofgate-stub"}
+
+
+@app.get("/v1/tee/status")
+def tee_status() -> dict[str, Any]:
+    """PL/EN: Report bunker/TEE status for UI badges (best-effort)."""
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True", "on"}
+    ra_req = (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True", "on"}
+    att = attestation_from_env()
+    fp = None
+    attested = False
+    try:
+        if att:
+            attested = True
+            fpo = extract_fingerprint(att)
+            fpd = getattr(fpo, "to_dict", lambda: {})()
+            if isinstance(fpd, dict):
+                # validate shape best-effort
+                if verify_fingerprint(fpd):
+                    fp = fpd
+                else:
+                    fp = {k: fpd.get(k) for k in ("vendor", "product", "measurement") if k in fpd}
+    except Exception:
+        attested = False
+        fp = None
+    return {"bunker_on": bunker_on, "ra_required": ra_req, "attested": bool(attested), "ra": fp}
 
 
 def _repo_root() -> Path:
@@ -403,13 +445,23 @@ def publish(req: PublishRequest) -> PublishResponse:
     # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
     bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
     if bunker_on:
-        # Attestation header stub: X-TEE-Attestation must be present and non-empty
-        # Note: In this stubbed variant, we cannot access headers directly (no Request).
-        # Allow PUBLISH path but require that PCO carries a tee.attested flag.
+        # Attestation stub: in this variant we cannot access headers directly (no Request).
+        # Require that PCO carries a tee.attested flag. If TEE_RA_REQUIRE=1, also require
+        # a minimal RA fingerprint under tee.ra {vendor,product,measurement}.
         try:
             tee = req.pco.get("tee") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
             if not (isinstance(tee, dict) and bool(tee.get("attested", False))):
                 return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+            if (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True"}:
+                ra = tee.get("ra") if isinstance(tee, dict) else None
+                ok_ra = (
+                    isinstance(ra, dict)
+                    and isinstance(ra.get("vendor"), str)
+                    and isinstance(ra.get("product"), str)
+                    and isinstance(ra.get("measurement"), str)
+                )
+                if not ok_ra:
+                    return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 

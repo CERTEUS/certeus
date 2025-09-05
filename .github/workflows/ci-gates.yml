@@ -160,6 +160,10 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/plugin_supply_ok.txt
+      - name: Supply-Chain Enforce (required)
+        run: |
+          python scripts/gates/supply_chain_enforce.py
+          echo ok > out/supply_chain_enforce_ok.txt
       - name: FROST 2-of-3 Gate (enforce)
         run: |
           python scripts/gates/proof_frost_enforce.py
@@ -196,6 +200,11 @@ jobs:
         run: |
           python scripts/smokes/cfe_smoke.py > out/cfe_smoke.json
           test -s out/cfe_smoke.json
+      - name: P2P Transport Smoke (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/smokes/p2p_smoke.py || true
+          test -f out/p2p_transport_smoke.json && echo ok > out/p2p_transport_ok.txt || true
       - name: Mark Smokes OK
         if: success()
         run: |
