@@ -38,10 +38,10 @@ Zwracane wartości są placeholderami niezależnymi od środowiska produkcyjnego
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from fastapi import APIRouter, Request, Response
-import os
 from pydantic import BaseModel, Field
 
 from services.api_gateway.routers.cfe_config import current_lock_sets, get_lensing_map
