@@ -1,4 +1,4 @@
-# +-------------------------------------------------------------+
+﻿# +-------------------------------------------------------------+
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
 # | FILE: .github/workflows/ci-gates.yml                      |
@@ -291,23 +291,23 @@ jobs:
         run: |
           set -e
           start_ts=$(python - <<'PY'
-import time; print(time.time())
-PY
+            import time; print(time.time())
+          PY
           )
           python scripts/gates/compute_boundary_report.py --out out/boundary_report.json || true
           end_ts=$(python - <<'PY'
-import time; print(time.time())
-PY
+            import time; print(time.time())
+          PY
           )
           dur=$(python - <<PY
-import os
-try:
-  s=float(os.environ.get('start_ts','0'))
-  e=float(os.environ.get('end_ts','0'))
-  print(f"{(e-s):.3f}")
-except Exception:
-  print('0.000')
-PY
+            import os
+            try:
+              s=float(os.environ.get('start_ts','0'))
+              e=float(os.environ.get('end_ts','0'))
+              print(f"{(e-s):.3f}")
+            except Exception:
+              print('0.000')
+          PY
           )
           echo "$dur" > out/boundary_rto.txt
           # Run gate in report-only mode (no fail in ci-gates)

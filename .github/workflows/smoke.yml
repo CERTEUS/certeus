@@ -98,7 +98,7 @@ jobs:
 
   smoke-summary:
     name: Smoke PR Summary
-    needs: [smoke, smoke_gh]
+    needs: [smoke]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -165,4 +165,7 @@ jobs:
             } catch (err) {
               core.warning(`Could not create PR comment: ${err?.message || err}`);
             }
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/main
