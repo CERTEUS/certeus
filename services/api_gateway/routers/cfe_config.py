@@ -127,6 +127,16 @@ def _refresh_config_if_changed() -> None:
         _CFG_MTIME = mtime
 
 
+def _load_external_config() -> tuple[dict[str, dict[str, float]], set[str] | None, set[str] | None]:
+    """Return merged external weights and (domains,severities) override sets.
+
+    Reads from cached state; refreshes if file mtime changed.
+    """
+    _refresh_config_if_changed()
+    with _CFG_LOCK:
+        return dict(_CFG_WEIGHTS), set(_CFG_DOMAINS), set(_CFG_SEVERITIES)
+
+
 def current_lensing_weights() -> dict[str, dict[str, float]]:
     ext, _, _ = _load_external_config()
     base = {k: dict(v) for k, v in _DEFAULT_LENSING_WEIGHTS.items()}
