@@ -73,15 +73,7 @@ jobs:
           # Prefer uv; if it fails (np. chwilowy błąd indeksu) – fallback do pip
           uv sync || python -m pip install -e ".[dev]"
 
-      - name: 🔍 Ruff (autofix)
-        run: |
-          uv run ruff check . --fix
-
-      - name: 🎨 Ruff (format)
-        run: |
-          uv run ruff format .
-
-      - name: 🔎 Ruff (strict check)
+      - name: 🔎 Ruff (lint)
         run: |
           uv run ruff check . --output-format=github
 
