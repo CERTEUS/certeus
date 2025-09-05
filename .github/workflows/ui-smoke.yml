@@ -13,13 +13,14 @@ on:
   push:
     branches: [ main ]
   pull_request:
+    branches: [ main, work/daily ]
 
 permissions:
   contents: read
 
 jobs:
   ui-smoke:
-    name: Validate UI (HTML/CSS/links)
+    name: UI Smoke
     runs-on: ubuntu-latest
 
     steps:
@@ -30,6 +31,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            requirements.txt
+            pyproject.toml
+            constraints/**
 
       - name: Smoke-check proof_visualizer
         run: |
