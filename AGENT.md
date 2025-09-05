@@ -3,6 +3,9 @@
 Uwaga: Centralny hub dokumentacji agenta znajduje się w:
 `docs/AGENTS/README.md` (skrót do WORKLOG/90_dni/manifestów, bramek i runbooków).
 
+Prompty zadań (P0/P1) do bezpośredniego wklejenia dla agentów:
+`docs/AGENT_PROMPTS.md` — każdy agent wybiera swój prompt, tworzy gałąź `feat/<obszar>-<skrót>` od `work/daily` i otwiera PR do `work/daily`.
+
 Zasada niezmienna (TL;DR):
 
 Publikujemy wyłącznie to, co jest jawnie dozwolone przez allowlistę LITE (mirror publiczny). Wszystko inne zostaje w repo prywatnym i przechodzi przez bramki (gitleaks/policy‑scan/branch‑protection) — bez wyjątków.
