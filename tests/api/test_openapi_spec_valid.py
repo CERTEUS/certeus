@@ -24,6 +24,7 @@ EN: Validates OpenAPI spec (docs/api/openapi.yaml) using openapi-spec-validator.
 from __future__ import annotations
 
 import warnings
+
 import yaml
 
 # Silence deprecation warnings from openapi-spec-validator shortcuts

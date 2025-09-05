@@ -20,14 +20,13 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-
 import warnings
+
 import yaml
+from services.api_gateway.main import app
 
 # Suppress noisy FastAPI OpenAPI duplicate operation id warnings during schema build
 warnings.filterwarnings("ignore", message="Duplicate Operation ID*", category=UserWarning)
-
-from services.api_gateway.main import app  # noqa: E402
 
 
 def _collect_methods(item: dict[str, Any]) -> set[str]:

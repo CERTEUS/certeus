@@ -26,6 +26,7 @@ EN: Minimal OpenAPI contract — presence of key endpoints.
 from __future__ import annotations
 
 import warnings
+
 from fastapi.testclient import TestClient
 
 # Suppress noisy FastAPI OpenAPI duplicate operation id warnings

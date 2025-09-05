@@ -20,9 +20,9 @@ EN: Quick Markdown link checker for docs/ and README.md.
 
 from __future__ import annotations
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
 
 
 # === LOGIKA / LOGIC ===
@@ -99,4 +99,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
