@@ -11,6 +11,46 @@
       ]
     },
     {
+      "type": "gauge",
+      "title": "LexQFT • Coverage Gamma",
+      "targets": [
+        { "expr": "certeus_lexqft_coverage_gamma" }
+      ],
+      "fieldConfig": { "defaults": { "min": 0, "max": 1 } }
+    },
+    {
+      "type": "gauge",
+      "title": "LexQFT • Uncaptured Mass",
+      "targets": [
+        { "expr": "certeus_lexqft_uncaptured_mass" }
+      ],
+      "fieldConfig": { "defaults": { "min": 0, "max": 1 } }
+    },
+    {
+      "type": "stat",
+      "title": "QOC • Vacuum Rate",
+      "targets": [
+        { "expr": "certeus_qoc_vacuum_rate" }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "LexQFT • Tunnel Events (5m)",
+      "targets": [
+        { "expr": "sum(rate(certeus_lexqft_tunnel_events_total[5m]))" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Idempotent Replays by Path",
+      "targets": [
+        {
+          "expr": "sum(rate(certeus_idempotent_replay_total[5m])) by (path, hit)",
+          "legendFormat": "{{path}} hit={{hit}}"
+        }
+      ]
+    },
+    {
       "type": "stat",
       "title": "HTTP error rate 1h",
       "targets": [

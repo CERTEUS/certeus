@@ -1,0 +1,7 @@
+{
+  "_note": "Example provenance (placeholder)",
+  "type": "https://in-toto.io/Statement/v1",
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [{"name": "plugins/tpl_diff_pl", "digest": {"sha256": "0"}}],
+  "predicate": {"buildType": "https://github.com/actions/runner", "builder": {"id": "https://github.com/CERTEUS/certeus"}}
+}

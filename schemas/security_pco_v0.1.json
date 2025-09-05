@@ -1,0 +1,77 @@
+{
+  "$id": "schemas/security_pco_v0.1.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Security PCO (SEC) v0.1",
+  "type": "object",
+  "description": "Minimalny schemat Security‑PCO dla publikowalnych znalezisk/ryzyk.",
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "description": "Identyfikator znaleziska (np. SEC-0001)."
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "description": "Poziom istotności znaleziska."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OPEN", "IN_PROGRESS", "RESOLVED", "RISK_ACCEPTED"],
+      "description": "Status cyklu życia znaleziska."
+    },
+    "controls": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Powiązane kontrolki/normy (np. ISO A.12.6, SOC2, wewn. polityki)."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "digest": {
+            "type": "string",
+            "description": "Skrót artefaktu (np. sha256:...)."
+          },
+          "type": {
+            "type": "string",
+            "description": "Rodzaj artefaktu (log, report, artifact)."
+          },
+          "uri": {
+            "type": "string",
+            "description": "Opcjonalne URI do artefaktu (pfs://, https://)."
+          }
+        },
+        "required": ["digest", "type"],
+        "additionalProperties": true
+      },
+      "minItems": 1,
+      "description": "Dowody potwierdzające znalezisko."
+    },
+    "cwe": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Powiązane CWE."
+    },
+    "cve": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Powiązane CVE."
+    },
+    "cvss": { "type": "number", "description": "Wynik CVSS (opcjonalny)." },
+    "attestation": {
+      "type": "object",
+      "properties": {
+        "tee": {
+          "type": "boolean",
+          "description": "Czy artefakt/ocena została wykonana w TEE."
+        },
+        "vendor": { "type": "string" },
+        "report_uri": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": ["finding_id", "severity", "evidence"],
+  "additionalProperties": true
+}

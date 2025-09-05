@@ -2,286 +2,477 @@
 +-------------------------------------------------------------+
 |                          CERTEUS                            |
 +-------------------------------------------------------------+
-| FILE: clients/web/public/marketplace.html                  |
+| FILE: clients/web/public/marketplace.html                   |
 | ROLE: Web client page.                                      |
-| PLIK: clients/web/public/marketplace.html                  |
-| ROLA: Strona marketplace wtyczek.                           |
+| PLIK: clients/web/public/marketplace.html                   |
+| ROLA: Strona klienta web.                                   |
 +-------------------------------------------------------------+
 -->
+
 <!doctype html>
-<html lang="pl">
+<html lang="pl" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CERTEUS — Marketplace</title>
+    <title>CERTEUS • Marketplace</title>
     <style>
-      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; padding: 0; background: #0f1115; color: #e5e7eb; }
-      .wrap { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-      h1, h2 { margin: 8px 0; }
-      .card { background: #161a20; border: 1px solid #232832; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-      table { width: 100%; border-collapse: collapse; }
-      th, td { text-align: left; padding: 8px; border-bottom: 1px solid #2a2f3a; }
-      .row { display: grid; gap: 8px; margin: 8px 0; }
-      textarea, input[type="text"] { width: 100%; background: #0f1319; color: #e5e7eb; border: 1px solid #2a2f3a; border-radius: 8px; padding: 8px; }
-      button { background: #2563eb; border: none; color: #fff; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; }
-      button:hover { background: #1d4ed8; }
-      .muted { color: #9aa0a6; }
-      .ok { color: #22c55e; }
-      .bad { color: #ef4444; }
-      .grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-      @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
-      .diffgrid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
-      .diffgrid pre { background: #0f1319; border: 1px solid #2a2f3a; border-radius: 8px; padding: 8px; overflow: auto; }
-      .dl { display: block; white-space: pre; }
-      .dl.add { color: #22c55e; background: #22c55e1a; }
-      .dl.rem { color: #ef4444; background: #ef44441a; }
-      .dl.eq { color: #e5e7eb; opacity: 0.8; }
-      mark { background: #ef44441a; color: #ef4444; padding: 0 2px; border-radius: 3px; }
-      .legend { display:flex; gap:10px; align-items:center; font-size: 12px; color:#9aa0a6; }
-      .legend .sw { display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:middle; margin-right:4px; }
-      .legend .sw.add { background:#22c55e; }
-      .legend .sw.rem { background:#ef4444; }
-      .legend .sw.mod { background:#ef4444; opacity: 0.6; }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #2a2d33;
+        padding: 8px 10px;
+        text-align: left;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
+      input {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        border-radius: 10px;
+        color: #f2f2f3;
+        padding: 8px 10px;
+      }
+      .tag {
+        display: inline-block;
+        margin-right: 6px;
+        margin-bottom: 4px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        border: 1px solid #2a2d33;
+        background: #20242a;
+        font-size: 12px;
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <h1>CERTEUS — Marketplace wtyczek</h1>
-      <p class="muted">Lista zainstalowanych wtyczek oraz instalacja przez podpisany manifest.</p>
-
-      <div class="card">
-        <h2>Wtyczki</h2>
-        <table id="tbl"><thead><tr><th>Nazwa</th><th>Moduł</th><th>Wersja</th><th>Podpis</th><th>Caps</th></tr></thead><tbody id="tbody"><tr><td colspan="5" class="muted">Ładowanie…</td></tr></tbody></table>
-      </div>
-
-      <div class="card">
-        <h2>Klucz publiczny (Ed25519)</h2>
-        <div id="pubkey" class="muted">—</div>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <h2>Weryfikacja podpisu</h2>
-          <div class="row">
-            <label for="verify-man" title="Wklej manifest YAML bez linii 'signature:'">Manifest YAML (bez linii signature:)</label>
-            <textarea id="verify-man" rows="8" placeholder="name: demo_alpha
-module: plugins.demo_alpha.src.main
-version: '0.1.0'"></textarea>
-          </div>
-          <div class="row">
-            <label title="Załaduj plik YAML manifestu">Wgraj plik manifestu (opcjonalnie)</label>
-            <input type="file" id="verify-file" accept=".yaml,.yml,text/yaml,text/plain" />
-          </div>
-          <div class="row">
-            <label for="verify-sig" title="Podpis Ed25519 w base64url (bez '=')">Podpis (base64url, Ed25519)</label>
-            <input type="text" id="verify-sig" placeholder="b64u..." />
-          </div>
-          <div class="row">
-            <button id="btn-verify" title="Ręczne sprawdzenie podpisu">Zweryfikuj</button>
-            <div id="verify-out" class="muted" aria-live="polite" aria-atomic="true"></div>
-          </div>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: flex-end; margin-bottom: 8px">
+          <label class="muted" for="lang">Lang</label>
+          <select id="lang" aria-label="Language select" class="btn">
+            <option value="pl" selected>PL</option>
+            <option value="en">EN</option>
+          </select>
         </div>
         <div class="card">
-          <h2>Instalacja/upgrade</h2>
-          <div class="row">
-            <label for="install-name" title="Nazwa folderu w plugins/ (A‑Z, a‑z, 0‑9, '-', '_')">Nazwa pakietu (folder w plugins/)</label>
-            <input type="text" id="install-name" placeholder="demo_alpha" />
+          <h1 id="title-mp">Marketplace • Packs</h1>
+          <div class="row" style="margin-bottom: 8px">
+            <input id="q" placeholder="filtruj po nazwie/capability" />
+            <button class="btn" id="refresh" data-i18n="refresh">
+              Odśwież
+            </button>
+            <span class="muted"
+              ><span data-i18n="count_label">Liczba</span>:
+              <span id="count" class="pill">0</span></span
+            >
           </div>
-          <div class="row">
-            <label for="install-man" title="Wklej manifest YAML bez 'signature:'">Manifest YAML (bez linii signature:)</label>
-            <textarea id="install-man" rows="8"></textarea>
-          </div>
-          <div class="row">
-            <label title="Załaduj plik YAML manifestu">Wgraj plik manifestu (opcjonalnie)</label>
-            <input type="file" id="install-file" accept=".yaml,.yml,text/yaml,text/plain" />
-          </div>
-          <div class="row">
-            <label for="install-sig" title="Podpis Ed25519 w base64url (bez '=')">Podpis (base64url, Ed25519)</label>
-            <input type="text" id="install-sig" />
-          </div>
-          <div class="row">
-            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-              <button id="btn-dryrun" class="neutral" title="Sprawdź nazwę/podpis bez instalacji">Dry‑Run</button>
-              <button id="btn-fetch-installed" class="neutral" title="Porównaj z aktualnie zainstalowanym manifestem">Pobierz zainstalowany manifest</button>
-              <button id="btn-install" title="Zainstaluj manifest po udanym dry‑run">Zainstaluj</button>
-              <span id="install-out" class="muted"></span>
-            </div>
-            <div id="dryrun-report" class="muted" style="white-space:pre-wrap"></div>
-            <div id="diff" class="muted"></div>
-            <div id="diff-yaml" class="diffgrid"></div>
-            <div id="diff-legend" class="legend">
-              <span><span class="sw add" aria-hidden="true"></span>Dodano</span>
-              <span><span class="sw rem" aria-hidden="true"></span>Usunięto</span>
-              <span><span class="sw mod" aria-hidden="true"></span>Zmiana (podświetlenie)</span>
-            </div>
-            <div class="row">
-              <label for="dryrun-history">Historia dry‑run (localStorage)</label>
-              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; width:100%">
-                <select id="dryrun-history" style="flex:1 1 260px" title="Wybierz poprzedni dry‑run"></select>
-                <button id="btn-load-dryrun" title="Załaduj do formularza">Załaduj</button>
-                <button id="btn-install-from-hist" title="1‑klik instalacja wybranego" disabled>Zainstaluj z historii</button>
-                <span id="dryrun-hint" class="muted"></span>
-              </div>
-            </div>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nazwa</th>
+                <th>Wersja</th>
+                <th>ABI</th>
+                <th>Capabilities</th>
+                <th>Status</th>
+                <th>Install</th>
+                <th>Akcja</th>
+                <th>Szczegóły</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
         </div>
+        <div class="card" id="details" style="display: none">
+          <h1>Szczegóły pakietu <span id="d-name" class="pill">–</span></h1>
+          <p class="muted">
+            Wersja: <span id="d-version" class="pill">–</span> ABI:
+            <span id="d-abi" class="pill">–</span> Status:
+            <span id="d-enabled" class="pill">–</span>
+          </p>
+          <p class="muted">
+            SemVer:
+            <span id="d-semver" class="pill" title="SemVer format x.y.z"
+              >–</span
+            >
+            Baseline:
+            <span id="d-baseline" class="pill" title="ABI baseline presence"
+              >–</span
+            >
+            <span
+              class="muted"
+              title="Legenda: SemVer=x.y.z; Baseline=abi_baseline.json w repo."
+              >[?]</span
+            >
+          </p>
+          <div class="row" style="margin: 8px 0">
+            <button class="btn" id="d-try">Try</button>
+            <button class="btn" id="d-docs">Docs</button>
+            <button class="btn" id="d-baseline-btn">Show baseline</button>
+          </div>
+          <div id="d-caps"></div>
+          <div class="row" style="margin: 8px 0">
+            <button class="btn" id="copyCurl">Copy curl</button>
+            <button class="btn" id="copySdk">Copy Python SDK</button>
+          </div>
+          <pre
+            id="d-manifest"
+            style="
+              background: #0f1115;
+              border: 1px solid #2a2d33;
+              padding: 12px;
+              border-radius: 8px;
+              overflow: auto;
+              max-height: 280px;
+            "
+          ></pre>
+          <pre
+            id="d-baseline-json"
+            style="
+              background: #0f1115;
+              border: 1px solid #2a2d33;
+              padding: 12px;
+              border-radius: 8px;
+              overflow: auto;
+              max-height: 220px;
+              display: none;
+            "
+          ></pre>
+          <pre
+            id="d-result"
+            style="
+              background: #0f1115;
+              border: 1px solid #2a2d33;
+              padding: 12px;
+              border-radius: 8px;
+              overflow: auto;
+              max-height: 220px;
+              display: none;
+            "
+          ></pre>
+        </div>
+        <p class="muted">
+          Tip: API <code>/v1/packs/</code> zwraca listę pakietów (name, version,
+          abi, capabilities, enabled).
+        </p>
       </div>
-    </div>
-    <script>
-      const API = location.origin;
-      async function api(path, init) {
-        const r = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...init });
-        const ct = r.headers.get('content-type') || '';
-        const body = ct.includes('application/json') ? await r.json() : await r.text();
-        if (!r.ok) throw new Error(typeof body === 'string' ? body : (body.detail || 'HTTP ' + r.status));
-        return body;
-      }
-      async function loadPlugins() {
-        const tb = document.getElementById('tbody');
-        try {
-          const data = await api('/v1/marketplace/plugins');
-          window.__PLUGS = data || [];
-          if (!data || !data.length) { tb.innerHTML = '<tr><td colspan="5" class="muted">Brak wtyczek</td></tr>'; return; }
-          tb.innerHTML = data.map(p => `<tr><td>${p.name}</td><td>${p.module||''}</td><td>${p.version||''}</td><td>${p.signed?'<span class=ok>TAK</span>':'<span class=bad>NIE</span>'}</td><td>${(p.capabilities||p.caps||[]).join(', ')}</td></tr>`).join('');
-        } catch (e) {
-          tb.innerHTML = `<tr><td colspan="5" class="bad">Błąd: ${e.message||e}</td></tr>`;
-        }
-      }
-      async function loadPubkey() {
-        const el = document.getElementById('pubkey');
-        try {
-          const res = await api('/v1/marketplace/pubkey');
-          el.textContent = res.ed25519_pubkey_b64url || 'brak/nieustawiony (ENV ED25519_PUBKEY_B64URL)';
-        } catch (e) { el.textContent = 'błąd: '+(e.message||e); }
-      }
-      document.getElementById('verify-file').addEventListener('change', (ev) => {
-        const f = ev.target.files && ev.target.files[0]; if (!f) return;
-        f.text().then(t => { document.getElementById('verify-man').value = t; });
-      });
-      document.getElementById('install-file').addEventListener('change', (ev) => {
-        const f = ev.target.files && ev.target.files[0]; if (!f) return;
-        f.text().then(t => { document.getElementById('install-man').value = t; });
-      });
-      function basicYamlCheck(txt){
-        // bardzo prosta walidacja: musi mieć co najmniej 'module:'
-        return /\bmodule\s*:\s*[^\n]+/.test(txt);
-      }
-      document.getElementById('btn-verify').addEventListener('click', async () => {
-        const man = document.getElementById('verify-man').value;
-        const sig = document.getElementById('verify-sig').value.trim();
-        const out = document.getElementById('verify-out');
-        out.textContent = 'Pracuję...';
-        try {
-          if (!basicYamlCheck(man)) throw new Error('Manifest: brak pola module:');
-          const res = await api('/v1/marketplace/verify_manifest', { method: 'POST', body: JSON.stringify({ manifest_yaml: man, signature_b64u: sig }) });
-          out.textContent = res.ok ? 'OK: podpis poprawny' : 'BŁĄD: podpis nieprawidłowy';
-          out.className = res.ok ? 'ok' : 'bad';
-        } catch (e) {
-          out.textContent = 'BŁĄD: ' + (e.message||e);
-          out.className = 'bad';
-        }
-      });
-      document.getElementById('btn-install').addEventListener('click', async () => {
-        const name = document.getElementById('install-name').value.trim();
-        const man = document.getElementById('install-man').value;
-        const sig = document.getElementById('install-sig').value.trim();
-        const out = document.getElementById('install-out');
-        out.textContent = 'Pracuję...';
-        try {
-          if (!basicYamlCheck(man)) throw new Error('Manifest: brak pola module:');
-          const res = await api('/v1/marketplace/install', { method: 'POST', body: JSON.stringify({ name, manifest_yaml: man, signature_b64u: sig }) });
-          out.textContent = 'OK: ' + JSON.stringify(res);
-          out.className = 'ok';
-          await loadPlugins();
-        } catch (e) {
-          out.textContent = 'BŁĄD: ' + (e.message||e);
-          out.className = 'bad';
-        }
-      });
-      function markDiff(a,b){
-        a = String(a||''); b = String(b||'');
-        if (a===b) return `<code>${a||'(brak)'}</code> → <code>${b||'(brak)'}</code>`;
-        let i=0; while(i<a.length && i<b.length && a[i]===b[i]) i++;
-        let j=0; while(j<a.length-i && j<b.length-i && a[a.length-1-j]===b[b.length-1-j]) j++;
-        const aMid = a.slice(i, a.length-j), bMid = b.slice(i, b.length-j);
-        const aHtml = `${a.slice(0,i)}<mark>${aMid||'∅'}</mark>${a.slice(a.length-j)}`;
-        const bHtml = `${b.slice(0,i)}<mark>${bMid||'∅'}</mark>${b.slice(b.length-j)}`;
-        return `<code>${aHtml||'(brak)'}</code> → <code>${bHtml||'(brak)'}</code>`;
-      }
-      function semverRisk(from, to){
-        const rx=/^(\d+)\.(\d+)\.(\d+)/; const m1=String(from||'').match(rx); const m2=String(to||'').match(rx);
-        if(!m1||!m2) return 'unknown';
-        const a=[+m1[1],+m1[2],+m1[3]], b=[+m2[1],+m2[2],+m2[3]];
-        if (b[0]>a[0]) return 'major'; if (b[0]<a[0]) return 'downgrade';
-        if (b[1]>a[1]) return 'minor'; if (b[1]<a[1]) return 'downgrade';
-        if (b[2]>a[2]) return 'patch'; if (b[2]<a[2]) return 'downgrade';
-        return 'same';
-      }
-      document.getElementById('btn-dryrun').addEventListener('click', async () => {
-        const name = document.getElementById('install-name').value.trim();
-        const man = document.getElementById('install-man').value;
-        const sig = document.getElementById('install-sig').value.trim();
-        const rep = document.getElementById('dryrun-report');
-        const diff = document.getElementById('diff');
-        rep.textContent = 'Analiza...'; diff.textContent='';
-        try {
-          if (!basicYamlCheck(man)) throw new Error('Manifest: brak pola module:');
-          const res = await api('/v1/marketplace/dry_run', { method: 'POST', body: JSON.stringify({ name, manifest_yaml: man, signature_b64u: sig }) });
-          const errs = res.errors || [];
-          rep.textContent = (res.ok? 'OK' : 'BŁĘDY: ' + errs.join(', ')) + '\nmodule: '+(res.module||'-')+'\nversion: '+(res.version||'-')+'\npath: '+res.would_write_path;
-          rep.className = res.ok ? 'ok' : 'bad';
-          // Pokaż diff wersji vs zainstalowany
-          const existing = (window.__PLUGS||[]).find(p=>p.name===name);
-          if (existing) {
-            const from = existing.version || '(brak)'; const to = res.version || '(brak)';
-            const modFrom = existing.module || '(?)'; const modTo = res.module || '(?)';
-            const risk = semverRisk(from,to);
-            diff.innerHTML = `<div>Aktualizacja: <strong>${name}</strong> [ryzyko: <em>${risk}</em>]<br>module: ${markDiff(modFrom,modTo)}<br>version: ${markDiff(from,to)}</div>`;
-          } else {
-            diff.textContent = '';
+      <script>
+        async function fetchPacks() {
+          const r = await fetch("/v1/packs/");
+          if (!r.ok) {
+            return [];
           }
-          // Zablokuj instalację jeśli błędy
-          document.getElementById('btn-install').disabled = !res.ok;
-        } catch (e) {
-          rep.textContent = 'BŁĄD: ' + (e.message||e);
-          rep.className = 'bad';
+          return await r.json();
         }
-      });
-      document.getElementById('btn-fetch-installed').addEventListener('click', async () => {
-        const name = document.getElementById('install-name').value.trim();
-        const diffBox = document.getElementById('diff-yaml'); diffBox.innerHTML='';
-        if (!name) { diffBox.textContent = 'Podaj nazwę pakietu.'; return; }
-        try {
-          const res = await api('/v1/marketplace/plugin_manifest/'+encodeURIComponent(name));
-          const inst = String(res.manifest_yaml||'').split('\n');
-          const cur = String(document.getElementById('install-man').value||'').split('\n');
-          const left = [], right = [];
-          const N = Math.max(inst.length, cur.length);
-          for (let i=0;i<N;i++) {
-            const a = inst[i]||''; const b = cur[i]||'';
-            left.push((a===b? '  ' : '- ') + a);
-            right.push((a===b? '  ' : '+ ') + b);
+        async function fetchDetails(name) {
+          const r = await fetch(`/v1/packs/${encodeURIComponent(name)}`);
+          if (!r.ok) {
+            return null;
           }
-          diffBox.innerHTML = `<div class="muted">Porównanie linii (zainstalowany ⇄ obecny formularz)</div>`+
-            `<div style="display:grid; gap:8px; grid-template-columns:1fr 1fr;">`+
-            `<pre>${left.map(x=>x.replace(/</g,'&lt;')).join('\n')}</pre>`+
-            `<pre>${right.map(x=>x.replace(/</g,'&lt;')).join('\n')}</pre>`+
-            `</div>`;
-        } catch (e) {
-          diffBox.textContent = 'BŁĄD: ' + (e.message||e);
+          return await r.json();
         }
-      });
-      // Drag&drop do textarea (install)
-      ;['install-man','verify-man'].forEach(id=>{
-        const ta = document.getElementById(id);
-        ta.addEventListener('dragover', ev=>{ ev.preventDefault(); ta.style.outline='2px dashed #60a5fa'; });
-        ta.addEventListener('dragleave', ()=>{ ta.style.outline=''; });
-        ta.addEventListener('drop', ev=>{
-          ev.preventDefault(); ta.style.outline=''; const f=ev.dataTransfer.files && ev.dataTransfer.files[0]; if(!f) return; f.text().then(t=>ta.value=t);
-        });
-      });
-      loadPlugins();
-      loadPubkey();
-    </script>
+        async function fetchBaseline(name) {
+          const r = await fetch(
+            `/v1/packs/${encodeURIComponent(name)}/baseline`,
+          );
+          if (!r.ok) {
+            return null;
+          }
+          return await r.json();
+        }
+        function showDetails(d) {
+          const card = document.getElementById("details");
+          document.getElementById("d-name").textContent = d.name || "-";
+          document.getElementById("d-version").textContent = d.version || "-";
+          document.getElementById("d-abi").textContent = d.abi || "-";
+          document.getElementById("d-enabled").textContent = d.enabled
+            ? "enabled"
+            : "disabled";
+          document.getElementById("d-semver").textContent =
+            d.status && d.status.semver_ok ? "ok" : "invalid";
+          document.getElementById("d-baseline").textContent =
+            d.status && d.status.baseline_present ? "present" : "missing";
+          const caps =
+            (d.capabilities || [])
+              .map((c) => `<span class="tag">${c}</span>`)
+              .join("") || '<span class="muted">—</span>';
+          document.getElementById("d-caps").innerHTML = caps;
+          document.getElementById("d-manifest").textContent = JSON.stringify(
+            d.manifest || {},
+            null,
+            2,
+          );
+          const res = document.getElementById("d-result");
+          res.style.display = "none";
+          res.textContent = "";
+          const tryBtn = document.getElementById("d-try");
+          tryBtn.onclick = async () => {
+            tryBtn.disabled = true;
+            try {
+              const r = await fetch("/v1/packs/try", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ pack: d.name }),
+              });
+              const j = await r.json();
+              res.style.display = "";
+              res.textContent = JSON.stringify(j, null, 2);
+            } catch (_) {
+              res.style.display = "";
+              res.textContent = "Error";
+            } finally {
+              tryBtn.disabled = false;
+            }
+          };
+          const docsBtn = document.getElementById("d-docs");
+          docsBtn.onclick = () => {
+            window.open("/docs/guides/packs_abi_semver.md", "_blank");
+          };
+          const baseBtn = document.getElementById("d-baseline-btn");
+          baseBtn.onclick = async () => {
+            const j = await fetchBaseline(d.name);
+            const el = document.getElementById("d-baseline-json");
+            if (j) {
+              el.style.display = "";
+              el.textContent = JSON.stringify(j, null, 2);
+              el.scrollIntoView({ behavior: "smooth" });
+            } else {
+              el.style.display = "";
+              el.textContent = "Baseline not found";
+            }
+          };
+          card.style.display = "";
+          card.scrollIntoView({ behavior: "smooth" });
+          // copy snippets
+          const name = d.name;
+          const curl = `curl -sS -X POST http://127.0.0.1:8000/v1/packs/enable -H 'content-type: application/json' -d '{"pack":"${name}","enabled":true}'`;
+          const sdk = `from certeus_sdk import CerteusClient\ncli=CerteusClient('http://127.0.0.1:8000'); cli.packs_enable('${name}', True)`;
+          document.getElementById("copyCurl").onclick = () =>
+            navigator.clipboard.writeText(curl);
+          document.getElementById("copySdk").onclick = () =>
+            navigator.clipboard.writeText(sdk);
+        }
+        function render(packs) {
+          const q = (document.getElementById("q").value || "").toLowerCase();
+          const filtered = packs.filter((p) => {
+            if (!q) return true;
+            const caps = (p.capabilities || []).join(",");
+            return (
+              (p.name || "").toLowerCase().includes(q) ||
+              caps.toLowerCase().includes(q)
+            );
+          });
+          const tb = document.getElementById("rows");
+          tb.innerHTML = filtered
+            .map((p) => {
+              const caps =
+                p.capabilities && p.capabilities.length
+                  ? p.capabilities
+                      .map((c) => `<span class="tag">${c}</span>`)
+                      .join("")
+                  : '<span class="muted">—</span>';
+              const status = p.enabled
+                ? '<span class="pill">enabled</span>'
+                : '<span class="pill">disabled</span>';
+              const install = `${p.installed_version ? `<span class=\"pill\">${p.installed_version}</span>` : "-"} ${p.signature ? '<span class=\"pill\">signed</span>' : ""}`;
+              const btn = `<button class=\"btn toggle\" data-pack=\"${p.name}\" data-enabled=\"${p.enabled ? "1" : "0"}\">${p.enabled ? "Disable" : "Enable"}</button>`;
+              const inst = `<button class=\"btn install\" data-pack=\"${p.name}\">${p.version ? "Upgrade" : "Install"}</button>`;
+              const det = `<button class=\"btn details\" data-pack=\"${p.name}\">Details</button>`;
+              return `<tr>
+            <td>${p.name}</td>
+            <td>${p.version || "-"}</td>
+            <td><code>${p.abi}</code></td>
+            <td>${caps}</td>
+            <td>${status}</td>
+            <td>${install}</td>
+            <td>${btn} ${inst}</td>
+            <td>${det}</td>
+          </tr>`;
+            })
+            .join("");
+          document.getElementById("count").textContent = String(
+            filtered.length,
+          );
+          Array.from(document.querySelectorAll("button.toggle")).forEach(
+            (btn) => {
+              btn.addEventListener("click", async (e) => {
+                const el = e.currentTarget;
+                const name = el.getAttribute("data-pack");
+                const enabled = el.getAttribute("data-enabled") === "1";
+                try {
+                  const r = await fetch("/v1/packs/enable", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({ pack: name, enabled: !enabled }),
+                  });
+                  if (r.ok) {
+                    await refresh();
+                  }
+                } catch (_) {
+                  /* noop */
+                }
+              });
+            },
+          );
+          Array.from(document.querySelectorAll("button.install")).forEach(
+            (btn) => {
+              btn.addEventListener("click", async (e) => {
+                const el = e.currentTarget;
+                const name = el.getAttribute("data-pack");
+                const sig = window.prompt("Podaj podpis (signature):");
+                if (!sig) return;
+                try {
+                  const r = await fetch("/v1/packs/install", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({ pack: name, signature: sig }),
+                  });
+                  if (r.ok) {
+                    await refresh();
+                  }
+                } catch (_) {
+                  /* noop */
+                }
+              });
+            },
+          );
+          Array.from(document.querySelectorAll("button.details")).forEach(
+            (btn) => {
+              btn.addEventListener("click", async (e) => {
+                const name = e.currentTarget.getAttribute("data-pack");
+                const d = await fetchDetails(name);
+                if (d) {
+                  showDetails(d);
+                }
+              });
+            },
+          );
+        }
+        async function refresh() {
+          const packs = await fetchPacks();
+          render(packs);
+        }
+        document.getElementById("refresh").addEventListener("click", refresh);
+        const I18N = {
+          pl: {
+            title: "Marketplace • Pakiety",
+            refresh: "Odśwież",
+            count_label: "Liczba",
+          },
+          en: {
+            title: "Marketplace • Packs",
+            refresh: "Refresh",
+            count_label: "Count",
+          },
+        };
+        function getLang() {
+          const u = new URL(location.href);
+          const p = (u.searchParams.get("lang") || "").toLowerCase();
+          return p === "en" || p === "pl" ? p : "pl";
+        }
+        function applyI18n() {
+          const lang = getLang();
+          const d = I18N[lang] || I18N.pl;
+          document.getElementById("title-mp").textContent = d.title;
+          document.querySelectorAll("[data-i18n]").forEach((el) => {
+            const k = el.getAttribute("data-i18n");
+            if (d[k]) el.textContent = d[k];
+          });
+          const sel = document.getElementById("lang");
+          sel.value = lang;
+          sel.onchange = () => {
+            const url = new URL(location.href);
+            url.searchParams.set("lang", sel.value);
+            location.href = url.toString();
+          };
+        }
+        applyI18n();
+        document.getElementById("q").addEventListener("input", refresh);
+        refresh();
+      </script>
+      <style>
+        :focus-visible {
+          outline: 2px solid #8a8f98;
+          outline-offset: 2px;
+        }
+        .sr-only {
+          position: absolute;
+          left: -10000px;
+          top: auto;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+        }
+        .sr-only-focusable:focus {
+          position: static;
+          width: auto;
+          height: auto;
+          padding: 8px 10px;
+          margin: 6px;
+          background: #181b20;
+          border: 2px solid #8a8f98;
+          border-radius: 8px;
+        }
+      </style>
+    </main>
   </body>
-  </html>
+</html>

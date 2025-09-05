@@ -33,6 +33,7 @@ ALLOW = {
     "PQCRYPTO_REQUIRE",
     "PQCRYPTO_READY",
     "STRICT_DP_BUDGET",
+    "VALIDATE_PCO",
 }
 
 

@@ -337,11 +337,6 @@ paths:
       summary: Set tenant quota (cost tokens)
       tags: [Billing]
       responses: { "200": { description: ok } }
-  /v1/billing/balance:
-    get:
-      summary: Get current tenant balance
-      tags: [Billing]
-      responses: { "200": { description: ok } }
   /v1/billing/refund:
     post:
       summary: Refund units to tenant budget
@@ -350,16 +345,6 @@ paths:
   /v1/billing/allocate:
     post:
       summary: Allocate units to current tenant (PENDING → allocate)
-      tags: [Billing]
-      responses: { "200": { description: ok } }
-  /v1/billing/estimate:
-    post:
-      summary: Estimate cost units for an action
-      tags: [Billing]
-      responses: { "200": { description: ok } }
-  /v1/billing/recommendation:
-    get:
-      summary: Recommend tier based on action and monthly volume
       tags: [Billing]
       responses: { "200": { description: ok } }
   /v1/ledger/{case_id}/records:

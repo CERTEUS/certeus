@@ -86,7 +86,7 @@ class MeasureResponse(BaseModel):
 
 
 class SequenceRequest(BaseModel):
-    operators: list[str] = Field(..., min_items=1)
+    operators: list[str] = Field(..., min_length=1)
     case: str | None = Field(default=None)
     basis: list[str] | None = None
     no_collapse: bool = Field(default=False, description="If true, do not collapse after each step")
@@ -208,11 +208,9 @@ async def init_case(req: InitCaseRequest, request: Request, response: Response) 
 
     enforce_limits(request, cost_units=1)
 
-    # Pick basis: if not provided, default to canonical basis
-    if req.basis is None:
-        basis = ["ALLOW", "DENY", "ABSTAIN"]
-    else:
-        basis = req.basis
+    # Pick basis: if not provided, default to common tri-basis (ALLOW/DENY/ABSTAIN)
+    # Note: InitCaseRequest does not include operator; avoid referencing non-existent fields.
+    basis = req.basis or ["ALLOW", "DENY", "ABSTAIN"]
 
     # Simple uniform predistribution stub
 
@@ -810,8 +808,9 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
 
 # === I/O / ENDPOINTS ===
 
-
 # === TESTY / TESTS ===
+
+
 class CommutatorExpRequest(BaseModel):
     case: str
     A: str

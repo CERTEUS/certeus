@@ -201,6 +201,7 @@ __all__ = [
     "set_tenant_quota",
     "get_tenant_id",
     "get_tenant_balance",
+    "allocate_tenant_cost",
     "refund_tenant_units",
 ]
 
@@ -231,16 +232,10 @@ def set_tenant_quota(tenant: str, units: int) -> None:
 
 
 def get_tenant_balance(tenant: str) -> int:
-    """PL: Pobierz bieżący budżet jednostek. EN: Get current budget balance.
-
-    Jeżeli tenant nie ma budżetu w `_TOKEN_BUDGETS`, zwracamy domyślny budżet
-    wg tier‑u z polityk billing.
-    """
+    """PL: Zwraca aktualny budżet tenant-a. EN: Return tenant's current budget."""
 
     with _LOCK:
-        if tenant in _TOKEN_BUDGETS:
-            return int(_TOKEN_BUDGETS[tenant])
-        return int(_default_budget_for(tenant))
+        return _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET)
 
 
 def _charge(tenant: str, cost_units: int) -> bool:
@@ -260,14 +255,18 @@ def _charge(tenant: str, cost_units: int) -> bool:
         return True
 
 
-def refund_tenant_units(tenant: str, units: int) -> None:
-    """PL: Zwróć jednostki do budżetu. EN: Refund units to budget."""
+def allocate_tenant_cost(tenant: str, cost_units: int) -> bool:
+    """PL/EN: Try charge budget for tenant; returns True if allocated (balance decremented)."""
 
-    if units <= 0:
-        return
+    return _charge(tenant, cost_units)
+
+
+def refund_tenant_units(tenant: str, units: int) -> int:
+    """PL/EN: Refund units to tenant and return new balance."""
+
     with _LOCK:
-        cur = _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET)
-        _TOKEN_BUDGETS[tenant] = cur + int(units)
+        _TOKEN_BUDGETS[tenant] = _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET) + max(0, int(units))
+        return _TOKEN_BUDGETS[tenant]
 
 
 def enforce_limits(req: Request, *, cost_units: int = 1) -> None:

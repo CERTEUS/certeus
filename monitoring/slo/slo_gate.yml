@@ -40,4 +40,3 @@ gate_decision:
     if_all_true: "PUBLISH"
     else_if_any_alert_critical: "ABSTAIN"
     else: "CONDITIONAL"
-

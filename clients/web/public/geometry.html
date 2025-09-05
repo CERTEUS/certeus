@@ -20,182 +20,290 @@
     <meta property="og:type" content="website" />
     <title>CERTEUS • Geometry</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:980px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      .btn:focus, input:focus, .cell:focus{outline:2px solid #3b82f6; outline-offset:2px}
-      .muted{color:#9aa0a6}
-      .grid{display:grid;grid-template-columns:repeat(10, 1fr);gap:2px;margin-top:8px}
-      .cell{width:18px;height:18px;background:#20242a;border-radius:2px;position:relative}
-      .cell[data-v]{background: linear-gradient(180deg, #20242a, #2a2d33)}
-      .spark{height:36px;display:flex;gap:2px;align-items:flex-end}
-      .bar{width:6px;background:#5bbaf2;border-radius:2px}
-      .cell:hover::after{content:attr(data-tip);position:absolute;left:20px;top:-10px;background:#1a1c20;border:1px solid #2a2d33;padding:4px 6px;border-radius:6px;white-space:nowrap;font-size:12px}
-      a{color:#9aa0a6}
-      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 2px;
+        margin-top: 8px;
+      }
+      .cell {
+        width: 18px;
+        height: 18px;
+        background: #20242a;
+        border-radius: 2px;
+        position: relative;
+      }
+      .cell[data-v] {
+        background: linear-gradient(180deg, #20242a, #2a2d33);
+      }
+      .cell:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: 20px;
+        top: -10px;
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        padding: 4px 6px;
+        border-radius: 6px;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+      a {
+        color: #9aa0a6;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="card">
-        <h1>Geometry • Ricci heatmap <span id="kappa" class="pill">kappa_max: ?</span></h1>
-        <div id="ricci" class="grid"></div>
-        <p class="muted">Lensing map (precedents): <span id="lensing"></span></p>
-        <p class="muted">UB L_T (trend): <span id="ubval" class="pill">?</span></p>
-        <div id="spark" class="spark" aria-label="UB L_T sparkline"></div>
-        <div class="row">
-          <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
-          <button id="geodesic" class="btn">Compute geodesic</button>
-          <button id="lock" class="btn">Lock horizon</button>
-          <button id="hstatus" class="btn">Refresh horizon</button>
-          <span id="status" class="muted"></span>
-          <a id="caseLink" href="#" target="_blank" class="muted">Open case</a>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+          <nav aria-label="Nawigacja">
+            <a href="/app/public/index.html">Cockpit</a>
+            <a href="/app/public/marketplace.html">Marketplace</a>
+            <a href="/app/public/chatops.html">ChatOps</a>
+            <a href="/app/public/mailops.html">MailOps</a>
+            <a href="/app/public/export.html">Export</a>
+          </nav>
+          <label class="muted" for="lang">Lang</label>
+          <select id="lang" aria-label="Language select" class="btn">
+            <option value="pl" selected>PL</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+        <div class="card">
+          <h1 id="title-ricci">
+            Geometry • Ricci heatmap
+            <span id="kappa" class="pill">kappa_max: ?</span>
+          </h1>
+          <div id="ricci" class="grid"></div>
+          <p class="muted">
+            Lensing map (precedents): <span id="lensing"></span>
+          </p>
+          <div class="row">
+            <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
+            <button id="geodesic" class="btn" data-i18n="compute_geodesic">
+              Compute geodesic
+            </button>
+            <button id="lock" class="btn" data-i18n="lock_horizon">
+              Lock horizon
+            </button>
+            <span id="status" class="muted"></span>
+            <a id="caseLink" href="#" target="_blank" class="muted"
+              >Open case</a
+            >
+          </div>
+        </div>
+        <div class="card" style="margin-top: 16px">
+          <h1>LexQFT • Coverage Contributions</h1>
+          <div class="row" style="margin-bottom: 10px">
+            <button class="btn" id="cov-refresh" data-i18n="refresh_coverage">
+              Refresh coverage
+            </button>
+            <span class="muted"
+              >gamma:<span id="cov-gamma" class="pill">?</span></span
+            >
+            <span class="muted"
+              >uncaptured:<span id="cov-unc" class="pill">?</span></span
+            >
+          </div>
+          <table id="covtbl">
+            <thead>
+              <tr>
+                <th>gamma</th>
+                <th>weight</th>
+                <th>uncaptured</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
-      <div class="card" style="margin-top:16px;">
-        <h1>LexQFT • Coverage Contributions</h1>
-        <div class="row" style="margin-bottom:10px;">
-          <button class="btn" id="cov-refresh">Refresh coverage</button>
-          <span class="muted">gamma:<span id="cov-gamma" class="pill">?</span></span>
-          <span class="muted">uncaptured:<span id="cov-unc" class="pill">?</span></span>
-        </div>
-        <table id="covtbl"><thead><tr><th>gamma</th><th>weight</th><th>uncaptured</th></tr></thead><tbody></tbody></table>
-      </div>
-      <div class="card" style="margin-top:16px;">
-        <h1>CFE • Lensing Map</h1>
-        <div class="row" style="margin-bottom:10px;">
-          <label class="muted">Filter:</label>
-          <label><input type="checkbox" id="fK" aria-label="Filter K_ precedents" checked /> K_</label>
-          <label><input type="checkbox" id="fIII" aria-label="Filter III_ precedents" checked /> III_</label>
-          <label><input type="checkbox" id="fSN" aria-label="Filter SN_ precedents" checked /> SN_</label>
-        </div>
-        <div id="lensingPanel"></div>
-      </div>
-    </div>
+    </main>
     <script>
-      async function fetchJSON(url, opts){ const r = await fetch(url, opts); const j = await r.json(); return {ok:r.ok, data:j, headers:r.headers} }
-      function paintRicci(kappa){
-        const grid = document.getElementById('ricci'); grid.innerHTML='';
-        for(let i=0;i<100;i++){
-          const v = Math.random()*kappa*100;
-          const d=document.createElement('div'); d.className='cell';
-          const tip = `Ricci[${i}]=${v.toFixed(2)}`;
-          d.dataset.tip = tip;
-          d.setAttribute('aria-label', tip);
-          d.setAttribute('tabindex','0');
-          if(v>0.5) d.dataset.v = '1';
+      async function fetchJSON(url, opts) {
+        const r = await fetch(url, opts);
+        const j = await r.json();
+        return { ok: r.ok, data: j, headers: r.headers };
+      }
+      const I18N = {
+        pl: {
+          compute_geodesic: "Oblicz geodezyjną",
+          lock_horizon: "Zablokuj horyzont",
+          refresh_coverage: "Odśwież pokrycie",
+          ricci_title: "Geometria • mapa Ricciego",
+        },
+        en: {
+          compute_geodesic: "Compute geodesic",
+          lock_horizon: "Lock horizon",
+          refresh_coverage: "Refresh coverage",
+          ricci_title: "Geometry • Ricci heatmap",
+        },
+      };
+      function getLang() {
+        const u = new URL(location.href);
+        const p = (u.searchParams.get("lang") || "").toLowerCase();
+        if (p === "en" || p === "pl") return p;
+        return "pl";
+      }
+      function applyI18n() {
+        const lang = getLang();
+        const dict = I18N[lang] || I18N.pl;
+        document.getElementById("title-ricci").childNodes[0].nodeValue =
+          dict.ricci_title + " ";
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const k = el.getAttribute("data-i18n");
+          if (dict[k]) el.textContent = dict[k];
+        });
+        const sel = document.getElementById("lang");
+        sel.value = lang;
+        sel.onchange = () => {
+          const url = new URL(location.href);
+          url.searchParams.set("lang", sel.value);
+          location.href = url.toString();
+        };
+      }
+      function paintRicci(kappa) {
+        const grid = document.getElementById("ricci");
+        grid.innerHTML = "";
+        for (let i = 0; i < 100; i++) {
+          const v = Math.random() * kappa * 100;
+          const d = document.createElement("div");
+          d.className = "cell";
+          d.dataset.tip = `Ricci[${i}]=${v.toFixed(2)}`;
+          if (v > 0.5) d.dataset.v = "1";
           grid.appendChild(d);
         }
       }
-      let _lastLensingMap = {};
-      function renderLensing(map){
-        _lastLensingMap = map || {};
-        const panel = document.getElementById('lensingPanel');
-        panel.innerHTML = '';
-        const filt = {K:document.getElementById('fK').checked, III:document.getElementById('fIII').checked, SN:document.getElementById('fSN').checked};
-        const entries = Object.entries(map||{}).filter(([k,_])=>{
-          if(k.includes('precedent:K_')) return !!filt.K;
-          if(k.includes('precedent:III_')) return !!filt.III;
-          if(k.includes('precedent:SN_')) return !!filt.SN;
-          return true;
-        }).sort((a,b)=>b[1]-a[1]);
-        for(const [k,v] of entries){
-          const row = document.createElement('div');
-          row.className='row';
-          const lab = document.createElement('div'); lab.className='muted'; lab.style.minWidth='220px'; lab.textContent=k;
-          const bar = document.createElement('div'); bar.style.flex='1'; bar.style.height='8px'; bar.style.background='#2a2d33'; bar.style.borderRadius='6px'; bar.style.position='relative';
-          const fill = document.createElement('div'); fill.style.height='100%'; fill.style.width=Math.round((v||0)*100)+'%'; fill.style.background='#3b82f6'; fill.style.borderRadius='6px'; fill.title = `${k}: ${(v||0).toFixed(3)}`;
-          bar.appendChild(fill);
-          const val = document.createElement('div'); val.className='pill'; val.textContent=(v||0).toFixed(3);
-          row.appendChild(lab); row.appendChild(bar); row.appendChild(val);
-          panel.appendChild(row);
+      async function init() {
+        const cur = await fetchJSON("/v1/cfe/curvature");
+        if (cur.ok) {
+          document.getElementById("kappa").textContent =
+            `kappa_max: ${cur.data.kappa_max}`;
+          paintRicci(cur.data.kappa_max || 0.01);
+        }
+        const lm = await fetchJSON("/v1/cfe/lensing");
+        if (lm.ok) {
+          const m = lm.data.lensing_map || {};
+          document.getElementById("lensing").textContent = Object.keys(m)
+            .map((k) => `${k}:${m[k]}`)
+            .join(", ");
         }
       }
-      
-      const _ubSeries = [];
-      function renderSpark(){
-        const wrap = document.getElementById('spark');
-        if(!wrap) return;
-        wrap.innerHTML = '';
-        const max = Math.max(0.01, ..._ubSeries);
-        _ubSeries.slice(-40).forEach(v=>{
-          const b = document.createElement('div');
-          b.className = 'bar';
-          b.style.height = `${Math.max(2, 32 * (v/max))}px`;
-          wrap.appendChild(b);
+      async function doGeodesic() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const r = await fetchJSON("/v1/cfe/geodesic", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, facts: {}, norms: {} }),
         });
+        const act = r.headers.get("X-CERTEUS-PCO-cfe.geodesic_action");
+        document.getElementById("status").textContent = r.ok
+          ? `geodesic_action=${act}`
+          : "error";
+        document.getElementById("caseLink").href =
+          `/v1/ledger/${encodeURIComponent(cs)}/records`;
       }
-      async function pollUB(){
-        try{
-          const r = await fetch('/v1/qtm/uncertainty');
-          if(!r.ok) return;
-          const j = await r.json();
-          const v = Number(j.lower_bound||0);
-          if(!Number.isFinite(v)) return;
-          _ubSeries.push(v);
-          const el = document.getElementById('ubval');
-          if(el) el.textContent = String(v);
-          renderSpark();
-        }catch(e){/*noop*/}
+      async function doLock() {
+        const cs = document.getElementById("case").value || "LEX-001";
+        const r = await fetchJSON("/v1/cfe/horizon", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ case: cs, lock: true }),
+        });
+        const locked = r.headers.get("X-CERTEUS-CFE-Locked");
+        const mass = r.headers.get("X-CERTEUS-PCO-cfe.horizon_mass");
+        document.getElementById("status").textContent = r.ok
+          ? `locked=${locked} mass=${mass}`
+          : "error";
+        document.getElementById("caseLink").href =
+          `/v1/ledger/${encodeURIComponent(cs)}/records`;
       }
-      
-      async function init(){
-        const cur = await fetchJSON('/v1/cfe/curvature');
-        if(cur.ok){ document.getElementById('kappa').textContent = `kappa_max: ${cur.data.kappa_max}`; paintRicci(cur.data.kappa_max||0.01) }
-        const lm = await fetchJSON('/v1/cfe/lensing');
-        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
-        await pollUB();
-        setInterval(pollUB, 3000);
-      }
-      async function doGeodesic(){
-        const cs = document.getElementById('case').value || 'LEX-001';
-        const r = await fetchJSON('/v1/cfe/geodesic', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, facts:{}, norms:{}})});
-        const act = r.headers.get('X-CERTEUS-PCO-cfe.geodesic_action');
-        document.getElementById('status').textContent = r.ok ? `geodesic_action=${act}` : 'error';
-        document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
-        const lm = await fetchJSON(`/v1/cfe/lensing?case_id=${encodeURIComponent(cs)}`);
-        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
-      }
-      async function doLock(){
-        const cs = document.getElementById('case').value || 'LEX-001';
-        const r = await fetchJSON('/v1/cfe/horizon', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, lock: true})});
-        const locked = r.headers.get('X-CERTEUS-CFE-Locked');
-        const mass = r.headers.get('X-CERTEUS-PCO-cfe.horizon_mass');
-        document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
-        document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
-        const lm = await fetchJSON(`/v1/cfe/lensing?case_id=${encodeURIComponent(cs)}`);
-        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
-      }
-      async function doHStatus(){
-        const cs = document.getElementById('case').value || 'LEX-001';
-        const r = await fetchJSON('/v1/cfe/horizon', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs})});
-        const locked = r.headers.get('X-CERTEUS-CFE-Locked') || 'false';
-        const mass = r.headers.get('X-CERTEUS-PCO-cfe.horizon_mass') || '0.0';
-        document.getElementById('status').textContent = r.ok ? `locked=${locked} mass=${mass}` : 'error';
-        document.getElementById('caseLink').href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
-        const lm = await fetchJSON(`/v1/cfe/lensing?case_id=${encodeURIComponent(cs)}`);
-        if(lm.ok){ const m = lm.data.lensing_map || {}; document.getElementById('lensing').textContent = Object.keys(m).map(k=>`${k}:${m[k]}`).join(', '); renderLensing(m) }
-      }
-      document.getElementById('geodesic').addEventListener('click', doGeodesic);
-      document.getElementById('lock').addEventListener('click', doLock);
-      document.getElementById('hstatus').addEventListener('click', doHStatus);
-      function rerenderLensing(){ renderLensing(_lastLensingMap); }
-      document.getElementById('fK').addEventListener('change', rerenderLensing);
-      document.getElementById('fIII').addEventListener('change', rerenderLensing);
-      document.getElementById('fSN').addEventListener('change', rerenderLensing);
-      // Keyboard shortcuts: 1->K_, 2->III_, 3->SN_
-      document.addEventListener('keydown', (e)=>{
-        const tag = (document.activeElement||{}).tagName || '';
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-        if (e.key==='1'){ const el=document.getElementById('fK'); el.checked=!el.checked; rerenderLensing(); }
-        if (e.key==='2'){ const el=document.getElementById('fIII'); el.checked=!el.checked; rerenderLensing(); }
-        if (e.key==='3'){ const el=document.getElementById('fSN'); el.checked=!el.checked; rerenderLensing(); }
-      });
+      document.getElementById("geodesic").addEventListener("click", doGeodesic);
+      document.getElementById("lock").addEventListener("click", doLock);
+      applyI18n();
       init();
     </script>
+    <style>
+      :focus-visible {
+        outline: 2px solid #8a8f98;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #181b20;
+        border: 2px solid #8a8f98;
+        border-radius: 8px;
+      }
+    </style>
   </body>
 </html>

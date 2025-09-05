@@ -49,7 +49,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: "pip"
           cache-dependency-path: |
             requirements.txt
             pyproject.toml
@@ -58,10 +58,10 @@ jobs:
       - name: 📦 Cache uv wheels
         uses: actions/cache@v4
         with:
-            path: ~/.cache/uv
-            key: uv-${{ runner.os }}-${{ hashFiles('uv.lock', 'pyproject.toml') }}
-            restore-keys: |
-              uv-${{ runner.os }}-
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock', 'pyproject.toml') }}
+          restore-keys: |
+            uv-${{ runner.os }}-
 
       - name: 📦 Install uv
         run: |
@@ -71,17 +71,9 @@ jobs:
       - name: 🔧 Sync dependencies (uv or pip fallback)
         run: |
           # Prefer uv; if it fails (np. chwilowy błąd indeksu) – fallback do pip
-          uv sync || python -m pip install -e ".[dev]"
+          uv sync --dev --all-extras || python -m pip install -e ".[dev]"
 
-      - name: 🔍 Ruff (autofix)
-        run: |
-          uv run ruff check . --fix
-
-      - name: 🎨 Ruff (format)
-        run: |
-          uv run ruff format .
-
-      - name: 🔎 Ruff (strict check)
+      - name: 🔎 Ruff (lint)
         run: |
           uv run ruff check . --output-format=github
 
@@ -89,10 +81,10 @@ jobs:
         run: |
           uv run ruff format --check
 
-      - name: Install OpenAPI validator deps (uv env)
+      - name: Install test deps (uv env)
         run: |
           # Install into the uv-managed environment
-          uv pip install openapi-spec-validator PyYAML
+          uv pip install pytest>=8 pytest-asyncio openapi-spec-validator PyYAML
 
       - name: 🧪 Pytest (JUnit report)
         run: |

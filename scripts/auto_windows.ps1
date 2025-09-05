@@ -105,4 +105,3 @@ Write-Host ("Ruff:   {0}" -f $ruffver)
 Write-Host ("Testy:  {0}" -f ($last -as [string]))
 Write-Host ("Remote: {0}" -f ($remote -as [string]))
 Write-Host ("Commit: {0}" -f $sha)
-

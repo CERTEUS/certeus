@@ -108,194 +108,177 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="card">
-        <h1>QTMP • Measurement cockpit</h1>
-        <div class="row">
-          <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
-          <button id="init" class="btn">Init case</button>
-          <button id="lt" class="btn">Measure L→T</button>
-          <button id="tl" class="btn">Measure T→L</button>
-          <button id="lockDeco" class="btn">Decoherence: dephasing</button>
-          <span id="status" class="muted"></span>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+          <nav aria-label="Nawigacja">
+            <a href="/app/public/index.html">Cockpit</a>
+            <a href="/app/public/marketplace.html">Marketplace</a>
+            <a href="/app/public/chatops.html">ChatOps</a>
+            <a href="/app/public/mailops.html">MailOps</a>
+            <a href="/app/public/export.html">Export</a>
+          </nav>
+          <label class="muted" for="lang">Lang</label>
+          <select id="lang" aria-label="Language select" class="btn">
+            <option value="pl" selected>PL</option>
+            <option value="en">EN</option>
+          </select>
         </div>
-        <div class="row" style="margin-top:8px;">
-          <span class="muted">Operator Composer:</span>
-          <label class="muted"><input type="radio" name="op" value="W" checked /> W</label>
-          <label class="muted"><input type="radio" name="op" value="I" /> I</label>
-          <label class="muted"><input type="radio" name="op" value="C" /> C</label>
-          <label class="muted"><input type="radio" name="op" value="L" /> L</label>
-          <label class="muted"><input type="radio" name="op" value="T" /> T</label>
-          <button id="savePreset" class="btn">Save preset</button>
-          <button id="loadPreset" class="btn">Load preset</button>
-          <span id="presetStatus" class="muted"></span>
+        <div class="card">
+          <h1 id="title-op">QTMP • Measurement cockpit</h1>
+          <div class="row">
+            <input id="case" class="btn" placeholder="case id (np. LEX-001)" />
+            <button id="init" class="btn" data-i18n="init_case">
+              Init case
+            </button>
+            <button id="lt" class="btn" data-i18n="measure_lt">
+              Measure L→T
+            </button>
+            <button id="tl" class="btn" data-i18n="measure_tl">
+              Measure T→L
+            </button>
+            <button id="lockDeco" class="btn">Decoherence: dephasing</button>
+            <span id="status" class="muted"></span>
+          </div>
+          <p class="muted">
+            Uncertainty L_T: <span id="ub" class="pill">?</span>, collapse:
+            <span id="collapse" class="pill">-</span>
+          </p>
+          <div id="heat" class="grid"></div>
+          <p class="muted">
+            Case ledger: <a id="caseLink" href="#" target="_blank">open</a>
+          </p>
         </div>
-        <p class="muted">
-          Uncertainty L_T: <span id="ub" class="pill">?</span>, collapse:
-          <span id="collapse" class="pill">-</span>
-        </p>
-        <div id="heat" class="grid"></div>
-        <p class="muted">
-          Case ledger: <a id="caseLink" href="#" target="_blank">open</a>
-        </p>
       </div>
-      <div class="card" style="margin-top:16px;">
-        <h1>QTMP • Commutator heatmap</h1>
-        <div class="row" style="margin-bottom:10px;">
-          <button id="heatmap" class="btn">Build heatmap</button>
-          <span class="muted">0=commute • 1=max non‑commute</span>
-        </div>
-        <table id="cmt" style="width:100%;border-collapse:collapse;">
-          <thead>
-            <tr>
-              <th></th>
-              <th>W</th>
-              <th>I</th>
-              <th>C</th>
-              <th>L</th>
-              <th>T</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-    <script>
-      async function fetchJSON(url, opts) {
-        const r = await fetch(url, opts);
-        const j = await r.json();
-        return { ok: r.ok, data: j, headers: r.headers };
-      }
-      function paintHeat(v) {
-        const grid = document.getElementById("heat");
-        grid.innerHTML = "";
-        const n = 32;
-        for (let i = 0; i < n; i++) {
-          const d = document.createElement("div");
-          const h = v + (Math.random() - 0.5) * 0.1;
-          d.className = "cell " + (h > 0.5 ? "hot" : "cold");
-          d.dataset.tip = `commutator heat=${h.toFixed(2)}`;
-          grid.appendChild(d);
+      <script>
+        async function fetchJSON(url, opts) {
+          const r = await fetch(url, opts);
+          const j = await r.json();
+          return { ok: r.ok, data: j, headers: r.headers };
         }
-      }
-      async function initCase() {
-        const cs = document.getElementById("case").value || "LEX-001";
-        const r = await fetchJSON("/v1/qtm/init_case", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            case: cs,
-            basis: ["ALLOW", "DENY", "ABSTAIN"],
-          }),
-        });
-        document.getElementById("status").textContent = r.ok
-          ? "initialized"
-          : "init failed";
-      }
-      function q(k){ return new URLSearchParams(location.search).get(k)||''; }
-      async function autoRun(){
-        const cs = q('case') || '';
-        const op = (q('op')||'').toUpperCase();
-        const autorun = q('auto');
-        if(cs){ document.getElementById('case').value = cs; await initCase(); }
-        if(autorun==='1' && (op==='LT' || op==='TL')){ await measure(op); }
-      }
-      function colorForValue(v){
-        // v in [0,1]; green (0) -> red (1)
-        const r = Math.round(255 * v);
-        const g = Math.round(200 * (1 - v));
-        return `rgb(${r},${g},120)`;
-      }
-      async function buildHeatmap(){
-        const ops = ['W','I','C','L','T'];
-        const tb = document.querySelector('#cmt tbody');
-        if(!tb) return;
-        tb.innerHTML='';
-        for(const A of ops){
-          const tr = document.createElement('tr');
-          const th = document.createElement('th'); th.textContent = A; th.className='muted'; th.style.textAlign='left'; tr.appendChild(th);
-          for(const B of ops){
-            const td = document.createElement('td'); td.style.height='22px'; td.style.textAlign='center'; td.style.borderBottom='1px solid #2a2d33';
-            try{
-              const r = await fetchJSON('/v1/qtm/commutator', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({A,B})});
-              const v = r.ok ? Number(r.data?.value||0) : 0;
-              td.style.background = colorForValue(Math.max(0, Math.min(1, v)));
-              td.title = `${A},${B} = ${v}`;
-              td.textContent = v.toFixed(2);
-            }catch(e){ td.textContent='-'; }
-            tr.appendChild(td);
+        function paintHeat(v) {
+          const grid = document.getElementById("heat");
+          grid.innerHTML = "";
+          const n = 32;
+          for (let i = 0; i < n; i++) {
+            const d = document.createElement("div");
+            const h = v + (Math.random() - 0.5) * 0.1;
+            d.className = "cell " + (h > 0.5 ? "hot" : "cold");
+            d.dataset.tip = `commutator heat=${h.toFixed(2)}`;
+            grid.appendChild(d);
           }
-          tb.appendChild(tr);
         }
-      }
-      async function measure(op) {
-        const cs = document.getElementById("case").value || "LEX-001";
-        let ub = '?';
-        let collapseText = '-';
-        // If operator represents a sequence (LT/TL), use measure_sequence for a nicer UI
-        if (op === 'LT' || op === 'TL') {
-          const r = await fetchJSON('/v1/qtm/measure_sequence', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ operators: op.split(''), case: cs })
+        async function initCase() {
+          const cs = document.getElementById("case").value || "LEX-001";
+          const r = await fetchJSON("/v1/qtm/init_case", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              case: cs,
+              basis: ["ALLOW", "DENY", "ABSTAIN"],
+            }),
           });
-          if (r.ok) {
-            ub = r.data?.uncertainty_bound?.L_T ?? '?';
-            collapseText = (r.data?.steps || []).map(s => `${s.operator}:${s.verdict}@${(s.p||0).toFixed(2)}`).join(', ');
-          }
-        } else {
+          document.getElementById("status").textContent = r.ok
+            ? "initialized"
+            : "init failed";
+        }
+        async function measure(op) {
+          const cs = document.getElementById("case").value || "LEX-001";
           const r = await fetchJSON("/v1/qtm/measure", {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ operator: op, source: cs }),
           });
-          ub = r.data?.uncertainty_bound?.L_T ?? "?";
-          collapseText = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+          const ub = r.data?.uncertainty_bound?.L_T ?? "?";
+          const ce = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event") || "-";
+          document.getElementById("ub").textContent = ub;
+          document.getElementById("collapse").textContent = ce;
+          document.getElementById("caseLink").href =
+            `/v1/ledger/${encodeURIComponent(cs)}/records`;
+          paintHeat(ub || 0.25);
         }
-        document.getElementById("ub").textContent = ub;
-        document.getElementById("collapse").textContent = collapseText;
-        document.getElementById("caseLink").href = `/v1/ledger/${encodeURIComponent(cs)}/records`;
-        paintHeat(ub || 0.25);
-      }
-      async function setDeco() {
-        const cs = document.getElementById("case").value || "LEX-001";
-        await fetchJSON("/v1/qtm/decoherence", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ case: cs, channel: "dephasing" }),
-        });
-        document.getElementById("status").textContent =
-          "decoherence: dephasing";
-      }
-      document.getElementById("init").addEventListener("click", initCase);
-      document
-        .getElementById("lt")
-        .addEventListener("click", () => measure("LT"));
-      document
-        .getElementById("tl")
-        .addEventListener("click", () => measure("TL"));
-      document.getElementById("lockDeco").addEventListener("click", setDeco);
-      document.getElementById("heatmap")?.addEventListener("click", buildHeatmap);
-      document.getElementById("savePreset").addEventListener("click", async ()=>{
-        const cs = document.getElementById('case').value || 'LEX-001';
-        const sel = document.querySelector('input[name="op"]:checked');
-        const op = sel ? sel.value : 'W';
-        const r = await fetchJSON('/v1/qtm/preset', {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({case: cs, operator: op})});
-        document.getElementById('presetStatus').textContent = r.ok ? `saved: ${op}` : 'save failed';
-      });
-      document.getElementById("loadPreset").addEventListener("click", async ()=>{
-        const cs = document.getElementById('case').value || 'LEX-001';
-        const r = await fetchJSON(`/v1/qtm/preset/${encodeURIComponent(cs)}`);
-        if(r.ok){
-          const op = r.data?.operator||'W';
-          const sel = document.querySelector(`input[name="op"][value="${op}"]`);
-          if(sel) sel.checked = true;
-          document.getElementById('presetStatus').textContent = `loaded: ${op}`;
-        } else {
-          document.getElementById('presetStatus').textContent = 'no preset';
+        async function setDeco() {
+          const cs = document.getElementById("case").value || "LEX-001";
+          await fetchJSON("/v1/qtm/decoherence", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ case: cs, channel: "dephasing" }),
+          });
+          document.getElementById("status").textContent =
+            "decoherence: dephasing";
         }
-      });
-      autoRun();
-    </script>
+        document.getElementById("init").addEventListener("click", initCase);
+        document
+          .getElementById("lt")
+          .addEventListener("click", () => measure("LT"));
+        document
+          .getElementById("tl")
+          .addEventListener("click", () => measure("TL"));
+        document.getElementById("lockDeco").addEventListener("click", setDeco);
+        const I18N = {
+          pl: {
+            title_op: "QTMP • Kokpit pomiarowy",
+            init_case: "Zainicjuj sprawę",
+            measure_lt: "Pomiary L→T",
+            measure_tl: "Pomiary T→L",
+          },
+          en: {
+            title_op: "QTMP • Measurement cockpit",
+            init_case: "Init case",
+            measure_lt: "Measure L→T",
+            measure_tl: "Measure T→L",
+          },
+        };
+        function getLang() {
+          const u = new URL(location.href);
+          const p = (u.searchParams.get("lang") || "").toLowerCase();
+          return p === "en" || p === "pl" ? p : "pl";
+        }
+        function applyI18n() {
+          const lang = getLang();
+          const d = I18N[lang] || I18N.pl;
+          document.getElementById("title-op").textContent = d.title_op;
+          document.querySelectorAll("[data-i18n]").forEach((el) => {
+            const k = el.getAttribute("data-i18n");
+            if (d[k]) el.textContent = d[k];
+          });
+          const sel = document.getElementById("lang");
+          sel.value = lang;
+          sel.onchange = () => {
+            const url = new URL(location.href);
+            url.searchParams.set("lang", sel.value);
+            location.href = url.toString();
+          };
+        }
+        applyI18n();
+      </script>
+      <style>
+        :focus-visible {
+          outline: 2px solid #8a8f98;
+          outline-offset: 2px;
+        }
+        .sr-only {
+          position: absolute;
+          left: -10000px;
+          top: auto;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+        }
+        .sr-only-focusable:focus {
+          position: static;
+          width: auto;
+          height: auto;
+          padding: 8px 10px;
+          margin: 6px;
+          background: #181b20;
+          border: 2px solid #8a8f98;
+          border-radius: 8px;
+        }
+      </style>
+    </main>
   </body>
 </html>

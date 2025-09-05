@@ -16,65 +16,270 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CERTEUS • Quantum Alpha</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:980px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      .muted{color:#9aa0a6}
-      input{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px;width:100px}
-      .pill{display:inline-block;padding:4px 8px;border:1px solid #2a2d33;border-radius:999px;background:#20242a;margin-left:8px}
-      canvas{background:#20242a;border:1px solid #2a2d33;border-radius:8px}
-      table{width:100%;border-collapse:collapse}
-      th,td{border-bottom:1px solid #2a2d33;padding:6px 8px;text-align:left}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      input {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        border-radius: 10px;
+        color: #f2f2f3;
+        padding: 8px 10px;
+        width: 100px;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
+      canvas {
+        background: #20242a;
+        border: 1px solid #2a2d33;
+        border-radius: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #2a2d33;
+        padding: 6px 8px;
+        text-align: left;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <div class="container" id="main" role="main">
+      <div class="row" style="justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+        <nav aria-label="Nawigacja">
+          <a href="/app/public/index.html">Cockpit</a>
+          <a href="/app/public/marketplace.html">Marketplace</a>
+          <a href="/app/public/chatops.html">ChatOps</a>
+          <a href="/app/public/mailops.html">MailOps</a>
+          <a href="/app/public/export.html">Export</a>
+        </nav>
+        <label class="muted" for="lang">Lang</label>
+        <select id="lang" aria-label="Language select" class="btn">
+          <option value="pl" selected>PL</option>
+          <option value="en">EN</option>
+        </select>
+      </div>
       <div class="card">
-        <h1>Quantum Alpha • Measure</h1>
+        <h1 id="title-alpha">Quantum Alpha • Measure</h1>
         <div class="row">
-          <label>risk <input id="risk" type="number" value="0.3" step="0.01" min="0" max="1" /></label>
-          <label>sentiment <input id="sent" type="number" value="0.6" step="0.01" min="0" max="1" /></label>
-          <button id="measure" class="btn">Measure</button>
-          <span class="muted">Outcome:<span id="outcome" class="pill">-</span></span>
+          <label
+            >risk
+            <input
+              id="risk"
+              type="number"
+              value="0.3"
+              step="0.01"
+              min="0"
+              max="1"
+          /></label>
+          <label
+            >sentiment
+            <input
+              id="sent"
+              type="number"
+              value="0.6"
+              step="0.01"
+              min="0"
+              max="1"
+          /></label>
+          <button id="measure" class="btn" data-i18n="measure">Measure</button>
+          <span class="muted"
+            >Outcome:<span id="outcome" class="pill">-</span></span
+          >
           <span class="muted">p:<span id="prob" class="pill">-</span></span>
         </div>
       </div>
       <div class="card">
-        <h1>Timeline • p/outcome</h1>
+        <h1 id="title-timeline">Timeline • p/outcome</h1>
         <canvas id="chart" width="940" height="240"></canvas>
         <table id="hist">
-          <thead><tr><th>t</th><th>risk</th><th>sent</th><th>outcome</th><th>p</th></tr></thead>
+          <thead>
+            <tr>
+              <th>t</th>
+              <th>risk</th>
+              <th>sent</th>
+              <th>outcome</th>
+              <th>p</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </div>
     </div>
     <script>
-      const key='certeus.alpha.history';
-      const hist = JSON.parse(localStorage.getItem(key)||'[]');
-      function redraw(){
-        const c=document.getElementById('chart'); const ctx=c.getContext('2d');
-        ctx.clearRect(0,0,c.width,c.height); ctx.strokeStyle='#9aa0a6'; ctx.strokeRect(0,0,c.width,c.height);
-        if(hist.length===0){return}
-        const maxP = 1.0, minP = 0.0; const pad=10; const w=c.width-2*pad, h=c.height-2*pad;
-        ctx.strokeStyle='#c8f2d2'; ctx.beginPath();
-        hist.forEach((e,i)=>{ const x = pad + (i/(hist.length-1))*w; const y = pad + (1-((e.p-minP)/(maxP-minP)))*h; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+      const key = "certeus.alpha.history";
+      const hist = JSON.parse(localStorage.getItem(key) || "[]");
+      function redraw() {
+        const c = document.getElementById("chart");
+        const ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.strokeStyle = "#9aa0a6";
+        ctx.strokeRect(0, 0, c.width, c.height);
+        if (hist.length === 0) {
+          return;
+        }
+        const maxP = 1.0,
+          minP = 0.0;
+        const pad = 10;
+        const w = c.width - 2 * pad,
+          h = c.height - 2 * pad;
+        ctx.strokeStyle = "#c8f2d2";
+        ctx.beginPath();
+        hist.forEach((e, i) => {
+          const x = pad + (i / (hist.length - 1)) * w;
+          const y = pad + (1 - (e.p - minP) / (maxP - minP)) * h;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
         ctx.stroke();
-        const tb=document.querySelector('#hist tbody'); tb.innerHTML = hist.slice().reverse().map(e=>`<tr><td>${new Date(e.t).toLocaleTimeString()}</td><td>${e.risk}</td><td>${e.sent}</td><td>${e.outcome}</td><td>${e.p.toFixed(3)}</td></tr>`).join('');
+        const tb = document.querySelector("#hist tbody");
+        tb.innerHTML = hist
+          .slice()
+          .reverse()
+          .map(
+            (e) =>
+              `<tr><td>${new Date(e.t).toLocaleTimeString()}</td><td>${e.risk}</td><td>${e.sent}</td><td>${e.outcome}</td><td>${e.p.toFixed(3)}</td></tr>`,
+          )
+          .join("");
       }
-      async function doMeasure(){
-        const risk=parseFloat(document.getElementById('risk').value||'0'), sent=parseFloat(document.getElementById('sent').value||'0');
-        const r = await fetch('/v1/fin/alpha/measure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({signals:{risk, sentiment:sent}})});
-        const body= await r.json();
-        document.getElementById('outcome').textContent = body.outcome; document.getElementById('prob').textContent = body.p;
-        hist.push({t:Date.now(), risk, sent, outcome:body.outcome, p:body.p}); if(hist.length>50) hist.shift(); localStorage.setItem(key, JSON.stringify(hist)); redraw();
+      async function doMeasure() {
+        const risk = parseFloat(document.getElementById("risk").value || "0"),
+          sent = parseFloat(document.getElementById("sent").value || "0");
+        const r = await fetch("/v1/fin/alpha/measure", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ signals: { risk, sentiment: sent } }),
+        });
+        const body = await r.json();
+        document.getElementById("outcome").textContent = body.outcome;
+        document.getElementById("prob").textContent = body.p;
+        hist.push({
+          t: Date.now(),
+          risk,
+          sent,
+          outcome: body.outcome,
+          p: body.p,
+        });
+        if (hist.length > 50) hist.shift();
+        localStorage.setItem(key, JSON.stringify(hist));
+        redraw();
       }
-      document.getElementById('measure').addEventListener('click', doMeasure);
+      document.getElementById("measure").addEventListener("click", doMeasure);
+      const I18N = {
+        pl: {
+          title: "Quantum Alpha • Pomiary",
+          measure: "Pomiary",
+          timeline: "Oś czasu • p/wynik",
+        },
+        en: {
+          title: "Quantum Alpha • Measure",
+          measure: "Measure",
+          timeline: "Timeline • p/outcome",
+        },
+      };
+      function getLang() {
+        const u = new URL(location.href);
+        const p = (u.searchParams.get("lang") || "").toLowerCase();
+        return p === "en" || p === "pl" ? p : "pl";
+      }
+      function applyI18n() {
+        const lang = getLang();
+        const d = I18N[lang] || I18N.pl;
+        document.getElementById("title-alpha").textContent = d.title;
+        document.getElementById("measure").textContent = d.measure;
+        document.getElementById("title-timeline").textContent = d.timeline;
+        const sel = document.getElementById("lang");
+        sel.value = lang;
+        sel.onchange = () => {
+          const url = new URL(location.href);
+          url.searchParams.set("lang", sel.value);
+          location.href = url.toString();
+        };
+      }
+      applyI18n();
       redraw();
     </script>
+    <style>
+      /* Focus indicator + skip link helpers */
+      :focus-visible {
+        outline: 2px solid #8a8f98;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #181b20;
+        border: 2px solid #8a8f98;
+        border-radius: 8px;
+      }
+    </style>
   </body>
-  </html>
-
+</html>

@@ -1,79 +1,36 @@
-# +-------------------------------------------------------------+
+#!/usr/bin/env python3
 
+# +-------------------------------------------------------------+
 # |                          CERTEUS                            |
-
 # +-------------------------------------------------------------+
-
-# | FILE: core/api.py                                         |
-
-# | ROLE: Project module.                                       |
-
-# | PLIK: core/api.py                                         |
-
-# | ROLA: Moduł projektu.                                       |
-
+# | FILE: core/api.py                                          |
+# | ROLE: Project module.                                      |
+# | PLIK: core/api.py                                          |
+# | ROLA: Moduł projektu.                                      |
 # +-------------------------------------------------------------+
 
 """
-PL: API rdzenia CERTEUS: interfejsy wysokiego poziomu.
+PL: Minimalny moduł pomocniczy API rdzenia (placeholder kompatybilności).
 
-EN: CERTEUS core API: high-level interfaces.
+EN: Minimal core API helper module (compatibility placeholder).
 """
 
 # === IMPORTY / IMPORTS ===
+
+from __future__ import annotations
 
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
 
-
-class PluginAPI:
-    def __init__(self):
-        self._plugins = {}
-
-        self.adapters = {}
-
-        self.rules = {}
-
-        self.exporters = {}
-
-    # bookkeeping
-
-    def register_plugin(self, name: str, meta: dict):
-        self._plugins[name] = meta
-
-    def list_plugins(self):
-        return self._plugins.keys()
-
-    # domains
-
-    def register_adapter(self, key: str, fn):
-        self.adapters[key] = fn
-
-    def register_rule(self, key: str, data):
-        self.rules[key] = data
-
-    def register_exporter(self, key: str, fn):
-        self.exporters[key] = fn
-
-
 # === LOGIKA / LOGIC ===
 
-# +-------------------------------------------------------------+
 
-# |                          CERTEUS                            |
+def ping() -> str:
+    """PL/EN: Lightweight health helper returning 'ok'."""
 
-# +-------------------------------------------------------------+
+    return "ok"
 
-# | FILE: core/api.py                                         |
-
-# | ROLE: Project module.                                       |
-
-# | PLIK: core/api.py                                         |
-
-# | ROLA: Moduł projektu.                                       |
-
-# +-------------------------------------------------------------+
 
 # === I/O / ENDPOINTS ===
 

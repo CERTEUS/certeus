@@ -24,14 +24,14 @@ groups:
           sum(rate(certeus_http_request_duration_ms_count[1h]))
 
       - alert: HighErrorRateShort
-        expr: certeus_http_error_rate_5m > 0.02  # 4x budżet przy 0.5%
+        expr: certeus_http_error_rate_5m > 0.02 # 4x budżet przy 0.5%
         for: 10m
         labels: { severity: critical }
         annotations:
           summary: "Short-burn error rate high (>2%)"
 
       - alert: HighErrorRateLong
-        expr: certeus_http_error_rate_1h > 0.005  # 0.5% SLO
+        expr: certeus_http_error_rate_1h > 0.005 # 0.5% SLO
         for: 1h
         labels: { severity: warning }
         annotations:
@@ -51,4 +51,3 @@ groups:
         labels: { severity: warning }
         annotations:
           summary: "p95 latency above 250ms"
-

@@ -17,9 +17,12 @@ _work/certeus/certeus/
 # Python/Build artifacts
 __pycache__/
 *.py[cod]
-*.pyo
-.pytest_cache/
-.hypothesis/
+.venv/
+# Ignore any ad-hoc virtualenvs created in repo root
+.venv*/
+venv*/
+venv/
+.git-credentials
 *.egg-info/
 dist/
 build/
@@ -45,10 +48,22 @@ data/lexqft_coverage_state.json
 static/previews/
 .devkeys/
 
-# IDE/Env
+# Artefakty
+reports/
+data/public_pco/
+out/
+data/lexqft_coverage_state.json
+data/packs_state.json
+
+# IDE / OS
 .vscode/
 .env
 .git-credentials
 node_modules
 
 .venv_cli/
+.hypothesis/
+.python-version
+*_sed.ps1
+tmp_*.py
+

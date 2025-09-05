@@ -14,6 +14,7 @@ EN: Smoke: reset, update and state for LexQFT coverage.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path

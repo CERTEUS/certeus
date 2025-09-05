@@ -46,3 +46,7 @@ Write-Host 'DEV ENV:'
 Write-Host '  ALLOW_ORIGINS=' $env:ALLOW_ORIGINS
 Write-Host '  ED25519_PUBKEY_B64URL set? ' ([bool]$env:ED25519_PUBKEY_B64URL)
 Write-Host '  ED25519_PUBKEY_HEX    set? ' ([bool]$env:ED25519_PUBKEY_HEX)
+
+# ProofGate report-only validation of PCO extensions in dev
+Set-IfEmpty -Name 'VALIDATE_PCO' -Value '1'
+Write-Host '  VALIDATE_PCO          = ' $env:VALIDATE_PCO ' (report-only)'

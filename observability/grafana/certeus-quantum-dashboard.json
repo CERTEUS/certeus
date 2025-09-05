@@ -20,17 +20,21 @@
       "type": "timeseries",
       "title": "QTMP UB L_T (by source)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-      "targets": [
-        { "expr": "certeus_qtm_ub_lt", "legendFormat": "{{source}}" }
-      ]
+      "targets": [{ "expr": "certeus_qtm_ub_lt", "legendFormat": "{{source}}" }]
     },
     {
       "type": "timeseries",
       "title": "Operator priorities (L/T focus)",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
-        { "expr": "certeus_qtm_operator_priority{operator=\"L\"}", "legendFormat": "L" },
-        { "expr": "certeus_qtm_operator_priority{operator=\"T\"}", "legendFormat": "T" }
+        {
+          "expr": "certeus_qtm_operator_priority{operator=\"L\"}",
+          "legendFormat": "L"
+        },
+        {
+          "expr": "certeus_qtm_operator_priority{operator=\"T\"}",
+          "legendFormat": "T"
+        }
       ]
     },
     {

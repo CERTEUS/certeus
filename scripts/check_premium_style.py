@@ -31,20 +31,15 @@ Zwraca kod 0 (OK) lub 1 (naruszenia). Wypisuje listę problemów.
 from __future__ import annotations
 
 import ast
-import os
 from pathlib import Path
 import sys
 
 REPO = Path(__file__).resolve().parents[1]
 
+# Exact top-level directories to skip
 SKIP_DIRS = {
     ".git",
-    ".venv",
-    ".venv_lin",
-    ".venv_cli",
-    "venv",
-    "venv_lin",
-    "venv_cli",
+    ".github/ci-status",  # status branch checkout (when present)
     "node_modules",
     "dist",
     "build",
@@ -52,7 +47,34 @@ SKIP_DIRS = {
     ".ruff_cache",
     ".pytest_cache",
     "clients/web/public/brand",
+    "out",
+    "reports",
 }
+
+# Prefix-based directories to skip anywhere in tree (handles local/CI venvs)
+SKIP_DIR_PREFIXES = (
+    ".venv",
+    "venv",
+    "_venv",
+    "mirror_",
+)
+
+
+def _should_skip(rel: str) -> bool:
+    # Normalize to POSIX-style
+    r = rel.replace("\\", "/")
+    # Skip exact directories at repo root
+    if any(r == d or r.startswith(d + "/") for d in SKIP_DIRS):
+        return True
+    # Skip any path containing virtualenv or mirrors
+    parts = r.split("/")
+    for part in parts:
+        if any(part.startswith(pfx) for pfx in SKIP_DIR_PREFIXES):
+            return True
+    # Skip third-party packages laid out in local/CI envs
+    if "/site-packages/" in r or r.endswith("/site-packages") or "/dist-packages/" in r:
+        return True
+    return False
 
 
 PROJECT_DIRS = [
@@ -80,23 +102,20 @@ PROJECT_DIRS = [
 
 def iter_files(patterns: list[str]) -> list[Path]:
     out: list[Path] = []
-    roots = [REPO / d for d in PROJECT_DIRS if (REPO / d).exists()]
-    for root in roots:
-        for dirpath, dirnames, filenames in os.walk(root):
-            rel_root = Path(dirpath).relative_to(REPO).as_posix()
-            if any(rel_root == d or rel_root.startswith(d + "/") for d in SKIP_DIRS):
-                dirnames[:] = []
+    for p in REPO.rglob("*"):
+        try:
+            rel = p.relative_to(REPO).as_posix()
+        except Exception:
+            continue
+        if _should_skip(rel):
+            continue
+        try:
+            if not p.is_file():
                 continue
-            for fn in filenames:
-                if not any(fn.endswith(suf) for suf in patterns):
-                    continue
-                p = Path(dirpath) / fn
-                try:
-                    if not p.is_file():
-                        continue
-                except OSError:
-                    continue
-                out.append(p)
+        except OSError:
+            continue
+        if any(rel.endswith(suf) for suf in patterns):
+            out.append(p)
     return out
 
 

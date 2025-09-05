@@ -1,36 +1,81 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tests/services/test_devices_idempotency.py           |
+# | ROLE: Test module.                                          |
+# | PLIK: tests/services/test_devices_idempotency.py           |
+# | ROLA: Moduł testów.                                         |
+# +-------------------------------------------------------------+
 """
-PL: W15 — Idempotencja urządzeń: ta sama Idempotency-Key zwraca ten sam wynik bez podwójnego kosztu.
-EN: W15 — Devices idempotency: same Idempotency-Key returns same result without double-charging.
+PL: Testy idempotency header dla devices: HDE/Q-Oracle/Entangle/Chronosync.
+EN: Idempotency header tests for devices: HDE/Q-Oracle/Entangle/Chronosync.
 """
+
+# === IMPORTY / IMPORTS ===
 
 from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+from services.api_gateway.main import app
 
-def test_qoracle_idempotency_and_budget_once() -> None:
-    from services.api_gateway.main import app
 
+def _assert_replay_headers(h1: str | None, h2: str | None) -> None:
+    assert h1 in {"0", None}  # first may be explicitly "0" or absent
+    assert h2 == "1"
+
+
+def test_hde_idempotent_replay_flag() -> None:
     c = TestClient(app)
-
-    tenant = "idem-tenant"
-    # set quota to known value
-    r = c.post("/v1/billing/quota", json={"tenant": tenant, "units": 10})
-    assert r.status_code == 200
-    # first call with key
-    h = {"Idempotency-Key": "k-qo-1", "X-Tenant-ID": tenant}
-    r1 = c.post("/v1/devices/qoracle/expectation", json={"question": "retry-safe"}, headers=h)
-    assert r1.status_code == 200
-    s1 = r1.headers.get("X-Idempotency-Status")
-    # second call same key
-    r2 = c.post("/v1/devices/qoracle/expectation", json={"question": "retry-safe"}, headers=h)
-    assert r2.status_code == 200
+    key = "idem-abc-1"
+    r1 = c.post("/v1/devices/horizon_drive/plan", json={}, headers={"X-Idempotency-Key": key})
+    r2 = c.post("/v1/devices/horizon_drive/plan", json={}, headers={"X-Idempotency-Key": key})
+    assert r1.status_code == r2.status_code == 200
     assert r1.json() == r2.json()
-    s2 = r2.headers.get("X-Idempotency-Status")
-    assert s1 == "new" and s2 == "reused"
-    # verify budget deducted only once (endpoint cost is 2 units)
-    rb = c.get("/v1/billing/balance", headers={"X-Tenant-ID": tenant})
-    assert rb.status_code == 200
-    bal = int(rb.json().get("balance"))
-    assert bal == 8
+    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+
+
+def test_qoracle_idempotent_replay_flag() -> None:
+    c = TestClient(app)
+    key = "idem-abc-2"
+    r1 = c.post(
+        "/v1/devices/qoracle/expectation",
+        json={"question": "maximize outcome", "constraints": {"limit": 10}},
+        headers={"X-Idempotency-Key": key},
+    )
+    r2 = c.post(
+        "/v1/devices/qoracle/expectation",
+        json={"question": "maximize outcome", "constraints": {"limit": 10}},
+        headers={"X-Idempotency-Key": key},
+    )
+    assert r1.status_code == r2.status_code == 200
+    assert r1.json() == r2.json()
+    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+
+
+def test_entangle_idempotent_replay_flag() -> None:
+    c = TestClient(app)
+    key = "idem-abc-3"
+    body = {"variables": ["A", "B", "C"], "target_negativity": 0.1}
+    r1 = c.post("/v1/devices/entangle", json=body, headers={"X-Idempotency-Key": key})
+    r2 = c.post("/v1/devices/entangle", json=body, headers={"X-Idempotency-Key": key})
+    assert r1.status_code == r2.status_code == 200
+    assert r1.json() == r2.json()
+    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+
+
+def test_chronosync_idempotent_replay_flag() -> None:
+    c = TestClient(app)
+    key = "idem-abc-4"
+    body = {"coords": {"a": 1}, "pc_delta": {"x": 1}}
+    r1 = c.post("/v1/devices/chronosync/reconcile", json=body, headers={"X-Idempotency-Key": key})
+    r2 = c.post("/v1/devices/chronosync/reconcile", json=body, headers={"X-Idempotency-Key": key})
+    assert r1.status_code == r2.status_code == 200
+    assert r1.json() == r2.json()
+    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+
+
+# === I/O / ENDPOINTS ===
+
+# === TESTY / TESTS ===

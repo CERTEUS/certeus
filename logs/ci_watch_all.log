@@ -1,0 +1,16 @@
+[2025-09-05 07:28:07Z] CI status for CERTEUS/certeus@work/daily
+
+[32;1mname                                       [0m[32;1m head_branch[0m[32;1m status   [0m[32;1m conclusion[0m[32;1m run_number[0m[32;1m head_sha[0m
+[32;1m----                                       [0m [32;1m-----------[0m [32;1m------   [0m [32;1m----------[0m [32;1m----------[0m [32;1m--------                       [0m
+UI Smoke                                    work/daily  completed success           596 094621f7be6828158bc373c66e9a21…
+ci-gates                                    work/daily  completed success           496 094621f7be6828158bc373c66e9a21…
+.github/workflows/boundary_rebuild_gate.yml work/daily  completed failure           393 094621f7be6828158bc373c66e9a21…
+.github/workflows/supply-chain.yml          work/daily  completed failure           487 094621f7be6828158bc373c66e9a21…
+.github/workflows/gauge_gate.yml            work/daily  completed failure           393 094621f7be6828158bc373c66e9a21…
+.github/workflows/path_coverage_gate.yml    work/daily  completed failure           277 094621f7be6828158bc373c66e9a21…
+.github/workflows/proof-gate.yml            work/daily  completed failure           531 094621f7be6828158bc373c66e9a21…
+.github/workflows/asset-guard.yml           work/daily  completed failure           543 094621f7be6828158bc373c66e9a21…
+.github/workflows/asset-guard.yml           work/daily  completed failure           542 3f3602252dc658eb4d459e50dc075e…
+UI Smoke                                    work/daily  completed success           595 3f3602252dc658eb4d459e50dc075e…
+
+Summary: success=3 failure=7 in_progress=0

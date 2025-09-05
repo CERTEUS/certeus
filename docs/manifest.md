@@ -180,6 +180,7 @@ Micro-Court, CLDF/LEX-FONTARIUS (cytaty z hash), generatory pism, orzecznictwo, 
 - `fin.entanglement.*`,
 - **DPCO (Data-PCO):** `dataset.hash, lineage[], dp_epsilon, consent_refs[]`,
 - **MCO (Model-PCO):** `training.data_dpco[], sbom_uri, commit_sha, eval.{ece,brier,auroc}, bias_report_uri`,
+- **SEC (Security-PCO):** `finding_id, severity∈{LOW,MEDIUM,HIGH,CRITICAL}, evidence[], controls[], cwe[], cve[], cvss?, attestation?`,
 - **MailOps:** `io.email.{mail_id,thread_id,spf,dkim,dmarc}`,
 - **ChatOps:** `chatops.cmd`, `chatops.args`, `chatops.openapi_rev`.
 
@@ -892,7 +893,3 @@ _(To nie porada prawna. Sekcja wskazuje implementacyjne punkty zaczepienia.)_
 ---
 
 **Koniec Manifestu Jednolitego v1.5 (Immutable).**
-
-
-
-

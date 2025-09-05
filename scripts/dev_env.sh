@@ -38,3 +38,7 @@ echo "DEV ENV:"
 echo "  ALLOW_ORIGINS=${ALLOW_ORIGINS}"
 echo "  ED25519_PUBKEY_B64URL set? " $([[ -n "${ED25519_PUBKEY_B64URL:-}" ]] && echo true || echo false)
 echo "  ED25519_PUBKEY_HEX    set? " $([[ -n "${ED25519_PUBKEY_HEX:-}" ]] && echo true || echo false)
+
+# ProofGate report-only validation of PCO extensions in dev
+export VALIDATE_PCO="${VALIDATE_PCO:-1}"
+echo "  VALIDATE_PCO          = ${VALIDATE_PCO} (report-only)"

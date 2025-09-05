@@ -28,7 +28,7 @@ EN: FastAPI router for ChatOps interface.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -70,9 +70,26 @@ async def command(req: CommandRequest, request: Request) -> dict:
     # Very small, safe whitelist and synthetic responses
 
     if req.cmd == "qtm.measure":
-        op = (req.args or {}).get("operator", "W")
+        # Bridge to QTMP measure endpoint to ensure PCO/ledger behavior
+        try:
+            from services.api_gateway.routers import qtm as _qtm
 
-        return {"dispatched": req.cmd, "args": req.args or {}, "result": {"verdict": op, "p": 0.5}}
+            args = req.args or {}
+            op = str(args.get("operator", "W"))
+            case = str(args.get("case") or args.get("source") or "chatops-case")
+            mreq = _qtm.MeasureRequest(operator=op, source=f"chatops:{req.cmd}", case=case)
+            tmp_resp = Response()
+            out = await _qtm.measure(mreq, request, tmp_resp)
+            # Expose essential PCO headers (collapse event, priorities, etc.)
+            pco_headers = {k: v for k, v in tmp_resp.headers.items() if k.startswith("X-CERTEUS-PCO-")}
+            return {
+                "dispatched": req.cmd,
+                "args": args,
+                "result": out.model_dump(),
+                "pco": pco_headers,
+            }
+        except Exception as e:  # pragma: no cover
+            raise HTTPException(status_code=500, detail=f"qtm.measure failed: {e}") from e
 
     if req.cmd == "cfe.geodesic":
         return {"dispatched": req.cmd, "result": {"path": ["A", "B", "C"], "geodesic_action": 12.34}}

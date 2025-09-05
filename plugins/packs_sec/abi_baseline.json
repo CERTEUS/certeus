@@ -1,0 +1,9 @@
+{
+  "__version__": "0.1.0",
+  "module": "plugins.packs_sec.src.main",
+  "has_module_register": true,
+  "module_register_arity": 1,
+  "has_class_plugin": false,
+  "has_class_register": false,
+  "class_register_arity": null
+}

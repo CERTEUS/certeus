@@ -63,6 +63,20 @@
 - Ewentualne wzmocnienie gate’ów (Proof Gate) o twarde warunki dla PQ/DP w zależności od zmiennych repo.
 - Dalsze optymalizacje p95 i paneli SRE.
 
+## Status W14 (UX/A11y/i18n/Marketplace) — A8
+
+- A11y/i18n: baseline smoke włączone w `ci-gates` (report-only) i testy zielone.
+- Marketplace Policy Gate: uruchamiany raz w `ci-gates` (report-only), tick `out/marketplace_ok.txt` publikowany.
+- Plugin Supply-Chain Gate: dodany (report-only) — weryfikuje SBOM/provenance dla `plugins/*` i publikuje tick `out/plugin_supply_ok.txt`.
+- Enforce (manual): workflow `.github/workflows/security-enforce.yml` — egzekwuje Marketplace/Plugin Supply/Compliance (workflow_dispatch).
+- Porządek CI: usunięto duplikację kroku Marketplace Gate w `.github/workflows/ci-gates.yml` (jedna ścieżka egzekucji pozostaje).
+
+### Następne kroki A8 (ciągłość W14)
+
+- Supply-chain dla wtyczek: doprecyzowanie checklist (SBOM/provenance) — report-only w `ci-gates`.
+- Observability: sanity dla trendów endpoint/tenant SLO (report-only), bez zmian progów.
+- Dokumentacja: krótkie runbooki dla maintainerów (enforce flags, lokalne uruchomienia bramek).
+
 ## Uwagi operacyjne
 
 - Jeśli czerwony check dotyczy braków importu w skryptach uruchamianych „jako plik” — wzorzec rozwiązania: dołączyć repo‑root do `sys.path` i dodać `# noqa: E402` przy importach aplikacji.

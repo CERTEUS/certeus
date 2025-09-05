@@ -26,4 +26,3 @@
   },
   "required": ["dataset_hash", "lineage", "dp_epsilon"]
 }
-

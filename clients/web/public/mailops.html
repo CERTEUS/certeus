@@ -2,102 +2,355 @@
 +-------------------------------------------------------------+
 |                          CERTEUS                            |
 +-------------------------------------------------------------+
-| FILE: clients/web/public/mailops.html                      |
-| ROLE: Web client page (MailOps ingest).                      |
-| PLIK: clients/web/public/mailops.html                      |
-| ROLA: Strona web (MailOps ingest).                            |
+| FILE: clients/web/public/mailops.html                       |
+| ROLE: Web client page (MailOps ingest UI).                  |
+| PLIK: clients/web/public/mailops.html                       |
+| ROLA: Strona klienta web (MailOps ingest UI).               |
 +-------------------------------------------------------------+
 -->
+
 <!doctype html>
 <html lang="pl" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="CERTEUS MailOps ingest" />
     <title>CERTEUS • MailOps</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:920px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      input,textarea{width:100%;background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
-      .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      pre{white-space:pre-wrap;background:#0f1115;border:1px solid #2a2d33;border-radius:10px;padding:12px}
-      .muted{color:#9aa0a6}
-      label{font-size:12px;color:#9aa0a6}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 960px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      label {
+        font-size: 14px;
+        color: #c9cdd3;
+      }
+      input,
+      textarea,
+      select {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
+      input[type="text"],
+      input[type="email"] {
+        width: 100%;
+      }
+      textarea {
+        min-height: 100px;
+        width: 100%;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      .pill {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid #2a2d33;
+        border-radius: 999px;
+        background: #20242a;
+        margin-left: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border-bottom: 1px solid #2a2d33;
+        padding: 6px 8px;
+        text-align: left;
+      }
+      pre {
+        background: #0f1115;
+        border: 1px solid #2a2d33;
+        padding: 12px;
+        border-radius: 8px;
+        overflow: auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="card">
-        <h1>MailOps • Ingest</h1>
-        <div class="row">
-          <div>
-            <label>mail_id</label>
-            <input id="mail_id" placeholder="MAIL-001" />
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+          <nav aria-label="Nawigacja">
+            <a href="/app/public/index.html">Cockpit</a>
+            <a href="/app/public/marketplace.html">Marketplace</a>
+            <a href="/app/public/chatops.html">ChatOps</a>
+            <a href="/app/public/export.html">Export</a>
+          </nav>
+          <label for="lang" class="muted">Lang</label>
+          <select id="lang" aria-label="Language select" class="btn">
+            <option value="pl" selected>PL</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+        <div class="card">
+          <h1 id="title">MailOps • Ingest</h1>
+          <p id="subtitle" class="muted">
+            Wstrzyknij metadane e‑maila do Ledger/ProofFS.
+          </p>
+          <div class="grid">
+            <div>
+              <label for="mail_id">mail_id</label>
+              <input id="mail_id" type="text" value="mail-001" />
+            </div>
+            <div>
+              <label for="thread_id">thread_id</label>
+              <input id="thread_id" type="text" value="thread-001" />
+            </div>
+            <div>
+              <label for="from_addr">from</label>
+              <input id="from_addr" type="email" value="alice@example.com" />
+            </div>
+            <div>
+              <label for="to">to (comma‑sep)</label>
+              <input id="to" type="text" value="bob@example.com" />
+            </div>
+            <div>
+              <label for="subject">subject</label>
+              <input id="subject" type="text" value="Dowód i załączniki" />
+            </div>
+            <div>
+              <label for="body_text">body (text)</label>
+              <textarea id="body_text">
+Szanowni Państwo, w załączeniu przesyłam materiały.</textarea
+              >
+            </div>
           </div>
-          <div>
-            <label>thread_id</label>
-            <input id="thread_id" placeholder="(opcjonalnie)" />
+          <div class="row" style="margin-top: 10px">
+            <label class="muted">Załączniki</label>
+            <button id="addAtt" class="btn">Dodaj</button>
           </div>
-          <div>
-            <label>from_addr</label>
-            <input id="from_addr" placeholder="alice@example.com" />
-          </div>
-          <div>
-            <label>to (comma)</label>
-            <input id="to" placeholder="ops@example.com, sre@example.com" />
-          </div>
-          <div>
-            <label>subject</label>
-            <input id="subject" placeholder="Hello" />
-          </div>
-          <div>
-            <label>body_text</label>
-            <input id="body_text" placeholder="Test" />
-          </div>
-          <div>
-            <label>SPF</label>
-            <input id="spf" placeholder="pass" />
-          </div>
-          <div>
-            <label>DKIM</label>
-            <input id="dkim" placeholder="pass" />
-          </div>
-          <div>
-            <label>DMARC</label>
-            <input id="dmarc" placeholder="pass" />
+          <table aria-label="Attachments">
+            <thead>
+              <tr>
+                <th>filename</th>
+                <th>content_type</th>
+                <th>size</th>
+                <th>Akcja</th>
+              </tr>
+            </thead>
+            <tbody id="atts"></tbody>
+          </table>
+          <div class="row" style="margin-top: 10px">
+            <button id="send" class="btn" data-i18n="send">Wyślij</button>
+            <span class="muted"
+              ><span data-i18n="status">Status</span>:
+              <span id="st" class="pill">-</span></span
+            >
+            <button id="copyCurl" class="btn">Copy curl</button>
           </div>
         </div>
-        <div style="margin-top:12px">
-          <button class="btn" id="send">Send</button>
+        <div class="card">
+          <h1>Wynik</h1>
+          <pre id="out" aria-live="polite"></pre>
         </div>
-        <p class="muted">Response:</p>
-        <pre id="out"></pre>
-        <p class="muted">Ledger: <a id="mlink" href="#" target="_blank">open records</a></p>
       </div>
-    </div>
+    </main>
     <script>
-      async function send(){
-        const body={
-          mail_id: (document.getElementById('mail_id').value||'MAIL-001').trim(),
-          thread_id: (document.getElementById('thread_id').value||'').trim()||null,
-          from_addr: (document.getElementById('from_addr').value||'alice@example.com').trim(),
-          to: (document.getElementById('to').value||'ops@example.com').split(',').map(x=>x.trim()).filter(Boolean),
-          subject: (document.getElementById('subject').value||'Hello').trim(),
-          body_text: (document.getElementById('body_text').value||'Test').trim(),
-          spf: (document.getElementById('spf').value||'pass').trim(),
-          dkim: (document.getElementById('dkim').value||'pass').trim(),
-          dmarc: (document.getElementById('dmarc').value||'pass').trim(),
-          attachments: []
-        };
-        const r = await fetch('/v1/mailops/ingest',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body)});
-        const txt = await r.text();
-        try{ const j = JSON.parse(txt); document.getElementById('out').textContent = JSON.stringify(j, null, 2); const tid = (j.io && (j.io['io.email.thread_id']||j.io['io.email.mail_id'])) || body.thread_id || body.mail_id; if(tid){ document.getElementById('mlink').href = `/v1/ledger/${encodeURIComponent(tid)}/records`; } }catch{ document.getElementById('out').textContent = txt; }
+      const I18N = {
+        pl: {
+          title: "MailOps • Ingest",
+          subtitle: "Wstrzyknij metadane e‑maila do Ledger/ProofFS.",
+          send: "Wyślij",
+          status: "Status",
+        },
+        en: {
+          title: "MailOps • Ingest",
+          subtitle: "Inject email metadata to Ledger/ProofFS.",
+          send: "Send",
+          status: "Status",
+        },
+      };
+      function getLang() {
+        const u = new URL(location.href);
+        const p = (u.searchParams.get("lang") || "").toLowerCase();
+        return p === "en" || p === "pl" ? p : "pl";
       }
-      document.getElementById('send').addEventListener('click', send);
+      function applyI18n() {
+        const lang = getLang();
+        const d = I18N[lang] || I18N.pl;
+        document.getElementById("title").textContent = d.title;
+        document.getElementById("subtitle").textContent = d.subtitle;
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const k = el.getAttribute("data-i18n");
+          if (d[k]) el.textContent = d[k];
+        });
+        const sel = document.getElementById("lang");
+        sel.value = lang;
+        sel.onchange = () => {
+          const url = new URL(location.href);
+          url.searchParams.set("lang", sel.value);
+          location.href = url.toString();
+        };
+      }
+      function attRow(a) {
+        return `<tr>
+          <td><input type="text" value="${a.filename || ""}" data-k="filename"/></td>
+          <td><input type="text" value="${a.content_type || "application/octet-stream"}" data-k="content_type"/></td>
+          <td><input type="text" value="${a.size || 0}" data-k="size"/></td>
+          <td><button class="btn rm">Usuń</button></td>
+        </tr>`;
+      }
+      function readAtts() {
+        const rows = Array.from(document.querySelectorAll("#atts tr"));
+        return rows.map((tr) => {
+          const m = {};
+          tr.querySelectorAll("input").forEach((inp) => {
+            const k = inp.getAttribute("data-k");
+            m[k] = k === "size" ? Number(inp.value || 0) : inp.value || "";
+          });
+          return m;
+        });
+      }
+      function renderAtts(list) {
+        const tb = document.getElementById("atts");
+        tb.innerHTML = list.map(attRow).join("");
+        Array.from(tb.querySelectorAll("button.rm")).forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.currentTarget.closest("tr")?.remove();
+          });
+        });
+      }
+      function buildReq() {
+        return {
+          mail_id: document.getElementById("mail_id").value || "mail-x",
+          thread_id: document.getElementById("thread_id").value || null,
+          from_addr:
+            document.getElementById("from_addr").value || "alice@example.com",
+          to: (document.getElementById("to").value || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          subject: document.getElementById("subject").value || null,
+          body_text: document.getElementById("body_text").value || null,
+          attachments: readAtts(),
+        };
+      }
+      function buildCurl(body) {
+        const s = JSON.stringify(body);
+        return `curl -sS -X POST http://127.0.0.1:8000/v1/mailops/ingest -H 'content-type: application/json' -d '${s.replace(/'/g, "'\\''")}'`;
+      }
+      async function send() {
+        const body = buildReq();
+        document.getElementById("st").textContent = "…";
+        try {
+          const r = await fetch("/v1/mailops/ingest", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          const j = await r.json();
+          document.getElementById("out").textContent = JSON.stringify(
+            j,
+            null,
+            2,
+          );
+          document.getElementById("st").textContent = r.ok ? "OK" : "ERR";
+          document.getElementById("copyCurl").onclick = () =>
+            navigator.clipboard.writeText(buildCurl(body));
+        } catch (e) {
+          document.getElementById("st").textContent = "ERR";
+          document.getElementById("out").textContent = String(e);
+        }
+      }
+      // init
+      applyI18n();
+      renderAtts([
+        { filename: "dowod.pdf", content_type: "application/pdf", size: 12345 },
+      ]);
+      document.getElementById("addAtt").addEventListener("click", () => {
+        const list = readAtts();
+        list.push({
+          filename: "plik.txt",
+          content_type: "text/plain",
+          size: 10,
+        });
+        renderAtts(list);
+      });
+      document.getElementById("send").addEventListener("click", send);
     </script>
+    <style>
+      :focus-visible {
+        outline: 2px solid #8a8f98;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #181b20;
+        border: 2px solid #8a8f98;
+        border-radius: 8px;
+      }
+    </style>
   </body>
-  </html>
+</html>

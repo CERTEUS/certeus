@@ -13,6 +13,7 @@ EN: Smoke: measure_sequence and expectation based on state.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path

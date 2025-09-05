@@ -38,11 +38,11 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from core.version import __version__
-from monitoring.correlation import attach_correlation_middleware
 from monitoring.otel_setup import setup_fastapi_otel
-from monitoring.profiling import attach_profiling_middleware
-from monitoring.shedder import attach_shedder_middleware
+from services.api_gateway.rate_limit import attach_rate_limit_middleware
 import services.api_gateway.routers.billing as billing
+import services.api_gateway.routers.billing_api as billing_api
+import services.api_gateway.routers.billing_quota as billing_quota
 import services.api_gateway.routers.boundary as boundary
 import services.api_gateway.routers.cfe as cfe
 import services.api_gateway.routers.chatops as chatops
@@ -52,32 +52,39 @@ import services.api_gateway.routers.ethics as ethics
 import services.api_gateway.routers.export as export
 import services.api_gateway.routers.fin as fin
 import services.api_gateway.routers.ledger as ledger
+import services.api_gateway.routers.lexenith as lexenith
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
+import services.api_gateway.routers.openapi_docs as openapi_docs
 import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
 import services.api_gateway.routers.pfs_dht as pfs_dht
-
-try:  # optional: avoid hard fail if core/pco deps are unavailable
-    import services.api_gateway.routers.pco_public as pco_public  # type: ignore
-except Exception:
-    pco_public = None  # type: ignore[assignment]
-import services.api_gateway.routers.lexenith as lexenith
-import services.api_gateway.routers.openapi_docs as openapi_docs
 import services.api_gateway.routers.preview as preview
 import services.api_gateway.routers.proofgate_gateway as proofgate_gateway
+import services.api_gateway.routers.qoc as qoc
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
 import services.api_gateway.routers.upn as upn
 import services.api_gateway.routers.verify as verify
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
 from services.api_gateway.security import attach_proof_only_middleware
+from services.api_gateway.shedder import attach_shedder_middleware
 from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.registry import get_llm, get_preview
+
+# Optional routers that may be absent depending on build profile
+try:  # optional legacy alias; may be absent in some trees
+    import services.api_gateway.routers.fin_tokens_api as fin_tokens_api  # type: ignore
+except Exception:
+    fin_tokens_api = None  # type: ignore[assignment]
+try:  # optional: avoid hard fail if core/pco deps are unavailable
+    import services.api_gateway.routers.pco_public as pco_public  # type: ignore
+except Exception:
+    pco_public = None  # type: ignore[assignment]
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -163,13 +170,8 @@ attach_proof_only_middleware(app)
 # Optional: OpenTelemetry auto-instrumentation (OTEL_ENABLED=1)
 setup_fastapi_otel(app)
 
-# Correlation-ID ↔ OTel trace ↔ PCO bridge (safe, best-effort)
-attach_correlation_middleware(app)
-
-# Optional per-request profiler (PROFILE_HTTP=1)
-attach_profiling_middleware(app)
-
-# Adaptive load-shedding (enable with SHED_ENABLE=1)
+# Optional: Rate-limit middleware (enable via RATE_LIMIT_QPS)
+attach_rate_limit_middleware(app)
 attach_shedder_middleware(app)
 
 # statyki
@@ -177,6 +179,24 @@ attach_shedder_middleware(app)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 app.mount("/app", StaticFiles(directory=str(CLIENTS_WEB)), name="app")
+
+# Serve repository docs for simple in-app linking (read-only)
+try:  # pragma: no cover
+    app.mount("/docs", StaticFiles(directory=str(ROOT / "docs")), name="docs")
+except Exception:
+    pass
+
+# Backward-compat: serve marketplace.html from clients/web/public if not at root
+from fastapi.responses import FileResponse  # noqa: E402
+
+
+@app.get("/app/marketplace.html")
+def _serve_marketplace():
+    cand = CLIENTS_WEB / "marketplace.html"
+    if not cand.exists():
+        cand = CLIENTS_WEB / "public" / "marketplace.html"
+    return FileResponse(str(cand))
+
 
 # CORS: configurable via ALLOW_ORIGINS (comma-separated); default "*"
 
@@ -189,7 +209,62 @@ app.add_middleware(
 )
 
 
-# (usunięto wcześniejszy, duplikujący middleware metryk — pojedynczy wariant niżej)
+# Simple i18n negotiation: query param `lang` overrides `Accept-Language`.
+# Sets `request.state.lang` and adds `Content-Language` response header.
+@app.middleware("http")
+async def _i18n_language_negotiator(request, call_next):  # type: ignore[no-redef]
+    def _pick_lang(raw: str | None) -> str:
+        if not raw:
+            return "pl"
+        s = raw.lower()
+        if "en" in s:
+            return "en"
+        if "pl" in s:
+            return "pl"
+        return "pl"
+
+    qp_lang = request.query_params.get("lang")
+    hdr_lang = request.headers.get("accept-language")
+    lang = _pick_lang(qp_lang or hdr_lang)
+    try:
+        request.state.lang = lang  # type: ignore[attr-defined]
+    except Exception:
+        pass
+    response = await call_next(request)
+    try:
+        response.headers["Content-Language"] = lang
+    except Exception:
+        pass
+    return response
+
+
+# Correlation ID middleware: attach per-request correlation and trace headers
+
+
+@app.middleware("http")
+async def _correlation_headers(request, call_next):  # type: ignore[no-redef]
+    try:
+        import uuid as _uuid
+
+        corr = request.headers.get("X-Correlation-ID") or _uuid.uuid4().hex
+        try:
+            request.state.correlation_id = corr  # type: ignore[attr-defined]
+        except Exception:
+            pass
+        response = await call_next(request)
+        try:
+            response.headers.setdefault("X-Correlation-ID", corr)
+            response.headers.setdefault("X-CERTEUS-PCO-correlation.correlation_id", corr)
+            # Optional simple trace id mirror
+            response.headers.setdefault("X-Trace-Id", corr)
+        except Exception:
+            pass
+        return response
+    except Exception:
+        return await call_next(request)
+
+
+# Request duration metrics middleware - refined version is defined at the end of file
 
 
 # Cache OpenAPI JSON in-memory to reduce per-request overhead
@@ -245,64 +320,43 @@ app.openapi = _cached_openapi  # type: ignore[assignment]
 # --- blok --- Rejestr routerów -------------------------------------------------
 
 app.include_router(system.router)
-
 app.include_router(preview.router)
-
-# Ensure ProofGate contract path present in runtime OpenAPI
-app.include_router(proofgate_gateway.router)
-app.include_router(openapi_docs.router)
-
 if pco_public is not None:
     app.include_router(pco_public.router)
-
-if pco_bundle is not None:  # only include if import succeeded
+if pco_bundle is not None:
     app.include_router(pco_bundle.router)
-
 app.include_router(export.router)
-
-
 app.include_router(ledger.router)
-
 app.include_router(mismatch.router)
-
 app.include_router(boundary.router)
-
 app.include_router(verify.router)
-
 app.include_router(cfe.router)
-
 app.include_router(qtm.router)
-
 app.include_router(lexenith.router)
-
 app.include_router(devices.router)
-
 app.include_router(dr.router)
-
 app.include_router(upn.router)
-
 app.include_router(lexqft.router)
-
+app.include_router(qoc.router)
 app.include_router(chatops.router)
-
 app.include_router(mailops.router)
-
 app.include_router(ethics.router)
-
 app.include_router(fin.router)
-
-app.include_router(packs.router)
-
-app.include_router(marketplace.router)
-
+if fin_tokens_api is not None:
+    app.include_router(fin_tokens_api.router)
+app.include_router(billing.router_tokens)
 app.include_router(billing.router)
-
+app.include_router(billing_quota.router)
+app.include_router(billing_api.router)
+app.include_router(packs.router)
 app.include_router(jwks_router)
-
 app.include_router(metrics.router)
 app.include_router(pfs.router)
 app.include_router(p2p.router)
 app.include_router(pfs_dht.router)
+app.include_router(openapi_docs.router)
+app.include_router(marketplace.router)
+app.include_router(proofgate_gateway.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------

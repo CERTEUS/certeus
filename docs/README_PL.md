@@ -105,35 +105,88 @@ Zobacz `docs/curl_examples.md` — komplet wywołań (bundle, public PCO, JWKS, 
 
 ---
 
-## Cockpit (UI) — Geometry/Quantum/Boundary
+## Demo T13 — Marketplace & Packs (ABI/SemVer)
 
-Po uruchomieniu API odwiedź:
+- Bramka Marketplace (report‑only): `python scripts/gates/marketplace_policy_gate.py`
+- Bramka ABI/SemVer (report‑only): `python scripts/gates/pack_abi_semver_gate.py`
+- Aktualizacja baseline ABI: `python scripts/packs/update_abi_baselines.py`
 
-- Geometry: `http://127.0.0.1:8000/app/public/geometry.html` — Ricci heatmap, lensing, geodesic/horizon lock (PCO headers) + link do Ledger.
-- Quantum: `http://127.0.0.1:8000/app/public/quantum.html` — Operator Composer, UB/priorities, Measurement Log (`/v1/qtm/history/{case}`).
-- Boundary (jeśli włączony): `http://127.0.0.1:8000/app/public/boundary.html` — shard view i reconstruct.
+Ścieżka deweloperska (skrót):
 
-## ChatOps/MailOps (Cookbook)
+1. Wprowadź zmianę w module pluginu (np. sygnatura `register`).
+2. Uruchom `python scripts/gates/pack_abi_semver_gate.py` — oczekiwane ostrzeżenie/violation przy braku bumpu MAJOR.
+3. Zrób bump MAJOR w `plugins/<name>/plugin.yaml` (`version: 2.0.0`).
+4. Zaktualizuj baseline: `python scripts/packs/update_abi_baselines.py`.
+5. Zweryfikuj w CI (ci‑gates publikuje wynik gate’ów jako komentarz w PR).
 
-Przykłady wywołań, Proof‑Only I/O oraz gotowe fragmenty cURL: `docs/cookbooks/chatops_mailops.md`.
+Polityka SemVer dla packs: zobacz `docs/guides/packs_abi_semver.md`.
 
-## Proof‑Only I/O (STRICT_PROOF_ONLY)
+## Demo T14 — Billing & A11y/i18n
 
-W DEV/CI możesz wymusić token PCO na publikowalnych ścieżkach:
-
-```
-# Linux/macOS
-export STRICT_PROOF_ONLY=1
-# Windows
-$env:STRICT_PROOF_ONLY='1'
-```
-
-Bez tokenu np. `POST /v1/mailops/ingest` zwróci `403` (DROP: proof-required).
-
-## Szybkie komendy (Windows)
+1. A11y/i18n
+   - Strony web mają skip‑link do `#main`, widoczne focusy; UI wspiera PL/EN (nagłówek `Accept-Language` + `?lang` → `Content-Language`).
+2. Billing & Cost‑tokens
+   - Sekwencja demo (PowerShell/bash):
 
 ```
-pwsh -File .\scripts\smoke_api.ps1
-pwsh -File .\scripts\keys_dev.ps1; . .\scripts\env_load.ps1
-.\.venv\Scripts\python.exe scripts\worklog\update_worklog.py --summary "W1: Cockpit + ChatOps/MailOps" --details "- Geometry/Quantum telemetry\n- ChatOps/MailOps smoke"
+# Billing (tenant quota + allocate + refund)
+$env:TENANT = 't-demo'
+curl.exe -s http://127.0.0.1:8000/v1/billing/quota -H "X-Tenant-ID: $env:TENANT"
+curl.exe -s -X POST http://127.0.0.1:8000/v1/billing/quota -H 'content-type: application/json' -d '{"tenant":"t-demo","units":3}'
+curl.exe -s -X POST http://127.0.0.1:8000/v1/billing/allocate -H 'content-type: application/json' -H "X-Tenant-ID: $env:TENANT" -d '{"cost_units":2}'
+curl.exe -s -X POST http://127.0.0.1:8000/v1/billing/refund   -H 'content-type: application/json' -H "X-Tenant-ID: $env:TENANT" -d '{"units":1}'
+
+# Tokens request → allocate → status
+$rid = (curl.exe -s -X POST http://127.0.0.1:8000/v1/fin/tokens/request -H 'content-type: application/json' -d '{"user_id":"u123","amount":50,"purpose":"compute"}' | ConvertFrom-Json).request_id
+curl.exe -s http://127.0.0.1:8000/v1/fin/tokens/$rid
+curl.exe -s -X POST http://127.0.0.1:8000/v1/fin/tokens/allocate -H 'content-type: application/json' -d '{"request_id":"'$rid'","allocated_by":"ops"}'
+curl.exe -s http://127.0.0.1:8000/v1/fin/tokens/$rid
+
+# Packs — list and try
+curl.exe -s http://127.0.0.1:8000/v1/packs/
+curl.exe -s -X POST http://127.0.0.1:8000/v1/packs/try -H 'content-type: application/json' -d '{"pack":"demo_report_pl","kind":"summarize","payload":{"title":"My Report","items":[1,2,3,4]}}'
+```
+
+- Ustal limit: `POST /v1/billing/quota {tenant, units}` (demo‑admin)
+- Sprawdź balans: `GET /v1/billing/quota`
+- Rezerwuj: `POST /v1/billing/allocate {cost_units}` → `ALLOCATED` lub `PENDING`
+- Zwrot: `POST /v1/billing/refund {units}`
+
+3. Marketplace Install/Upgrade
+   - `POST /v1/packs/install {pack, signature, version?}` — zapisuje podpis i wersję zainstalowaną; UI: `/app/public/marketplace.html` (przycisk Install/Upgrade)
+
+## Demo T15 — QTMP API & SDK
+
+1) QTMP (cURL)
+
+```
+curl -sS -X POST http://127.0.0.1:8000/v1/qtm/init_case -H 'content-type: application/json' -d '{"case":"LEX-001","basis":["ALLOW","DENY","ABSTAIN"]}'
+curl -i  -sS -X POST http://127.0.0.1:8000/v1/qtm/measure -H 'content-type: application/json' -d '{"operator":"L","case":"LEX-001","source":"doc"}' | sed -n '1,30p'
+curl -sS -X POST http://127.0.0.1:8000/v1/qtm/measure_sequence -H 'content-type: application/json' -d '{"operators":["L","T","W"],"case":"LEX-001"}'
+curl -sS -X POST http://127.0.0.1:8000/v1/qtm/decoherence -H 'content-type: application/json' -d '{"case":"LEX-001","channel":"dephasing","gamma":0.2}'
+```
+
+2) SDK (Python)
+
+```
+from sdk.python.certeus_sdk import CerteusClient
+
+cli = CerteusClient(base_url="http://127.0.0.1:8000")
+cli.qtm_init_case(case="LEX-001", basis=["ALLOW","DENY","ABSTAIN"])
+resp = cli.qtm_measure(operator="L", case="LEX-001", source="sdk:demo")
+print(resp.pco_headers.get("X-CERTEUS-PCO-qtm.collapse_event"))
+print(cli.qtm_measure_sequence(operators=["L","T","W"], case="LEX-001").data)
+```
+
+## CFE — przykłady domenowe (Geometry of Meaning)
+
+ ```bash 
+curl -sS \ http://127.0.0.1:8000/v1/cfe/lensing?domain=MED\ | jq
+
+curl -sS -X POST \\
+  \http://127.0.0.1:8000/v1/cfe/horizon\ \\
+  -H 'Content-Type: application/json' \\
+  -d '{\case\:\MED-CASE-CRIT-1\,\domain\:\MED\,\severity\:\critical\}' | jq
+```
+
 ```

@@ -11,4 +11,3 @@ flowchart LR
   D -- no --> F[OK (exit 0)]
   C -->|no hits| F
 ```
-

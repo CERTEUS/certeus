@@ -154,6 +154,17 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         }
     }
 
+    # Feed LexQFT Path-Coverage with FIN signal (γ from p, uncaptured from 1-p)
+    try:
+        # Simple mapping: gamma in ~[0.85, 0.95], uncaptured small when confident
+        gamma = max(0.0, min(0.99, 0.85 + 0.1 * p))
+        unc = max(0.0, min(0.5, 0.2 * (1.0 - p)))
+        from services.api_gateway.routers.lexqft import append_coverage_contribution
+
+        append_coverage_contribution(gamma=gamma, weight=1.0, uncaptured=unc)
+    except Exception:
+        pass
+
     # Emit PCO header + metrics + ledger hash
     try:
         import json as _json

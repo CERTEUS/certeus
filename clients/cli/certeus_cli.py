@@ -27,6 +27,7 @@ EN: Simple CLI for CERTEUS.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import argparse

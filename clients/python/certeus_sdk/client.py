@@ -16,7 +16,8 @@ EN: Python SDK client — thin HTTP wrapper over CERTEUS API Gateway.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import requests
 
@@ -64,7 +65,14 @@ class CerteusClient:
                 pass
         return h
 
-    def _post(self, path: str, *, json_body: Any | None = None, files: Any | None = None, headers: dict[str, str] | None = None):
+    def _post(
+        self,
+        path: str,
+        *,
+        json_body: Any | None = None,
+        files: Any | None = None,
+        headers: dict[str, str] | None = None,
+    ):
         import time
 
         last_exc: Exception | None = None

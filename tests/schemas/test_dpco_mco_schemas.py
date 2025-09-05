@@ -22,6 +22,7 @@ EN: Schema validation tests for example DPCO/MCO objects.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json

@@ -120,6 +120,13 @@ certeus_brier = Gauge("certeus_brier", "Brier score")
 
 certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
 
+# Idempotency reuse counter (per-endpoint)
+certeus_idem_reused_total = Counter(
+    "certeus_idem_reused_total",
+    "Number of idempotent response reuses",
+    labelnames=("endpoint",),
+)
+
 # CFE: Ricci (kappa_max)
 certeus_cfe_kappa_max = Gauge("certeus_cfe_kappa_max", "CFE kappa_max curvature")
 
@@ -270,83 +277,28 @@ certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT c
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
 certeus_lexqft_energy_debt = Gauge("certeus_lexqft_energy_debt", "LexQFT energy debt (per case)", labelnames=("case",))
 
+# QOC: Vacuum pairs rate
+certeus_qoc_vacuum_rate = Gauge("certeus_qoc_vacuum_rate", "QOC vacuum pairs generation rate")
+
+# LexQFT: tunnel events (logged)
+certeus_lexqft_tunnel_events_total = Counter("certeus_lexqft_tunnel_events_total", "LexQFT tunneling events logged")
+
 # FINENITH: entanglement MI and commutator
 certeus_fin_entanglement_mi = Gauge(
     "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
 )
 certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
 
-# FINENITH: paper trading (W5)
-certeus_fin_paper_orders_total = Counter(
-    "certeus_fin_paper_orders_total",
-    "FIN paper trading orders total",
-    labelnames=("tenant", "side"),
+# Billing: tokens requests/allocations and pending gauge
+certeus_billing_token_requests_total = Counter(
+    "certeus_billing_token_requests_total", "Billing tokens: requests created"
 )
-certeus_fin_paper_equity = Gauge(
-    "certeus_fin_paper_equity",
-    "FIN paper trading account equity",
-    labelnames=("tenant",),
+certeus_billing_token_allocations_total = Counter(
+    "certeus_billing_token_allocations_total", "Billing tokens: requests allocated"
 )
+certeus_billing_token_pending = Gauge("certeus_billing_token_pending", "Billing tokens: currently pending requests")
 
-# P2P queue (W8)
-certeus_p2p_enqueued_total = Counter(
-    "certeus_p2p_enqueued_total",
-    "P2P enqueued jobs",
-    labelnames=("device",),
-)
-certeus_p2p_dequeued_total = Counter(
-    "certeus_p2p_dequeued_total",
-    "P2P dequeued jobs",
-    labelnames=("device",),
-)
-certeus_p2p_queue_depth = Gauge("certeus_p2p_queue_depth", "P2P queue depth")
-
-# Devices signatures (W9)
-certeus_devices_signed_total = Counter(
-    "certeus_devices_signed_total",
-    "Device outputs signed",
-    labelnames=("device",),
-)
-
-# TEE/RA signalling
-certeus_tee_ra_attested_total = Counter(
-    "certeus_tee_ra_attested_total",
-    "TEE RA headers attached",
-    labelnames=("device",),
-)
-
-# Idempotency (W15)
-certeus_idem_new_total = Counter(
-    "certeus_idem_new_total",
-    "Idempotency new computations",
-    labelnames=("endpoint",),
-)
-certeus_idem_reused_total = Counter(
-    "certeus_idem_reused_total",
-    "Idempotency cache hits",
-    labelnames=("endpoint",),
-)
-
-# LEX Pilot (W16): feedback counters and latest rating
-certeus_lex_pilot_feedback_total = Counter(
-    "certeus_lex_pilot_feedback_total",
-    "LEX pilot feedback submissions",
-    labelnames=("case", "tenant"),
-)
-certeus_lex_pilot_last_rating = Gauge(
-    "certeus_lex_pilot_last_rating",
-    "LEX pilot last feedback rating",
-    labelnames=("case", "tenant"),
-)
-
-# LEX Micro‑Court (W6)
-certeus_lex_micro_court_locked_total = Counter(
-    "certeus_lex_micro_court_locked_total",
-    "LEX Micro‑Court locked events",
-    labelnames=("case", "tenant"),
-)
-certeus_lex_micro_court_published_total = Counter(
-    "certeus_lex_micro_court_published_total",
-    "LEX Micro‑Court published events",
-    labelnames=("case", "tenant"),
+# Idempotency metrics (Devices/API)
+certeus_idempotent_replay_total = Counter(
+    "certeus_idempotent_replay_total", "Idempotent replay counter", labelnames=("path", "hit")
 )

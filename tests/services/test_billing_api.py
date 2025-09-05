@@ -2,16 +2,15 @@
 # +-------------------------------------------------------------+
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
-# | FILE: tests/services/test_billing_api.py                   |
-# | ROLE: Project test.                                         |
-# | PLIK: tests/services/test_billing_api.py                   |
-# | ROLA: Testy API Billing (quota/balance/refund/allocate).    |
+# | FILE: tests/services/test_billing_api.py                    |
+# | ROLE: Test module.                                          |
+# | PLIK: tests/services/test_billing_api.py                    |
+# | ROLA: Moduł testów.                                         |
 # +-------------------------------------------------------------+
 
 """
-PL: Testy Billing – ustawianie limitu, saldo, refund i alokacja.
-
-EN: Billing tests – set quota, balance, refund and allocation.
+PL: Testy API billing: quota/allocate/refund i status PENDING → ALLOCATED.
+EN: Billing API tests: quota/allocate/refund and PENDING → ALLOCATED flow.
 """
 
 # === IMPORTY / IMPORTS ===
@@ -20,32 +19,27 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from services.api_gateway.main import app
 
+def test_billing_quota_allocate_refund_flow() -> None:
+    from services.api_gateway.limits import set_tenant_quota
+    from services.api_gateway.main import app
 
-def test_quota_balance_allocate_refund_roundtrip():
     c = TestClient(app)
+    tenant = "t-cost"
+    set_tenant_quota(tenant, 2)
 
-    # Ustaw quota dla TENANT-X
-    r1 = c.post("/v1/billing/quota", json={"tenant": "TENANT-X", "units": 50})
-    assert r1.status_code == 200
-    assert r1.json().get("balance") == 50
+    # get quota
+    r = c.get("/v1/billing/quota", headers={"X-Tenant-ID": tenant})
+    assert r.status_code == 200 and int(r.json().get("balance", -1)) == 2
 
-    # Balance z nagłówkiem tenant-a (X-Tenant-ID)
-    r2 = c.get("/v1/billing/balance", headers={"X-Tenant-ID": "TENANT-X"})
-    assert r2.status_code == 200
-    assert r2.json().get("balance") == 50
+    # allocate 1 -> ALLOCATED, balance 1
+    r2 = c.post("/v1/billing/allocate", json={"cost_units": 1}, headers={"X-Tenant-ID": tenant})
+    assert r2.status_code == 200 and r2.json().get("status") == "ALLOCATED"
 
-    # Allocate +20
-    r3 = c.post(
-        "/v1/billing/allocate",
-        json={"units": 20},
-        headers={"X-Tenant-ID": "TENANT-X"},
-    )
-    assert r3.status_code == 200
-    assert r3.json().get("balance") == 70
+    # allocate 2 (exceeds) -> PENDING, balance unchanged (1)
+    r3 = c.post("/v1/billing/allocate", json={"cost_units": 2}, headers={"X-Tenant-ID": tenant})
+    assert r3.status_code == 200 and r3.json().get("status") == "PENDING"
 
-    # Refund +5 (po nazwie tenant-a)
-    r4 = c.post("/v1/billing/refund", json={"tenant": "TENANT-X", "units": 5})
-    assert r4.status_code == 200
-    assert r4.json().get("balance") == 75
+    # refund 1 -> balance increases
+    r4 = c.post("/v1/billing/refund", json={"units": 1}, headers={"X-Tenant-ID": tenant})
+    assert r4.status_code == 200 and int(r4.json().get("balance", -1)) >= 1

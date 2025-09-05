@@ -7,4 +7,3 @@
   - Set `KEYS_BACKEND=vault`, `VAULT_ADDR`, `VAULT_TOKEN`, `VAULT_SECRET_PATH`
   - Expected fields: `ed25519_privkey_pem` (PEM), `ed25519_pubkey_b64url` (Base64URL)
 - Rotation: write new secret version, reload service (or hot-reload JWKS if supported)
-

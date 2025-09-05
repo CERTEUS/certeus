@@ -2,185 +2,111 @@
 +-------------------------------------------------------------+
 |                          CERTEUS                            |
 +-------------------------------------------------------------+
-| FILE: clients/web/public/index.html                        |
-| ROLE: Landing page.                                         |
-| PLIK: clients/web/public/index.html                        |
-| ROLA: Strona startowa.                                      |
+| FILE: clients/web/public/index.html                         |
+| ROLE: Cockpit index (links to pages).                       |
+| PLIK: clients/web/public/index.html                         |
+| ROLA: Indeks Cockpitu (linki do stron).                     |
 +-------------------------------------------------------------+
 -->
+
 <!doctype html>
-<html lang="pl">
+<html lang="pl" data-theme="dark">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CERTEUS — Start</title>
+    <title>CERTEUS • Cockpit</title>
     <style>
-      :root{--bg:#0f1115;--fg:#e5e7eb;--card:#151922;--muted:#9aa0a6;--accent:#22c55e;--link:#60a5fa}
-      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--fg)}
-      .wrap{max-width:980px;margin:36px auto;padding:0 16px}
-      .card{background:var(--card);border:1px solid #232832;border-radius:12px;padding:18px;margin-bottom:16px}
-      a{color:var(--link);text-decoration:none}
-      a:hover{text-decoration:underline}
-      h1{margin:0 0 4px}
-      .grid{display:grid;gap:14px;grid-template-columns:1fr}
-      @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+      a {
+        color: #d5e3ff;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        margin: 6px 0;
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <h1>CERTEUS — Start</h1>
-      <p class="muted">Szybkie linki do demo stron i narzędzi.</p>
-
-      <div class="grid">
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <main id="main" role="main">
+      <div class="container">
         <div class="card">
-          <h2>Cockpit</h2>
-          <p>Geometry/Quantum — telemetria, heatmapy, Measurement Log.</p>
-          <p>
-            <a href="/app/public/geometry.html">Otwórz Geometry</a> •
-            <a href="/app/public/quantum.html">Otwórz Quantum</a> •
-            <a href="/app/public/fin_dashboard.html">Otwórz FIN Dashboard</a> •
-            <a href="/app/public/lexenith.html">Otwórz LEXENITH</a> •
-            <a href="/app/public/boundary.html">Otwórz Boundary</a> •
-            <a href="/app/public/devices.html">Otwórz Devices</a>
-          </p>
-        </div>
-        <div class="card">
-          <h2>ChatOps / MailOps</h2>
-          <p>Wywołania komend i ingest e‑mail (cookbook + UI).</p>
-          <p>
-            <a href="/app/public/chatops.html">ChatOps Console</a> •
-            <a href="/app/public/mailops.html">MailOps Ingest</a> •
-            <a href="/docs#/?path=docs/cookbooks/chatops_mailops.md">Cookbook</a>
-          </p>
-        </div>
-        <div class="card">
-          <h2>Boundary Status</h2>
-          <p class="muted">delta_bits: <span id="b-delta">?</span> • observed_at: <span id="b-obs">?</span></p>
-          <ul id="b-shards" class="muted"></ul>
-          <p><a href="/app/public/boundary.html">Otwórz Boundary</a></p>
-        </div>
-        <div class="card">
-          <h2>FIN Dashboard</h2>
-          <p>Sentyment, ryzyko i splątania; symulacja strategii.</p>
-          <p><a href="/app/public/fin_dashboard.html">Otwórz FIN Dashboard</a></p>
-        </div>
-        <div class="card">
-          <h2>LEX Generator</h2>
-          <p>Generator pism (2 szablony) + Micro‑Court lock/publish.</p>
-          <p><a href="/app/public/lex_generator.html">Otwórz LEX Generator</a></p>
-        </div>
-        <div class="card">
-          <h2>Quick checks</h2>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <input id="tenant" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="X-Tenant-ID (np. acme)">
-            <button id="checkTier" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">Check tier</button>
-            <button id="checkBal" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">Check balance</button>
-            <span id="tInfo" style="color:#9aa0a6"></span>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
-            <select id="act" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb">
-              <option value="qtm.measure">qtm.measure</option>
-              <option value="qtm.decoherence">qtm.decoherence</option>
-              <option value="system.analyze">system.analyze</option>
-              <option value="ingest.upload">ingest.upload</option>
-              <option value="lexqft.tunnel">lexqft.tunnel</option>
-              <option value="proofgate.publish">proofgate.publish</option>
-            </select>
-            <button id="estimate" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">Estimate cost</button>
-            <span id="est" style="color:#9aa0a6"></span>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
-            <input id="rid" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="RID / case_id (np. CER-LEX-001)">
-            <a id="openPCO" href="#" target="_blank" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb;text-decoration:none">Open Public PCO</a>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
-            <input id="admTenant" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="[DEV] tenant (e.g., demo)">
-            <select id="admTier" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb">
-              <option>free</option>
-              <option>pro</option>
-              <option>enterprise</option>
-            </select>
-            <label style="color:#9aa0a6"><input type="checkbox" id="admPersist"> persist</label>
-            <button id="admSet" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">[DEV] Set tier</button>
-            <button id="admReload" style="padding:8px 12px;border-radius:10px;border:1px solid #232832;background:#151922;color:#e5e7eb">[DEV] Reload policies</button>
-            <span id="admInfo" style="color:#9aa0a6"></span>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Marketplace</h2>
-          <p>Instalacja podpisanych wtyczek, lista zainstalowanych, klucz publiczny.</p>
-          <p><a href="/app/public/marketplace.html">Otwórz Marketplace</a></p>
-        </div>
-        <div class="card">
-          <h2>Case Studio</h2>
-          <p>Upload → Analyze → Publish (PUBLISH/ledger_ref) z jednym PDF‑em.</p>
-          <p><a href="/app/public/case_studio.html">Otwórz Case Studio</a></p>
-        </div>
-        <div class="card">
-          <h2>Proof Visualizer</h2>
-          <p>Wizualizator wyników analizy (ALI/PCO) z i18n i dostępnością.</p>
-          <p><a href="/app/proof_visualizer/index.html">Otwórz Wizualizator</a></p>
-        </div>
-        <div class="card">
-          <h2>API Explorer</h2>
-          <p>Interaktywny eksplorator OpenAPI z wysyłką żądań i gotowymi snippetami.</p>
-          <p><a href="/app/public/explorer.html">Otwórz API Explorer</a></p>
-        </div>
-        <div class="card">
-          <h2>Pricing & Estimator</h2>
-          <p>Porównanie tierów + kalkulator jednostek akcji/miesiąc.</p>
-          <p><a href="/app/public/pricing.html">Otwórz Pricing</a></p>
-        </div>
-        <div class="card">
-          <h2>Public PCO Explorer</h2>
-          <p>Podgląd publicznych payloadów PCO z trasą Merkle i linkami.</p>
-          <p><a href="/app/public/pco_explorer.html">Otwórz PCO Explorer</a></p>
+          <h1>CERTEUS • Cockpit</h1>
+          <p>Strony klienta web:</p>
+          <ul>
+            <li><a href="/app/public/geometry.html">Geometry</a></li>
+            <li><a href="/app/public/qtm.html">Quantum</a></li>
+            <li><a href="/app/public/boundary.html">Boundary</a></li>
+            <li><a href="/app/public/lexenith.html">LEXENITH</a></li>
+            <li><a href="/app/public/alpha.html">FINENITH Alpha</a></li>
+            <li><a href="/app/public/marketplace.html">Marketplace</a></li>
+            <li><a href="/app/public/chatops.html">ChatOps</a></li>
+            <li><a href="/app/public/mailops.html">MailOps</a></li>
+            <li><a href="/app/public/export.html">Export</a></li>
+            <li><a href="/app/public/playground.html">DevEx Playground</a></li>
+          </ul>
         </div>
       </div>
-      <div class="card" style="margin-top:16px">
-        <h2>Live Metrics (summary)</h2>
-        <p class="muted">Top paths by average latency and by request count (in‑proc summary). Filter by substring.</p>
-        <div class="row" style="margin-bottom:8px">
-          <input id="mFilter" style="padding:8px 10px;border-radius:10px;border:1px solid #232832;background:#0f1115;color:#e5e7eb" placeholder="filter (e.g., /v1/qtm)"/>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div>
-            <h3 style="font-size:14px;color:#9aa0a6">Top avg ms</h3>
-            <table id="topavg"><thead><tr><th>path</th><th>method</th><th>avg ms</th><th>count</th></tr></thead><tbody></tbody></table>
-          </div>
-          <div>
-            <h3 style="font-size:14px;color:#9aa0a6">Top count</h3>
-            <table id="topcnt"><thead><tr><th>path</th><th>method</th><th>avg ms</th><th>count</th></tr></thead><tbody></tbody></table>
-          </div>
-        </div>
-        <div style="margin-top:12px">
-          <h3 style="font-size:14px;color:#9aa0a6">Sparklines (p95)</h3>
-          <div id="sparks" style="display:flex;gap:12px;flex-wrap:wrap"></div>
-        </div>
-      </div>
-      <script>
-        async function jfetch(url, opts){ const r = await fetch(url, opts||{}); const t = await r.text(); try{ return {ok:r.ok, data: JSON.parse(t)} }catch{ return {ok:r.ok, data:t} } }
-        function fillTable(id, rows){ const tb=document.getElementById(id).querySelector('tbody'); tb.innerHTML=''; const f=(document.getElementById('mFilter').value||'').toLowerCase(); (rows||[]).filter(it=>!f || (`${it.method} ${it.path}`.toLowerCase().includes(f))).forEach(it=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.path}</td><td>${it.method}</td><td>${(it.avg_ms||0).toFixed(1)}</td><td>${it.count}</td>`; tb.appendChild(tr); }); }
-        async function refreshMetrics(){ const r=await jfetch('/v1/metrics/summary'); if(r.ok){ fillTable('topavg', r.data.top_avg_ms); fillTable('topcnt', r.data.top_count);} }
-        function drawSparkline(canvas, pts){ const ctx=canvas.getContext('2d'); const w=canvas.width, h=canvas.height; ctx.clearRect(0,0,w,h); if(!pts||!pts.length){ return;} const max=Math.max(...pts); const min=Math.min(...pts); const scaleX = w/Math.max(pts.length-1,1); const scaleY = max>min ? (h-4)/(max-min):1; ctx.strokeStyle='#60a5fa'; ctx.beginPath(); for(let i=0;i<pts.length;i++){ const x=i*scaleX; const y=h-2-(pts[i]-min)*scaleY; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke(); }
-        async function refreshSeries(){ const r=await jfetch('/v1/metrics/series?top=5'); if(!r.ok){ return;} const cont=document.getElementById('sparks'); cont.innerHTML=''; (r.data.series||[]).forEach(s=>{ const wrap=document.createElement('div'); wrap.style.border='1px solid #232832'; wrap.style.borderRadius='8px'; wrap.style.padding='6px'; wrap.style.background='#151922'; const title=document.createElement('div'); title.textContent=`${s.method} ${s.path} (p95=${(s.p95||0).toFixed(1)}ms)`; title.style.fontSize='12px'; title.style.color='#9aa0a6'; const canvas=document.createElement('canvas'); canvas.width=160; canvas.height=40; wrap.appendChild(title); wrap.appendChild(canvas); cont.appendChild(wrap); drawSparkline(canvas, s.points||[]); }); }
-        async function checkTier(){ const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/tenant_tier',{headers:{'X-Tenant-ID':tid}}); document.getElementById('tInfo').textContent = r.ok?`tenant=${r.data.tenant} tier=${r.data.tier}`:'error'; }
-        async function checkBal(){ const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/balance',{headers:{'X-Tenant-ID':tid}}); document.getElementById('tInfo').textContent = r.ok?`tenant=${tid} balance=${r.data.balance}`:'error'; }
-        async function doEstimate(){ const act=(document.getElementById('act').value||'qtm.measure'); const tid=(document.getElementById('tenant').value||'anonymous'); const r=await jfetch('/v1/billing/estimate',{method:'POST', headers:{'content-type':'application/json','X-Tenant-ID':tid}, body: JSON.stringify({action:act})}); document.getElementById('est').textContent = r.ok?`${act}: ~${r.data.estimated_units} units (tier=${r.data.tier})`:'error'; }
-        function updPCOLink(){ const rid=(document.getElementById('rid').value||'CER-LEX-001').trim(); const a=document.getElementById('openPCO'); a.href = `/pco/public/${encodeURIComponent(rid)}`; }
-        async function admSetTier(){ const t=(document.getElementById('admTenant').value||'').trim(); const tier=document.getElementById('admTier').value||'free'; const persist=document.getElementById('admPersist').checked; if(!t){ document.getElementById('admInfo').textContent='tenant required'; return; } const r=await jfetch('/v1/billing/admin/set_tier',{method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({tenant:t,tier, persist})}); document.getElementById('admInfo').textContent = r.ok?`set ${t}→${tier} (persist=${persist})`:'admin disabled (set BILLING_ADMIN=1)'; }
-        async function admReload(){ const r=await jfetch('/v1/billing/admin/reload',{method:'POST'}); document.getElementById('admInfo').textContent = r.ok?'policies reloaded':'admin disabled (set BILLING_ADMIN=1)'; }
-        document.getElementById('checkTier').addEventListener('click', checkTier);
-        document.getElementById('checkBal').addEventListener('click', checkBal);
-        document.getElementById('estimate').addEventListener('click', doEstimate);
-        document.getElementById('admSet').addEventListener('click', admSetTier);
-        document.getElementById('admReload').addEventListener('click', admReload);
-        document.getElementById('rid').addEventListener('input', updPCOLink);
-        async function refreshBoundary(){ const r=await jfetch('/v1/boundary/status'); if(r.ok){ document.getElementById('b-delta').textContent = r.data.delta_bits; const a=(r.data.anchors||{}).observed_at||''; document.getElementById('b-obs').textContent = a||'-'; const ul=document.getElementById('b-shards'); ul.innerHTML=''; const mp=r.data.bits_delta_map||{}; Object.keys(mp).filter(k=>Number(mp[k]||0)!==0).sort((a,b)=>Number(mp[b])-Number(mp[a])).slice(0,5).forEach(k=>{ const li=document.createElement('li'); li.textContent = `${k}: Δ=${mp[k]}`; ul.appendChild(li); }); } }
-        updPCOLink();
-        refreshMetrics(); setInterval(refreshMetrics, 5000); refreshSeries(); setInterval(refreshSeries, 5000); refreshBoundary(); setInterval(refreshBoundary, 10000);
-        document.getElementById('mFilter').addEventListener('input', ()=>{ refreshMetrics(); refreshSeries(); });
-      </script>
-    </div>
+    </main>
+    <style>
+      :focus-visible {
+        outline: 2px solid #8a8f98;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #181b20;
+        border: 2px solid #8a8f98;
+        border-radius: 8px;
+      }
+    </style>
   </body>
-  </html>
+</html>

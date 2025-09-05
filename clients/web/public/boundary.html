@@ -16,83 +16,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CERTEUS • Boundary</title>
     <style>
-      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 0; background:#111315; color:#f2f2f3; }
-      .container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
-      .card { background:#181b20; border:1px solid #2a2d33; border-radius: 12px; padding: 16px; }
-      h1 { margin: 0 0 10px; font-size: 22px; }
-      table { width: 100%; border-collapse: collapse; }
-      th, td { padding: 8px 10px; border-bottom: 1px solid #2a2d33; text-align: left; }
-      .muted { color:#9aa0a6; }
-      .row { display:flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-      .btn { background:#1a1c20; border:1px solid #2a2d33; color:#f2f2f3; padding:8px 12px; border-radius:10px; cursor:pointer; }
-      .btn:hover { background:#20242a; }
-      .ok { color:#7cd992; font-weight:600; }
-      .bad { color:#ff7b7b; font-weight:600; }
-      .row-bad { background:#2a1518; }
-      .row-ok { background:#162a1a; }
-      a { color:#9aa0a6; }
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #2a2d33;
+        text-align: left;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      a {
+        color: #9aa0a6;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="card">
-        <h1>Boundary • Shards</h1>
-        <p class="muted">Delta bits and per-shard map. Link to ledger and time anchors.</p>
-        <div class="row" style="margin-bottom:10px;">
-          <button class="btn" id="reconstruct">Reconstruct now</button>
-          <span class="muted" id="observed"></span>
+    <a href="#main" class="sr-only sr-only-focusable">Skip to main content</a>
+    <main id="main" role="main">
+      <div class="container">
+        <div class="row" style="justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+          <nav aria-label="Nawigacja">
+            <a href="/app/public/index.html">Cockpit</a>
+            <a href="/app/public/marketplace.html">Marketplace</a>
+            <a href="/app/public/chatops.html">ChatOps</a>
+            <a href="/app/public/mailops.html">MailOps</a>
+            <a href="/app/public/export.html">Export</a>
+          </nav>
+          <label class="muted" for="lang">Lang</label>
+          <select id="lang" aria-label="Language select" class="btn">
+            <option value="en" selected>EN</option>
+            <option value="pl">PL</option>
+          </select>
         </div>
-        <div id="summary" class="muted"></div>
-        <table id="tbl">
-          <thead>
-            <tr>
-              <th>Shard</th>
-              <th>Δbits</th>
-              <th>Status</th>
-              <th>Files</th>
-              <th>Bytes</th>
-              <th>GZip Ratio</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <p class="muted">Ledger: <a href="/docs#/%5BLedger%5D" target="_blank">/v1/ledger</a></p>
+        <div class="card">
+          <h1 id="title-b">Boundary • Shards</h1>
+          <p class="muted">
+            Delta bits and per-shard map. Link to ledger and time anchors.
+          </p>
+          <div class="row" style="margin-bottom: 10px">
+            <button class="btn" id="reconstruct" data-i18n="reconstruct">
+              Reconstruct now
+            </button>
+            <span class="muted" id="observed"></span>
+          </div>
+          <div id="summary" class="muted"></div>
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th>Shard</th>
+                <th>Δbits</th>
+                <th>Files</th>
+                <th>Bytes</th>
+                <th>GZip Ratio</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="muted">
+            Ledger: <a href="/docs#/%5BLedger%5D" target="_blank">/v1/ledger</a>
+          </p>
+        </div>
       </div>
-    </div>
-    <script>
-      async function fetchStatus() {
-        const r = await fetch('/v1/boundary/status');
-        const body = await r.json();
-        render(body);
-      }
-      async function reconstruct() {
-        const r = await fetch('/v1/boundary/reconstruct', {method:'POST'});
-        const body = await r.json();
-        render(body);
-      }
-      function render(body) {
-        const tbd = document.querySelector('#tbl tbody');
-        tbd.innerHTML='';
-        const bitsMap = body.bits_delta_map || {};
-        const stats = body.stats || {};
-        const shards = Object.keys(bitsMap).sort((a,b)=> Number(bitsMap[b]||0) - Number(bitsMap[a]||0));
-        let rows='';
-        for (const shard of shards) {
-          const st = stats[shard] || {};
-          const bad = Number(bitsMap[shard]||0) !== 0;
-          const status = bad ? 'FAIL' : 'OK';
-          rows += `<tr class="${bad?'row-bad':'row-ok'}"><td>${shard}</td><td class="${bad?'bad':'ok'}">${bitsMap[shard]}</td><td class="${bad?'bad':'ok'}">${status}</td><td>${st.files||0}</td><td>${st.bytes||0}</td><td>${(st.gzip_ratio||1).toFixed(2)}</td></tr>` 
+      <script>
+        async function fetchStatus() {
+          const r = await fetch("/v1/boundary/status");
+          const body = await r.json();
+          render(body);
         }
-        tbd.innerHTML = rows;
-        const db = Number(body.delta_bits||0);
-        const sumEl = document.getElementById('summary');
-        sumEl.textContent = `delta_bits=${db} • shards=${Object.keys(bitsMap).length}`;
-        sumEl.style.color = db===0 ? '#9aa0a6' : '#f2c8cc';
-        const obs = (body.anchors && body.anchors.observed_at) ? `observed_at=${body.anchors.observed_at}` : '';
-        document.getElementById('observed').textContent = obs;
-      }
-      document.getElementById('reconstruct').addEventListener('click', reconstruct);
-      fetchStatus();
-    </script>
+        async function reconstruct() {
+          const r = await fetch("/v1/boundary/reconstruct", { method: "POST" });
+          const body = await r.json();
+          render(body);
+        }
+        function render(body) {
+          const tbd = document.querySelector("#tbl tbody");
+          tbd.innerHTML = "";
+          const bitsMap = body.bits_delta_map || {};
+          const stats = body.stats || {};
+          let rows = "";
+          for (const shard of Object.keys(bitsMap).sort()) {
+            const st = stats[shard] || {};
+            rows += `<tr><td>${shard}</td><td>${bitsMap[shard]}</td><td>${st.files || 0}</td><td>${st.bytes || 0}</td><td>${(st.gzip_ratio || 1).toFixed(2)}</td></tr>`;
+          }
+          tbd.innerHTML = rows;
+          document.getElementById("summary").textContent =
+            `delta_bits=${body.delta_bits}`;
+          const obs =
+            body.anchors && body.anchors.observed_at
+              ? `observed_at=${body.anchors.observed_at}`
+              : "";
+          document.getElementById("observed").textContent = obs;
+        }
+        document
+          .getElementById("reconstruct")
+          .addEventListener("click", reconstruct);
+        const I18N = {
+          en: { title: "Boundary • Shards", reconstruct: "Reconstruct now" },
+          pl: { title: "Boundary • Shardy", reconstruct: "Odtwórz teraz" },
+        };
+        function getLang() {
+          const u = new URL(location.href);
+          const p = (u.searchParams.get("lang") || "").toLowerCase();
+          if (p === "pl" || p === "en") return p;
+          return "en";
+        }
+        function applyI18n() {
+          const lang = getLang();
+          const d = I18N[lang] || I18N.en;
+          document.getElementById("title-b").textContent = d.title;
+          document.querySelectorAll("[data-i18n]").forEach((el) => {
+            const k = el.getAttribute("data-i18n");
+            if (d[k]) el.textContent = d[k];
+          });
+          const sel = document.getElementById("lang");
+          sel.value = lang;
+          sel.onchange = () => {
+            const url = new URL(location.href);
+            url.searchParams.set("lang", sel.value);
+            location.href = url.toString();
+          };
+        }
+        applyI18n();
+        fetchStatus();
+      </script>
+      <style>
+        :focus-visible {
+          outline: 2px solid #8a8f98;
+          outline-offset: 2px;
+        }
+        .sr-only {
+          position: absolute;
+          left: -10000px;
+          top: auto;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+        }
+        .sr-only-focusable:focus {
+          position: static;
+          width: auto;
+          height: auto;
+          padding: 8px 10px;
+          margin: 6px;
+          background: #181b20;
+          border: 2px solid #8a8f98;
+          border-radius: 8px;
+        }
+      </style>
+    </main>
   </body>
-  </html>
+</html>

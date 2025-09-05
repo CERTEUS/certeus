@@ -22,6 +22,7 @@ EN: Device services (v0.2) tests: planning, expectations and metrics.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

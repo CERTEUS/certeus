@@ -7,8 +7,15 @@ from certeus_sdk.client import CerteusClient
 
 
 def main() -> int:
-    idem = lambda: f"cli-{uuid.uuid4()}"
-    cli = CerteusClient(tenant_id="sdk-demo", retries=2, backoff_sec=0.1, idem_key_factory=idem)
+    def idem() -> str:
+        return f"cli-{uuid.uuid4()}"
+
+    cli = CerteusClient(
+        tenant_id="sdk-demo",
+        retries=2,
+        backoff_sec=0.1,
+        idem_key_factory=idem,
+    )
     print(cli.health())
     # Idempotent allocate + publish alias
     print(cli.set_quota("sdk-demo", 5))
@@ -20,4 +27,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

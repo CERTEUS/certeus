@@ -30,6 +30,7 @@ Idempotent and safe to run multiple times.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -39,13 +40,14 @@ import subprocess
 import sys
 
 # === KONFIGURACJA / CONFIGURATION ===
-SECTION_RE = re.compile(r"^#\s*===\s+.*?\s+===\s*$")
 
+SECTION_RE = re.compile(r"^#\s*===\s+.*?\s+===\s*$")
 
 # === MODELE / MODELS ===
 
-
 # === LOGIKA / LOGIC ===
+
+
 def list_tracked_py_files(repo: Path) -> Iterable[Path]:
     try:
         # nosec B603: calls git with static args; not user-controlled

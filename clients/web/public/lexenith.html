@@ -15,74 +15,188 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CERTEUS • LEXENITH</title>
     <style>
-      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
-      .container{max-width:1080px;margin:24px auto;padding:0 16px}
-      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
-      h1{margin:0 0 10px;font-size:22px}
-      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
-      .btn:hover{background:#20242a}
-      .muted{color:#9aa0a6}
-      input,textarea{background:#1a1c20;border:1px solid #2a2d33;border-radius:10px;color:#f2f2f3;padding:8px 10px}
-      pre{background:#0f1115;border:1px solid #2a2d33;border-radius:10px;padding:10px;overflow:auto}
+      body {
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial;
+        margin: 0;
+        background: #111315;
+        color: #f2f2f3;
+      }
+      .container {
+        max-width: 980px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: #181b20;
+        border: 1px solid #2a2d33;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 22px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .btn {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        color: #f2f2f3;
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #20242a;
+      }
+      .muted {
+        color: #9aa0a6;
+      }
+      textarea,
+      input {
+        background: #1a1c20;
+        border: 1px solid #2a2d33;
+        border-radius: 10px;
+        color: #f2f2f3;
+        padding: 8px 10px;
+      }
+      textarea {
+        width: 100%;
+        height: 100px;
+      }
+      pre {
+        background: #20242a;
+        border: 1px solid #2a2d33;
+        border-radius: 8px;
+        padding: 8px;
+        white-space: pre-wrap;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="card">
-        <h1>Micro‑Court / Motion</h1>
-        <div class="row">
-          <input id="mc-case" placeholder="case id (LEX-CASE-001)" />
-          <select id="mc-pattern"><option value="motion-dismiss">motion-dismiss</option><option value="motion-summary">motion-summary</option></select>
-          <button id="mc-lock" class="btn">Lock case</button>
-          <button id="mc-publish" class="btn">Publish</button>
-        </div>
-        <div class="row" style="margin-top:8px;">
-          <textarea id="mc-facts" placeholder='facts JSON (e.g. {"A":true})' rows="3" cols="60"></textarea>
-          <input id="mc-cites" placeholder="citations (comma‑separated)" />
-          <button id="mc-generate" class="btn">Generate motion</button>
-        </div>
-        <pre id="mc-out" class="muted"></pre>
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <div class="container" id="main" role="main">
+      <div class="row" style="justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+        <nav aria-label="Nawigacja">
+          <a href="/app/public/index.html">Cockpit</a>
+          <a href="/app/public/marketplace.html">Marketplace</a>
+          <a href="/app/public/chatops.html">ChatOps</a>
+          <a href="/app/public/mailops.html">MailOps</a>
+          <a href="/app/public/export.html">Export</a>
+        </nav>
+        <label class="muted" for="lang">Lang</label>
+        <select id="lang" aria-label="Language select" class="btn">
+          <option value="pl" selected>PL</option>
+          <option value="en">EN</option>
+        </select>
       </div>
       <div class="card">
-        <h1>CLDF — Renormalize</h1>
+        <h1 id="title-mg">Motion Generator</h1>
         <div class="row">
-          <input id="cldf-cites" placeholder="citations (A;B;C)" />
-          <input id="cldf-weights" placeholder="weights (1;0.5;0.25)" />
-          <input id="cldf-damp" placeholder="damping (0..1)" />
-          <button id="cldf-run" class="btn">Renormalize</button>
+          <label>Case <input id="case" value="LEX-001" /></label>
+          <label
+            >Pattern
+            <select id="pattern">
+              <option>motion-dismiss</option>
+              <option>motion-summary</option>
+            </select></label
+          >
         </div>
-        <pre id="cldf-out" class="muted"></pre>
+        <label>Citations (one per line)</label>
+        <textarea id="cites"></textarea>
+        <label>Facts (JSON)</label>
+        <textarea id="facts">{"key":"value"}</textarea>
+        <button id="gen" class="btn" data-i18n="generate">Generate</button>
+        <pre id="motion"></pre>
       </div>
       <div class="card">
-        <h1>Why‑Not (PCΔ) Export</h1>
-        <div class="row">
-          <input id="wn-claim" placeholder="claim" />
-          <input id="wn-counters" placeholder="counter‑arguments (A;B;C)" />
-          <button id="wn-run" class="btn">Export</button>
-          <span class="muted">trace:<span id="wn-trace" class="pill">-</span></span>
-        </div>
+        <h1 id="title-cldf">CLDF Renormalize</h1>
+        <label>Citations (JSON array of {text,weight})</label>
+        <textarea id="cldf">
+[{"text":"Art. 5 k.c.","weight":1.0},{"text":"III 2020","weight":0.5}]</textarea
+        >
+        <button id="renorm" class="btn" data-i18n="renormalize">
+          Renormalize
+        </button>
+        <pre id="cldf_out"></pre>
+      </div>
+      <div class="card">
+        <h1 id="title-wn">Why‑Not Export</h1>
+        <label>Claim</label>
+        <input id="claim" value="Powództwo o zapłatę" />
+        <label>Counter‑arguments (one per line)</label>
+        <textarea id="cargs">
+Brak legitymacji czynnej
+Nadmierne roszczenie</textarea
+        >
+        <button id="export" class="btn" data-i18n="export">Export</button>
+        <pre id="wn_out"></pre>
       </div>
     </div>
     <script>
-      async function jfetch(url, opts){ const r=await fetch(url, opts||{}); const t=await r.text(); try{ return {ok:r.ok, data: JSON.parse(t), headers:r.headers} }catch{ return {ok:r.ok, data:t, headers:r.headers} } }
-      function show(el, obj){ el.textContent = typeof obj==='string'? obj : JSON.stringify(obj, null, 2); }
-      document.getElementById('mc-lock').addEventListener('click', async()=>{
-        const cid=(document.getElementById('mc-case').value||'LEX-CASE-001').trim(); const r=await jfetch('/v1/lexenith/micro_court/lock',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({case_id:cid})}); show(document.getElementById('mc-out'), r.data);
-      });
-      document.getElementById('mc-publish').addEventListener('click', async()=>{
-        const cid=(document.getElementById('mc-case').value||'LEX-CASE-001').trim(); const r=await jfetch('/v1/lexenith/micro_court/publish',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({case_id:cid, footnotes:[]})}); show(document.getElementById('mc-out'), r.data);
-      });
-      document.getElementById('mc-generate').addEventListener('click', async()=>{
-        const cid=(document.getElementById('mc-case').value||'LEX-CASE-001').trim(); const pat=document.getElementById('mc-pattern').value; let facts={}; try{ facts=JSON.parse(document.getElementById('mc-facts').value||'{}'); }catch(e){} const cites=(document.getElementById('mc-cites').value||'').split(',').map(x=>x.trim()).filter(Boolean); const r=await jfetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({case_id:cid, pattern_id:pat, facts, citations:cites})}); show(document.getElementById('mc-out'), r.data);
-      });
-      document.getElementById('cldf-run').addEventListener('click', async()=>{
-        const labels=(document.getElementById('cldf-cites').value||'A;B;C').split(';').map(x=>x.trim()).filter(Boolean); const ws=(document.getElementById('cldf-weights').value||'1;0.5;0.25').split(';').map(x=>parseFloat(x)||0); const damping=parseFloat(document.getElementById('cldf-damp').value||'1'); const citations = labels.map((t,i)=>({text:t, weight: (ws[i]!==undefined? ws[i]: 1)})); const r=await jfetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({citations, damping})}); show(document.getElementById('cldf-out'), r.data);
-      });
-      document.getElementById('wn-run').addEventListener('click', async()=>{
-        const claim=(document.getElementById('wn-claim').value||'claim'); const counters=(document.getElementById('wn-counters').value||'A;B').split(';').map(x=>x.trim()).filter(Boolean); const r=await jfetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body: JSON.stringify({claim, counter_arguments:counters})}); if(r.ok){ document.getElementById('wn-trace').textContent = r.data.trace_uri || '-'; }
-      });
+            async function gen(){
+              const caseId=document.getElementById('case').value; const pattern=document.getElementById('pattern').value;
+              const cites=document.getElementById('cites').value.split('
+      ').filter(Boolean);
+              let facts={}; try{facts=JSON.parse(document.getElementById('facts').value)}catch(e){}
+              const r = await fetch('/v1/lexenith/motion/generate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({case_id:caseId,pattern_id:pattern,citations:cites,facts})});
+              document.getElementById('motion').textContent = JSON.stringify(await r.json(), null, 2);
+            }
+            async function renorm(){
+              let arr=[]; try{arr=JSON.parse(document.getElementById('cldf').value)}catch(e){}
+              const r = await fetch('/v1/lexenith/cldf/renormalize',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({citations:arr})});
+              document.getElementById('cldf_out').textContent = JSON.stringify(await r.json(), null, 2);
+            }
+            async function exportWN(){
+              const claim=document.getElementById('claim').value; const cargs=document.getElementById('cargs').value.split('
+      ').filter(Boolean);
+              const r = await fetch('/v1/lexenith/why_not/export',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({claim:claim,counter_arguments:cargs})});
+              document.getElementById('wn_out').textContent = JSON.stringify(await r.json(), null, 2);
+            }
+            document.getElementById('gen').addEventListener('click', gen);
+            document.getElementById('renorm').addEventListener('click', renorm);
+            document.getElementById('export').addEventListener('click', exportWN);
+            const I18N={ pl:{title_mg:'Generator pism',generate:'Generuj',title_cldf:'CLDF Renormalizacja',renormalize:'Renormalizuj',title_wn:'Why‑Not Eksport',export:'Eksportuj'}, en:{title_mg:'Motion Generator',generate:'Generate',title_cldf:'CLDF Renormalize',renormalize:'Renormalize',title_wn:'Why‑Not Export',export:'Export'} };
+            function getLang(){ const u=new URL(location.href); const p=(u.searchParams.get('lang')||'').toLowerCase(); return (p==='en'||p==='pl')?p:'pl'; }
+            function applyI18n(){ const lang=getLang(); const d=I18N[lang]||I18N.pl; document.getElementById('title-mg').textContent=d.title_mg; document.getElementById('title-cldf').textContent=d.title_cldf; document.getElementById('title-wn').textContent=d.title_wn; document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.textContent=d[k]; }); const sel=document.getElementById('lang'); sel.value=lang; sel.onchange=()=>{ const url=new URL(location.href); url.searchParams.set('lang', sel.value); location.href=url.toString(); } }
+            applyI18n();
     </script>
+    <style>
+      :focus-visible {
+        outline: 2px solid #8a8f98;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #181b20;
+        border: 2px solid #8a8f98;
+        border-radius: 8px;
+      }
+    </style>
   </body>
-  </html>
-
+</html>

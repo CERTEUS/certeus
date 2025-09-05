@@ -19,4 +19,3 @@ groups:
         expr: rate(certeus_source_fetch_errors_total[1h])
       - record: job:certeus_abstain_rate_gauge
         expr: certeus_abstain_rate
-

@@ -23,8 +23,11 @@ EN: Validates OpenAPI spec (docs/api/openapi.yaml) using openapi-spec-validator.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-from openapi_spec_validator import validate_spec
+import warnings
 import yaml
+
+# Silence deprecation warnings from openapi-spec-validator shortcuts
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -38,6 +41,14 @@ import yaml
 
 
 def test_openapi_spec_is_valid() -> None:
+    # Lazy import to avoid ruff/isort import-order noise and keep compatibility
+    try:  # support both legacy and modern versions
+        from openapi_spec_validator import validate_spec as _validate  # type: ignore[attr-defined]
+    except Exception:  # pragma: no cover
+        try:
+            from openapi_spec_validator import validate as _validate  # type: ignore[attr-defined]
+        except Exception:  # very new API shapes
+            from openapi_spec_validator.validators import validate as _validate  # type: ignore
     with open("docs/api/openapi.yaml", encoding="utf-8") as f:
         spec = yaml.safe_load(f)
-    validate_spec(spec)  # type: ignore[arg-type]
+    _validate(spec)  # type: ignore[arg-type]

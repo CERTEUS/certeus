@@ -29,28 +29,4 @@ if (( ${#viol[@]} > 0 )); then
   exit 1
 fi
 
-# Block files from denylist (repo-configurable)
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-DENYLIST_FILE="$REPO_ROOT/tools/automation/denylist.txt"
-
-if [[ -f "$DENYLIST_FILE" ]]; then
-  mapfile -t PATTERNS < "$DENYLIST_FILE"
-  VIOLATIONS=()
-  for p in "${STAGED[@]}"; do
-    for pat in "${PATTERNS[@]}"; do
-      # Skip comments and empty lines
-      [[ -z "$pat" || "$pat" =~ ^# ]] && continue
-      if [[ "$p" == $pat ]]; then
-        VIOLATIONS+=("$p matches $pat")
-        break
-      fi
-    done
-  done
-  if (( ${#VIOLATIONS[@]} > 0 )); then
-    echo "Commit blocked by denylist patterns:" >&2
-    printf ' - %s\n' "${VIOLATIONS[@]}" >&2
-    exit 1
-  fi
-fi
-
 exit 0

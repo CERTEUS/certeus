@@ -17,4 +17,3 @@ contains(arr, x) {
   some i
   arr[i] == x
 }
-

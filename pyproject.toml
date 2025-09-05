@@ -62,10 +62,18 @@ dev = [
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+exclude = []
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"core/omega/transforms.py" = ["F811"]
+"tests/api/test_openapi_spec_valid.py" = ["I001", "E402"]
+"tests/api/test_openapi_contract_runtime.py" = ["I001", "E402"]
+"tests/services/test_openapi_contract.py" = ["I001"]
+"services/api_gateway/routers/devices.py" = ["I001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["packs_core", "services", "core"]

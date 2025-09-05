@@ -22,6 +22,7 @@ EN: Simple Conventional Commits validator for commit messages.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -29,6 +30,7 @@ import re
 import sys
 
 # === KONFIGURACJA / CONFIGURATION ===
+
 ALLOWED = {
     "feat",
     "fix",
@@ -44,11 +46,11 @@ ALLOWED = {
 }
 HEADER_RE = re.compile(r"^(?P<type>[a-z]+)(\([^)]+\))?(!)?:\s(?P<subject>.+)$")
 
-
 # === MODELE / MODELS ===
 
-
 # === LOGIKA / LOGIC ===
+
+
 def validate(message: str) -> tuple[bool, str | None]:
     lines = [ln for ln in message.splitlines() if ln.strip() != ""]
     if not lines:

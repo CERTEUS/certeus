@@ -36,4 +36,3 @@ spec:
           env:
             - name: DEFAULT_BUDGET_TOKENS
               value: {{ .Values.proofgate.env.DEFAULT_BUDGET_TOKENS | quote }}
-

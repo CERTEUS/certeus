@@ -8,18 +8,18 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 - WORKLOG (dziennik): `WORKLOG.md`
 - Manifest / standard kodowania: `docs/manifest.md`, `docs/manifest_v1_7.md`
 - Runbooki bezpieczeństwa i ról: `docs/runbooks/security_bunker.md`, `docs/runbooks/roles_governance.md`
-- Cookbooks operacyjne: `docs/cookbooks/chatops_mailops.md`
+- Runbooki: `docs/runbooks/security_bunker.md`, `docs/runbooks/roles_governance.md`, `docs/runbooks/ci_enforce_flags.md`
 - Dashboardy/alerty SRE: `observability/grafana/certeus-sre-dashboard.json`, `observability/prometheus/alert_rules_w10.yml`
  - Runbooki demo: `docs/runbooks/w1_demo.md`
 
 ## Gałęzie i automatyzacja
 
 - Gałąź robocza: `work/daily` (zielona) – zmiany agenta trafiają tutaj.
- - Auto-promocja TYLKO tygodniowa: do `main` promujemy wyłącznie po zakończeniu tygodnia i zielonych checkach:
-  - commit na `work/daily` musi zawierać marker `[week-end]` lub trailer `weekly-promote: true`.
-  - Wymagane checki (Branch Protection): `Smoke (ubuntu-latest)`, `Smoke (windows-latest)`, `ci-gates`.
-  - Gate’y informacyjne (PR‑only): Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate, asset‑guard; Proof Gate — push: main, PR: main.
-  - PR summary (ci‑gates) publikuje ticki gate’ów/smoków/workflowów + trend perf.
+- Auto-promocja TYLKO tygodniowa: do `main` promujemy wyłącznie po zakończeniu tygodnia i zielonych checkach:
+- commit na `work/daily` musi zawierać marker `[week-end]` lub trailer `weekly-promote: true`.
+- Wymagane checki (Branch Protection): `Smoke (ubuntu-latest)`, `Smoke (windows-latest)`, `ci-gates`.
+- Gate’y informacyjne (PR‑only): Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate, asset‑guard; Proof Gate — push: main, PR: main.
+- PR summary (ci‑gates) publikuje ticki gate’ów/smoków/workflowów + trend perf.
 - OTel w CI: włączony mock OTLP (`scripts/otel/mock_otlp.py`), `OTEL_ENABLED=1`.
 
 ## Smoki / SLO / Perf (w CI i lokalnie)
@@ -38,6 +38,7 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 - Bunkier/TEE: `scripts/gates/security_bunker_gate.py` (+ stub `security/bunker/attestation.json`).
 - PQ‑crypto: `scripts/gates/pqcrypto_gate.py` (informacyjny lub wymagany przez `PQCRYPTO_REQUIRE=1`).
 - DP budgets: `scripts/gates/dp_budget_gate.py` (stub; `STRICT_DP_BUDGET=1` wymusza znaczenie).
+- Plugin Supply‑Chain: `scripts/gates/plugin_supply_chain_gate.py` (report‑only; enforce: `ENFORCE_PLUGIN_SUPPLY=1`), dokument: `docs/compliance/plugins_supply_chain.md`.
 
 ## Flagi środowiskowe (CI defaults)
 
@@ -64,17 +65,17 @@ Ten hub zbiera w jednym miejscu wszystkie istotne materiały dla agenta:
 
 ## Onboarding (5 minut)
 
-1) Klon i środowisko
+1. Klon i środowisko
    - `python -m venv .venv && source .venv/bin/activate` (Windows: `py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1`)
    - `python -m pip install -U pip wheel setuptools ruff pytest fastapi uvicorn jsonschema cryptography`
-2) Lint + testy lokalnie
+2. Lint + testy lokalnie
    - `python -m ruff check . --fix && python -m ruff format .`
    - `mkdir -p reports && python -m pytest -q --junitxml=reports/junit.xml`
-3) Uruchomienie API in‑proc (szybki smoke)
+3. Uruchomienie API in‑proc (szybki smoke)
    - `python scripts/smokes/openapi_smoke.py` • `python scripts/smokes/metrics_smoke.py`
-4) Push roboczy
+4. Push roboczy
    - `python scripts/git_push.py --to work/daily`
-5) CI
+5. CI
    - Sprawdź ticki w komentarzu PR/ci‑gates. Jeśli czerwone — patrz „Troubleshooting”.
 
 ## Daily SOP (TL;DR)

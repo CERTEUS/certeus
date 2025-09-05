@@ -1,0 +1,15 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/packs_sec/plugin.yaml                        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: plugins/packs_sec/plugin.yaml                        |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: packs_sec
+version: 0.1.0
+license: MIT
+enabled: true
+module: plugins.packs_sec.src.main
+register: register

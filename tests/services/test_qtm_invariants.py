@@ -22,6 +22,7 @@ EN: QTM invariants tests — UB ranges and expectation values.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 from fastapi.testclient import TestClient

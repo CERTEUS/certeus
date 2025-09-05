@@ -36,14 +36,27 @@ from services.api_gateway.main import app  # noqa: E402
 
 OUT_DIR = REPO_ROOT / "out"
 OUT_FILE = OUT_DIR / "openapi.json"
+DOCS_DIR = REPO_ROOT / "docs" / "openapi"
 
 # === LOGIKA / LOGIC ===
 
 
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
     spec = app.openapi()
+    # D71: embed version/compat notes
+    try:
+        spec["info"]["version"] = spec.get("info", {}).get("version", "0.0.0")
+        spec["info"]["x-compat"] = {
+            "semver": "^1.0",
+            "notes": "Backwards-compatible additions only; breaking changes require MAJOR bump.",
+        }
+    except Exception:
+        pass
+    # Save to out/openapi.json and docs/openapi/certeus.v1.json
     OUT_FILE.write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
+    (DOCS_DIR / "certeus.v1.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"OpenAPI written to {OUT_FILE}")
     return 0
 

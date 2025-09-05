@@ -25,6 +25,7 @@ EN: CERTEUS project module (generic description).
 from __future__ import annotations
 
 from collections.abc import Mapping
+import json
 import os
 from pathlib import Path
 from typing import Any
@@ -174,6 +175,44 @@ def _load_governance_pack() -> dict[str, Any]:
         return yaml.safe_load(p.read_text(encoding="utf-8")) or {}
     except Exception:
         return {}
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _validate_pco_extensions(pco: Mapping[str, Any]) -> list[str]:
+    """PL/EN: Opcjonalna walidacja rozszerzeń PCO (report-only).
+
+    Aktualnie wspiera SEC‑PCO pod kluczami `security` lub `sec`.
+    Zwraca listę błędów walidacji (pusta ⇒ brak lub OK).
+    """
+    errs: list[str] = []
+    try:
+        # lazy import; brak zależności nie blokuje publikacji
+        from jsonschema import Draft7Validator  # type: ignore
+
+        repo = _repo_root()
+        sec_schema = _load_json(repo / "schemas" / "security_pco_v0.1.json")
+        v_sec = Draft7Validator(sec_schema) if sec_schema else None  # type: ignore[call-arg]
+
+        sec_obj: Any = None
+        if isinstance(pco.get("security"), Mapping):
+            sec_obj = pco.get("security")
+        elif isinstance(pco.get("sec"), Mapping):
+            sec_obj = pco.get("sec")
+
+        if v_sec is not None and isinstance(sec_obj, Mapping):
+            for err in v_sec.iter_errors(sec_obj):
+                errs.append(f"SEC schema: {err.message}")
+    except Exception:
+        # report-only: nie blokujemy, ignorujemy błędy narzędzi
+        return errs
+
+    return errs
 
 
 def _infer_domain(pco: Mapping[str, Any]) -> str:
@@ -391,6 +430,20 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     # W9: Fine-grained role enforcement (optional)
     enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
+
+    # Opcjonalna walidacja PCO (report-only)
+    if (os.getenv("VALIDATE_PCO") or "").strip() in {"1", "true", "True"}:
+        try:
+            pco_errs = _validate_pco_extensions(req.pco)
+            if pco_errs:
+                print("[ProofGate] PCO validation warnings:")
+                for e in pco_errs:
+                    print(" -", e)
+        except Exception:
+            # report-only
+            pass
+
+    decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
         # Governance‑aware enforcement: require at least one allowed role per governance pack

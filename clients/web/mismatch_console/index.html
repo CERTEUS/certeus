@@ -57,6 +57,29 @@
         min-height: 100vh;
         color: #1c1e21;
       }
+      /* Focus styles and skip-link helpers */
+      :focus-visible {
+        outline: 3px solid #222;
+        outline-offset: 2px;
+      }
+      .sr-only {
+        position: absolute;
+        left: -10000px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+      .sr-only-focusable:focus {
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 8px 10px;
+        margin: 6px;
+        background: #fff;
+        border: 2px solid #222;
+        border-radius: 8px;
+      }
 
       /* A11y: skip link */
       .skip-link {
@@ -441,8 +464,10 @@
     </style>
   </head>
   <body>
-    <a href="#main" class="skip-link" aria-label="Skip to main content">Skip to content</a>
-    <div class="container" id="main" role="main" tabindex="-1">
+    <a href="#main" class="sr-only sr-only-focusable"
+      >Pomiń do treści głównej</a
+    >
+    <div class="container" id="main" role="main">
       <!-- ────────────────────────────────────────────────────────────── -->
       <!-- HEADER                                                        -->
       <!-- ────────────────────────────────────────────────────────────── -->

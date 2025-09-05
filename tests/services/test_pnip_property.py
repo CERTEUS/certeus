@@ -22,6 +22,7 @@ EN: Property-based tests for PNIP — SHA256 validity and policy checks.
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import string

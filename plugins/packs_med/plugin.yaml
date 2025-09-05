@@ -1,0 +1,15 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/packs_med/plugin.yaml                        |
+# | ROLE: Project YAML manifest.                                |
+# | PLIK: plugins/packs_med/plugin.yaml                        |
+# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+
+name: packs_med
+version: 0.1.0
+license: MIT
+enabled: true
+module: plugins.packs_med.src.main
+register: register

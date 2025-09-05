@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import fnmatch
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,7 @@ from pydantic import BaseModel, Field
 # === KONFIGURACJA / CONFIGURATION ===
 
 _STORE = Path(__file__).resolve().parents[3] / "data" / "pfs_dht.json"
+_MEM_DB: dict[str, dict[str, Any]] = {}
 
 # === MODELE / MODELS ===
 
@@ -37,6 +39,7 @@ class AnnounceIn(BaseModel):
     node: str = Field(pattern=r"^[A-Za-z0-9_.:-]+$")
     competencies: list[str] = Field(min_length=1)
     capacity: int = Field(default=1, ge=0)
+    ttl_sec: int | None = Field(default=None, ge=0)
 
 
 class AnnounceOut(BaseModel):
@@ -63,7 +66,13 @@ class PublishPathOut(BaseModel):
 router = APIRouter(prefix="/v1/pfs/dht", tags=["ProofFS-DHT"])
 
 
+def _use_persistence() -> bool:
+    return (os.getenv("PFS_DHT_PERSIST") or "").strip() in {"1", "true", "True"}
+
+
 def _load() -> dict[str, dict[str, Any]]:
+    if not _use_persistence():
+        return _MEM_DB
     try:
         if _STORE.exists():
             raw = json.loads(_STORE.read_text(encoding="utf-8"))
@@ -75,6 +84,11 @@ def _load() -> dict[str, dict[str, Any]]:
 
 
 def _save(data: dict[str, dict[str, Any]]) -> None:
+    if not _use_persistence():
+        snapshot = dict(data)
+        _MEM_DB.clear()
+        _MEM_DB.update(snapshot)
+        return
     try:
         _STORE.parent.mkdir(parents=True, exist_ok=True)
         _STORE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -86,7 +100,11 @@ def _save(data: dict[str, dict[str, Any]]) -> None:
 async def announce(req: AnnounceIn, request: Request) -> AnnounceOut:
     _ = request  # rate-limit hook optional
     db = _load()
-    db[req.node] = {"competencies": list(req.competencies), "capacity": int(req.capacity)}
+    db[req.node] = {
+        "competencies": list(req.competencies),
+        "capacity": int(req.capacity),
+        "ttl_sec": int(req.ttl_sec) if req.ttl_sec is not None else None,
+    }
     _save(db)
     return AnnounceOut(ok=True, count=len(db))
 
@@ -98,6 +116,10 @@ async def query(competency: str) -> QueryOut:
     for node, meta in db.items():
         comps = meta.get("competencies") if isinstance(meta, dict) else None
         if not isinstance(comps, list):
+            continue
+        # TTL filter: ttl_sec == 0 means expired; None -> no TTL check
+        ttl = meta.get("ttl_sec") if isinstance(meta, dict) else None
+        if isinstance(ttl, int) and ttl == 0:
             continue
         if any(fnmatch.fnmatch(competency, str(patt)) or fnmatch.fnmatch(str(patt), competency) for patt in comps):
             nodes.append(str(node))
@@ -125,8 +147,13 @@ async def publish_path(req: PublishPathIn) -> PublishPathOut:
                 best.append(node)
         best.sort()
         if best:
-            # wybierz najmniej obciążony
-            tgt = min(best, key=lambda n: plan.get(n, 0))
+            # wybierz najmniej obciążony z uwzględnieniem capacity: load/capacity
+            def _load_factor(n: str) -> float:
+                meta = db.get(n) or {}
+                cap = int(meta.get("capacity", 1)) or 1
+                return plan.get(n, 0) / float(max(1, cap))
+
+            tgt = min(best, key=_load_factor)
             plan[tgt] = plan.get(tgt, 0) + 1
     # usuń zera
     plan = {k: v for k, v in plan.items() if v > 0}

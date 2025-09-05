@@ -20,4 +20,3 @@ spec:
     - name: http
       port: {{ .Values.api.service.port }}
       targetPort: http
-
