@@ -65,7 +65,14 @@ class CerteusClient:
                 pass
         return h
 
-    def _post(self, path: str, *, json_body: Any | None = None, files: Any | None = None, headers: dict[str, str] | None = None):
+    def _post(
+        self,
+        path: str,
+        *,
+        json_body: Any | None = None,
+        files: Any | None = None,
+        headers: dict[str, str] | None = None,
+    ):
         import time
 
         last_exc: Exception | None = None

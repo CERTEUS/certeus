@@ -51,29 +51,19 @@ import services.api_gateway.routers.dr as dr
 import services.api_gateway.routers.ethics as ethics
 import services.api_gateway.routers.export as export
 import services.api_gateway.routers.fin as fin
-
-try:  # optional legacy alias; may be absent in some trees
-    import services.api_gateway.routers.fin_tokens_api as fin_tokens_api  # type: ignore
-except Exception:
-    fin_tokens_api = None  # type: ignore[assignment]
 import services.api_gateway.routers.ledger as ledger
+import services.api_gateway.routers.lexenith as lexenith
 import services.api_gateway.routers.lexqft as lexqft
 import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
+import services.api_gateway.routers.openapi_docs as openapi_docs
 import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
 import services.api_gateway.routers.pfs_dht as pfs_dht
-import services.api_gateway.routers.openapi_docs as openapi_docs
-import services.api_gateway.routers.qoc as qoc
-
-try:  # optional: avoid hard fail if core/pco deps are unavailable
-    import services.api_gateway.routers.pco_public as pco_public  # type: ignore
-except Exception:
-    pco_public = None  # type: ignore[assignment]
-import services.api_gateway.routers.lexenith as lexenith
 import services.api_gateway.routers.preview as preview
+import services.api_gateway.routers.qoc as qoc
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
 import services.api_gateway.routers.upn as upn
@@ -82,6 +72,16 @@ from services.api_gateway.routers.well_known_jwks import router as jwks_router
 from services.api_gateway.security import attach_proof_only_middleware
 from services.ingest_service.adapters.contracts import Blob
 from services.ingest_service.adapters.registry import get_llm, get_preview
+
+# Optional routers that may be absent depending on build profile
+try:  # optional legacy alias; may be absent in some trees
+    import services.api_gateway.routers.fin_tokens_api as fin_tokens_api  # type: ignore
+except Exception:
+    fin_tokens_api = None  # type: ignore[assignment]
+try:  # optional: avoid hard fail if core/pco deps are unavailable
+    import services.api_gateway.routers.pco_public as pco_public  # type: ignore
+except Exception:
+    pco_public = None  # type: ignore[assignment]
 
 # === KONFIGURACJA / CONFIGURATION ===
 
