@@ -71,8 +71,8 @@ async def legacy_allocate_tokens(req: TokenAllocateIn, request: Request) -> Toke
     operation_id="fin_legacy_get_token_request_status",
     include_in_schema=False,
 )
-async def legacy_get_token_request_status(request_id: str) -> TokenStatusOut:
-    return await billing.get_token_request_status(request_id)
+async def legacy_get_token_request_status(request_id: str, request: Request) -> TokenStatusOut:
+    return await billing.get_request_status(request_id, request)
 
 
 # === I/O / ENDPOINTS ===

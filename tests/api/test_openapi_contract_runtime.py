@@ -23,6 +23,7 @@ from typing import Any
 import warnings
 
 import yaml
+from services.api_gateway.main import app
 
 from services.api_gateway.main import app
 

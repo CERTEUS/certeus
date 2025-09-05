@@ -35,6 +35,12 @@ venv/
 # Local outputs/reports
 out/
 reports/
+
+# Internal docs and local notes (do not version)
+docs/internal/
+docs/private/
+notes/
+scratch/
 site/
 mirror_pub_clone/
 mirror_publish/
