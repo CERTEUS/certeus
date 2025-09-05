@@ -141,6 +141,11 @@ jobs:
           python scripts/gates/pco_validation_gate.py || true
           test -f out/pco_validation.json && echo ok > out/pco_validation_ok.txt || true
 
+      - name: Asset-Integrity Gate (enforce)
+        run: |
+          python scripts/gates/asset_integrity_gate.py
+          test -f out/asset_integrity_ok.txt
+
       - name: Plugin Supply-Chain Gate (report-only)
         continue-on-error: true
         run: |

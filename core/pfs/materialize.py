@@ -25,6 +25,7 @@ import time
 from typing import Any
 
 from .uri import _sanitize
+from .resolve import resolve_uri
 
 
 def _root_dir() -> Path:
@@ -56,3 +57,20 @@ def materialize_mail_attachment(mail_id: str, filename: str, meta: dict[str, Any
 # === I/O / ENDPOINTS ===
 
 # === TESTY / TESTS ===
+
+
+def materialize_uri(uri: str, meta: dict[str, Any] | None = None) -> Path:
+    """
+    PL/EN: Materialize artifact for a given pfs:// URI.
+    Currently supports mail attachments: pfs://mail/<mail_id>/<filename>
+    """
+    res = resolve_uri(uri)
+    parts = res.path.parts
+    # Expect .../mail/<mail_id>/<filename>
+    try:
+        idx = parts.index("mail")
+        mail_id = parts[idx + 1]
+        filename = parts[idx + 2]
+    except Exception as _e:  # pragma: no cover - defensive
+        raise ValueError("unsupported ProofFS URI for materialize") from _e
+    return materialize_mail_attachment(mail_id, filename, meta)
