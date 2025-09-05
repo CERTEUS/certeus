@@ -36,7 +36,81 @@ EN: CERTEUS module – please complete the functional description.
 
 from __future__ import annotations
 
+from collections import deque
+from threading import Lock
+
 from prometheus_client import Counter, Gauge, Histogram
+
+# In‑proc lightweight aggregator for quick summaries (landing widgets, API)
+_REQ_AGG_LOCK: Lock = Lock()
+_REQ_AGG: dict[tuple[str, str], dict[str, float]] = {}
+_SERIES: dict[tuple[str, str], deque[float]] = {}
+
+
+def record_http_observation(path: str, method: str, status: str, tenant: str, dur_ms: float) -> None:
+    """Record a simple aggregate for (path, method): count, sum_ms, last_ms.
+
+    This is supplementary to Prometheus metrics and intended for quick JSON
+    summaries without scraping the /metrics exposition.
+    """
+
+    key = (str(path), str(method))
+    with _REQ_AGG_LOCK:
+        st = _REQ_AGG.get(key)
+        if not st:
+            st = {"count": 0.0, "sum_ms": 0.0, "last_ms": 0.0}
+            _REQ_AGG[key] = st
+        st["count"] += 1.0
+        st["sum_ms"] += float(dur_ms)
+        st["last_ms"] = float(dur_ms)
+        dq = _SERIES.get(key)
+        if dq is None:
+            dq = deque(maxlen=200)
+            _SERIES[key] = dq
+        dq.append(float(dur_ms))
+
+
+def http_summary(top: int = 10) -> dict[str, object]:
+    """Return a snapshot summary of top endpoints by average latency and by count."""
+
+    with _REQ_AGG_LOCK:
+        items = [
+            {
+                "path": k[0],
+                "method": k[1],
+                "count": int(v.get("count", 0.0)),
+                "avg_ms": (v.get("sum_ms", 0.0) / v.get("count", 1.0)),
+                "last_ms": v.get("last_ms", 0.0),
+            }
+            for k, v in _REQ_AGG.items()
+        ]
+    by_avg = sorted(items, key=lambda x: x["avg_ms"], reverse=True)[:top]
+    by_count = sorted(items, key=lambda x: x["count"], reverse=True)[:top]
+    return {"top_avg_ms": by_avg, "top_count": by_count, "total_paths": len(items)}
+
+
+def http_series(top: int = 5) -> dict[str, object]:
+    """Return series for top endpoints by count with p95 and last durations.
+
+    The series contains up to 200 most recent durations (ms) per path/method.
+    """
+
+    with _REQ_AGG_LOCK:
+        counts = [(k, int(v.get("count", 0.0))) for k, v in _REQ_AGG.items()]
+        top_keys = [k for (k, _) in sorted(counts, key=lambda x: x[1], reverse=True)[:top]]
+        out = []
+        for k in top_keys:
+            pts = list(_SERIES.get(k, deque()))
+            if pts:
+                s = sorted(pts)
+                # p95 index
+                idx = int(0.95 * (len(s) - 1))
+                p95 = s[idx]
+            else:
+                p95 = 0.0
+            out.append({"path": k[0], "method": k[1], "points": pts, "p95": p95, "count": len(pts)})
+    return {"series": out}
+
 
 # Gauges for model calibration and decision quality
 
@@ -45,6 +119,17 @@ certeus_ece = Gauge("certeus_ece", "Expected Calibration Error")
 certeus_brier = Gauge("certeus_brier", "Brier score")
 
 certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
+
+# CFE: Ricci (kappa_max)
+certeus_cfe_kappa_max = Gauge("certeus_cfe_kappa_max", "CFE kappa_max curvature")
+
+# CFE: Geodesic action (hist) and Horizon mass (gauge)
+certeus_cfe_geodesic_action = Histogram(
+    "certeus_cfe_geodesic_action",
+    "CFE geodesic action",
+    buckets=(1, 2, 3, 5, 8, 13, 21, 34),
+)
+certeus_cfe_horizon_mass = Gauge("certeus_cfe_horizon_mass", "CFE horizon mass")
 
 # Histogram for compile/verification durations (ms)
 
@@ -122,6 +207,26 @@ certeus_http_request_duration_ms = Histogram(
     buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
 )
 
+# Per-tenant HTTP metrics (W16: SLO per tenant)
+certeus_http_request_duration_ms_tenant = Histogram(
+    "certeus_http_request_duration_ms_tenant",
+    "Gateway HTTP request duration (ms) per tenant",
+    labelnames=("tenant", "path", "method", "status"),
+    buckets=(5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000),
+)
+certeus_http_requests_total = Counter(
+    "certeus_http_requests_total",
+    "Total HTTP requests by tenant/path/method/status",
+    labelnames=("tenant", "path", "method", "status"),
+)
+
+# HTTP load shedding counter
+certeus_http_shed_total = Counter(
+    "certeus_http_shed_total",
+    "Total HTTP shed events",
+    labelnames=("tenant", "path", "method", "reason"),
+)
+
 # QTMP: Uncertainty bound and operator priorities
 certeus_qtm_ub_lt = Gauge("certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",))
 certeus_qtm_operator_priority = Gauge(
@@ -160,9 +265,10 @@ certeus_qtm_cfe_correlation = Gauge(
     labelnames=("case",),
 )
 
-# LexQFT: Coverage (gamma, uncaptured)
+# LexQFT: Coverage (gamma, uncaptured) + energy debt
 certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
 certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
+certeus_lexqft_energy_debt = Gauge("certeus_lexqft_energy_debt", "LexQFT energy debt (per case)", labelnames=("case",))
 
 # QOC: Vacuum pairs rate
 certeus_qoc_vacuum_rate = Gauge("certeus_qoc_vacuum_rate", "QOC vacuum pairs generation rate")

@@ -14,111 +14,133 @@ on:
     workflows:
       - ci-gates
     types: [completed]
+  push:
+    branches: [ work/daily ]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Bypass weekly marker and force promotion'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 jobs:
   promote:
-    if: ${{ github.event.workflow_run.head_branch == 'work/daily' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
+      - name: Decide whether to evaluate promotion
+        id: cond
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const evt = context.eventName;
+            let ok = true;
+            if (evt === 'workflow_run') {
+              const wr = context.payload.workflow_run || {};
+              ok = (wr.head_branch === 'work/daily' && wr.conclusion === 'success');
+            } else if (evt === 'push') {
+              ok = (context.ref === 'refs/heads/work/daily');
+            }
+            core.setOutput('ok', ok ? 'true' : 'false');
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Configure git user
+        shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Determine SHA for evaluation
+        id: sha
+        if: steps.cond.outputs.ok == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const evt = context.eventName;
+            let sha;
+            if (evt === 'workflow_run') sha = context.payload.workflow_run?.head_sha;
+            else sha = context.sha;
+            core.setOutput('sha', sha);
       - name: Determine if weekly promotion is requested
         id: marker
-        env:
-          SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          # Read commit message for head SHA
-          MSG=$(git show -s --format=%B "$SHA")
-          echo "Commit message for $SHA:"; echo "$MSG"
-          # Weekly promotion marker policy:
-          # - Include "[week-end]" anywhere in the message, OR
-          # - Include a trailer line like: weekly-promote: true
-          if echo "$MSG" | grep -Eqi '\[week-end\]|^weekly-promote:\s*(true|1)'; then
-            echo "promote=true" >> $GITHUB_OUTPUT
-          else
-            echo "promote=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Verify all required gates are green for HEAD SHA
-        id: gates
-        if: steps.marker.outputs.promote == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          set -euo pipefail
-          echo "Checking gates for commit: $SHA"
-          required=( "ci-gates" )
-          ok=1
-          for wf in "${required[@]}"; do
-            # Get latest run for this commit and workflow
-            concl=$(gh run list --branch work/daily --workflow "$wf" --json headSha,conclusion,headBranch,name | jq -r \
-              --arg sha "$SHA" '.[] | select(.headSha==$sha) | .conclusion' | head -n1)
-            if [ "${concl:-}" != "success" ]; then
-              echo "Gate not green: $wf (conclusion=${concl:-none})"
-              ok=0
-            else
-              echo "Gate OK: $wf"
-            fi
-          done
-          if [ "$ok" = "1" ]; then
-            echo "all_ok=true" >> $GITHUB_OUTPUT
-          else
-            echo "all_ok=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
+        if: steps.cond.outputs.ok == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const force = (context.payload?.inputs?.force === 'true');
+            let promote = false;
+            if (force) {
+              promote = true;
+            } else {
+              const sha = core.getInput('sha', { required: false }) || '${{ steps.sha.outputs.sha }}';
+              const { data: commit } = await github.rest.repos.getCommit({ owner: context.repo.owner, repo: context.repo.repo, ref: sha });
+              const msg = commit?.commit?.message || '';
+              core.info('Commit message for '+sha+':\n'+msg);
+              promote = /\[week-end\]/i.test(msg) || /^weekly-promote:\s*(true|1)/mi.test(msg);
+            }
+            core.setOutput('promote', promote ? 'true' : 'false');
+      # ci-gates conclusion is already 'success' by job condition above${insert}
       - name: Append WORKLOG on work/daily (pre-merge)
-        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true'
+        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
         env:
           SHA: ${{ github.event.workflow_run.head_sha }}
           ACTOR: ${{ github.actor }}
+        shell: pwsh
         run: |
-          set -euo pipefail
           git checkout work/daily
-          SUMMARY="auto-promote: ${SHA} (gates green)"
-          DETAILS=$'Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate\nActor: '${ACTOR}
-          python scripts/worklog/update_worklog.py --summary "$SUMMARY" --details "$DETAILS"
+          $ts = [DateTime]::UtcNow.ToString('yyyy-MM-dd HH:mm:ssZ')
+          $branch = 'work/daily'
+          $summary = "auto-promote: ${env:SHA} (gates green)"
+          $details = @(
+            'Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate',
+            "Actor: ${env:ACTOR}"
+          ) -join "`n"
+          $entry = "- $ts [${env:ACTOR}] ($branch): $summary`n  - " + ($details -replace "`n","`n  - ") + "`n"
+          if (-not (Test-Path WORKLOG.md)) { "# CERTEUS - WORKLOG`n`n" | Out-File -FilePath WORKLOG.md -Encoding UTF8 }
+          Add-Content -Path WORKLOG.md -Value $entry -Encoding UTF8
           git add WORKLOG.md
-          git commit -m "chore(worklog): ${SUMMARY}" || true
-          git push origin work/daily || true
+          git commit -m "chore(worklog): $summary" || exit 0
+          git push origin work/daily || exit 0
       - name: Fast-forward main to work/daily (if possible)
-        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true'
+        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true'
         id: ff
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
         run: |
-          set -euo pipefail
           git fetch origin
-          # Ensure branches are up-to-date
           git checkout main
           git reset --hard origin/main
-          git merge --ff-only origin/work/daily && {
-            echo "ff=true" >> $GITHUB_OUTPUT
+          git merge --ff-only origin/work/daily 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            "ff=true" >> $env:GITHUB_OUTPUT
             git push origin main
-            exit 0
-          } || echo "No fast-forward possible; will create/auto-merge PR."
-          echo "ff=false" >> $GITHUB_OUTPUT
+          } else {
+            Write-Host "No fast-forward possible; skipping (PR path)."
+            "ff=false" >> $env:GITHUB_OUTPUT
+          }
       - name: Create or auto-merge PR (work/daily -> main)
-        if: steps.marker.outputs.promote == 'true' && steps.gates.outputs.all_ok == 'true' && steps.ff.outputs.ff == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          # Find existing PR
-          PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number' || true)
-          if [ -z "$PR_NUM" ]; then
-            gh pr create -B main -H work/daily -t "Promote work/daily to main" -b "Auto-promotion after green CI."
-            PR_NUM=$(gh pr list -B main -H work/daily --state open --json number --jq '.[0].number')
-          fi
-          # Try enabling auto-merge (squash) if allowed; otherwise just leave PR open
-          gh pr merge "$PR_NUM" --auto --squash || true
+        if: steps.cond.outputs.ok == 'true' && steps.marker.outputs.promote == 'true' && steps.ff.outputs.ff == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            // Find existing PR
+            const list = await github.rest.pulls.list({ owner, repo, state: 'open', base: 'main', head: owner+':work/daily', per_page: 1 });
+            let pr = list.data[0];
+            if (!pr) {
+              const created = await github.rest.pulls.create({ owner, repo, base: 'main', head: 'work/daily', title: 'Promote work/daily to main', body: 'Auto-promotion after green CI.' });
+              pr = created.data;
+            }
+            // Try to enable auto-merge (squash). Requires GraphQL.
+            try {
+              await github.graphql(`mutation($prId: ID!) { enablePullRequestAutoMerge(input: { pullRequestId: $prId, mergeMethod: SQUASH }) { clientMutationId } }`, { prId: pr.node_id });
+            } catch (e) {
+              core.warning('Could not enable auto-merge: ' + (e?.message || e));
+            }

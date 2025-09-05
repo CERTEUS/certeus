@@ -115,6 +115,7 @@ hit GET / && PASSES+=1 || FAILS+=1
 hit GET /metrics && PASSES+=1 || FAILS+=1
 hit GET /.well-known/jwks.json && PASSES+=1 || FAILS+=1
 hit GET /v1/packs/ && PASSES+=1 || FAILS+=1
+hit GET /v1/boundary/status && PASSES+=1 || FAILS+=1
 hit POST /v1/fin/alpha/measure '{"signals":{"risk":0.10,"sentiment":0.55}}' && PASSES+=1 || FAILS+=1
 hit GET /v1/fin/alpha/uncertainty && PASSES+=1 || FAILS+=1
 hit GET /v1/fin/alpha/entanglements && PASSES+=1 || FAILS+=1
@@ -123,6 +124,9 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 hit GET /v1/cfe/lensing && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"basis":["ALLOW","DENY","ABSTAIN"]}' http://127.0.0.1:8000/v1/qtm/init_case); echo "[POST] /v1/qtm/init_case => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"operator":"W","source":"ui"}' http://127.0.0.1:8000/v1/qtm/measure); echo "[POST] /v1/qtm/measure => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"operator":"L","source":"smoke","case":"SMOKE-QTMP-1"}' http://127.0.0.1:8000/v1/qtm/measure); echo "[POST] /v1/qtm/measure (SMOKE-QTMP-1) => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+hit GET /v1/qtm/history/SMOKE-QTMP-1 && PASSES+=1 || FAILS+=1
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"variables":["RISK","SENTIMENT"]}' http://127.0.0.1:8000/v1/qtm/find_entanglement); echo "[POST] /v1/qtm/find_entanglement => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"A":"X","B":"Y"}' http://127.0.0.1:8000/v1/qtm/commutator); echo "[POST] /v1/qtm/commutator => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"variables":["A","B"]}' http://127.0.0.1:8000/v1/qtm/find_entanglement); echo "[POST] /v1/qtm/find_entanglement => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8000/v1/devices/horizon_drive/plan); echo "[POST] /v1/devices/horizon_drive/plan => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
@@ -132,6 +136,9 @@ code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"distribution_a":[0.2,0.8],"distribution_b":[0.5,0.5]}' http://127.0.0.1:8000/v1/ethics/equity_meter); echo "[POST] /v1/ethics/equity_meter => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"W_litera":"ALLOW","T_telos":"TRUTH","rationale":"smoke"}' http://127.0.0.1:8000/v1/ethics/double_verdict); echo "[POST] /v1/ethics/double_verdict => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"cmd":"cfe.geodesic","args":{}}' http://127.0.0.1:8000/v1/chatops/command); echo "[POST] /v1/chatops/command => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
+
+# MailOps
+code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"mail_id":"SMOKE-EMAIL-1","from_addr":"smoke@example.com","to":["ops@example.com"],"subject":"Smoke","body_text":"Hello","spf":"pass","dkim":"pass","dmarc":"pass","attachments":[]}' http://127.0.0.1:8000/v1/mailops/ingest); echo "[POST] /v1/mailops/ingest => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
 
 # Ledger
 code=$(curl -s -o /dev/null -w "%{http_code}" -H 'Content-Type: application/json' -d '{"case_id":"CER-1","document_hash":"sha256:0000000000000000000000000000000000000000000000000000000000000000"}' http://127.0.0.1:8000/v1/ledger/record-input); echo "[POST] /v1/ledger/record-input => $code"; [[ $code == 2* ]] && PASSES+=1 || FAILS+=1
@@ -249,6 +256,20 @@ fi
 
 # PCO public rid equals requested rid
 if curl -s http://127.0.0.1:8000/pco/public/RID-SMOKE-1 | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); assert j.get("rid")=="RID-SMOKE-1"; print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
+
+# ChatOps response shape (geodesic_action numeric)
+if curl -s -H 'Content-Type: application/json' -d '{"cmd":"cfe.geodesic","args":{}}' http://127.0.0.1:8000/v1/chatops/command | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); x=(j.get("result") or {}).get("geodesic_action"); assert isinstance(x,(int,float)); print("ok")'; then
+  PASSES=$((PASSES+1))
+else
+  FAILS=$((FAILS+1))
+fi
+
+# MailOps response shape (io.email.mail_id present)
+if curl -s -H 'Content-Type: application/json' -d '{"mail_id":"SMOKE-EMAIL-2","from_addr":"smoke@example.com","to":["ops@example.com"],"attachments":[]}' http://127.0.0.1:8000/v1/mailops/ingest | ./.venv/bin/python -c 'import sys,json; j=json.load(sys.stdin); io=j.get("io") or {}; assert isinstance(io.get("io.email.mail_id"),str); print("ok")'; then
   PASSES=$((PASSES+1))
 else
   FAILS=$((FAILS+1))

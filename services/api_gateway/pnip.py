@@ -28,6 +28,8 @@ from fastapi import HTTPException, Request
 from pydantic import BaseModel, Field
 import yaml
 
+_POLICY_ID_CACHE: str | None = None
+
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
@@ -45,13 +47,17 @@ class PNIP(BaseModel):
 
 def _policy_pack_id() -> str:
     # Read from policies/pco/policy_pack.yaml (meta.id)
+    global _POLICY_ID_CACHE
+    if _POLICY_ID_CACHE is not None:
+        return _POLICY_ID_CACHE
     try:
         p = Path(__file__).resolve().parents[3] / "policies" / "pco" / "policy_pack.yaml"
         doc = yaml.safe_load(p.read_text(encoding="utf-8"))
         mid = str(((doc or {}).get("meta") or {}).get("id") or "pco-policy-pack")
-        return mid
+        _POLICY_ID_CACHE = mid
     except Exception:
-        return "pco-policy-pack"
+        _POLICY_ID_CACHE = "pco-policy-pack"
+    return _POLICY_ID_CACHE
 
 
 def _parse_jurisdiction(header_val: str | None) -> tuple[str, str]:

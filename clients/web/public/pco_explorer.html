@@ -1,0 +1,79 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/pco_explorer.html                  |
+| ROLE: Public PCO Explorer                                   |
+| PLIK: clients/web/public/pco_explorer.html                  |
+| ROLA: Eksplorator publicznych PCO                           |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Public PCO Explorer</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0f1114;color:#f2f2f3}
+      .wrap{max-width:1100px;margin:24px auto;padding:0 12px}
+      .card{background:#151922;border:1px solid #232832;border-radius:12px;padding:12px;margin-bottom:12px}
+      input{background:#0f1114;border:1px solid #232832;border-radius:8px;color:#f2f2f3;padding:8px}
+      .btn{padding:8px 12px;border:1px solid #232832;border-radius:8px;background:#1a1f29;color:#f2f2f3;cursor:pointer}
+      pre{background:#0f1114;border:1px solid #232832;border-radius:8px;padding:8px;overflow:auto}
+      table{width:100%;border-collapse:collapse}
+      th,td{border:1px solid #232832;padding:6px;text-align:left}
+      .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>Public PCO Explorer</h1>
+        <div class="row">
+          <input id="rid" value="CER-LEX-001" placeholder="RID / case_id"/>
+          <button id="load" class="btn">Load</button>
+          <a id="share" class="btn" href="#">Share link</a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Summary</h2>
+        <table id="sum"><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h2>Payload</h2>
+        <pre id="payload"></pre>
+      </div>
+      <div class="card">
+        <h2>Merkle path</h2>
+        <table id="merkle"><thead><tr><th>#</th><th>dir</th><th>sibling</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+    <script>
+      const $=id=>document.getElementById(id);
+      async function j(url){ const r=await fetch(url); const t=await r.text(); let d=t; try{ d=JSON.parse(t)}catch{} return {ok:r.ok,data:d}; }
+      function q(k){ return new URLSearchParams(location.search).get(k)||''; }
+      function fillSummary(p){
+        const tb=$("sum").querySelector('tbody'); tb.innerHTML='';
+        const rows=[['rid', p.rid], ['version', p.version||p.status||'-'], ['ledger_ref', p.ledger_ref||'-'], ['signatures', (p.signatures||[]).length]];
+        for(const [k,v] of rows){ const tr=document.createElement('tr'); tr.innerHTML=`<td>${k}</td><td>${v}</td>`; tb.appendChild(tr); }
+      }
+      function fillMerkle(p){
+        const tb=$("merkle").querySelector('tbody'); tb.innerHTML='';
+        const path = p.merkle_proof || p.merklePath || [];
+        (path||[]).forEach((it,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${i}</td><td>${it.dir||'-'}</td><td>${it.sibling||'-'}</td>`; tb.appendChild(tr); })
+      }
+      async function load(){
+        const rid = $("rid").value.trim();
+        const r = await j(`/pco/public/${encodeURIComponent(rid)}`);
+        if(!r.ok){ $("payload").textContent = 'Not found'; return; }
+        $("payload").textContent = JSON.stringify(r.data, null, 2);
+        fillSummary(r.data); fillMerkle(r.data);
+        const url = new URL(location.href); url.searchParams.set('rid', rid); $("share").href=url.toString();
+      }
+      document.getElementById('load').addEventListener('click', load);
+      (function init(){ const rid=q('rid'); if(rid){ $("rid").value=rid; } load(); })();
+    </script>
+  </body>
+  </html>
+

@@ -177,6 +177,33 @@ def record_input(payload: RecordInputRequest, request: Request) -> RecordInputRe
     return RecordInputResponse(**result)
 
 
+@router.get("/{case_id}", tags=["Ledger"])
+def get_ledger_head(case_id: str) -> dict[str, Any]:
+    """
+
+    PL: Zwraca prosty „head” księgi dla sprawy (ostatnie ogniwo łańcucha) oraz długość.
+
+    EN: Returns a simple ledger head for the case (last chain link) and length.
+
+    """
+
+    items = ledger_service.get_records_for_case(case_id=case_id)
+
+    if not items:
+        # Spójne z minimalnym kontraktem – brak definicji schematu w OpenAPI.
+        return {"case_id": case_id, "length": 0, "head": None}
+
+    head = items[-1]
+
+    return {
+        "case_id": case_id,
+        "length": len(items),
+        "head": head.get("chain_self"),
+        "type": head.get("type"),
+        "timestamp": head.get("timestamp"),
+    }
+
+
 @router.get("/{case_id}/records", tags=["Ledger"])
 def get_records(case_id: str) -> list[RecordInputResponse]:
     """

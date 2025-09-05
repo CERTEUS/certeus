@@ -1,0 +1,18 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/lexenith_pl/plugin.yaml                      |
+# | ROLE: LEXENITH (PL) pack manifest                            |
+# | PLIK: plugins/lexenith_pl/plugin.yaml                      |
+# | ROLA: Manifest pakietu LEXENITH (PL)                         |
+# +-------------------------------------------------------------+
+
+name: lexenith_pl
+module: plugins.lexenith_pl.adapter
+version: "0.1.0"
+capabilities:
+  - lex
+  - law
+  - jurisdiction:PL
+# signature: (dodaj przez scripts/marketplace/sign_manifest.py --embed)
+

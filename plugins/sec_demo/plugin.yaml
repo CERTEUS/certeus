@@ -1,0 +1,8 @@
+name: sec_demo
+module: plugins.sec_demo.src.main
+version: "0.1.0"
+license: Apache-2.0
+publisher: CERTEUS
+capabilities:
+  - sec
+  - risk

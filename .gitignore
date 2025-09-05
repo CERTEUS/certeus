@@ -1,4 +1,20 @@
-# Python
+# GitHub Actions runner local artifacts (keep runner out of repo!)
+_work/
+_diag/
+externals/
+bin/
+.run*
+.credentials*
+actions-runner-*
+config.cmd
+run.cmd
+run-helper.cmd*
+# Runner toolcache
+_work/_tool/
+# Embedded checkout from runner
+_work/certeus/certeus/
+
+# Python/Build artifacts
 __pycache__/
 *.py[cod]
 .venv/
@@ -8,10 +24,28 @@ venv*/
 venv/
 .git-credentials
 *.egg-info/
+dist/
+build/
+venv/
+.venv/
+.venv_uv/
+.venv_cli/
+.venv*/
 
-# Env / secrets (local only)
-.env
-.env.local
+# Local outputs/reports
+out/
+reports/
+site/
+mirror_pub_clone/
+mirror_publish/
+mirror_work_repo/
+exports/
+data/law_cache/
+# data/public_pco public PCO files: keep a sample for CI gates
+data/public_pco/*.json
+!data/public_pco/sample_case.json
+data/lexqft_coverage_state.json
+static/previews/
 .devkeys/
 
 # Artefakty
@@ -23,23 +57,8 @@ data/packs_state.json
 
 # IDE / OS
 .vscode/
-.idea/
-.DS_Store
-Thumbs.db
+.env
+.git-credentials
+node_modules
 
-# Build / frontend
-build/
-dist/
-node_modules/
-
-# Cache / coverage
-.cache/
-.ruff_cache/
-.pytest_cache/
-.coverage*
-htmlcov/
-data/law_cache/
-exports/
-static/previews/
-
-.hypothesis/
+.venv_cli/

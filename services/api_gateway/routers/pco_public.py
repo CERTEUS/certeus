@@ -343,4 +343,20 @@ def get_public_pco(rid: str, request: Request) -> PublicPCO:
     return PublicPCO(**{**pub, "merkle_proof": path})
 
 
+# Kontrakt OpenAPI (docs/api/openapi.yaml) używa nazwy parametru "case_id".
+# Zachowując główny endpoint zgodny z testami (/pco/public/{rid}),
+# wystawiamy alias ścieżki z nazwą {case_id} wskazujący na tę samą logikę.
+
+
+@router.get("/{case_id}", response_model=PublicPCO, include_in_schema=True)
+def get_public_pco_by_case_id(case_id: str, request: Request) -> PublicPCO:  # pragma: no cover (alias)
+    return get_public_pco(case_id, request)
+
+
+# Alias ścieżki: zgodność z dokumentacją /pco/public/{case_id}
+@router.get("/{case_id}", response_model=PublicPCO, include_in_schema=True)
+def get_public_pco_alias(case_id: str, request: Request) -> PublicPCO:  # pragma: no cover - alias
+    return get_public_pco(case_id, request)
+
+
 # === TESTY / TESTS ===

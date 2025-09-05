@@ -1,0 +1,6 @@
+type(scope): short summary
+
+Body: explain what and why, not how. Wrap at 72 chars.
+
+Refs: #issue-id (optional)
+

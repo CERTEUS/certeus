@@ -1,0 +1,4 @@
+Contact: mailto:kontakt@certeus.pl
+Policy: https://github.com/CERTEUS/certeus-public/blob/main/SECURITY.md
+Preferred-Languages: pl, en
+

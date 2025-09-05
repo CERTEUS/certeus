@@ -1,0 +1,52 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: tools/automation/mirror/mkdocs.public.yml            |
+# | ROLE: Public mirror MkDocs config.                           |
+# | PLIK: tools/automation/mirror/mkdocs.public.yml            |
+# | ROLA: Konfiguracja MkDocs dla mirrora publicznego.           |
+# +-------------------------------------------------------------+
+
+site_name: CERTEUS
+site_description: Verifiable Cognitive Intelligence — Dowód, nie opinia.
+site_url: https://certeus.github.io/certeus-public
+repo_url: https://github.com/CERTEUS/certeus-public
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.top
+    - content.code.copy
+  palette:
+    - scheme: default
+  favicon: assets/favicon.ico
+plugins:
+  - search
+use_directory_urls: true
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CERTEUS
+  generator: false
+  meta:
+    - property: og:title
+      content: CERTEUS — Verifiable Cognitive Intelligence
+    - property: og:description
+      content: Dowód, nie opinia. Publiczny front LITE. Core pod kołdrą.
+    - property: og:image
+      content: /assets/og.svg
+    - name: twitter:card
+      content: summary_large_image
+    - name: twitter:title
+      content: CERTEUS — Verifiable Cognitive Intelligence
+    - name: twitter:description
+      content: Dowód, nie opinia. Publiczny front LITE. Core pod kołdrą.
+    - name: twitter:image
+      content: /assets/og.svg
+    - property: og:image:alt
+      content: CERTEUS — Dowód, nie opinia.
+    - name: author
+      content: Radosław Skarżycki (CERTEUS)
+nav:
+  - Home: index.md
+  - API Overview: api/overview.md

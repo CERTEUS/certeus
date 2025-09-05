@@ -76,20 +76,32 @@ def main() -> int:
         except Exception:
             pass
     else:
-        # In-proc fallback: import FastAPI app and query via TestClient (requires fastapi installed)
+        # Prefer Ω‑Kernel holonomia językowa jeśli dostępna; fallback: CFE curvature (in-proc)
         try:
-            from fastapi.testclient import TestClient  # type: ignore
+            from core.omega_lang import holonomy_drift  # type: ignore
 
-            from services.api_gateway.main import app  # type: ignore
-
-            with TestClient(app) as client:  # type: ignore
-                r = client.get("/v1/cfe/curvature")
-                if r.status_code == 200:
-                    data = r.json()
-                    kappa = float(data.get("kappa_max", 0.0))
-                    payload["gauge"]["holonomy_drift"] = kappa
+            samples = [
+                {"text": "Publikuj dowód", "lang": "pl"},
+                {"text": "Analizuj dowód", "lang": "pl"},
+                {"text": "Podgląd dowód", "lang": "pl"},
+            ]
+            drifts = [holonomy_drift(s, cycle=("pl", "en")) for s in samples]
+            payload["gauge"]["holonomy_drift"] = float(sum(drifts) / max(1, len(drifts)))
         except Exception:
-            pass
+            # In-proc fallback: import FastAPI app and query via TestClient (requires fastapi installed)
+            try:
+                from fastapi.testclient import TestClient  # type: ignore
+
+                from services.api_gateway.main import app  # type: ignore
+
+                with TestClient(app) as client:  # type: ignore
+                    r = client.get("/v1/cfe/curvature")
+                    if r.status_code == 200:
+                        data = r.json()
+                        kappa = float(data.get("kappa_max", 0.0))
+                        payload["gauge"]["holonomy_drift"] = kappa
+            except Exception:
+                pass
 
     # Ω‑Kernel drift (report‑only): use optional before/after files
     try:

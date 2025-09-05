@@ -1,33 +1,19 @@
-# CERTEUS <img src="docs/assets/brand/certeus-favicon.svg" height="24" alt="CERTEUS" />
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: README.md                                            |
+| ROLE: Repo landing (Quickstart).                             |
+| PLIK: README.md                                            |
+| ROLA: Strona startowa repo (Szybki start).                   |
++-------------------------------------------------------------+
+-->
 
-[![Tests](https://github.com/CERTEUS/certeus/actions/workflows/tests.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/tests.yml)
-[![Proof Gate](https://github.com/CERTEUS/certeus/actions/workflows/proof-gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/proof-gate.yml)
-[![Smoke](https://github.com/CERTEUS/certeus/actions/workflows/smoke.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/smoke.yml)
-[![Smoke Summary](https://img.shields.io/badge/smoke-summary-blue?logo=github)](https://github.com/CERTEUS/certeus/actions/workflows/smoke.yml)
-[![OpenAPI Pages](https://github.com/CERTEUS/certeus/actions/workflows/openapi-pages.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/openapi-pages.yml)
-[![OpenAPI Diff](https://github.com/CERTEUS/certeus/actions/workflows/openapi-diff.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/openapi-diff.yml)
-[![Gauge-Gate](https://github.com/CERTEUS/certeus/actions/workflows/gauge_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/gauge_gate.yml)
-[![Path-Coverage-Gate](https://github.com/CERTEUS/certeus/actions/workflows/path_coverage_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/path_coverage_gate.yml)
-[![Boundary-Rebuild-Gate](https://github.com/CERTEUS/certeus/actions/workflows/boundary_rebuild_gate.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/boundary_rebuild_gate.yml)
-[![Security Policy](https://img.shields.io/badge/security-policy-blue)](https://github.com/CERTEUS/certeus/security/policy)
-[![SemVer](https://img.shields.io/badge/semver-1.x-blue)](#versioning-deprecation-support)
-[![SLSA](https://img.shields.io/badge/slsa-3%2B-8A2BE2)](https://slsa.dev)
-[![OpenSSF Scorecard](https://img.shields.io/badge/openssf-scorecard-brightgreen)](https://securityscorecards.dev/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![OpenAPI](https://img.shields.io/badge/openapi-latest-blue)](https://CERTEUS.github.io/certeus/openapi/openapi.json)
+# CERTEUS — Quickstart
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/certeus-banner-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="docs/assets/brand/certeus-banner-light.png">
-    <img alt="CERTEUS — Proof-native AI System" src="docs/assets/brand/certeus-readme-banner.svg" />
-  </picture>
-</p>
+Dowód, nie opinia. Verifiable Cognitive Intelligence.
 
-> **Proof-native system dla dowodów, decyzji i modeli.** Rdzeń _niezmienialny_ (PCO/Boundary), wszystko inne – _wtyczki_ i _polityki_.
->
-> **Fizyka sensu:** CFE (geometria), lexqft (ścieżki), QTMP (pomiar). **Interfejsy 1. klasy:** MailOps, ChatOps.
-> (Technikalia: Manifest Jednolity v1.5 w `docs/manifest.md`.)
+Najważniejsze instrukcje uruchomienia lokalnego i odnośniki do dokumentacji.
 
 ---
 
@@ -92,11 +78,8 @@ Core → Services → Modules → Plugins (Domain Packs) → Clients → Infra
 
 ```
 python -m venv .venv && source .venv/bin/activate
-source ./scripts/dev_env.sh
-python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
+python -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
 python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
-# in another terminal
-curl -s http://127.0.0.1:8000/health
 ```
 
 - Windows (PowerShell)
@@ -164,17 +147,9 @@ python -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 ```powershell
 # Windows PowerShell (Python 3.11)
 py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
-$py = ".\.venv\Scripts\python.exe"
-. .\\scripts\\dev_env.ps1
-& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client python-multipart z3-solver -c constraints/requirements-constraints.txt
-& $py -m ruff check . --fix; & $py -m ruff format .
-& $py -m pytest -q --junitxml="reports\junit.xml"
-
-# API Gateway (DEV)
+$py = ".\\.venv\\Scripts\\python.exe"
+& $py -m pip install -U pip wheel setuptools ruff pytest jsonschema cryptography fastapi uvicorn
 & $py -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
-
-# (Opcjonalnie) ProofGate lokalnie
-& $py -m uvicorn services.proofgate.app:app --host 127.0.0.1 --port 8085
 ```
 
 ### Cockpit (Dev) — szybkie linki
@@ -188,13 +163,9 @@ $py = ".\.venv\Scripts\python.exe"
 
 ### Dev stack (Docker Compose)
 
-```bash
-make run-stack   # start API+ProofGate+Prometheus+Grafana
-make smoke       # szybki smoke test E2E
-make down-stack  # zatrzymaj stack
-```
+## Cockpit (UI)
 
-Grafana: http://localhost:3000 (admin/admin), Prometheus: http://localhost:9090.
+Przeglądaj w przeglądarce po uruchomieniu API:
 
 ### SRE (k8s)
 
@@ -492,43 +463,32 @@ Pełna lista: `docs/configuration.md` (w przygotowaniu).
 ## Struktura repo
 
 ```
-core/       services/    modules/    plugins/     clients/    schemas/    policies/
-ci/         infra/       scripts/    docs/
+curl -s -H 'Content-Type: application/json' \
+  -d '{"cmd":"cfe.geodesic","args":{}}' \
+  http://127.0.0.1:8000/v1/chatops/command | jq .
+
+curl -s -H 'Content-Type: application/json' \
+  -d '{"mail_id":"MAIL-001","from_addr":"alice@example.com","to":["ops@example.com"],"attachments":[]}' \
+  http://127.0.0.1:8000/v1/mailops/ingest | jq .
 ```
 
----
+Więcej przykładów: `docs/cookbooks/chatops_mailops.md`.
 
-## Standard kodowania
+## Smoke (szybki test E2E)
 
-Zob. `docs/manifest.md` — sekcja **21) Premium Code Style** (baner, docstring PL/EN, PNIP/PCO, OTel, testy, linty).
-Przykłady w: Python/TS/Go/Rust/Bash/HTML/YAML/JSON/SQL.
+- PowerShell: `pwsh -File scripts/smoke_api.ps1`
+- Bash: `bash scripts/smoke_api.sh`
 
----
-
-## Brand & Assets
-
-- Pliki trzymamy w `docs/assets/brand/` i `clients/web/public/brand/`.
-- README używa `<picture>` z wariantami dark/light i fallbackiem SVG.
-- Social preview: `docs/assets/brand/certeus-og.png` (1200×630) – ustaw w **Repo → Settings → Social preview**.
-
-Struktura:
+## Lint i testy
 
 ```
-docs/assets/brand/
-  certeus-banner-dark.png
-  certeus-banner-light.png
-  certeus-readme-banner.svg
-  certeus-favicon.svg
-  certeus-og.png
-clients/web/public/brand/
-  favicon.svg
-  apple-touch-icon.png
-  site.webmanifest
+python -m ruff check . --fix && python -m ruff format .
+python -m pytest -q --junitxml=reports/junit.xml
 ```
 
----
+## Proof‑Only I/O (opcjonalnie)
 
-## Versioning, Deprecation, Support
+Wymuś dowodową publikowalność dla wybranych ścieżek:
 
 - **SemVer** (major.minor.patch) + wersjonowanie **PCO schema** (`pco.vX.Y`).
 - **Deprecation policy**: 1 wersja major „overlap”; ostrzeżenia w ChatOps/ProofGate.
@@ -648,9 +608,10 @@ Uwaga (OTel): ustaw `OTEL_ENABLED=1` oraz `OTEL_EXPORTER_OTLP_ENDPOINT` (np. `ht
 1. Zaplanuj HDE (plan dowodów):
 
 ```
-curl -sX POST "$CER_BASE/v1/devices/horizon_drive/plan" \
-  -H 'Content-Type: application/json' \
-  -d '{"case":"CER-LEX-99","budget_tokens":120}' | jq
+# Windows PS
+$env:STRICT_PROOF_ONLY = '1'
+# Linux/macOS
+export STRICT_PROOF_ONLY=1
 ```
 
 Oczekiwane: plan_of_evidence[] z kosztami i referencjami PFS.

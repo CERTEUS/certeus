@@ -1,0 +1,15 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/demo_beta/plugin.yaml                       |
+# | ROLE: Demo plugin manifest.                                 |
+# | PLIK: plugins/demo_beta/plugin.yaml                       |
+# | ROLA: Manifest wtyczki demo.                                |
+# +-------------------------------------------------------------+
+
+name: demo_beta
+module: plugins.demo_beta.src.main
+version: "0.1.0"
+capabilities:
+  - demo
+# signature: (dodaj przez scripts/marketplace/sign_manifest.py --embed)

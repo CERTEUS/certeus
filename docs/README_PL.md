@@ -29,6 +29,14 @@ $py = ".\\.venv\\Scripts\\python.exe"
 curl.exe -s http://127.0.0.1:8000/health
 ```
 
+Jeśli `py/python` wskazuje na stub WindowsApps (problem z utworzeniem venv), zainstaluj Pythona:
+
+```
+winget install -e --id Python.Python.3.11 --silent --accept-package-agreements --accept-source-agreements
+```
+
+Następnie powtórz komendy tworzące venv.
+
 ## Lint i testy
 
 ```

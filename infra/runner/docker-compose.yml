@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  runner:
+    image: myoung34/github-runner:latest
+    container_name: certeus-gha-runner
+    environment:
+      REPO_URL: https://github.com/CERTEUS/certeus
+      RUNNER_NAME: certeus-self-hosted
+      RUNNER_LABELS: self-hosted,linux,docker,build
+      RUNNER_WORKDIR: /runner
+      EPHEMERAL: "true"
+      DISABLE_AUTO_UPDATE: "true"
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-data:/runner
+    restart: unless-stopped
+volumes:
+  runner-data:
+

@@ -1,0 +1,227 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/explorer.html                      |
+| ROLE: Interactive API Explorer (OpenAPI-driven)             |
+| PLIK: clients/web/public/explorer.html                      |
+| ROLA: Interaktywny eksplorator API                          |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • API Explorer</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0f1114;color:#f2f2f3}
+      .wrap{display:grid;grid-template-columns:320px 1fr;gap:12px;max-width:1200px;margin:24px auto;padding:0 12px}
+      .card{background:#151922;border:1px solid #232832;border-radius:12px;padding:12px}
+      h1{font-size:20px;margin:0 0 8px}
+      h2{font-size:14px;margin:12px 0 6px;color:#9aa0a6}
+      input,select,textarea{background:#0f1114;border:1px solid #232832;border-radius:8px;color:#f2f2f3;padding:8px}
+      textarea{width:100%;height:160px}
+      .list{max-height:70vh;overflow:auto}
+      .ep{padding:6px;border-radius:8px;border:1px solid #232832;margin-bottom:6px;cursor:pointer}
+      .ep:hover{background:#1a1f29}
+      .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+      .pill{display:inline-block;padding:2px 6px;border:1px solid #232832;border-radius:999px;color:#9aa0a6}
+      .btn{padding:8px 12px;border:1px solid #232832;border-radius:8px;background:#1a1f29;color:#f2f2f3;cursor:pointer}
+      pre{background:#0f1114;border:1px solid #232832;border-radius:8px;padding:8px;overflow:auto}
+      a{color:#9aa0a6}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>Endpoints</h1>
+        <div class="row" style="margin-bottom:8px">
+          <input id="search" placeholder="filter (tag/path)" />
+          <span class="pill" id="cnt">0</span>
+        </div>
+        <div id="list" class="list"></div>
+      </div>
+      <div class="card">
+        <h1 id="title">API Explorer</h1>
+        <div class="row">
+          <input id="base" value="" placeholder="Base URL (default current)" />
+          <input id="tenant" value="anonymous" placeholder="X-Tenant-ID" />
+          <button id="send" class="btn">Send</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button id="cmp" class="btn">Compare endpoint</button>
+          <button id="cmpAll" class="btn">Export diff (all)</button>
+          <span id="cmpOut" class="pill">-</span>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <details style="width:100%"><summary>Diff details</summary>
+            <pre id="cmpDetails"></pre>
+          </details>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="path" style="flex:1" placeholder="/v1/..." />
+          <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
+          <select id="ctype"><option>application/json</option><option>text/plain</option></select>
+        </div>
+        <h2>Request body</h2>
+        <textarea id="body"></textarea>
+        <h2>Response (<span id="status">-</span>)</h2>
+        <pre id="resp"></pre>
+        <h2>Code samples</h2>
+        <div class="row" style="margin-bottom:6px">
+          <button id="copyCurl" class="btn">Copy curl</button>
+          <button id="copyPy" class="btn">Copy Python</button>
+          <button id="copyTs" class="btn">Copy TS</button>
+          <span id="cpyInfo" class="pill">ready</span>
+        </div>
+        <pre id="code"></pre>
+      </div>
+    </div>
+    <script>
+      const $ = (id)=>document.getElementById(id);
+      async function j(url, opts){ const r=await fetch(url, opts); const t=await r.text(); let data=t; try{ data=JSON.parse(t)}catch{} return {ok:r.ok,status:r.status,data,headers:r.headers}; }
+      let api={paths:{}};
+      let docs={paths:{}};
+      function renderList(){
+        const q = ($("search").value||"").toLowerCase();
+        const list = $("list"); list.innerHTML='';
+        const items=[];
+        Object.entries(api.paths||{}).forEach(([p, rec])=>{
+          Object.keys(rec).filter(m=>['get','post','put','delete','patch'].includes(m)).forEach(m=>{
+            const tag = (rec[m].tags||[])[0]||'misc';
+            const s = `${m.toUpperCase()} ${p} [${tag}]`;
+            if(!q || s.toLowerCase().includes(q)) items.push({m,p,tag, sum: rec[m].summary||''});
+          })
+        })
+        $("cnt").textContent = items.length;
+        for(const it of items.sort((a,b)=> a.tag.localeCompare(b.tag) || a.p.localeCompare(b.p))){
+          const d=document.createElement('div'); d.className='ep'; d.innerHTML=`<b>${it.m.toUpperCase()}</b> <code>${it.p}</code><br/><span class="pill">${it.tag}</span> ${it.sum}`;
+          d.onclick=()=> selectEp(it.m, it.p);
+          list.appendChild(d);
+        }
+      }
+      function selectEp(m,p){
+        $("path").value=p; $("method").value=m.toUpperCase();
+        $("title").textContent=`${m.toUpperCase()} ${p}`;
+        // attempt example
+        try{
+          const ex = api.paths[p][m].requestBody?.content?.['application/json']?.examples;
+          const first = ex && Object.values(ex)[0]?.value;
+          if(first){ $("body").value = JSON.stringify(first, null, 2); }
+        }catch{}
+        updateCode();
+        // Reset compare label
+        $("cmpOut").textContent='-';
+      }
+      let _lastSnippets={curl:'',py:'',ts:''};
+      function updateCode(){
+        const base = $("base").value || location.origin;
+        const path = $("path").value || '/';
+        const method = $("method").value || 'GET';
+        const body = $("body").value || '';
+        const ct = $("ctype").value || 'application/json';
+        const tenant = $("tenant").value || 'anonymous';
+        const curl = [
+          `curl -s -X ${method} ${base}${path} \\\n+  -H 'X-Tenant-ID: ${tenant}' -H 'Content-Type: ${ct}'${body?` \\\n+  -d '${body.replace(/'/g, "'\''")}'`:''}`
+        ].join('\n');
+        const py = `import requests\nprint(requests.${method.toLowerCase()}('${base}${path}', headers={'X-Tenant-ID':'${tenant}','Content-Type':'${ct}'}, ${body?`json=${body}`:'timeout=30'}).json())`;
+        const ts = `fetch('${base}${path}', { method: '${method}', headers: {'X-Tenant-ID':'${tenant}','Content-Type':'${ct}'}, ${body?`body: JSON.stringify(${body}),`:''}}).then(r=>r.json()).then(console.log)`;
+        _lastSnippets={curl,py,ts};
+        $("code").textContent = `# curl\n${curl}\n\n# python\n${py}\n\n// typescript\n${ts}`;
+      }
+      async function copyText(t){ try{ if(navigator.clipboard){ await navigator.clipboard.writeText(t);} else { const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);} $("cpyInfo").textContent='copied'; setTimeout(()=>$("cpyInfo").textContent='ready', 1500);}catch{ $("cpyInfo").textContent='copy failed'; setTimeout(()=>$("cpyInfo").textContent='ready', 2000);} }
+      async function send(){
+        const base = $("base").value || location.origin;
+        const path = $("path").value || '/';
+        const method = $("method").value || 'GET';
+        const ct = $("ctype").value || 'application/json';
+        const tenant = $("tenant").value || 'anonymous';
+        const bodyTxt = $("body").value || '';
+        const opts = { method, headers: {'X-Tenant-ID': tenant, 'Content-Type': ct} };
+        if(method!=='GET' && bodyTxt && ct==='application/json'){ opts.body = bodyTxt; }
+        const r = await j(`${base}${path}`, opts);
+        $("status").textContent = `${r.status}`;
+        $("resp").textContent = typeof r.data==='string' ? r.data : JSON.stringify(r.data, null, 2);
+      }
+      async function init(){
+        const doc = await j('/openapi.json'); api = doc.data||{};
+        try { const d = await j('/v1/openapi/docs'); docs = d.data||{}; } catch(err) { docs={paths:{}} }
+        renderList(); updateCode();
+      }
+      function _schemaProps(obj){
+        try{
+          const props = Object.keys((obj||{}).properties||{});
+          const req = new Set(((obj||{}).required)||[]);
+          return { props, req };
+        }catch{ return { props: [], req: new Set() } }
+      }
+      function compareDocs(){
+        const p = $("path").value || '/';
+        const m = ($("method").value || 'GET').toLowerCase();
+        const dP = (docs.paths||{})[p]||{}; const rP = (api.paths||{})[p]||{};
+        const dM = Object.keys(dP).filter(x=>['get','post','put','delete','patch'].includes(x));
+        const rM = Object.keys(rP).filter(x=>['get','post','put','delete','patch'].includes(x));
+        const missing = dM.filter(x=>!rM.includes(x));
+        let msg='OK';
+        if(!(p in (api.paths||{}))){ msg = 'Path missing in runtime'; }
+        else if(missing.length){ msg = 'Missing methods: '+missing.join(', '); }
+        else {
+          // Shallow response codes and requestBody presence
+          const dR = Object.keys((dP[m]||{}).responses||{});
+          const rR = Object.keys((rP[m]||{}).responses||{});
+          const missResp = dR.filter(x=>!rR.includes(x));
+          const dHasRB = !!((dP[m]||{}).requestBody);
+          const rHasRB = !!((rP[m]||{}).requestBody);
+          if(missResp.length){ msg = 'Missing responses: '+missResp.join(', '); }
+          else if(dHasRB && !rHasRB){ msg = 'Missing requestBody'; }
+          else {
+            // Deeper: compare top-level properties/required
+            const dSch = (dP[m]?.requestBody?.content?.['application/json']?.schema)||{};
+            const rSch = (rP[m]?.requestBody?.content?.['application/json']?.schema)||{};
+            const dS = _schemaProps(dSch), rS = _schemaProps(rSch);
+            const missProps = dS.props.filter(x=>!rS.props.includes(x));
+            const missReq = Array.from(dS.req).filter(x=>!rS.req?.has?.(x));
+            if(missProps.length || missReq.length){ msg = 'Schema diff'; }
+            const detail = { missing_properties: missProps, missing_required: missReq };
+            $("cmpDetails").textContent = JSON.stringify(detail, null, 2);
+          }
+        }
+        $("cmpOut").textContent = msg;
+      }
+      function exportDiffAll(){
+        const dPaths = Object.keys(docs.paths||{});
+        const rPaths = Object.keys(api.paths||{});
+        const out = { missing_paths: dPaths.filter(p=>!rPaths.includes(p)), paths: {} };
+        dPaths.forEach(p=>{
+          const dP = docs.paths[p]||{}; const rP = api.paths[p]||{};
+          const ep = {};
+          ['get','post','put','delete','patch'].forEach(m=>{
+            if(dP[m]){
+              const dM = dP[m]||{}; const rM = rP[m]||{};
+              const dR = Object.keys(dM.responses||{});
+              const rR = Object.keys(rM.responses||{});
+              const missResp = dR.filter(x=>!rR.includes(x));
+              const dHasRB = !!dM.requestBody; const rHasRB = !!rM.requestBody;
+              if(!(p in rPaths) || !api.paths[p] || !rM || missResp.length || (dHasRB && !rHasRB)){
+                ep[m] = { missing_responses: missResp, request_body_docs: dHasRB, request_body_runtime: rHasRB };
+              }
+            }
+          });
+          if(Object.keys(ep).length){ out.paths[p] = ep; }
+        });
+        const s = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(out, null, 2));
+        const a = document.createElement('a'); a.href=s; a.download='openapi_diff.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      }
+      $("search").addEventListener('input', renderList);
+      $("send").addEventListener('click', ()=>{ updateCode(); send(); });
+      $("cmp").addEventListener('click', compareDocs);
+      $("cmpAll").addEventListener('click', exportDiffAll);
+      $("copyCurl").addEventListener('click', ()=> copyText(_lastSnippets.curl));
+      $("copyPy").addEventListener('click', ()=> copyText(_lastSnippets.py));
+      $("copyTs").addEventListener('click', ()=> copyText(_lastSnippets.ts));
+      ["path","method","ctype","body","tenant","base"].forEach(id=> $(id).addEventListener('input', updateCode));
+      init();
+    </script>
+  </body>
+  </html>

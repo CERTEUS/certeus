@@ -14,6 +14,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="CERTEUS Quantum cockpit: QTMP measurements, presets, heatmaps." />
+    <meta property="og:title" content="CERTEUS — Quantum Cockpit" />
+    <meta property="og:description" content="QTMP • measurements • operator composer" />
+    <meta property="og:type" content="website" />
     <title>CERTEUS • Quantum</title>
     <style>
       body {
@@ -338,6 +342,72 @@
           >Bar chart where height corresponds to prior probability of each
           verdict state.</span
         >
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Sequence</h1>
+        <div class="row">
+          <input id="seq" placeholder="operators (np. L,T,W)" />
+          <label class="muted"><input type="checkbox" id="noCollapse"> no_collapse</label>
+          <button id="run-seq" class="btn">Run sequence</button>
+          <span class="muted">UB L_T:<span id="seq-ub" class="pill">?</span></span>
+          <span class="muted">Latency:<span id="seq-lat" class="pill">?</span></span>
+        </div>
+        <table id="seqtbl"><thead><tr><th>#</th><th>op</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Measurement Log</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="log-refresh" class="btn">Refresh log</button>
+          <span class="muted">last events for case: <span id="log-case" class="pill">-</span></span>
+        </div>
+        <table id="logtbl"><thead><tr><th>ts</th><th>operator</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Sequence</h1>
+        <div class="row">
+          <input id="seq" placeholder="operators (np. L,T,W)" />
+          <label class="muted"><input type="checkbox" id="noCollapse"> no_collapse</label>
+          <button id="run-seq" class="btn">Run sequence</button>
+          <span class="muted">UB L_T:<span id="seq-ub" class="pill">?</span></span>
+          <span class="muted">Latency:<span id="seq-lat" class="pill">?</span></span>
+        </div>
+        <table id="seqtbl"><thead><tr><th>#</th><th>op</th><th>verdict</th><th>p</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Compare Sequences</h1>
+        <div class="row">
+          <input id="seqA" placeholder="seq A (np. L,T)" value="L,T" />
+          <input id="seqB" placeholder="seq B (np. T,L)" value="T,L" />
+          <label class="muted"><input type="checkbox" id="noCollapseCmp"> no_collapse</label>
+          <button id="run-compare" class="btn">Run compare</button>
+          <span class="muted">ΔUB:<span id="cmp-dub" class="pill">0</span></span>
+        </div>
+        <div id="cmp-bars" style="display:flex;gap:12px;align-items:flex-end;height:80px;margin:8px 0;"></div>
+        <table id="cmptbl"><thead><tr><th>#</th><th>opA</th><th>verdictA</th><th>pA</th><th>opB</th><th>verdictB</th><th>pB</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Commutator Heatmap</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <button id="comm-refresh" class="btn">Refresh heatmap</button>
+          <span class="muted">operators: <span class="pill">W/I/C/L/T</span></span>
+        </div>
+        <div id="comm" class="grid"></div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h1>Entanglement</h1>
+        <div class="row" style="margin-bottom:10px;">
+          <input id="vars" placeholder="variables (np. RISK,SENTIMENT)" />
+          <button id="ent" class="btn">Find entanglement</button>
+          <span class="muted">MI:<span id="mi" class="pill">?</span></span>
+          <span class="muted">Negativity:<span id="neg" class="pill">?</span></span>
+        </div>
+        <table id="enttbl"><thead><tr><th>A</th><th>B</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
     <script>

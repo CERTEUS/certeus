@@ -1,0 +1,28 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/mirror_pages_health.yml             |
+# | ROLE: Weekly: alert if Pages down                           |
+# +-------------------------------------------------------------+
+
+name: Mirror-Pages-Health
+
+on:
+  schedule:
+    - cron: "13 6 * * 1"  # weekly Monday 06:13 UTC
+  workflow_dispatch:
+
+jobs:
+  health:
+    if: ${{ github.event.repository.private == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Pages URL
+        run: |
+          set -euo pipefail
+          URL="https://certeus.github.io/certeus-public"
+          code=$(curl -sS -o /dev/null -w "%{http_code}" "$URL")
+          echo "HTTP $code"
+          if [ "$code" != "200" ] && [ "$code" != "301" ] && [ "$code" != "302" ]; then
+            gh issue create --title "Pages down: $URL (HTTP $code)" --body "Mirror Pages returned HTTP $code. Investigate docs-site workflow and Pages settings." || true
+          fi

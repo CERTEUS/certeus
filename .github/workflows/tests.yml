@@ -89,6 +89,11 @@ jobs:
         run: |
           uv run ruff format --check
 
+      - name: Install OpenAPI validator deps (uv env)
+        run: |
+          # Install into the uv-managed environment
+          uv pip install openapi-spec-validator PyYAML
+
       - name: 🧪 Pytest (JUnit report)
         run: |
           mkdir -p "$(dirname "$PYTEST_JUNIT_XML")"

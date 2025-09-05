@@ -48,4 +48,29 @@ def metrics() -> Response:
     return Response(content=data, media_type=CONTENT_TYPE_LATEST, headers={"Cache-Control": "no-store"})
 
 
+@router.get("/v1/metrics/summary", summary="Quick in-proc metrics summary")
+def metrics_summary() -> dict[str, object]:
+    """PL: Zwraca szybkie podsumowanie ścieżek (top avg/count) do widgetów landing.
+
+    EN: Returns a quick summary of paths (top avg/count) for landing widgets.
+    """
+
+    try:
+        from monitoring.metrics_slo import http_summary
+
+        return http_summary(10)
+    except Exception:
+        return {"top_avg_ms": [], "top_count": [], "total_paths": 0}
+
+
+@router.get("/v1/metrics/series", summary="Quick series for top endpoints")
+def metrics_series(top: int = 5) -> dict[str, object]:
+    try:
+        from monitoring.metrics_slo import http_series
+
+        return http_series(top)
+    except Exception:
+        return {"series": []}
+
+
 # === TESTY / TESTS ===

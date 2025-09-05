@@ -1,0 +1,37 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/policies-report.yml                |
+# | ROLE: Report repo policy settings via gh api               |
+# +-------------------------------------------------------------+
+
+name: Policies-Report
+
+on:
+  schedule:
+    - cron: "19 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump repository actions settings
+        run: |
+          echo "# Repository Actions Settings" >> policies.md
+          gh api repos/${{ github.repository }}/actions/permissions >> policies.md || true
+          echo "\n# Allowed Actions" >> policies.md
+          gh api repos/${{ github.repository }}/actions/permissions/selected-actions >> policies.md || true
+          echo "\n# Fork PR approval setting" >> policies.md
+          gh api repos/${{ github.repository }}/actions/permissions/workflow --method GET >> policies.md || true
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: policies-report-${{ github.sha }}
+          path: policies.md
+
+ 
+

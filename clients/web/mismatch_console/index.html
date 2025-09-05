@@ -81,6 +81,20 @@
         border-radius: 8px;
       }
 
+      /* A11y: skip link */
+      .skip-link {
+        position: absolute;
+        left: -999px;
+        top: 0;
+        background: #000;
+        color: #fff;
+        padding: 8px 12px;
+        z-index: 1000;
+      }
+      .skip-link:focus {
+        left: 8px;
+      }
+
       /* ──────────────────────────────────────────────────────────────── */
       /* LAYOUT                                                           */
       /* ──────────────────────────────────────────────────────────────── */
@@ -459,8 +473,8 @@
       <!-- ────────────────────────────────────────────────────────────── -->
       <div class="header">
         <div class="alert-icon">🚨</div>
-        <h1>CERTEUS — Konsola Niezgodności</h1>
-        <p>Human-In-The-Loop (HITL) · Rozwiązywanie konfliktów solverów SMT</p>
+        <h1 id="title">CERTEUS — Konsola Niezgodności</h1>
+        <p id="subtitle">Human-In-The-Loop (HITL) · Rozwiązywanie konfliktów solverów SMT</p>
       </div>
 
       <!-- ────────────────────────────────────────────────────────────── -->
@@ -469,19 +483,19 @@
       <div class="stats-bar">
         <div class="stat">
           <div class="value" id="stat-total">0</div>
-          <div class="label">Wszystkie bilety</div>
+          <div class="label" id="statLabelTotal">Wszystkie bilety</div>
         </div>
         <div class="stat">
           <div class="value" id="stat-open">0</div>
-          <div class="label">Otwarte</div>
+          <div class="label" id="statLabelOpen">Otwarte</div>
         </div>
         <div class="stat">
           <div class="value" id="stat-review">0</div>
-          <div class="label">W trakcie</div>
+          <div class="label" id="statLabelReview">W trakcie</div>
         </div>
         <div class="stat">
           <div class="value" id="stat-resolved">0</div>
-          <div class="label">Rozwiązane</div>
+          <div class="label" id="statLabelResolved">Rozwiązane</div>
         </div>
       </div>
 
@@ -490,7 +504,7 @@
       <!-- ────────────────────────────────────────────────────────────── -->
       <div class="controls">
         <div class="filters">
-          <label for="filter-status">Status:</label>
+          <label for="filter-status" id="label-status">Status:</label>
           <select id="filter-status">
             <option value="">Wszystkie</option>
             <option value="open">Otwarte</option>
@@ -500,13 +514,19 @@
             <option value="closed">Zamknięte</option>
           </select>
 
-          <label for="filter-priority">Priorytet:</label>
+          <label for="filter-priority" id="label-priority">Priorytet:</label>
           <select id="filter-priority">
             <option value="">Wszystkie</option>
             <option value="critical">Krytyczny</option>
             <option value="high">Wysoki</option>
             <option value="medium">Średni</option>
             <option value="low">Niski</option>
+          </select>
+
+          <label for="lang" id="label-lang" style="margin-left:12px">Język:</label>
+          <select id="lang" aria-label="Language">
+            <option value="pl">PL</option>
+            <option value="en">EN</option>
           </select>
         </div>
 
@@ -515,6 +535,7 @@
             class="btn secondary"
             id="btn-refresh"
             title="Odśwież (Alt+R)"
+            aria-label="Odśwież / Refresh"
           >
             🔄 Odśwież
           </button>
@@ -531,14 +552,14 @@
         <table id="tickets">
           <thead>
             <tr>
-              <th>ID Biletu</th>
-              <th>ID Sprawy</th>
-              <th>Priorytet</th>
-              <th>Status</th>
-              <th>Formuła</th>
-              <th>Niezgodność (skrót)</th>
-              <th>Utworzono</th>
-              <th>Akcje</th>
+              <th id="th-ticket-id">ID Biletu</th>
+              <th id="th-case-id">ID Sprawy</th>
+              <th id="th-priority">Priorytet</th>
+              <th id="th-status">Status</th>
+              <th id="th-formula">Formuła</th>
+              <th id="th-mismatch">Niezgodność (skrót)</th>
+              <th id="th-created">Utworzono</th>
+              <th id="th-actions">Akcje</th>
             </tr>
           </thead>
           <tbody id="tbody">
@@ -715,6 +736,154 @@
       };
 
       // ────────────────────────────────────────────────────────────────
+      // I18N (PL/EN)
+      // ────────────────────────────────────────────────────────────────
+      const I18N = {
+        pl: {
+          title: "CERTEUS — Konsola Niezgodności",
+          subtitle: "Human-In-The-Loop (HITL) · Rozwiązywanie konfliktów solverów SMT",
+          stats_total: "Wszystkie bilety",
+          stats_open: "Otwarte",
+          stats_review: "W trakcie",
+          stats_resolved: "Rozwiązane",
+          label_status: "Status:",
+          label_priority: "Priorytet:",
+          label_lang: "Język:",
+          th_ticket_id: "ID Biletu",
+          th_case_id: "ID Sprawy",
+          th_priority: "Priorytet",
+          th_status: "Status",
+          th_formula: "Formuła",
+          th_mismatch: "Niezgodność (skrót)",
+          th_created: "Utworzono",
+          th_actions: "Akcje",
+          status_open: "Otwarty",
+          status_under_review: "W trakcie",
+          status_resolved: "Rozwiązany",
+          status_escalated: "Eskalowany",
+          status_closed: "Zamknięty",
+          btn_refresh: "Odśwież",
+          btn_resolve: "Rozwiąż",
+          btn_escalate: "Eskaluj",
+          btn_resolved: "✓ Rozwiązany",
+          no_tickets: "Brak biletów do wyświetlenia",
+          ago_min: "min temu",
+          ago_h: "godz. temu",
+          label_resolution_type: "Typ rozwiązania",
+          label_chosen_result: "Wybór wyniku",
+          label_notes: "Uzasadnienie",
+          hint_audit: "Wskazówka: wpis trafia do logów audytowych.",
+          label_resolved_by: "Rozwiązujący",
+          label_confidence: "Pewność (0–1)",
+          btn_cancel: "Anuluj",
+          btn_submit: "Zatwierdź",
+          label_escalate_reason: "Powód eskalacji",
+          label_escalated_by: "Eskalujący",
+        },
+        en: {
+          title: "CERTEUS — Mismatch Console",
+          subtitle: "Human-In-The-Loop (HITL) · Resolving SMT solver conflicts",
+          stats_total: "All tickets",
+          stats_open: "Open",
+          stats_review: "Under review",
+          stats_resolved: "Resolved",
+          label_status: "Status:",
+          label_priority: "Priority:",
+          label_lang: "Language:",
+          th_ticket_id: "Ticket ID",
+          th_case_id: "Case ID",
+          th_priority: "Priority",
+          th_status: "Status",
+          th_formula: "Formula",
+          th_mismatch: "Mismatch (summary)",
+          th_created: "Created",
+          th_actions: "Actions",
+          status_open: "Open",
+          status_under_review: "Under review",
+          status_resolved: "Resolved",
+          status_escalated: "Escalated",
+          status_closed: "Closed",
+          btn_refresh: "Refresh",
+          btn_resolve: "Resolve",
+          btn_escalate: "Escalate",
+          btn_resolved: "✓ Resolved",
+          no_tickets: "No tickets to display",
+          ago_min: "min ago",
+          ago_h: "h ago",
+          label_resolution_type: "Resolution type",
+          label_chosen_result: "Chosen result",
+          label_notes: "Notes",
+          hint_audit: "Hint: entry goes to audit logs.",
+          label_resolved_by: "Resolver",
+          label_confidence: "Confidence (0–1)",
+          btn_cancel: "Cancel",
+          btn_submit: "Submit",
+          label_escalate_reason: "Escalation reason",
+          label_escalated_by: "Escalated by",
+        },
+      };
+
+      const LANG_KEY = "certeus-lang";
+      function _lang() {
+        return (localStorage.getItem(LANG_KEY) || document.documentElement.lang || "pl").startsWith("en") ? "en" : "pl";
+      }
+      function t(k) {
+        const lang = _lang();
+        return (I18N[lang] && I18N[lang][k]) || (I18N.pl && I18N.pl[k]) || k;
+      }
+
+      function applyI18N() {
+        document.getElementById("title").textContent = t("title");
+        document.getElementById("subtitle").textContent = t("subtitle");
+        document.getElementById("statLabelTotal").textContent = t("stats_total");
+        document.getElementById("statLabelOpen").textContent = t("stats_open");
+        document.getElementById("statLabelReview").textContent = t("stats_review");
+        document.getElementById("statLabelResolved").textContent = t("stats_resolved");
+        document.getElementById("label-status").textContent = t("label_status");
+        document.getElementById("label-priority").textContent = t("label_priority");
+        const lblLang = document.getElementById("label-lang");
+        if (lblLang) lblLang.textContent = t("label_lang");
+        document.getElementById("th-ticket-id").textContent = t("th_ticket_id");
+        document.getElementById("th-case-id").textContent = t("th_case_id");
+        document.getElementById("th-priority").textContent = t("th_priority");
+        document.getElementById("th-status").textContent = t("th_status");
+        document.getElementById("th-formula").textContent = t("th_formula");
+        document.getElementById("th-mismatch").textContent = t("th_mismatch");
+        document.getElementById("th-created").textContent = t("th_created");
+        document.getElementById("th-actions").textContent = t("th_actions");
+        const br = document.getElementById("btn-refresh");
+        if (br) br.innerText = `🔄 ${t("btn_refresh")}`;
+        // Resolve modal labels/buttons
+        const lr = document.querySelector('label[for="resolution-type"]');
+        if (lr) lr.textContent = t("label_resolution_type");
+        const lc = document.querySelector('label[for="chosen-result"]');
+        if (lc) lc.textContent = t("label_chosen_result");
+        const ln = document.querySelector('label[for="resolution-notes"]');
+        if (ln) ln.textContent = t("label_notes");
+        const hint = document.querySelector('#resolve-modal .hint');
+        if (hint) hint.textContent = t("hint_audit");
+        const lrb = document.querySelector('label[for="resolved-by"]');
+        if (lrb) lrb.textContent = t("label_resolved_by");
+        const lcf = document.querySelector('label[for="confidence"]');
+        if (lcf) lcf.textContent = t("label_confidence");
+        const btnCancel = document.getElementById('btn-cancel-resolve');
+        if (btnCancel) btnCancel.textContent = t("btn_cancel");
+        const btnSubmit = document.getElementById('btn-submit-resolve');
+        if (btnSubmit) btnSubmit.textContent = t("btn_submit");
+        // Escalate modal labels/buttons
+        const ler = document.querySelector('label[for="escalate-reason"]');
+        if (ler) ler.textContent = t("label_escalate_reason");
+        const leb = document.querySelector('label[for="escalated-by"]');
+        if (leb) leb.textContent = t("label_escalated_by");
+        const btnCancelE = document.getElementById('btn-cancel-escalate');
+        if (btnCancelE) btnCancelE.textContent = t("btn_cancel");
+        const btnSubmitE = document.getElementById('btn-submit-escalate');
+        if (btnSubmitE) btnSubmitE.textContent = t("btn_submit");
+        // Sync language selector
+        const sel = document.getElementById('lang');
+        if (sel) sel.value = _lang();
+      }
+
       // HELPERS
       // ────────────────────────────────────────────────────────────────
       function showLoading(on) {
@@ -731,11 +900,12 @@
         const d = new Date(iso);
         const now = new Date();
         const diff = now - d;
+        const lang = _lang();
         if (diff < 60 * 60 * 1000)
-          return `${Math.max(1, Math.floor(diff / 60000))} min temu`;
+          return `${Math.max(1, Math.floor(diff / 60000))} ${t("ago_min")}`;
         if (diff < 24 * 60 * 60 * 1000)
-          return `${Math.floor(diff / 3600000)} godz. temu`;
-        return d.toLocaleString("pl-PL", {
+          return `${Math.floor(diff / 3600000)} ${t("ago_h")}`;
+        return d.toLocaleString(lang === "en" ? "en-US" : "pl-PL", {
           hour: "2-digit",
           minute: "2-digit",
           day: "2-digit",
@@ -751,11 +921,11 @@
       function badgeStatus(s) {
         const cls = `badge status-${s}`;
         const map = {
-          open: "Otwarty",
-          under_review: "W trakcie",
-          resolved: "Rozwiązany",
-          escalated: "Eskalowany",
-          closed: "Zamknięty",
+          open: t("status_open"),
+          under_review: t("status_under_review"),
+          resolved: t("status_resolved"),
+          escalated: t("status_escalated"),
+          closed: t("status_closed"),
         };
         return `<span class="${cls}">${map[s] || s}</span>`;
       }
@@ -769,7 +939,7 @@
 
       function renderRows(rows) {
         if (!rows.length) {
-          el.tbody.innerHTML = `<tr><td colspan="8" style="padding:32px; text-align:center;">Brak biletów do wyświetlenia</td></tr>`;
+          el.tbody.innerHTML = `<tr><td colspan=\"8\" style=\"padding:32px; text-align:center;\">${t("no_tickets")}</td></tr>`;
           return;
         }
         el.tbody.innerHTML = rows
@@ -786,11 +956,11 @@
           <td>
             ${
               t.status === "resolved"
-                ? `<button class="btn" disabled>✓ Rozwiązany</button>`
+                ? `<button class=\"btn\" disabled>${t("btn_resolved")}</button>`
                 : `
-                <div class="toolbar">
-                  <button class="btn" onclick="openResolve('${t.ticket_id}')">Rozwiąż</button>
-                  <button class="btn warn" onclick="openEscalate('${t.ticket_id}')">Eskaluj</button>
+                <div class=\"toolbar\">
+                  <button class=\"btn\" onclick=\"openResolve('${t.ticket_id}')\">${t("btn_resolve")}</button>
+                  <button class=\"btn warn\" onclick=\"openEscalate('${t.ticket_id}')\">${t("btn_escalate")}</button>
                 </div>
               `
             }
@@ -945,6 +1115,18 @@
           loadTickets();
           loadStats();
         });
+        // i18n: language selector
+        const langSel = document.getElementById("lang");
+        if (langSel) {
+          langSel.addEventListener("change", () => {
+            const v = langSel.value === "en" ? "en" : "pl";
+            localStorage.setItem("certeus-lang", v);
+            document.documentElement.lang = v;
+            applyI18N();
+            applyFilters();
+          });
+        }
+        applyI18N();
         el.filters.status.addEventListener("change", applyFilters);
         el.filters.priority.addEventListener("change", applyFilters);
 

@@ -458,6 +458,7 @@
               id="themeToggle"
               title="Przełącz motyw"
               data-i18n="theme"
+              aria-label="Przełącz motyw / Toggle theme"
             >
               Motyw
             </button>
@@ -496,7 +497,7 @@
                   />
                 </div>
                 <div class="stack">
-                  <button id="analyzeBtn" class="btn" aria-label="Analyze">
+                  <button id="analyzeBtn" class="btn" aria-label="Analizuj / Analyze">
                     <span
                       class="spinner"
                       id="spinAnalyze"
@@ -615,6 +616,7 @@
             class="tab"
             role="tab"
             aria-selected="true"
+            tabindex="0"
             aria-controls="tab-overview"
             id="tabbtn-overview"
             data-i18n="tab_overview"
@@ -625,6 +627,7 @@
             class="tab"
             role="tab"
             aria-selected="false"
+            tabindex="-1"
             aria-controls="tab-premises"
             id="tabbtn-premises"
             data-i18n="tab_premises"
@@ -635,6 +638,7 @@
             class="tab"
             role="tab"
             aria-selected="false"
+            tabindex="-1"
             aria-controls="tab-ledger"
             id="tabbtn-ledger"
             data-i18n="tab_ledger"
@@ -645,6 +649,7 @@
             class="tab"
             role="tab"
             aria-selected="false"
+            tabindex="-1"
             aria-controls="tab-viewer"
             id="tabbtn-viewer"
             data-i18n="tab_viewer"
@@ -655,11 +660,23 @@
             class="tab"
             role="tab"
             aria-selected="false"
+            tabindex="-1"
             aria-controls="tab-raw"
             id="tabbtn-raw"
             data-i18n="tab_raw"
           >
             Surowe
+          </button>
+          <button
+            class="tab"
+            role="tab"
+            aria-selected="false"
+            tabindex="-1"
+            aria-controls="tab-devex"
+            id="tabbtn-devex"
+            title="DevEx: curl/SDK/Playground"
+          >
+            DevEx
           </button>
         </div>
 
@@ -799,6 +816,46 @@
             </button>
           </div>
         </section>
+
+        <section
+          id="tab-devex"
+          class="tabpanel"
+          role="tabpanel"
+          aria-labelledby="tabbtn-devex"
+        >
+          <div class="row">
+            <div class="col">
+              <h2>Copy code</h2>
+              <div class="stack" style="margin-bottom: 8px">
+                <select id="devexKind" class="select" title="SDK">
+                  <option value="curl">cURL</option>
+                  <option value="py">Python</option>
+                  <option value="ts">TypeScript</option>
+                  <option value="go">Go</option>
+                </select>
+                <select id="devexEndpoint" class="select" title="Endpoint">
+                  <option value="health">GET /health</option>
+                  <option value="pco_public">GET /pco/public/{case_id}</option>
+                  <option value="pco_bundle">POST /v1/pco/bundle</option>
+                  <option value="analyze">POST /v1/analyze</option>
+                </select>
+                <input id="devexTenantId" class="input" type="text" placeholder="X-Tenant-ID (opcjonalnie)" style="max-width:220px" />
+                <button class="btn" id="devexCopy">Kopiuj</button>
+                <button class="btn secondary" id="devexRun">Playground</button>
+              </div>
+              <div id="devexParamRow" class="stack" style="margin-bottom:8px; display:none">
+                <label id="devexParamLabel" for="devexParamInput" class="muted">Param</label>
+                <input id="devexParamInput" class="input" type="text" placeholder="wartość parametru" style="max-width:260px" />
+              </div>
+              <div class="json" id="devexSnippet">—</div>
+              <div id="devexBodyRow" style="margin-top:8px; display:none">
+                <label for="devexBody" class="muted" style="display:block; margin-bottom:4px">Body (JSON)</label>
+                <textarea id="devexBody" class="input" style="width:100%; height:120px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace;"></textarea>
+                <div id="devexBodyError" class="muted" style="color:#f88; display:none; margin-top:6px">Invalid JSON</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <div class="footer">
@@ -930,7 +987,8 @@
 
       // ====================== PREFS ============================= //
       const THEME_KEY = "certeus-theme",
-        LANG_KEY = "certeus-lang";
+        LANG_KEY = "certeus-lang",
+        CONTRAST_KEY = "certeus-contrast";
       function applyTheme(theme) {
         document.documentElement.setAttribute("data-theme", theme);
         localStorage.setItem(THEME_KEY, theme);
@@ -938,6 +996,11 @@
       function t(key) {
         const lang = localStorage.getItem(LANG_KEY) || "pl";
         return I18N[lang][key] ?? key;
+      }
+      function applyContrast(mode) {
+        const m = mode === "high" ? "high" : "normal";
+        document.documentElement.setAttribute("data-contrast", m);
+        localStorage.setItem(CONTRAST_KEY, m);
       }
       function applyI18N() {
         const lang = localStorage.getItem(LANG_KEY) || "pl";
@@ -993,11 +1056,22 @@
         { btn: $("#tabbtn-raw"), panel: $("#tab-raw") },
       ];
 
+      function selectTab(idx) {
+        tabs.forEach((t, i) => {
+          const sel = i === idx;
+          t.btn.setAttribute("aria-selected", sel ? "true" : "false");
+          t.btn.setAttribute("tabindex", sel ? "0" : "-1");
+          t.panel.hidden = !sel;
+          if (sel) t.btn.focus();
+        });
+      }
+
       // ====================== INIT ============================== //
       (function init() {
         applyTheme(localStorage.getItem(THEME_KEY) || "dark");
         const savedLang = localStorage.getItem(LANG_KEY) || "pl";
         document.getElementById("lang").value = savedLang;
+        applyContrast(localStorage.getItem(CONTRAST_KEY) || "normal");
         applyI18N();
       })();
       elThemeToggle.addEventListener("click", () => {
@@ -1007,6 +1081,31 @@
             : "dark";
         applyTheme(now);
       });
+      const elContrastToggle = document.getElementById("contrastToggle");
+      if (elContrastToggle) {
+        elContrastToggle.addEventListener("click", () => {
+          const now =
+            document.documentElement.getAttribute("data-contrast") === "high"
+              ? "normal"
+              : "high";
+          applyContrast(now);
+        });
+      }
+      // Tabs: click + keyboard (Left/Right/Home/End)
+      (function initTabs(){
+        tabs.forEach((t, i) => {
+          t.btn.addEventListener('click', () => selectTab(i));
+          t.btn.addEventListener('keydown', (ev) => {
+            const N = tabs.length;
+            if (ev.key === 'ArrowRight') { ev.preventDefault(); selectTab((i+1)%N); }
+            else if (ev.key === 'ArrowLeft') { ev.preventDefault(); selectTab((i-1+N)%N); }
+            else if (ev.key === 'Home') { ev.preventDefault(); selectTab(0); }
+            else if (ev.key === 'End') { ev.preventDefault(); selectTab(N-1); }
+          });
+        });
+        // Ensure only first is visible on init
+        selectTab(0);
+      })();
       elLang.addEventListener("change", () => {
         localStorage.setItem(LANG_KEY, elLang.value);
         applyI18N();
@@ -1456,6 +1555,286 @@
             .writeText(elModel.textContent || "")
             .then(() => toast(t("toast_copied"))),
         );
+
+      // ====================== DEVEX ============================ //
+      const elDevexKind = document.getElementById("devexKind");
+      const elDevexEndpoint = document.getElementById("devexEndpoint");
+      const elDevexSnippet = document.getElementById("devexSnippet");
+      const elDevexBodyRow = document.getElementById("devexBodyRow");
+      const elDevexBody = document.getElementById("devexBody");
+      const elDevexTenant = document.getElementById("devexTenantId");
+      const elDevexBodyError = document.getElementById("devexBodyError");
+
+      const DEVEX_BASE = API_BASE || location.origin;
+
+      // Autouzupełnianie listy endpointów na podstawie OpenAPI (best-effort)
+      async function fillEndpointsFromOpenAPI() {
+        try {
+          const res = await fetch(`${DEVEX_BASE}/openapi.json`);
+          if (!res.ok) return;
+          const spec = await res.json();
+          const paths = spec?.paths || {};
+          const opts = [];
+          // Always include health
+          opts.push({ value: 'health', label: 'GET /health' });
+          // Find pco.public
+          for (const p of Object.keys(paths)) {
+            if (/^\/pco\/public\/.+/.test(p) && paths[p]?.get) {
+              opts.push({ value: 'pco_public', label: `GET ${p}`, path: p });
+              break;
+            }
+          }
+          // pco bundle
+          if (paths['/v1/pco/bundle']?.post) {
+            opts.push({ value: 'pco_bundle', label: 'POST /v1/pco/bundle', path: '/v1/pco/bundle' });
+          }
+          // analyze
+          if (paths['/v1/analyze']?.post) {
+            opts.push({ value: 'analyze', label: 'POST /v1/analyze', path: '/v1/analyze' });
+          }
+          // billing endpoints (optional)
+          if (paths['/v1/billing/balance']?.get) {
+            opts.push({ value: 'billing_balance', label: 'GET /v1/billing/balance', path: '/v1/billing/balance' });
+          }
+          if (paths['/v1/billing/allocate']?.post) {
+            opts.push({ value: 'billing_allocate', label: 'POST /v1/billing/allocate', path: '/v1/billing/allocate' });
+          }
+          // write options if we found anything
+          if (opts.length) {
+            elDevexEndpoint.innerHTML = '';
+            for (const o of opts) {
+              const option = document.createElement('option');
+              option.value = o.value;
+              option.textContent = o.label;
+              if (o.path) option.setAttribute('data-path', o.path);
+              elDevexEndpoint.appendChild(option);
+            }
+          }
+          window.__DEVEX_SPEC__ = spec; // store for body heuristics
+        } catch {}
+      }
+      fillEndpointsFromOpenAPI();
+
+      function endpointPath() {
+        const sel = elDevexEndpoint.options[elDevexEndpoint.selectedIndex];
+        return sel?.getAttribute('data-path') || '';
+      }
+
+      function firstPathParam(path) {
+        const m = /\{([^}]+)\}/.exec(path || '');
+        return m ? m[1] : '';
+      }
+
+      function resolveRef(schema, ref) {
+        try {
+          const name = String(ref).split('#/components/schemas/')[1];
+          return schema?.components?.schemas?.[name] || null;
+        } catch { return null; }
+      }
+
+      function buildBodyFromSchema(schema, root, depth = 0) {
+        if (!schema || depth > 5) return {};
+        // Prefer explicit example/default on the node itself
+        if (schema.example != null) {
+          return schema.example;
+        }
+        if (schema.default != null) {
+          return schema.default;
+        }
+        if (schema.$ref) {
+          const t = resolveRef(root, schema.$ref);
+          if (t) return buildBodyFromSchema(t, root, depth + 1);
+        }
+        const typ = schema.type || (schema.oneOf ? schema.oneOf[0]?.type : undefined);
+        if (typ === 'object' || schema.properties) {
+          const req = new Set(schema.required || []);
+          const out = {};
+          for (const [k, v] of Object.entries(schema.properties || {})) {
+            const sub = buildBodyFromSchema(v, root, depth + 1);
+            // Prefer property-level example/default
+            if (v && v.example != null) {
+              out[k] = v.example;
+              continue;
+            }
+            if (v && v.default != null) {
+              out[k] = v.default;
+              continue;
+            }
+            out[k] = sub === {} && v?.type === 'string' ? (req.has(k) ? `${k}_value` : '') : sub;
+            if (v?.type === 'number') out[k] = 0;
+            if (v?.type === 'integer') out[k] = 0;
+            if (v?.type === 'array') out[k] = [];
+          }
+          return out;
+        }
+        if (typ === 'array') return [];
+        if (typ === 'string') return '';
+        if (typ === 'integer' || typ === 'number') return 0;
+        return {};
+      }
+
+      function buildBundleBodyDefault() {
+        try {
+          const spec = (window).__DEVEX_SPEC__ || {};
+          const sch = spec?.paths?.['/v1/pco/bundle']?.post?.requestBody?.content?.['application/json']?.schema;
+          const caseId = document.getElementById('caseId').value || 'case-001';
+          let body = buildBodyFromSchema(sch, spec);
+          if (!body || Object.keys(body).length === 0) {
+            body = { rid: caseId, smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' };
+          } else {
+            if (body.rid == null) body.rid = caseId;
+            if (!body.smt2_hash) body.smt2_hash = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+            if (!body.lfsc) body.lfsc = '(lfsc proof)';
+          }
+          return body;
+        } catch { return { rid: 'case-001', smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' }; }
+      }
+
+      function buildBillingAllocateDefault() {
+        return { units: 10 };
+      }
+
+      function updateDevexBodyValidation() {
+        const txt = (elDevexBody?.value || '').trim();
+        let ok = true; let msg = '';
+        if (elDevexBodyRow.style.display !== 'none' && txt) {
+          try { JSON.parse(txt); } catch (e) { ok = false; msg = String(e).split('\n')[0]; }
+        }
+        if (!ok) {
+          elDevexBody.style.borderColor = '#c33';
+          elDevexBodyError.style.display = '';
+          elDevexBodyError.textContent = msg || 'Invalid JSON';
+          document.getElementById('devexCopy').disabled = true;
+          document.getElementById('devexRun').disabled = true;
+        } else {
+          elDevexBody.style.borderColor = '';
+          elDevexBodyError.style.display = 'none';
+          document.getElementById('devexCopy').disabled = false;
+          document.getElementById('devexRun').disabled = false;
+        }
+      }
+
+      function devexSnippet() {
+        const kind = elDevexKind?.value || "curl";
+        const ep = elDevexEndpoint?.value || "health";
+        const caseId = document.getElementById("caseId").value || "case-001";
+        const pth = endpointPath();
+        const paramName = firstPathParam(pth);
+        const paramVal = (document.getElementById('devexParamInput')?.value || caseId);
+        const pathWithParam = paramName ? pth.replace(`{${paramName}}`, encodeURIComponent(paramVal)) : pth;
+        if (kind === "curl") {
+          if (ep === "health") return `curl -s ${DEVEX_BASE}/health`;
+          if (ep === "pco_public") return `curl -s ${DEVEX_BASE}${pathWithParam || ('/pco/public/' + caseId)}`;
+          if (ep === "pco_bundle") return `curl -s -X POST ${DEVEX_BASE}/v1/pco/bundle -H 'Content-Type: application/json' \\\n+  -d '{"rid":"${caseId}","smt2_hash":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","lfsc":"(lfsc proof)"}'`;
+          if (ep === "analyze") return `curl -s -X POST -F file=@/path/to/file.pdf '${DEVEX_BASE}/v1/analyze?case_id=${caseId}'`;
+        }
+        if (kind === "py") {
+          if (ep === "health")
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.health())`;
+          if (ep === "pco_public")
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.get_public_pco('${paramName ? paramVal : caseId}'))`;
+          if (ep === "pco_bundle")
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nresp = cli.publish_pco_bundle(rid='${caseId}', smt2_hash='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc='(lfsc proof)')\nprint(resp)`;
+          if (ep === "analyze")
+            return `from clients.python.certeus_sdk import CerteusClient\ncli = CerteusClient(base_url='${DEVEX_BASE}')\nprint(cli.analyze('${caseId}', '/path/to/file.pdf'))`;
+        }
+        if (kind === "ts") {
+          if (ep === "health")
+            return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.health())`;
+          if (ep === "pco_public")
+            return `import { CerteusClient } from 'clients/typescript/certeus-sdk/src/index.js'\nconst cli = new CerteusClient({ baseUrl: '${DEVEX_BASE}' });\nconsole.log(await cli.getPublicPCO('${paramName ? paramVal : caseId}'))`;
+          if (ep === "pco_bundle")
+            return `const res = await fetch('${DEVEX_BASE}/v1/pco/bundle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rid:'${caseId}',smt2_hash:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',lfsc:'(lfsc proof)'})});\nconsole.log(await res.json())`;
+          if (ep === "analyze")
+            return `const fd=new FormData(); fd.append('file', new File([],'demo.pdf'));\nconst res=await fetch('${DEVEX_BASE}/v1/analyze?case_id=${caseId}',{method:'POST',body:fd});\nconsole.log(await res.json())`;
+        }
+        if (kind === "go") {
+          if (ep === "health")
+            return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.Health()\nfmt.Println(resp)`;
+          if (ep === "pco_public")
+            return `cli := certeus.New("${DEVEX_BASE}", "")\nresp, _ := cli.GetPublicPCO("${paramName ? paramVal : caseId}")\nfmt.Println(resp)`;
+          if (ep === "pco_bundle")
+            return `// Use curl or write a small http client to POST JSON to ${DEVEX_BASE}/v1/pco/bundle`;
+          if (ep === "analyze")
+            return `// Use curl to upload a file: curl -F file=@/path/to/file '${DEVEX_BASE}/v1/analyze?case_id=${caseId}'`;
+        }
+        return "—";
+      }
+
+      function refreshDevex() {
+        if (!elDevexSnippet) return;
+        elDevexSnippet.textContent = devexSnippet();
+      }
+      elDevexKind?.addEventListener("change", refreshDevex);
+      elDevexEndpoint?.addEventListener("change", () => {
+        const p = endpointPath();
+        const name = firstPathParam(p);
+        const row = document.getElementById('devexParamRow');
+        const lab = document.getElementById('devexParamLabel');
+        if (name) {
+          row.style.display = '';
+          lab.textContent = `Param {${name}}`;
+          const v = document.getElementById('devexParamInput');
+          if (v && !v.value) v.value = document.getElementById('caseId').value || 'case-001';
+        } else {
+          row.style.display = 'none';
+        }
+        // Body editor visible for JSON POST endpoints (currently: pco_bundle)
+        const ep = elDevexEndpoint?.value || 'health';
+        if (ep === 'pco_bundle') {
+          elDevexBodyRow.style.display = '';
+          if (!(elDevexBody?.value || '').trim()) {
+            elDevexBody.value = JSON.stringify(buildBundleBodyDefault(), null, 2);
+          }
+          updateDevexBodyValidation();
+        } else if (ep === 'billing_allocate') {
+          elDevexBodyRow.style.display = '';
+          if (!(elDevexBody?.value || '').trim()) {
+            elDevexBody.value = JSON.stringify(buildBillingAllocateDefault(), null, 2);
+          }
+          updateDevexBodyValidation();
+        } else {
+          elDevexBodyRow.style.display = 'none';
+          elDevexBody.value = '';
+        }
+        refreshDevex();
+      });
+      document.getElementById('devexParamInput')?.addEventListener('input', refreshDevex);
+      elDevexBody?.addEventListener('input', updateDevexBodyValidation);
+      refreshDevex();
+
+      document.getElementById("devexCopy")?.addEventListener("click", () => {
+        if (!elDevexSnippet) return;
+        navigator.clipboard.writeText(elDevexSnippet.textContent || "").then(
+          () => toast(t("toast_copied")),
+        );
+      });
+      document.getElementById("devexRun")?.addEventListener("click", async () => {
+        try {
+          const ep = elDevexEndpoint?.value || "health";
+          let res;
+          if (ep === "health") res = await fetch(`${DEVEX_BASE}/health`);
+          if (ep === "pco_public") {
+            const caseId = document.getElementById("caseId").value || "case-001";
+            res = await fetch(`${DEVEX_BASE}/pco/public/${encodeURIComponent(caseId)}`);
+          }
+          if (ep === "pco_bundle") {
+            let body = null;
+            try { const txt = (document.getElementById('devexBody')?.value || '').trim(); if (txt) body = JSON.parse(txt); } catch {}
+            if (!body) { body = { rid: (document.getElementById('caseId').value || 'case-001'), smt2_hash: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', lfsc: '(lfsc proof)' }; }
+            res = await fetch(`${DEVEX_BASE}/v1/pco/bundle`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+          }
+          if (ep === "analyze") {
+            // Reuse main Analyze flow (uses selected file and updates UI)
+            await doAnalyze();
+            return;
+          }
+          if (!res || !res.ok) throw new Error(String(res && res.status));
+          toast(t("toast_copied"));
+        } catch (e) {
+          toast(String(e));
+        }
+      });
     </script>
   </body>
 </html>

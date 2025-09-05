@@ -1,0 +1,8 @@
+services:
+  gha-runner:
+    volumes:
+      - runner_work:/_work
+      - //./pipe/docker_engine://./pipe/docker_engine
+    environment:
+      DOCKER_HOST: npipe:////./pipe/docker_engine
+

@@ -64,6 +64,26 @@ class PublishResponse(BaseModel):
     ledger_ref: str | None = None
 
 
+class RtbfAppealRequest(BaseModel):
+    case_id: str = Field(..., description="Case identifier (RID or CASE_ID)")
+    reason: str | None = Field(default=None, description="Optional appeal reason")
+
+
+class RtbfAppealResponse(BaseModel):
+    status: str
+    case_id: str
+    reason: str | None = None
+
+
+class RtbfEraseRequest(BaseModel):
+    case_id: str = Field(..., description="Case identifier (RID or CASE_ID)")
+
+
+class RtbfEraseResponse(BaseModel):
+    status: str
+    case_id: str
+
+
 # === LOGIKA / LOGIC ===
 
 app = FastAPI(title="ProofGate", version=__version__)
@@ -77,6 +97,66 @@ def healthz() -> dict[str, Any]:
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
+
+
+_RTBF_STORE = _repo_root() / "out" / "rtbf_erased.json"
+_RTBF_APPEALS = _repo_root() / "out" / "rtbf_appeals.json"
+
+
+def _load_rtbf_store() -> set[str]:
+    try:
+        import json
+
+        data = json.loads(_RTBF_STORE.read_text(encoding="utf-8")) if _RTBF_STORE.exists() else []
+        return {str(x) for x in (data or [])}
+    except Exception:
+        return set()
+
+
+def _save_rtbf_store(items: set[str]) -> None:
+    try:
+        import json
+
+        _RTBF_STORE.parent.mkdir(parents=True, exist_ok=True)
+        _RTBF_STORE.write_text(json.dumps(sorted(items), indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _now_iso() -> str:
+    import time
+
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def _load_appeals() -> dict[str, dict[str, str]]:
+    try:
+        import json
+
+        data = {} if not _RTBF_APPEALS.exists() else json.loads(_RTBF_APPEALS.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            return {}
+        # Ensure mapping of case -> {received_at, reason}
+        out: dict[str, dict[str, str]] = {}
+        for k, v in data.items():
+            if isinstance(v, dict):
+                rec = {"received_at": str(v.get("received_at") or _now_iso())}
+                if v.get("reason"):
+                    rec["reason"] = str(v["reason"])  # type: ignore[index]
+                out[str(k)] = rec
+        return out
+    except Exception:
+        return {}
+
+
+def _save_appeals(data: dict[str, dict[str, str]]) -> None:
+    try:
+        import json
+
+        _RTBF_APPEALS.parent.mkdir(parents=True, exist_ok=True)
+        _RTBF_APPEALS.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    except Exception:
+        pass
 
 
 def _load_policy_pack() -> dict[str, Any]:
@@ -329,6 +409,25 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
+    # W9: Decision (base), then optional gates (PQ/roles)
+    decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
+
+    # W9: PQ-crypto gate (optional, stub)
+    pq_require = (os.getenv("PQCRYPTO_REQUIRE") or "").strip() in {"1", "true", "True"}
+    pq_ready_env = (os.getenv("PQCRYPTO_READY") or "").strip() in {"1", "true", "True"}
+
+    if pq_require and decision != "ABSTAIN":
+        try:
+            pq_ready_pco = False
+            if isinstance(req.pco, dict):
+                crypto = req.pco.get("crypto") if isinstance(req.pco.get("crypto"), dict) else {}
+                pq = crypto.get("pq") if isinstance(crypto, dict) else None
+                pq_ready_pco = bool((pq or {}).get("ready", False))
+            if not (pq_ready_pco or pq_ready_env):
+                decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
+
     # W9: Fine-grained role enforcement (optional)
     enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
 
@@ -400,6 +499,70 @@ def publish(req: PublishRequest) -> PublishResponse:
 
 
 # === I/O / ENDPOINTS ===
+
+
+@app.post("/v1/rtbf/appeal", response_model=RtbfAppealResponse)
+def rtbf_appeal(req: RtbfAppealRequest) -> RtbfAppealResponse:
+    """
+    PL: Rejestruje odwołanie RTBF (stub); zwraca status RECEIVED.
+    EN: Registers an RTBF appeal (stub); returns status RECEIVED.
+    """
+
+    appeals = _load_appeals()
+    appeals[req.case_id] = {"received_at": _now_iso(), **({"reason": req.reason} if req.reason else {})}
+    _save_appeals(appeals)
+    return RtbfAppealResponse(status="RECEIVED", case_id=req.case_id, reason=req.reason)
+
+
+@app.post("/v1/rtbf/erase", response_model=RtbfEraseResponse)
+def rtbf_erase(req: RtbfEraseRequest) -> RtbfEraseResponse:
+    """
+    PL: Zaznacza sprawę jako usuniętą (stub, brak dostępu do prywatnych danych w ProofGate).
+    EN: Marks case as erased (stub; ProofGate has no access to private data).
+    """
+
+    items = _load_rtbf_store()
+    items.add(req.case_id)
+    _save_rtbf_store(items)
+    return RtbfEraseResponse(status="ERASED", case_id=req.case_id)
+
+
+@app.get("/v1/rtbf/erased/{case_id}")
+def rtbf_erased(case_id: str) -> dict[str, bool]:
+    """PL/EN: Returns whether a case is marked as erased (best-effort)."""
+
+    items = _load_rtbf_store()
+    return {"erased": case_id in items}
+
+
+@app.get("/v1/rtbf/appeal_sla/{case_id}")
+def rtbf_appeal_sla(case_id: str) -> dict[str, str | float | bool]:
+    """
+    PL: Zwraca szczegóły SLA dla odwołania (received_at, due_by). Domyślnie 72h.
+    EN: Returns SLA details for an appeal (received_at, due_by). Default 72h.
+    """
+
+    import datetime as _dt
+
+    appeals = _load_appeals()
+    rec = appeals.get(case_id)
+    sla_h = float(os.getenv("RTBF_APPEAL_SLA_HOURS", "72") or 72)
+    if not rec:
+        return {"present": False, "sla_hours": sla_h}
+    try:
+        received_at = rec.get("received_at") or _now_iso()
+        t = _dt.datetime.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_dt.UTC)
+    except Exception:
+        t = _dt.datetime.now(tz=_dt.UTC)
+        received_at = _now_iso()
+    due = t + _dt.timedelta(hours=sla_h)
+    return {
+        "present": True,
+        "received_at": received_at,
+        "sla_hours": sla_h,
+        "due_by": due.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
 
 # Cache OpenAPI JSON in-memory to reduce overhead
 _openapi_schema_cache = None

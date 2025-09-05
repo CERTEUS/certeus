@@ -1,0 +1,28 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/self_hosted_smoke.yml              |
+# | ROLE: Self-hosted runner smoke (no push)                   |
+# | PLIK: .github/workflows/self_hosted_smoke.yml              |
+# | ROLA: Smoke self-hosted (bez push)                         |
+# +-------------------------------------------------------------+
+
+name: Self-Hosted Smoke
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hello:
+    runs-on: [self-hosted, linux, docker, build]
+    steps:
+      - name: Say hello
+        run: echo "Hello from self-hosted runner $(uname -a)"
+      - name: Docker build (alpine) no-push
+        run: |
+          cat > Dockerfile <<'DOCKER'
+          FROM alpine:3.19
+          RUN echo hello
+          DOCKER
+          docker build -t certeus/hello:ci .
+

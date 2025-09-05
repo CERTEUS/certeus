@@ -1,0 +1,122 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/case_studio.html                   |
+| ROLE: Case Studio (ingest → analyze → publish)              |
+| PLIK: clients/web/public/case_studio.html                   |
+| ROLA: Studio sprawy (upload→analiza→publish)                |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Case Studio</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0f1114;color:#f2f2f3}
+      .wrap{max-width:1100px;margin:24px auto;padding:0 12px}
+      .card{background:#151922;border:1px solid #232832;border-radius:12px;padding:12px;margin-bottom:12px}
+      input,button{background:#0f1114;border:1px solid #232832;border-radius:8px;color:#f2f2f3;padding:8px}
+      .btn{padding:8px 12px;border:1px solid #232832;border-radius:8px;background:#1a1f29;color:#f2f2f3;cursor:pointer}
+      .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+      pre{background:#0f1114;border:1px solid #232832;border-radius:8px;padding:8px;overflow:auto}
+      label{color:#9aa0a6}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>Case Studio</h1>
+        <div class="row">
+          <label>Tenant <input id="tenant" value="anonymous"/></label>
+          <label>Case <input id="case" value="CER-LEX-001"/></label>
+          <input id="file" type="file" accept="application/pdf" />
+          <button id="ingest" class="btn">1) Ingest</button>
+          <button id="analyze" class="btn">2) Analyze</button>
+          <button id="publish" class="btn">3) Publish</button>
+          <button id="bundle" class="btn">Build PCO Bundle</button>
+          <button id="bundleSend" class="btn">Submit Bundle</button>
+          <a id="bundleDl" class="btn" href="#" download="pco_bundle.json">Download JSON</a>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <a id="ledger" class="btn" target="_blank" href="#">Open Ledger</a>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Ingest result</h2>
+        <pre id="ingest_out">-</pre>
+      </div>
+      <div class="card">
+        <h2>Analyze result</h2>
+        <pre id="analyze_out">-</pre>
+      </div>
+      <div class="card">
+        <h2>Publish response</h2>
+        <pre id="publish_out">-</pre>
+      </div>
+    </div>
+    <script>
+      const $=id=>document.getElementById(id);
+      function setLedgerLink(){ const cs=$("case").value||'CER-LEX-001'; $("ledger").href = `/v1/ledger/${encodeURIComponent(cs)}/records`; }
+      async function ingest(){
+        const f=$("file").files?.[0]; if(!f){ alert('Select PDF first'); return; }
+        const fd=new FormData(); fd.append('file', f);
+        const r=await fetch('/v1/ingest',{method:'POST', headers:{'X-Tenant-ID':($("tenant").value||'anonymous')}, body:fd});
+        const t=await r.text(); try{ $("ingest_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("ingest_out").textContent=t }
+        setLedgerLink();
+      }
+      async function analyze(){
+        const f=$("file").files?.[0]; if(!f){ alert('Select PDF first'); return; }
+        const cs=$("case").value||'CER-LEX-001';
+        const fd=new FormData(); fd.append('file', f); fd.append('case_id', cs);
+        const r=await fetch(`/v1/analyze?case_id=${encodeURIComponent(cs)}`,{method:'POST', headers:{'X-Tenant-ID':($("tenant").value||'anonymous')}, body:fd});
+        const t=await r.text(); try{ $("analyze_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("analyze_out").textContent=t }
+        setLedgerLink();
+      }
+      async function publish(){
+        const cs=$("case").value||'CER-LEX-001';
+        const pco={ case_id: cs, signatures:[{role:'counsel', party:'demo', signature:'sig'}], risk:{ece:0.01,brier:0.05,abstain_rate:0.05} };
+        const r=await fetch('/v1/proofgate/publish',{method:'POST', headers:{'content-type':'application/json','X-Tenant-ID':($("tenant").value||'anonymous')}, body: JSON.stringify({pco, budget_tokens:10})});
+        const t=await r.text(); try{ $("publish_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("publish_out").textContent=t }
+        setLedgerLink();
+      }
+      async function sha256hex(blob){ const b = await blob.arrayBuffer(); const d = await crypto.subtle.digest('SHA-256', b); const a = Array.from(new Uint8Array(d)); return a.map(x=>x.toString(16).padStart(2,'0')).join(''); }
+      function validateBundle(b){
+        const issues=[];
+        if(!b || typeof b!=='object') issues.push('bundle not an object');
+        if(!b.rid || typeof b.rid!=='string') issues.push('rid missing');
+        if(!/^[0-9a-f]{64}$/i.test(b.smt2_hash||'')) issues.push('smt2_hash must be 64 hex chars');
+        if(typeof b.lfsc!=='string') issues.push('lfsc must be string');
+        if(!Array.isArray(b.merkle_proof)) issues.push('merkle_proof must be array');
+        return issues;
+      }
+      async function buildBundle(){
+        const cs=$("case").value||'CER-LEX-001';
+        const rid = cs;
+        let smt2_hash = 'a'.repeat(64);
+        try{
+          const f=$("file").files?.[0]; if(f){ smt2_hash = await sha256hex(f); }
+        }catch{}
+        const bundle = { rid, smt2_hash, lfsc: '(lfsc proof)', merkle_proof: [] };
+        const issues = validateBundle(bundle);
+        const s = JSON.stringify(bundle, null, 2);
+        $("bundleDl").href = 'data:application/json;charset=utf-8,' + encodeURIComponent(s);
+        $("publish_out").textContent = issues.length? ('Bundle validation: '+issues.join('; ')) : 'Bundle validation: OK';
+        return bundle;
+      }
+      async function submitBundle(){
+        const b = await buildBundle();
+        const r = await fetch('/v1/pco/bundle', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(b)});
+        const t = await r.text(); try{ $("publish_out").textContent=JSON.stringify(JSON.parse(t),null,2);}catch{ $("publish_out").textContent=t }
+      }
+      document.getElementById('ingest').addEventListener('click', ingest);
+      document.getElementById('analyze').addEventListener('click', analyze);
+      document.getElementById('publish').addEventListener('click', publish);
+      document.getElementById('bundle').addEventListener('click', buildBundle);
+      document.getElementById('bundleSend').addEventListener('click', submitBundle);
+      setLedgerLink();
+    </script>
+  </body>
+  </html>

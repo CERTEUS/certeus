@@ -1,0 +1,44 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/asset-health.yml                    |
+# | ROLE: Nightly check for hashed OG/Favicon on Pages          |
+# +-------------------------------------------------------------+
+
+name: Asset Health (OG/Favicon)
+
+on:
+  schedule:
+    - cron: "17 2 * * *"   # daily 02:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read AssetRev from PROVENANCE.md
+        id: rev
+        run: |
+          set -euo pipefail
+          rev=$(grep -E '^AssetRev:' PROVENANCE.md | awk '{print $2}')
+          echo "rev=$rev" >> "$GITHUB_OUTPUT"
+      - name: HEAD check hashed assets
+        run: |
+          set -euo pipefail
+          BASE="https://certeus.github.io/certeus-public/assets"
+          curl -sSfI "$BASE/favicon.${{ steps.rev.outputs.rev }}.ico" >/dev/null
+          curl -sSfI "$BASE/og.${{ steps.rev.outputs.rev }}.svg"     >/dev/null
+      - name: Open issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            -t "Asset health failed" \
+            -b "Hashed assets not 200/301 for rev=${{ steps.rev.outputs.rev }}"
+

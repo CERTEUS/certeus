@@ -1,4 +1,4 @@
-## Security Policy
+# Security Policy
 
 Zależy nam na bezpieczeństwie użytkowników i danych. Poniżej zasady, wymagania i procedury.
 

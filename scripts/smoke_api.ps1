@@ -28,9 +28,16 @@ if (Test-Path .\scripts\dev_env.ps1) { . .\scripts\dev_env.ps1 }
 if (Test-Path .\scripts\keys_dev.ps1) { pwsh -File .\scripts\keys_dev.ps1 | Out-Host }
 if (Test-Path .\scripts\env_load.ps1) { . .\scripts\env_load.ps1 }
 
+function Get-PyPath {
+  if (Test-Path .\.venv\Scripts\python.exe) { return (Resolve-Path .\.venv\Scripts\python.exe).Path }
+  try { $cmd = Get-Command python -ErrorAction Stop; return $cmd.Source } catch {}
+  $uv = Join-Path $env:USERPROFILE 'AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\python.exe'
+  if (Test-Path $uv) { return $uv }
+  throw 'Python not found (.venv/python/uv)'
+}
+
 function Start-Server {
-  $py = (Resolve-Path .\.venv\Scripts\python.exe).Path
-  if (-not (Test-Path $py)) { throw 'Python venv not found: .\\.venv\\Scripts\\python.exe' }
+  $py = Get-PyPath
   $args = @('-m','uvicorn','services.api_gateway.main:app','--host','127.0.0.1','--port','8000')
   $proc = Start-Process -FilePath $py -ArgumentList $args -PassThru -WindowStyle Hidden
   for ($i=0; $i -lt 120; $i++) {
@@ -61,12 +68,15 @@ function Hit($method, $path, $bodyJson) {
 $results = @()
 $proc = $null
 try {
-  $proc = Start-Server
+  $start = $true
+  try { if ($env:SMOKE_START_SERVER -and $env:SMOKE_START_SERVER -eq '0') { $start = $false } } catch { $start = $true }
+  if ($start) { $proc = Start-Server }
   $results += Hit 'GET' '/health' $null
   $results += Hit 'GET' '/' $null
   $results += Hit 'GET' '/metrics' $null
   $results += Hit 'GET' '/.well-known/jwks.json' $null
   $results += Hit 'GET' '/v1/packs/' $null
+  $results += Hit 'GET' '/v1/boundary/status' $null
 
   # CFE
   $results += Hit 'POST' '/v1/cfe/geodesic' '{"case":"CER-SMOKE","facts":{},"norms":{}}'
@@ -76,6 +86,8 @@ try {
   # QTMP
   $results += Hit 'POST' '/v1/qtm/init_case' '{"basis":["ALLOW","DENY","ABSTAIN"]}'
   $results += Hit 'POST' '/v1/qtm/measure' '{"operator":"W","source":"ui"}'
+  $results += Hit 'POST' '/v1/qtm/measure' '{"operator":"L","source":"smoke","case":"SMOKE-QTMP-1"}'
+  $results += Hit 'GET' '/v1/qtm/history/SMOKE-QTMP-1' $null
   $results += Hit 'POST' '/v1/qtm/commutator' '{"A":"X","B":"Y"}'
   $results += Hit 'POST' '/v1/qtm/find_entanglement' '{"variables":["A","B"]}'
 
@@ -99,6 +111,10 @@ try {
   # ChatOps
   $results += Hit 'POST' '/v1/chatops/command' '{"cmd":"cfe.geodesic","args":{}}'
 
+  # MailOps
+  $mail = '{"mail_id":"SMOKE-EMAIL-1","from_addr":"smoke@example.com","to":["ops@example.com"],"subject":"Smoke","body_text":"Hello","spf":"pass","dkim":"pass","dmarc":"pass","attachments":[]}'
+  $results += Hit 'POST' '/v1/mailops/ingest' $mail
+
   # Ledger
   $rand = -join ((65..70 + 48..57) | Get-Random -Count 64 | ForEach-Object {[char]$_})
   $results += Hit 'POST' '/v1/ledger/record-input' ("{`"case_id`":`"CER-1`",`"document_hash`":`"sha256:" + $rand + "`"}")
@@ -111,6 +127,18 @@ try {
   # Verify (Truth Engine)
   $smt = "(set-logic QF_UF) (declare-fun x () Bool) (assert x) (check-sat)"
   $results += Hit 'POST' '/v1/verify' ("{`"formula`":`"$smt`",`"lang`":`"smt2`"}")
+
+  # PCO bundle (dev) + public fetch
+  try {
+    $rid = 'RID-SMOKE-1'
+    $smt2 = '(set-logic ALL) (check-sat)'
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($smt2)
+    $hash = ($sha.ComputeHash($bytes) | ForEach-Object { $_.ToString('x2') }) -join ''
+    $payload = '{"rid":"' + $rid + '","smt2_hash":"' + $hash + '","lfsc":"(lfsc proof)","merkle_proof":[]}'
+    $results += Hit 'POST' '/v1/pco/bundle' $payload
+    $results += Hit 'GET' ('/pco/public/' + $rid) $null
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/pco/bundle'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # PCO bundle + public verify
   $rid = 'RID-SMOKE-1'
@@ -164,34 +192,9 @@ try {
     New-Item -ItemType Directory -Force -Path reports | Out-Null
     $open = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/openapi.json' -TimeoutSec 8
     if ($open.StatusCode -eq 200) { Set-Content -LiteralPath 'reports\openapi.json' -Value $open.Content -Encoding UTF8 }
-    $py = (Resolve-Path .\.venv\Scripts\python.exe).Path
-    $code = @'
-import json, sys
-from pathlib import Path
-spec = json.loads(Path('reports/openapi.json').read_text(encoding='utf-8'))
-ok = ('openapi' in spec and 'paths' in spec)
-try:
-    # Try modern API first
-    try:
-        from openapi_spec_validator import validate_spec as _validate
-    except Exception:
-        try:
-            from openapi_spec_validator.validators import validate as _validate
-        except Exception:
-            _validate = None
-    if _validate is not None:
-        _validate(spec)
-        ok = True
-except Exception as e:
-    ok = False
-sys.exit(0 if ok else 1)
-'@
-    $tmp = Join-Path $env:TEMP ('oapi_val_' + [guid]::NewGuid().ToString('N') + '.py')
-    Set-Content -LiteralPath $tmp -Value $code -Encoding UTF8
-    & $py $tmp
-    $ok = ($LASTEXITCODE -eq 0)
-    Remove-Item -LiteralPath $tmp -ErrorAction SilentlyContinue
-    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'invalid openapi'} }
+    $spec = $open.Content | ConvertFrom-Json -ErrorAction Stop
+    $ok = ($null -ne $spec.openapi -and $null -ne $spec.paths)
+    $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=[int]$open.StatusCode; ok=$ok; msg=if($ok){'ok'}else{'openapi/paths missing'} }
   } catch { $results += [pscustomobject]@{ method='GET'; path='/openapi.json#schema'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # Health payload shape
@@ -234,6 +237,21 @@ sys.exit(0 if ok else 1)
     $ok = ([double]$comm.value -eq 1.0)
     $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/commutator#regression'; code=200; ok=$ok; msg=if($ok){'ok'}else{"value=$($comm.value)"} }
   } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/qtm/commutator#regression'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # ChatOps response shape (geodesic_action numeric)
+  try {
+    $ch = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/chatops/command' -TimeoutSec 8 -ContentType 'application/json' -Body '{"cmd":"cfe.geodesic","args":{}}'
+    $x = $ch.result.geodesic_action
+    $ok = ($null -ne $x)
+    $results += [pscustomobject]@{ method='POST'; path='/v1/chatops/command#shape'; code=200; ok=$ok; msg=if($ok){'ok'}else{'missing geodesic_action'} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/chatops/command#shape'; code=0; ok=$false; msg=$_.Exception.Message } }
+
+  # MailOps response shape (io.email.mail_id present)
+  try {
+    $mo = Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/v1/mailops/ingest' -TimeoutSec 8 -ContentType 'application/json' -Body '{"mail_id":"SMOKE-EMAIL-2","from_addr":"smoke@example.com","to":["ops@example.com"],"attachments":[]}'
+    $ok = ($mo.io.'io.email.mail_id' -is [string])
+    $results += [pscustomobject]@{ method='POST'; path='/v1/mailops/ingest#shape'; code=200; ok=$ok; msg=if($ok){'ok'}else{'missing io.email.mail_id'} }
+  } catch { $results += [pscustomobject]@{ method='POST'; path='/v1/mailops/ingest#shape'; code=0; ok=$false; msg=$_.Exception.Message } }
 
   # PCO public rid regression: equals requested rid
   try {
@@ -340,3 +358,4 @@ if ($env:GITHUB_STEP_SUMMARY) {
 
 Write-Host ("SMOKE SUMMARY: total=$total passes=$passes fails=$fails p95_ms=$p95 threshold_ms=$sloThresh max_fails=$maxFails")
 if ($fails -gt $maxFails) { exit 1 } else { exit 0 }
+

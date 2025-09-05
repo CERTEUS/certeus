@@ -1,0 +1,8 @@
+name: fin_policy
+module: plugins.fin_policy.src.main
+version: "0.1.0"
+license: Apache-2.0
+publisher: CERTEUS
+capabilities:
+  - fin
+  - policy

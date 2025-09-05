@@ -1,0 +1,10 @@
+{
+  "tiers": {
+    "free": { "daily_quota": 200, "burst": 1.0 },
+    "pro": { "daily_quota": 10000, "burst": 2.0 },
+    "enterprise": { "daily_quota": 250000, "burst": 3.0 }
+  },
+  "tenants": {
+    "anonymous": "free"
+  }
+}

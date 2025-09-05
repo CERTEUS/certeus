@@ -1,0 +1,101 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/devices.html                       |
+| ROLE: Web client page.                                      |
+| PLIK: clients/web/public/devices.html                       |
+| ROLA: Strona klienta web.                                   |
++-------------------------------------------------------------+
+-->
+
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • Devices</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#111315;color:#f2f2f3}
+      .container{max-width:980px;margin:24px auto;padding:0 16px}
+      .card{background:#181b20;border:1px solid #2a2d33;border-radius:12px;padding:16px;margin-bottom:16px}
+      h1{margin:0 0 10px;font-size:22px}
+      .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .btn{background:#1a1c20;border:1px solid #2a2d33;color:#f2f2f3;padding:8px 12px;border-radius:10px;cursor:pointer}
+      .btn:hover{background:#20242a}
+      .muted{color:#9aa0a6}
+      textarea{width:100%;height:140px;background:#111315;color:#f2f2f3;border:1px solid #2a2d33;border-radius:8px;padding:8px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>HDE • Horizon Drive Plan</h1>
+        <div class="row">
+          <input id="hde-case" class="btn" placeholder="case id (np. CER-1)" />
+          <input id="hde-target" class="btn" placeholder="target_horizon (np. 0.2)" />
+          <button id="hde-go" class="btn">Plan</button>
+        </div>
+        <textarea id="hde-out" readonly></textarea>
+      </div>
+
+      <div class="card">
+        <h1>Q‑Oracle • Expectation</h1>
+        <div class="row">
+          <input id="qo-q" class="btn" placeholder="question (np. Should we appeal?)" />
+          <button id="qo-go" class="btn">Ask</button>
+        </div>
+        <textarea id="qo-out" readonly></textarea>
+      </div>
+
+      <div class="card">
+        <h1>Entangler</h1>
+        <div class="row">
+          <input id="ent-vars" class="btn" placeholder="variables (comma‑sep)" />
+          <input id="ent-neg" class="btn" placeholder="target_negativity (np. 0.1)" />
+          <button id="ent-go" class="btn">Entangle</button>
+        </div>
+        <textarea id="ent-out" readonly></textarea>
+      </div>
+
+      <div class="card">
+        <h1>Chronosync • Reconcile</h1>
+        <div class="row">
+          <input id="chr-t" class="btn" placeholder="t (np. 0)" />
+          <button id="chr-go" class="btn">Reconcile</button>
+        </div>
+        <textarea id="chr-out" readonly></textarea>
+      </div>
+    </div>
+    <script>
+      async function call(url, body){
+        const r = await fetch(url, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify(body||{})});
+        const txt = await r.text();
+        return {ok:r.ok, text:txt};
+      }
+      document.getElementById('hde-go').addEventListener('click', async ()=>{
+        const caseId = document.getElementById('hde-case').value||'CER-1';
+        const target = parseFloat(document.getElementById('hde-target').value||'0.2');
+        const r = await call('/v1/devices/horizon_drive/plan', {case: caseId, target_horizon: target});
+        document.getElementById('hde-out').value = r.text;
+      });
+      document.getElementById('qo-go').addEventListener('click', async ()=>{
+        const q = document.getElementById('qo-q').value||'Should we appeal?';
+        const r = await call('/v1/devices/qoracle/expectation', {question: q});
+        document.getElementById('qo-out').value = r.text;
+      });
+      document.getElementById('ent-go').addEventListener('click', async ()=>{
+        const v = (document.getElementById('ent-vars').value||'A,B').split(',').map(s=>s.trim()).filter(Boolean);
+        const n = parseFloat(document.getElementById('ent-neg').value||'0.1');
+        const r = await call('/v1/devices/entangle', {variables: v, target_negativity: n});
+        document.getElementById('ent-out').value = r.text;
+      });
+      document.getElementById('chr-go').addEventListener('click', async ()=>{
+        const t = parseFloat(document.getElementById('chr-t').value||'0');
+        const r = await call('/v1/devices/chronosync/reconcile', {coords:{t}, pc_delta:{}});
+        document.getElementById('chr-out').value = r.text;
+      });
+    </script>
+  </body>
+  </html>
+

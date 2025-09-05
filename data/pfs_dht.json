@@ -1,0 +1,29 @@
+{
+  "node-expired": {
+    "competencies": [
+      "lexqft.*"
+    ],
+    "capacity": 10,
+    "ttl_sec": 0,
+    "health": "up",
+    "last_seen": 1757003386.4790263
+  },
+  "node-low": {
+    "competencies": [
+      "proof.*"
+    ],
+    "capacity": 1,
+    "ttl_sec": 3600,
+    "health": "up",
+    "last_seen": 1757003386.6056397
+  },
+  "node-high": {
+    "competencies": [
+      "proof.*"
+    ],
+    "capacity": 3,
+    "ttl_sec": 3600,
+    "health": "up",
+    "last_seen": 1757003386.7059698
+  }
+}

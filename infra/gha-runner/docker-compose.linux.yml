@@ -1,0 +1,6 @@
+services:
+  gha-runner:
+    volumes:
+      - runner_work:/_work
+      - /var/run/docker.sock:/var/run/docker.sock
+

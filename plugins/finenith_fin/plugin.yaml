@@ -1,0 +1,17 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: plugins/finenith_fin/plugin.yaml                     |
+# | ROLE: FINENITH pack manifest                                 |
+# | PLIK: plugins/finenith_fin/plugin.yaml                     |
+# | ROLA: Manifest pakietu FINENITH                              |
+# +-------------------------------------------------------------+
+
+name: finenith_fin
+module: plugins.finenith_fin.src.main
+version: "0.1.0"
+capabilities:
+  - fin
+  - alpha
+# signature: (dodaj przez scripts/marketplace/sign_manifest.py --embed)
+

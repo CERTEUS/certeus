@@ -1,0 +1,69 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/docs-site.yml                      |
+# | ROLE: Build & deploy MkDocs to Pages                       |
+# +-------------------------------------------------------------+
+
+name: Docs-Site
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'mkdocs.yml'
+      - 'docs/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install mkdocs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -U pip wheel setuptools
+          python -m pip install mkdocs mkdocs-material
+          # Auto-install common mkdocs plugins if referenced in mkdocs.yml
+          if [ -f mkdocs.yml ]; then
+            if grep -q 'sitemap' mkdocs.yml; then
+              echo 'sitemap plugin referenced; skipping install (plugin unavailable)'
+            fi
+            if grep -q 'minify' mkdocs.yml; then
+              python -m pip install 'mkdocs-minify-plugin'
+            fi
+            if grep -q 'redirects' mkdocs.yml; then
+              python -m pip install 'mkdocs-redirects'
+            fi
+          fi
+      - name: Build site
+        run: |
+          mkdocs build -d _site
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

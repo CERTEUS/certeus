@@ -31,6 +31,7 @@ Zwraca kod 0 (OK) lub 1 (naruszenia). Wypisuje listę problemów.
 from __future__ import annotations
 
 import ast
+import os
 from pathlib import Path
 import sys
 
@@ -77,6 +78,29 @@ def _should_skip(rel: str) -> bool:
     return False
 
 
+PROJECT_DIRS = [
+    ".github",
+    "charts",
+    "clients",
+    "core",
+    "docs",
+    "governance",
+    "monitoring",
+    "observability",
+    "ops",
+    "packs",
+    "packs_core",
+    "plugins",
+    "policies",
+    "runtime",
+    "scripts",
+    "security",
+    "services",
+    "tests",
+    "tools",
+]
+
+
 def iter_files(patterns: list[str]) -> list[Path]:
     out: list[Path] = []
     for p in REPO.rglob("*"):
@@ -90,10 +114,16 @@ def iter_files(patterns: list[str]) -> list[Path]:
         try:
             if not p.is_file():
                 continue
-        except OSError:
-            continue
-        if any(rel.endswith(suf) for suf in patterns):
-            out.append(p)
+            for fn in filenames:
+                if not any(fn.endswith(suf) for suf in patterns):
+                    continue
+                p = Path(dirpath) / fn
+                try:
+                    if not p.is_file():
+                        continue
+                except OSError:
+                    continue
+                out.append(p)
     return out
 
 
@@ -132,10 +162,11 @@ def check_python() -> list[str]:
         if not has_sections_head(t):
             errs.append(f"[PY][SECTIONS] {f.relative_to(REPO)}")
 
-        # Detect decorators that are not immediately followed (skipping blank/comment
-        # lines) by another decorator, a class or a function definition. This guards
-        # against accidental insertion of section markers between a decorator and
-        # its target (class/def), which breaks Python syntax.
+        # Detect decorators that are not followed (allowing for multi-line decorator
+        # arguments and skipping blank/comment lines) by another decorator, a class
+        # or a function definition. This guards against accidental insertion of
+        # section markers between a decorator and its target (class/def), which
+        # breaks Python syntax.
         lines = t.splitlines()
         n = len(lines)
         orphan_found = False
@@ -144,25 +175,32 @@ def check_python() -> list[str]:
             if not s.startswith("@"):  # decorator candidate
                 continue
             j = i + 1
-            while j < n and (lines[j].strip() == "" or lines[j].lstrip().startswith("#")):
-                # If we hit a section header between decorator and target → orphan
-                if lines[j].lstrip().startswith("# === "):
+            while j < n:
+                t = lines[j]
+                lt = t.lstrip()
+                if lt.startswith("# === "):
+                    # Section header between decorator and its target ⇒ orphan
                     orphan_found = True
                     break
+                if lt == "" or lt.startswith("#"):
+                    j += 1
+                    continue
+                # Allow multi-line decorator arguments: keep advancing until we hit
+                # the actual target (@/def/class)
+                if (
+                    lt.startswith("@")
+                    or lt.startswith("def ")
+                    or lt.startswith("async def ")
+                    or lt.startswith("class ")
+                ):
+                    # Proper target reached
+                    break
+                # Non-empty, non-comment, non-target line inside decorator block: advance
                 j += 1
-            if orphan_found:
-                break
             if j >= n:
                 orphan_found = True
                 break
-            nxt = lines[j].lstrip()
-            if not (
-                nxt.startswith("@")
-                or nxt.startswith("def ")
-                or nxt.startswith("async def ")
-                or nxt.startswith("class ")
-            ):
-                orphan_found = True
+            if orphan_found:
                 break
         if orphan_found:
             rel = f.relative_to(REPO).as_posix()
@@ -200,11 +238,15 @@ def main() -> int:
     issues += check_textual([".ps1"], "PS1")
 
     if issues:
+        try:
+            outdir = REPO / "out"
+            outdir.mkdir(parents=True, exist_ok=True)
+            (outdir / "premium_violations.txt").write_text("\n".join(issues), encoding="utf-8")
+        except Exception:
+            pass
         print("Premium Code Style violations (sec.21):", file=sys.stderr)
-
         for line in issues:
             print(line, file=sys.stderr)
-
         return 1
 
     print("Premium Code Style: OK")
