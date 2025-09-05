@@ -65,3 +65,25 @@
 {"ts": "2025-09-05T05:38:05.289778Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
 {"ts": "2025-09-05T05:38:05.300982Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.4, "path": ["start", "reflect"], "counter_arguments": []}
 {"ts": "2025-09-05T05:38:05.320074Z", "case_id": "lexqft-case-2", "barrier_energy": 1.5, "p_tunnel": 0.4, "path": ["start", "reflect"], "counter_arguments": ["low_energy", "no_shortcut"]}
+{"ts": "2025-09-05T07:36:01.968323Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:01.978072Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.12, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:01.989728Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.36, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:02.000486Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:02.010436Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:02.969964Z", "case_id": "lexqft-case-1", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:10.515569Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:10.523659Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:10.778785Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:10.785822Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.4, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:36:10.805894Z", "case_id": "lexqft-case-2", "barrier_energy": 1.5, "p_tunnel": 0.4, "path": ["start", "reflect"], "counter_arguments": ["low_energy", "no_shortcut"]}
+{"ts": "2025-09-05T07:38:16.725583Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:16.737121Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.12, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:16.748121Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.36, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:16.758148Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:16.768615Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:17.717304Z", "case_id": "lexqft-case-1", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:24.752034Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:24.767510Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:25.077768Z", "case_id": "lexqft-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:25.091986Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.4, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-05T07:38:25.116532Z", "case_id": "lexqft-case-2", "barrier_energy": 1.5, "p_tunnel": 0.4, "path": ["start", "reflect"], "counter_arguments": ["low_energy", "no_shortcut"]}

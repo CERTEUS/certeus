@@ -157,7 +157,8 @@ def _cache_get(path: str, key: str) -> dict[str, Any] | None:
         if not item:
             return None
         exp, payload = item
-        if exp < time():
+        # Expired when expiration time is at or before now (TTL==0 expires immediately)
+        if exp <= time():
             # expired
             try:
                 _IDEMP_STORE.pop(k, None)
