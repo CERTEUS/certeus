@@ -19,8 +19,8 @@ from typing import Any
 
 from fastapi.testclient import TestClient
 
-from services.proofgate.app import app
 from security.frost import aggregate
+from services.proofgate.app import app
 
 
 def _base_ok_pco() -> dict[str, Any]:
@@ -41,7 +41,8 @@ def _base_ok_pco() -> dict[str, Any]:
 
 
 def main() -> None:
-    out_dir = Path("out"); out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path("out")
+    out_dir.mkdir(parents=True, exist_ok=True)
     # Enforce FROST gate
     os.environ["REQUIRE_COSIGN_ATTESTATIONS"] = "1"
     client = TestClient(app)
@@ -65,4 +66,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover
     main()
-

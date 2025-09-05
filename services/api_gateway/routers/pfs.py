@@ -31,10 +31,11 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PublicKey,
 )
 from fastapi import APIRouter, HTTPException, Query
-from core.pfs.resolve import resolve_uri, resolve_prefix_dir
+
 from core.pfs.materialize import materialize_uri
-from core.pfs.xattrs import get_xattrs_for_uri
 from core.pfs.mount import mount_readonly, unmount
+from core.pfs.resolve import resolve_prefix_dir
+from core.pfs.xattrs import get_xattrs_for_uri
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -97,7 +98,7 @@ async def get_xattrs(uri: str = Query(..., description="pfs:// URI")) -> dict[st
     try:
         x = get_xattrs_for_uri(uri)
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="artifact not found")
+        raise HTTPException(status_code=404, detail="artifact not found") from None
     except Exception as _e:
         raise HTTPException(status_code=400, detail=str(_e)) from _e
     return {"uri": uri, "xattrs": x}

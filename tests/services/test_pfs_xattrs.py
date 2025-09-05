@@ -21,9 +21,8 @@ import tempfile
 
 from fastapi.testclient import TestClient
 
-from services.api_gateway.main import app
 from core.pfs.xattrs import get_xattrs_for_path
-
+from services.api_gateway.main import app
 
 _RE_SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
 
@@ -58,4 +57,3 @@ def test_pfs_xattrs_endpoint_and_core() -> None:
         x = body.get("xattrs") or {}
         assert _RE_SHA256.match(x.get("pnip", ""))
         assert (x.get("pco") or {}).get("smt2_hash") == x.get("pnip").split(":", 1)[1]
-

@@ -38,10 +38,8 @@ import yaml
 from core.version import __version__
 from monitoring.metrics_slo import observe_decision
 from monitoring.otel_setup import set_span_attrs, setup_fastapi_otel
-from services.ledger_service.ledger import (
-    compute_provenance_hash,
-    ledger_service,
-)
+from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
 try:  # optional: FROST aggregator
     from security.frost import verify_quorum
 except Exception:  # pragma: no cover - optional
@@ -451,7 +449,8 @@ def publish(req: PublishRequest) -> PublishResponse:
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     # FROST 2-of-3 (optional enforce)
-    frost_require = (os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or "").strip() in {"1", "true", "True"}
+    frost_env = (os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or "").strip()
+    frost_require = frost_env in {"1", "true", "True"}
     if frost_require and decision in ("PUBLISH", "CONDITIONAL"):
         try:
             cos = req.pco.get("cosign") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]

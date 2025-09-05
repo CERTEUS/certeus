@@ -20,12 +20,11 @@ EN: Mock mount/unmount API compatible with Linux/macOS (FUSE) and Windows
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass
+import os
 from pathlib import Path
-from typing import Dict
 
-_REGISTRY: Dict[str, Path] = {}
+_REGISTRY: dict[str, Path] = {}
 
 
 @dataclass(frozen=True)
@@ -55,4 +54,3 @@ def unmount(mount_id: str) -> bool:
 
 def get_mount_path(mount_id: str) -> Path | None:
     return _REGISTRY.get(mount_id)
-

@@ -24,8 +24,8 @@ from pathlib import Path
 import time
 from typing import Any
 
-from .uri import _sanitize
 from .resolve import resolve_uri
+from .uri import _sanitize
 
 
 def _root_dir() -> Path:

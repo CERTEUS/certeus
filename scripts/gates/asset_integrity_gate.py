@@ -50,7 +50,8 @@ def _check_consistency(xattrs: dict[str, Any]) -> tuple[bool, str]:
 
 
 def main() -> None:
-    out_dir = Path("out"); out_dir.mkdir(parents=True, exist_ok=True)
+    out_dir = Path("out")
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     # Use an isolated temp root to avoid repo pollution
     with tempfile.TemporaryDirectory() as tmp:
@@ -80,4 +81,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover
     main()
-

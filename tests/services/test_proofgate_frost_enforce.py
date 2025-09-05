@@ -15,14 +15,13 @@ EN: FROST 2‑of‑3 — enforce in publish (opt-in via ENV), quorum presence in
 
 from __future__ import annotations
 
-from hashlib import sha256
 from typing import Any
 
 from fastapi.testclient import TestClient
 
-from services.ledger_service.ledger import ledger_service, compute_provenance_hash
-from services.proofgate.app import app
 from security.frost import aggregate
+from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+from services.proofgate.app import app
 
 
 def _base_ok_pco() -> dict[str, Any]:
@@ -73,4 +72,3 @@ def test_publish_with_frost_env_requires_quorum(monkeypatch) -> None:
     expect_hash = compute_provenance_hash(pco_ok, include_timestamp=False)
     recs = ledger_service.get_records_for_case(case_id=pco_ok["case_id"])
     assert any(r.get("type") == "PCO_PUBLISH" and r.get("document_hash") == expect_hash for r in recs)
-

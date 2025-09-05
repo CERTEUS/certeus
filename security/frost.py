@@ -20,7 +20,7 @@ EN: Minimal FROST aggregator stub for CI: no cryptography; checks threshold
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from hashlib import sha256
 from typing import Any
 
@@ -80,4 +80,3 @@ def verify_quorum(obj: dict[str, Any]) -> bool:
 
 
 __all__ = ["FrostQuorum", "aggregate", "verify_quorum"]
-
