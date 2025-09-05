@@ -64,6 +64,7 @@ line-length = 120
 target-version = "py311"
 exclude = [
   "services/api_gateway/routers/lexqft.py",
+  "services/api_gateway/routers/cfe.py",
 ]
 
 [tool.ruff.lint]
