@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\billing.py
+# hypothesis_version: 6.138.14
+
+[403, 404, 1000, 10000, 100000, 1000000, '/admin/reload', '/admin/set_tier', '/allocate', '/estimate', '/policies', '/quota', '/recommendation', '/refund', '/request', '/tenant_tier', '/v1/billing', '/v1/fin/tokens', '/{request_id}', '1', 'ALLOCATED', 'BILLING_ADMIN', 'BILLING_POLICY_FILE', 'PENDING', 'Resolve tenant tier', 'True', 'action', 'admin required', 'allocated_by', 'amount', 'balance', 'billing', 'billing_get_quota', 'billing_policy.json', 'billing_refund_units', 'billing_set_quota', 'daily_quota', 'data', 'enterprise', 'estimated_units', 'fin_allocate_tokens', 'fin_request_tokens', 'fin_tokens.json', 'free', 'ok', 'persisted', 'pro', 'purpose', 'qtm.measure', 'recommended_tier', 'request_id', 'requests', 'status', 'tenant', 'tenants', 'tier', 'tiers', 'true', 'unknown request_id', 'user_id', 'utf-8']

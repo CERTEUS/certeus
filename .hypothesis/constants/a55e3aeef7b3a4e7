@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\pfs_dht.py
+# hypothesis_version: 6.138.14
+
+['/announce', '/publish_path', '/query', '/v1/pfs/dht', '1', 'PFS_DHT_PERSIST', 'ProofFS-DHT', 'True', '^[A-Za-z0-9_.:-]+$', 'capacity', 'competencies', 'data', 'pfs_dht.json', 'true', 'ttl_sec', 'utf-8']

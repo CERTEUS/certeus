@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\billing_api.py
+# hypothesis_version: 6.138.14
+
+['/allocate', '/quota', '/refund', '/v1/billing', 'ALLOCATED', 'PENDING', 'balance', 'billing', 'billing_api_allocate', 'billing_api_refund', 'populate_by_name', 'status', 'tenant', 'units']

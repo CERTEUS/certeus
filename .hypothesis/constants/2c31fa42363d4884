@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\shedder.py
+# hypothesis_version: 6.138.14
+
+[0.0, 1.0, 503, '/v1/qtm/measure', '1', 'POST', 'SHED_ENABLE', 'SHED_FORCE_RATE', 'SHED_MAX_RATE', 'True', 'detail', 'http', 'shed', 'true']

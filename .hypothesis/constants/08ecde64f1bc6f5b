@@ -1,0 +1,4 @@
+# file: F:\projekty\certeus\services\api_gateway\routers\pfs.py
+# hypothesis_version: 6.138.14
+
+[400, 404, 1000, 10000, '*', '.', '/', '/case/{case}', '/exists', '/inspect', '/list', '/v1/pfs', 'List recursively', 'PROOFS_FS_ROOT', 'ProofFS', 'case', 'case_id', 'cases', 'data', 'entries', 'exists', 'path', 'paths', 'pfs://', 'pfs:// URI', 'pfs:// prefix', 'pfs_exists', 'pfs_list_entries', 'prefix', 'prefix not found', 'proof_fs', 'size', 'uri', 'utf-8']
