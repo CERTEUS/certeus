@@ -5,11 +5,11 @@
 # | ROLE: Canary/progressive readiness (PR-only)                |
 # +-------------------------------------------------------------+
 
-name: Canary-Gate
+name: Canary‑Gate
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, work/daily ]
 
 permissions:
   contents: read
@@ -17,6 +17,7 @@ permissions:
 
 jobs:
   canary:
+    name: Canary‑Gate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -80,5 +81,4 @@ jobs:
             } catch (e) {
               core.warning('Could not create PR comment: ' + (e?.message || e));
             }
-
 

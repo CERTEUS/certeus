@@ -22,7 +22,7 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, work/daily]
 
 permissions:
   contents: read
@@ -38,6 +38,7 @@ env:
 
 jobs:
   tests:
+    name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -72,6 +73,24 @@ jobs:
         run: |
           # Prefer uv; if it fails (np. chwilowy błąd indeksu) – fallback do pip
           uv sync --dev --all-extras || python -m pip install -e ".[dev]"
+
+      - name: 🧬 Generate OpenAPI spec (FastAPI import)
+        run: |
+          mkdir -p reports
+          uv run python - << 'PY'
+          import json, os
+          from services.api_gateway.main import app
+          spec = app.openapi()
+          os.makedirs('reports', exist_ok=True)
+          with open('reports/openapi.json','w', encoding='utf-8') as f:
+            json.dump(spec, f, ensure_ascii=False, indent=2)
+          print('Wrote reports/openapi.json')
+          PY
+
+      - name: 🔭 Spectral (non-blocking)
+        continue-on-error: true
+        run: |
+          npx -y @stoplight/spectral-cli lint reports/openapi.json -f json -o reports/spectral.json || true
 
       - name: 🔎 Ruff (lint)
         run: |
