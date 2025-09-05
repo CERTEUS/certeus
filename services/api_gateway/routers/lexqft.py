@@ -327,11 +327,13 @@ async def coverage_from_fin(body: FinCoverageIn, request: Request) -> dict:
     enforce_limits(request, cost_units=1)
 
     sig = {str(k).lower(): float(v) for k, v in (body.signals or {}).items()}
+
     def _get(sig: dict[str, float], keys: list[str], default: float) -> float:
         for k in keys:
             if k in sig:
                 return float(sig[k])
         return float(default)
+
     sent = _get(sig, ["sentiment", "sent", "sent_score"], 0.5)
     risk = _get(sig, ["risk", "risk_factor", "volatility"], 0.5)
     # Score computed on raw inputs then clamped to [-1,1], finally mapped to [0,1]
@@ -432,6 +434,7 @@ async def tunnel_stats() -> TunnelStats:
     except Exception:
         return TunnelStats(count=0, last_ts=None)
 
+
 # --- Virtual Pairs (energy budget / debt) -------------------------------------
 
 _VP_STATE: dict[str, dict[str, float | int]] = {}
@@ -474,8 +477,6 @@ async def vp_state(case: str) -> dict:
         "budget": float(st["budget"]),
         "remaining": float(remaining),
     }
-
-
 
 
 @router.post("/virtual_pairs/spawn")
