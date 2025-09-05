@@ -78,13 +78,6 @@ def main() -> int:
                 ops[op["operationId"]] = (method.lower(), p)
 
     errors: list[str] = []
-    # Required minimal operations for SDK 2.0 stub
-    required_ops = {
-        "pfs_list_entries",
-        "pfs_get_xattrs",
-        "pfs_materialize",
-        "publish_proofgate_publish",  # fallback if generator names it this way
-    }
     # allow either proofgate publish opId or any POST path under /v1/proofgate/publish
     has_publish = any(p.endswith("/v1/proofgate/publish") and m == "post" for (_id, (m, p)) in ops.items()) or (
         "publish_proofgate_publish" in ops or "proofgate_publish" in ops
@@ -114,4 +107,3 @@ def main() -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
-
