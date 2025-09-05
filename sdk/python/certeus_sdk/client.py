@@ -48,9 +48,19 @@ class CerteusClient:
     EN: Synchronous SDK client (MVP). Supports key QTMP and lexqft endpoints.
     """
 
-    def __init__(self, base_url: str = DEFAULT_BASE_URL, session: requests.Session | None = None) -> None:
+    def __init__(
+        self,
+        base_url: str = DEFAULT_BASE_URL,
+        session: requests.Session | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
         self.base_url = base_url.rstrip("/")
         self._s = session or requests.Session()
+        if headers:
+            try:
+                self._s.headers.update(headers)
+            except Exception:
+                pass
 
     # --- Pomocnicze ---------------------------------------------------------
 
@@ -186,6 +196,40 @@ class CerteusClient:
         if state_uri:
             payload["state_uri"] = state_uri
         return self._post("/v1/lexqft/tunnel", json=payload)
+
+    # --- ProofGate -----------------------------------------------------------
+
+    def proofgate_publish(
+        self,
+        *,
+        pco: Mapping[str, Any],
+        policy: Mapping[str, Any] | None = None,
+        budget_tokens: int | None = None,
+    ) -> SDKResponse:
+        payload: dict[str, Any] = {"pco": dict(pco)}
+        if policy is not None:
+            payload["policy"] = dict(policy)
+        if budget_tokens is not None:
+            payload["budget_tokens"] = int(budget_tokens)
+        return self._post("/v1/proofgate/publish", json=payload)
+
+    # --- ProofFS -------------------------------------------------------------
+
+    def pfs_exists(self, *, uri: str) -> SDKResponse:
+        return self._get(f"/v1/pfs/exists?uri={uri}")
+
+    def pfs_list(
+        self,
+        *,
+        prefix: str,
+        recursive: bool = False,
+        limit: int = 1000,
+        mime: str | None = None,
+    ) -> SDKResponse:
+        q = [f"prefix={prefix}", f"recursive={'true' if recursive else 'false'}", f"limit={int(limit)}"]
+        if mime:
+            q.append(f"mime={mime}")
+        return self._get(f"/v1/pfs/list?{'&'.join(q)}")
 
     # --- Ledger -------------------------------------------------------------
 

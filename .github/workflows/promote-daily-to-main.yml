@@ -118,8 +118,13 @@ jobs:
           git reset --hard origin/main
           git merge --ff-only origin/work/daily 2>$null
           if ($LASTEXITCODE -eq 0) {
-            "ff=true" >> $env:GITHUB_OUTPUT
-            git push origin main
+            try {
+              git push origin main
+              "ff=true" >> $env:GITHUB_OUTPUT
+            } catch {
+              Write-Warning "Protected branch push failed; falling back to PR path."
+              "ff=false" >> $env:GITHUB_OUTPUT
+            }
           } else {
             Write-Host "No fast-forward possible; skipping (PR path)."
             "ff=false" >> $env:GITHUB_OUTPUT
@@ -144,5 +149,4 @@ jobs:
             } catch (e) {
               core.warning('Could not enable auto-merge: ' + (e?.message || e));
             }
-
 

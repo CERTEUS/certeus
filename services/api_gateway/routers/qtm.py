@@ -86,7 +86,7 @@ class MeasureResponse(BaseModel):
 
 
 class SequenceRequest(BaseModel):
-    operators: list[str] = Field(..., min_items=1)
+    operators: list[str] = Field(..., min_length=1)
     case: str | None = Field(default=None)
     basis: list[str] | None = None
     no_collapse: bool = Field(default=False, description="If true, do not collapse after each step")

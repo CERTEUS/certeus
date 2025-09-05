@@ -143,6 +143,10 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
                 has_sig = bool(entry.get("signature"))
                 if enabled and not has_sig:
                     warnings.append(f"{ctx}: enabled without installed signature (state overlay)")
+                # Version mismatch advisory (installed vs manifest)
+                inst_ver = str(entry.get("installed_version") or "").strip()
+                if inst_ver and ver and inst_ver != ver:
+                    warnings.append(f"{ctx}: installed_version '{inst_ver}' differs from manifest version '{ver}'")
         except Exception:
             pass
 

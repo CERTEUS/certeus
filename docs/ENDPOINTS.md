@@ -38,7 +38,7 @@ See also `docs/openapi/certeus.v1.yaml` for full schemas and examples.
 - POST `/v1/qoc/vacuum_pairs`: Vacuum virtual pairs (QOC); returns `{pairs_count, rate}` and emits PCO header `X-CERTEUS-PCO-qoc.vacuum_pairs.rate`.
 - POST `/v1/qoc/energy_debt`: Helper to calculate energy debt for a number of pairs: `{pairs_count, mean_energy}` → `{energy_debt}`.
 
-- POST `/v1/devices/horizon_drive/plan`: HDE planner; returns `plan_of_evidence`, `cost_tokens`, `expected_kappa`, and `alternatives[]` with `best_strategy`. Supports idempotency via `X-Idempotency-Key`; replay flagged by `X-Idempotent-Replay: 1`.
+- POST `/v1/devices/horizon_drive/plan`: HDE planner; returns `plan_of_evidence`, `cost_tokens`, `expected_kappa`, and `alternatives[]` with `best_strategy`. Supports idempotency via `X-Idempotency-Key`; replay flagged by `X-Idempotent-Replay: 1`. TTL można nadpisać przez `IDEMP_TTL_SEC` (sekundy).
 - POST `/v1/devices/qoracle/expectation`: Q‑Oracle expectation (heuristic distribution); returns `{optimum, payoff, distribution[]}`.
 - POST `/v1/devices/entangle`: Entangler; returns `{certificate, achieved_negativity}` and exposes negativity metrics per variable.
 - POST `/v1/devices/chronosync/reconcile`: Chronosync; returns `{reconciled, sketch}` with treaty clause skeleton.
@@ -296,6 +296,22 @@ curl -sS -X POST \
   http://127.0.0.1:8000/v1/packs/install \
   -H 'Content-Type: application/json' \
   -d '{"pack":"demo_billing_pl","signature":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":"1.0.0"}'
+
+# Handle (MED/SEC/CODE) with minimal PCO in response
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/packs/handle \
+  -H 'Content-Type: application/json' \
+  -d '{"pack":"plugins.packs_med.src.main","kind":"case.summary","payload":{"subject":"MED-1","risk_index":0.2}}' | jq
+
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/packs/handle \
+  -H 'Content-Type: application/json' \
+  -d '{"pack":"plugins.packs_sec.src.main","kind":"policy.audit","payload":{"policy":{"name":"P","required":["a"],"provided":["a"]}}}' | jq
+
+curl -sS -X POST \
+  http://127.0.0.1:8000/v1/packs/handle \
+  -H 'Content-Type: application/json' \
+  -d '{"pack":"plugins.packs_code.src.main","kind":"text.normalize","payload":{"text":"  a   b  c "}}' | jq
 
 # Idempotent Devices example
 curl -sS -X POST \

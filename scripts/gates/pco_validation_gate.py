@@ -50,13 +50,31 @@ def main() -> int:
     out_dir = repo / "out"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load SEC‑PCO schema
+    # Load schemas
     sec_schema_path = repo / "schemas" / "security_pco_v0.1.json"
+    dpco_schema_path = repo / "schemas" / "data_pco_v0.1.json"
+    mco_schema_path = repo / "schemas" / "model_pco_v0.1.json"
+
     sec_schema = _load_json(sec_schema_path)
+    dpco_schema = _load_json(dpco_schema_path)
+    mco_schema = _load_json(mco_schema_path)
+
+    report: dict[str, Any] = {
+        "sec": {"ok": False, "errors": []},
+        "dpco": {"ok": False, "errors": []},
+        "mco": {"ok": False, "errors": []},
+    }
+    missing: list[str] = []
     if not sec_schema:
-        report = {"ok": False, "errors": [f"missing schema: {sec_schema_path.as_posix()}"]}
+        missing.append(sec_schema_path.as_posix())
+    if not dpco_schema:
+        missing.append(dpco_schema_path.as_posix())
+    if not mco_schema:
+        missing.append(mco_schema_path.as_posix())
+    if missing:
+        report["errors"] = [f"missing schema: {p}" for p in missing]
         (out_dir / "pco_validation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-        print("PCO Validation: schema missing")
+        print("PCO Validation: schema missing:", ", ".join(missing))
         return 1
 
     # Example SEC‑PCO object (minimal valid)
@@ -77,13 +95,41 @@ def main() -> int:
         "cvss": 8.2,
     }
 
-    v = Draft7Validator(sec_schema)  # type: ignore[call-arg]
-    errors = [f"SEC schema: {e.message}" for e in v.iter_errors(sec)]
-    ok = len(errors) == 0
-    report = {"ok": ok, "errors": errors}
+    v_sec = Draft7Validator(sec_schema)  # type: ignore[call-arg]
+    sec_errors = [f"SEC: {e.message}" for e in v_sec.iter_errors(sec)]
+    report["sec"]["ok"] = len(sec_errors) == 0
+    report["sec"]["errors"] = sec_errors
+
+    # Example DPCO
+    dpco = {
+        "dataset_hash": "sha256:" + ("0" * 64),
+        "lineage": ["io.email.mail_id", "cfe.geodesic_action"],
+        "dp_epsilon": 0.5,
+        "consent_refs": ["consent://demo"],
+    }
+    v_dpco = Draft7Validator(dpco_schema)  # type: ignore[call-arg]
+    dpco_errors = [f"DPCO: {e.message}" for e in v_dpco.iter_errors(dpco)]
+    report["dpco"]["ok"] = len(dpco_errors) == 0
+    report["dpco"]["errors"] = dpco_errors
+
+    # Example MCO
+    mco = {
+        "training": {
+            "data_dpco": [dpco],
+            "sbom_uri": "file://sbom.json",
+            "commit_sha": "deadbee",
+        },
+        "eval": {"ece": 0.01, "brier": 0.05, "auroc": 0.9},
+        "bias_report_uri": "https://example.invalid/report",
+    }
+    v_mco = Draft7Validator(mco_schema)  # type: ignore[call-arg]
+    mco_errors = [f"MCO: {e.message}" for e in v_mco.iter_errors(mco)]
+    report["mco"]["ok"] = len(mco_errors) == 0
+    report["mco"]["errors"] = mco_errors
     (out_dir / "pco_validation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print("PCO Validation:", "OK" if ok else "FAIL")
-    return 0 if ok else 1
+    all_ok = bool(report["sec"]["ok"] and report["dpco"]["ok"] and report["mco"]["ok"])
+    print("PCO Validation:", "OK" if all_ok else "FAIL")
+    return 0 if all_ok else 1
 
 
 # === I/O / ENDPOINTS ===

@@ -30,7 +30,10 @@ class _Pack:
             text = str(payload.get("text") or "")
             norm = " ".join(text.split())
             result = {"len": len(norm), "text": norm}
-            pco = {"code.text.normalize": {"len": len(norm)}}
+            pco = {
+                "code.text.normalize": {"len": len(norm)},
+                "consent_ref": "consent://demo",
+            }
             return {"result": result, "pco": pco}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 

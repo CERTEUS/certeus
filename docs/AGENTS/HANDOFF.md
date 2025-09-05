@@ -68,6 +68,7 @@
 - A11y/i18n: baseline smoke włączone w `ci-gates` (report-only) i testy zielone.
 - Marketplace Policy Gate: uruchamiany raz w `ci-gates` (report-only), tick `out/marketplace_ok.txt` publikowany.
 - Plugin Supply-Chain Gate: dodany (report-only) — weryfikuje SBOM/provenance dla `plugins/*` i publikuje tick `out/plugin_supply_ok.txt`.
+- Enforce (manual): workflow `.github/workflows/security-enforce.yml` — egzekwuje Marketplace/Plugin Supply/Compliance (workflow_dispatch).
 - Porządek CI: usunięto duplikację kroku Marketplace Gate w `.github/workflows/ci-gates.yml` (jedna ścieżka egzekucji pozostaje).
 
 ### Następne kroki A8 (ciągłość W14)

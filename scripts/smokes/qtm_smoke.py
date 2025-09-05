@@ -33,7 +33,9 @@ def main() -> int:
     assert r.status_code == 200
     r2 = c.post("/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": "SMOKE-QTMP"})
     assert r2.status_code == 200
+    # PCO headers: collapse event and priorities should be present
     assert "X-CERTEUS-PCO-qtm.collapse_event" in r2.headers
+    assert "X-CERTEUS-PCO-qtmp.priorities" in r2.headers
     r3 = c.get("/v1/qtm/operators")
     assert r3.status_code == 200
     r4 = c.get("/v1/qtm/uncertainty")

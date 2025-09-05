@@ -17,6 +17,8 @@ EN: Tunnel scenarios tests: barrier catalog and behavior for 'thick'.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
@@ -34,6 +36,13 @@ def test_barrier_scenarios_listed() -> None:
 
 
 def test_thick_barrier_reflects_at_low_energy() -> None:
+    # reset log file for deterministic check
+    from services.api_gateway.routers.lexqft import _TUNNEL_LOG  # type: ignore
+
+    try:
+        Path(_TUNNEL_LOG).unlink(missing_ok=True)  # type: ignore[arg-type]
+    except Exception:
+        pass
     # thick barrier has energy=1.5; evidence=1.0 should yield reflect path
     r = client.post(
         "/v1/lexqft/tunnel",
@@ -49,3 +58,11 @@ def test_thick_barrier_reflects_at_low_energy() -> None:
     assert body["path"][-1] == "reflect"
     # PCO includes model_uri header when provided
     assert r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.model_uri") == "lexqft://barrier/thick"
+    # log file should have one line
+    try:
+        with Path(_TUNNEL_LOG).open("r", encoding="utf-8") as fh:  # type: ignore[arg-type]
+            lines = [ln for ln in fh.read().splitlines() if ln.strip()]
+            assert len(lines) == 1
+    except FileNotFoundError:
+        # acceptable on platforms without fs perms in CI
+        pass

@@ -9,6 +9,64 @@
     }
   },
   "paths": {
+    "/v1/cfe/geodesic": {
+      "post": {
+        "summary": "Compute legal geodesic (CFE)",
+        "operationId": "cfe_geodesic_post",
+        "tags": ["CFE"],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "case": {"type": "string"},
+                  "facts": {"type": "object", "additionalProperties": true},
+                  "norms": {"type": "object", "additionalProperties": true}
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Successful Response" } }
+      }
+    },
+    "/v1/cfe/horizon": {
+      "post": {
+        "summary": "Compute legal horizon (CFE)",
+        "operationId": "cfe_horizon_post",
+        "tags": ["CFE"],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "case": {"type": "string"},
+                  "lock": {"type": "boolean"},
+                  "domain": {"type": "string", "enum": ["LEX","FIN","MED","SEC","CODE"]},
+                  "severity": {"type": "string", "enum": ["low","medium","high","critical"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Successful Response" } }
+      }
+    },
+    "/v1/cfe/lensing": {
+      "get": {
+        "summary": "Lensing map (CFE)",
+        "operationId": "cfe_lensing_get",
+        "tags": ["CFE"],
+        "parameters": [
+          {"name": "domain", "in": "query", "required": false, "schema": {"type": "string", "enum": ["LEX","FIN","MED","SEC","CODE"]}}
+        ],
+        "responses": { "200": { "description": "Successful Response" } }
+      }
+    },
     "/app/marketplace.html": {
       "get": {
         "summary": " Serve Marketplace",

@@ -144,6 +144,25 @@ paths:
       responses:
         "200":
           description: Measurement result
+          headers:
+            X-CERTEUS-PCO-qtm.collapse_event:
+              description: JSON snippet with operator, verdict and channel
+              schema: { type: string }
+            X-CERTEUS-PCO-qtm.predistribution[]:
+              description: JSON array of predistribution items
+              schema: { type: string }
+            X-CERTEUS-PCO-qtmp.priorities:
+              description: JSON map of operator priorities
+              schema: { type: string }
+            X-CERTEUS-PCO-correlation.cfe_qtmp:
+              description: Scalar correlation value between CFE and QTMP
+              schema: { type: string }
+            X-CERTEUS-PCO-qtm.collapse_prob:
+              description: Collapse probability for selected verdict
+              schema: { type: string }
+            X-CERTEUS-PCO-qtm.collapse_latency_ms:
+              description: Collapse latency in milliseconds
+              schema: { type: string }
           content:
             application/json:
               schema:
@@ -198,6 +217,10 @@ paths:
       responses:
         "200":
           description: Sequence result
+          headers:
+            X-CERTEUS-PCO-qtm.sequence:
+              description: JSON array with operator sequence
+              schema: { type: string }
           content:
             application/json:
               schema:

@@ -203,11 +203,18 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
 
     # Idempotency check
     _k = _get_idemp_key(request)
+    path_key = "/v1/devices/horizon_drive/plan"
     if _k:
-        cached = _cache_get("/v1/devices/horizon_drive/plan", _k)
+        cached = _cache_get(path_key, _k)
         if cached is not None:
             try:
                 response.headers["X-Idempotent-Replay"] = "1"
+                try:
+                    from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                    certeus_idempotent_replay_total.labels(path=path_key, hit="1").inc()
+                except Exception:
+                    pass
             except Exception:
                 pass
             return HDEPlanResponse(**cached)
@@ -259,9 +266,15 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
         best_strategy=best,
     )
     if _k:
-        _cache_set("/v1/devices/horizon_drive/plan", _k, out.model_dump())
+        _cache_set(path_key, _k, out.model_dump())
         try:
             response.headers["X-Idempotent-Replay"] = "0"
+            try:
+                from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                certeus_idempotent_replay_total.labels(path=path_key, hit="0").inc()
+            except Exception:
+                pass
         except Exception:
             pass
     return out
@@ -288,11 +301,18 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
 
     # Idempotency check
     _k = _get_idemp_key(request)
+    path_key = "/v1/devices/qoracle/expectation"
     if _k:
-        cached = _cache_get("/v1/devices/qoracle/expectation", _k)
+        cached = _cache_get(path_key, _k)
         if cached is not None:
             try:
                 response.headers["X-Idempotent-Replay"] = "1"
+                try:
+                    from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                    certeus_idempotent_replay_total.labels(path=path_key, hit="1").inc()
+                except Exception:
+                    pass
             except Exception:
                 pass
             return QOracleResponse(**cached)
@@ -331,9 +351,15 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
         distribution=dist,
     )
     if _k:
-        _cache_set("/v1/devices/qoracle/expectation", _k, out.model_dump())
+        _cache_set(path_key, _k, out.model_dump())
         try:
             response.headers["X-Idempotent-Replay"] = "0"
+            try:
+                from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                certeus_idempotent_replay_total.labels(path=path_key, hit="0").inc()
+            except Exception:
+                pass
         except Exception:
             pass
     return out
@@ -360,11 +386,18 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
 
     # Idempotency check
     _k = _get_idemp_key(request)
+    path_key = "/v1/devices/entangle"
     if _k:
-        cached = _cache_get("/v1/devices/entangle", _k)
+        cached = _cache_get(path_key, _k)
         if cached is not None:
             try:
                 response.headers["X-Idempotent-Replay"] = "1"
+                try:
+                    from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                    certeus_idempotent_replay_total.labels(path=path_key, hit="1").inc()
+                except Exception:
+                    pass
             except Exception:
                 pass
             return EntangleResponse(**cached)
@@ -404,9 +437,15 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
         pairs=pairs,
     )
     if _k:
-        _cache_set("/v1/devices/entangle", _k, out.model_dump())
+        _cache_set(path_key, _k, out.model_dump())
         try:
             response.headers["X-Idempotent-Replay"] = "0"
+            try:
+                from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                certeus_idempotent_replay_total.labels(path=path_key, hit="0").inc()
+            except Exception:
+                pass
         except Exception:
             pass
     return out
@@ -433,11 +472,18 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, respons
 
     # Idempotency check
     _k = _get_idemp_key(request)
+    path_key = "/v1/devices/chronosync/reconcile"
     if _k:
-        cached = _cache_get("/v1/devices/chronosync/reconcile", _k)
+        cached = _cache_get(path_key, _k)
         if cached is not None:
             try:
                 response.headers["X-Idempotent-Replay"] = "1"
+                try:
+                    from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                    certeus_idempotent_replay_total.labels(path=path_key, hit="1").inc()
+                except Exception:
+                    pass
             except Exception:
                 pass
             return ChronoSyncResponse(**cached)
@@ -467,9 +513,15 @@ async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, respons
         mediated=collisions > 0,
     )
     if _k:
-        _cache_set("/v1/devices/chronosync/reconcile", _k, out.model_dump())
+        _cache_set(path_key, _k, out.model_dump())
         try:
             response.headers["X-Idempotent-Replay"] = "0"
+            try:
+                from monitoring.metrics_slo import certeus_idempotent_replay_total
+
+                certeus_idempotent_replay_total.labels(path=path_key, hit="0").inc()
+            except Exception:
+                pass
         except Exception:
             pass
     return out

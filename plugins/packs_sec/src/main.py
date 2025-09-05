@@ -33,7 +33,11 @@ class _Pack:
             provided = set(pol.get("provided", []))
             missing = sorted(list(required - provided))
             result = {"name": name, "missing": missing, "ok": not missing}
-            pco = {"sec.policy.audit": result}
+            pco = {
+                "sec.policy.audit": result,
+                # Governance linkage (informational)
+                "consent_ref": "consent://policies",
+            }
             return {"result": result, "pco": pco}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 

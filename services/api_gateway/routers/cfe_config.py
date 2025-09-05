@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import threading
 from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -43,6 +44,15 @@ _ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_CONFIG_FILE = _ROOT / "data" / "cfe_lensing.json"
 _CONFIG_ENV = "CERTEUS_CFE_LENSING_CONFIG"
 
+# Runtime cache + watcher state
+_CFG_LOCK = threading.Lock()
+_CFG_WEIGHTS: dict[str, dict[str, float]] = {k: dict(v) for k, v in _DEFAULT_LENSING_WEIGHTS.items()}
+_CFG_DOMAINS: set[str] = set(_DEFAULT_DOMAINS_LOCK)
+_CFG_SEVERITIES: set[str] = set(_DEFAULT_SEVERITY_LOCK)
+_CFG_PATH: Path | None = None
+_CFG_MTIME: float = 0.0
+_WATCHER_STARTED = False
+
 
 def _config_path() -> Path | None:
     p = os.getenv(_CONFIG_ENV)
@@ -61,14 +71,7 @@ def _clamp01(x: Any) -> float:
     return float(max(0.0, min(1.0, v)))
 
 
-def _load_external_config() -> tuple[dict[str, dict[str, float]] | None, set[str] | None, set[str] | None]:
-    path = _config_path()
-    if not path:
-        return None, None, None
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return None, None, None
+def _parse_config(data: dict[str, Any]) -> tuple[dict[str, dict[str, float]], set[str], set[str]]:
     w_cfg: dict[str, dict[str, float]] = {}
     try:
         w_raw = data.get("lensing", {})  # type: ignore[assignment]
@@ -85,12 +88,43 @@ def _load_external_config() -> tuple[dict[str, dict[str, float]] | None, set[str
         lock = data.get("lock", {})  # type: ignore[assignment]
         d_set = {str(x).strip().upper() for x in lock.get("domains", []) if str(x).strip()}
         s_set = {str(x).strip().lower() for x in lock.get("severities", []) if str(x).strip()}
-        domains = d_set or None
-        severities = s_set or None
     except Exception:
-        domains = None
-        severities = None
-    return (w_cfg or None), domains, severities
+        d_set = set()
+        s_set = set()
+    return w_cfg, d_set, s_set
+
+
+def _refresh_config_if_changed() -> None:
+    global _CFG_PATH, _CFG_MTIME, _CFG_WEIGHTS, _CFG_DOMAINS, _CFG_SEVERITIES
+    path = _config_path()
+    try:
+        mtime = path.stat().st_mtime if path and path.exists() else 0.0
+    except Exception:
+        mtime = 0.0
+    with _CFG_LOCK:
+        if path is None or not path.exists():
+            _CFG_PATH = None
+            _CFG_MTIME = 0.0
+            _CFG_WEIGHTS = {k: dict(v) for k, v in _DEFAULT_LENSING_WEIGHTS.items()}
+            _CFG_DOMAINS = set(_DEFAULT_DOMAINS_LOCK)
+            _CFG_SEVERITIES = set(_DEFAULT_SEVERITY_LOCK)
+            return
+        if _CFG_PATH == path and _CFG_MTIME == mtime:
+            return
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return
+        w_cfg, d_set, s_set = _parse_config(data)
+        base = {k: dict(v) for k, v in _DEFAULT_LENSING_WEIGHTS.items()}
+        for dom, mapping in w_cfg.items():
+            base.setdefault(dom, {})
+            base[dom].update(mapping)
+        _CFG_WEIGHTS = base
+        _CFG_DOMAINS = set(d_set) if d_set else set(_DEFAULT_DOMAINS_LOCK)
+        _CFG_SEVERITIES = set(s_set) if s_set else set(_DEFAULT_SEVERITY_LOCK)
+        _CFG_PATH = path
+        _CFG_MTIME = mtime
 
 
 def current_lensing_weights() -> dict[str, dict[str, float]]:

@@ -154,3 +154,39 @@ curl.exe -s -X POST http://127.0.0.1:8000/v1/packs/try -H 'content-type: applica
 
 3. Marketplace Install/Upgrade
    - `POST /v1/packs/install {pack, signature, version?}` — zapisuje podpis i wersję zainstalowaną; UI: `/app/public/marketplace.html` (przycisk Install/Upgrade)
+
+## Demo T15 — QTMP API & SDK
+
+1) QTMP (cURL)
+
+```
+curl -sS -X POST http://127.0.0.1:8000/v1/qtm/init_case -H 'content-type: application/json' -d '{"case":"LEX-001","basis":["ALLOW","DENY","ABSTAIN"]}'
+curl -i  -sS -X POST http://127.0.0.1:8000/v1/qtm/measure -H 'content-type: application/json' -d '{"operator":"L","case":"LEX-001","source":"doc"}' | sed -n '1,30p'
+curl -sS -X POST http://127.0.0.1:8000/v1/qtm/measure_sequence -H 'content-type: application/json' -d '{"operators":["L","T","W"],"case":"LEX-001"}'
+curl -sS -X POST http://127.0.0.1:8000/v1/qtm/decoherence -H 'content-type: application/json' -d '{"case":"LEX-001","channel":"dephasing","gamma":0.2}'
+```
+
+2) SDK (Python)
+
+```
+from sdk.python.certeus_sdk import CerteusClient
+
+cli = CerteusClient(base_url="http://127.0.0.1:8000")
+cli.qtm_init_case(case="LEX-001", basis=["ALLOW","DENY","ABSTAIN"])
+resp = cli.qtm_measure(operator="L", case="LEX-001", source="sdk:demo")
+print(resp.pco_headers.get("X-CERTEUS-PCO-qtm.collapse_event"))
+print(cli.qtm_measure_sequence(operators=["L","T","W"], case="LEX-001").data)
+```
+
+## CFE — przykłady domenowe (Geometry of Meaning)
+
+ ```bash 
+curl -sS \ http://127.0.0.1:8000/v1/cfe/lensing?domain=MED\ | jq
+
+curl -sS -X POST \\
+  \http://127.0.0.1:8000/v1/cfe/horizon\ \\
+  -H 'Content-Type: application/json' \\
+  -d '{\case\:\MED-CASE-CRIT-1\,\domain\:\MED\,\severity\:\critical\}' | jq
+```
+
+```

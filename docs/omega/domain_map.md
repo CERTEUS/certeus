@@ -41,6 +41,13 @@ Wynik zawiera sekcję `omega_mapped` z metrykami po `domain_map`.
 - Progi `--max-*-mapped` (lub ENV: `OMEGA_MAX_JACCARD_MAPPED`, `OMEGA_MAX_ENTROPY_MAPPED`, `OMEGA_MAX_ENTITY_DRIFT_MAPPED`) są raportowe.
 - Wymuszenie porażki wyłącznie z `ENFORCE_OMEGA_MAPPED=1` (domyślnie report‑only).
 
+Idempotencja i liczba tokenów testowane są property‑based (Hypothesis).
+
+## Jurisdiction Map i Lang Map
+
+- `jurisdiction_map` – idempotentna adnotacja terminów prawnych ("ustawa", "rozporządzenie", "kodeks") znakiem `§` przy zachowaniu stabilności zbiorów tokenów (granice słów, brak zmian w liczbie tokenów). Testy: `tests/omega/test_jurisdiction_map_property.py`.
+- `lang_map` – cykl PL→EN→PL o niskim dryfie (dla podstawowych terminów prawnych). Testy: `tests/omega/test_lang_map_property.py`.
+
 ## Inwarianty (testowane)
 
 - Idempotencja: `domain_map(domain, text)` zastosowany 2× daje identyczny wynik.
@@ -52,4 +59,3 @@ Wynik zawiera sekcję `omega_mapped` z metrykami po `domain_map`.
 - Dodawaj tylko równania 1→1, preferuj formy kanoniczne z PL diakrytyką.
 - Unikaj „agresywnej” normalizacji, która zmieniłaby liczbę tokenów.
 - Każdy dodatek powinien być pokryty property‑testami (idempotencja, token_count==0).
-

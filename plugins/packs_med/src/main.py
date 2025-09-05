@@ -30,8 +30,13 @@ class _Pack:
             subj = str(payload.get("subject") or "MED-CASE")
             risk = float(payload.get("risk_index") or 0.1)
             body = {"subject": subj, "risk_index": round(risk, 3)}
-            # Minimal PCO-like structure for packs
-            pco = {"med.case.summary": body}
+            # Minimal PCO-like structure for packs + governance hints
+            pco = {
+                "med.case.summary": body,
+                # Governance: consent/data protection (demo values)
+                "consent_ref": "consent://demo",
+                "dp_epsilon": 0.2,
+            }
             return {"summary": body, "pco": pco}
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 

@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
+
 # +-------------------------------------------------------------+
+
 # |                          CERTEUS                            |
+
 # +-------------------------------------------------------------+
+
 # | FILE: services/api_gateway/routers/lexqft.py              |
+
 # | ROLE: Project module.                                       |
+
 # | PLIK: services/api_gateway/routers/lexqft.py              |
+
 # | ROLA: Moduł projektu.                                       |
+
 # +-------------------------------------------------------------+
+
 """
+
 PL: Router FastAPI dla obszaru lexqft / geometria sensu.
 
 EN: FastAPI router for lexqft / geometry of meaning.
+
 """
 
 # === IMPORTY / IMPORTS ===
+
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 
 from fastapi import APIRouter, Request, Response
@@ -31,7 +42,7 @@ from pydantic import BaseModel, Field
 class TunnelRequest(BaseModel):
     state_uri: str | None = None
 
-    barrier_model: dict[str, float] | None = None
+    barrier_model: dict | None = None
 
     evidence_energy: float = Field(ge=0)
 
@@ -55,6 +66,12 @@ class TunnelResponse(BaseModel):
 # +=====================================================================+
 
 router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
+
+# | FILE: services/api_gateway/routers/lexqft.py                        |
+
+# | ROLE: lexqft endpoints (evidence tunneling)                         |
+
+# +=====================================================================+
 
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
@@ -96,13 +113,6 @@ async def tunnel_scenarios() -> list[BarrierScenario]:
         BarrierScenario(model_id="thick", energy=1.5, model_uri="lexqft://barrier/thick"),
         BarrierScenario(model_id="stepped", energy=1.2, model_uri="lexqft://barrier/stepped"),
     ]
-
-# Virtual pairs / energy debt state (per case)
-_PAIRS_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_pairs_state.json"
-# case -> {"pairs": int, "energy_debt": float, "budget": float}
-_PAIRS: dict[str, dict[str, float | int]] = {}
-_RENORM_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_renorm_state.json"
-_RENORM: dict[str, dict[str, float]] = {}  # case -> {uid -> prob}
 
 
 class CoverageResponse(BaseModel):
@@ -163,7 +173,7 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         p = 0.95 if e >= 1.0 else max(0.05, e * 0.6)
 
     path = ["start", "barrier", "post-barrier"] if p > 0.5 else ["start", "reflect"]
-    resp = TunnelResponse(p_tunnel=round(float(p), 6), min_energy_to_cross=float(min_e), path=path)
+    resp = TunnelResponse(p_tunnel=round(p, 6), min_energy_to_cross=min_e, path=path)
 
     # PCO headers: qlaw.tunneling.*
     try:
@@ -209,254 +219,16 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
         _TUNNEL_LOG.parent.mkdir(parents=True, exist_ok=True)
         with _TUNNEL_LOG.open("a", encoding="utf-8") as fh:
             fh.write(_json.dumps(entry, ensure_ascii=False) + "\n")
+        try:
+            from monitoring.metrics_slo import certeus_lexqft_tunnel_events_total
+
+            certeus_lexqft_tunnel_events_total.inc()
+        except Exception:
+            pass
     except Exception:
         pass
 
     return resp
-
-
-# W3 — Virtual pairs & energy debt (budgeted)
-
-
-class PairsBudgetIn(BaseModel):
-    case: str
-    budget: float = Field(ge=0)
-
-
-class PairsSpawnIn(BaseModel):
-    case: str
-    pairs: int = Field(ge=1)
-    energy_per_pair: float = Field(ge=0)
-
-
-class PairsState(BaseModel):
-    case: str
-    pairs: int
-    energy_debt: float
-    budget: float
-    remaining: float
-
-
-def _pairs_load() -> None:
-    global _PAIRS
-    if _PAIRS:
-        return
-    try:
-        if _PAIRS_STORE.exists():
-            raw = json.loads(_PAIRS_STORE.read_text(encoding="utf-8"))
-            if isinstance(raw, dict):
-                _PAIRS = raw  # type: ignore[assignment]
-    except Exception:
-        _PAIRS = {}
-
-
-def _pairs_save() -> None:
-    try:
-        _PAIRS_STORE.parent.mkdir(parents=True, exist_ok=True)
-        _PAIRS_STORE.write_text(json.dumps(_PAIRS, ensure_ascii=False, indent=2), encoding="utf-8")
-    except Exception:
-        pass
-
-
-@router.post("/virtual_pairs/budget", response_model=PairsState)
-async def pairs_set_budget(req: PairsBudgetIn, request: Request) -> PairsState:
-    from services.api_gateway.limits import enforce_limits
-
-    enforce_limits(request, cost_units=1)
-    _pairs_load()
-    st = _PAIRS.get(req.case) or {"pairs": 0, "energy_debt": 0.0, "budget": 0.0}
-    st["budget"] = float(req.budget)
-    _PAIRS[req.case] = st
-    _pairs_save()
-    remaining = float(st["budget"]) - float(st["energy_debt"])
-    try:
-        from monitoring.metrics_slo import certeus_lexqft_energy_debt
-
-        certeus_lexqft_energy_debt.labels(case=req.case).set(float(st["energy_debt"]))
-    except Exception:
-        pass
-    return PairsState(
-        case=req.case,
-        pairs=int(st["pairs"]),
-        energy_debt=float(st["energy_debt"]),
-        budget=float(st["budget"]),
-        remaining=max(0.0, float(remaining)),
-    )
-
-
-@router.post("/virtual_pairs/spawn", response_model=PairsState)
-async def pairs_spawn(req: PairsSpawnIn, request: Request, response: Response) -> PairsState:
-    from services.api_gateway.limits import enforce_limits
-
-    enforce_limits(request, cost_units=2)
-    _pairs_load()
-    st = _PAIRS.get(req.case) or {"pairs": 0, "energy_debt": 0.0, "budget": 100.0}
-    want = int(req.pairs)
-    cost = float(want) * float(req.energy_per_pair)
-    new_debt = float(st["energy_debt"]) + cost
-    budget = float(st.get("budget", 100.0))
-    if new_debt > budget + 1e-9:
-        # Over budget — refuse
-        response.status_code = 409
-    else:
-        st["pairs"] = int(st.get("pairs", 0)) + want
-        st["energy_debt"] = new_debt
-        _PAIRS[req.case] = st
-        _pairs_save()
-    try:
-        from monitoring.metrics_slo import certeus_lexqft_energy_debt
-
-        certeus_lexqft_energy_debt.labels(case=req.case).set(float(st["energy_debt"]))
-    except Exception:
-        pass
-    remaining = float(st.get("budget", 0.0)) - float(st["energy_debt"])
-    return PairsState(
-        case=req.case,
-        pairs=int(st.get("pairs", 0)),
-        energy_debt=float(st.get("energy_debt", 0.0)),
-        budget=float(st.get("budget", 0.0)),
-        remaining=max(0.0, float(remaining)),
-    )
-
-
-@router.get("/virtual_pairs/state", response_model=PairsState)
-async def pairs_state(case: str) -> PairsState:
-    _pairs_load()
-    st = _PAIRS.get(case) or {"pairs": 0, "energy_debt": 0.0, "budget": 0.0}
-    remaining = float(st.get("budget", 0.0)) - float(st.get("energy_debt", 0.0))
-    try:
-        from monitoring.metrics_slo import certeus_lexqft_energy_debt
-
-        certeus_lexqft_energy_debt.labels(case=case).set(float(st.get("energy_debt", 0.0)))
-    except Exception:
-        pass
-    return PairsState(
-        case=case,
-        pairs=int(st.get("pairs", 0)),
-        energy_debt=float(st.get("energy_debt", 0.0)),
-        budget=float(st.get("budget", 0.0)),
-        remaining=max(0.0, float(remaining)),
-    )
-
-
-@router.post("/virtual_pairs/reset")
-async def pairs_reset(case: str | None = None) -> dict:
-    """Resetuje stan wirtualnych par (dla case lub globalnie)."""
-    global _PAIRS
-    _pairs_load()
-    if case is None:
-        _PAIRS = {}
-    else:
-        _PAIRS.pop(case, None)
-    _pairs_save()
-    return {"ok": True}
-
-
-# Renormalizacja autorytetu (cldf.renorm.*)
-
-
-class RenormItem(BaseModel):
-    uid: str
-    authority: float = Field(ge=0)
-    weight: float = Field(default=1.0, ge=0)
-
-
-class RenormRequest(BaseModel):
-    case: str | None = None
-    items: list[RenormItem]
-
-
-class RenormOutItem(BaseModel):
-    uid: str
-    p: float
-
-
-class RenormResponse(BaseModel):
-    case: str
-    dist: list[RenormOutItem]
-    entropy: float
-
-
-def _renorm_load() -> None:
-    global _RENORM
-    if _RENORM:
-        return
-    try:
-        if _RENORM_STORE.exists():
-            raw = json.loads(_RENORM_STORE.read_text(encoding="utf-8"))
-            if isinstance(raw, dict):
-                _RENORM = raw  # type: ignore[assignment]
-    except Exception:
-        _RENORM = {}
-
-
-def _renorm_save() -> None:
-    try:
-        _RENORM_STORE.parent.mkdir(parents=True, exist_ok=True)
-        _RENORM_STORE.write_text(json.dumps(_RENORM, ensure_ascii=False, indent=2), encoding="utf-8")
-    except Exception:
-        pass
-
-
-@router.post("/renorm", response_model=RenormResponse)
-async def renorm(req: RenormRequest, response: Response) -> RenormResponse:
-    """PL/EN: Renormalizacja autorytetu (CLDF) do rozkładu probabilistycznego.
-
-    Zasady:
-    - Ujemne i NaN traktowane jako 0.
-    - Jeśli suma autorytetów==0 → rozkład jednostajny.
-    - Wynik jest persistowany per-case.
-    """
-
-    _renorm_load()
-    case = req.case or "lexqft-case"
-    vals: list[tuple[str, float]] = []
-    EPS = 1e-300  # clamp subnormals to 0 to preserve scale invariance numerically
-    for it in req.items:
-        try:
-            a = float(it.authority) * max(0.0, float(it.weight))
-        except Exception:
-            a = 0.0
-        if not (a >= 0.0):  # includes NaN
-            a = 0.0
-        if a < EPS:
-            a = 0.0
-        vals.append((it.uid, a))
-    s = sum(a for _, a in vals)
-    if s <= 0.0:
-        n = max(1, len(vals))
-        dist = [(uid, 1.0 / n) for uid, _ in vals] if n else [("_", 1.0)]
-    else:
-        dist = [(uid, a / s) for uid, a in vals]
-
-    # Persist
-    _RENORM[case] = {uid: float(p) for uid, p in dist}
-    _renorm_save()
-
-    # Entropia Shannona (nats)
-    import math as _m
-
-    entropy = -sum(p * _m.log(p) for _, p in dist if p > 0.0)
-
-    # PCO header: cldf.renorm.entropy
-    try:
-        response.headers["X-CERTEUS-PCO-cldf.renorm.entropy"] = str(entropy)
-    except Exception:
-        pass
-
-    try:
-        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma as _noop  # keep import style consistent
-
-        # (opcjonalnie można dodać dedykowany gauge, ale nie wymuszamy tutaj)
-        _ = _noop
-    except Exception:
-        pass
-
-    return RenormResponse(
-        case=case,
-        dist=[RenormOutItem(uid=uid, p=float(p)) for uid, p in dist],
-        entropy=float(entropy),
-    )
 
 
 class CoverageItem(BaseModel):
@@ -466,7 +238,7 @@ class CoverageItem(BaseModel):
 
 
 @router.post("/coverage/update")
-async def coverage_update(items: list[CoverageItem], request: Request, response: Response) -> dict:
+async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
     """PL/EN: Ustaw (zastąp) wkłady ścieżek do pokrycia (gamma, wagi, uncaptured)."""
     from services.api_gateway.limits import enforce_limits
 
@@ -479,15 +251,11 @@ async def coverage_update(items: list[CoverageItem], request: Request, response:
         _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
     except Exception:
         pass
-    try:
-        response.headers.setdefault("Cache-Control", "no-store")
-    except Exception:
-        pass
     return {"ok": True, "count": len(_COVERAGE_AGG)}
 
 
 @router.post("/coverage/reset")
-async def coverage_reset(request: Request, response: Response) -> dict:
+async def coverage_reset(request: Request) -> dict:
     """PL/EN: Resetuje stan agregatora pokrycia do wartości domyślnych (empty)."""
     from services.api_gateway.limits import enforce_limits
 
@@ -499,59 +267,7 @@ async def coverage_reset(request: Request, response: Response) -> dict:
             _COVERAGE_STORE.unlink()
     except Exception:
         pass
-    try:
-        response.headers.setdefault("Cache-Control", "no-store")
-    except Exception:
-        pass
     return {"ok": True}
-
-
-class FinSignalsIn(BaseModel):
-    signals: dict[str, float]
-    weight: float = 1.0
-    uncaptured_base: float = 0.1
-
-
-@router.post("/coverage/from_fin")
-async def coverage_from_fin(payload: FinSignalsIn, request: Request) -> dict:
-    """PL/EN: Zasil agregator coverage danymi FIN (risk/sentiment → gamma/uncaptured).
-
-    Heurystyka (W5):
-    - score = sentiment - risk (sumy po kluczach zawierających 'sent'/'risk')
-    - gamma = clamp(0.8 + 0.2*tanh(score), 0.6, 0.98)
-    - uncaptured = clamp(uncaptured_base - 0.15*tanh(score), 0.0, 0.2)
-    Aktualizuje `_COVERAGE_AGG` jako pojedynczy ważony wkład (zastąpienie).
-    """
-    from services.api_gateway.limits import enforce_limits
-
-    enforce_limits(request, cost_units=1)
-    s = payload.signals or {}
-    risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
-    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
-
-    import math as _m
-
-    score = sent - risk
-    t = _m.tanh(score)
-    gamma = max(0.6, min(0.98, 0.8 + 0.2 * t))
-    unc = max(0.0, min(0.2, float(payload.uncaptured_base) - 0.15 * t))
-
-    global _COVERAGE_AGG
-    _COVERAGE_AGG = [(float(gamma), float(payload.weight), float(unc))]
-    try:
-        _COVERAGE_STORE.parent.mkdir(parents=True, exist_ok=True)
-        _COVERAGE_STORE.write_text(json.dumps(_COVERAGE_AGG), encoding="utf-8")
-    except Exception:
-        pass
-    # Emit metrics
-    try:
-        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma, certeus_lexqft_uncaptured_mass
-
-        certeus_lexqft_coverage_gamma.set(float(gamma))
-        certeus_lexqft_uncaptured_mass.set(float(unc))
-    except Exception:
-        pass
-    return {"ok": True, "gamma": round(gamma, 6), "uncaptured": round(unc, 6)}
 
 
 # === I/O / ENDPOINTS ===
@@ -583,5 +299,56 @@ async def coverage_state() -> CoverageState:
     return CoverageState(coverage_gamma=0.953, uncaptured_mass=0.02)
 
 
-_WORKER = os.getenv("PYTEST_XDIST_WORKER")
-_PFS_NAME = f"pfs_paths.{_WORKER}.json" if _WORKER else "pfs_paths.json"
+class CoverageContribution(BaseModel):
+    gamma: float
+    weight: float
+    uncaptured: float
+
+
+@router.get("/coverage/contributions", response_model=list[CoverageContribution])
+async def coverage_contributions() -> list[CoverageContribution]:
+    """PL/EN: Surowa lista wkładów do pokrycia (gamma, weight, uncaptured)."""
+    out: list[CoverageContribution] = []
+    for g, w, u in _COVERAGE_AGG:
+        out.append(CoverageContribution(gamma=float(g), weight=float(w), uncaptured=float(u)))
+    return out
+
+
+class TunnelStats(BaseModel):
+    count: int
+    last_ts: str | None = None
+
+
+@router.get("/tunnel/stats", response_model=TunnelStats)
+async def tunnel_stats() -> TunnelStats:
+    """PL/EN: Statystyki tunelowania: liczba wpisów i ostatni timestamp.
+
+    Bazuje na lekkim logu JSONL w `data/lexqft_tunnel_log.jsonl`.
+    """
+    try:
+        if not _TUNNEL_LOG.exists():
+            return TunnelStats(count=0, last_ts=None)
+        # Count lines and parse last non-empty
+        last_ts: str | None = None
+        count = 0
+        with _TUNNEL_LOG.open("r", encoding="utf-8") as fh:
+            for ln in fh:
+                s = ln.strip()
+                if not s:
+                    continue
+                count += 1
+                last_ts = None  # will set below
+            # Re-read last line efficiently
+        # Fallback simple read for last line
+        try:
+            data = _TUNNEL_LOG.read_text(encoding="utf-8").strip().splitlines()
+            if data:
+                import json as _json
+
+                obj = _json.loads(data[-1])
+                last_ts = str(obj.get("ts"))
+        except Exception:
+            pass
+        return TunnelStats(count=int(count), last_ts=last_ts)
+    except Exception:
+        return TunnelStats(count=0, last_ts=None)

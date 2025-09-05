@@ -74,3 +74,18 @@ def test_publish_with_security_extension(monkeypatch) -> None:
     # Ledger contains publish event for case
     records = ledger_service.get_records_for_case(case_id=pco["case_id"])
     assert any(rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"] for rec in records)
+
+
+def test_publish_still_ok_when_security_extension_invalid_report_only(monkeypatch) -> None:
+    # VALIDATE_PCO enables report-only validation; decision path should remain unaffected
+    monkeypatch.setenv("VALIDATE_PCO", "1")
+    client = TestClient(app)
+    pco = _base_ok_pco_with_security()
+    # Break SEC evidence (required) to trigger schema error
+    if isinstance(pco.get("security"), dict):
+        pco["security"].pop("evidence", None)  # type: ignore[index]
+    r = client.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    # Decision should still be PUBLISH because validation is report-only
+    assert body["status"] == "PUBLISH"

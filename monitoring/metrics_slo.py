@@ -280,6 +280,9 @@ certeus_lexqft_energy_debt = Gauge("certeus_lexqft_energy_debt", "LexQFT energy 
 # QOC: Vacuum pairs rate
 certeus_qoc_vacuum_rate = Gauge("certeus_qoc_vacuum_rate", "QOC vacuum pairs generation rate")
 
+# LexQFT: tunnel events (logged)
+certeus_lexqft_tunnel_events_total = Counter("certeus_lexqft_tunnel_events_total", "LexQFT tunneling events logged")
+
 # FINENITH: entanglement MI and commutator
 certeus_fin_entanglement_mi = Gauge(
     "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
@@ -294,3 +297,8 @@ certeus_billing_token_allocations_total = Counter(
     "certeus_billing_token_allocations_total", "Billing tokens: requests allocated"
 )
 certeus_billing_token_pending = Gauge("certeus_billing_token_pending", "Billing tokens: currently pending requests")
+
+# Idempotency metrics (Devices/API)
+certeus_idempotent_replay_total = Counter(
+    "certeus_idempotent_replay_total", "Idempotent replay counter", labelnames=("path", "hit")
+)
