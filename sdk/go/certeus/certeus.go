@@ -49,6 +49,38 @@ type PublishResponse struct {
     LedgerRef *string                `json:"ledger_ref"`
 }
 
+// P2P types
+type P2PEnqueueRequest struct {
+    Device  string                 `json:"device"`
+    Payload map[string]interface{} `json:"payload,omitempty"`
+}
+
+type P2PEnqueueResponse struct {
+    JobID   string `json:"job_id"`
+    Status  string `json:"status"`
+    ETAHint string `json:"eta_hint"`
+}
+
+type P2PJobStatusResponse struct {
+    JobID   string                 `json:"job_id"`
+    Status  string                 `json:"status"`
+    Device  string                 `json:"device"`
+    Payload map[string]interface{} `json:"payload"`
+}
+
+type P2PQueueSummaryResponse struct {
+    Depth    int               `json:"depth"`
+    ByDevice map[string]int    `json:"by_device"`
+}
+
+type P2PTransportEchoResponse struct {
+    A       string `json:"a"`
+    B       string `json:"b"`
+    OK      bool   `json:"ok"`
+    Len     int    `json:"len"`
+    Message string `json:"message"`
+}
+
 func (c *Client) doJSON(method, path string, body any, out any) error {
     var rdr io.Reader
     if body != nil {
@@ -120,3 +152,48 @@ func (c *Client) Publish(req PublishRequest) (*PublishResponse, error) {
     return &out, nil
 }
 
+// P2P transport echo
+func (c *Client) P2PTransportEcho(msg string) (*P2PTransportEchoResponse, error) {
+    if msg == "" {
+        msg = "synapse"
+    }
+    var out P2PTransportEchoResponse
+    path := "/v1/p2p/transport/echo?msg=" + url.QueryEscape(msg)
+    if err := c.doJSON("GET", path, nil, &out); err != nil {
+        return nil, err
+    }
+    return &out, nil
+}
+
+// P2P queue
+func (c *Client) P2PEnqueue(req P2PEnqueueRequest) (*P2PEnqueueResponse, error) {
+    var out P2PEnqueueResponse
+    if err := c.doJSON("POST", "/v1/p2p/enqueue", req, &out); err != nil {
+        return nil, err
+    }
+    return &out, nil
+}
+
+func (c *Client) P2PJobStatus(jobID string) (*P2PJobStatusResponse, error) {
+    var out P2PJobStatusResponse
+    if err := c.doJSON("GET", "/v1/p2p/jobs/"+url.PathEscape(jobID), nil, &out); err != nil {
+        return nil, err
+    }
+    return &out, nil
+}
+
+func (c *Client) P2PQueueSummary() (*P2PQueueSummaryResponse, error) {
+    var out P2PQueueSummaryResponse
+    if err := c.doJSON("GET", "/v1/p2p/queue", nil, &out); err != nil {
+        return nil, err
+    }
+    return &out, nil
+}
+
+func (c *Client) P2PDequeueOnce() (*P2PJobStatusResponse, error) {
+    var out P2PJobStatusResponse
+    if err := c.doJSON("POST", "/v1/p2p/dequeue_once", nil, &out); err != nil {
+        return nil, err
+    }
+    return &out, nil
+}

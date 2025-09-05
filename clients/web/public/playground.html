@@ -190,6 +190,7 @@
                 <button id="run" class="btn" data-i18n="run">Uruchom</button>
                 <button id="copyCurl" class="btn">Copy curl</button>
                 <button id="copySdk" class="btn">Copy Python SDK</button>
+                <button id="copyTsSdk" class="btn">Copy TS SDK</button>
               </div>
             </div>
             <div>
@@ -301,6 +302,28 @@
       function buildSdk(url, method, body) {
         return `# pseudo-code using certeus_sdk\nfrom certeus_sdk import CerteusClient\ncli=CerteusClient('http://127.0.0.1:8000')\nresp=cli.request('${method}','${url}', body=${body ? JSON.stringify(JSON.parse(body), null, 0) : "None"})\nprint(resp)`;
       }
+      function buildTsSdk(url, method, body) {
+        // Minimal TypeScript snippet using sdk/ts/src/client
+        const base = "http://127.0.0.1:8000";
+        // Map common endpoints to SDK methods
+        if (url.startsWith('/v1/pfs/xattrs') && method==='GET') {
+          const u = new URL('http://x'+url); const uri=u.searchParams.get('uri')||'';
+          return `import { CerteusClient } from './sdk/ts/src/client';\nconst cli=new CerteusClient({baseUrl:'${base}'});\nconst r=await cli.pfsXattrs('${"${uri}"}');\nconsole.log(r);`;
+        }
+        if (url.startsWith('/v1/pfs/list') && method==='GET') {
+          const u = new URL('http://x'+url); const prefix=u.searchParams.get('prefix')||'';
+          return `import { CerteusClient } from './sdk/ts/src/client';\nconst cli=new CerteusClient({baseUrl:'${base}'});\nconst r=await cli.pfsList('${"${prefix}"}');\nconsole.log(r);`;
+        }
+        if (url==='/v1/proofgate/publish' && method==='POST') {
+          return `import { CerteusClient } from './sdk/ts/src/client';\nconst cli=new CerteusClient({baseUrl:'${base}'});\nconst r=await cli.publish(${body || '{"pco":{}}'});\nconsole.log(r);`;
+        }
+        if (url.startsWith('/v1/p2p/transport/echo') && method==='GET') {
+          const u = new URL('http://x'+url); const msg=u.searchParams.get('msg')||'synapse';
+          return `import { CerteusClient } from './sdk/ts/src/client';\nconst cli=new CerteusClient({baseUrl:'${base}'});\nconst r=await cli.transportEcho('${"${msg}"}');\nconsole.log(r);`;
+        }
+        // Fallback: generic fetch in TS
+        return `const r=await fetch('${base}${url}', {method:'${method}'${body?`, headers:{'content-type':'application/json'}, body:${body}`:''}});\nconsole.log(await r.json());`;
+      }
       function parseSel(val) {
         const [m, u] = val.split(" ");
         return { method: m, url: u };
@@ -335,6 +358,9 @@
             navigator.clipboard.writeText(curl);
           document.getElementById("copySdk").onclick = () =>
             navigator.clipboard.writeText(sdk);
+          const ts = buildTsSdk(url, method, bodyTxt);
+          document.getElementById("copyTsSdk").onclick = () =>
+            navigator.clipboard.writeText(ts);
         } catch (e) {
           document.getElementById("st").textContent = "ERR";
           document.getElementById("out").textContent = String(e);

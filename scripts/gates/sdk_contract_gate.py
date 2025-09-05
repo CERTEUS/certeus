@@ -87,9 +87,23 @@ def main() -> int:
         _ensure(op_id in ops, f"missing operationId: {op_id}", errors)
     _ensure(has_publish, "missing publish endpoint (/v1/proofgate/publish)", errors)
 
-    # SDK stubs presence
-    _ensure(_has_ts_sdk(repo), "missing or incomplete TS SDK stub (sdk/ts/src/client.ts)", errors)
-    _ensure(_has_go_sdk(repo), "missing or incomplete Go SDK stub (sdk/go/c\u0301erteus/certeus.go)", errors)
+    # SDK stubs presence (TS/Go). TS: require core PFS + at least one P2P marker
+    ts_ok = _has_ts_sdk(repo)
+    try:
+        ts_src = (repo / "sdk" / "ts" / "src" / "client.ts").read_text(encoding="utf-8") if ts_ok else ""
+        ts_ok = ts_ok and (("transportEcho(" in ts_src) or ("p2pEnqueue(" in ts_src))
+    except Exception:
+        pass
+    _ensure(ts_ok, "TS SDK missing P2P markers (transportEcho/p2pEnqueue)", errors)
+
+    # Go: require core PFS + at least one P2P marker
+    go_ok = _has_go_sdk(repo)
+    try:
+        go_src = (repo / "sdk" / "go" / "certeus" / "certeus.go").read_text(encoding="utf-8") if go_ok else ""
+        go_ok = go_ok and (("P2PTransportEcho(" in go_src) or ("P2PEnqueue(" in go_src))
+    except Exception:
+        pass
+    _ensure(go_ok, "Go SDK missing P2P markers (P2PTransportEcho/P2PEnqueue)", errors)
 
     report = {
         "openapi_paths": len(paths),
