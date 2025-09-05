@@ -58,6 +58,7 @@ import services.api_gateway.routers.mailops as mailops
 import services.api_gateway.routers.metrics as metrics
 import services.api_gateway.routers.mismatch as mismatch
 import services.api_gateway.routers.openapi_docs as openapi_docs
+import services.api_gateway.routers.marketplace as marketplace
 import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
@@ -68,6 +69,7 @@ import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
 import services.api_gateway.routers.upn as upn
 import services.api_gateway.routers.verify as verify
+import services.api_gateway.routers.proofgate_gateway as proofgate_gateway
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
 from services.api_gateway.security import attach_proof_only_middleware
 from services.ingest_service.adapters.contracts import Blob
@@ -325,6 +327,8 @@ app.include_router(pfs.router)
 app.include_router(p2p.router)
 app.include_router(pfs_dht.router)
 app.include_router(openapi_docs.router)
+app.include_router(marketplace.router)
+app.include_router(proofgate_gateway.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------
