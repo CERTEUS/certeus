@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   promote:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Decide whether to evaluate promotion
         id: cond
@@ -144,3 +144,5 @@ jobs:
             } catch (e) {
               core.warning('Could not enable auto-merge: ' + (e?.message || e));
             }
+
+
