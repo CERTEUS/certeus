@@ -120,6 +120,13 @@ certeus_brier = Gauge("certeus_brier", "Brier score")
 
 certeus_abstain_rate = Gauge("certeus_abstain_rate", "Abstain rate")
 
+# Idempotency reuse counter (per-endpoint)
+certeus_idem_reused_total = Counter(
+    "certeus_idem_reused_total",
+    "Number of idempotent response reuses",
+    labelnames=("endpoint",),
+)
+
 # CFE: Ricci (kappa_max)
 certeus_cfe_kappa_max = Gauge("certeus_cfe_kappa_max", "CFE kappa_max curvature")
 

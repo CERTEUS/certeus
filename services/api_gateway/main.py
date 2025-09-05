@@ -65,6 +65,7 @@ import services.api_gateway.routers.p2p as p2p
 import services.api_gateway.routers.packs as packs
 import services.api_gateway.routers.pfs as pfs
 import services.api_gateway.routers.pfs_dht as pfs_dht
+import services.api_gateway.routers.openapi_docs as openapi_docs
 import services.api_gateway.routers.qoc as qoc
 
 try:  # optional: avoid hard fail if core/pco deps are unavailable
@@ -326,6 +327,7 @@ app.include_router(metrics.router)
 app.include_router(pfs.router)
 app.include_router(p2p.router)
 app.include_router(pfs_dht.router)
+app.include_router(openapi_docs.router)
 
 # ProofGate proxy to expose /v1/proofgate/publish via gateway (OpenAPI doc parity)
 # --- blok --- Health i root redirect -------------------------------------------
