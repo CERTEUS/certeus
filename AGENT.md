@@ -1,7 +1,7 @@
-# CERTEUS — AGENTS.md (reguły dla agenta)
+# CERTEUS — AGENT.md (reguły dla agenta)
 
-Uwaga: Centralny hub dokumentacji agenta przeniesiony do:
-`docs/AGENTS/README.md` (zawiera skróty do WORKLOG/90_dni/manifestów, bramek i runbooków).
+Uwaga: Centralny hub dokumentacji agenta znajduje się w:
+`docs/AGENTS/README.md` (skrót do WORKLOG/90_dni/manifestów, bramek i runbooków).
 
 Zasada niezmienna (TL;DR):
 
