@@ -24,7 +24,7 @@ EN: Validates OpenAPI spec (docs/api/openapi.yaml) using openapi-spec-validator.
 from __future__ import annotations
 
 try:  # support both legacy and modern versions
-from openapi_spec_validator import validate_spec as _validate  # type: ignore[attr-defined]
+    from openapi_spec_validator import validate_spec as _validate  # type: ignore[attr-defined]
 except Exception:  # pragma: no cover
     try:
         from openapi_spec_validator import validate as _validate  # type: ignore[attr-defined]
