@@ -28,13 +28,14 @@ EN: FastAPI router for HDE/Q-Oracle/Entangle/Chronosync devices.
 
 from __future__ import annotations
 
-import os
-from time import time
 import base64
 import json as _json
+import os
+from time import time
+from typing import Any
+
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-from typing import Any
 
 from fastapi import APIRouter, Request, Response
 from pydantic import BaseModel, Field
@@ -299,8 +300,6 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
     # TEE RA header (optional, when enabled)
     try:
         if (os.getenv("TEE_ENABLED") or "").strip() in {"1", "true", "True"}:
-            import json as _json
-
             fp = os.getenv("ED25519_PUBKEY_HEX", "")[:16] or "tee-dev"
             response.headers["X-CERTEUS-TEE-RA"] = _json.dumps({"fingerprint": fp})
     except Exception:
@@ -393,8 +392,6 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
     # TEE RA header (optional)
     try:
         if (os.getenv("TEE_ENABLED") or "").strip() in {"1", "true", "True"}:
-            import json as _json
-
             fp = os.getenv("ED25519_PUBKEY_HEX", "")[:16] or "tee-dev"
             response.headers["X-CERTEUS-TEE-RA"] = _json.dumps({"fingerprint": fp})
     except Exception:
