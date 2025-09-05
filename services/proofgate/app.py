@@ -42,6 +42,11 @@ from services.ledger_service.ledger import (
     compute_provenance_hash,
     ledger_service,
 )
+try:  # optional: FROST aggregator
+    from security.frost import verify_quorum
+except Exception:  # pragma: no cover - optional
+    def verify_quorum(_obj):  # type: ignore
+        return False
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -409,7 +414,7 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
-    # W9: Decision (base), then optional gates (PQ/roles)
+    # W9: Decision (base), then optional gates (PQ/roles/FROST)
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     # W9: PQ-crypto gate (optional, stub)
@@ -444,6 +449,16 @@ def publish(req: PublishRequest) -> PublishResponse:
             pass
 
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
+
+    # FROST 2-of-3 (optional enforce)
+    frost_require = (os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or "").strip() in {"1", "true", "True"}
+    if frost_require and decision in ("PUBLISH", "CONDITIONAL"):
+        try:
+            cos = req.pco.get("cosign") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            if not (isinstance(cos, dict) and verify_quorum(cos)):
+                decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
 
     if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
         # Governance‑aware enforcement: require at least one allowed role per governance pack

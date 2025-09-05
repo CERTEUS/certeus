@@ -4,6 +4,13 @@
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
 
+- 2025-09-05 19:45:00Z [A5] (feat/prooffs-mount-xattrs): ProofFS xattrs + mock mount + UI + CI gate
+  - Core: `core/pfs/xattrs.py` (PNIP/PCO RO, sidecar), `core/pfs/mount.py` (mock), adaptery stub FUSE/Dokan
+  - API: `/v1/pfs/xattrs`, `/v1/pfs/materialize`, `/v1/pfs/mount|unmount`; list używa resolvera
+  - UI: `clients/web/public/pfs_inspector.html` — inspektor xattrs (PNIP/PCO)
+  - CI: `scripts/gates/asset_integrity_gate.py` (enforce) + krok w `ci-gates.yml`
+  - Testy: unit/integration/e2e dla xattrs i mount→inspect→unmount; kontrakt OpenAPI – zielony
+
 - 2025-09-05 06:50:00Z [A7] (work/daily): W14 — Domain Packs MVP (MED/SEC/CODE) + A4 green
   - Plugins: packs_med / packs_sec / packs_code (manifesty + register(api)/handle)
   - Marketplace: ABI baselines zaktualizowane (scripts/packs/update_abi_baselines.py)

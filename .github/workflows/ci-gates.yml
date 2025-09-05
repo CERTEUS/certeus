@@ -154,6 +154,10 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/plugin_supply_ok.txt
+      - name: FROST 2-of-3 Gate (enforce)
+        run: |
+          python scripts/gates/proof_frost_enforce.py
+          test -f out/proof_frost_enforce_ok.txt
       - name: Compliance Mapping (report-only)
         continue-on-error: true
         run: |
