@@ -5,7 +5,11 @@
             "label": "Python: Run Tests",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/python",
-            "args": ["-m", "pytest", "-v"],
+            "args": [
+                "-m",
+                "pytest",
+                "-v"
+            ],
             "group": "test",
             "presentation": {
                 "echo": true,
@@ -21,7 +25,11 @@
             "label": "Python: Install Dependencies",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/pip",
-            "args": ["install", "-r", "requirements.txt"],
+            "args": [
+                "install",
+                "-r",
+                "requirements.txt"
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -34,7 +42,11 @@
             "label": "Python: Format Code",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/python",
-            "args": ["-m", "black", "."],
+            "args": [
+                "-m",
+                "black",
+                "."
+            ],
             "group": "build",
             "presentation": {
                 "echo": true,
@@ -47,7 +59,12 @@
             "label": "Python: Lint Code",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/python",
-            "args": ["-m", "ruff", "check", "."],
+            "args": [
+                "-m",
+                "ruff",
+                "check",
+                "."
+            ],
             "group": "test",
             "presentation": {
                 "echo": true,

@@ -24,7 +24,14 @@
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
-            "args": ["main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
+            "args": [
+                "main:app",
+                "--reload",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000"
+            ],
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "python": "${workspaceFolder}/.venv/bin/python"
@@ -34,7 +41,10 @@
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
-            "args": ["${workspaceFolder}/tests", "-v"],
+            "args": [
+                "${workspaceFolder}/tests",
+                "-v"
+            ],
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "python": "${workspaceFolder}/.venv/bin/python"

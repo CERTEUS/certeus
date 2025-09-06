@@ -54,12 +54,34 @@
     "remote.autoForward": true,
     "remote.restoreForwardedPorts": true,
     "remote.portsAttributes": {
+        "8000": {
+            "protocol": "http",
+            "label": "API Gateway",
+            "onAutoForward": "openPreview"
+        },
+        "8085": {
+            "protocol": "http",
+            "label": "ProofGate",
+            "onAutoForward": "notify"
+        },
+        "3000": {
+            "protocol": "http",
+            "label": "Web Client",
+            "onAutoForward": "openPreview"
+        },
         "3056": {
             "protocol": "http",
             "label": "Pylance Server",
-            "onAutoForward": "openPreview"
+            "onAutoForward": "silent"
         }
     },
+    // VS Code Remote Development
+    "remote.tunnels.access": "public",
+    "remote.tunnels.privacyStatement": true,
+    "remote.SSH.remotePlatform": {
+        "*": "linux"
+    },
+    "remote.SSH.useLocalServer": false,
     // Wspólne ustawienia dla wszystkich AI
     "editor.inlineSuggest.enabled": true,
     "editor.acceptSuggestionOnEnter": "on",
@@ -77,14 +99,36 @@
     "editor.suggest.showWords": true,
     "editor.suggest.preview": true,
     "editor.suggest.shareSuggestSelections": true,
-    // Optymalizacje wydajności VS Code
+    // Cross-platform performance optimizations
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.settings.useSplitJSON": true,
     "workbench.editor.closeOnFileDelete": true,
     "workbench.editor.enablePreview": false,
     "workbench.editor.limit.enabled": true,
     "workbench.editor.limit.value": 8,
+    "workbench.editor.revealIfOpen": true,
+    "workbench.startupEditor": "none",
+    "workbench.tips.enabled": false,
+    // Auto-save and formatting
     "files.autoSave": "afterDelay",
     "files.autoSaveDelay": 1000,
     "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": false,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll.ruff": "explicit"
+    },
+    // Mobile-friendly settings
+    "editor.suggest.maxVisibleSuggestions": 8,
+    "editor.parameterHints.cycle": true,
+    "editor.hover.delay": 1500,
+    "editor.lightbulb.enabled": "on",
+    // Network optimization
+    "extensions.autoCheckUpdates": false,
+    "extensions.autoUpdate": false,
+    "telemetry.telemetryLevel": "off",
+    "update.mode": "manual",
     "python.analysis.diagnosticMode": "openFilesOnly",
     "python.analysis.typeCheckingMode": "off",
     "python.analysis.logLevel": "Error",
@@ -185,25 +229,34 @@
     },
     "gemini.suggestInRealTime": true,
     "gemini.inlineSuggest.enable": true,
-    
     // Environment consistency settings
     "python.defaultInterpreterPath": "./.venv/bin/python",
     "python.terminal.activateEnvironment": true,
     "python.analysis.persistAllIndices": false,
     "python.analysis.userFileIndexingLimit": 200,
     "python.analysis.packageIndexDepths": [
-        {"name": ".", "depth": 2},
-        {"name": "certeus", "depth": 3},
-        {"name": "core", "depth": 3},
-        {"name": "services", "depth": 3}
+        {
+            "name": ".",
+            "depth": 2
+        },
+        {
+            "name": "certeus",
+            "depth": 3
+        },
+        {
+            "name": "core",
+            "depth": 3
+        },
+        {
+            "name": "services",
+            "depth": 3
+        }
     ],
-    
     // Cross-platform file handling
     "files.eol": "\n",
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "files.encoding": "utf8",
-    
     // Performance optimizations
     "search.exclude": {
         "**/.venv": true,

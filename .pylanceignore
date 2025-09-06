@@ -1,12 +1,5 @@
-.venv
-**/.venv
-venv
-**/venv
-env
-**/env
-__pycache__
-**/__pycache__
-*.pyc
-**/*.pyc
+.venv **/.venv venv **/venv env **/env __pycache__ **/__pycache__ *.pyc **
+/*.pyc
 .git
-**/.git
+**/
+.git
