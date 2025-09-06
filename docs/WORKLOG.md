@@ -1,5 +1,3 @@
-#!/usr/bin/env markdown
-
 # CERTEUS — WORKLOG
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
@@ -86,12 +84,12 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Lint/Tests: ruff OK; targeted tests dla QTMP i OpenAPI zielone
 
 - 2025-09-04 20:10:00Z [agent] (work/daily): W13 — ProofFS I/O (stub) + MailOps pfs:// URIs
-  - MailOps: /v1/mailops/ingest wzbogacony o pfs://mail/<mail_id>/<filename> dla załączników
+  - MailOps: /v1/mailops/ingest wzbogacony o pfs://mail/\<mail_id\>/\<filename\> dla załączników
   - Core: helper core/pfs/uri.py (sanityzacja i budowa URI)
   - Lint+Tests: ruff OK; 114 passed (unit), e2e/perf pominięte lokalnie
 
 - 2025-09-04 21:25:00Z [agent] (work/daily): W13 — ProofFS materializacja+listing, Boundary snapshot/diff, i18n static compat
-  - MailOps: PROOFS_FS_MATERIALIZE=1 → zapis stubów do data/proof_fs/mail/<id> (JSON meta)
+  - MailOps: PROOFS_FS_MATERIALIZE=1 → zapis stubów do data/proof_fs/mail/\<id\> (JSON meta)
   - ProofFS: /v1/pfs/list (prefix, recursive, limit), router podpięty w API
   - Boundary: snapshot/diff (core+scripts) — artefakt publikowany w CI (ci-gates)
   - Static: /app/marketplace.html serwowane z clients/web/public (kompatybilność)
@@ -270,7 +268,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - scripts/gates/pack_abi_semver_gate.py: reload modułu dla poprawnej detekcji zmian ABI
   - - pytest: 198 passed, 4 skipped; ruff OK
 - 2025-09-04 18:57:27Z [root] (work/daily): T14 D66+D67: A11y semantyka + i18n (Accept-Language) + testy
-  - - HTML: <main> + skip links + focus styles (geometry/boundary/qtm/marketplace)\n- i18n: middleware → Content-Language; lang param overrides header\n- Testy: i18n negotiation + PCO invariance; gates stable\n- pytest: 198 passed, 4 skipped; ruff OK
+  - - HTML: \<main\> + skip links + focus styles (geometry/boundary/qtm/marketplace)\n- i18n: middleware → Content-Language; lang param overrides header\n- Testy: i18n negotiation + PCO invariance; gates stable\n- pytest: 198 passed, 4 skipped; ruff OK
 - 2025-09-04 18:57:44Z [root] (work/daily): W13: Marketplace — toggle enable/disable + tests
   - - API: POST /v1/packs/enable (persist overlay)\n- UI: toggle button in marketplace listing\n- Tests: packs list+toggle; suite: 198 passed (lokalnie)
 - 2025-09-04 19:06:22Z [root] (work/daily): W14 (A8): A11y/i18n — smoke + testy + CI tick
@@ -444,32 +442,24 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Shedder: middleware adaptacyjny (ENV: SHED_ENABLE/SHED_FORCE_RATE/SHED_MAX_RATE) – testy 503/429 przechodzą.
   - Lint/tests: ruff OK; pytest: 340 passed, 5 skipped lokalnie; push na work/daily.
   - Nast.: poczekać na CI (Tests/UI Smoke/Canary-Gate/truth-gates) i auto-promocję do main.
-<<<<<<< HEAD
 - 2025-09-05 15:36:35Z [root] (feat/ci-workflows-sanitize): A11: CI/Workflows sanitize
   - - checki: Tests/UI Smoke/Canary‑Gate/truth‑gates\n- Python 3.11 + pip cache (spójnie)\n- smoke.yml: usunięto konflikt/markery\n- tests.yml: OpenAPI + Spectral (nieblokujące)\n- PR targets: +work/daily w PR-only\n- ci-gates.yml: BOM→LF\n- branch_protection.json: wymagane checki zaktualizowane
-=======
-- 2025-09-05 16:03:28Z [48793] (work/daily): A12: Lint/Test hygiene — OpenAPI tests + warnings
-  - - Per-file-ignores zredukowane (tests/api, services test)
-  - - Importy uporządkowane, E402/E501/I001 naprawione
-  - - pytest.ini: filtry warningów (FastAPI dup op-id, spec-validator deprecations)
-  - - Ruff: lint+format zielone
->>>>>>> origin/work/daily
 
 - 2025-09-05 17:07:28Z [A11] (main): Porządek + zielony CI + dokumentacja do docs/
   - CI/Workflows: sanitacja ci-gates/smoke/tests (heredoc, znaki kontrolne, needs), unifikacja Python 3.11 + cache; wymagane checki: Tests/UI Smoke/Canary‑Gate/truth‑gates — zielone na PR i main.
   - API/Tests: CFE (/cache/warm, /lensing/from_fin), LexQFT (dispute profiles, /coverage/from_fin, /renorm, /virtual_pairs), PFS (DHT TTL/capacity, /sign_path, /verify_path), Billing (alias units), Shedder (ENV) — full suite: 340 passed, 5 skipped.
   - Docs: przeniesienie dokumentów do docs/ (CONTRIBUTING/DEV_WORKFLOW/GOVERNANCE/SECURITY/WORKLOG/Blueprint/Tree), pozostawione tylko README.md i AGENT.md w root; guard wewnętrznych dokumentów (pre‑commit + workflow) aktywny; .gitignore rozszerzony.
-  - Gałęzie: posprzątane zdalne (feat/*, work/a12-*); pozostały tylko main i work/daily (+ci-status); PR‑y zbiorcze scalone.
+  - Gałęzie: posprzątane zdalne (feat/_, work/a12-_); pozostały tylko main i work/daily (+ci-status); PR‑y zbiorcze scalone.
   - Stan: main i work/daily — zielone; branch protection skonfigurowany; brak czerwonych bramek; openapi-pages publikuje.
   - Braki vs Plan P0/P1:
-    * ProofFS 3× platformy: częściowo (API + sign/verify); brak macFUSE/Dokan, xattrs PNIP/PCO, mount/unmount UI, inspektor xattrs, Asset‑Integrity Gate (do dodania w CI).
-    * FROST 2‑z‑3 (ProofGate): brak (TODO: security/frost.py, enforce w publish + gate w CI).
-    * TEE/bunker/RA→PCO: częściowo (nagłówki TEE w devices); brak pełnej integracji w ProofGate i polityk bunkra.
-    * SYNAPSY P2P: szkielet p2p routera; brak transportu QUIC/Noise i SPIFFE/SPIRE.
-    * Supply‑chain enforce: brak enforce (mamy guard docs); TODO: SBOM/provenance + cosign enforce w ci-gates.
-    * SDK 2.0 (TS/Go): brak; TODO: kontrakty i smoke SDK.
-    * LEXENITH pipeline: częściowo; brak pełnego lock→motion→publish→Why‑Not z PCO ścieżki.
-    * FIN/LEX dashboardy: częściowo (SRE p95); brak dedykowanych paneli FIN/LEX.
+    - ProofFS 3× platformy: częściowo (API + sign/verify); brak macFUSE/Dokan, xattrs PNIP/PCO, mount/unmount UI, inspektor xattrs, Asset‑Integrity Gate (do dodania w CI).
+    - FROST 2‑z‑3 (ProofGate): brak (TODO: security/frost.py, enforce w publish + gate w CI).
+    - TEE/bunker/RA→PCO: częściowo (nagłówki TEE w devices); brak pełnej integracji w ProofGate i polityk bunkra.
+    - SYNAPSY P2P: szkielet p2p routera; brak transportu QUIC/Noise i SPIFFE/SPIRE.
+    - Supply‑chain enforce: brak enforce (mamy guard docs); TODO: SBOM/provenance + cosign enforce w ci-gates.
+    - SDK 2.0 (TS/Go): brak; TODO: kontrakty i smoke SDK.
+    - LEXENITH pipeline: częściowo; brak pełnego lock→motion→publish→Why‑Not z PCO ścieżki.
+    - FIN/LEX dashboardy: częściowo (SRE p95); brak dedykowanych paneli FIN/LEX.
   - Zmiany w CI do dorobienia (A8): Asset‑Integrity Gate (enforce), FROST step w Proof Gate, P2P smoke, SDK Contract Gate, enforce supply‑chain flags.
 - 2025-09-05 18:05:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
@@ -478,3 +468,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
 
+- 2025-09-06 14:36:28Z [agent] (work/daily): W7 — ProofFS: Linux xattrs + Cockpit mount UI
+  - core/pfs/xattrs.py: OS xattrs (user.*) best-effort; sidecar/PNIP fallback
+  - clients/web/public/pfs_mount.html: mock mount/unmount helper (contract)

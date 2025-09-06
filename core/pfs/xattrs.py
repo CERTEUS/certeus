@@ -22,6 +22,7 @@ EN: Read extended attributes (xattrs) for ProofFS artifacts.
 from __future__ import annotations
 
 from dataclasses import asdict
+import os
 import hashlib
 import json
 from pathlib import Path
@@ -56,6 +57,54 @@ def _load_sidecar(p: Path) -> dict[str, Any] | None:
     except Exception:
         pass
     return None
+
+
+def _load_os_xattrs(p: Path) -> dict[str, Any] | None:
+    """
+    PL/EN: Best-effort read of OS extended attributes (Linux user.* namespace).
+    Returns a dict with optional keys: pnip, pco, xattrs_raw.
+
+    Safe in CI: all failures are swallowed and return None.
+    """
+    try:
+        # listxattr/getxattr may be unavailable on some platforms/filesystems
+        names = []
+        try:
+            names = os.listxattr(p.as_posix())  # type: ignore[attr-defined]
+        except Exception:
+            names = []
+        if not names:
+            return None
+        raw: dict[str, str] = {}
+        for n in names:
+            try:
+                v = os.getxattr(p.as_posix(), n)  # type: ignore[attr-defined]
+                if isinstance(v, (bytes, bytearray)):
+                    try:
+                        raw[n] = v.decode("utf-8", errors="replace")
+                    except Exception:
+                        raw[n] = ""
+                else:
+                    raw[n] = str(v)
+            except Exception:
+                continue
+        if not raw:
+            return None
+        out: dict[str, Any] = {"xattrs_raw": raw}
+        # Heuristic: look for user.pnip / user.pco JSON
+        pnip = raw.get("user.pnip") or raw.get("pnip")
+        pco_raw = raw.get("user.pco") or raw.get("pco")
+        if pnip:
+            out["pnip"] = pnip if pnip.startswith("sha256:") else f"sha256:{pnip}"
+        if pco_raw:
+            try:
+                out["pco"] = json.loads(pco_raw)
+            except Exception:
+                # keep as string if not JSON
+                out["pco"] = pco_raw
+        return out
+    except Exception:
+        return None
 
 
 def _synthesize_pco(*, rid: str, pnip_hex: str) -> dict[str, Any]:
@@ -100,17 +149,17 @@ def get_xattrs_for_path(p: Path) -> dict[str, Any]:
       1) Sidecar JSON (<file>.xattrs.json) if present
       2) Synthesize PNIP/PCO based on file content and pathname
     """
+    # Priority 1: sidecar JSON
     x: dict[str, Any] | None = _load_sidecar(p)
     if not x:
-        # compute PNIP from file content
+        # Priority 2: OS xattrs (best-effort)
+        x = _load_os_xattrs(p)
+    if not x:
+        # Fallback: synthesize from file content
         pnip_hex = _sha256_hex_path(p)
-        # rid heuristic: last two path parts (e.g., mail/<MAIL_ID>/<FILENAME>)
-        parts = p.parts
+        parts = p.parts  # rid heuristic: last two components
         rid = "/".join(parts[-2:]) if len(parts) >= 2 else p.name
-        x = {
-            "pnip": f"sha256:{pnip_hex}",
-            "pco": _synthesize_pco(rid=rid, pnip_hex=pnip_hex),
-        }
+        x = {"pnip": f"sha256:{pnip_hex}", "pco": _synthesize_pco(rid=rid, pnip_hex=pnip_hex)}
     # Ensure basic normalization
     if isinstance(x.get("pnip"), str) and x["pnip"].startswith("sha256:"):
         pass
