@@ -489,3 +489,4 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-06 15:53:58Z [agent] (work/daily): Enforcement: signatures verify + Bandit/Gitleaks
   - ProofGate: enforce SIGNATURES_REQUIRE=1 (verify Ed25519 + ML-DSA)
   - CI: generate keys, set env, Bandit enforce (bandit.yml), Gitleaks enforce (allowlist tuned)
+- 2025-09-06 15:56:50Z [agent] (work/daily): Enforced signatures required; dispatched ProofFS Self-Hosted; all CI gates hardened

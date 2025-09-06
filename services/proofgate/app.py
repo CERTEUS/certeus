@@ -597,7 +597,8 @@ def publish(req: PublishRequest) -> PublishResponse:
             # Ed25519 verify (if ed25519 block present or env pub provided)
             ed_ok = True
             try:
-                ed = ((pco_out or req.pco) or {}).get("crypto", {}) if isinstance((pco_out or req.pco), dict) else {}
+                src = req.pco if isinstance(req.pco, dict) else {}
+                ed = (src.get("crypto") or {}) if isinstance(src, dict) else {}
                 ed = ed.get("ed25519") if isinstance(ed, dict) else None
                 sig_b64 = str(ed.get("sig_b64")) if isinstance(ed, dict) and ed.get("sig_b64") else None
                 pub_b64 = str(ed.get("pub_b64")) if isinstance(ed, dict) and ed.get("pub_b64") else None
@@ -613,13 +614,17 @@ def publish(req: PublishRequest) -> PublishResponse:
                         ed25519_verify_b64u(b64u_decode(pub_b64), sig_b64, _doc_hash)
                     else:
                         ed_ok = False
+                else:
+                    # Require presence if signatures are required
+                    ed_ok = False
             except Exception:
                 ed_ok = False
 
             # PQ verify via pyoqs (if available and pq block present)
             pq_ok = True
             try:
-                pq = ((pco_out or req.pco) or {}).get("crypto", {}) if isinstance((pco_out or req.pco), dict) else {}
+                src = req.pco if isinstance(req.pco, dict) else {}
+                pq = (src.get("crypto") or {}) if isinstance(src, dict) else {}
                 pq = pq.get("pq") if isinstance(pq, dict) else None
                 if isinstance(pq, dict) and pq.get("sig_b64"):
                     import base64 as _b64
@@ -633,6 +638,8 @@ def publish(req: PublishRequest) -> PublishResponse:
                         pk = _b64.urlsafe_b64decode((pub + "=" * (-len(pub) % 4)).encode("ascii"))
                         alg = str(pq.get("alg") or os.getenv("PQ_MLDSA_ALG") or "Dilithium3")
                         pq_ok = _pq.verify(_doc_hash.encode("utf-8"), sig, pk, alg=alg)
+                else:
+                    pq_ok = False
             except Exception:
                 pq_ok = False
 
