@@ -1,0 +1,42 @@
+{
+    "remoteUser": "vscode",
+    "features": {},
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.confirmOnExit": "never",
+                "terminal.integrated.confirmOnKill": "never",
+                "workbench.dialogs.useSimpleDialogs": true,
+                "security.workspace.trust.enabled": false,
+                "chat.experimental.autoExecuteCommands": true,
+                "chat.experimental.requireConfirmation": false,
+                "github.copilot.advanced": {
+                    "noConfirm": true,
+                    "autonomousExecution": true,
+                    "requireManualApproval": false
+                },
+                "task.allowAutomaticTasks": "on",
+                "task.autoDetect": "on",
+                "task.problemMatchers.neverPrompt": true,
+                "git.confirmSync": false,
+                "git.enableSmartCommit": true,
+                "git.smartCommitChanges": "all",
+                "git.confirmEmptyCommits": false,
+                "git.confirmNoVerifyCommit": false,
+                "extensions.confirmedUriHandlerExtensionIds": ["*"],
+                "window.confirmBeforeClose": "never",
+                "window.confirmSaveUntitledWorkspace": false,
+                "explorer.confirmDelete": false,
+                "explorer.confirmDragAndDrop": false,
+                "ai.autonomousExecution": true,
+                "ai.requireManualApproval": false,
+                "automation.enabled": true,
+                "automation.requireConfirmation": false,
+                "copilot.autonomousMode": true,
+                "copilot.requireConfirmation": false
+            }
+        }
+    },
+    "postCreateCommand": "source /workspaces/certeus/.vscode/autonomous_terminal.sh",
+    "postStartCommand": "source /workspaces/certeus/.bashrc_autonomous"
+}

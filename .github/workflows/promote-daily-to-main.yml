@@ -46,15 +46,20 @@ jobs:
               ok = (context.ref === 'refs/heads/work/daily');
             }
             core.setOutput('ok', ok ? 'true' : 'false');
+
       - name: Checkout repository
+        if: ${{ steps.cond.outputs.ok == 'true' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Configure git user
+        if: ${{ steps.cond.outputs.ok == 'true' }}
         shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Determine SHA for evaluation
         id: sha
         if: ${{ steps.cond.outputs.ok == 'true' }}
@@ -66,6 +71,7 @@ jobs:
             if (evt === 'workflow_run') sha = context.payload.workflow_run?.head_sha;
             else sha = context.sha;
             core.setOutput('sha', sha);
+
       - name: Determine if weekly promotion is requested
         id: marker
         if: ${{ steps.cond.outputs.ok == 'true' }}

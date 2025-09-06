@@ -18,6 +18,12 @@ AUTHORIZED_AGENTS=github_copilot,openai_codex,gemini
 # No confirmation required for these operations
 AUTONOMOUS_OPERATIONS=commit,push,merge,format,test,fix,install,update
 
+# Terminal configuration for zero prompts
+TERMINAL_AUTONOMOUS_SCRIPT=/workspaces/certeus/.vscode/autonomous_terminal.sh
+FORCE_TERMINAL_AUTONOMY=true
+DISABLE_ALL_CONFIRMATIONS=true
+NONINTERACTIVE_MODE=true
+
 # Status
 STATUS=FULLY_AUTONOMOUS
 LAST_UPDATED=2025-09-06
