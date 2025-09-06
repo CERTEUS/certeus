@@ -1,0 +1,368 @@
+import React, { useState } from 'react';
+import { Clock, Cpu, Database, CheckCircle, AlertTriangle, TrendingUp, FileText, Zap } from 'lucide-react';
+
+const CerteusBenchmarks = () => {
+  const [selectedCategory, setSelectedCategory] = useState('core');
+  const [results, setResults] = useState({});
+
+  const benchmarkCategories = {
+    core: {
+      name: 'Core SMT/Crypto',
+      icon: <Cpu className="w-5 h-5" />,
+      benchmarks: [
+        {
+          name: 'SMT Solver Performance',
+          description: 'Z3 vs CVC5 performance comparison',
+          metrics: ['Solving time (ms)', 'Memory usage (MB)', 'Formula complexity handling'],
+          targets: { excellent: '<100ms', good: '<500ms', poor: '>1000ms' },
+          testCases: [
+            'Simple boolean formulas (10-50 variables)',
+            'Complex nested implications (100+ variables)', 
+            'Quantified formulas with arithmetic',
+            'Unsat core extraction performance'
+          ]
+        },
+        {
+          name: 'Crypto Operations',
+          description: 'Ed25519, SHA256, Merkle tree operations',
+          metrics: ['Signature time (μs)', 'Verification time (μs)', 'Hash throughput (MB/s)'],
+          targets: { excellent: '<1ms', good: '<5ms', poor: '>10ms' },
+          testCases: [
+            'Ed25519 sign/verify 1000 operations',
+            'SHA256 hashing large payloads (1MB+)',
+            'Merkle path verification (depth 10-20)',
+            'Canonical bundle hash computation'
+          ]
+        },
+        {
+          name: 'PCO Validation',
+          description: 'Public PCO bundle processing',
+          metrics: ['Validation time per PCO', 'Memory per validation', 'Throughput (PCOs/sec)'],
+          targets: { excellent: '<10ms', good: '<50ms', poor: '>100ms' },
+          testCases: [
+            'Single PCO validation with merkle proof',
+            'Batch validation (100 PCOs)',
+            'Large LFSC proof validation',
+            'DRAT proof processing'
+          ]
+        }
+      ]
+    },
+    boundary: {
+      name: 'Boundary Operations', 
+      icon: <Database className="w-5 h-5" />,
+      benchmarks: [
+        {
+          name: 'Bulk Reconstruction',
+          description: 'Boundary reconstruction from PCO bundles',
+          metrics: ['Processing time per shard', 'Memory usage', 'Delta bits accuracy'],
+          targets: { excellent: '<1s/1000files', good: '<5s/1000files', poor: '>10s/1000files' },
+          testCases: [
+            'Small shards (100-500 files)',
+            'Large shards (1000+ files)', 
+            'Corrupted/missing files handling',
+            'Gzip compression efficiency'
+          ]
+        },
+        {
+          name: 'Snapshot Computation',
+          description: 'Shard digest and global snapshot creation',
+          metrics: ['Files processed per second', 'Digest computation time', 'Memory efficiency'],
+          targets: { excellent: '>1000files/s', good: '>500files/s', poor: '<200files/s' },
+          testCases: [
+            'Single shard snapshot (various sizes)',
+            'Multi-shard global digest',
+            'Incremental snapshot updates',
+            'File hierarchy traversal performance'
+          ]
+        }
+      ]
+    },
+    omega: {
+      name: 'Ω-Kernel Transforms',
+      icon: <Zap className="w-5 h-5" />,
+      benchmarks: [
+        {
+          name: 'Text Transformations',
+          description: 'Language, jurisdiction, litera-telos transforms',
+          metrics: ['Transform time per text', 'Drift measurement accuracy', 'Memory usage'],
+          targets: { excellent: '<1ms/1KB', good: '<5ms/1KB', poor: '>10ms/1KB' },
+          testCases: [
+            'PL↔EN language transforms (various text sizes)',
+            'PL↔EU jurisdiction mapping',
+            'Litera↔Telos interpretation switching',
+            'Holonomy drift measurement accuracy'
+          ]
+        },
+        {
+          name: 'Gauge Metrics',
+          description: 'Jaccard drift, entropy, entity extraction',
+          metrics: ['Processing speed (tokens/s)', 'Accuracy of drift detection', 'Memory per analysis'],
+          targets: { excellent: '>10k tokens/s', good: '>5k tokens/s', poor: '<1k tokens/s' },
+          testCases: [
+            'Large document analysis (10k+ tokens)',
+            'Batch processing multiple documents',
+            'Domain-specific canonicalization (med/sec/code)',
+            'Entity extraction accuracy on legal texts'
+          ]
+        }
+      ]
+    },
+    truthops: {
+      name: 'TruthOps Engine',
+      icon: <CheckCircle className="w-5 h-5" />,
+      benchmarks: [
+        {
+          name: 'Decision Pipeline',
+          description: 'GoP/EUQ/TTDE → ATT/MTV pipeline performance',
+          metrics: ['Pipeline latency', 'Decision accuracy', 'Resource utilization'],
+          targets: { excellent: '<100ms', good: '<500ms', poor: '>1000ms' },
+          testCases: [
+            'Simple cases (HOT classification)',
+            'Complex cases requiring CONDITIONAL flow',
+            'ABSTAIN cases with contradictions',
+            'Batch processing multiple cases'
+          ]
+        }
+      ]
+    },
+    system: {
+      name: 'System Integration',
+      icon: <TrendingUp className="w-5 h-5" />,
+      benchmarks: [
+        {
+          name: 'End-to-End Flows',
+          description: 'Complete verification workflows',
+          metrics: ['Total verification time', 'Memory peak usage', 'Success rate'],
+          targets: { excellent: '<5s', good: '<15s', poor: '>30s' },
+          testCases: [
+            'SMT formula → dual core verification → PCO generation',
+            'Batch verification of related proofs',
+            'Plugin loading and capability registration',
+            'ProofFS materialization and URI resolution'
+          ]
+        },
+        {
+          name: 'Scalability Limits',
+          description: 'System behavior under load',
+          metrics: ['Concurrent verification capacity', 'Memory scaling', 'Error rates'],
+          targets: { excellent: '100+ concurrent', good: '50+ concurrent', poor: '<10 concurrent' },
+          testCases: [
+            'Concurrent SMT solving (different formulas)',
+            'Large proof tree processing',
+            'Memory pressure scenarios',
+            'Plugin system under load'
+          ]
+        }
+      ]
+    }
+  };
+
+  const runBenchmark = (category, benchmarkIndex) => {
+    // Symulacja uruchamiania benchmarku
+    const key = `${category}_${benchmarkIndex}`;
+    setResults(prev => ({
+      ...prev,
+      [key]: {
+        status: 'running',
+        startTime: Date.now()
+      }
+    }));
+
+    setTimeout(() => {
+      // Symulowane wyniki
+      const mockResults = {
+        executionTime: Math.floor(Math.random() * 1000) + 50,
+        memoryUsage: Math.floor(Math.random() * 100) + 20,
+        throughput: Math.floor(Math.random() * 5000) + 1000,
+        status: Math.random() > 0.8 ? 'warning' : 'success'
+      };
+
+      setResults(prev => ({
+        ...prev,
+        [key]: mockResults
+      }));
+    }, 2000 + Math.random() * 3000);
+  };
+
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'running': return <Clock className="w-4 h-4 animate-spin text-blue-500" />;
+      case 'success': return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+      default: return null;
+    }
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">CERTEUS - Benchmarki Wydajności</h1>
+        <p className="text-gray-600">System weryfikacji dowodów matematycznych - analiza wydajności</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sidebar z kategoriami */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow p-4">
+            <h2 className="text-lg font-semibold mb-4">Kategorie</h2>
+            <div className="space-y-2">
+              {Object.entries(benchmarkCategories).map(([key, category]) => (
+                <button
+                  key={key}
+                  onClick={() => setSelectedCategory(key)}
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
+                    selectedCategory === key 
+                      ? 'bg-blue-100 text-blue-800 border border-blue-200' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                >
+                  {category.icon}
+                  <span className="font-medium">{category.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Główny obszar benchmarków */}
+        <div className="lg:col-span-3">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
+              {benchmarkCategories[selectedCategory].icon}
+              {benchmarkCategories[selectedCategory].name}
+            </h2>
+
+            <div className="space-y-6">
+              {benchmarkCategories[selectedCategory].benchmarks.map((benchmark, index) => {
+                const resultKey = `${selectedCategory}_${index}`;
+                const result = results[resultKey];
+
+                return (
+                  <div key={index} className="border border-gray-200 rounded-lg p-5">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-800">{benchmark.name}</h3>
+                        <p className="text-gray-600 mt-1">{benchmark.description}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {result && getStatusIcon(result.status)}
+                        <button
+                          onClick={() => runBenchmark(selectedCategory, index)}
+                          disabled={result?.status === 'running'}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            result?.status === 'running'
+                              ? 'bg-gray-300 cursor-not-allowed'
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
+                          }`}
+                        >
+                          {result?.status === 'running' ? 'Uruchomiony...' : 'Uruchom Test'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Metryki */}
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-700 mb-2">Metryki:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {benchmark.metrics.map((metric, idx) => (
+                          <span key={idx} className="bg-gray-100 px-3 py-1 rounded-full text-sm">
+                            {metric}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Cele wydajności */}
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-700 mb-2">Cele wydajności:</h4>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div className="bg-green-50 p-2 rounded border">
+                          <span className="font-medium text-green-800">Excellent:</span>
+                          <span className="text-green-700 ml-1">{benchmark.targets.excellent}</span>
+                        </div>
+                        <div className="bg-yellow-50 p-2 rounded border">
+                          <span className="font-medium text-yellow-800">Good:</span>
+                          <span className="text-yellow-700 ml-1">{benchmark.targets.good}</span>
+                        </div>
+                        <div className="bg-red-50 p-2 rounded border">
+                          <span className="font-medium text-red-800">Poor:</span>
+                          <span className="text-red-700 ml-1">{benchmark.targets.poor}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Przypadki testowe */}
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-700 mb-2">Przypadki testowe:</h4>
+                      <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
+                        {benchmark.testCases.map((testCase, idx) => (
+                          <li key={idx}>{testCase}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Wyniki */}
+                    {result && result.status !== 'running' && (
+                      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-700 mb-3">Wyniki:</h4>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-600">Czas wykonania:</span>
+                            <span className="ml-2 font-mono">{result.executionTime}ms</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Użycie pamięci:</span>
+                            <span className="ml-2 font-mono">{result.memoryUsage}MB</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Przepustowość:</span>
+                            <span className="ml-2 font-mono">{result.throughput}/s</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Rekomendacje specjalne dla CERTEUS */}
+      <div className="mt-6 bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <FileText className="w-5 h-5" />
+          Specjalne Rekomendacje dla CERTEUS
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div className="p-4 border rounded-lg">
+            <h3 className="font-semibold text-blue-800 mb-2">Dual-Core Verification</h3>
+            <p className="text-gray-600">
+              Monitoruj rozbieżności między Z3 i CVC5. Ustaw alerty gdy niezgodność > 1%.
+            </p>
+          </div>
+          <div className="p-4 border rounded-lg">
+            <h3 className="font-semibold text-green-800 mb-2">Merkle Tree Performance</h3>
+            <p className="text-gray-600">
+              Testuj głębokie drzewa (depth > 15). Ważne dla skalowalności boundary operations.
+            </p>
+          </div>
+          <div className="p-4 border rounded-lg">
+            <h3 className="font-semibold text-purple-800 mb-2">Ω-Kernel Drift</h3>
+            <p className="text-gray-600">
+              Mierz dokładność transformacji. Holonomy drift powinien być bliski 0.0 dla odwracalnych operacji.
+            </p>
+          </div>
+          <div className="p-4 border rounded-lg">
+            <h3 className="font-semibold text-orange-800 mb-2">Plugin System</h3>
+            <p className="text-gray-600">
+              Testuj wydajność z wieloma załadowanymi pluginami. Monitoruj memory leaks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

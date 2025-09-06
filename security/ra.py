@@ -1,22 +1,13 @@
 #!/usr/bin/env python3
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: security/ra.py                                       |
-# | ROLE: TEE attestation helpers                                |
-# | PLIK: security/ra.py                                       |
-# | ROLA: Pomocniki atestacji TEE                                |
-# +-------------------------------------------------------------+
 
 """
-PL: Pomocnicze funkcje do sygnalizacji TEE oraz generowania odcisku RA.
-
-EN: Helpers for TEE signalling and computing RA fingerprint.
+PL: Remote Attestation (TEE) — minimalna obsługa odcisku RA na potrzeby CI/ProofGate.
+EN: Remote Attestation (TEE) — minimal RA fingerprint utilities for CI/ProofGate.
 """
 
-# === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass
 import hashlib
 import json
 import os
@@ -24,60 +15,55 @@ from pathlib import Path
 from typing import Any
 
 
-def tee_enabled() -> bool:
-    """Return True if TEE signalling is enabled via env."""
+@dataclass(frozen=True)
+class RAFingerprint:
+    vendor: str
+    product: str
+    measurement: str  # hex digest of claims
+    hwid: str | None = None
 
-    val = (os.getenv("TEE_ENABLED") or os.getenv("BUNKER") or "").strip()
-    return val in {"1", "true", "True"}
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
 
 
-def load_attestation() -> dict[str, Any]:
-    """Load attestation JSON (best-effort).
+def _h_json(obj: Any) -> str:
+    s = json.dumps(obj, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(s).hexdigest()
 
-    Sources (first hit wins):
-    - ENV `TEE_ATTESTATION_JSON` (inline JSON string)
-    - Repo file `security/bunker/attestation.json`
-    - Fallback stub
-    """
 
-    env = os.getenv("TEE_ATTESTATION_JSON")
-    if env and env.strip().startswith("{"):
-        try:
-            return json.loads(env)
-        except Exception:
-            pass
-    p = Path(__file__).resolve().parent / "bunker" / "attestation.json"
+def parse_attestation_json(p: str | os.PathLike[str]) -> dict[str, Any]:
+    path = Path(p)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("attestation must be JSON object")
+    return data
+
+
+def extract_fingerprint(attestation: dict[str, Any]) -> RAFingerprint:
+    vendor = str(attestation.get("vendor") or attestation.get("tee_vendor") or "unknown").strip()
+    product = str(attestation.get("product") or attestation.get("tee") or "unknown").strip()
+    hwid = attestation.get("hwid") or attestation.get("device_id")
+    claims = attestation.get("claims") if isinstance(attestation.get("claims"), dict) else attestation
+    meas = _h_json(claims)
+    return RAFingerprint(vendor=vendor, product=product, measurement=meas, hwid=str(hwid) if hwid else None)
+
+
+def verify_fingerprint(obj: dict[str, Any]) -> bool:
     try:
-        if p.exists():
-            return json.loads(p.read_text(encoding="utf-8"))
+        vendor = obj.get("vendor")
+        product = obj.get("product")
+        measurement = obj.get("measurement")
+        return all(isinstance(x, str) and x for x in (vendor, product, measurement)) and len(measurement) == 64
     except Exception:
-        pass
-    return {
-        "provider": "TEE-STUB",
-        "platform": "SIMULATED",
-        "quote": "",
-        "attester": "local",
-        "ts": "",
-    }
+        return False
 
 
-def ra_fingerprint() -> dict[str, Any]:
-    """Compute fingerprint from attestation JSON.
-
-    Uses sha256 over stable JSON (sorted keys) or `quote` if present.
-    """
-
-    att = load_attestation()
-    base = att.get("quote") or json.dumps(att, sort_keys=True, separators=(",", ":"))
-    fp = hashlib.sha256(str(base).encode("utf-8")).hexdigest()
-    return {
-        "provider": str(att.get("provider") or ""),
-        "platform": str(att.get("platform") or ""),
-        "fingerprint": f"sha256:{fp}",
-        "ts": str(att.get("ts") or ""),
-    }
-
-
-# === I/O / ENDPOINTS ===
-
-# === TESTY / TESTS ===
+def attestation_from_env() -> dict[str, Any] | None:
+    cand = os.getenv("BUNKER_ATTESTATION_PATH") or (Path("security/bunker/attestation.json").as_posix())
+    try:
+        p = Path(cand)
+        if p.exists():
+            return parse_attestation_json(p)
+    except Exception:
+        return None
+    return None

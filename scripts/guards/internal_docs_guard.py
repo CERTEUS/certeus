@@ -15,9 +15,17 @@ Usage:
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import sys
 
-MARKERS = ("INTERNAL ONLY", "CONFIDENTIAL")
+# Markers indicating internal-only classification. More conservative matching:
+# - 'INTERNAL ONLY' (case-insensitive, whole words)
+# - 'CONFIDENTIAL' (uppercase token only) to avoid flagging phrases like
+#   'Confidential Computing' or 'Confidentiality' in public compliance docs.
+MARKER_PATTERNS = (
+    re.compile(r"\bINTERNAL\s+ONLY\b", re.IGNORECASE),
+    re.compile(r"\bCONFIDENTIAL\b"),  # match uppercase confidential marker only
+)
 
 
 def is_text(p: Path) -> bool:
@@ -52,8 +60,7 @@ def main() -> int:
             txt = p.read_text(encoding="utf-8")
         except Exception:
             continue
-        low = txt.lower()
-        if any(m.lower() in low for m in MARKERS):
+        if any(rx.search(txt) for rx in MARKER_PATTERNS):
             offenders.append(rel)
     if offenders:
         sys.stderr.write("Internal-docs-guard: found internal markers in public docs:\n")

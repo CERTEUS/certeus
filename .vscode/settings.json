@@ -1,0 +1,234 @@
+{
+    // Ustawienia dla urządzeń mobilnych
+    "editor.fontSize": 14,
+    "editor.lineHeight": 24,
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "on",
+    "workbench.colorTheme": "Default Light Modern",
+    "workbench.preferredLightColorTheme": "Default Light Modern",
+    "workbench.preferredDarkColorTheme": "Default Light Modern",
+    "workbench.colorCustomizations": {
+        "[Default Light Modern]": {
+            "editor.background": "#ffffff",
+            "sideBar.background": "#f8f8f8",
+            "activityBar.background": "#f8f8f8",
+            "tab.activeBackground": "#ffffff",
+            "tab.inactiveBackground": "#f0f0f0"
+        }
+    },
+    "workbench.statusBar.visible": true,
+    "window.zoomLevel": 0.5,
+    "editor.accessibilitySupport": "on",
+    "editor.scrollBeyondLastLine": false,
+    "editor.smoothScrolling": true,
+    "workbench.list.smoothScrolling": true,
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.lineHeight": 1.2,
+    "workbench.activityBar.location": "default",
+    "workbench.sideBar.location": "left",
+    "editor.mouseWheelZoom": true,
+    "editor.renderControlCharacters": false,
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "smooth",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.renderWhitespace": "selection",
+    // Optymalizacje wydajności dla urządzeń mobilnych
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/.pytest_cache": true,
+        "**/.coverage": true,
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/venv": true,
+        "**/.env": true,
+        "**/env": true
+    },
+    // Port forwarding i serwery
+    "remote.autoForward": true,
+    "remote.restoreForwardedPorts": true,
+    "remote.portsAttributes": {
+        "8000": {
+            "protocol": "http",
+            "label": "API Gateway",
+            "onAutoForward": "openPreview"
+        },
+        "8085": {
+            "protocol": "http",
+            "label": "ProofGate",
+            "onAutoForward": "notify"
+        },
+        "3000": {
+            "protocol": "http",
+            "label": "Web Client",
+            "onAutoForward": "openPreview"
+        },
+        "3056": {
+            "protocol": "http",
+            "label": "Pylance Server",
+            "onAutoForward": "silent"
+        }
+    },
+    // VS Code Remote Development
+    "remote.tunnels.access": "public",
+    "remote.tunnels.privacyStatement": true,
+    "remote.SSH.remotePlatform": {
+        "*": "linux"
+    },
+    "remote.SSH.useLocalServer": false,
+    // Wspólne ustawienia dla wszystkich AI
+    "editor.inlineSuggest.enabled": true,
+    "editor.acceptSuggestionOnEnter": "on",
+    "security.workspace.trust.enabled": false,
+    "security.workspace.trust.startupPrompt": "never",
+    "security.workspace.trust.banner": "never",
+    "security.workspace.trust.emptyWindow": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "on",
+        "strings": "on"
+    },
+    "editor.suggestSelection": "first",
+    "editor.suggest.showWords": true,
+    "editor.suggest.preview": true,
+    "editor.suggest.shareSuggestSelections": true,
+    // Cross-platform performance optimizations
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "workbench.settings.useSplitJSON": true,
+    "workbench.editor.closeOnFileDelete": true,
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.limit.enabled": true,
+    "workbench.editor.limit.value": 8,
+    "workbench.editor.revealIfOpen": true,
+    "workbench.startupEditor": "none",
+    "workbench.tips.enabled": false,
+    // Auto-save and formatting
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": false,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
+        "source.fixAll.ruff": "explicit"
+    },
+    // Mobile-friendly settings
+    "editor.suggest.maxVisibleSuggestions": 8,
+    "editor.parameterHints.cycle": true,
+    "editor.hover.delay": 1500,
+    "editor.lightbulb.enabled": "on",
+    // Network optimization
+    "extensions.autoCheckUpdates": false,
+    "extensions.autoUpdate": false,
+    "telemetry.telemetryLevel": "off",
+    "update.mode": "manual",
+    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.logLevel": "Error",
+    // Python analysis - konfiguracja przeniesiona do pyrightconfig.json
+    "python.analysis.indexing": false,
+    "python.analysis.enableExtensions": false,
+    "python.languageServer": "Pylance",
+    "python.linting.enabled": false,
+    // GitHub Copilot
+    "github.copilot.enable": {
+        "*": true
+    },
+    "github.copilot.advanced": {
+        "automaticPanelFocus": true,
+        "indentationMode": true,
+        "showUnauthorizedModal": false,
+        "showAuthorizedModal": false,
+        "showEditorCompletions": true,
+        "enableAutoCompletions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true
+    },
+    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.chat.autoFollowUpSuggestions": true,
+    "github.copilot.chat.clearOnSend": false,
+    "github.copilot.chat.welcomeMessage": "none",
+    // OpenAI Codex
+    "openai.enable": {
+        "*": true
+    },
+    "openai.codex.suggestInRealTime": true,
+    "openai.codex.inlineSuggest.enable": true,
+    "openai.codex.maxTokens": 800,
+    "openai.codex.temperature": 0.7,
+    "openai.codex.autoTrigger": true,
+    "openai.codex.advanced": {
+        "automaticPanelFocus": true,
+        "indentationMode": true,
+        "showEditorCompletions": true,
+        "enableAutoCompletions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true
+    },
+    "openai.codex.chat": {
+        "autoFollowUpSuggestions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true,
+        "welcomeMessage": "none"
+    },
+    // Google Gemini
+    "gemini.enable": {
+        "*": true
+    },
+    "gemini.advanced": {
+        "automaticPanelFocus": true,
+        "indentationMode": true,
+        "showEditorCompletions": true,
+        "enableAutoCompletions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true
+    },
+    "gemini.chat": {
+        "autoFollowUpSuggestions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true,
+        "welcomeMessage": "none"
+    },
+    "gemini.suggestInRealTime": true,
+    "gemini.inlineSuggest.enable": true,
+    // Environment consistency settings
+    "python.defaultInterpreterPath": "./.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.persistAllIndices": false,
+    "python.analysis.userFileIndexingLimit": 200,
+    // Cross-platform file handling
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.encoding": "utf8",
+    // Performance optimizations
+    "search.exclude": {
+        "**/.venv": true,
+        "**/venv": true,
+        "**/env": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/node_modules": true,
+        "**/.git": true
+    },
+    "files.watcherExclude": {
+        "**/.venv/**": true,
+        "**/venv/**": true,
+        "**/env/**": true,
+        "**/__pycache__/**": true,
+        "**/*.pyc": true,
+        "**/node_modules/**": true,
+        "**/.git/**": true
+    }
+}

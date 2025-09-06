@@ -27,11 +27,18 @@ import sys  # noqa: E402
 def run_gate(env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     e = os.environ.copy()
     e.update(env)
+    # Add current directory to PYTHONPATH for module imports
+    current_path = e.get("PYTHONPATH", "")
+    if current_path:
+        e["PYTHONPATH"] = f"{Path.cwd()}:{current_path}"
+    else:
+        e["PYTHONPATH"] = str(Path.cwd())
     return subprocess.run(
         [sys.executable, "scripts/gates/security_bunker_gate.py"],
         text=True,
         capture_output=True,
         env=e,
+        cwd=Path.cwd(),  # Ensure proper working directory
     )
 
 

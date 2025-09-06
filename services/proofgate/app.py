@@ -38,10 +38,32 @@ import yaml
 from core.version import __version__
 from monitoring.metrics_slo import observe_decision
 from monitoring.otel_setup import set_span_attrs, setup_fastapi_otel
-from services.ledger_service.ledger import (
-    compute_provenance_hash,
-    ledger_service,
-)
+from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+
+try:  # optional: FROST aggregator
+    from security.frost import verify_quorum
+except Exception:  # pragma: no cover - optional
+
+    def verify_quorum(_obj):  # type: ignore
+        return False
+
+
+try:  # optional: RA helpers for TEE status
+    from security.ra import attestation_from_env, extract_fingerprint, verify_fingerprint
+except Exception:  # pragma: no cover - optional
+
+    def attestation_from_env():  # type: ignore
+        return None
+
+    def extract_fingerprint(_obj):  # type: ignore
+        class _FP:
+            def to_dict(self):
+                return {}
+
+        return _FP()
+
+    def verify_fingerprint(_obj):  # type: ignore
+        return False
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -93,6 +115,31 @@ setup_fastapi_otel(app)
 @app.get("/healthz")
 def healthz() -> dict[str, Any]:
     return {"ok": True, "service": "proofgate-stub"}
+
+
+@app.get("/v1/tee/status")
+def tee_status() -> dict[str, Any]:
+    """PL/EN: Report bunker/TEE status for UI badges (best-effort)."""
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True", "on"}
+    ra_req = (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True", "on"}
+    att = attestation_from_env()
+    fp = None
+    attested = False
+    try:
+        if att:
+            attested = True
+            fpo = extract_fingerprint(att)
+            fpd = getattr(fpo, "to_dict", lambda: {})()
+            if isinstance(fpd, dict):
+                # validate shape best-effort
+                if verify_fingerprint(fpd):
+                    fp = fpd
+                else:
+                    fp = {k: fpd.get(k) for k in ("vendor", "product", "measurement") if k in fpd}
+    except Exception:
+        attested = False
+        fp = None
+    return {"bunker_on": bunker_on, "ra_required": ra_req, "attested": bool(attested), "ra": fp}
 
 
 def _repo_root() -> Path:
@@ -399,17 +446,27 @@ def publish(req: PublishRequest) -> PublishResponse:
     # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
     bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
     if bunker_on:
-        # Attestation header stub: X-TEE-Attestation must be present and non-empty
-        # Note: In this stubbed variant, we cannot access headers directly (no Request).
-        # Allow PUBLISH path but require that PCO carries a tee.attested flag.
+        # Attestation stub: in this variant we cannot access headers directly (no Request).
+        # Require that PCO carries a tee.attested flag. If TEE_RA_REQUIRE=1, also require
+        # a minimal RA fingerprint under tee.ra {vendor,product,measurement}.
         try:
             tee = req.pco.get("tee") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
             if not (isinstance(tee, dict) and bool(tee.get("attested", False))):
                 return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+            if (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True"}:
+                ra = tee.get("ra") if isinstance(tee, dict) else None
+                ok_ra = (
+                    isinstance(ra, dict)
+                    and isinstance(ra.get("vendor"), str)
+                    and isinstance(ra.get("product"), str)
+                    and isinstance(ra.get("measurement"), str)
+                )
+                if not ok_ra:
+                    return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
-    # W9: Decision (base), then optional gates (PQ/roles)
+    # W9: Decision (base), then optional gates (PQ/roles/FROST)
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     # W9: PQ-crypto gate (optional, stub)
@@ -445,6 +502,17 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
+    # FROST 2-of-3 (optional enforce)
+    frost_env = (os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or "").strip()
+    frost_require = frost_env in {"1", "true", "True"}
+    if frost_require and decision in ("PUBLISH", "CONDITIONAL"):
+        try:
+            cos = req.pco.get("cosign") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            if not (isinstance(cos, dict) and verify_quorum(cos)):
+                decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
+
     if enforce_roles and decision in ("PUBLISH", "CONDITIONAL"):
         # Governance‑aware enforcement: require at least one allowed role per governance pack
         try:
@@ -463,14 +531,30 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             decision = "ABSTAIN"
 
+    # Optionally embed TEE RA fingerprint into PCO (when bunker is on and attestation present)
+    pco_out = req.pco
+    if bunker_on and isinstance(req.pco, dict):
+        try:
+            att = attestation_from_env()
+            if att:
+                fp = extract_fingerprint(att).to_dict()
+                # Merge into tee block without overwriting explicit client-provided RA
+                tee = dict(req.pco.get("tee") or {})
+                tee.setdefault("attested", True)
+                tee.setdefault("ra", fp)
+                pco_out = dict(req.pco)
+                pco_out["tee"] = tee
+        except Exception:
+            pass
+
     ledger: str | None = None
 
     # On PUBLISH, persist a ledger event with a provenance hash of the PCO
 
     if decision == "PUBLISH":
-        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "")
+        case_id = str((pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or "")
 
-        doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+        doc_hash = compute_provenance_hash(pco_out, include_timestamp=False)
 
         rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
 
@@ -495,7 +579,7 @@ def publish(req: PublishRequest) -> PublishResponse:
     except Exception:
         pass
 
-    return PublishResponse(status=decision, pco=req.pco, ledger_ref=ledger)
+    return PublishResponse(status=decision, pco=pco_out, ledger_ref=ledger)
 
 
 # === I/O / ENDPOINTS ===

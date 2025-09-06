@@ -39,6 +39,8 @@
       <div class="card">
         <h2>Summary</h2>
         <table id="sum"><tbody></tbody></table>
+        <div id="tee" class="row"></div>
+        <div id="tee_status" class="row"></div>
       </div>
       <div class="card">
         <h2>Payload</h2>
@@ -57,11 +59,29 @@
         const tb=$("sum").querySelector('tbody'); tb.innerHTML='';
         const rows=[['rid', p.rid], ['version', p.version||p.status||'-'], ['ledger_ref', p.ledger_ref||'-'], ['signatures', (p.signatures||[]).length]];
         for(const [k,v] of rows){ const tr=document.createElement('tr'); tr.innerHTML=`<td>${k}</td><td>${v}</td>`; tb.appendChild(tr); }
+        const tee=$("tee"); tee.innerHTML='';
+        const t=(p.tee||{}); const att=t.attested? 'attested' : 'not-attested';
+        const ra=t.ra||{}; const el=document.createElement('div'); el.className='tag';
+        el.textContent = `TEE: ${att}${ra.vendor?` (${ra.vendor}/${ra.product||'-'})`:''}`; tee.appendChild(el);
       }
       function fillMerkle(p){
         const tb=$("merkle").querySelector('tbody'); tb.innerHTML='';
         const path = p.merkle_proof || p.merklePath || [];
         (path||[]).forEach((it,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${i}</td><td>${it.dir||'-'}</td><td>${it.sibling||'-'}</td>`; tb.appendChild(tr); })
+      }
+      async function teeStatus(){
+        try{
+          const r = await fetch('/v1/tee/status');
+          if(!r.ok) return;
+          const s = await r.json();
+          const el=$("tee_status"); el.innerHTML='';
+          const mk=(k,v)=>{ const span=document.createElement('span'); span.className='tag'; span.textContent=`${k}: ${v}`; return span; };
+          el.appendChild(mk('bunker', s.bunker_on? 'on':'off'));
+          el.appendChild(mk('attested', s.attested? 'yes':'no'));
+          if(s.ra && (s.ra.vendor||s.ra.product)){
+            el.appendChild(mk('TEE', (s.ra.vendor||'')+'/'+(s.ra.product||'')));
+          }
+        }catch{}
       }
       async function load(){
         const rid = $("rid").value.trim();
@@ -72,8 +92,7 @@
         const url = new URL(location.href); url.searchParams.set('rid', rid); $("share").href=url.toString();
       }
       document.getElementById('load').addEventListener('click', load);
-      (function init(){ const rid=q('rid'); if(rid){ $("rid").value=rid; } load(); })();
+      (function init(){ const rid=q('rid'); if(rid){ $("rid").value=rid; } load(); teeStatus(); })();
     </script>
   </body>
   </html>
-

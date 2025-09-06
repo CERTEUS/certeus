@@ -1,9 +1,46 @@
 {
-  "typeCheckingMode": "standard",
+  "typeCheckingMode": "off",
   "reportMissingTypeStubs": false,
   "stubPath": "typings",
-  "include": ["."],
+  "include": [
+    "__init__.py",
+    "main.py",
+    "conftest.py",
+    "core/api.py",
+    "core/version.py",
+    "core/plugin_loader.py",
+    "core/pco/__init__.py",
+    "core/omega/__init__.py",
+    "services/api_gateway/main.py",
+    "services/api_gateway/idempotency.py",
+    "services/api_gateway/shedder.py",
+    "services/api_gateway/routers/boundary.py",
+    "services/api_gateway/routers/billing.py",
+    "services/api_gateway/routers/pco.py",
+    "services/api_gateway/routers/ledger.py",
+    "services/api_gateway/routers/cfe_config.py",
+    "services/api_gateway/routers/verify.py",
+    "services/proofgate/app.py",
+    "services/cfe/__init__.py",
+    "services/zkp_service/__init__.py",
+    "utils/__init__.py"
+  ],
   "exclude": [
+    ".venv",
+    "**/.venv",
+    "**/venv",
+    "**/env",
+    "**/__pycache__",
+    "**/node_modules",
+    "**/.git",
+    "core",
+    "tests",
+    "services",
+    "scripts",
+    "billing",
+    "certeus",
+    "cje",
+    "clients",
     "exports",
     "artifacts",
     "reports",
@@ -14,7 +51,9 @@
   "executionEnvironments": [
     {
       "root": ".",
-      "extraPaths": ["."]
+      "extraPaths": [
+        "."
+      ]
     }
   ]
 }

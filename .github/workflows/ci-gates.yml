@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   ci-gates:
-    runs-on: ${{ fromJSON(vars.CI_GATES_RUNS_ON || '["self-hosted","linux","docker","build"]') }}
+    runs-on: ${{ fromJSON(vars.CI_GATES_RUNS_ON || '"ubuntu-latest"') }}
     permissions:
       contents: write
       pull-requests: write
@@ -141,6 +141,17 @@ jobs:
           python scripts/gates/pco_validation_gate.py || true
           test -f out/pco_validation.json && echo ok > out/pco_validation_ok.txt || true
 
+      - name: SDK Contract Gate (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/gates/sdk_contract_gate.py || true
+          test -f out/sdk_contract_ok.txt && echo ok > out/sdk_contract_ok.txt || true
+
+      - name: Asset-Integrity Gate (enforce)
+        run: |
+          python scripts/gates/asset_integrity_gate.py
+          test -f out/asset_integrity_ok.txt
+
       - name: Plugin Supply-Chain Gate (report-only)
         continue-on-error: true
         run: |
@@ -149,6 +160,14 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/plugin_supply_ok.txt
+      - name: Supply-Chain Enforce (required)
+        run: |
+          python scripts/gates/supply_chain_enforce.py
+          echo ok > out/supply_chain_enforce_ok.txt
+      - name: FROST 2-of-3 Gate (enforce)
+        run: |
+          python scripts/gates/proof_frost_enforce.py
+          test -f out/proof_frost_enforce_ok.txt
       - name: Compliance Mapping (report-only)
         continue-on-error: true
         run: |
@@ -181,6 +200,11 @@ jobs:
         run: |
           python scripts/smokes/cfe_smoke.py > out/cfe_smoke.json
           test -s out/cfe_smoke.json
+      - name: P2P Transport Smoke (report-only)
+        continue-on-error: true
+        run: |
+          python scripts/smokes/p2p_smoke.py || true
+          test -f out/p2p_transport_smoke.json && echo ok > out/p2p_transport_ok.txt || true
       - name: Mark Smokes OK
         if: success()
         run: |
@@ -1045,7 +1069,6 @@ jobs:
       - name: Publish CI status to branch
         continue-on-error: true
         if: always()
-        continue-on-error: true
         run: |
           set -e
           git config user.name "github-actions[bot]"

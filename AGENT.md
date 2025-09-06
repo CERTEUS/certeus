@@ -1,11 +1,23 @@
-# CERTEUS — AGENTS.md (reguły dla agenta)
+# CERTEUS — AGENT.md (reguły dla agenta)
 
-Uwaga: Centralny hub dokumentacji agenta przeniesiony do:
-`docs/AGENTS/README.md` (zawiera skróty do WORKLOG/90_dni/manifestów, bramek i runbooków).
+Uwaga: Centralny hub dokumentacji agenta znajduje się w:
+`docs/AGENTS/README.md` (skrót do WORKLOG/90_dni/manifestów, bramek i runbooków).
+
+Prompty zadań (P0/P1) do bezpośredniego wklejenia dla agentów:
+`docs/AGENT_PROMPTS.md` — każdy agent wybiera swój prompt, tworzy gałąź `feat/<obszar>-<skrót>` od `work/daily` i otwiera PR do `work/daily`.
 
 Zasada niezmienna (TL;DR):
 
 Publikujemy wyłącznie to, co jest jawnie dozwolone przez allowlistę LITE (mirror publiczny). Wszystko inne zostaje w repo prywatnym i przechodzi przez bramki (gitleaks/policy‑scan/branch‑protection) — bez wyjątków.
+
+## Wymagane checki PR/CI (dla wszystkich agentów)
+
+- Ruff lint: `ruff check .` — bez błędów/ostrzeżeń blokujących.
+- Ruff format (check): `ruff format --check` — zero „Would reformat”.
+- Testy: `pytest -q` (lokalnie) i „Tests” workflow na GH (zielony).
+- `ci-gates`: zielone bramki (style/lint/tests/smokes/gates).
+
+Przed każdym pushem: `ruff check . --fix && ruff format . && pytest -q`.
 
 ## Interpreter
 
@@ -69,6 +81,7 @@ UWAGA (oszczędzanie minut GH Actions): push/PR wykonujemy tylko na koniec w pe�
   - Wymagane checki (Branch Protection): `Smoke (ubuntu-latest)`, `Smoke (windows-latest)`, `ci-gates`.
   - Gate’y informacyjne (PR‑only): Gauge‑Gate, Path‑Coverage‑Gate, Boundary‑Rebuild‑Gate, asset‑guard, Proof Gate (push: main; PR: main).
   - Workflow `.github/workflows/promote-daily-to-main.yml` nasłuchuje `ci-gates` i promuje `work/daily → main` (FF/PR auto‑merge).
+  - Auto‑merge PR: gdy FF niemożliwy, workflow tworzy PR `work/daily → main` i włącza auto‑merge (Squash) przez GraphQL.
 - Powiadomienia o porażkach: `.github/workflows/gate-failure-notify.yml` otwiera/aktualizuje Issue z linkiem do błędnego gate’u i blokuje promocję do `main` do czasu naprawy.
 
 ### Uwierzytelnianie push (agent)

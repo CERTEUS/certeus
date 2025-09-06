@@ -68,6 +68,7 @@ import services.api_gateway.routers.proofgate_gateway as proofgate_gateway
 import services.api_gateway.routers.qoc as qoc
 import services.api_gateway.routers.qtm as qtm
 import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze, /v1/sipp
+import services.api_gateway.routers.tee as tee
 import services.api_gateway.routers.upn as upn
 import services.api_gateway.routers.verify as verify
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
@@ -351,6 +352,7 @@ app.include_router(billing_api.router)
 app.include_router(packs.router)
 app.include_router(jwks_router)
 app.include_router(metrics.router)
+app.include_router(tee.router)
 app.include_router(pfs.router)
 app.include_router(p2p.router)
 app.include_router(pfs_dht.router)

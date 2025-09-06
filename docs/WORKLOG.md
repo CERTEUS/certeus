@@ -4,6 +4,19 @@
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
 
+- 2025-09-05 19:45:00Z [A5] (feat/prooffs-mount-xattrs): ProofFS xattrs + mock mount + UI + CI gate
+  - Core: `core/pfs/xattrs.py` (PNIP/PCO RO, sidecar), `core/pfs/mount.py` (mock), adaptery stub FUSE/Dokan
+  - API: `/v1/pfs/xattrs`, `/v1/pfs/materialize`, `/v1/pfs/mount|unmount`; list używa resolvera
+  - UI: `clients/web/public/pfs_inspector.html` — inspektor xattrs (PNIP/PCO)
+  - CI: `scripts/gates/asset_integrity_gate.py` (enforce) + krok w `ci-gates.yml`
+  - Testy: unit/integration/e2e dla xattrs i mount→inspect→unmount; kontrakt OpenAPI – zielony
+
+- 2025-09-05 20:15:00Z [A5] (work/daily): ProofGate — FROST 2‑z‑3 enforce + Gate
+  - Security: `security/frost.py` — quorum stub (aggregate/verify)
+  - ProofGate: publish egzekwuje quorum przy `REQUIRE_COSIGN_ATTESTATIONS=1` (domyślnie off)
+  - CI: `scripts/gates/proof_frost_enforce.py` (enforce) + krok w `ci-gates.yml`
+  - Testy: `tests/services/test_proofgate_frost_enforce.py` — PUBLISH gdy quorum, ABSTAIN bez quorum
+
 - 2025-09-05 06:50:00Z [A7] (work/daily): W14 — Domain Packs MVP (MED/SEC/CODE) + A4 green
   - Plugins: packs_med / packs_sec / packs_code (manifesty + register(api)/handle)
   - Marketplace: ABI baselines zaktualizowane (scripts/packs/update_abi_baselines.py)
@@ -442,3 +455,22 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - - Ruff: lint+format zielone
 >>>>>>> origin/work/daily
 
+- 2025-09-05 17:07:28Z [A11] (main): Porządek + zielony CI + dokumentacja do docs/
+  - CI/Workflows: sanitacja ci-gates/smoke/tests (heredoc, znaki kontrolne, needs), unifikacja Python 3.11 + cache; wymagane checki: Tests/UI Smoke/Canary‑Gate/truth‑gates — zielone na PR i main.
+  - API/Tests: CFE (/cache/warm, /lensing/from_fin), LexQFT (dispute profiles, /coverage/from_fin, /renorm, /virtual_pairs), PFS (DHT TTL/capacity, /sign_path, /verify_path), Billing (alias units), Shedder (ENV) — full suite: 340 passed, 5 skipped.
+  - Docs: przeniesienie dokumentów do docs/ (CONTRIBUTING/DEV_WORKFLOW/GOVERNANCE/SECURITY/WORKLOG/Blueprint/Tree), pozostawione tylko README.md i AGENT.md w root; guard wewnętrznych dokumentów (pre‑commit + workflow) aktywny; .gitignore rozszerzony.
+  - Gałęzie: posprzątane zdalne (feat/*, work/a12-*); pozostały tylko main i work/daily (+ci-status); PR‑y zbiorcze scalone.
+  - Stan: main i work/daily — zielone; branch protection skonfigurowany; brak czerwonych bramek; openapi-pages publikuje.
+  - Braki vs Plan P0/P1:
+    * ProofFS 3× platformy: częściowo (API + sign/verify); brak macFUSE/Dokan, xattrs PNIP/PCO, mount/unmount UI, inspektor xattrs, Asset‑Integrity Gate (do dodania w CI).
+    * FROST 2‑z‑3 (ProofGate): brak (TODO: security/frost.py, enforce w publish + gate w CI).
+    * TEE/bunker/RA→PCO: częściowo (nagłówki TEE w devices); brak pełnej integracji w ProofGate i polityk bunkra.
+    * SYNAPSY P2P: szkielet p2p routera; brak transportu QUIC/Noise i SPIFFE/SPIRE.
+    * Supply‑chain enforce: brak enforce (mamy guard docs); TODO: SBOM/provenance + cosign enforce w ci-gates.
+    * SDK 2.0 (TS/Go): brak; TODO: kontrakty i smoke SDK.
+    * LEXENITH pipeline: częściowo; brak pełnego lock→motion→publish→Why‑Not z PCO ścieżki.
+    * FIN/LEX dashboardy: częściowo (SRE p95); brak dedykowanych paneli FIN/LEX.
+  - Zmiany w CI do dorobienia (A8): Asset‑Integrity Gate (enforce), FROST step w Proof Gate, P2P smoke, SDK Contract Gate, enforce supply‑chain flags.
+- 2025-09-05 18:05:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS

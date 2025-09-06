@@ -59,7 +59,15 @@ def _bunker_ready(repo_root: Path) -> bool:
             return False
         if p.suffix == ".json":
             try:
-                json.loads(p.read_text(encoding="utf-8"))
+                obj = json.loads(p.read_text(encoding="utf-8"))
+                # Optional RA verify (structure only)
+                from security.ra import extract_fingerprint, verify_fingerprint
+
+                fp_ok = verify_fingerprint(obj) or verify_fingerprint(extract_fingerprint(obj).to_dict())
+                if not fp_ok:
+                    # Not fatal unless explicitly required by TEE_RA_REQUIRE
+                    if _is_on(os.getenv("TEE_RA_REQUIRE")):
+                        return False
             except Exception:
                 return False
         return True
@@ -94,7 +102,11 @@ def _write_summary(text: str) -> None:
 
 
 def main() -> int:
-    repo = Path(__file__).resolve().parents[2]
+    # Try to detect repo root from __file__ if available, otherwise use current directory
+    try:
+        repo = Path(__file__).resolve().parents[2]
+    except NameError:
+        repo = Path.cwd()
 
     bunker = _is_on(os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER"))
     pq_ready = _is_on(os.getenv("PQCRYPTO_READY"))
