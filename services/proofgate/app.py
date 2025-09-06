@@ -604,6 +604,49 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             pass
 
+    # Optionally embed PQ-crypto (ML-DSA) signature over provenance hash
+    if isinstance(req.pco, dict):
+        try:
+            # Canonical provenance hash (stable)
+            _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+
+            def _b64u(b: bytes) -> str:
+                import base64 as _b64
+
+                return _b64.urlsafe_b64encode(b).decode("ascii").rstrip("=")
+
+            sk_b64 = (os.getenv("PQ_MLDSA_SK_B64URL") or "").strip()
+            pk_b64 = (os.getenv("PQ_MLDSA_PK_B64URL") or "").strip()
+            alg = (os.getenv("PQ_MLDSA_ALG") or "Dilithium3").strip()
+            pq_ready_env = (os.getenv("PQCRYPTO_READY") or "").strip() in {"1", "true", "True"}
+
+            pq_block: dict[str, Any] = {"ready": bool(pq_ready_env)}
+            if sk_b64:
+                try:
+                    from security import pq_mldsa as _pq
+                    import base64 as _b64
+
+                    pad = "=" * (-len(sk_b64) % 4)
+                    sk_raw = _b64.urlsafe_b64decode((sk_b64 + pad).encode("ascii"))
+                    sig = _pq.sign(_doc_hash.encode("utf-8"), sk_raw, alg=alg)
+                    pq_block.update({"alg": alg, "sig_b64": _b64u(sig)})
+                    if pk_b64:
+                        pq_block["pub_b64"] = pk_b64
+                    pq_block["ready"] = True
+                except Exception:
+                    # Keep env marker only
+                    pass
+            # Merge into crypto.pq without clobbering explicit client-provided fields
+            pco_out = dict(pco_out or req.pco)
+            crypto = dict((pco_out.get("crypto") or {}))
+            pq_merged = dict((crypto.get("pq") or {}))
+            for k, v in pq_block.items():
+                pq_merged.setdefault(k, v)
+            crypto["pq"] = pq_merged
+            pco_out["crypto"] = crypto
+        except Exception:
+            pass
+
     ledger: str | None = None
 
     # On PUBLISH, persist a ledger event with a provenance hash of the PCO
@@ -613,7 +656,8 @@ def publish(req: PublishRequest) -> PublishResponse:
             (pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or ""
         )
 
-        doc_hash = compute_provenance_hash(pco_out, include_timestamp=False)
+        # Ledger must reflect the original client-provided PCO (stable hash)
+        doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
 
         rec = ledger_service.record_event(
             event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash

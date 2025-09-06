@@ -1,249 +1,250 @@
-{"ts": "2025-09-06T15:13:05.157382Z", "case_id": "stats-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.161274Z", "case_id": "stats-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.189281Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.18, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.192913Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.12, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.196707Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.104348, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.201512Z", "case_id": "lexqft-case", "barrier_energy": 0.0, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.206363Z", "case_id": "lexqft-case", "barrier_energy": 0.7, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.215596Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.219908Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.224779Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.228562Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.233835Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.262735, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.237775Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.160582, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.242473Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.246287Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.250959Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.255178Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.017531, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.260187Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.442919, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.264122Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.216058, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.268874Z", "case_id": "lexqft-case", "barrier_energy": 1.978228405301699, "p_tunnel": 0.019578, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.272775Z", "case_id": "lexqft-case", "barrier_energy": 1.978228405301699, "p_tunnel": 0.016859, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.277721Z", "case_id": "lexqft-case", "barrier_energy": 1.9052806658049037, "p_tunnel": 0.081122, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.281482Z", "case_id": "lexqft-case", "barrier_energy": 1.9052806658049037, "p_tunnel": 0.033974, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.286578Z", "case_id": "lexqft-case", "barrier_energy": 1.9824494637607484, "p_tunnel": 0.023083, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.290285Z", "case_id": "lexqft-case", "barrier_energy": 1.9824494637607484, "p_tunnel": 0.016682, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.294865Z", "case_id": "lexqft-case", "barrier_energy": 1.62710837103603, "p_tunnel": 0.037805, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.298655Z", "case_id": "lexqft-case", "barrier_energy": 1.62710837103603, "p_tunnel": 0.01715, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.303488Z", "case_id": "lexqft-case", "barrier_energy": 1.3534909947387779, "p_tunnel": 0.037136, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.307365Z", "case_id": "lexqft-case", "barrier_energy": 1.3534909947387779, "p_tunnel": 0.018082, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.312056Z", "case_id": "lexqft-case", "barrier_energy": 1.3534909947387779, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.315889Z", "case_id": "lexqft-case", "barrier_energy": 1.3534909947387779, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.320539Z", "case_id": "lexqft-case", "barrier_energy": 1.4345954833348151, "p_tunnel": 0.411393, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.324291Z", "case_id": "lexqft-case", "barrier_energy": 1.4345954833348151, "p_tunnel": 0.200315, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.329868Z", "case_id": "lexqft-case", "barrier_energy": 1.4345954833348151, "p_tunnel": 0.411393, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.333584Z", "case_id": "lexqft-case", "barrier_energy": 1.4345954833348151, "p_tunnel": 0.244286, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.338582Z", "case_id": "lexqft-case", "barrier_energy": 1.4345954833348151, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.342400Z", "case_id": "lexqft-case", "barrier_energy": 1.4345954833348151, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.347555Z", "case_id": "lexqft-case", "barrier_energy": 1.282279688860902, "p_tunnel": 0.212977, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.351613Z", "case_id": "lexqft-case", "barrier_energy": 1.282279688860902, "p_tunnel": 0.065611, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.356345Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.360082Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.364691Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.368438Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.015403, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.373256Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.377042Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.015403, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.381646Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.3, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.385751Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.09242, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.390786Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.3, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.394657Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.146341, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.399180Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.403035Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.407534Z", "case_id": "lexqft-case", "barrier_energy": 0.7161815582816993, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.411287Z", "case_id": "lexqft-case", "barrier_energy": 0.7161815582816993, "p_tunnel": 0.016462, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.416026Z", "case_id": "lexqft-case", "barrier_energy": 0.7161815582816993, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.420018Z", "case_id": "lexqft-case", "barrier_energy": 0.7161815582816993, "p_tunnel": 0.016462, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.424906Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.428712Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.016462, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.433411Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.437134Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.443384Z", "case_id": "lexqft-case", "barrier_energy": 0.5747372177099059, "p_tunnel": 0.049427, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.447056Z", "case_id": "lexqft-case", "barrier_energy": 0.5747372177099059, "p_tunnel": 0.016349, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.451700Z", "case_id": "lexqft-case", "barrier_energy": 0.5747372177099059, "p_tunnel": 0.049427, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.455481Z", "case_id": "lexqft-case", "barrier_energy": 0.5747372177099059, "p_tunnel": 0.016349, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.459931Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.049427, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.463654Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.016349, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.468253Z", "case_id": "lexqft-case", "barrier_energy": 1.0231925821253376, "p_tunnel": 0.049085, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.472044Z", "case_id": "lexqft-case", "barrier_energy": 1.0231925821253376, "p_tunnel": 0.016236, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.477427Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.481235Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.485932Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.489679Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.494949Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.498851Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.504372Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.508289Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.513029Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.516780Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.521895Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.525745Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.530405Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.534125Z", "case_id": "lexqft-case", "barrier_energy": 0.6793635961157294, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.538781Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.542585Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.547496Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.033333, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.551151Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.555877Z", "case_id": "lexqft-case", "barrier_energy": 1.9999999999999998, "p_tunnel": 0.025641, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.559668Z", "case_id": "lexqft-case", "barrier_energy": 1.9999999999999998, "p_tunnel": 0.018762, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.564330Z", "case_id": "lexqft-case", "barrier_energy": 0.4448494908933678, "p_tunnel": 0.025649, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.567999Z", "case_id": "lexqft-case", "barrier_energy": 0.4448494908933678, "p_tunnel": 0.022761, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.572627Z", "case_id": "lexqft-case", "barrier_energy": 0.4448494908933678, "p_tunnel": 0.025649, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.576585Z", "case_id": "lexqft-case", "barrier_energy": 0.4448494908933678, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.582029Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.025649, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.585951Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.590744Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.594581Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.600785Z", "case_id": "lexqft-case", "barrier_energy": 0.5942051628321261, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.604579Z", "case_id": "lexqft-case", "barrier_energy": 0.5942051628321261, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.609246Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.612897Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.617666Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.621436Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.626400Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.630192Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.635044Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.027205, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.639123Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.644812Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.648656Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.653618Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.295859, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.657412Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.088441, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.662007Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.665846Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.670677Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.674477Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.679129Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.682940Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.014947, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.687932Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.076566, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.691809Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.022888, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.696617Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.076566, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.700481Z", "case_id": "lexqft-case", "barrier_energy": 0.7836337180322595, "p_tunnel": 0.037349, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.705963Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.305341, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.709839Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.179397, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.714426Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.718114Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.722860Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.726583Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.731200Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.735226Z", "case_id": "lexqft-case", "barrier_energy": 1.3684398860433533, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.743695Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.747551Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.752155Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.755930Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.311468, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.760992Z", "case_id": "lexqft-case", "barrier_energy": 0.25, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.764794Z", "case_id": "lexqft-case", "barrier_energy": 0.9301842007302294, "p_tunnel": 0.301361, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.769365Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.773081Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.16, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.778462Z", "case_id": "lexqft-case", "barrier_energy": 0.20527498994713725, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.782224Z", "case_id": "lexqft-case", "barrier_energy": 1.2, "p_tunnel": 0.113208, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.786777Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.159947, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.790620Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.795263Z", "case_id": "lexqft-case", "barrier_energy": 0.5161040024572368, "p_tunnel": 0.061983, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.799258Z", "case_id": "lexqft-case", "barrier_energy": 1.2898931718989508, "p_tunnel": 0.0368, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.803891Z", "case_id": "lexqft-case", "barrier_energy": 0.7, "p_tunnel": 0.245903, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.807729Z", "case_id": "lexqft-case", "barrier_energy": 1.0927147954908052, "p_tunnel": 0.153264, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.812789Z", "case_id": "lexqft-case", "barrier_energy": 0.49994272708182635, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.816665Z", "case_id": "lexqft-case", "barrier_energy": 1.0411974075347452, "p_tunnel": 0.039512, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.821222Z", "case_id": "lexqft-case", "barrier_energy": 0.2677764682606184, "p_tunnel": 0.357067, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.824906Z", "case_id": "lexqft-case", "barrier_energy": 1.9797287981889578, "p_tunnel": 0.037326, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.829463Z", "case_id": "lexqft-case", "barrier_energy": 0.7853726956997449, "p_tunnel": 0.451756, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.833287Z", "case_id": "lexqft-case", "barrier_energy": 1.333122163144037, "p_tunnel": 0.241959, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.838359Z", "case_id": "lexqft-case", "barrier_energy": 0.7853726956997449, "p_tunnel": 0.451756, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.842630Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.394218, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.847211Z", "case_id": "lexqft-case", "barrier_energy": 0.7391596449306725, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.851033Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.394218, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.856058Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.859875Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.394218, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.865369Z", "case_id": "lexqft-case", "barrier_energy": 0.7391596449306725, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.869251Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.873779Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.877479Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.882329Z", "case_id": "lexqft-case", "barrier_energy": 0.7829006457059309, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.886156Z", "case_id": "lexqft-case", "barrier_energy": 1.986640383217102, "p_tunnel": 0.202888, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.891669Z", "case_id": "lexqft-case", "barrier_energy": 0.7829006457059309, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.895763Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.900226Z", "case_id": "lexqft-case", "barrier_energy": 0.7829006457059309, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.903961Z", "case_id": "lexqft-case", "barrier_energy": 1.0882685779526138, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.908551Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.912295Z", "case_id": "lexqft-case", "barrier_energy": 1.0882685779526138, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.917265Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.921032Z", "case_id": "lexqft-case", "barrier_energy": 1.0882685779526138, "p_tunnel": 0.085938, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.925526Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.929221Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.106667, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.935179Z", "case_id": "lexqft-case", "barrier_energy": 0.3828664212823809, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.938925Z", "case_id": "lexqft-case", "barrier_energy": 1.3642802825677767, "p_tunnel": 0.14624, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.943900Z", "case_id": "lexqft-case", "barrier_energy": 0.3828664212823809, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.947667Z", "case_id": "lexqft-case", "barrier_energy": 1.3642802825677767, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.953528Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.957994Z", "case_id": "lexqft-case", "barrier_energy": 1.3642802825677767, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.963910Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.969098Z", "case_id": "lexqft-case", "barrier_energy": 1.3642802825677767, "p_tunnel": 0.063434, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.978010Z", "case_id": "lexqft-case", "barrier_energy": 0.33, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.981834Z", "case_id": "lexqft-case", "barrier_energy": 1.076777287438888, "p_tunnel": 0.180645, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.986446Z", "case_id": "lexqft-case", "barrier_energy": 0.33, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.990244Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.221105, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.994962Z", "case_id": "lexqft-case", "barrier_energy": 0.41457208835535553, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:05.998796Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.221105, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.003810Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.007459Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.221105, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.012259Z", "case_id": "lexqft-case", "barrier_energy": 0.41457208835535553, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.015973Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.021560Z", "case_id": "lexqft-case", "barrier_energy": 0.28, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.025266Z", "case_id": "lexqft-case", "barrier_energy": 1.4891941485731668, "p_tunnel": 0.205217, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.029833Z", "case_id": "lexqft-case", "barrier_energy": 0.28, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.033716Z", "case_id": "lexqft-case", "barrier_energy": 1.4891941485731668, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.038227Z", "case_id": "lexqft-case", "barrier_energy": 0.28, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.042009Z", "case_id": "lexqft-case", "barrier_energy": 1.4891941485731668, "p_tunnel": 0.0787, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.046536Z", "case_id": "lexqft-case", "barrier_energy": 0.28, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.050258Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.149333, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.055043Z", "case_id": "lexqft-case", "barrier_energy": 0.28, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.058737Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.064595Z", "case_id": "lexqft-case", "barrier_energy": 0.6807174438190358, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.068734Z", "case_id": "lexqft-case", "barrier_energy": 0.99999, "p_tunnel": 0.384796, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.074039Z", "case_id": "lexqft-case", "barrier_energy": 0.6807174438190358, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.078120Z", "case_id": "lexqft-case", "barrier_energy": 0.99999, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.082951Z", "case_id": "lexqft-case", "barrier_energy": 0.6807174438190358, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.087614Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.092254Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.096017Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.104369Z", "case_id": "lexqft-case", "barrier_energy": 0.35911459338228835, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.109503Z", "case_id": "lexqft-case", "barrier_energy": 1.8808535739810783, "p_tunnel": 0.221308, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.116215Z", "case_id": "lexqft-case", "barrier_energy": 0.35911459338228835, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.120134Z", "case_id": "lexqft-case", "barrier_energy": 1.0963418911877554, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.124777Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.128993Z", "case_id": "lexqft-case", "barrier_energy": 1.0963418911877554, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.134457Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.139110Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.144830Z", "case_id": "lexqft-case", "barrier_energy": 0.2611604559230441, "p_tunnel": 0.135228, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.150080Z", "case_id": "lexqft-case", "barrier_energy": 0.9346569096465938, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.156520Z", "case_id": "lexqft-case", "barrier_energy": 0.2611604559230441, "p_tunnel": 0.135228, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.161877Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.167169Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.176582, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.170942Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.176218Z", "case_id": "lexqft-case", "barrier_energy": 0.46427328702791504, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.180868Z", "case_id": "lexqft-case", "barrier_energy": 1.7742670964098588, "p_tunnel": 0.315283, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.187084Z", "case_id": "lexqft-case", "barrier_energy": 0.46427328702791504, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.193096Z", "case_id": "lexqft-case", "barrier_energy": 1.7742670964098588, "p_tunnel": 0.101926, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.199244Z", "case_id": "lexqft-case", "barrier_energy": 0.46427328702791504, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.205292Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.247612, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.212355Z", "case_id": "lexqft-case", "barrier_energy": 0.46427328702791504, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.218318Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.224898Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.231079Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.247612, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.237524Z", "case_id": "lexqft-case", "barrier_energy": 0.48957177505160465, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.241464Z", "case_id": "lexqft-case", "barrier_energy": 1.0626754835161076, "p_tunnel": 0.317657, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.246787Z", "case_id": "lexqft-case", "barrier_energy": 0.7164873249412482, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.251352Z", "case_id": "lexqft-case", "barrier_energy": 1.0626754835161076, "p_tunnel": 0.317657, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.257274Z", "case_id": "lexqft-case", "barrier_energy": 0.7164873249412482, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.262356Z", "case_id": "lexqft-case", "barrier_energy": 1.0626754835161076, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.267495Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.271667Z", "case_id": "lexqft-case", "barrier_energy": 1.0626754835161076, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.276264Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.280018Z", "case_id": "lexqft-case", "barrier_energy": 1.0626754835161076, "p_tunnel": 0.088671, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.285931Z", "case_id": "lexqft-case", "barrier_energy": 0.6105960228961794, "p_tunnel": 0.393059, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.289744Z", "case_id": "lexqft-case", "barrier_energy": 1.8561009796977355, "p_tunnel": 0.10288, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.294641Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.298423Z", "case_id": "lexqft-case", "barrier_energy": 1.8561009796977355, "p_tunnel": 0.10288, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.302955Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.306702Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.266667, "path": ["start", "reflect"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.312240Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
-{"ts": "2025-09-06T15:13:06.316464Z", "case_id": "lexqft-case", "barrier_energy": 5.0, "p_tunnel": 0.000891, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.310289Z", "case_id": "stats-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.314105Z", "case_id": "stats-case", "barrier_energy": 0.8, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.341631Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.18, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.346701Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.12, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.352170Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.104348, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.358675Z", "case_id": "lexqft-case", "barrier_energy": 0.0, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.363570Z", "case_id": "lexqft-case", "barrier_energy": 0.7, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.374613Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.379118Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.383955Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.387881Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.392885Z", "case_id": "lexqft-case", "barrier_energy": 1.6431605436041312, "p_tunnel": 0.132582, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.396639Z", "case_id": "lexqft-case", "barrier_energy": 1.6431605436041312, "p_tunnel": 0.059112, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.401238Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.404995Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.409633Z", "case_id": "lexqft-case", "barrier_energy": 0.4173226046555214, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.413454Z", "case_id": "lexqft-case", "barrier_energy": 0.4173226046555214, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.418270Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.421893Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.427250Z", "case_id": "lexqft-case", "barrier_energy": 0.24260146289347767, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.431425Z", "case_id": "lexqft-case", "barrier_energy": 0.24260146289347767, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.436092Z", "case_id": "lexqft-case", "barrier_energy": 0.355978482820159, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.439957Z", "case_id": "lexqft-case", "barrier_energy": 0.355978482820159, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.444664Z", "case_id": "lexqft-case", "barrier_energy": 1.15, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.448322Z", "case_id": "lexqft-case", "barrier_energy": 1.15, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.452813Z", "case_id": "lexqft-case", "barrier_energy": 1.5759848395826714, "p_tunnel": 0.042633, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.456486Z", "case_id": "lexqft-case", "barrier_energy": 1.5759848395826714, "p_tunnel": 0.014518, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.460864Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.030422, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.464499Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.018279, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.469387Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.030422, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.473051Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.024299, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.477903Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.030422, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.481805Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.024299, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.486450Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.490446Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.496172Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.049812, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.500040Z", "case_id": "lexqft-case", "barrier_energy": 1.0125555760480973, "p_tunnel": 0.024299, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.505820Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.509682Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.514379Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.025007, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.517976Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.019979, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.523004Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.049948, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.526733Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.019979, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.531549Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.04986, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.535394Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.019979, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.541094Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.545185Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.550049Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.553895Z", "case_id": "lexqft-case", "barrier_energy": 1.0035013175566976, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.559533Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.564174Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.569435Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.177723, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.574025Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.077921, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.579969Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.177723, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.584398Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.119007, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.590192Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.243965, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.594980Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.119007, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.600859Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.605908Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.613451Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.618426Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.625070Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.039384, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.629467Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.019212, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.634690Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.027176, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.640196Z", "case_id": "lexqft-case", "barrier_energy": 1.8984666716318617, "p_tunnel": 0.019212, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.647529Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.245593, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.652649Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.110343, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.657263Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.263, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.661418Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.110343, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.666743Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.263, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.671200Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.128293, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.676545Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.680869Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.685818Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.689885Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.695006Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.698860Z", "case_id": "lexqft-case", "barrier_energy": 0.9398399355465867, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.705634Z", "case_id": "lexqft-case", "barrier_energy": 1.3087440156108274, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.709510Z", "case_id": "lexqft-case", "barrier_energy": 1.3087440156108274, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.713947Z", "case_id": "lexqft-case", "barrier_energy": 1.4188295230353882, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.717693Z", "case_id": "lexqft-case", "barrier_energy": 1.4188295230353882, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.722668Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.726670Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.731254Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.378052, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.734970Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.111274, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.739656Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.378052, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.743969Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.184416, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.748570Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.752250Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.757270Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.760961Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.765557Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.769237Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.774931Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.779756Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.784851Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.788629Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.793699Z", "case_id": "lexqft-case", "barrier_energy": 0.6339552237671433, "p_tunnel": 0.290212, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.797441Z", "case_id": "lexqft-case", "barrier_energy": 0.6339552237671433, "p_tunnel": 0.189496, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.802098Z", "case_id": "lexqft-case", "barrier_energy": 0.6339552237671433, "p_tunnel": 0.576886, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.805941Z", "case_id": "lexqft-case", "barrier_energy": 0.6339552237671433, "p_tunnel": 0.189496, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.811114Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.814863Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.819550Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.823235Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.827871Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.3, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.831494Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.146341, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.835914Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.3, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.839711Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.146341, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.844477Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.848205Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.02439, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.852828Z", "case_id": "lexqft-case", "barrier_energy": 1.2263595859939411, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.856519Z", "case_id": "lexqft-case", "barrier_energy": 1.2263595859939411, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.861275Z", "case_id": "lexqft-case", "barrier_energy": 1.6221090460235676, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.864848Z", "case_id": "lexqft-case", "barrier_energy": 1.6221090460235676, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.869453Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.873107Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.877632Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.881211Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.885819Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.889437Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.895200Z", "case_id": "lexqft-case", "barrier_energy": 0.5159986232424287, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.898894Z", "case_id": "lexqft-case", "barrier_energy": 0.5159986232424287, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.903500Z", "case_id": "lexqft-case", "barrier_energy": 0.5159986232424287, "p_tunnel": 0.028874, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.907231Z", "case_id": "lexqft-case", "barrier_energy": 0.5159986232424287, "p_tunnel": 0.014953, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.912141Z", "case_id": "lexqft-case", "barrier_energy": 0.5159986232424287, "p_tunnel": 0.05, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.915905Z", "case_id": "lexqft-case", "barrier_energy": 0.5159986232424287, "p_tunnel": 0.014953, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.924167Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.927918Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.932521Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.936238Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.941482Z", "case_id": "lexqft-case", "barrier_energy": 0.48320142308000463, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.945402Z", "case_id": "lexqft-case", "barrier_energy": 1.032147051646251, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.949915Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.953692Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.21735, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.958149Z", "case_id": "lexqft-case", "barrier_energy": 0.4743688388405564, "p_tunnel": 0.412369, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.961865Z", "case_id": "lexqft-case", "barrier_energy": 1.9142698715287256, "p_tunnel": 0.080192, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.967002Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.970908Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.975788Z", "case_id": "lexqft-case", "barrier_energy": 0.52774302638074, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.980004Z", "case_id": "lexqft-case", "barrier_energy": 0.9908617148222133, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.984691Z", "case_id": "lexqft-case", "barrier_energy": 0.535724078502521, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.988504Z", "case_id": "lexqft-case", "barrier_energy": 1.7715315812137749, "p_tunnel": 0.29637, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.994828Z", "case_id": "lexqft-case", "barrier_energy": 0.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:53.999196Z", "case_id": "lexqft-case", "barrier_energy": 1.1, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.003882Z", "case_id": "lexqft-case", "barrier_energy": 0.3954062987398741, "p_tunnel": 0.308595, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.007762Z", "case_id": "lexqft-case", "barrier_energy": 1.1489458732446949, "p_tunnel": 0.101659, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.012207Z", "case_id": "lexqft-case", "barrier_energy": 0.29691513413543624, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.015982Z", "case_id": "lexqft-case", "barrier_energy": 0.99, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.020944Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.024711Z", "case_id": "lexqft-case", "barrier_energy": 0.99, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.029539Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.033389Z", "case_id": "lexqft-case", "barrier_energy": 0.99, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.038102Z", "case_id": "lexqft-case", "barrier_energy": 0.637342015165717, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.041780Z", "case_id": "lexqft-case", "barrier_energy": 1.2802129748517856, "p_tunnel": 0.247719, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.046870Z", "case_id": "lexqft-case", "barrier_energy": 0.637342015165717, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.050813Z", "case_id": "lexqft-case", "barrier_energy": 1.2802129748517856, "p_tunnel": 0.220433, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.055524Z", "case_id": "lexqft-case", "barrier_energy": 0.637342015165717, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.059257Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.339916, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.063844Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.067615Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.339916, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.072741Z", "case_id": "lexqft-case", "barrier_energy": 0.637342015165717, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.076530Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.081031Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.084750Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.090000Z", "case_id": "lexqft-case", "barrier_energy": 0.7477370670712369, "p_tunnel": 0.187824, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.093728Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.081416, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.098101Z", "case_id": "lexqft-case", "barrier_energy": 0.7477370670712369, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.101701Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.106136Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.109750Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.114419Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.118336Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.123162Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.127055Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.106667, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.132224Z", "case_id": "lexqft-case", "barrier_energy": 0.6787969306782176, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.135860Z", "case_id": "lexqft-case", "barrier_energy": 1.9768680631239124, "p_tunnel": 0.281667, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.140353Z", "case_id": "lexqft-case", "barrier_energy": 0.6787969306782176, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.144252Z", "case_id": "lexqft-case", "barrier_energy": 1.9768680631239124, "p_tunnel": 0.030934, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.148822Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.152555Z", "case_id": "lexqft-case", "barrier_energy": 1.9768680631239124, "p_tunnel": 0.030934, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.156889Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.160515Z", "case_id": "lexqft-case", "barrier_energy": 1.9768680631239124, "p_tunnel": 0.037556, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.166746Z", "case_id": "lexqft-case", "barrier_energy": 0.6158789432892275, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.170728Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.392141, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.175163Z", "case_id": "lexqft-case", "barrier_energy": 0.6158789432892275, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.178888Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.435713, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.183407Z", "case_id": "lexqft-case", "barrier_energy": 0.6158789432892275, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.187050Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.191551Z", "case_id": "lexqft-case", "barrier_energy": 0.6158789432892275, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.195182Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.328469, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.199895Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.203568Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.328469, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.208850Z", "case_id": "lexqft-case", "barrier_energy": 0.3333333333333333, "p_tunnel": 0.270622, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.212581Z", "case_id": "lexqft-case", "barrier_energy": 1.5651117611190575, "p_tunnel": 0.049282, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.216947Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.451037, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.221040Z", "case_id": "lexqft-case", "barrier_energy": 1.5651117611190575, "p_tunnel": 0.049282, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.225734Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.229628Z", "case_id": "lexqft-case", "barrier_energy": 1.5651117611190575, "p_tunnel": 0.052446, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.235917Z", "case_id": "lexqft-case", "barrier_energy": 0.2529428248823129, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.239627Z", "case_id": "lexqft-case", "barrier_energy": 0.9400878995203726, "p_tunnel": 0.238839, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.245021Z", "case_id": "lexqft-case", "barrier_energy": 0.2529428248823129, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.248796Z", "case_id": "lexqft-case", "barrier_energy": 0.9400878995203726, "p_tunnel": 0.12915, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.253215Z", "case_id": "lexqft-case", "barrier_energy": 0.2529428248823129, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.256907Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.134903, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.261435Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.265143Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.134903, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.270382Z", "case_id": "lexqft-case", "barrier_energy": 0.2529428248823129, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.274055Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.279075Z", "case_id": "lexqft-case", "barrier_energy": 0.47158722951769, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.282817Z", "case_id": "lexqft-case", "barrier_energy": 1.6448824298884321, "p_tunnel": 0.033516, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.287230Z", "case_id": "lexqft-case", "barrier_energy": 0.47158722951769, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.290928Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.297326Z", "case_id": "lexqft-case", "barrier_energy": 0.4898335664411244, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.300964Z", "case_id": "lexqft-case", "barrier_energy": 1.9504946063503077, "p_tunnel": 0.09446, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.305446Z", "case_id": "lexqft-case", "barrier_energy": 0.4898335664411244, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.309091Z", "case_id": "lexqft-case", "barrier_energy": 1.9504946063503077, "p_tunnel": 0.031125, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.313719Z", "case_id": "lexqft-case", "barrier_energy": 0.4898335664411244, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.317693Z", "case_id": "lexqft-case", "barrier_energy": 1.9504946063503077, "p_tunnel": 0.093798, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.322424Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.326057Z", "case_id": "lexqft-case", "barrier_energy": 1.9504946063503077, "p_tunnel": 0.093798, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.330340Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.333858Z", "case_id": "lexqft-case", "barrier_energy": 1.9504946063503077, "p_tunnel": 0.031125, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.338907Z", "case_id": "lexqft-case", "barrier_energy": 0.37900087778999664, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.342611Z", "case_id": "lexqft-case", "barrier_energy": 0.99999, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.346969Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.350752Z", "case_id": "lexqft-case", "barrier_energy": 0.99999, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.355742Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.359453Z", "case_id": "lexqft-case", "barrier_energy": 1.4378808086978312, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.364096Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.368157Z", "case_id": "lexqft-case", "barrier_energy": 1.4378808086978312, "p_tunnel": 0.059013, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.373566Z", "case_id": "lexqft-case", "barrier_energy": 0.22678782431394381, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.377091Z", "case_id": "lexqft-case", "barrier_energy": 1.5, "p_tunnel": 0.191137, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.381561Z", "case_id": "lexqft-case", "barrier_energy": 0.22678782431394381, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.385389Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.366346, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.389896Z", "case_id": "lexqft-case", "barrier_energy": 0.22678782431394381, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.393599Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.120954, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.397855Z", "case_id": "lexqft-case", "barrier_energy": 0.22678782431394381, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.401570Z", "case_id": "lexqft-case", "barrier_energy": 0.9, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.407659Z", "case_id": "lexqft-case", "barrier_energy": 0.676344012738201, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.411377Z", "case_id": "lexqft-case", "barrier_energy": 1.8443546034999088, "p_tunnel": 0.031916, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.416067Z", "case_id": "lexqft-case", "barrier_energy": 0.676344012738201, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.419802Z", "case_id": "lexqft-case", "barrier_energy": 1.8443546034999088, "p_tunnel": 0.140445, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.424430Z", "case_id": "lexqft-case", "barrier_energy": 0.676344012738201, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.429199Z", "case_id": "lexqft-case", "barrier_energy": 1.8443546034999088, "p_tunnel": 0.031916, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.434050Z", "case_id": "lexqft-case", "barrier_energy": 0.2, "p_tunnel": 0.04, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.437855Z", "case_id": "lexqft-case", "barrier_energy": 1.8443546034999088, "p_tunnel": 0.031916, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.444213Z", "case_id": "lexqft-case", "barrier_energy": 1.0, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:54.447888Z", "case_id": "lexqft-case", "barrier_energy": 5.0, "p_tunnel": 0.000891, "path": ["start", "reflect"], "counter_arguments": []}
+{"ts": "2025-09-06T15:21:55.478183Z", "case_id": "pfs-demo-1", "barrier_energy": 1.0, "p_tunnel": 0.95, "path": ["start", "barrier", "post-barrier"], "counter_arguments": []}
