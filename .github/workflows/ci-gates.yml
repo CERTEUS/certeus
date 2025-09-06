@@ -185,6 +185,17 @@ jobs:
           python -m pip install fusepy || true
           python -m pytest -q tests/services/test_pfs_fuse_linux.py || true
           echo ok > out/pfs_fuse_smoke_ok.txt
+      - name: P2P QUIC Smoke (report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install aioquic || true
+          python - << 'PY'
+          try:
+              import aioquic  # noqa: F401
+              print('aioquic: OK')
+          except Exception as e:
+              print('aioquic: FAIL', e)
+          PY
       - name: FROST 2-of-3 Gate (enforce)
         run: |
           python scripts/gates/proof_frost_enforce.py
