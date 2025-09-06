@@ -169,6 +169,34 @@ jobs:
               with open(os.environ.get('GITHUB_ENV',''), 'a', encoding='utf-8') as f:
                   f.write('PQCRYPTO_READY=1\n')
           PY
+      - name: Generate signing keys (Ed25519 + ML-DSA) for CI
+        run: |
+          python - << 'PY'
+          import base64, os
+          from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+          from cryptography.hazmat.primitives import serialization
+          # Ed25519
+          sk = Ed25519PrivateKey.generate()
+          sk_raw = sk.private_bytes(encoding=serialization.Encoding.Raw, format=serialization.PrivateFormat.Raw, encryption_algorithm=serialization.NoEncryption())
+          pk_raw = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+          # Export to GITHUB_ENV
+          with open(os.environ['GITHUB_ENV'],'a',encoding='utf-8') as f:
+              f.write('ED25519_SK_HEX='+sk_raw.hex()+'\n')
+              f.write('ED25519_PUBKEY_B64URL='+base64.urlsafe_b64encode(pk_raw).decode('ascii').rstrip('=')+'\n')
+          # ML-DSA (Dilithium) if available
+          try:
+              import oqs
+              with oqs.Signature('Dilithium3') as signer:
+                  pk = signer.generate_keypair()
+                  sk = signer.export_secret_key()
+              with open(os.environ['GITHUB_ENV'],'a',encoding='utf-8') as f:
+                  f.write('PQ_MLDSA_ALG=Dilithium3\n')
+                  f.write('PQ_MLDSA_PK_B64URL='+base64.urlsafe_b64encode(pk).decode('ascii').rstrip('=')+'\n')
+                  f.write('PQ_MLDSA_SK_B64URL='+base64.urlsafe_b64encode(sk).decode('ascii').rstrip('=')+'\n')
+                  f.write('PQCRYPTO_READY=1\n')
+          except Exception:
+              pass
+          PY
       - name: SPIFFE Gate (enforce)
         run: |
           python scripts/gates/spiffe_gate.py
@@ -177,6 +205,9 @@ jobs:
           PQCRYPTO_REQUIRE: '1'
         run: |
           python scripts/gates/pqcrypto_gate.py
+      - name: Require PCO signatures (Ed25519+PQ)
+        run: |
+          echo 'SIGNATURES_REQUIRE=1' >> $GITHUB_ENV
       - name: Supply-Chain Enforce (required)
         run: |
           python scripts/gates/supply_chain_enforce.py
@@ -210,18 +241,16 @@ jobs:
       - name: Compliance Mapping (enforce)
         run: |
           python scripts/gates/compliance_mapping_gate.py
-      - name: Bandit security scan (report-only)
-        continue-on-error: true
+      - name: Bandit security scan (enforce)
         run: |
           python -m pip install bandit
-          # Report-only in ci-gates; enforcement lives in dedicated workflow
-          bandit -q -r . -x .venv,venv,clients/web,clients/cli,dist,build || true
+          bandit -q -r . -c bandit.yml
       - name: Gitleaks (secrets scan)
-        continue-on-error: true
+        continue-on-error: false
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
           # Report-only for ci-gates; blocking in security-scan.yml
-          args: detect --verbose --redact --no-banner --exit-code 1
+          args: detect --verbose --redact --no-banner --exit-code 1 --config gitleaks.toml
       - name: Tests
         env:
           PYTEST_ADDOPTS: "-n auto --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"

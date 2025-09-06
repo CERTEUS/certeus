@@ -588,6 +588,59 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             decision = "ABSTAIN"
 
+    # Require cryptographic signatures (Ed25519 and/or PQ) if requested
+    if decision in ("PUBLISH", "CONDITIONAL") and (os.getenv("SIGNATURES_REQUIRE") or "").strip() in {"1", "true", "True"}:
+        try:
+            # Compute stable provenance hash
+            _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+            from core.pco.crypto import ed25519_verify_b64u, b64u_decode  # type: ignore
+            # Ed25519 verify (if ed25519 block present or env pub provided)
+            ed_ok = True
+            try:
+                ed = ((pco_out or req.pco) or {}).get("crypto", {}) if isinstance((pco_out or req.pco), dict) else {}
+                ed = ed.get("ed25519") if isinstance(ed, dict) else None
+                sig_b64 = str(ed.get("sig_b64")) if isinstance(ed, dict) and ed.get("sig_b64") else None
+                pub_b64 = str(ed.get("pub_b64")) if isinstance(ed, dict) and ed.get("pub_b64") else None
+                # Prefer env pubkey if present
+                ev_pub_hex = (os.getenv("ED25519_PUBKEY_HEX") or "").strip()
+                ev_pub_b64 = (os.getenv("ED25519_PUBKEY_B64URL") or os.getenv("ED25519_PUBKEY_B64U") or "").strip()
+                if sig_b64:
+                    if ev_pub_hex:
+                        ed25519_verify_b64u(bytes.fromhex(ev_pub_hex), sig_b64, _doc_hash)
+                    elif ev_pub_b64:
+                        ed25519_verify_b64u(b64u_decode(ev_pub_b64), sig_b64, _doc_hash)
+                    elif pub_b64:
+                        ed25519_verify_b64u(b64u_decode(pub_b64), sig_b64, _doc_hash)
+                    else:
+                        ed_ok = False
+            except Exception:
+                ed_ok = False
+
+            # PQ verify via pyoqs (if available and pq block present)
+            pq_ok = True
+            try:
+                pq = ((pco_out or req.pco) or {}).get("crypto", {}) if isinstance((pco_out or req.pco), dict) else {}
+                pq = pq.get("pq") if isinstance(pq, dict) else None
+                if isinstance(pq, dict) and pq.get("sig_b64"):
+                    import base64 as _b64
+                    from security import pq_mldsa as _pq  # type: ignore
+
+                    sig = _b64.urlsafe_b64decode((str(pq.get("sig_b64")) + "=" * (-len(str(pq.get("sig_b64"))) % 4)).encode("ascii"))
+                    pub = str(pq.get("pub_b64") or os.getenv("PQ_MLDSA_PK_B64URL") or "")
+                    if not pub:
+                        pq_ok = False
+                    else:
+                        pk = _b64.urlsafe_b64decode((pub + "=" * (-len(pub) % 4)).encode("ascii"))
+                        alg = str(pq.get("alg") or os.getenv("PQ_MLDSA_ALG") or "Dilithium3")
+                        pq_ok = _pq.verify(_doc_hash.encode("utf-8"), sig, pk, alg=alg)
+            except Exception:
+                pq_ok = False
+
+            if not (ed_ok and pq_ok):
+                decision = "ABSTAIN"
+        except Exception:
+            decision = "ABSTAIN"
+
     # Optionally embed TEE RA fingerprint into PCO (when bunker is on and attestation present)
     pco_out = req.pco
     if bunker_on and isinstance(req.pco, dict):

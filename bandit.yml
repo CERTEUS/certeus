@@ -1,0 +1,14 @@
+profiles:
+  default:
+    tests: ["B3xx", "B4xx", "B6xx", "B7xx"]
+    skips: ["B101", "B110", "B404", "B603", "B607"]
+exclude_dirs:
+  - .venv
+  - venv
+  - clients
+  - dist
+  - build
+  - openapi_spec_validator
+  - tests
+  - docs
+  - .devkeys

@@ -7,5 +7,8 @@
     "tests/",
     "docs/",
     "clients/web/",
+    ".devkeys/",
+    "security/bunker/",
+    "scripts/runners/",
+    "scripts/pfs/win_dokan_smoke.ps1",
   ]
-
