@@ -16,8 +16,6 @@ on:
     workflows:
       - ci-gates
     types: [completed]
-  push:
-    branches: [ work/daily ]
   workflow_dispatch:
     inputs:
       force:
@@ -46,8 +44,6 @@ jobs:
             if (evt === 'workflow_run') {
               const wr = context.payload.workflow_run || {};
               ok = (wr.head_branch === 'work/daily' && wr.conclusion === 'success');
-            } else if (evt === 'push') {
-              ok = (context.ref === 'refs/heads/work/daily');
             }
             core.setOutput('ok', ok ? 'true' : 'false');
             console.log(`Setting ok output to: ${ok ? 'true' : 'false'}`);
@@ -91,8 +87,6 @@ jobs:
             if (!promote && evt === 'workflow_run') {
               const wr = context.payload.workflow_run || {};
               promote = (wr.head_branch === 'work/daily' && wr.conclusion === 'success');
-            } else if (!promote && evt === 'push') {
-              promote = (context.ref === 'refs/heads/work/daily');
             }
             core.setOutput('promote', promote ? 'true' : 'false');
       # ci-gates conclusion is already 'success' by job condition above${insert}
