@@ -474,3 +474,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-05 18:05:58Z [CERTEUS] (work/daily): auto-promote:  (gates green)
   - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
   - Actor: CERTEUS
+- 2025-09-06 12:51:34Z [CERTEUS] (work/daily): auto-promote:  (gates green)
+  - Gates: Proof Gate, asset-guard, Gauge-Gate, Path-Coverage-Gate, Boundary-Rebuild-Gate
+  - Actor: CERTEUS
+
