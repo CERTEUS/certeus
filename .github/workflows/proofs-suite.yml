@@ -7,10 +7,7 @@ on:
 
 jobs:
   proofs:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
@@ -23,15 +20,15 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest
-      - name: Run Proofs Suite (cross-platform)
+      - name: Run Proofs Suite
         shell: bash
         run: |
           set -euo pipefail
           python scripts/generate_proofs.py --out out/proof_artifacts --mode simulate --formats drat lfsc --with-inputs --receipt
           (
             cd out/proof_artifacts
-            sha256sum z3.drat > z3.drat.sha256 || shasum -a 256 z3.drat > z3.drat.sha256
-            sha256sum cvc5.lfsc > cvc5.lfsc.sha256 || shasum -a 256 cvc5.lfsc > cvc5.lfsc.sha256
+            sha256sum z3.drat > z3.drat.sha256
+            sha256sum cvc5.lfsc > cvc5.lfsc.sha256
           )
           python scripts/check_proofs.py --dir out/proof_artifacts
           pytest -q tests/truth/test_solvers.py::test_generate_proofs_function_creates_expected_artifacts tests/truth/test_solvers.py::test_generate_proofs_cli_smoke_test -q

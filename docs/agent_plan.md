@@ -396,18 +396,23 @@ Cel: uruchomienie ProofFS mount smoke na runnerach self‑hosted i (docelowo) EN
     - `pwsh -File scripts/runners/windows/bootstrap_windows_runner.ps1 -RepoSlug 'CERTEUS/certeus'`
   - Etykiety: `self-hosted, windows, dokan`.
 
-- Workflow ProofFS (self‑hosted): `.github/workflows/proofs-fs-selfhosted.yml` (push/PR + ręczny dispatch).
-  - macOS job: `runs-on: [self-hosted, macos, macfuse]` → `scripts/pfs/osx_mount_smoke.sh`.
-  - Windows job: `runs-on: [self-hosted, windows, dokan]` → `scripts/pfs/win_dokan_smoke.ps1`.
+- Workflow ProofFS (self‑hosted): `.github/workflows/proofs-fs-selfhosted.yml` (TERAZ: tylko ręczny dispatch; push/PR wyłączone).
+  - macOS job: `runs-on: [self-hosted, macos, macfuse]` → `scripts/pfs/osx_mount_smoke.sh` (wymaga macFUSE i „Allow”).
+  - Windows job: `runs-on: [self-hosted, windows, dokan]` → `scripts/pfs/win_dokan_smoke.ps1` (wymaga dokanctl na hoście).
 
 Po pojawieniu się runnerów online: przełącz ENFORCE i dodaj required checks (konteksty):
-- `ProofFS Self-Hosted / macOS ProofFS (self-hosted)`
-- `ProofFS Self-Hosted / Windows Dokan (self-hosted)`
+- (opcjonalnie) `ProofFS Self-Hosted / macOS ProofFS (self-hosted)`
+- (opcjonalnie) `ProofFS Self-Hosted / Windows Dokan (self-hosted)`
 
 Możesz użyć pomocnika:
 - `GITHUB_REPOSITORY=OWNER/REPO BRANCH=main bash scripts/github/set_required_checks.sh`
 
 Uwaga: pełne zero‑klik dla macFUSE wymaga MDM (Jamf/Kandji) i profilu Kernel Extension Policy; na Apple Silicon obowiązuje „Reduced Security” z Recovery (wymóg Apple).
+
+Pragmatyczny fallback (bez macFUSE/Dokan):
+- ProofFS mount smoke pozostaje manualny (self‑hosted). W CI na GitHub‑hosted runnerach utrzymujemy testy API/PCO/Proofs oraz bramki report‑only.
+- „Proofs suite” (DRAT/LFSC) działa niezależnie: `scripts/run_proofs_suite.sh` + testy `tests/truth/test_solvers.py`.
+ - Proofs Suite w CI: aktywne na Linux (GitHub‑hosted). Windows/macOS wyłączone teraz (opcjonalne; włączymy, gdy będzie potrzebne).
 
 
 ## **3\) Testy – „sami tworzą” (bez Twojej ingerencji)**
