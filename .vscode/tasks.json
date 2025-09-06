@@ -22,6 +22,24 @@
             }
         },
         {
+            "label": "Codex: Remember last 5",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "remember",
+                "--count",
+                "5"
+            ],
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
             "label": "Codex: Start autosave daemon",
             "type": "shell",
             "command": "python",

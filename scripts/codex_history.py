@@ -156,6 +156,53 @@ def cmd_export_md(args: argparse.Namespace) -> int:
     return 0
 
 
+def _read_records(session: Path) -> list[dict]:
+    recs: list[dict] = []
+    try:
+        for line in session.read_text(encoding="utf-8").splitlines():
+            s = line.strip()
+            if not s:
+                continue
+            try:
+                recs.append(json.loads(s))
+            except Exception:
+                # awaryjnie zapakuj jako tekst
+                recs.append({"ts": _now_iso(), "role": "assistant", "text": s})
+    except Exception:
+        pass
+    return recs
+
+
+def _write_context_files(target: Path, items: list[dict]) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"messages": items}
+    target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    # Markdown obok
+    md = ["# Last messages (context)"]
+    for it in items:
+        ts = it.get("ts", "?")
+        role = it.get("role", "?")
+        text = it.get("text", "")
+        md.append("")
+        md.append(f"## {ts} • {role}")
+        md.append("")
+        md.append("```text")
+        md.append(str(text))
+        md.append("```")
+    target.with_suffix(".md").write_text("\n".join(md) + "\n", encoding="utf-8")
+
+
+def cmd_remember(args: argparse.Namespace) -> int:
+    session = _resolve_session(args.session)
+    recs = _read_records(session)
+    k = int(max(1, args.count))
+    last = recs[-k:] if recs else []
+    out = Path(args.out) if args.out else _history_dir() / "context_last.json"
+    _write_context_files(out, last)
+    print(str(out))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Codex chat history journal")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -195,12 +242,15 @@ def main(argv: list[str] | None = None) -> int:
     p_push.add_argument("--text", required=True, help="Treść")
     p_push.set_defaults(func=cmd_push)
 
+    p_mem = sub.add_parser("remember", help="Zapisz ostatnie N wiadomości do pliku kontekstu")
+    p_mem.add_argument("--session", help="Plik sesji (domyślna: latest)")
+    p_mem.add_argument("--count", type=int, default=5, help="Liczba wiadomości (domyślnie: 5)")
+    p_mem.add_argument("--out", help="Ścieżka docelowa JSON (domyślnie: logs/codex_history/context_last.json)")
+    p_mem.set_defaults(func=cmd_remember)
+
     args = ap.parse_args(argv)
     return int(args.func(args))
 
-
-if __name__ == "__main__":  # pragma: no cover
-    raise SystemExit(main())
 
 # === Implementacja trybu daemon/push ===
 
@@ -290,3 +340,7 @@ def cmd_daemon(args: argparse.Namespace) -> int:
         _flush()
     print("[codex-history] daemon stopped")
     return 0
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(main())
