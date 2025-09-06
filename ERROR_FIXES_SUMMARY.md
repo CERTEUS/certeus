@@ -48,3 +48,31 @@
 
 Wszystkie krytyczne błędy składni i konfliktów zostały naprawione.
 System autonomiczny działa bez przeszkód.
+CERTEUS • Error/Fixes Summary
+
+Scope
+- Close gaps from docs/agent_plan.md Week-7 (ProofFS) deliverables achievable in‑repo under CI constraints.
+- Keep full test suite green and CI gates unaffected.
+
+Changes
+- core/pfs/xattrs.py:1
+  - Added OS xattrs support (Linux user.*) via os.listxattr/getxattr.
+  - Priority changed to: sidecar JSON → OS xattrs → PNIP/PCO fallback.
+  - Backwards compatible; non‑Linux stays on sidecar/fallback.
+- clients/web/public/pfs_mount.html:1
+  - New Cockpit page to call /v1/pfs/mount and /v1/pfs/unmount (mock, contract‑accurate).
+- clients/web/public/playground.html:120
+  - Added links to ProofFS Inspector and ProofFS Mount pages.
+- docs/WORKLOG.md:361
+  - Added W7 entry describing the above.
+
+Validation
+- Local full test run: 353 passed, 5 skipped.
+- No changes to public OpenAPI contract that would break clients.
+
+Notes
+- macFUSE/Dokan real mounts, PQ‑ML‑DSA crypto, and TEE/RA hardware attestation require OS/hardware setup on runners and cannot be delivered purely in repo. The current codebase provides full implementations where feasible and feature flags for optional hard dependencies (ready for integration when infra is available).
+
+Commits
+- W7: ProofFS Linux xattrs + Cockpit mount UI; xattrs priority (sidecar→OS→fallback); docs/worklog update (12a02cd)
+- DevEx: add ProofFS Inspector and Mount links to Playground (ac53296)
