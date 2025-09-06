@@ -1,6 +1,15 @@
 {
   "name": "CERTEUS",
   "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
+  "forwardPorts": [8000, 8085, 4318],
+  "portsAttributes": {
+    "8000": { "label": "CERTEUS API", "onAutoForward": "openBrowser" },
+    "8085": { "label": "Proofgate", "onAutoForward": "notify" },
+    "4318": { "label": "OTLP Collector", "onAutoForward": "silent" },
+    "2222": { "label": "Codespaces SSH", "onAutoForward": "ignore" },
+    "2000": { "label": "System port 2000", "onAutoForward": "ignore" },
+    "5033": { "label": "Pylance LSP", "onAutoForward": "ignore" }
+  },
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
@@ -8,7 +17,17 @@
   "customizations": {
     "vscode": {
       "settings": {
-        "python.defaultInterpreterPath": "/workspaces/${localWorkspaceFolderBasename}/.venv/bin/python"
+        "python.defaultInterpreterPath": "/workspaces/${localWorkspaceFolderBasename}/.venv/bin/python",
+        "remote.autoForwardPorts": true,
+        "remote.autoForwardPortsSource": "process",
+        "remote.portsAttributes": {
+          "8000": { "label": "CERTEUS API", "onAutoForward": "openBrowser" },
+          "8085": { "label": "Proofgate", "onAutoForward": "notify" },
+          "4318": { "label": "OTLP Collector", "onAutoForward": "silent" },
+          "2222": { "label": "Codespaces SSH", "onAutoForward": "ignore" },
+          "2000": { "label": "System port 2000", "onAutoForward": "ignore" },
+          "5033": { "label": "Pylance LSP", "onAutoForward": "ignore" }
+        }
       },
       "extensions": [
         "ms-python.python",

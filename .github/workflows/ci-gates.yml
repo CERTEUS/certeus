@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   ci-gates:
-    runs-on: ${{ fromJSON(vars.CI_GATES_RUNS_ON || '["self-hosted","linux","docker","build"]') }}
+    runs-on: ${{ fromJSON(vars.CI_GATES_RUNS_ON || '"ubuntu-latest"') }}
     permissions:
       contents: write
       pull-requests: write
@@ -1069,7 +1069,6 @@ jobs:
       - name: Publish CI status to branch
         continue-on-error: true
         if: always()
-        continue-on-error: true
         run: |
           set -e
           git config user.name "github-actions[bot]"
