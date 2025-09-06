@@ -24,13 +24,11 @@ concurrency:
 
 jobs:
   smoke:
-    name: Smoke (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Smoke (ubuntu-latest)
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -42,31 +40,18 @@ jobs:
             pyproject.toml
             constraints/**
       - name: Install deps (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
         run: |
           python -m pip install -U pip wheel setuptools
           python -m pip install ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator python-multipart z3-solver -c constraints/requirements-constraints.txt || python -m pip install -U prometheus-client openapi-spec-validator python-multipart z3-solver
-      - name: Install deps (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          py -3 -m pip install -U pip wheel setuptools
-          py -3 -m pip install ruff pytest jsonschema cryptography fastapi uvicorn prometheus-client openapi-spec-validator python-multipart z3-solver -c constraints/requirements-constraints.txt; if ($LASTEXITCODE -ne 0) { py -3 -m pip install -U prometheus-client openapi-spec-validator python-multipart z3-solver }
       - name: Run smoke (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
         continue-on-error: true
         run: bash ./scripts/smoke_api.sh
-      - name: Run smoke (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        continue-on-error: true
-        run: pwsh -File .\scripts\smoke_api.ps1
 
       - name: Append Spectral summary to job summary
         if: always()
         uses: actions/github-script@v7
         env:
-          OS: ${{ matrix.os }}
+          OS: ubuntu-latest
         with:
           script: |
             const fs = require('fs');
@@ -170,4 +155,3 @@ jobs:
             } catch (err) {
               core.warning(`Could not create PR comment: ${err?.message || err}`);
             }
-

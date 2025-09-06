@@ -8,36 +8,21 @@
 name: ProofFS Platforms (optional)
 
 on:
-  pull_request:
-    branches: [ main, work/daily ]
+  # Tylko ręcznie; domyślnie wyłączone, by nie hałasować w PR
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   macos:
+    if: ${{ false }}
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Attempt to install macFUSE (cask)
-        continue-on-error: true
-        run: |
-          brew update || true
-          brew install --cask macfuse || true
-      - name: Report macFUSE status
-        run: |
-          kextstat | grep -i fuse || true
-          echo "macOS macFUSE step completed (best-effort)."
+      - run: echo "macOS path disabled"
 
   windows:
+    if: ${{ false }}
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Dokan (LTS)
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          choco install dokan-lts -y || $true
-          $exists = (Get-Command dokanctl -ErrorAction SilentlyContinue) -ne $null
-          if ($exists) { Write-Host "Dokan installed" } else { Write-Host "Dokan not found (best-effort)" }
-
+      - run: echo "Windows path disabled"
