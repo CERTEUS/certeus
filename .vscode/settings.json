@@ -50,25 +50,6 @@
         "**/.env": true,
         "**/env": true
     },
-    "files.watcherExclude": {
-        "**/.git/objects/**": true,
-        "**/.git/subtree-cache/**": true,
-        "**/node_modules/**": true,
-        "**/.hg/store/**": true,
-        "**/__pycache__/**": true,
-        "**/.pytest_cache/**": true
-    },
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/bower_components": true,
-        "**/*.code-search": true,
-        "**/__pycache__": true,
-        "**/.pytest_cache": true,
-        "**/.venv": true,
-        "**/venv": true,
-        "**/.env": true,
-        "**/env": true
-    },
     // Port forwarding i serwery
     "remote.autoForward": true,
     "remote.restoreForwardedPorts": true,
@@ -105,8 +86,8 @@
     "files.autoSaveDelay": 1000,
     "editor.formatOnSave": true,
     "python.analysis.diagnosticMode": "openFilesOnly",
-    "python.analysis.typeCheckingMode": "standard",
-    "python.analysis.logLevel": "Warning",
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.logLevel": "Error",
     "python.analysis.stubPath": "typings",
     // Python analysis exclusions - fix for 18K+ problems
     "python.analysis.exclude": [
@@ -124,21 +105,19 @@
     ],
     "python.analysis.autoSearchPaths": false,
     "python.analysis.indexing": false,
+    "python.analysis.enableExtensions": false,
+    "python.languageServer": "None",
+    "python.analysis.disabled": [
+        "unresolved-import",
+        "undefined-variable",
+        "import-error",
+        "no-member"
+    ],
+    "python.linting.enabled": false,
     "python.analysis.include": [
-        "core",
-        "tests",
-        "services",
-        "scripts",
-        "billing",
-        "certeus",
-        "cje",
-        "clients",
-        "conftest.py",
+        "__init__.py",
         "main.py",
-        "repo_to_packs.py",
-        "sitecustomize.py",
-        "test_pco.py",
-        "__init__.py"
+        "conftest.py"
     ],
     // GitHub Copilot
     "github.copilot.enable": {
