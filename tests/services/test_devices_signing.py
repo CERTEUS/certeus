@@ -38,9 +38,7 @@ def _gen_keys_env() -> tuple[str, bytes]:
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
-    pub = sk.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-    )
+    pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = pub.hex()
     return pem, pub

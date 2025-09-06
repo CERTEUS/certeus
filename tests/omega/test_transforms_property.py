@@ -57,9 +57,7 @@ _PUNCT = [",", ".", ";", ":", "-", "—", "–", "(", ")", "[", "]", '"', "'", "
     ),
     st.lists(st.sampled_from(_PUNCT), min_size=2, max_size=6),
 )
-def test_normalize_limits_drift_under_punctuation_noise(
-    words: list[str], punct: list[str]
-) -> None:
+def test_normalize_limits_drift_under_punctuation_noise(words: list[str], punct: list[str]) -> None:
     base = " ".join(words)
     noisy = base
     for p in punct:

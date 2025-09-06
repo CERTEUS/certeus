@@ -27,18 +27,14 @@ def test_geodesic_and_horizon_headers_present() -> None:
     assert r1.status_code == 200
     assert "X-CERTEUS-PCO-cfe.geodesic_action" in r1.headers
     body1 = r1.json()
-    assert isinstance(body1.get("path"), list) and isinstance(
-        body1.get("geodesic_action"), int | float
-    )
+    assert isinstance(body1.get("path"), list) and isinstance(body1.get("geodesic_action"), int | float)
 
     r2 = c.post("/v1/cfe/horizon", json={"case": "LEX-TEST", "lock": True})
     assert r2.status_code == 200
     assert "X-CERTEUS-PCO-cfe.horizon_mass" in r2.headers
     assert "X-CERTEUS-CFE-Locked" in r2.headers
     body2 = r2.json()
-    assert isinstance(body2.get("locked"), bool) and isinstance(
-        body2.get("horizon_mass"), int | float
-    )
+    assert isinstance(body2.get("locked"), bool) and isinstance(body2.get("horizon_mass"), int | float)
 
 
 # === KONFIGURACJA / CONFIGURATION ===

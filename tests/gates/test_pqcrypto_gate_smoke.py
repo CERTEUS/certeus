@@ -37,14 +37,10 @@ def _run_gate(env: dict[str, str]) -> tuple[int, str]:
 
 def test_pqcrypto_gate_off_and_ready(tmp_path: Path) -> None:
     # OFF
-    rc_off, out_off = _run_gate(
-        {"PQCRYPTO_REQUIRE": "0", "PQCRYPTO_READY": "0", "OUT_DIR": str(tmp_path)}
-    )
+    rc_off, out_off = _run_gate({"PQCRYPTO_REQUIRE": "0", "PQCRYPTO_READY": "0", "OUT_DIR": str(tmp_path)})
     assert rc_off == 0
     # READY
-    rc_ready, out_ready = _run_gate(
-        {"PQCRYPTO_REQUIRE": "1", "PQCRYPTO_READY": "1", "OUT_DIR": str(tmp_path)}
-    )
+    rc_ready, out_ready = _run_gate({"PQCRYPTO_REQUIRE": "1", "PQCRYPTO_READY": "1", "OUT_DIR": str(tmp_path)})
     assert rc_ready == 0
     # Marker file
     marker = Path("out") / "pqcrypto.txt"

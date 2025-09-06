@@ -59,13 +59,7 @@ def _gen_ed25519_env() -> tuple[str, str]:
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
-    pub = (
-        sk.public_key()
-        .public_bytes(
-            encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-        )
-        .hex()
-    )
+    pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = pub
     return pem, pub
@@ -96,9 +90,7 @@ def run_demo() -> dict[str, Any]:
     # Env: proof-only + local verification mocks off by default
     os.environ.setdefault("STRICT_PROOF_ONLY", "1")
     os.environ.setdefault("FINE_GRAINED_ROLES", "0")
-    os.environ.setdefault(
-        "PROOF_BUNDLE_DIR", str((Path("out") / "public_pco").resolve())
-    )
+    os.environ.setdefault("PROOF_BUNDLE_DIR", str((Path("out") / "public_pco").resolve()))
 
     pem, pub_hex = _gen_ed25519_env()
     sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)
@@ -161,9 +153,7 @@ def run_demo() -> dict[str, Any]:
         "signatures": [{"role": "counsel", "by": "demo", "sig": "ok"}],
     }
 
-    r = client.post(
-        "/v1/proofgate/publish", headers=auth, json={"pco": pco, "budget_tokens": 1}
-    )
+    r = client.post("/v1/proofgate/publish", headers=auth, json={"pco": pco, "budget_tokens": 1})
     steps.append(
         {
             "publish.gateway.status": r.status_code,

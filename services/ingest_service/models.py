@@ -134,9 +134,7 @@ class Fact(BaseModel):
 
     fact_id: str = Field(
         ...,
-        description=(
-            "PL: Unikalny identyfikator faktu. | EN: Unique identifier for the fact."
-        ),
+        description=("PL: Unikalny identyfikator faktu. | EN: Unique identifier for the fact."),
     )
 
     role: FactRole = Field(
@@ -146,9 +144,7 @@ class Fact(BaseModel):
 
     event_date: date | None = Field(
         None,
-        description=(
-            "PL: Data zdarzenia (opcjonalna). | EN: Date of the event (optional)."
-        ),
+        description=("PL: Data zdarzenia (opcjonalna). | EN: Date of the event (optional)."),
     )
 
     # Treść i źródło / Content and source
@@ -162,9 +158,7 @@ class Fact(BaseModel):
     source_document_hash: str = Field(
         ...,
         pattern=r"^sha256:[0-9a-f]{64}$",
-        description=(
-            "PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."
-        ),
+        description=("PL: Hash dokumentu źródłowego (sha256:...). | EN: Source document hash (sha256:...)."),
     )
 
     source_page: int | None = Field(
@@ -179,9 +173,7 @@ class Fact(BaseModel):
         ...,
         ge=0.0,
         le=1.0,
-        description=(
-            "PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0]."
-        ),
+        description=("PL: Pewność ekstrakcji [0.0–1.0]. | EN: Extraction confidence [0.0–1.0]."),
     )
 
 

@@ -47,9 +47,7 @@ def is_external_or_anchor(target: str) -> bool:
     t = target.strip()
     if not t or t.startswith("#"):
         return True
-    return any(
-        t.startswith(prefix) for prefix in ("http://", "https://", "mailto:", "tel:")
-    )
+    return any(t.startswith(prefix) for prefix in ("http://", "https://", "mailto:", "tel:"))
 
 
 def normalize_target(base: Path, target: str) -> Path:

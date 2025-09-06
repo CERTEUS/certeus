@@ -97,7 +97,4 @@ def test_publish_with_frost_env_requires_quorum(monkeypatch) -> None:
     # Ledger includes hash of PCO containing quorum (stabilize by recomputation)
     expect_hash = compute_provenance_hash(pco_ok, include_timestamp=False)
     recs = ledger_service.get_records_for_case(case_id=pco_ok["case_id"])
-    assert any(
-        r.get("type") == "PCO_PUBLISH" and r.get("document_hash") == expect_hash
-        for r in recs
-    )
+    assert any(r.get("type") == "PCO_PUBLISH" and r.get("document_hash") == expect_hash for r in recs)

@@ -58,10 +58,7 @@ def validate(message: str) -> tuple[bool, str | None]:
     header = lines[0].strip()
     m = HEADER_RE.match(header)
     if not m:
-        return False, (
-            "Invalid header. Expected 'type(scope)?: subject'. Allowed types: "
-            + ", ".join(sorted(ALLOWED))
-        )
+        return False, ("Invalid header. Expected 'type(scope)?: subject'. Allowed types: " + ", ".join(sorted(ALLOWED)))
     ctype = m.group("type")
     if ctype not in ALLOWED:
         return False, f"Invalid type '{ctype}'. Allowed: {', '.join(sorted(ALLOWED))}"

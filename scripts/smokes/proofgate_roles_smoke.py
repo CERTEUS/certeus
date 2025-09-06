@@ -36,9 +36,7 @@ def _pco(domain: str, case_prefix: str, roles: list[str]) -> dict[str, Any]:
         "case_id": f"CER-{case_prefix}-SMOKE",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.1},
         "sources": [{"digest": "d1", "retrieved_at": "now"}],
-        "derivations": [
-            {"solver": "z3", "proof_format": "LFSC", "artifact_digest": "h"}
-        ],
+        "derivations": [{"solver": "z3", "proof_format": "LFSC", "artifact_digest": "h"}],
         "reproducibility": {
             "image": "img",
             "image_digest": "sha256:deadbeef",

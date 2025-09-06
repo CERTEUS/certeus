@@ -16,9 +16,7 @@ from datetime import UTC, datetime, timedelta
 MAX_TTL_DAYS = 14
 
 
-def approve_break_glass(
-    request_id: str, reason: str, until: datetime, merkle_log: list[dict[str, str]]
-) -> bool:
+def approve_break_glass(request_id: str, reason: str, until: datetime, merkle_log: list[dict[str, str]]) -> bool:
     """PL: Zgoda na BG. EN: Approve BG."""
     # === IMPORTY / IMPORTS ===
     # === KONFIGURACJA / CONFIGURATION ===

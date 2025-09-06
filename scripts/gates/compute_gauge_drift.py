@@ -48,12 +48,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--flags", help="Ścieżka do pliku flag (opcjonalne)")
     ap.add_argument("--out", required=True, help="Ścieżka pliku wynikowego JSON")
-    ap.add_argument(
-        "--before-file", help="Opcjonalny plik 'before' do obliczeń Ω‑Kernel drift"
-    )
-    ap.add_argument(
-        "--after-file", help="Opcjonalny plik 'after' do obliczeń Ω‑Kernel drift"
-    )
+    ap.add_argument("--before-file", help="Opcjonalny plik 'before' do obliczeń Ω‑Kernel drift")
+    ap.add_argument("--after-file", help="Opcjonalny plik 'after' do obliczeń Ω‑Kernel drift")
     ap.add_argument(
         "--max-jaccard",
         type=float,
@@ -72,9 +68,7 @@ def main() -> int:
         default=None,
         help="Maksymalny entity_jaccard_drift (omega)",
     )
-    ap.add_argument(
-        "--domain", help="Opcjonalna domena dla domain_map: med|sec|code (raport‑only)"
-    )
+    ap.add_argument("--domain", help="Opcjonalna domena dla domain_map: med|sec|code (raport‑only)")
     ap.add_argument(
         "--max-jaccard-mapped",
         type=float,
@@ -98,16 +92,12 @@ def main() -> int:
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    payload: dict[str, object] = {
-        "gauge": {"holonomy_drift": 0.0, "compensators_count": 0}
-    }
+    payload: dict[str, object] = {"gauge": {"holonomy_drift": 0.0, "compensators_count": 0}}
     # Optional: real telemetry from running API if CER_BASE provided
     base = os.getenv("CER_BASE")
     if base:
         try:
-            with urllib.request.urlopen(
-                base.rstrip("/") + "/v1/cfe/curvature", timeout=3
-            ) as resp:
+            with urllib.request.urlopen(base.rstrip("/") + "/v1/cfe/curvature", timeout=3) as resp:
                 data = _json.loads(resp.read().decode("utf-8"))
                 kappa = float(data.get("kappa_max", 0.0))
                 payload["gauge"]["holonomy_drift"] = kappa
@@ -124,9 +114,7 @@ def main() -> int:
                 {"text": "Podgląd dowód", "lang": "pl"},
             ]
             drifts = [holonomy_drift(s, cycle=("pl", "en")) for s in samples]
-            payload["gauge"]["holonomy_drift"] = float(
-                sum(drifts) / max(1, len(drifts))
-            )
+            payload["gauge"]["holonomy_drift"] = float(sum(drifts) / max(1, len(drifts)))
         except Exception:
             # In-proc fallback: import FastAPI app and query via TestClient (requires fastapi installed)
             try:
@@ -156,12 +144,8 @@ def main() -> int:
         )
 
         # Prefer files; fallback to env text
-        bef = _read_text(getattr(args, "before_file", None)) or os.getenv(
-            "OMEGA_BEFORE_TEXT", ""
-        )
-        aft = _read_text(getattr(args, "after_file", None)) or os.getenv(
-            "OMEGA_AFTER_TEXT", ""
-        )
+        bef = _read_text(getattr(args, "before_file", None)) or os.getenv("OMEGA_BEFORE_TEXT", "")
+        aft = _read_text(getattr(args, "after_file", None)) or os.getenv("OMEGA_AFTER_TEXT", "")
         if bef or aft:
             gd = _gauge(bef, aft)
             ed = _entropy(bef, aft)
@@ -173,11 +157,7 @@ def main() -> int:
                 "entity_jaccard_drift": nd.entity_jaccard_drift,
             }
             # Optional domain mapping (report-only): compute metrics after domain_map
-            dom = (
-                (getattr(args, "domain", None) or os.getenv("OMEGA_DOMAIN") or "")
-                .strip()
-                .lower()
-            )
+            dom = (getattr(args, "domain", None) or os.getenv("OMEGA_DOMAIN") or "").strip().lower()
             if dom in {"med", "sec", "code"}:
                 bef_m, _ = _apply(bef, "domain_map", domain=dom)
                 aft_m, _ = _apply(aft, "domain_map", domain=dom)
@@ -228,15 +208,11 @@ def main() -> int:
                         thr_n2 = None
                 if thr_j2 is not None and payload["omega_mapped"]["jaccard_drift"] > thr_j2:  # type: ignore[index]
                     jd = payload["omega_mapped"]["jaccard_drift"]  # type: ignore[index]
-                    print(
-                        f"Omega Mapped Gate: jaccard_drift {jd} > {thr_j2} (threshold)"
-                    )
+                    print(f"Omega Mapped Gate: jaccard_drift {jd} > {thr_j2} (threshold)")
                     fail_mapped = True
                 if thr_e2 is not None and payload["omega_mapped"]["entropy_drift"] > thr_e2:  # type: ignore[index]
                     edv = payload["omega_mapped"]["entropy_drift"]  # type: ignore[index]
-                    print(
-                        f"Omega Mapped Gate: entropy_drift {edv} > {thr_e2} (threshold)"
-                    )
+                    print(f"Omega Mapped Gate: entropy_drift {edv} > {thr_e2} (threshold)")
                     fail_mapped = True
                 if thr_n2 is not None and payload["omega_mapped"]["entity_jaccard_drift"] > thr_n2:  # type: ignore[index]
                     print(
@@ -245,9 +221,7 @@ def main() -> int:
                     )
                     fail_mapped = True
                 # Only enforce fail if explicit opt-in
-                if fail_mapped and (
-                    _os.getenv("ENFORCE_OMEGA_MAPPED") or ""
-                ).strip() in {"1", "true", "True"}:
+                if fail_mapped and (_os.getenv("ENFORCE_OMEGA_MAPPED") or "").strip() in {"1", "true", "True"}:
                     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
                     return 1
         else:
@@ -265,41 +239,25 @@ def main() -> int:
         # env fallbacks
         if thr_j is None:
             try:
-                thr_j = (
-                    float(os.getenv("OMEGA_MAX_JACCARD", ""))
-                    if os.getenv("OMEGA_MAX_JACCARD")
-                    else None
-                )
+                thr_j = float(os.getenv("OMEGA_MAX_JACCARD", "")) if os.getenv("OMEGA_MAX_JACCARD") else None
             except Exception:
                 thr_j = None
         if thr_e is None:
             try:
-                thr_e = (
-                    float(os.getenv("OMEGA_MAX_ENTROPY", ""))
-                    if os.getenv("OMEGA_MAX_ENTROPY")
-                    else None
-                )
+                thr_e = float(os.getenv("OMEGA_MAX_ENTROPY", "")) if os.getenv("OMEGA_MAX_ENTROPY") else None
             except Exception:
                 thr_e = None
         if thr_n is None:
             try:
-                thr_n = (
-                    float(os.getenv("OMEGA_MAX_ENTITY_DRIFT", ""))
-                    if os.getenv("OMEGA_MAX_ENTITY_DRIFT")
-                    else None
-                )
+                thr_n = float(os.getenv("OMEGA_MAX_ENTITY_DRIFT", "")) if os.getenv("OMEGA_MAX_ENTITY_DRIFT") else None
             except Exception:
                 thr_n = None
         if bef or aft:
             if thr_j is not None and payload["omega"]["jaccard_drift"] > thr_j:  # type: ignore[index]
-                print(
-                    f"Omega Gate: jaccard_drift {payload['omega']['jaccard_drift']} > {thr_j} (threshold)"
-                )
+                print(f"Omega Gate: jaccard_drift {payload['omega']['jaccard_drift']} > {thr_j} (threshold)")
                 fail = True
             if thr_e is not None and payload["omega"]["entropy_drift"] > thr_e:  # type: ignore[index]
-                print(
-                    f"Omega Gate: entropy_drift {payload['omega']['entropy_drift']} > {thr_e} (threshold)"
-                )
+                print(f"Omega Gate: entropy_drift {payload['omega']['entropy_drift']} > {thr_e} (threshold)")
                 fail = True
             if thr_n is not None and payload["omega"]["entity_jaccard_drift"] > thr_n:  # type: ignore[index]
                 print(

@@ -56,9 +56,7 @@ class DualCoreVerifier:
 
         return [assertions[i] for i in range(len(assertions))]
 
-    def _solve_core2_stub(
-        self, core1_result: dict[str, Any], *, force_mismatch: bool
-    ) -> dict[str, Any]:
+    def _solve_core2_stub(self, core1_result: dict[str, Any], *, force_mismatch: bool) -> dict[str, Any]:
         r = dict(core1_result)
 
         if force_mismatch:
@@ -101,9 +99,7 @@ class DualCoreVerifier:
 
         # Divergence?
 
-        if (result_z3.get("status") or "").lower() != (
-            result_core2.get("status") or ""
-        ).lower():
+        if (result_z3.get("status") or "").lower() != (result_core2.get("status") or "").lower():
             handle_mismatch(
                 case_id=case_id or "temp-case-id",
                 formula_str=formula,
@@ -144,11 +140,7 @@ except Exception:
                 "time_ms": round(elapsed, 3),
                 "model": None,
                 "error": None,
-                "version": (
-                    z3.get_version_string()
-                    if hasattr(z3, "get_version_string")
-                    else None
-                ),
+                "version": (z3.get_version_string() if hasattr(z3, "get_version_string") else None),
             }
 
             if status == z3.sat:

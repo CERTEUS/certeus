@@ -38,18 +38,10 @@ def _from_fin(sent: float, risk: float):
 
 
 @given(
-    sent1=st.floats(
-        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
-    ),
-    risk1=st.floats(
-        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
-    ),
-    sent2=st.floats(
-        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
-    ),
-    risk2=st.floats(
-        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
-    ),
+    sent1=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
+    risk1=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
+    sent2=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
+    risk2=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
 )
 @settings(deadline=None, max_examples=60)
 def test_fin_coverage_ranges_and_monotonicity(sent1, risk1, sent2, risk2) -> None:

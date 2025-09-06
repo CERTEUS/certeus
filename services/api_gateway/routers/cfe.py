@@ -70,12 +70,8 @@ class GeodesicResponse(BaseModel):
 class HorizonRequest(BaseModel):
     case: str | None = None
     lock: bool | None = None
-    domain: str | None = Field(
-        default=None, description="Domain context (LEX/FIN/MED/SEC/CODE)"
-    )
-    severity: str | None = Field(
-        default=None, description="Heuristic severity (low/medium/high/critical)"
-    )
+    domain: str | None = Field(default=None, description="Domain context (LEX/FIN/MED/SEC/CODE)")
+    severity: str | None = Field(default=None, description="Heuristic severity (low/medium/high/critical)")
 
 
 class HorizonResponse(BaseModel):
@@ -89,9 +85,7 @@ class LensingResponse(BaseModel):
 
     critical_precedents: list[str]
 
-    domain: str | None = Field(
-        default=None, description="Domain context (e.g., LEX/FIN/MED/SEC/CODE)"
-    )
+    domain: str | None = Field(default=None, description="Domain context (e.g., LEX/FIN/MED/SEC/CODE)")
 
 
 class LensingFromFinRequest(BaseModel):
@@ -152,9 +146,7 @@ async def curvature(response: Response) -> CurvatureResponse:
 
 
 @router.post("/geodesic", response_model=GeodesicResponse)
-async def geodesic(
-    req: GeodesicRequest, request: Request, response: Response
-) -> GeodesicResponse:
+async def geodesic(req: GeodesicRequest, request: Request, response: Response) -> GeodesicResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -178,9 +170,7 @@ async def geodesic(
             ledger_service,
         )
 
-        doc_hash = "sha256:" + compute_provenance_hash(
-            {"cfe.geodesic_action": action}, include_timestamp=False
-        )
+        doc_hash = "sha256:" + compute_provenance_hash({"cfe.geodesic_action": action}, include_timestamp=False)
         case_id = req.case or "cfe-case"
         ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
     except Exception:
@@ -190,9 +180,7 @@ async def geodesic(
 
 
 @router.post("/horizon", response_model=HorizonResponse)
-async def horizon(
-    req: HorizonRequest, request: Request, response: Response
-) -> HorizonResponse:
+async def horizon(req: HorizonRequest, request: Request, response: Response) -> HorizonResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -209,9 +197,7 @@ async def horizon(
         if d in _domains and s in _severities:
             return True
         # Legacy behavior: samples lock automatically
-        if isinstance(req.case, str) and (
-            "sample" in req.case.lower() or "przyklad" in req.case.lower()
-        ):
+        if isinstance(req.case, str) and ("sample" in req.case.lower() or "przyklad" in req.case.lower()):
             return True
         return False
 
@@ -242,9 +228,7 @@ async def horizon(
 
 
 @router.get("/lensing", response_model=LensingResponse)
-async def lensing(
-    domain: str | None = None, response: Response = None
-) -> LensingResponse:
+async def lensing(domain: str | None = None, response: Response = None) -> LensingResponse:
     """PL/EN: Domenowy lensing — mapa wpływów zależna od kontekstu.
 
     Parametr `domain` jest opcjonalny i pozwala na doprecyzowanie
@@ -275,9 +259,7 @@ async def lensing_from_fin(req: LensingFromFinRequest) -> LensingResponse:
         return LensingResponse(lensing_map={}, critical_precedents=[], domain="FIN")
     # Normalizacja do [0,1] przez podział przez maksimum bezwzględne
     max_abs = max(abs(v) for v in sig.values()) or 1.0
-    norm = {
-        k: max(0.0, min(1.0, (v / max_abs) if max_abs else 0.0)) for k, v in sig.items()
-    }
+    norm = {k: max(0.0, min(1.0, (v / max_abs) if max_abs else 0.0)) for k, v in sig.items()}
     crit = [max(norm.items(), key=lambda kv: (kv[1], kv[0]))[0]] if norm else []
     return LensingResponse(lensing_map=norm, critical_precedents=crit, domain="FIN")
 
@@ -300,9 +282,7 @@ class CaseActionOut(BaseModel):
 
 
 @router.post("/case/lock", response_model=CaseActionOut)
-async def case_lock(
-    req: CaseActionIn, request: Request, response: Response
-) -> CaseActionOut:
+async def case_lock(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -315,9 +295,7 @@ async def case_lock(
 
 
 @router.post("/case/recall", response_model=CaseActionOut)
-async def case_recall(
-    req: CaseActionIn, request: Request, response: Response
-) -> CaseActionOut:
+async def case_recall(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -330,9 +308,7 @@ async def case_recall(
 
 
 @router.post("/case/revoke", response_model=CaseActionOut)
-async def case_revoke(
-    req: CaseActionIn, request: Request, response: Response
-) -> CaseActionOut:
+async def case_revoke(req: CaseActionIn, request: Request, response: Response) -> CaseActionOut:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)

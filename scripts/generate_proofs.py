@@ -395,18 +395,14 @@ def generate_proofs(
 
     if with_inputs:
         for ip in _emit_inputs(out, smt2=True, cnf=True):
-            created.append(
-                Generated(kind="input", format=None, path=ip, sha256=_sha256_hex(ip))
-            )
+            created.append(Generated(kind="input", format=None, path=ip, sha256=_sha256_hex(ip)))
 
             log_info(f"Created input file: {ip}")
 
     # Receipt
 
     if write_receipt:
-        receipt_path = _emit_receipt(
-            out, created
-        )  # <-- KLUCZOWE: nowa nazwa zmiennej, nie nadpisuj write_receipt
+        receipt_path = _emit_receipt(out, created)  # <-- KLUCZOWE: nowa nazwa zmiennej, nie nadpisuj write_receipt
 
         created.append(
             Generated(

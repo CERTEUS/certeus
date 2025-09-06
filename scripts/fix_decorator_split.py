@@ -70,12 +70,8 @@ def fix_file(p: Path, *, check_only: bool = False) -> bool:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Fix decorator splits and stray shebangs"
-    )
-    parser.add_argument(
-        "--check", action="store_true", help="Report-only; do not modify files"
-    )
+    parser = argparse.ArgumentParser(description="Fix decorator splits and stray shebangs")
+    parser.add_argument("--check", action="store_true", help="Report-only; do not modify files")
     args = parser.parse_args()
 
     touched = 0

@@ -139,9 +139,7 @@ def test_generate_proofs_cli_smoke_test() -> None:
 
         stdout: str = res.stdout
 
-        assert ("Created simulated proof with content" in stdout) or (
-            "Created stub proof" in stdout
-        )
+        assert ("Created simulated proof with content" in stdout) or ("Created stub proof" in stdout)
 
         assert (out / "z3.drat").exists()
 

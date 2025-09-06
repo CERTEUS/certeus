@@ -80,9 +80,7 @@ def test_kernel_bundle_hash_and_leaf() -> None:
 def test_kernel_canonical_digest_and_sig() -> None:
     sk = Ed25519PrivateKey.generate()
 
-    pk = sk.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-    )
+    pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
 
     smt2_hash = _hex("(set-logic ALL)\n(check-sat)")
 
@@ -104,17 +102,13 @@ def test_kernel_canonical_digest_and_sig() -> None:
 
     sig = sk.sign(bytes.fromhex(digest))
 
-    ed25519_verify_b64u(
-        pk, __import__("base64").urlsafe_b64encode(sig).rstrip(b"=").decode(), digest
-    )
+    ed25519_verify_b64u(pk, __import__("base64").urlsafe_b64encode(sig).rstrip(b"=").decode(), digest)
 
 
 def test_kernel_build_and_verify() -> None:
     sk = Ed25519PrivateKey.generate()
 
-    pk = sk.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-    )
+    pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
 
     rid = "demo-001"
 
@@ -163,8 +157,6 @@ def test_kernel_build_and_verify() -> None:
                 smt2_hash_hex=bad.smt2_hash,
                 lfsc_text=bad.lfsc,
                 drat_text=None,
-                merkle_root_hex=compute_leaf_hex(
-                    bad.rid, canonical_bundle_hash_hex(bad.smt2_hash, bad.lfsc, None)
-                ),
+                merkle_root_hex=compute_leaf_hex(bad.rid, canonical_bundle_hash_hex(bad.smt2_hash, bad.lfsc, None)),
             ),
         )

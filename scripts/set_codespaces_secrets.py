@@ -57,9 +57,7 @@ def _api(token: str, method: str, url: str, data: dict | None = None) -> dict:
             return json.loads(raw.decode("utf-8"))
     except urllib.error.HTTPError as e:
         msg = e.read().decode("utf-8", errors="ignore")
-        raise SystemExit(
-            f"API {method} {url} failed: {e.code} {e.reason} -> {msg}"
-        ) from e
+        raise SystemExit(f"API {method} {url} failed: {e.code} {e.reason} -> {msg}") from e
 
 
 def _ensure_pynacl():
@@ -81,9 +79,7 @@ def _encrypt(key_b64: str, value: str) -> str:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(
-        description="Set Codespaces User Secrets for this account (and grant repo access)"
-    )
+    ap = argparse.ArgumentParser(description="Set Codespaces User Secrets for this account (and grant repo access)")
     ap.add_argument(
         "--repo",
         default="CERTEUS/certeus",
@@ -130,15 +126,11 @@ def main() -> int:
         raise SystemExit("Could not resolve repository id")
 
     # Public key for user codespaces secrets
-    pub = _api(
-        token, "GET", "https://api.github.com/user/codespaces/secrets/public-key"
-    )
+    pub = _api(token, "GET", "https://api.github.com/user/codespaces/secrets/public-key")
     key_id = pub.get("key_id")
     key_b64 = pub.get("key")
     if not (isinstance(key_id, str) and isinstance(key_b64, str)):
-        raise SystemExit(
-            "Could not obtain Codespaces user public key (check token scopes)"
-        )
+        raise SystemExit("Could not obtain Codespaces user public key (check token scopes)")
 
     _ensure_pynacl()
 
@@ -158,9 +150,7 @@ def main() -> int:
             f"https://api.github.com/user/codespaces/secrets/{name}/repositories/{repo_id}",
             None,
         )
-        print(
-            f"OK: set Codespaces secret '{name}' and granted access to {owner}/{repo}"
-        )
+        print(f"OK: set Codespaces secret '{name}' and granted access to {owner}/{repo}")
 
     return 0
 

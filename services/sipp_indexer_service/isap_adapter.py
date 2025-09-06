@@ -49,9 +49,7 @@ class IsapAdapter:
 
     """
 
-    def fetch_act_snapshot(
-        self, act_id: str, at: date | None = None
-    ) -> LegalActSnapshot:
+    def fetch_act_snapshot(self, act_id: str, at: date | None = None) -> LegalActSnapshot:
         """
 
         PL: Zwraca LegalActSnapshot dla zadanego act_id. Parametr 'at' to

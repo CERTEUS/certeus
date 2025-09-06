@@ -51,9 +51,7 @@ def test_ledger_record_and_prove() -> None:
 
     doc_hash = "sha256:" + sha256(b"doc").hexdigest()
 
-    r = client.post(
-        "/v1/ledger/record-input", json={"case_id": case_id, "document_hash": doc_hash}
-    )
+    r = client.post("/v1/ledger/record-input", json={"case_id": case_id, "document_hash": doc_hash})
 
     assert r.status_code == 200, r.text
 

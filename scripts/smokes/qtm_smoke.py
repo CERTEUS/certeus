@@ -34,9 +34,7 @@ def main() -> int:
         json={"case": "SMOKE-QTMP", "basis": ["ALLOW", "DENY", "ABSTAIN"]},
     )
     assert r.status_code == 200
-    r2 = c.post(
-        "/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": "SMOKE-QTMP"}
-    )
+    r2 = c.post("/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": "SMOKE-QTMP"})
     assert r2.status_code == 200
     # PCO headers: collapse event and priorities should be present
     assert "X-CERTEUS-PCO-qtm.collapse_event" in r2.headers

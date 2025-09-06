@@ -106,9 +106,7 @@ def main() -> int:  # pragma: no cover
     }
     if vio and enforce:
         return 1
-    print(
-        f"OpenAPI validate: {'OK (report-only)' if not enforce else ('FAIL' if vio else 'OK')}"
-    )
+    print(f"OpenAPI validate: {'OK (report-only)' if not enforce else ('FAIL' if vio else 'OK')}")
     return 0
 
 

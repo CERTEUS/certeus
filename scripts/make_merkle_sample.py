@@ -96,11 +96,7 @@ def _hx_text(s: str) -> str:
 
 
 def _is_hex64(x: str) -> bool:
-    return (
-        isinstance(x, str)
-        and len(x) == 64
-        and all(c in "0123456789abcdef" for c in x.lower())
-    )
+    return isinstance(x, str) and len(x) == 64 and all(c in "0123456789abcdef" for c in x.lower())
 
 
 def sha256_hex_utf8(s: str) -> str:
@@ -183,15 +179,11 @@ def make_bundle(
     # Materiał: LFSC/SMT2 – z pliku lub inline albo fallback demo
 
     lfsc = lfsc_text or (
-        Path(lfsc_path).read_text(encoding="utf-8")
-        if lfsc_path and Path(lfsc_path).exists()
-        else None
+        Path(lfsc_path).read_text(encoding="utf-8") if lfsc_path and Path(lfsc_path).exists() else None
     )
 
     smt2 = smt2_text or (
-        Path(smt2_path).read_text(encoding="utf-8")
-        if smt2_path and Path(smt2_path).exists()
-        else None
+        Path(smt2_path).read_text(encoding="utf-8") if smt2_path and Path(smt2_path).exists() else None
     )
 
     if not allow_missing and (lfsc is None or smt2 is None):
@@ -223,9 +215,7 @@ def make_bundle(
 
     bundle_hash_hex = compute_bundle_hash_hex(pub)
 
-    leaf_hex = hashlib.sha256(
-        bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)
-    ).hexdigest()
+    leaf_hex = hashlib.sha256(bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)).hexdigest()
 
     merkle_root_hex = merkle_root_from_path(leaf_hex, path)
 
@@ -241,9 +231,7 @@ def make_bundle(
 
             raise SystemExit(2)
 
-        sk_any = serialization.load_pem_private_key(
-            Path(pem_path).read_bytes(), password=None
-        )
+        sk_any = serialization.load_pem_private_key(Path(pem_path).read_bytes(), password=None)
 
         if not isinstance(sk_any, Ed25519PrivateKey):
             print("PEM is not Ed25519 private key", file=sys.stderr)
@@ -272,9 +260,7 @@ def make_bundle(
 
 
 def _parse_args() -> Any:
-    p = ArgumentParser(
-        description="Build demo public bundle (non-empty Merkle path) and sign it."
-    )
+    p = ArgumentParser(description="Build demo public bundle (non-empty Merkle path) and sign it.")
 
     p.add_argument("--rid", help="Resource ID (64-hex). If absent, derived from seed.")
 

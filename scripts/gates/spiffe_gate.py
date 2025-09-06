@@ -12,7 +12,6 @@ import base64
 import json
 import os
 from pathlib import Path
-from typing import Any
 
 
 def _is_on(v: str | None) -> bool:
@@ -78,4 +77,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

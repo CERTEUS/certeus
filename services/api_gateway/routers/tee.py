@@ -40,9 +40,7 @@ router = APIRouter(prefix="/v1/tee", tags=["security"])
 
 @router.get("/status")
 async def tee_status() -> dict[str, Any]:
-    bunker_on = (
-        os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or ""
-    ).strip() in {"1", "true", "True", "on"}
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True", "on"}
     ra_req = (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True", "on"}
     att = attestation_from_env()
     fp = None
@@ -56,11 +54,7 @@ async def tee_status() -> dict[str, Any]:
                 if verify_fingerprint(fpd):
                     fp = fpd
                 else:
-                    fp = {
-                        k: fpd.get(k)
-                        for k in ("vendor", "product", "measurement")
-                        if k in fpd
-                    }
+                    fp = {k: fpd.get(k) for k in ("vendor", "product", "measurement") if k in fpd}
     except Exception:
         attested = False
         fp = None

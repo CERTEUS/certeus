@@ -48,11 +48,7 @@ def _gen_keys_env() -> Ed25519PrivateKey:
     ).decode("utf-8")
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = (
-        sk.public_key()
-        .public_bytes(
-            encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-        )
-        .hex()
+        sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
     )
     return sk
 
@@ -106,10 +102,7 @@ def run_demo() -> dict[str, Any]:
             {
                 "id": "cfe",
                 "uri": "cfe://signals",
-                "digest": "sha256:"
-                + sha256(
-                    json.dumps({"a": action, "m": mass}).encode("utf-8")
-                ).hexdigest(),
+                "digest": "sha256:" + sha256(json.dumps({"a": action, "m": mass}).encode("utf-8")).hexdigest(),
                 "retrieved_at": _now(),
             }
         ],

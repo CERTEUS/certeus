@@ -87,9 +87,7 @@ def main() -> int:
         "clean_strict_rc": rc_clean,
         "ok": (rc_detect == 0 and rc_clean == 0),
     }
-    (reports / "rtbf_smoke.json").write_text(
-        json.dumps(result, indent=2), encoding="utf-8"
-    )
+    (reports / "rtbf_smoke.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     (outdir / "dpia_summary.txt").write_text(_dpia_summary(), encoding="utf-8")
     print(json.dumps(result))
     return 0 if result["ok"] else 1

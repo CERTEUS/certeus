@@ -71,9 +71,7 @@ def _flag(flags: Mapping[str, bool], name: str) -> bool:
     return bool(flags.get(name, False))
 
 
-def evaluate_rule(
-    ast: LexAst, rule_id: str, flags: Mapping[str, bool], ctx: EvalContext
-) -> RuleEvalResult:
+def evaluate_rule(ast: LexAst, rule_id: str, flags: Mapping[str, bool], ctx: EvalContext) -> RuleEvalResult:
     rule = next((r for r in ast.rules if r.id == rule_id), None)
 
     if rule is None:
@@ -107,9 +105,7 @@ def evaluate_rule(
     )
 
 
-def choose_article_for_kk(
-    ast: LexAst, flags: Mapping[str, bool], ctx: EvalContext
-) -> str | None:
+def choose_article_for_kk(ast: LexAst, flags: Mapping[str, bool], ctx: EvalContext) -> str | None:
     res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, ctx)
 
     return "art286" if res.satisfied else None

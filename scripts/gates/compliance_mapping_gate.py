@@ -44,9 +44,7 @@ def check(root: str | Path | None = None) -> tuple[list[str], list[str]]:
         vio.append("missing docs/compliance/dpia.md")
     else:
         txt = dpia.read_text(encoding="utf-8", errors="ignore")
-        if not _contains_all(
-            txt, ["purpose", "lawful basis", "minimization", "security", "risk"]
-        ):
+        if not _contains_all(txt, ["purpose", "lawful basis", "minimization", "security", "risk"]):
             warn.append("dpia.md: missing some expected sections")
 
     # ISO 27001
@@ -56,9 +54,7 @@ def check(root: str | Path | None = None) -> tuple[list[str], list[str]]:
     else:
         txt = iso.read_text(encoding="utf-8", errors="ignore")
         if not _contains_all(txt, ["A.5", "A.8", "A.12", "A.14", "A.18"]):
-            warn.append(
-                "iso27001_checklist.md: expected A.5/A.8/A.12/A.14/A.18 entries"
-            )
+            warn.append("iso27001_checklist.md: expected A.5/A.8/A.12/A.14/A.18 entries")
 
     # SOC2
     soc2 = repo / "docs" / "compliance" / "soc2_checklist.md"
@@ -67,9 +63,7 @@ def check(root: str | Path | None = None) -> tuple[list[str], list[str]]:
     else:
         txt = soc2.read_text(encoding="utf-8", errors="ignore")
         if not _contains_all(txt, ["security", "availability", "confidentiality"]):
-            warn.append(
-                "soc2_checklist.md: expected Security/Availability/Confidentiality entries"
-            )
+            warn.append("soc2_checklist.md: expected Security/Availability/Confidentiality entries")
 
     return vio, warn
 

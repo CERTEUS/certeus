@@ -54,9 +54,7 @@ except Exception:  # pragma: no cover
 log = logging.getLogger("certeus.plugins")
 
 if not log.handlers:
-    logging.basicConfig(
-        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
 # === KONFIG / CONFIG ===
 
@@ -128,9 +126,7 @@ def _parse_plugin_yaml(path: Path) -> PluginSpec | None:
 
         return None
 
-    return PluginSpec(
-        name=name, module=module, register=register, enabled=enabled, version=version
-    )
+    return PluginSpec(name=name, module=module, register=register, enabled=enabled, version=version)
 
 
 def _discover_plugins(base_dir: Path = PLUGINS_DIR) -> list[PluginSpec]:
@@ -203,11 +199,7 @@ def _register_into_api(api: Any, spec: PluginSpec, mod: Any) -> str | None:
             log.warning("Cannot instantiate Plugin() for %s: %s", spec.name, e)
 
     if plugin_obj and hasattr(plugin_obj, "register"):
-        hook = (
-            getattr(api, "register", None)
-            or getattr(api, "add", None)
-            or getattr(api, "attach", None)
-        )
+        hook = getattr(api, "register", None) or getattr(api, "add", None) or getattr(api, "attach", None)
 
         if not callable(hook):
             raise RuntimeError("Plugin API is missing a register/add/attach method")

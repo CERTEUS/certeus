@@ -144,15 +144,9 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
                     ledger = obj.get("ledger") or {}
                     mr_expected = None
                     if isinstance(ledger, dict):
-                        mr_expected = ledger.get("merkle_root") or ledger.get(
-                            "merkleRoot"
-                        )
+                        mr_expected = ledger.get("merkle_root") or ledger.get("merkleRoot")
 
-                    if not (
-                        isinstance(rid, str)
-                        and isinstance(smt2_hash, str)
-                        and isinstance(lfsc, str)
-                    ):
+                    if not (isinstance(rid, str) and isinstance(smt2_hash, str) and isinstance(lfsc, str)):
                         mismatches += 1
                         continue
 
@@ -166,10 +160,7 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
                         mismatches += 1
                         continue
 
-                    if (
-                        not isinstance(mr_expected, str)
-                        or mr_expected.lower() != mr_computed.lower()
-                    ):
+                    if not isinstance(mr_expected, str) or mr_expected.lower() != mr_computed.lower():
                         mismatches += 1
                 except Exception:
                     mismatches += 1

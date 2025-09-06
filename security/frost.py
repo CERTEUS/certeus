@@ -44,9 +44,7 @@ def aggregate(
     *,
     scheme: str = "frost-ed25519",
 ) -> FrostQuorum:
-    if not isinstance(signers, list) or not all(
-        isinstance(s, str) and s for s in signers
-    ):
+    if not isinstance(signers, list) or not all(isinstance(s, str) and s for s in signers):
         raise ValueError("invalid signers")
     if not isinstance(threshold, int) or threshold <= 0:
         raise ValueError("invalid threshold")
@@ -72,9 +70,7 @@ def verify_quorum(obj: dict[str, Any]) -> bool:
         return False
     try:
         thr = int(obj.get("threshold"))
-        parts = (
-            int(obj.get("participants")) if obj.get("participants") is not None else thr
-        )
+        parts = int(obj.get("participants")) if obj.get("participants") is not None else thr
         signers = obj.get("signers") or []
         scheme = str(obj.get("scheme") or "")
         agg = str(obj.get("agg") or "")
@@ -82,11 +78,7 @@ def verify_quorum(obj: dict[str, Any]) -> bool:
             return False
         if parts < thr:
             return False
-        if (
-            not isinstance(signers, list)
-            or len(signers) < thr
-            or not all(isinstance(s, str) and s for s in signers)
-        ):
+        if not isinstance(signers, list) or len(signers) < thr or not all(isinstance(s, str) and s for s in signers):
             return False
         if "frost" not in scheme:
             return False

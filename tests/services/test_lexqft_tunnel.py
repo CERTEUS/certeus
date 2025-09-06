@@ -60,10 +60,5 @@ def test_tunnel_with_barrier_energy_reflect_case() -> None:
     assert body["path"][-1] == "reflect"
     # PCO headers include p, path and min energy, plus optional model uri
     assert r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.p") is not None
-    assert r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.min_energy") == str(
-        barrier_energy
-    )
-    assert (
-        r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.model_uri")
-        == "lexqft://barrier/demo"
-    )
+    assert r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.min_energy") == str(barrier_energy)
+    assert r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.model_uri") == "lexqft://barrier/demo"

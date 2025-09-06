@@ -99,10 +99,7 @@ def test_publish_with_security_extension(monkeypatch) -> None:
     assert isinstance(body.get("ledger_ref"), str) and len(body["ledger_ref"]) == 64
     # Ledger contains publish event for case
     records = ledger_service.get_records_for_case(case_id=pco["case_id"])
-    assert any(
-        rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"]
-        for rec in records
-    )
+    assert any(rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"] for rec in records)
 
 
 def test_publish_still_ok_when_security_extension_invalid_report_only(

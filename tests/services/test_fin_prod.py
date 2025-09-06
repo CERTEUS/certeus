@@ -27,16 +27,12 @@ def test_fin_measure_policy_violation_header() -> None:
 
     c = TestClient(app)
     # High risk to trigger violation
-    r = c.post(
-        "/v1/fin/alpha/measure", json={"signals": {"risk": 0.95, "sentiment": 0.1}}
-    )
+    r = c.post("/v1/fin/alpha/measure", json={"signals": {"risk": 0.95, "sentiment": 0.1}})
     assert r.status_code == 200
     hdr = r.headers.get("X-CERTEUS-Policy-FIN")
     assert isinstance(hdr, str) and hdr
     pol = json.loads(hdr)
-    assert pol.get("policy_ok") is False and "risk_above_max" in pol.get(
-        "violations", []
-    )
+    assert pol.get("policy_ok") is False and "risk_above_max" in pol.get("violations", [])
 
 
 def test_fin_simulate_two_strategies_and_pnl() -> None:

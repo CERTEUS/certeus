@@ -81,9 +81,7 @@ def _minimal_pco(case_id: str, with_counsel: bool = True) -> dict:
     }
 
     if with_counsel:
-        pco["signatures"].append(
-            {"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"}
-        )
+        pco["signatures"].append({"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"})
 
     return pco
 
@@ -103,10 +101,7 @@ def test_publish_when_policy_and_budget_ok_and_counsel_present() -> None:
 
     records = ledger_service.get_records_for_case(case_id="case-123")
 
-    assert any(
-        rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"]
-        for rec in records
-    )
+    assert any(rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"] for rec in records)
 
 
 def test_abstain_when_missing_counsel_signature() -> None:

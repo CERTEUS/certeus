@@ -25,9 +25,7 @@ client = TestClient(app)
 
 
 def test_qoc_vacuum_pairs_emits_pco_and_reasonable_rate() -> None:
-    r = client.post(
-        "/v1/qoc/vacuum_pairs", json={"vacuum_energy": 2.0, "horizon_scale": 1.2}
-    )
+    r = client.post("/v1/qoc/vacuum_pairs", json={"vacuum_energy": 2.0, "horizon_scale": 1.2})
     assert r.status_code == 200
     body = r.json()
     assert 0.05 <= float(body["rate"]) <= 1.0

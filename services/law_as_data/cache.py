@@ -98,13 +98,9 @@ class FileCache:
             "retrieved_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
 
-        self._index_path(digest).write_text(
-            json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        self._index_path(digest).write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
 
-        return CachedSource(
-            uri=uri, digest=digest, path=blob, retrieved_at=meta["retrieved_at"]
-        )
+        return CachedSource(uri=uri, digest=digest, path=blob, retrieved_at=meta["retrieved_at"])
 
     def get(self, digest: str) -> CachedSource | None:
         idx = self._index_path(digest)

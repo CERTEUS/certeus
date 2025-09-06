@@ -78,9 +78,7 @@ import re
 
 BORDER = "# +=====================================================================+"
 
-CERTEUS_LINE = (
-    "# |                          CERTEUS                                    |"
-)
+CERTEUS_LINE = "# |                          CERTEUS                                    |"
 
 MODULE_LABEL = "MODULE:"
 
@@ -108,9 +106,7 @@ EXCLUDE_DIRS = {
 
 PY_GLOB = "**/*.py"
 
-BANNER_RE = re.compile(
-    rf"(?ms)^({re.escape(BORDER)}\n(?:# \|.*\n)+{re.escape(BORDER)}\n)"
-)
+BANNER_RE = re.compile(rf"(?ms)^({re.escape(BORDER)}\n(?:# \|.*\n)+{re.escape(BORDER)}\n)")
 
 DATE_LINE_RE = re.compile(r"# \|\s*DATE:\s*(?P<date>.*?)\s*\|")
 
@@ -176,10 +172,7 @@ def build_banner(module_path: str, date_str: str) -> str:
 
     line_date = f"# | DATE:    {date_str:<{CANONICAL_WIDTH}}|"
 
-    return (
-        "\n".join([BORDER, CERTEUS_LINE, BORDER, line_module, line_date, BORDER])
-        + "\n\n"
-    )
+    return "\n".join([BORDER, CERTEUS_LINE, BORDER, line_module, line_date, BORDER]) + "\n\n"
 
 
 def has_module_docstring_near_top(text_after_banner: str) -> tuple[bool, int, int]:
@@ -336,9 +329,7 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
     module_path = str(p).replace("\\", "/")
 
     date_str = (
-        datetime.date.today().isoformat()
-        if set_date_today
-        else (first_date or datetime.date.today().isoformat())
+        datetime.date.today().isoformat() if set_date_today else (first_date or datetime.date.today().isoformat())
     )
 
     banner = build_banner(module_path, date_str)
@@ -367,9 +358,7 @@ def normalize_file(p: Path, set_date_today: bool, dry_run: bool) -> bool:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(
-        description="Normalize CERTEUS banners and module docstrings across repository."
-    )
+    ap = argparse.ArgumentParser(description="Normalize CERTEUS banners and module docstrings across repository.")
 
     ap.add_argument("--root", default=".", help="Repository root (default: .)")
 

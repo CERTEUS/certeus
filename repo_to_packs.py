@@ -281,15 +281,9 @@ def iter_files_no_git(
         if not p.is_file():
             continue
         rel = str(p.relative_to(root)).replace("\\", "/")
-        if any(
-            rel.startswith(ep.rstrip("/"))
-            for ep in exclude_patterns
-            if ep.endswith("/")
-        ):
+        if any(rel.startswith(ep.rstrip("/")) for ep in exclude_patterns if ep.endswith("/")):
             continue
-        if any(
-            fnmatch.fnmatch(rel, ep) for ep in exclude_patterns if not ep.endswith("/")
-        ):
+        if any(fnmatch.fnmatch(rel, ep) for ep in exclude_patterns if not ep.endswith("/")):
             continue
         if not any(fnmatch.fnmatch(rel, ip) for ip in include_patterns):
             continue
@@ -506,17 +500,11 @@ def write_packs(
         path = root / fe.rel_path
         text = read_text_safely(path)
         total_files += 1
-        f_chunks = chunk_text(
-            text, max_chars=file_chunk, overlap=overlap, safe=safe_boundaries
-        )
+        f_chunks = chunk_text(text, max_chars=file_chunk, overlap=overlap, safe=safe_boundaries)
         for i_chunk, ch in enumerate(f_chunks, 1):
-            hdr = file_header(
-                fe.rel_path + (f" ::chunk:{i_chunk}" if len(f_chunks) > 1 else "")
-            )
+            hdr = file_header(fe.rel_path + (f" ::chunk:{i_chunk}" if len(f_chunks) > 1 else ""))
             block = f"{hdr}{ch}{file_footer()}"
-            if current_len + len(block) > pack_chars and current_len > len(
-                pack_preamble()
-            ):
+            if current_len + len(block) > pack_chars and current_len > len(pack_preamble()):
                 pack_texts.append("".join(current))
                 pack_files.append(current_files[:])
                 total_chars += current_len
@@ -584,9 +572,7 @@ def write_packs(
         )
 
     # Write machine manifest
-    (out_dir / "MANIFEST.json").write_text(
-        json.dumps(manifest, indent=2), encoding="utf-8"
-    )
+    (out_dir / "MANIFEST.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     # Write short human manifest (summary of packs)
     md = io.StringIO()
@@ -600,9 +586,7 @@ def write_packs(
     )
     for rec in manifest["packs"]:
         sha12 = str(rec["sha256"])[:12]
-        md.write(
-            f"- **{rec['file']}** — chars: {rec['chars']}, files: {rec['files_count']}, sha256: `{sha12}…`\n"
-        )
+        md.write(f"- **{rec['file']}** — chars: {rec['chars']}, files: {rec['files_count']}, sha256: `{sha12}…`\n")
     (out_dir / "MANIFEST.md").write_text(md.getvalue(), encoding="utf-8")
 
     return pack_paths, manifest
@@ -635,15 +619,11 @@ def build(
     # NEW: collect full repo inventory (machines) and REPO_TREE.md (human)
     repo_inv = collect_repo_inventory(src)
 
-    pack_paths, manifest = write_packs(
-        src, files, out_dir, pack_chars, file_chunk, overlap, safe_boundaries, verbose
-    )
+    pack_paths, manifest = write_packs(src, files, out_dir, pack_chars, file_chunk, overlap, safe_boundaries, verbose)
 
     # inject repo inventory into MANIFEST.json (machines)
     manifest["repo"] = repo_inv
-    (out_dir / "MANIFEST.json").write_text(
-        json.dumps(manifest, indent=2), encoding="utf-8"
-    )
+    (out_dir / "MANIFEST.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     # write human-readable tree
     write_repo_tree_md(src, out_dir)
@@ -658,21 +638,15 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         )
     )
     ap.add_argument("src", type=str, help="source repository root")
-    ap.add_argument(
-        "--out", type=str, default="ingest_repo", help="output directory for packs"
-    )
+    ap.add_argument("--out", type=str, default="ingest_repo", help="output directory for packs")
     ap.add_argument(
         "--pack-chars",
         type=int,
         default=DEFAULT_PACK_CHARS,
         help="target characters per pack",
     )
-    ap.add_argument(
-        "--file-chunk", type=int, default=DEFAULT_FILE_CHUNK, help="per-file chunk size"
-    )
-    ap.add_argument(
-        "--overlap", type=int, default=DEFAULT_OVERLAP, help="overlap between chunks"
-    )
+    ap.add_argument("--file-chunk", type=int, default=DEFAULT_FILE_CHUNK, help="per-file chunk size")
+    ap.add_argument("--overlap", type=int, default=DEFAULT_OVERLAP, help="overlap between chunks")
     ap.add_argument(
         "--include",
         action="append",
@@ -690,9 +664,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         action="store_true",
         help="disable safe chunk boundaries",
     )
-    ap.add_argument(
-        "--git-ls-files", action="store_true", help="force using git ls-files (if repo)"
-    )
+    ap.add_argument("--git-ls-files", action="store_true", help="force using git ls-files (if repo)")
     ap.add_argument("--verbose", action="store_true", help="print progress")
     return ap.parse_args(argv)
 

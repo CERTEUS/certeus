@@ -22,9 +22,9 @@ EN: Read extended attributes (xattrs) for ProofFS artifacts.
 from __future__ import annotations
 
 from dataclasses import asdict
-import os
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -79,7 +79,7 @@ def _load_os_xattrs(p: Path) -> dict[str, Any] | None:
         for n in names:
             try:
                 v = os.getxattr(p.as_posix(), n)  # type: ignore[attr-defined]
-                if isinstance(v, (bytes, bytearray)):
+                if isinstance(v, (bytes | bytearray)):
                     try:
                         raw[n] = v.decode("utf-8", errors="replace")
                     except Exception:

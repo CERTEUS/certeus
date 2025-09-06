@@ -70,9 +70,7 @@ def main() -> int:
         # dataclass with slots=True — use asdict instead of __dict__
         d.update(asdict(desc))
         outp = man.parent / "abi_baseline.json"
-        outp.write_text(
-            json.dumps(d, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
+        outp.write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"Updated {outp} for {name} (version {ver})")
         updated += 1
     print(f"ABI baselines updated: {updated}")

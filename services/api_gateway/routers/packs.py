@@ -140,9 +140,7 @@ async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
     sig = (req.signature or "").strip()
     # Require at least 64 hex chars (report-only semantics preserved for tests using 'a'*64/'A'*64)
     if not _re.fullmatch(r"[0-9a-fA-F]{64,}", sig):
-        raise HTTPException(
-            status_code=400, detail="invalid signature: expected hex(64+) string"
-        )
+        raise HTTPException(status_code=400, detail="invalid signature: expected hex(64+) string")
 
     # Persist signature and installed_version in state
     state = _load_state()
@@ -243,9 +241,7 @@ class _MiniAPI:
         self.adapters: dict[str, Any] = {}
         self.exporters: dict[str, Any] = {}
 
-    def register_plugin(
-        self, name: str, meta: Any
-    ) -> None:  # compat for plugin.register(api)
+    def register_plugin(self, name: str, meta: Any) -> None:  # compat for plugin.register(api)
         self.plugins[name] = meta
 
     def register_adapter(self, key: str, fn: Any) -> None:

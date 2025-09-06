@@ -52,9 +52,7 @@ class MismatchService:
 
         self._tickets: dict[str, MismatchTicket] = {}
 
-        self._resolution_callbacks: list[
-            Callable[[MismatchTicket, TicketResolution], None]
-        ] = []
+        self._resolution_callbacks: list[Callable[[MismatchTicket, TicketResolution], None]] = []
 
         if storage_mode == "file":
             STORAGE_PATH.mkdir(parents=True, exist_ok=True)
@@ -96,9 +94,7 @@ class MismatchService:
 
         # Upewnij się, że priority ma typ TicketPriority (nie None)
 
-        prio: TicketPriority = (
-            priority if priority is not None else TicketPriority.MEDIUM
-        )
+        prio: TicketPriority = priority if priority is not None else TicketPriority.MEDIUM
 
         ticket = MismatchTicket(
             ticket_id=ticket_id,
@@ -155,9 +151,7 @@ class MismatchService:
 
     # -- Resolution / Escalation ----------------------------------------
 
-    def resolve_ticket(
-        self, ticket_id: str, resolution: TicketResolution
-    ) -> MismatchTicket:
+    def resolve_ticket(self, ticket_id: str, resolution: TicketResolution) -> MismatchTicket:
         ticket = self._tickets.get(ticket_id)
 
         if not ticket:
@@ -198,9 +192,7 @@ class MismatchService:
 
         return ticket
 
-    def escalate_ticket(
-        self, ticket_id: str, reason: str, escalated_by: str
-    ) -> MismatchTicket:
+    def escalate_ticket(self, ticket_id: str, reason: str, escalated_by: str) -> MismatchTicket:
         ticket = self._tickets.get(ticket_id)
 
         if not ticket:
@@ -212,13 +204,9 @@ class MismatchService:
 
         ticket.updated_at = datetime.now(UTC)
 
-        note = (
-            f"[{datetime.now(UTC).isoformat()}] Escalated by {escalated_by}: {reason}"
-        )
+        note = f"[{datetime.now(UTC).isoformat()}] Escalated by {escalated_by}: {reason}"
 
-        ticket.resolution_notes = (
-            (ticket.resolution_notes + "\n") if ticket.resolution_notes else ""
-        ) + note
+        ticket.resolution_notes = ((ticket.resolution_notes + "\n") if ticket.resolution_notes else "") + note
 
         self._persist_if_needed()
 
@@ -256,9 +244,7 @@ class MismatchService:
                 solver_counts[r.solver_name] += 1
 
             if t.resolved_at and t.created_at:
-                resolution_times.append(
-                    (t.resolved_at - t.created_at).total_seconds() / 3600.0
-                )
+                resolution_times.append((t.resolved_at - t.created_at).total_seconds() / 3600.0)
 
         stats.total_tickets = len(self._tickets)
 
@@ -277,9 +263,7 @@ class MismatchService:
         stats.by_solver = dict(solver_counts)
 
         if resolution_times:
-            stats.avg_resolution_time_hours = sum(resolution_times) / len(
-                resolution_times
-            )
+            stats.avg_resolution_time_hours = sum(resolution_times) / len(resolution_times)
 
         return stats
 
@@ -314,9 +298,7 @@ class MismatchService:
 
     # -- Callbacks -------------------------------------------------------
 
-    def register_resolution_callback(
-        self, callback: Callable[[MismatchTicket, TicketResolution], None]
-    ) -> None:
+    def register_resolution_callback(self, callback: Callable[[MismatchTicket, TicketResolution], None]) -> None:
         self._resolution_callbacks.append(callback)
 
         logger.debug(

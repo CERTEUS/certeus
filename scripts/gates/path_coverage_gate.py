@@ -57,15 +57,9 @@ def main() -> int:
     args = ap.parse_args()
 
     min_gamma = args.min_gamma if args.min_gamma is not None else args.min_gamma_alt
-    max_unc = (
-        args.max_uncaptured
-        if args.max_uncaptured is not None
-        else args.max_uncaptured_alt
-    )
+    max_unc = args.max_uncaptured if args.max_uncaptured is not None else args.max_uncaptured_alt
     if min_gamma is None or max_unc is None:
-        raise SystemExit(
-            "Missing thresholds: --min-gamma/--min and --max-uncaptured/--max_uncaptured"
-        )
+        raise SystemExit("Missing thresholds: --min-gamma/--min and --max-uncaptured/--max_uncaptured")
 
     data = _read_or_default(args.input)
     cov = data.get("coverage") or {}
@@ -74,9 +68,7 @@ def main() -> int:
 
     ok = (gamma >= float(min_gamma)) and (unc <= float(max_unc))
     status = "OK" if ok else "FAIL"
-    print(
-        f"Path coverage: gamma={gamma} (min={min_gamma}), uncaptured={unc} (max={max_unc}) -> {status}"
-    )
+    print(f"Path coverage: gamma={gamma} (min={min_gamma}), uncaptured={unc} (max={max_unc}) -> {status}")
     return 0 if ok else 1
 
 

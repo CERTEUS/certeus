@@ -81,9 +81,7 @@ def _check_quality(name: str, schema: dict[str, Any]) -> list[str]:
     # Restrykcyjność: preferujemy additionalProperties:false na root
 
     if schema.get("additionalProperties", True) is not False:
-        errs.append(
-            "Root 'additionalProperties' should be false for stricter contracts"
-        )
+        errs.append("Root 'additionalProperties' should be false for stricter contracts")
 
     return errs
 

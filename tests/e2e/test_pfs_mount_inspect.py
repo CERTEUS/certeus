@@ -36,9 +36,7 @@ def test_pfs_mount_materialize_inspect_unmount_e2e() -> None:
 
         # materialize a stub artifact
         uri = "pfs://mail/E2E/flow.txt"
-        r2 = client.post(
-            "/v1/pfs/materialize", json={"uri": uri, "meta": {"note": "e2e"}}
-        )
+        r2 = client.post("/v1/pfs/materialize", json={"uri": uri, "meta": {"note": "e2e"}})
         assert r2.status_code == 200
         path = Path(r2.json().get("path") or "")
         assert path.exists() and path.is_file()
@@ -47,9 +45,7 @@ def test_pfs_mount_materialize_inspect_unmount_e2e() -> None:
         r3 = client.get("/v1/pfs/xattrs", params={"uri": uri})
         assert r3.status_code == 200
         xattrs = r3.json().get("xattrs") or {}
-        assert isinstance(xattrs.get("pnip"), str) and xattrs["pnip"].startswith(
-            "sha256:"
-        )
+        assert isinstance(xattrs.get("pnip"), str) and xattrs["pnip"].startswith("sha256:")
 
         # unmount (mock)
         r4 = client.post("/v1/pfs/unmount", json={"mount_id": mid})

@@ -95,9 +95,7 @@ router = APIRouter(prefix="/v1/mailops", tags=["MailOps"])
 
 
 @router.post("/ingest", response_model=IngestEmailResponse)
-async def ingest_email(
-    req: IngestEmailRequest, request: Request
-) -> IngestEmailResponse:
+async def ingest_email(req: IngestEmailRequest, request: Request) -> IngestEmailResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -144,13 +142,9 @@ async def ingest_email(
             ledger_service,
         )
 
-        doc_hash = "sha256:" + compute_provenance_hash(
-            io_email, include_timestamp=False
-        )
+        doc_hash = "sha256:" + compute_provenance_hash(io_email, include_timestamp=False)
         case_id = req.thread_id or req.mail_id
-        ledger_service.record_input(
-            case_id=case_id or "mail-case", document_hash=doc_hash
-        )
+        ledger_service.record_input(case_id=case_id or "mail-case", document_hash=doc_hash)
     except Exception:
         pass
 

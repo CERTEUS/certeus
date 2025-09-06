@@ -41,9 +41,7 @@ def main() -> int:
     )
     assert r.status_code == 200
     # Sequence
-    r2 = c.post(
-        "/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]}
-    )
+    r2 = c.post("/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]})
     assert r2.status_code == 200
     assert "X-CERTEUS-PCO-qtm.sequence" in r2.headers
     # Expectation

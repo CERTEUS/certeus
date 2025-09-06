@@ -35,11 +35,7 @@ def _check_consistency(xattrs: dict[str, Any]) -> tuple[bool, str]:
     pnip = xattrs.get("pnip")
     pco = xattrs.get("pco") or {}
 
-    if (
-        not isinstance(pnip, str)
-        or not pnip.startswith("sha256:")
-        or len(pnip.split(":", 1)[1]) != 64
-    ):
+    if not isinstance(pnip, str) or not pnip.startswith("sha256:") or len(pnip.split(":", 1)[1]) != 64:
         return False, "PNIP must be sha256:<64-hex>"
     pnip_hex = pnip.split(":", 1)[1]
 
@@ -74,9 +70,7 @@ def main() -> None:
         ok_b, msg_b = _check_consistency(xb)
 
         report = {"a": {"ok": ok_a, "msg": msg_a}, "b": {"ok": ok_b, "msg": msg_b}}
-        (out_dir / "asset_integrity.json").write_text(
-            json.dumps(report, indent=2), encoding="utf-8"
-        )
+        (out_dir / "asset_integrity.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
         if not (ok_a and ok_b):
             _fail(f"Asset-Integrity Gate failed: {report}")

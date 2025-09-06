@@ -80,9 +80,7 @@ router = APIRouter(prefix="/v1/ethics", tags=["ethics"])
 
 
 @router.post("/equity_meter", response_model=EquityMeterResponse)
-async def equity_meter(
-    req: EquityMeterRequest, request: Request
-) -> EquityMeterResponse:
+async def equity_meter(req: EquityMeterRequest, request: Request) -> EquityMeterResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -101,22 +99,16 @@ async def equity_meter(
 
     score = max(0.0, 1.0 - (sum(deltas) / n))
 
-    return EquityMeterResponse(
-        score=round(score, 6), deltas=[round(d, 6) for d in deltas]
-    )
+    return EquityMeterResponse(score=round(score, 6), deltas=[round(d, 6) for d in deltas])
 
 
 @router.post("/double_verdict", response_model=DoubleVerdictResponse)
-async def double_verdict(
-    req: DoubleVerdictRequest, request: Request
-) -> DoubleVerdictResponse:
+async def double_verdict(req: DoubleVerdictRequest, request: Request) -> DoubleVerdictResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
 
-    return DoubleVerdictResponse(
-        verdicts={"W": req.W_litera, "T": req.T_telos}, rationale=req.rationale
-    )
+    return DoubleVerdictResponse(verdicts={"W": req.W_litera, "T": req.T_telos}, rationale=req.rationale)
 
 
 # === I/O / ENDPOINTS ===

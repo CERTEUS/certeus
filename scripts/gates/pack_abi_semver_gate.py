@@ -109,9 +109,7 @@ def _abi_for_module(mod_path: str) -> AbiDescriptor:
         try:
             sig = inspect.signature(reg)
             allowed = (_P.POSITIONAL_ONLY, _P.POSITIONAL_OR_KEYWORD)
-            mod_reg_arity = len(
-                [p for p in sig.parameters.values() if p.kind in allowed]
-            )
+            mod_reg_arity = len([p for p in sig.parameters.values() if p.kind in allowed])
         except Exception:
             mod_reg_arity = None
     Plugin = getattr(mod, "Plugin", None)
@@ -128,9 +126,7 @@ def _abi_for_module(mod_path: str) -> AbiDescriptor:
             try:
                 sig = inspect.signature(reg_m)
                 allowed = (_P.POSITIONAL_ONLY, _P.POSITIONAL_OR_KEYWORD)
-                cls_reg_arity = len(
-                    [p for p in sig.parameters.values() if p.kind in allowed]
-                )
+                cls_reg_arity = len([p for p in sig.parameters.values() if p.kind in allowed])
             except Exception:
                 cls_reg_arity = None
     return AbiDescriptor(
@@ -164,11 +160,7 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
         if not parts:
             violations.append(f"{ctx}: invalid semver '{ver or '<empty>'}'")
             continue
-        desc = (
-            _abi_for_module(mod)
-            if mod
-            else AbiDescriptor(mod, False, None, False, False, None)
-        )
+        desc = _abi_for_module(mod) if mod else AbiDescriptor(mod, False, None, False, False, None)
 
         baseline_p = man.parent / "abi_baseline.json"
         if baseline_p.exists():
@@ -187,27 +179,19 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
                     major_cur = parts[0]
                     # try to read previous version (optional 'version' in baseline file)
                     prev_ver = raw.get("__version__")
-                    prev_parts = (
-                        _semver_parts(prev_ver) if isinstance(prev_ver, str) else None
-                    )
+                    prev_parts = _semver_parts(prev_ver) if isinstance(prev_ver, str) else None
                     # If previous version unknown, be conservative and require major bump
                     if (prev_parts is None) or (major_cur <= prev_parts[0]):
                         violations.append(
                             f"{ctx}: ABI changed but major version not bumped (prev={prev_ver}, cur={ver})"
                         )
                     else:
-                        warnings.append(
-                            f"{ctx}: ABI changed; ensure major bump is intentional (prev baseline differs)"
-                        )
+                        warnings.append(f"{ctx}: ABI changed; ensure major bump is intentional (prev baseline differs)")
             except Exception:
-                warnings.append(
-                    f"{ctx}: cannot parse abi_baseline.json; skipping ABI compare"
-                )
+                warnings.append(f"{ctx}: cannot parse abi_baseline.json; skipping ABI compare")
         else:
             # No baseline — report-only; suggest creating one
-            warnings.append(
-                f"{ctx}: no abi_baseline.json; run update_abi_baselines.py to create baseline"
-            )
+            warnings.append(f"{ctx}: no abi_baseline.json; run update_abi_baselines.py to create baseline")
     return violations, warnings
 
 

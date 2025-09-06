@@ -32,21 +32,15 @@ client = TestClient(app)
     w2=st.floats(min_value=3.1, max_value=6.0, allow_nan=False, allow_infinity=False),
 )
 @settings(deadline=None, max_examples=60)
-def test_wkb_probability_monotonic_width(
-    E: float, V0: float, w1: float, w2: float
-) -> None:
+def test_wkb_probability_monotonic_width(E: float, V0: float, w1: float, w2: float) -> None:
     # compare p for same E,V0 but different widths
     b = {"V0": float(V0), "w": float(w1), "m": 1.0}
-    r1 = client.post(
-        "/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b}
-    )
+    r1 = client.post("/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b})
     assert r1.status_code == 200
     p1 = float(r1.json()["p_tunnel"]) if V0 > E else 0.95
 
     b["w"] = float(w2)
-    r2 = client.post(
-        "/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b}
-    )
+    r2 = client.post("/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b})
     assert r2.status_code == 200
     p2 = float(r2.json()["p_tunnel"]) if V0 > E else 0.95
 
@@ -64,15 +58,11 @@ def test_wkb_probability_monotonic_height(E: float, V01: float, V02: float) -> N
     b1 = {"V0": float(V01), "w": 1.5, "m": 1.0}
     b2 = {"V0": float(V02), "w": 1.5, "m": 1.0}
 
-    r1 = client.post(
-        "/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b1}
-    )
+    r1 = client.post("/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b1})
     assert r1.status_code == 200
     p1 = float(r1.json()["p_tunnel"]) if V01 > E else 0.95
 
-    r2 = client.post(
-        "/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b2}
-    )
+    r2 = client.post("/v1/lexqft/tunnel", json={"evidence_energy": float(E), "barrier_model": b2})
     assert r2.status_code == 200
     p2 = float(r2.json()["p_tunnel"]) if V02 > E else 0.95
 

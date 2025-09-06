@@ -89,12 +89,7 @@ def attach_correlation_middleware(app: FastAPI) -> None:
                 import json as _json
 
                 js = _json.loads(p.read_text(encoding="utf-8"))
-                val = (
-                    js.get("measurement")
-                    or js.get("mrenclave")
-                    or js.get("fingerprint")
-                    or ""
-                )
+                val = js.get("measurement") or js.get("mrenclave") or js.get("fingerprint") or ""
                 _ra_fp = str(val).strip() or None
     except Exception:
         _ra_fp = None
@@ -141,13 +136,9 @@ def attach_correlation_middleware(app: FastAPI) -> None:
 
         # PCO correlation headers (public, safe)
         try:
-            response.headers.setdefault(
-                "X-CERTEUS-PCO-correlation.correlation_id", corr_id
-            )
+            response.headers.setdefault("X-CERTEUS-PCO-correlation.correlation_id", corr_id)
             if trace_id:
-                response.headers.setdefault(
-                    "X-CERTEUS-PCO-correlation.trace_id", trace_id
-                )
+                response.headers.setdefault("X-CERTEUS-PCO-correlation.trace_id", trace_id)
         except Exception:
             pass
 

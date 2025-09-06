@@ -35,9 +35,7 @@ def test_install_enable_list_and_details_roundtrip() -> None:
 
     # Install with signature (stub) and optional version
     sig = "A" * 64
-    r1 = c.post(
-        "/v1/packs/install", json={"pack": name, "signature": sig, "version": "1.0.0"}
-    )
+    r1 = c.post("/v1/packs/install", json={"pack": name, "signature": sig, "version": "1.0.0"})
     assert r1.status_code == 200
     body1 = r1.json()
     assert body1.get("ok") is True and body1.get("signature") is True

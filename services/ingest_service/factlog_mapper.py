@@ -55,9 +55,7 @@ class FactlogMapper:
 
     """
 
-    def map_to_facts(
-        self, ocr_output: dict[str, Any], document_bytes: bytes
-    ) -> list[Fact]:
+    def map_to_facts(self, ocr_output: dict[str, Any], document_bytes: bytes) -> list[Fact]:
         """
 
         PL:

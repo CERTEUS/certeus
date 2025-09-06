@@ -30,9 +30,7 @@ import warnings
 from fastapi.testclient import TestClient
 
 # Suppress noisy FastAPI OpenAPI duplicate operation id warnings
-warnings.filterwarnings(
-    "ignore", message="Duplicate Operation ID*", category=UserWarning
-)
+warnings.filterwarnings("ignore", message="Duplicate Operation ID*", category=UserWarning)
 
 # === TESTY / TESTS ===
 

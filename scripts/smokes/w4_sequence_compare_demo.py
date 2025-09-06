@@ -38,12 +38,8 @@ def main() -> int:
     out = Path("reports/w4_sequence_compare.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     c = TestClient(app)
-    ra = c.post(
-        "/v1/qtm/measure_sequence", json={"operators": ["L", "T"], "case": "W4-CMP"}
-    )
-    rb = c.post(
-        "/v1/qtm/measure_sequence", json={"operators": ["T", "L"], "case": "W4-CMP"}
-    )
+    ra = c.post("/v1/qtm/measure_sequence", json={"operators": ["L", "T"], "case": "W4-CMP"})
+    rb = c.post("/v1/qtm/measure_sequence", json={"operators": ["T", "L"], "case": "W4-CMP"})
     da = ra.json() if ra.status_code == 200 else {"steps": []}
     db = rb.json() if rb.status_code == 200 else {"steps": []}
     uba = float(((da.get("uncertainty_bound") or {}).get("L_T")) or 0.0)

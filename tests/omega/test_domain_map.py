@@ -21,9 +21,7 @@ from __future__ import annotations
 from core.omega.transforms import apply_transform, compute_gauge_drift
 
 
-def _assert_bounded(
-    base: str, out: str, *, j_max: float = 0.25, d_max: int = 2
-) -> None:
+def _assert_bounded(base: str, out: str, *, j_max: float = 0.25, d_max: int = 2) -> None:
     d = compute_gauge_drift(base, out)
     assert d.jaccard_drift <= j_max
     assert d.token_count_delta <= d_max

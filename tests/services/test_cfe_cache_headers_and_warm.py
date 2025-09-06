@@ -31,9 +31,7 @@ def test_cfe_cache_headers_present(monkeypatch) -> None:
 
     r2 = c.get("/v1/cfe/lensing?case_id=CACHE-TEST")
     assert r2.status_code == 200
-    assert "Cache-Control" in r2.headers and "max-age=120" in r2.headers.get(
-        "Cache-Control", ""
-    )
+    assert "Cache-Control" in r2.headers and "max-age=120" in r2.headers.get("Cache-Control", "")
 
 
 def test_cfe_cache_warm_endpoint(monkeypatch) -> None:

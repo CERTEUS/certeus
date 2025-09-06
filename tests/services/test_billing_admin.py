@@ -28,9 +28,7 @@ def test_admin_set_tier_and_reload(monkeypatch) -> None:
     c = TestClient(app)
 
     # Without admin flag should be forbidden
-    r_forbidden = c.post(
-        "/v1/billing/admin/set_tier", json={"tenant": "demo", "tier": "pro"}
-    )
+    r_forbidden = c.post("/v1/billing/admin/set_tier", json={"tenant": "demo", "tier": "pro"})
     assert r_forbidden.status_code == 403
 
     with TemporaryDirectory() as td:

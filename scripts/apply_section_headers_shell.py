@@ -68,9 +68,7 @@ def insert_after_banner(text: str) -> str | None:
 
     # Skip banner block (lines starting with '#')
 
-    while idx < len(lines) and (
-        lines[idx].lstrip().startswith("#") or lines[idx].strip() == ""
-    ):
+    while idx < len(lines) and (lines[idx].lstrip().startswith("#") or lines[idx].strip() == ""):
         idx += 1
 
     block = []

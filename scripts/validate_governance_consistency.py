@@ -78,9 +78,7 @@ def _run_gate(payload: dict[str, Any], env: dict[str, str] | None = None) -> int
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--pack", default=str(_repo() / "policies/governance/governance_pack.v0.1.yaml")
-    )
+    ap.add_argument("--pack", default=str(_repo() / "policies/governance/governance_pack.v0.1.yaml"))
     ap.add_argument("--rego", default=str(_repo() / "policies/security/roles.rego"))
     args = ap.parse_args()
 
@@ -108,11 +106,7 @@ def main() -> int:
         for action, allowed_list in allow.items():
             allowed = set(map(str, allowed_list or []))
             # pick a resource kind heuristic
-            rkind = (
-                "keys"
-                if action == "manage_keys"
-                else ("policy" if action in {"merge", "manage_policy"} else "pco")
-            )
+            rkind = "keys" if action == "manage_keys" else ("policy" if action in {"merge", "manage_policy"} else "pco")
             for role in roles_pack:
                 payload = {
                     "user": {"role": role},
@@ -122,9 +116,7 @@ def main() -> int:
                 rc = _run_gate(payload)
                 if (rc == 0) != (role in allowed):
                     exp = "ALLOW" if role in allowed else "DENY"
-                    print(
-                        f"Gate mismatch: dom={dom} action={action} role={role} expected={exp} rc={rc}"
-                    )
+                    print(f"Gate mismatch: dom={dom} action={action} role={role} expected={exp} rc={rc}")
                     return 2
     print("Governance consistency: OK")
     return 0

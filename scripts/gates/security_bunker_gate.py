@@ -63,9 +63,7 @@ def _bunker_ready(repo_root: Path) -> bool:
                 # Optional RA verify (structure only)
                 from security.ra import extract_fingerprint, verify_fingerprint
 
-                fp_ok = verify_fingerprint(obj) or verify_fingerprint(
-                    extract_fingerprint(obj).to_dict()
-                )
+                fp_ok = verify_fingerprint(obj) or verify_fingerprint(extract_fingerprint(obj).to_dict())
                 if not fp_ok:
                     # Not fatal unless explicitly required by TEE_RA_REQUIRE
                     if _is_on(os.getenv("TEE_RA_REQUIRE")):

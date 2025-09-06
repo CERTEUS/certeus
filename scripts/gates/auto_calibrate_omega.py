@@ -94,9 +94,7 @@ def _summarize(vals: list[float]) -> dict[str, float]:
     }
 
 
-def calibrate(
-    pairs: Iterable[tuple[str, str]], domain: str | None, q: float, margin: float
-) -> dict:
+def calibrate(pairs: Iterable[tuple[str, str]], domain: str | None, q: float, margin: float) -> dict:
     # late import for repo‑root path friendliness
     from pathlib import Path as _Path
     import sys as _sys
@@ -127,15 +125,9 @@ def calibrate(
 
     def _rec(vals: _Metrics) -> dict[str, float]:
         return {
-            "jaccard_max": (
-                round(_quantile(vals.jaccard, q) * margin, 6) if vals.jaccard else 0.0
-            ),
-            "entropy_max": (
-                round(_quantile(vals.entropy, q) * margin, 6) if vals.entropy else 0.0
-            ),
-            "entity_jaccard_max": (
-                round(_quantile(vals.entity, q) * margin, 6) if vals.entity else 0.0
-            ),
+            "jaccard_max": (round(_quantile(vals.jaccard, q) * margin, 6) if vals.jaccard else 0.0),
+            "entropy_max": (round(_quantile(vals.entropy, q) * margin, 6) if vals.entropy else 0.0),
+            "entity_jaccard_max": (round(_quantile(vals.entity, q) * margin, 6) if vals.entity else 0.0),
         }
 
     out: dict[str, object] = {

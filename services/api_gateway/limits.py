@@ -132,9 +132,7 @@ def reload_policies() -> None:
         _ = _load_policies()
 
 
-def set_tenant_tier_policy(
-    tenant: str, tier: str, *, persist: bool = False
-) -> dict[str, object]:
+def set_tenant_tier_policy(tenant: str, tier: str, *, persist: bool = False) -> dict[str, object]:
     """Ustaw mapowanie tenant→tier w politykach. Opcjonalnie zapisz do pliku.
 
     Zwraca wynik z polami: tenant, tier, persisted (bool), policy_path (opcjonalnie).
@@ -154,9 +152,7 @@ def set_tenant_tier_policy(
 
         persisted = False
         pth: str | None = None
-        want_write = persist or (
-            os.getenv("BILLING_POLICY_FILE_WRITE") in {"1", "true", "True"}
-        )
+        want_write = persist or (os.getenv("BILLING_POLICY_FILE_WRITE") in {"1", "true", "True"})
         if want_write:
             try:
                 p = _policy_path()
@@ -277,9 +273,7 @@ def refund_tenant_units(tenant: str, units: int) -> int:
     """PL/EN: Refund units to tenant and return new balance."""
 
     with _LOCK:
-        _TOKEN_BUDGETS[tenant] = _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET) + max(
-            0, int(units)
-        )
+        _TOKEN_BUDGETS[tenant] = _TOKEN_BUDGETS.get(tenant, _DEFAULT_BUDGET) + max(0, int(units))
         return _TOKEN_BUDGETS[tenant]
 
 

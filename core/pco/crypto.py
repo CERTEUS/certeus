@@ -176,9 +176,7 @@ def ed25519_sign_b64u(private_key_bytes: bytes, msg_hex: str) -> str:
     return b64u_encode(sig)
 
 
-def ed25519_verify_b64u(
-    public_key_bytes: bytes, signature_b64u: str, msg_hex: str
-) -> None:
+def ed25519_verify_b64u(public_key_bytes: bytes, signature_b64u: str, msg_hex: str) -> None:
     pk = Ed25519PublicKey.from_public_bytes(public_key_bytes)
 
     # raises InvalidSignature on failure

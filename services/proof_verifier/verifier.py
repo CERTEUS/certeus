@@ -67,9 +67,7 @@ def verify_lfsc(text: str) -> VerificationResult:
     mock = os.getenv("PROOF_VERIFIER_MOCK")
 
     if mock == "lfsc_ok":
-        return VerificationResult(
-            ok=True, proof_hash=_sha256_hex(data), details={"verifier": "mock:lfsc-ok"}
-        )
+        return VerificationResult(ok=True, proof_hash=_sha256_hex(data), details={"verifier": "mock:lfsc-ok"})
 
     if mock == "lfsc_fail":
         return VerificationResult(
@@ -102,9 +100,7 @@ def verify_lfsc(text: str) -> VerificationResult:
 
                 err = (proc.stderr or b"").decode("utf-8", errors="ignore")[:200]
 
-                logging.getLogger(__name__).debug(
-                    "LFSC verify rc=%s out='%s' err='%s'", proc.returncode, out, err
-                )
+                logging.getLogger(__name__).debug("LFSC verify rc=%s out='%s' err='%s'", proc.returncode, out, err)
 
             return VerificationResult(
                 ok=ok,
@@ -114,9 +110,7 @@ def verify_lfsc(text: str) -> VerificationResult:
 
         except Exception as e:
             if os.getenv("PROOF_VERIFY_DEBUG") == "1":
-                logging.getLogger(__name__).exception(
-                    "LFSC external verifier error: %s", e
-                )
+                logging.getLogger(__name__).exception("LFSC external verifier error: %s", e)
 
             return VerificationResult(
                 ok=False,
@@ -126,25 +120,19 @@ def verify_lfsc(text: str) -> VerificationResult:
 
     ok = bool(text.strip()) and bool(_LFSC_HEADER_RE.search(text))
 
-    return VerificationResult(
-        ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:lfsc-check"}
-    )
+    return VerificationResult(ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:lfsc-check"})
 
 
 def verify_drat(text: str) -> VerificationResult:
     if text is None:
-        return VerificationResult(
-            ok=False, proof_hash="", details={"verifier": "internal:drat-check"}
-        )
+        return VerificationResult(ok=False, proof_hash="", details={"verifier": "internal:drat-check"})
 
     data = text.encode("utf-8")
 
     mock = os.getenv("PROOF_VERIFIER_MOCK")
 
     if mock == "drat_ok":
-        return VerificationResult(
-            ok=True, proof_hash=_sha256_hex(data), details={"verifier": "mock:drat-ok"}
-        )
+        return VerificationResult(ok=True, proof_hash=_sha256_hex(data), details={"verifier": "mock:drat-ok"})
 
     if mock == "drat_fail":
         return VerificationResult(
@@ -177,9 +165,7 @@ def verify_drat(text: str) -> VerificationResult:
 
                 err = (proc.stderr or b"").decode("utf-8", errors="ignore")[:200]
 
-                logging.getLogger(__name__).debug(
-                    "DRAT verify rc=%s out='%s' err='%s'", proc.returncode, out, err
-                )
+                logging.getLogger(__name__).debug("DRAT verify rc=%s out='%s' err='%s'", proc.returncode, out, err)
 
             return VerificationResult(
                 ok=ok,
@@ -189,9 +175,7 @@ def verify_drat(text: str) -> VerificationResult:
 
         except Exception as e:
             if os.getenv("PROOF_VERIFY_DEBUG") == "1":
-                logging.getLogger(__name__).exception(
-                    "DRAT external verifier error: %s", e
-                )
+                logging.getLogger(__name__).exception("DRAT external verifier error: %s", e)
 
             return VerificationResult(
                 ok=False,
@@ -201,6 +185,4 @@ def verify_drat(text: str) -> VerificationResult:
 
     ok = bool(text.strip()) and bool(_DRAT_HINT_RE.search(text))
 
-    return VerificationResult(
-        ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:drat-check"}
-    )
+    return VerificationResult(ok=ok, proof_hash=_sha256_hex(data), details={"verifier": "internal:drat-check"})

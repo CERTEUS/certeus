@@ -166,9 +166,7 @@ def _safe_register(api: Any, plugin: Any, name: str) -> None:
 
             return
 
-    raise RuntimeError(
-        "No compatible registration hook or registry mapping found on Plugin API"
-    )
+    raise RuntimeError("No compatible registration hook or registry mapping found on Plugin API")
 
 
 def register(api: Any, name: str | None = None) -> None:

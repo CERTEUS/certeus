@@ -55,12 +55,8 @@ def main() -> int:
     except Exception:
         pass
     # Save to out/openapi.json and docs/openapi/certeus.v1.json
-    OUT_FILE.write_text(
-        json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    (DOCS_DIR / "certeus.v1.json").write_text(
-        json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    OUT_FILE.write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
+    (DOCS_DIR / "certeus.v1.json").write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"OpenAPI written to {OUT_FILE}")
     return 0
 

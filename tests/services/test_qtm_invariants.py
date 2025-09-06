@@ -46,9 +46,7 @@ def test_qtm_sequence_uncertainty_and_probs_bounds() -> None:
     )
     assert r.status_code == 200
     # Measure sequence
-    r2 = c.post(
-        "/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]}
-    )
+    r2 = c.post("/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]})
     assert r2.status_code == 200
     body = r2.json()
     ub = body.get("uncertainty_bound", {})

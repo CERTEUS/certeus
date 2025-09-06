@@ -53,9 +53,7 @@ def new_dek() -> bytes:
     return urandom(32)
 
 
-def encrypt(
-    dek: bytes, plaintext: bytes, aad: bytes = b""
-) -> tuple[bytes, bytes, bytes]:
+def encrypt(dek: bytes, plaintext: bytes, aad: bytes = b"") -> tuple[bytes, bytes, bytes]:
     """
 
     PL: Zaszyfruj AES-GCM: zwróć (iv, ciphertext, aad).

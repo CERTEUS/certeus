@@ -54,9 +54,7 @@ class ProofQueue:
         self._heap: list[tuple[int, float, str, _QItem]] = []
         self._depth = 0
 
-    def enqueue(
-        self, tenant: str, heat: Heat, payload: dict[str, Any], sla: str
-    ) -> _QItem:
+    def enqueue(self, tenant: str, heat: Heat, payload: dict[str, Any], sla: str) -> _QItem:
         prio = -SLA_W.get(sla, 1)
         now = time.time()
         qid = f"pt_{int(now * 1000)}_{tenant}"

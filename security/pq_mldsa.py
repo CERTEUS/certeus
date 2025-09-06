@@ -22,7 +22,6 @@ Bez zależności twardych: importy wykonywane leniwie; brak pyoqs ⇒ ImportErro
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Tuple
 
 
 def _oqs():  # lazy import to avoid hard dependency in CI
@@ -73,4 +72,3 @@ __all__ = [
     "sign",
     "verify",
 ]
-

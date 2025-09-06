@@ -99,15 +99,11 @@ def canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
 
 
 def main() -> None:
-    ap = ArgumentParser(
-        description="Sign public PCO bundle (Ed25519 detached signature)."
-    )
+    ap = ArgumentParser(description="Sign public PCO bundle (Ed25519 detached signature).")
 
     ap.add_argument("--rid", required=True)
 
-    ap.add_argument(
-        "--bundle-dir", default=os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
-    )
+    ap.add_argument("--bundle-dir", default=os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco"))
 
     ap.add_argument(
         "--key",
@@ -129,17 +125,13 @@ def main() -> None:
 
     rid_hash_hex = hashlib.sha256(pub["rid"].encode("utf-8")).hexdigest()
 
-    leaf_hex = hashlib.sha256(
-        bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)
-    ).hexdigest()
+    leaf_hex = hashlib.sha256(bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)).hexdigest()
 
     merkle_root_hex = leaf_hex
 
     digest_hex = canonical_digest_hex(pub, merkle_root_hex)
 
-    sk_any = serialization.load_pem_private_key(
-        Path(args.key).read_bytes(), password=None
-    )
+    sk_any = serialization.load_pem_private_key(Path(args.key).read_bytes(), password=None)
 
     if not isinstance(sk_any, Ed25519PrivateKey):
         raise TypeError("Loaded key is not Ed25519 (expected Ed25519PrivateKey).")
@@ -150,9 +142,7 @@ def main() -> None:
 
     pub["signature"] = base64.urlsafe_b64encode(sig).rstrip(b"=").decode()
 
-    bundle_path.write_text(
-        json.dumps(pub, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    bundle_path.write_text(json.dumps(pub, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"OK: signed {bundle_path}")
 

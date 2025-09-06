@@ -71,9 +71,7 @@ def _hex(s: str) -> str:
     return sha256(s.encode("utf-8")).hexdigest()
 
 
-def _bundle_hash_hex(
-    smt2_hash: str, lfsc_text: str, drat_text: str | None = None
-) -> str:
+def _bundle_hash_hex(smt2_hash: str, lfsc_text: str, drat_text: str | None = None) -> str:
     """Musi odzwierciedlać serwerowe _compute_bundle_hash_hex."""
 
     payload = {"lfsc_sha256": _hex(lfsc_text), "smt2_hash": smt2_hash}
@@ -89,9 +87,7 @@ def _bundle_hash_hex(
 # ---Bloki----- TESTY
 
 
-def test_get_public_pco_happy_path(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_get_public_pco_happy_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # GIVEN: środowisko i klucz testowy
 
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
@@ -134,9 +130,7 @@ def test_get_public_pco_happy_path(
 
     # Zapisz bundle na FS
 
-    (tmp_path / f"{rid}.json").write_text(
-        json.dumps(pub, ensure_ascii=False), encoding="utf-8"
-    )
+    (tmp_path / f"{rid}.json").write_text(json.dumps(pub, ensure_ascii=False), encoding="utf-8")
 
     # WHEN: pobieramy publiczny PCO
 
@@ -155,9 +149,7 @@ def test_get_public_pco_happy_path(
     assert "signature" in body
 
 
-def test_get_public_pco_validation(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_get_public_pco_validation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
 
     rid = _hex("rid-bad")

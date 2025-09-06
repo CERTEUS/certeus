@@ -36,9 +36,7 @@ def _gen_ed25519() -> tuple[str, str]:
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
-    pub = sk.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-    )
+    pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
     return pem, pub.hex()
 
 
@@ -126,16 +124,12 @@ def test_get_endpoints_respond_2xx(client: TestClient, path: str) -> None:
     POST_JSON_ENDPOINTS,
     ids=[p for p, _ in POST_JSON_ENDPOINTS],
 )
-def test_post_endpoints_json_2xx(
-    client: TestClient, path: str, payload: dict[str, Any] | list[dict[str, Any]]
-) -> None:
+def test_post_endpoints_json_2xx(client: TestClient, path: str, payload: dict[str, Any] | list[dict[str, Any]]) -> None:
     r = client.post(path, json=payload)
     assert 200 <= r.status_code < 300
 
 
-def test_post_preview_and_ingest_minimal_pdf(
-    client: TestClient, tmp_path: Path
-) -> None:
+def test_post_preview_and_ingest_minimal_pdf(client: TestClient, tmp_path: Path) -> None:
     # Preview
     files = {"file": ("hello.txt", b"hello", "text/plain")}
     rp = client.post("/v1/preview", files=files)
@@ -168,12 +162,8 @@ def test_lexqft_tunnel_energy_bounds(client: TestClient, e: float) -> None:
     ],
     ids=["n=0.05", "n=0.10", "n=0.20", "n=0.50"],
 )
-def test_devices_entangle_negativity_bounds(
-    client: TestClient, neg: float, vars_: list[str]
-) -> None:
-    r = client.post(
-        "/v1/devices/entangle", json={"variables": vars_, "target_negativity": neg}
-    )
+def test_devices_entangle_negativity_bounds(client: TestClient, neg: float, vars_: list[str]) -> None:
+    r = client.post("/v1/devices/entangle", json={"variables": vars_, "target_negativity": neg})
     assert r.status_code == 200
     val = float(r.json().get("achieved_negativity", 0.0))
     assert 0.0 <= val <= 0.12
@@ -248,10 +238,7 @@ def test_mailops_ingest_variants(
     dmarc: str | None,
     att_count: int,
 ) -> None:
-    atts = [
-        {"filename": f"a{i}.txt", "content_type": "text/plain", "size": 5 + i}
-        for i in range(att_count)
-    ]
+    atts = [{"filename": f"a{i}.txt", "content_type": "text/plain", "size": 5 + i} for i in range(att_count)]
     r = client.post(
         "/v1/mailops/ingest",
         json={

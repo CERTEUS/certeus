@@ -46,9 +46,7 @@ def main() -> int:
     ).json()
 
     # 2) CLDF renormalize
-    cldf_in = [
-        {"text": x, "weight": 1.0 if i == 0 else 0.5} for i, x in enumerate(cites)
-    ]
+    cldf_in = [{"text": x, "weight": 1.0 if i == 0 else 0.5} for i, x in enumerate(cites)]
     cldf = c.post("/v1/lexenith/cldf/renormalize", json={"citations": cldf_in}).json()
 
     # 3) Why‑Not export
@@ -69,9 +67,7 @@ def main() -> int:
 
     # 5) DR lock/revoke (horyzont w sprawach)
     dr_lock = c.post("/v1/dr/lock", json={"case": case, "reason": "court-hold"}).json()
-    dr_revoke = c.post(
-        "/v1/dr/revoke", json={"lock_ref": dr_lock.get("lock_ref", "lock://unknown/")}
-    ).json()
+    dr_revoke = c.post("/v1/dr/revoke", json={"lock_ref": dr_lock.get("lock_ref", "lock://unknown/")}).json()
 
     rep = {
         "case": case,
@@ -82,9 +78,7 @@ def main() -> int:
         "dr": {"lock": dr_lock, "revoke": dr_revoke},
     }
     Path("reports").mkdir(parents=True, exist_ok=True)
-    Path("reports/w8_demo.json").write_text(
-        json.dumps(rep, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    Path("reports/w8_demo.json").write_text(json.dumps(rep, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({"ok": True, "case": case}))
     return 0
 

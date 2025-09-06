@@ -29,12 +29,8 @@ from pydantic import BaseModel, Field
 
 
 class VacuumPairsRequest(BaseModel):
-    vacuum_energy: float = Field(
-        ge=0, description="Proxy for field vacuum energy level"
-    )
-    horizon_scale: float | None = Field(
-        default=None, ge=0, description="Optional scale factor near horizon"
-    )
+    vacuum_energy: float = Field(ge=0, description="Proxy for field vacuum energy level")
+    horizon_scale: float | None = Field(default=None, ge=0, description="Optional scale factor near horizon")
 
 
 class VacuumPairsResponse(BaseModel):
@@ -57,9 +53,7 @@ router = APIRouter(prefix="/v1/qoc", tags=["lexqft"])
 
 
 @router.post("/vacuum_pairs", response_model=VacuumPairsResponse)
-async def vacuum_pairs(
-    req: VacuumPairsRequest, request: Request, response: Response
-) -> VacuumPairsResponse:
+async def vacuum_pairs(req: VacuumPairsRequest, request: Request, response: Response) -> VacuumPairsResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)

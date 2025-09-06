@@ -77,17 +77,11 @@ async def command(req: CommandRequest, request: Request) -> dict:
             args = req.args or {}
             op = str(args.get("operator", "W"))
             case = str(args.get("case") or args.get("source") or "chatops-case")
-            mreq = _qtm.MeasureRequest(
-                operator=op, source=f"chatops:{req.cmd}", case=case
-            )
+            mreq = _qtm.MeasureRequest(operator=op, source=f"chatops:{req.cmd}", case=case)
             tmp_resp = Response()
             out = await _qtm.measure(mreq, request, tmp_resp)
             # Expose essential PCO headers (collapse event, priorities, etc.)
-            pco_headers = {
-                k: v
-                for k, v in tmp_resp.headers.items()
-                if k.startswith("X-CERTEUS-PCO-")
-            }
+            pco_headers = {k: v for k, v in tmp_resp.headers.items() if k.startswith("X-CERTEUS-PCO-")}
             return {
                 "dispatched": req.cmd,
                 "args": args,
@@ -95,9 +89,7 @@ async def command(req: CommandRequest, request: Request) -> dict:
                 "pco": pco_headers,
             }
         except Exception as e:  # pragma: no cover
-            raise HTTPException(
-                status_code=500, detail=f"qtm.measure failed: {e}"
-            ) from e
+            raise HTTPException(status_code=500, detail=f"qtm.measure failed: {e}") from e
 
     if req.cmd == "cfe.geodesic":
         return {

@@ -41,11 +41,7 @@ def attach_rate_limit_middleware(app: FastAPI) -> None:
     @app.middleware("http")
     async def _rate_limiter(request: Request, call_next):  # type: ignore
         try:
-            tenant = (
-                request.headers.get("X-Tenant-ID")
-                or request.headers.get("X-Org-ID")
-                or "anonymous"
-            )
+            tenant = request.headers.get("X-Tenant-ID") or request.headers.get("X-Org-ID") or "anonymous"
             now = time.monotonic()
             tokens, last = buckets.get(tenant, (burst, now))
             # refill

@@ -60,9 +60,7 @@ def test_sign_manifest_dev_only(monkeypatch):
         encoding=serialization.Encoding.Raw,
         format=serialization.PublicFormat.Raw,
     )
-    os.environ["ED25519_PUBKEY_B64URL"] = (
-        base64.urlsafe_b64encode(pub).rstrip(b"=").decode("ascii")
-    )
+    os.environ["ED25519_PUBKEY_B64URL"] = base64.urlsafe_b64encode(pub).rstrip(b"=").decode("ascii")
 
     r2 = client.post("/v1/marketplace/sign_manifest", json={"manifest_yaml": "name: x"})
     assert r2.status_code == 200

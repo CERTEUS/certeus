@@ -88,9 +88,7 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
                 Ed25519PublicKey,
             )
 
-            Ed25519PublicKey.from_public_bytes(pk).verify(
-                b64u_decode(sig_b64u), signing_input
-            )
+            Ed25519PublicKey.from_public_bytes(pk).verify(b64u_decode(sig_b64u), signing_input)
             return True
         except Exception:
             return False
@@ -166,11 +164,7 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
 
     if rl_per_min > 0:
         _rl_state: dict[str, tuple[float, int]] = {}
-        _rl_paths = {
-            p.strip()
-            for p in (os.getenv("RATE_LIMIT_PATHS") or "/health").split(",")
-            if p.strip()
-        }
+        _rl_paths = {p.strip() for p in (os.getenv("RATE_LIMIT_PATHS") or "/health").split(",") if p.strip()}
 
         @app.middleware("http")
         async def _rate_limit(  # type: ignore[override]

@@ -29,9 +29,7 @@ client = TestClient(app)
 def test_virtual_pairs_budget_and_spawn_within_budget() -> None:
     # Reset and set budget
     client.post("/v1/lexqft/virtual_pairs/reset")
-    r0 = client.post(
-        "/v1/lexqft/virtual_pairs/budget", json={"case": "case-A", "budget": 10.0}
-    )
+    r0 = client.post("/v1/lexqft/virtual_pairs/budget", json={"case": "case-A", "budget": 10.0})
     assert r0.status_code == 200
     s0 = r0.json()
     assert float(s0["budget"]) == 10.0 and float(s0["energy_debt"]) == 0.0

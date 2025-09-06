@@ -62,9 +62,7 @@ def _wait(url: str, timeout: float = 30.0) -> None:
 
 
 def _rid(prefix: str = "case") -> str:
-    return f"{prefix}-" + "".join(
-        random.choices(string.ascii_lowercase + string.digits, k=6)
-    )
+    return f"{prefix}-" + "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
 
 
 def main() -> int:

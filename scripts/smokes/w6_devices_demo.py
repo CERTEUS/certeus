@@ -43,9 +43,7 @@ def _pp(title: str, data) -> None:
 def main() -> int:
     c = TestClient(gateway_app)
 
-    r_hde = c.post(
-        "/v1/devices/horizon_drive/plan", json={"case": "w6-hde", "target_horizon": 0.2}
-    )
+    r_hde = c.post("/v1/devices/horizon_drive/plan", json={"case": "w6-hde", "target_horizon": 0.2})
     r_hde.raise_for_status()
     r_qo = c.post(
         "/v1/devices/qoracle/expectation",
@@ -57,9 +55,7 @@ def main() -> int:
         json={"variables": ["A", "B", "C", "D"], "target_negativity": 0.12},
     )
     r_ei.raise_for_status()
-    r_cs = c.post(
-        "/v1/devices/chronosync/reconcile", json={"coords": {"case": "w6-cs", "t": 0}}
-    )
+    r_cs = c.post("/v1/devices/chronosync/reconcile", json={"coords": {"case": "w6-cs", "t": 0}})
     r_cs.raise_for_status()
 
     _pp("HDE plan", r_hde.json())

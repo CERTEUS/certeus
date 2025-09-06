@@ -89,9 +89,7 @@ def discover() -> list[PackInfo]:
         caps = list(data.get("capabilities") or [])
         version = str(data.get("version") or data.get("ver") or "") or None
         enabled = bool(data.get("enabled", True))
-        infos.append(
-            PackInfo(name=name, abi=abi, caps=caps, version=version, enabled=enabled)
-        )
+        infos.append(PackInfo(name=name, abi=abi, caps=caps, version=version, enabled=enabled))
     return infos
 
 
@@ -134,8 +132,6 @@ def load(path: str) -> PackLike:  # noqa: A002 - zgodność z istniejącymi impo
             api = object()
             pack = inst.register(api)
             if not hasattr(pack, "handle"):
-                raise RuntimeError(
-                    "Plugin.register did not return handle-capable object"
-                )
+                raise RuntimeError("Plugin.register did not return handle-capable object")
             return pack  # type: ignore[return-value]
     raise RuntimeError(f"Unsupported pack module shape for '{module_path}'")

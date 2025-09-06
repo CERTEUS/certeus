@@ -29,9 +29,7 @@ from core.truthops.engine import post_solve, pre_solve
 
 try:
     from runtime.proof_queue import PROOF_QUEUE
-except (
-    Exception
-):  # pragma: no cover - fallback stub to avoid hard import failures in demos/tests
+except Exception:  # pragma: no cover - fallback stub to avoid hard import failures in demos/tests
     from dataclasses import dataclass
 
     @dataclass
@@ -102,17 +100,9 @@ def reason(
 
             import yaml
 
-            pack = (
-                Path(__file__).resolve().parents[3]
-                / "policies"
-                / "pco"
-                / "policy_pack.yaml"
-            )
+            pack = Path(__file__).resolve().parents[3] / "policies" / "pco" / "policy_pack.yaml"
             doc = yaml.safe_load(pack.read_text(encoding="utf-8")) or {}
-            pats = [
-                re.compile(str(p))
-                for p in (((doc.get("redaction") or {}).get("pii_patterns")) or [])
-            ]
+            pats = [re.compile(str(p)) for p in (((doc.get("redaction") or {}).get("pii_patterns")) or [])]
 
             def _mask(v: Any) -> Any:
                 if isinstance(v, dict):

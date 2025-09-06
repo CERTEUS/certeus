@@ -58,9 +58,7 @@ def test_pfs_list_returns_entries(monkeypatch) -> None:
         )
         assert r2.status_code == 200
         uris2 = {e["uri"] for e in r2.json().get("entries", [])}
-        assert (
-            "pfs://mail/MID/sub/c.pdf" in uris2 and "pfs://mail/MID/a.txt" not in uris2
-        )
+        assert "pfs://mail/MID/sub/c.pdf" in uris2 and "pfs://mail/MID/a.txt" not in uris2
 
 
 def test_mailops_ingest_materializes_when_flag(monkeypatch) -> None:
@@ -76,9 +74,7 @@ def test_mailops_ingest_materializes_when_flag(monkeypatch) -> None:
             "mail_id": "MID-X",
             "from_addr": "a@example.com",
             "to": ["b@example.com"],
-            "attachments": [
-                {"filename": "x.pdf", "content_type": "application/pdf", "size": 1}
-            ],
+            "attachments": [{"filename": "x.pdf", "content_type": "application/pdf", "size": 1}],
         }
         r = client.post("/v1/mailops/ingest", json=payload)
         assert r.status_code == 200

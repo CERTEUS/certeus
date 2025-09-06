@@ -57,9 +57,7 @@ def main() -> int:
 
     (out / "dht_announce_a.json").write_text(json.dumps(a1, indent=2), encoding="utf-8")
     (out / "dht_announce_b.json").write_text(json.dumps(a2, indent=2), encoding="utf-8")
-    (out / "dht_query_lexqft.json").write_text(
-        json.dumps(q1, indent=2), encoding="utf-8"
-    )
+    (out / "dht_query_lexqft.json").write_text(json.dumps(q1, indent=2), encoding="utf-8")
     (out / "dht_publish.json").write_text(json.dumps(pub, indent=2), encoding="utf-8")
     return 0
 

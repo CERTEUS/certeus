@@ -129,14 +129,10 @@ def test_domain_map_sample_synonym_resolution() -> None:
     txt, _ = apply_transform("Doktor podał leki pacjentce", "domain_map", domain="med")
     assert "lekarz" in txt and "lek" in txt and "pacjent" in txt
     # SEC
-    txt, _ = apply_transform(
-        "Exploit i patch zwiększają krytycznosc", "domain_map", domain="sec"
-    )
+    txt, _ = apply_transform("Exploit i patch zwiększają krytycznosc", "domain_map", domain="sec")
     assert "eksploit" in txt and "łatka" in txt and "poważność" in txt
     # CODE
-    txt, _ = apply_transform(
-        "Metoda w modul zgłasza exception", "domain_map", domain="code"
-    )
+    txt, _ = apply_transform("Metoda w modul zgłasza exception", "domain_map", domain="code")
     assert "funkcja" in txt and "moduł" in txt and "wyjątek" in txt
 
 
@@ -144,9 +140,7 @@ def test_domain_map_sample_synonym_resolution() -> None:
 
 
 # Mixed with noise: ensure idempotence and token count invariants hold
-_NOISE_CHARS = st.characters(
-    whitelist_categories=("Ll", "Lu"), min_codepoint=97, max_codepoint=122
-)
+_NOISE_CHARS = st.characters(whitelist_categories=("Ll", "Lu"), min_codepoint=97, max_codepoint=122)
 _NOISE_WORDS = st.text(alphabet=_NOISE_CHARS, min_size=3, max_size=8)
 
 
@@ -175,8 +169,6 @@ def test_domain_map_sec_idempotent_with_noise(sec: list[str], noise: list[str]) 
     st.lists(st.sampled_from(CODE_WORDS), min_size=2, max_size=6),
     st.lists(_NOISE_WORDS, min_size=1, max_size=4),
 )
-def test_domain_map_code_idempotent_with_noise(
-    code: list[str], noise: list[str]
-) -> None:
+def test_domain_map_code_idempotent_with_noise(code: list[str], noise: list[str]) -> None:
     words = code + noise
     _idempotent("code", words)

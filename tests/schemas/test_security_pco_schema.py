@@ -38,9 +38,7 @@ def _repo() -> Path:
 
 
 def test_security_pco_schema_valid_example() -> None:
-    schema = json.loads(
-        (_repo() / "schemas" / "security_pco_v0.1.json").read_text(encoding="utf-8")
-    )
+    schema = json.loads((_repo() / "schemas" / "security_pco_v0.1.json").read_text(encoding="utf-8"))
     validator = Draft7Validator(schema)  # type: ignore[call-arg]
 
     sec = {

@@ -91,9 +91,7 @@ def _save(data: dict[str, dict[str, Any]]) -> None:
         return
     try:
         _STORE.parent.mkdir(parents=True, exist_ok=True)
-        _STORE.write_text(
-            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        _STORE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception:
         pass
 
@@ -123,11 +121,7 @@ async def query(competency: str) -> QueryOut:
         ttl = meta.get("ttl_sec") if isinstance(meta, dict) else None
         if isinstance(ttl, int) and ttl == 0:
             continue
-        if any(
-            fnmatch.fnmatch(competency, str(patt))
-            or fnmatch.fnmatch(str(patt), competency)
-            for patt in comps
-        ):
+        if any(fnmatch.fnmatch(competency, str(patt)) or fnmatch.fnmatch(str(patt), competency) for patt in comps):
             nodes.append(str(node))
     nodes.sort()
     return QueryOut(nodes=nodes)
@@ -149,10 +143,7 @@ async def publish_path(req: PublishPathIn) -> PublishPathOut:
             comps = meta.get("competencies") if isinstance(meta, dict) else None
             if not isinstance(comps, list):
                 continue
-            if any(
-                fnmatch.fnmatch(token, str(patt)) or fnmatch.fnmatch(str(patt), token)
-                for patt in comps
-            ):
+            if any(fnmatch.fnmatch(token, str(patt)) or fnmatch.fnmatch(str(patt), token) for patt in comps):
                 best.append(node)
         best.sort()
         if best:

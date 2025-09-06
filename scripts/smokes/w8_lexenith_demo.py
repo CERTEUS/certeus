@@ -56,25 +56,11 @@ def main() -> int:
         json={"claim": "A", "counter_arguments": ["B", "C"]},
     )
     data = {
-        "lock": (
-            r_lock.json()
-            if r_lock.status_code == 200
-            else {"status": r_lock.status_code}
-        ),
-        "publish": (
-            r_pub.json() if r_pub.status_code == 200 else {"status": r_pub.status_code}
-        ),
-        "motion": (
-            r_mot.json() if r_mot.status_code == 200 else {"status": r_mot.status_code}
-        ),
-        "cldf": (
-            r_cldf.json()
-            if r_cldf.status_code == 200
-            else {"status": r_cldf.status_code}
-        ),
-        "why_not": (
-            r_wn.json() if r_wn.status_code == 200 else {"status": r_wn.status_code}
-        ),
+        "lock": (r_lock.json() if r_lock.status_code == 200 else {"status": r_lock.status_code}),
+        "publish": (r_pub.json() if r_pub.status_code == 200 else {"status": r_pub.status_code}),
+        "motion": (r_mot.json() if r_mot.status_code == 200 else {"status": r_mot.status_code}),
+        "cldf": (r_cldf.json() if r_cldf.status_code == 200 else {"status": r_cldf.status_code}),
+        "why_not": (r_wn.json() if r_wn.status_code == 200 else {"status": r_wn.status_code}),
     }
     out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Saved {out}")

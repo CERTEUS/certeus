@@ -78,9 +78,7 @@ def verify(path: Path, sha_path: Path) -> bool:
 
     ok = computed == recorded
 
-    print(
-        f"{path.name}: {'OK' if ok else 'MISMATCH'} (computed={computed}, recorded={recorded})"
-    )
+    print(f"{path.name}: {'OK' if ok else 'MISMATCH'} (computed={computed}, recorded={recorded})")
 
     return ok
 

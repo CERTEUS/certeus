@@ -170,9 +170,7 @@ class CerteusClient:
     def qtm_uncertainty(self) -> SDKResponse:
         return self._get("/v1/qtm/uncertainty")
 
-    def qtm_decoherence(
-        self, *, case: str | None, channel: str, gamma: float | None = None
-    ) -> SDKResponse:
+    def qtm_decoherence(self, *, case: str | None, channel: str, gamma: float | None = None) -> SDKResponse:
         payload: dict[str, Any] = {"channel": channel}
         if case:
             payload["case"] = case
@@ -187,14 +185,10 @@ class CerteusClient:
         return self._post("/v1/qtm/commutator", json={"A": A, "B": B})
 
     def qtm_commutator_expectation(self, *, case: str, A: str, B: str) -> SDKResponse:
-        return self._post(
-            "/v1/qtm/commutator_expectation", json={"case": case, "A": A, "B": B}
-        )
+        return self._post("/v1/qtm/commutator_expectation", json={"case": case, "A": A, "B": B})
 
     def qtm_expectation(self, *, case: str, operator: str) -> SDKResponse:
-        return self._post(
-            "/v1/qtm/expectation", json={"case": case, "operator": operator}
-        )
+        return self._post("/v1/qtm/expectation", json={"case": case, "operator": operator})
 
     def qtm_find_entanglement(self, *, variables: list[str]) -> SDKResponse:
         return self._post("/v1/qtm/find_entanglement", json={"variables": variables})
@@ -226,9 +220,7 @@ class CerteusClient:
     def lexqft_coverage(self) -> SDKResponse:
         return self._get("/v1/lexqft/coverage")
 
-    def lexqft_tunnel(
-        self, *, evidence_energy: float, state_uri: str | None = None
-    ) -> SDKResponse:
+    def lexqft_tunnel(self, *, evidence_energy: float, state_uri: str | None = None) -> SDKResponse:
         payload: dict[str, Any] = {"evidence_energy": float(evidence_energy)}
         if state_uri:
             payload["state_uri"] = state_uri
@@ -279,9 +271,7 @@ class CerteusClient:
 
     # --- ChatOps ------------------------------------------------------------
 
-    def chatops_command(
-        self, *, cmd: str, args: dict | None = None, text_context: str | None = None
-    ) -> SDKResponse:
+    def chatops_command(self, *, cmd: str, args: dict | None = None, text_context: str | None = None) -> SDKResponse:
         payload: dict[str, Any] = {"cmd": cmd}
         if args is not None:
             payload["args"] = args

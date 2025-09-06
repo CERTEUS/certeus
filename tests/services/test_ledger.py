@@ -54,21 +54,12 @@ def _normalize_for_hash(data: Mapping[str, Any], *, include_timestamp: bool) -> 
     return json.dumps(work, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-def compute_provenance_hash(
-    data: Mapping[str, Any], *, include_timestamp: bool = False
-) -> str:
-    return sha256(
-        _normalize_for_hash(data, include_timestamp=include_timestamp)
-    ).hexdigest()
+def compute_provenance_hash(data: Mapping[str, Any], *, include_timestamp: bool = False) -> str:
+    return sha256(_normalize_for_hash(data, include_timestamp=include_timestamp)).hexdigest()
 
 
-def verify_provenance_hash(
-    data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False
-) -> bool:
-    return (
-        compute_provenance_hash(data, include_timestamp=include_timestamp)
-        == expected_hash
-    )
+def verify_provenance_hash(data: Mapping[str, Any], expected_hash: str, *, include_timestamp: bool = False) -> bool:
+    return compute_provenance_hash(data, include_timestamp=include_timestamp) == expected_hash
 
 
 class LedgerRecord:
@@ -160,9 +151,7 @@ class Ledger:
         if prev:
             body["prev"] = prev
 
-        return sha256(
-            json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
+        return sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
 
     def record_input(self, *, case_id: str, document_hash: str) -> dict[str, Any]:
         event_id = self._next_event_id()

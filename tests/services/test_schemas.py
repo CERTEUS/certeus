@@ -224,9 +224,7 @@ def test_pca2_valid(S_PCA2: Schema) -> None:
     ok: JSONObj = {
         "case_id": "RS-DOM-vs-Stasikowski",
         "policy": ["lexenith.secure.v1", "legal.pl.civil.kc"],
-        "constraints": [
-            {"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}
-        ],
+        "constraints": [{"name": "no_private_data", "expression": "PII==False", "verdict": "pass"}],
         "assumptions": [{"name": "ryczalt", "value": "tak"}],
         "attestations": [
             {

@@ -65,9 +65,7 @@ async def list_entries(
     prefix: str = Query(..., description="pfs:// prefix"),
     recursive: bool = Query(False, description="List recursively"),
     limit: int = Query(1000, ge=1, le=10000, description="Max entries to return"),
-    mime: str | None = Query(
-        None, description="Filter by simple mime/extension substring, e.g. 'pdf'"
-    ),
+    mime: str | None = Query(None, description="Filter by simple mime/extension substring, e.g. 'pdf'"),
 ) -> dict[str, Any]:
     if not prefix.startswith("pfs://"):
         raise HTTPException(status_code=400, detail="prefix must start with pfs://")
@@ -171,9 +169,7 @@ async def case_paths(case: str) -> dict[str, Any]:
                 if not s:
                     continue
                 obj = json.loads(s)
-                if str(obj.get("case_id")) == case and isinstance(
-                    obj.get("path"), list
-                ):
+                if str(obj.get("case_id")) == case and isinstance(obj.get("path"), list):
                     paths.append([str(x) for x in obj.get("path")])
     except Exception:
         paths = []

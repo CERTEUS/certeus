@@ -44,9 +44,7 @@ def test_fin_tokens_request_allocate(tmp_path: Path, monkeypatch) -> None:
     r2 = c.get(f"/v1/fin/tokens/{req_id}")
     assert r2.status_code == 200 and r2.json()["status"] == "PENDING"
 
-    r3 = c.post(
-        "/v1/fin/tokens/allocate", json={"request_id": req_id, "allocated_by": "ops"}
-    )
+    r3 = c.post("/v1/fin/tokens/allocate", json={"request_id": req_id, "allocated_by": "ops"})
     assert r3.status_code == 200 and r3.json()["status"] == "ALLOCATED"
 
     r4 = c.get(f"/v1/fin/tokens/{req_id}")

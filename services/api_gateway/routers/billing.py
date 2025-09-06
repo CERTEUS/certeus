@@ -88,9 +88,7 @@ class TokenStatusOut(BaseModel):
 router_tokens = APIRouter(prefix="/v1/fin/tokens", tags=["billing"])
 
 
-@router_tokens.post(
-    "/request", response_model=TokenRequestOut, operation_id="fin_request_tokens"
-)
+@router_tokens.post("/request", response_model=TokenRequestOut, operation_id="fin_request_tokens")
 async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestOut:
     from services.api_gateway.limits import enforce_limits
 
@@ -120,9 +118,7 @@ async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestO
     return TokenRequestOut(**entry)
 
 
-@router_tokens.post(
-    "/allocate", response_model=TokenStatusOut, operation_id="fin_allocate_tokens"
-)
+@router_tokens.post("/allocate", response_model=TokenStatusOut, operation_id="fin_allocate_tokens")
 async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatusOut:
     from services.api_gateway.limits import enforce_limits
 
@@ -277,11 +273,7 @@ _POLICY_CACHE: dict[str, Any] | None = None
 
 def _policy_file_path() -> Path:
     p = os.getenv("BILLING_POLICY_FILE")
-    return (
-        Path(p)
-        if p
-        else (Path(__file__).resolve().parents[3] / "data" / "billing_policy.json")
-    )
+    return Path(p) if p else (Path(__file__).resolve().parents[3] / "data" / "billing_policy.json")
 
 
 def _load_policy() -> dict[str, Any]:
@@ -345,9 +337,7 @@ async def estimate(body: dict[str, Any], request: Request) -> dict[str, Any]:
 
 
 @router.get("/recommendation", summary="Recommend tier based on action and volume")
-async def recommendation(
-    action: str, monthly: int = 0, days: int = 30
-) -> dict[str, Any]:
+async def recommendation(action: str, monthly: int = 0, days: int = 30) -> dict[str, Any]:
     pol = _load_policy()
     # progi proste: enterprise dla bardzo wysokiego wolumenu, pro dla średniego
     rec = "free"
@@ -375,9 +365,7 @@ async def admin_set_tier(body: SetTierIn) -> dict[str, Any]:
     pol = _load_policy()
     tenants = pol.setdefault("tenants", {})
     tenants[str(body.tenant)] = str(body.tier)
-    persisted = bool(body.persist) and (
-        os.getenv("BILLING_POLICY_FILE_WRITE") or ""
-    ).strip() in {"1", "true", "True"}
+    persisted = bool(body.persist) and (os.getenv("BILLING_POLICY_FILE_WRITE") or "").strip() in {"1", "true", "True"}
     if persisted:
         _save_policy(pol)
     else:

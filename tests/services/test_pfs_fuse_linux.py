@@ -8,13 +8,12 @@
 
 from __future__ import annotations
 
-import os
-import sys
-import tempfile
 from pathlib import Path
 import subprocess
-import pytest
+import sys
+import tempfile
 
+import pytest
 
 linux_only = pytest.mark.skipif(sys.platform != "linux", reason="Linux-only FUSE smoke")
 
@@ -62,4 +61,3 @@ def test_fuse_mount_smoke() -> None:
                 proc.terminate()
             except Exception:
                 pass
-

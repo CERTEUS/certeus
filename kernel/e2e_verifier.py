@@ -67,9 +67,7 @@ class E2EVerifier:
 
     # ──────────────────────────────────────────────────────────────────
 
-    def compile_ast_to_z3(
-        self, ast_root: Any, *, do_validate: bool = True
-    ) -> z3.ExprRef:
+    def compile_ast_to_z3(self, ast_root: Any, *, do_validate: bool = True) -> z3.ExprRef:
         """
 
         Compile CERTEUS boolean AST to a single Z3 expression.
@@ -79,9 +77,7 @@ class E2EVerifier:
         if do_validate:
             validate_ast(cast(Any, ast_root))
 
-        expr, _symbols = compile_bool_ast(
-            cast(Any, ast_root), declare_on_use=True, validate=False
-        )
+        expr, _symbols = compile_bool_ast(cast(Any, ast_root), declare_on_use=True, validate=False)
 
         return expr  # ExprRef (BoolRef derives from ExprRef in stubs)
 
@@ -156,11 +152,7 @@ except Exception:  # pragma: no cover - emergency fallback
                 "time_ms": None,
                 "model": None,
                 "error": None,
-                "version": (
-                    z3.get_version_string()
-                    if hasattr(z3, "get_version_string")
-                    else None
-                ),
+                "version": (z3.get_version_string() if hasattr(z3, "get_version_string") else None),
             }
 
             if status == z3.sat:

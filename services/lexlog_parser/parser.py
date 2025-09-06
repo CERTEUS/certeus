@@ -240,9 +240,7 @@ def _canonicalize_id(identifier: str) -> str:
 
 # Pattern for DEFINE statements
 
-_PATTERN_DEFINE: re.Pattern[str] = re.compile(
-    r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE
-)
+_PATTERN_DEFINE: re.Pattern[str] = re.compile(r"^\s*DEFINE\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$", re.MULTILINE)
 
 # Pattern for PREMISE declarations
 
@@ -266,9 +264,7 @@ _PATTERN_CONCLUSION: re.Pattern[str] = re.compile(
 
 # Alternative pattern for ASSERT on separate line
 
-_PATTERN_ASSERT: re.Pattern[str] = re.compile(
-    r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL
-)
+_PATTERN_ASSERT: re.Pattern[str] = re.compile(r"^\s*ASSERT\s*\((.*?)\)\s*$", re.MULTILINE | re.DOTALL)
 
 # ┌─────────────────────────────────────────────────────────────────────┐
 
@@ -362,9 +358,7 @@ def parse_lexlog(text: str) -> LexAst:
         premise_list: list[str]
 
         if premises_str:
-            premise_list = [
-                _canonicalize_id(p.strip()) for p in premises_str.split(",")
-            ]
+            premise_list = [_canonicalize_id(p.strip()) for p in premises_str.split(",")]
 
         else:
             premise_list = []
@@ -402,9 +396,7 @@ def parse_lexlog(text: str) -> LexAst:
 
                 conclusion_assertions[conclusion_id] = assert_expr
 
-        conclusions.append(
-            Conclusion(id=conclusion_id, title=title, assert_expr=assert_expr)
-        )
+        conclusions.append(Conclusion(id=conclusion_id, title=title, assert_expr=assert_expr))
 
     # Second pass: Handle ASSERT on separate lines
 
@@ -421,9 +413,7 @@ def parse_lexlog(text: str) -> LexAst:
             if assert_match:
                 # Find the conclusion ID from current line
 
-                concl_match = re.match(
-                    r"^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)", line
-                )
+                concl_match = re.match(r"^\s*CONCLUSION\s+([A-Za-z_][A-Za-z0-9_]*)", line)
 
                 if concl_match:
                     conclusion_id = concl_match.group(1).strip()
@@ -434,9 +424,7 @@ def parse_lexlog(text: str) -> LexAst:
 
                     for j, concl in enumerate(conclusions):
                         if concl.id == conclusion_id and not concl.assert_expr:
-                            conclusions[j] = Conclusion(
-                                id=concl.id, title=concl.title, assert_expr=assert_expr
-                            )
+                            conclusions[j] = Conclusion(id=concl.id, title=concl.title, assert_expr=assert_expr)
 
                             break
 
@@ -448,9 +436,7 @@ def parse_lexlog(text: str) -> LexAst:
 
     # ─────────────────────────────────────────
 
-    return LexAst(
-        defines=defines, premises=premises, rules=rules, conclusions=conclusions
-    )
+    return LexAst(defines=defines, premises=premises, rules=rules, conclusions=conclusions)
 
 
 # ┌─────────────────────────────────────────────────────────────────────┐
@@ -496,10 +482,7 @@ class LexlogParser:
 
         # Quick check for known rule patterns
 
-        if (
-            "R_286_OSZUSTWO" in lexlog_content
-            or "RULE R_286_OSZUSTWO" in lexlog_content
-        ):
+        if "R_286_OSZUSTWO" in lexlog_content or "RULE R_286_OSZUSTWO" in lexlog_content:
             return {
                 "rule_id": "R_286_OSZUSTWO",
                 "conclusion": "K_OSZUSTWO_STWIERDZONE",

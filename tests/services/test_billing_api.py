@@ -33,19 +33,13 @@ def test_billing_quota_allocate_refund_flow() -> None:
     assert r.status_code == 200 and int(r.json().get("balance", -1)) == 2
 
     # allocate 1 -> ALLOCATED, balance 1
-    r2 = c.post(
-        "/v1/billing/allocate", json={"cost_units": 1}, headers={"X-Tenant-ID": tenant}
-    )
+    r2 = c.post("/v1/billing/allocate", json={"cost_units": 1}, headers={"X-Tenant-ID": tenant})
     assert r2.status_code == 200 and r2.json().get("status") == "ALLOCATED"
 
     # allocate 2 (exceeds) -> PENDING, balance unchanged (1)
-    r3 = c.post(
-        "/v1/billing/allocate", json={"cost_units": 2}, headers={"X-Tenant-ID": tenant}
-    )
+    r3 = c.post("/v1/billing/allocate", json={"cost_units": 2}, headers={"X-Tenant-ID": tenant})
     assert r3.status_code == 200 and r3.json().get("status") == "PENDING"
 
     # refund 1 -> balance increases
-    r4 = c.post(
-        "/v1/billing/refund", json={"units": 1}, headers={"X-Tenant-ID": tenant}
-    )
+    r4 = c.post("/v1/billing/refund", json={"units": 1}, headers={"X-Tenant-ID": tenant})
     assert r4.status_code == 200 and int(r4.json().get("balance", -1)) >= 1

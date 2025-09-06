@@ -30,9 +30,7 @@ def test_qtm_measure_emits_pco_headers() -> None:
     c = TestClient(app)
     case = "HDR-QTMP-1"
     # Ensure predistribution exists for predistribution header
-    r0 = c.post(
-        "/v1/qtm/init_case", json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"]}
-    )
+    r0 = c.post("/v1/qtm/init_case", json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"]})
     assert r0.status_code == 200
 
     r = c.post("/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": case})

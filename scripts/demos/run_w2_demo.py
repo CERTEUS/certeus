@@ -45,9 +45,7 @@ def main() -> int:
         json={"case_id": "CASE-2", "document_hash": "sha1:bad"},
         headers={"X-Policy-Pack-ID": "WRONG", "X-Jurisdiction": "PL:lex"},
     )
-    pnip_ok = (r.status_code == 400) and (
-        r.json().get("detail", {}).get("error", {}).get("code") == "PNIP_INVALID"
-    )
+    pnip_ok = (r.status_code == 400) and (r.json().get("detail", {}).get("error", {}).get("code") == "PNIP_INVALID")
 
     # Quick perf bench (p95)
     import json as _json
@@ -81,11 +79,7 @@ def main() -> int:
     }
     Path("reports").mkdir(parents=True, exist_ok=True)
     Path("reports/w2_demo.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")
-    print(
-        json.dumps(
-            {"ok": True, "delta_bits": b1.get("delta_bits", -1), "pnip_strict": pnip_ok}
-        )
-    )
+    print(json.dumps({"ok": True, "delta_bits": b1.get("delta_bits", -1), "pnip_strict": pnip_ok}))
     return 0
 
 

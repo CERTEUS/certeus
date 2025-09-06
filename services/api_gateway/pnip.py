@@ -51,12 +51,7 @@ def _policy_pack_id() -> str:
     if _POLICY_ID_CACHE is not None:
         return _POLICY_ID_CACHE
     try:
-        p = (
-            Path(__file__).resolve().parents[3]
-            / "policies"
-            / "pco"
-            / "policy_pack.yaml"
-        )
+        p = Path(__file__).resolve().parents[3] / "policies" / "pco" / "policy_pack.yaml"
         doc = yaml.safe_load(p.read_text(encoding="utf-8"))
         mid = str(((doc or {}).get("meta") or {}).get("id") or "pco-policy-pack")
         _POLICY_ID_CACHE = mid
@@ -101,9 +96,7 @@ def _validate_hash(h: str) -> bool:
         return False
 
 
-def make_pco_error(
-    code: str, message: str, *, ctx: dict[str, Any] | None = None
-) -> dict[str, Any]:
+def make_pco_error(code: str, message: str, *, ctx: dict[str, Any] | None = None) -> dict[str, Any]:
     return {
         "version": "0.2",
         "status": "ERROR",
@@ -111,13 +104,9 @@ def make_pco_error(
     }
 
 
-def validate_pnip_request(
-    request: Request, *, body: dict[str, Any] | None, strict: bool = False
-) -> PNIP | None:
+def validate_pnip_request(request: Request, *, body: dict[str, Any] | None, strict: bool = False) -> PNIP | None:
     # Headers precedence, fallback to body keys
-    jhdr = request.headers.get("X-Jurisdiction") or request.headers.get(
-        "x-jurisdiction"
-    )
+    jhdr = request.headers.get("X-Jurisdiction") or request.headers.get("x-jurisdiction")
     juris_country, juris_domain = _parse_jurisdiction(jhdr)
     policy_hdr = (
         request.headers.get("X-Policy-Pack-ID")
@@ -133,8 +122,7 @@ def validate_pnip_request(
             doc_hash = dh
 
     pnip = PNIP(
-        document_hash=doc_hash
-        or "sha256:" + ("0" * 64),  # placeholder if missing in non-strict mode
+        document_hash=doc_hash or "sha256:" + ("0" * 64),  # placeholder if missing in non-strict mode
         juris_country=juris_country,
         juris_domain=juris_domain,
         policy_pack_id=policy_pack_id,

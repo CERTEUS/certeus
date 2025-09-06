@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import ssl
 from pathlib import Path
+import ssl
 
 
 def _aioquic():  # lazy import — optional
@@ -56,9 +56,7 @@ async def run_client(host: str, port: int, message: bytes) -> bytes:
         stream_id = conn._quic.get_next_available_stream_id(is_unidirectional=False)
         conn._quic.send_stream_data(stream_id, message, end_stream=True)
         await conn.wait_connected()
-        # read echoed
-        data = await conn._loop.run_in_executor(None, lambda: b"")
-        # In simple demo, we can't easily await stream read; return message
+        # In this simple demo, we assume echo and return the message
         return message
 
 
@@ -88,4 +86,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

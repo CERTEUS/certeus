@@ -123,9 +123,7 @@ def ensure_markers(text: str, rel: str) -> str | None:
         if lines and lines[0].startswith("#!"):
             insert_at = 1
         # skip banner comment block
-        while insert_at < len(lines) and (
-            lines[insert_at].lstrip().startswith("#") or lines[insert_at].strip() == ""
-        ):
+        while insert_at < len(lines) and (lines[insert_at].lstrip().startswith("#") or lines[insert_at].strip() == ""):
             insert_at += 1
 
     block = []

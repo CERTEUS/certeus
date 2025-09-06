@@ -32,12 +32,8 @@ from services.api_gateway.main import app  # noqa: E402
 def main() -> int:
     c = TestClient(app)
     # Tunneling: low vs high energy
-    low = c.post(
-        "/v1/lexqft/tunnel", json={"evidence_energy": 0.2, "state_uri": "psi://w5-low"}
-    )
-    high = c.post(
-        "/v1/lexqft/tunnel", json={"evidence_energy": 1.2, "state_uri": "psi://w5-high"}
-    )
+    low = c.post("/v1/lexqft/tunnel", json={"evidence_energy": 0.2, "state_uri": "psi://w5-low"})
+    high = c.post("/v1/lexqft/tunnel", json={"evidence_energy": 1.2, "state_uri": "psi://w5-high"})
     # Coverage: set weighted items to exceed threshold
     c.post("/v1/lexqft/coverage/reset")
     items = [
@@ -73,12 +69,8 @@ def main() -> int:
     )
     # QTMP: run a short sequence
     case = "LEX-W5-QTMP"
-    c.post(
-        "/v1/qtm/init_case", json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"]}
-    )
-    seq = c.post(
-        "/v1/qtm/measure_sequence", json={"operators": ["L", "T", "W"], "case": case}
-    ).json()
+    c.post("/v1/qtm/init_case", json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"]})
+    seq = c.post("/v1/qtm/measure_sequence", json={"operators": ["L", "T", "W"], "case": case}).json()
     rep = {
         "tunnel_low": low.json() if low.status_code == 200 else None,
         "tunnel_high": high.json() if high.status_code == 200 else None,

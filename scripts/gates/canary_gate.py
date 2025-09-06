@@ -65,9 +65,7 @@ def main() -> int:
     from services.api_gateway.main import app  # lazy import
 
     ap = argparse.ArgumentParser(description="Canary/progressive readiness gate")
-    ap.add_argument(
-        "--phases", type=int, default=3, help="Number of phases (e.g. 3 => [1,5,25]%)"
-    )
+    ap.add_argument("--phases", type=int, default=3, help="Number of phases (e.g. 3 => [1,5,25]%)")
     ap.add_argument(
         "--count",
         type=int,

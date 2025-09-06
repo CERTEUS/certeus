@@ -20,8 +20,8 @@ EN: Simple read-only FUSE filesystem mirroring ProofFS tree in user space.
 from __future__ import annotations
 
 import os
-import stat
 from pathlib import Path
+import stat
 from typing import Any
 
 
@@ -71,8 +71,7 @@ class ROFS:  # minimal Operations subset
         yield "."
         yield ".."
         if p.is_dir():
-            for name in sorted(os.listdir(p)):
-                yield name
+            yield from sorted(os.listdir(p))
 
     # open (read-only)
     def open(self, path: str, flags: int):  # type: ignore[override]
@@ -97,4 +96,3 @@ def mount(root: Path, mount_point: Path, *, foreground: bool = False) -> None:
 
 
 __all__ = ["mount", "ROFS"]
-

@@ -74,9 +74,7 @@ class ExporterService:
 # (hash helpers są w ledger_service, ale nie są tu potrzebne do samego eksportu)
 
 
-def export_answer_to_txt(
-    answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False
-) -> str:
+def export_answer_to_txt(answer: Mapping[str, Any], *, out_path: str, create_ledger_entry: bool = False) -> str:
     p = Path(out_path)
 
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -86,9 +84,7 @@ def export_answer_to_txt(
     return str(p)
 
 
-def export_answer(
-    answer: Mapping[str, Any], *, fmt: str, output_dir: Path | None = None
-):
+def export_answer(answer: Mapping[str, Any], *, fmt: str, output_dir: Path | None = None):
     """
 
     - fmt="json": return pretty json string

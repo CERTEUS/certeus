@@ -49,9 +49,7 @@ def sign_text(priv_pem: str, text: str) -> str:
 
 def embed_signature(yaml_text: str, signature_b64u: str) -> str:
     # Dodaj/aktualizuj linię `signature: <b64u>` na końcu (MVP).
-    lines = [
-        ln for ln in yaml_text.splitlines() if not ln.strip().startswith("signature:")
-    ]
+    lines = [ln for ln in yaml_text.splitlines() if not ln.strip().startswith("signature:")]
     lines.append(f"signature: {signature_b64u}")
     return "\n".join(lines) + "\n"
 

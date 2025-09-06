@@ -14,9 +14,7 @@ from __future__ import annotations
 from prometheus_client import Counter
 
 truth_novel_case_rate = Counter("truth_novel_case_rate", "Novel case detections")
-truth_contradiction_rate = Counter(
-    "truth_contradiction_rate", "Contradictions detected"
-)
+truth_contradiction_rate = Counter("truth_contradiction_rate", "Contradictions detected")
 
 
 def observe_novel_case() -> None:

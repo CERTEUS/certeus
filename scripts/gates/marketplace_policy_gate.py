@@ -120,19 +120,13 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
         if not name:
             violations.append(f"{ctx}: missing name")
         if not ver or not SEMVER_RE.match(ver):
-            violations.append(
-                f"{ctx}: invalid or missing semver version '{ver or '<empty>'}'"
-            )
+            violations.append(f"{ctx}: invalid or missing semver version '{ver or '<empty>'}'")
 
         if lic:
             if lic not in ALLOWED_LICENSES:
-                violations.append(
-                    f"{ctx}: disallowed license '{lic}' (allow: {sorted(ALLOWED_LICENSES)})"
-                )
+                violations.append(f"{ctx}: disallowed license '{lic}' (allow: {sorted(ALLOWED_LICENSES)})")
         else:
-            warnings.append(
-                f"{ctx}: license not specified (advised: one of {sorted(ALLOWED_LICENSES)})"
-            )
+            warnings.append(f"{ctx}: license not specified (advised: one of {sorted(ALLOWED_LICENSES)})")
 
         if sig:
             # basic sanity: at least 40 hex/base64‑ish chars
@@ -148,15 +142,11 @@ def check(repo_root: str | Path | None = None) -> tuple[list[str], list[str]]:
                 enabled = bool(entry.get("enabled", False))
                 has_sig = bool(entry.get("signature"))
                 if enabled and not has_sig:
-                    warnings.append(
-                        f"{ctx}: enabled without installed signature (state overlay)"
-                    )
+                    warnings.append(f"{ctx}: enabled without installed signature (state overlay)")
                 # Version mismatch advisory (installed vs manifest)
                 inst_ver = str(entry.get("installed_version") or "").strip()
                 if inst_ver and ver and inst_ver != ver:
-                    warnings.append(
-                        f"{ctx}: installed_version '{inst_ver}' differs from manifest version '{ver}'"
-                    )
+                    warnings.append(f"{ctx}: installed_version '{inst_ver}' differs from manifest version '{ver}'")
         except Exception:
             pass
 

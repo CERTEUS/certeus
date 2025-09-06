@@ -14,9 +14,7 @@ from pathlib import Path
 from scripts.gates.supply_chain_enforce import main as gate_main
 
 
-def _mk_plugin(
-    root: Path, name: str, *, with_sbom: bool, with_prov: bool, with_sig: bool
-) -> Path:
+def _mk_plugin(root: Path, name: str, *, with_sbom: bool, with_prov: bool, with_sig: bool) -> Path:
     d = root / "plugins" / name
     (d).mkdir(parents=True, exist_ok=True)
     (d / "plugin.yaml").write_text(f"name: {name}\n", encoding="utf-8")
@@ -43,9 +41,7 @@ def test_supply_chain_enforce_repo_only(tmp_path: Path, monkeypatch) -> None:
     assert rc2 == 1
 
 
-def test_supply_chain_enforce_plugins_deny_by_default(
-    tmp_path: Path, monkeypatch
-) -> None:
+def test_supply_chain_enforce_plugins_deny_by_default(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     # Repo SBOM present to isolate plugin checks
     (tmp_path / "sbom.json").write_text("{}", encoding="utf-8")
@@ -57,12 +53,8 @@ def test_supply_chain_enforce_plugins_deny_by_default(
     monkeypatch.setenv("SUPPLY_CHAIN_ENFORCE", "1")
     rc = gate_main()
     assert rc == 1  # violations present
-    rep = json.loads(
-        (tmp_path / "out" / "supply_chain_enforce.json").read_text(encoding="utf-8")
-    )
-    assert isinstance(rep.get("violations"), list) and any(
-        "pluginB" in x for x in rep.get("violations")
-    )
+    rep = json.loads((tmp_path / "out" / "supply_chain_enforce.json").read_text(encoding="utf-8"))
+    assert isinstance(rep.get("violations"), list) and any("pluginB" in x for x in rep.get("violations"))
 
 
 def test_supply_chain_enforce_require_cosign(tmp_path: Path, monkeypatch) -> None:
@@ -74,7 +66,5 @@ def test_supply_chain_enforce_require_cosign(tmp_path: Path, monkeypatch) -> Non
     monkeypatch.setenv("REQUIRE_COSIGN", "1")
     rc = gate_main()
     assert rc == 1
-    rep = json.loads(
-        (tmp_path / "out" / "supply_chain_enforce.json").read_text(encoding="utf-8")
-    )
+    rep = json.loads((tmp_path / "out" / "supply_chain_enforce.json").read_text(encoding="utf-8"))
     assert any("missing cosign" in x for x in rep.get("violations", []))

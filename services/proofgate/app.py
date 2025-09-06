@@ -76,9 +76,7 @@ except Exception:  # pragma: no cover - optional
 
 
 class PublishRequest(BaseModel):
-    pco: dict[str, Any] | None = Field(
-        default=None, description="Proof-Carrying Object"
-    )
+    pco: dict[str, Any] | None = Field(default=None, description="Proof-Carrying Object")
 
     policy: dict[str, Any] | None = None
 
@@ -127,9 +125,7 @@ def healthz() -> dict[str, Any]:
 @app.get("/v1/tee/status")
 def tee_status() -> dict[str, Any]:
     """PL/EN: Report bunker/TEE status for UI badges (best-effort)."""
-    bunker_on = (
-        os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or ""
-    ).strip() in {"1", "true", "True", "on"}
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True", "on"}
     ra_req = (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True", "on"}
     att = attestation_from_env()
     fp = None
@@ -144,11 +140,7 @@ def tee_status() -> dict[str, Any]:
                 if verify_fingerprint(fpd):
                     fp = fpd
                 else:
-                    fp = {
-                        k: fpd.get(k)
-                        for k in ("vendor", "product", "measurement")
-                        if k in fpd
-                    }
+                    fp = {k: fpd.get(k) for k in ("vendor", "product", "measurement") if k in fpd}
     except Exception:
         attested = False
         fp = None
@@ -172,11 +164,7 @@ def _load_rtbf_store() -> set[str]:
     try:
         import json
 
-        data = (
-            json.loads(_RTBF_STORE.read_text(encoding="utf-8"))
-            if _RTBF_STORE.exists()
-            else []
-        )
+        data = json.loads(_RTBF_STORE.read_text(encoding="utf-8")) if _RTBF_STORE.exists() else []
         return {str(x) for x in (data or [])}
     except Exception:
         return set()
@@ -202,11 +190,7 @@ def _load_appeals() -> dict[str, dict[str, str]]:
     try:
         import json
 
-        data = (
-            {}
-            if not _RTBF_APPEALS.exists()
-            else json.loads(_RTBF_APPEALS.read_text(encoding="utf-8"))
-        )
+        data = {} if not _RTBF_APPEALS.exists() else json.loads(_RTBF_APPEALS.read_text(encoding="utf-8"))
         if not isinstance(data, dict):
             return {}
         # Ensure mapping of case -> {received_at, reason}
@@ -411,15 +395,10 @@ def _repro_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
     if not isinstance(r, Mapping):
         return False
 
-    return all(
-        isinstance(r.get(k), str) and r.get(k)
-        for k in ("image", "image_digest", "seed")
-    )
+    return all(isinstance(r.get(k), str) and r.get(k) for k in ("image", "image_digest", "seed"))
 
 
-def _evaluate_decision(
-    pco: Mapping[str, Any], policy: Mapping[str, Any], budget_tokens: int | None
-) -> str:
+def _evaluate_decision(pco: Mapping[str, Any], policy: Mapping[str, Any], budget_tokens: int | None) -> str:
     thr = _get(policy, ["publish_contract", "thresholds", "risk"], {}) or {}
 
     e_max = float(thr.get("ece_max", 0.02))
@@ -481,9 +460,7 @@ def publish(req: PublishRequest) -> PublishResponse:
     policy = req.policy or _load_policy_pack()
 
     # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
-    bunker_on = (
-        os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or ""
-    ).strip() in {"1", "true", "True"}
+    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
     if bunker_on:
         # Attestation stub: in this variant we cannot access headers directly (no Request).
         # Require that PCO carries a tee.attested flag. If TEE_RA_REQUIRE=1, also require
@@ -501,9 +478,7 @@ def publish(req: PublishRequest) -> PublishResponse:
                     and isinstance(ra.get("measurement"), str)
                 )
                 if not ok_ra:
-                    return PublishResponse(
-                        status="ABSTAIN", pco=req.pco, ledger_ref=None
-                    )
+                    return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
@@ -518,11 +493,7 @@ def publish(req: PublishRequest) -> PublishResponse:
         try:
             pq_ready_pco = False
             if isinstance(req.pco, dict):
-                crypto = (
-                    req.pco.get("crypto")
-                    if isinstance(req.pco.get("crypto"), dict)
-                    else {}
-                )
+                crypto = req.pco.get("crypto") if isinstance(req.pco.get("crypto"), dict) else {}
                 pq = crypto.get("pq") if isinstance(crypto, dict) else None
                 pq_ready_pco = bool((pq or {}).get("ready", False))
             if not (pq_ready_pco or pq_ready_env):
@@ -552,9 +523,7 @@ def publish(req: PublishRequest) -> PublishResponse:
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     # FROST 2-of-3 (optional enforce)
-    frost_env = (
-        os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or ""
-    ).strip()
+    frost_env = (os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or "").strip()
     frost_require = frost_env in {"1", "true", "True"}
     if frost_require and decision in ("PUBLISH", "CONDITIONAL"):
         try:
@@ -568,19 +537,13 @@ def publish(req: PublishRequest) -> PublishResponse:
         # Governance‑aware enforcement: require at least one allowed role per governance pack
         try:
             sigs = req.pco.get("signatures") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
-            roles_present = (
-                {s.get("role") for s in sigs if isinstance(s, dict)}
-                if isinstance(sigs, list)
-                else set()
-            )
+            roles_present = {s.get("role") for s in sigs if isinstance(s, dict)} if isinstance(sigs, list) else set()
             if not roles_present:
                 decision = "ABSTAIN"
             else:
                 gov = _load_governance_pack()
                 dom = _infer_domain(req.pco)
-                allow_map = ((gov.get("domains") or {}).get(dom) or {}).get(
-                    "allow"
-                ) or {}
+                allow_map = ((gov.get("domains") or {}).get(dom) or {}).get("allow") or {}
                 allowed = set(map(str, (allow_map.get("publish") or [])))
                 # 'counsel' sygnatura jest wymagana osobno wcześniej; nie nadaje uprawnień publish
                 if not (roles_present & allowed):
@@ -589,11 +552,16 @@ def publish(req: PublishRequest) -> PublishResponse:
             decision = "ABSTAIN"
 
     # Require cryptographic signatures (Ed25519 and/or PQ) if requested
-    if decision in ("PUBLISH", "CONDITIONAL") and (os.getenv("SIGNATURES_REQUIRE") or "").strip() in {"1", "true", "True"}:
+    if decision in ("PUBLISH", "CONDITIONAL") and (os.getenv("SIGNATURES_REQUIRE") or "").strip() in {
+        "1",
+        "true",
+        "True",
+    }:
         try:
             # Compute stable provenance hash
             _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
-            from core.pco.crypto import ed25519_verify_b64u, b64u_decode  # type: ignore
+            from core.pco.crypto import b64u_decode, ed25519_verify_b64u  # type: ignore
+
             # Ed25519 verify (if ed25519 block present or env pub provided)
             ed_ok = True
             try:
@@ -628,9 +596,12 @@ def publish(req: PublishRequest) -> PublishResponse:
                 pq = pq.get("pq") if isinstance(pq, dict) else None
                 if isinstance(pq, dict) and pq.get("sig_b64"):
                     import base64 as _b64
+
                     from security import pq_mldsa as _pq  # type: ignore
 
-                    sig = _b64.urlsafe_b64decode((str(pq.get("sig_b64")) + "=" * (-len(str(pq.get("sig_b64"))) % 4)).encode("ascii"))
+                    sig = _b64.urlsafe_b64decode(
+                        (str(pq.get("sig_b64")) + "=" * (-len(str(pq.get("sig_b64"))) % 4)).encode("ascii")
+                    )
                     pub = str(pq.get("pub_b64") or os.getenv("PQ_MLDSA_PK_B64URL") or "")
                     if not pub:
                         pq_ok = False
@@ -683,8 +654,9 @@ def publish(req: PublishRequest) -> PublishResponse:
             pq_block: dict[str, Any] = {"ready": bool(pq_ready_env)}
             if sk_b64:
                 try:
-                    from security import pq_mldsa as _pq
                     import base64 as _b64
+
+                    from security import pq_mldsa as _pq
 
                     pad = "=" * (-len(sk_b64) % 4)
                     sk_raw = _b64.urlsafe_b64decode((sk_b64 + pad).encode("ascii"))
@@ -698,8 +670,8 @@ def publish(req: PublishRequest) -> PublishResponse:
                     pass
             # Merge into crypto.pq without clobbering explicit client-provided fields
             pco_out = dict(pco_out or req.pco)
-            crypto = dict((pco_out.get("crypto") or {}))
-            pq_merged = dict((crypto.get("pq") or {}))
+            crypto = dict(pco_out.get("crypto") or {})
+            pq_merged = dict(crypto.get("pq") or {})
             for k, v in pq_block.items():
                 pq_merged.setdefault(k, v)
             crypto["pq"] = pq_merged
@@ -736,8 +708,8 @@ def publish(req: PublishRequest) -> PublishResponse:
             if sk_bytes:
                 try:
                     sig = ed25519_sign_b64u(sk_bytes, _doc_hash)
-                    crypto = dict((pco_out.get("crypto") or {}))
-                    ed = dict((crypto.get("ed25519") or {}))
+                    crypto = dict(pco_out.get("crypto") or {})
+                    ed = dict(crypto.get("ed25519") or {})
                     ed.setdefault("sig_b64", sig)
                     if pk_b64:
                         ed.setdefault("pub_b64", pk_b64)
@@ -754,16 +726,12 @@ def publish(req: PublishRequest) -> PublishResponse:
     # On PUBLISH, persist a ledger event with a provenance hash of the PCO
 
     if decision == "PUBLISH":
-        case_id = str(
-            (pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or ""
-        )
+        case_id = str((pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or "")
 
         # Ledger must reflect the original client-provided PCO (stable hash)
         doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
 
-        rec = ledger_service.record_event(
-            event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash
-        )
+        rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
 
         ledger = rec.get("chain_self")
 
@@ -778,11 +746,7 @@ def publish(req: PublishRequest) -> PublishResponse:
     # OTel: correlate trace with PCO (best-effort)
     try:
         attrs = {}
-        case_id = (
-            str(req.pco.get("case_id") or req.pco.get("rid") or "")
-            if isinstance(req.pco, dict)
-            else ""
-        )
+        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "") if isinstance(req.pco, dict) else ""
         if case_id:
             attrs["pco.case_id"] = case_id
         attrs["pco.decision"] = decision
@@ -849,9 +813,7 @@ def rtbf_appeal_sla(case_id: str) -> dict[str, str | float | bool]:
         return {"present": False, "sla_hours": sla_h}
     try:
         received_at = rec.get("received_at") or _now_iso()
-        t = _dt.datetime.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ").replace(
-            tzinfo=_dt.UTC
-        )
+        t = _dt.datetime.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_dt.UTC)
     except Exception:
         t = _dt.datetime.now(tz=_dt.UTC)
         received_at = _now_iso()

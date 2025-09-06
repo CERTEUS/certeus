@@ -94,26 +94,18 @@ def check(root: str | Path | None = None) -> tuple[list[str], list[str]]:
         name = str(man.get("name") or d.name)
 
         # SBOM candidates
-        has_sbom = any((d / n).exists() for n in SBOM_NAMES) or _glob_any(
-            d / "supply_chain", ["sbom*.json"]
-        )
+        has_sbom = any((d / n).exists() for n in SBOM_NAMES) or _glob_any(d / "supply_chain", ["sbom*.json"])
         # Provenance candidates
-        has_prov = any((d / n).exists() for n in PROV_NAMES) or _glob_any(
-            d / "supply_chain", ["provenance*.json"]
-        )
+        has_prov = any((d / n).exists() for n in PROV_NAMES) or _glob_any(d / "supply_chain", ["provenance*.json"])
         # Cosign hints (optional)
         has_sig = _glob_any(d, [f"*{suf}" for suf in SIG_SUFFIXES]) or _glob_any(
             d / "supply_chain", [f"*{suf}" for suf in SIG_SUFFIXES]
         )
 
         if not has_sbom:
-            vio.append(
-                f"{name}: missing SBOM (sbom.json / sbom.cdx.json / supply_chain/sbom*.json)"
-            )
+            vio.append(f"{name}: missing SBOM (sbom.json / sbom.cdx.json / supply_chain/sbom*.json)")
         if not has_prov:
-            vio.append(
-                f"{name}: missing provenance (provenance.json / supply_chain/provenance*.json)"
-            )
+            vio.append(f"{name}: missing provenance (provenance.json / supply_chain/provenance*.json)")
         if not has_sig:
             warn.append(f"{name}: cosign signatures not found (optional: *.sig/*.cert)")
 

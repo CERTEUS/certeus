@@ -76,9 +76,7 @@ def _cmd_openapi(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_file = out_dir / "openapi.json"
     spec = app.openapi()
-    out_file.write_text(
-        json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    out_file.write_text(json.dumps(spec, ensure_ascii=False, indent=2), encoding="utf-8")
     if args.print:
         print(out_file)
     return 0

@@ -26,9 +26,7 @@ import sys
 def _run(args: list[str], env: dict[str, str] | None = None) -> tuple[int, str, dict]:
     out = Path("out")
     out.mkdir(exist_ok=True)
-    rc = subprocess.run(
-        [sys.executable, *args], capture_output=True, text=True, env=env
-    ).returncode
+    rc = subprocess.run([sys.executable, *args], capture_output=True, text=True, env=env).returncode
     data = json.loads((out / "mapped.json").read_text(encoding="utf-8"))
     return rc, "", data
 
@@ -79,7 +77,5 @@ def test_mapped_thresholds_report_only(tmp_path: Path) -> None:
         "--max-jaccard-mapped",
         "0.1",
     ]
-    rc = subprocess.run(
-        [sys.executable, *args], capture_output=True, text=True, env=os.environ
-    ).returncode
+    rc = subprocess.run([sys.executable, *args], capture_output=True, text=True, env=os.environ).returncode
     assert rc == 0

@@ -21,9 +21,7 @@ def main() -> int:
     out = Path("out")
     out.mkdir(parents=True, exist_ok=True)
     rep = echo_roundtrip("hello-synapse")
-    (out / "p2p_transport_smoke.json").write_text(
-        json.dumps(rep, indent=2), encoding="utf-8"
-    )
+    (out / "p2p_transport_smoke.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")
     print("p2p transport smoke:", rep)
     return 0
 

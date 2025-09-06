@@ -109,9 +109,7 @@ def transform_litera_telos(obj: Mapping[str, Any] | str, target: str) -> dict[st
     return unit.to_obj()
 
 
-def holonomy_drift_lt(
-    obj: Mapping[str, Any] | str, *, cycle: tuple[str, str] = ("l", "t")
-) -> float:
+def holonomy_drift_lt(obj: Mapping[str, Any] | str, *, cycle: tuple[str, str] = ("l", "t")) -> float:
     """
     PL: Zmierz drift po cyklu L→T→L (lub odwrotnie).
 

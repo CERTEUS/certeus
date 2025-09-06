@@ -120,11 +120,7 @@ def main() -> int:
 
     cov = _read_json(Path("out/lexqft_coverage.json")) or {}
     # Accept both flat and nested {"coverage": {...}} formats
-    if (
-        isinstance(cov, dict)
-        and "coverage" in cov
-        and isinstance(cov.get("coverage"), dict)
-    ):
+    if isinstance(cov, dict) and "coverage" in cov and isinstance(cov.get("coverage"), dict):
         _cov = cov.get("coverage") or {}
     else:
         _cov = cov or {}
@@ -143,9 +139,7 @@ def main() -> int:
 
     err_max = float(os.getenv("SLO_MAX_ERROR_RATE", "0.005"))
 
-    tests_ok = (junit.get("failures", 0) + junit.get("errors", 0)) == 0 and junit.get(
-        "total", 0
-    ) > 0
+    tests_ok = (junit.get("failures", 0) + junit.get("errors", 0)) == 0 and junit.get("total", 0) > 0
 
     slo_p95 = float(((slo or {}).get("latency_ms", {}) or {}).get("p95", 0.0))
 
@@ -153,9 +147,7 @@ def main() -> int:
 
     slo_ok = slo_p95 <= p95_max and slo_err <= err_max
 
-    gauge_ok = (
-        float(((gauge or {}).get("gauge", {}) or {}).get("holonomy_drift", 1.0)) <= eps
-    )
+    gauge_ok = float(((gauge or {}).get("gauge", {}) or {}).get("holonomy_drift", 1.0)) <= eps
 
     cov_gamma = float((_cov or {}).get("coverage_gamma", 0.0))
 
@@ -184,23 +176,13 @@ def main() -> int:
 
     cosign_v = _read_json(Path("out/cosign_verify.json")) or {}
 
-    cosign_ok = bool(cosign_v.get("results")) and all(
-        r.get("verified") for r in cosign_v.get("results", [])
-    )
+    cosign_ok = bool(cosign_v.get("results")) and all(r.get("verified") for r in cosign_v.get("results", []))
 
     ATC = {
         "status": (
             "PASS"
-            if (
-                Path("sbom.json").exists()
-                and Path("out/provenance.json").exists()
-                and cosign_ok
-            )
-            else (
-                "WARN"
-                if Path("sbom.json").exists() and Path("out/provenance.json").exists()
-                else "FAIL"
-            )
+            if (Path("sbom.json").exists() and Path("out/provenance.json").exists() and cosign_ok)
+            else ("WARN" if Path("sbom.json").exists() and Path("out/provenance.json").exists() else "FAIL")
         ),
         "artifacts": {
             "sbom": Path("sbom.json").exists(),

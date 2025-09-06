@@ -67,9 +67,7 @@ async def test_drive_roundtrip(tmp_path: Path) -> None:
 
     data = b"hello"
 
-    saved = await drive.save_bytes(
-        data, filename="x.txt", content_type="text/plain", case_id="caseA"
-    )
+    saved = await drive.save_bytes(data, filename="x.txt", content_type="text/plain", case_id="caseA")
 
     assert saved.file_id.endswith(".txt")
 
@@ -90,9 +88,7 @@ async def test_preview_stub_docx_to_pdf(tmp_path: Path) -> None:
 
     blob = Blob(
         filename="sample.docx",
-        content_type=(
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ),
+        content_type=("application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
         data=b"DOCX_BYTES_STUB",
     )
 

@@ -34,9 +34,7 @@ def _run(cmd: list[str]) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--to", default="work/daily", help="Target branch (default: work/daily)"
-    )
+    ap.add_argument("--to", default="work/daily", help="Target branch (default: work/daily)")
     args = ap.parse_args()
 
     # Prefer explicit user/token; support ADMIN_TOKEN fallback
@@ -48,17 +46,12 @@ def main() -> int:
         if u and u not in {"root", "vscode", "codespace", "code"}:
             user = u
     token = (
-        os.getenv("GITHUB_PUSH_TOKEN")
-        or os.getenv("GITHUB_TOKEN")
-        or os.getenv("GH_TOKEN")
-        or os.getenv("ADMIN_TOKEN")
+        os.getenv("GITHUB_PUSH_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("ADMIN_TOKEN")
     )
     if not token:
         # Fallback: try GitHub CLI token if available
         try:
-            out = subprocess.run(
-                ["gh", "auth", "token"], check=True, capture_output=True, text=True
-            )
+            out = subprocess.run(["gh", "auth", "token"], check=True, capture_output=True, text=True)
             cand = (out.stdout or "").strip()
             if cand:
                 token = cand
@@ -77,9 +70,7 @@ def main() -> int:
                 if token:
                     break
     if not token:
-        raise SystemExit(
-            "Missing push token: set ADMIN_TOKEN/GITHUB_PUSH_TOKEN or provide .devkeys/admin_token.txt"
-        )
+        raise SystemExit("Missing push token: set ADMIN_TOKEN/GITHUB_PUSH_TOKEN or provide .devkeys/admin_token.txt")
 
     # Resolve repo owner/name from origin
     _proc = subprocess.run(
@@ -139,9 +130,7 @@ def main() -> int:
             meta = json.loads(resp.read().decode("utf-8"))
             perms = meta.get("permissions") or {}
             if not perms.get("push", False):
-                print(
-                    "warning: token may lack push permission for repo; proceeding anyway"
-                )
+                print("warning: token may lack push permission for repo; proceeding anyway")
     except Exception:
         pass
 

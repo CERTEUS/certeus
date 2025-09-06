@@ -46,9 +46,7 @@ _CONFIG_ENV = "CERTEUS_CFE_LENSING_CONFIG"
 
 # Runtime cache + watcher state
 _CFG_LOCK = threading.Lock()
-_CFG_WEIGHTS: dict[str, dict[str, float]] = {
-    k: dict(v) for k, v in _DEFAULT_LENSING_WEIGHTS.items()
-}
+_CFG_WEIGHTS: dict[str, dict[str, float]] = {k: dict(v) for k, v in _DEFAULT_LENSING_WEIGHTS.items()}
 _CFG_DOMAINS: set[str] = set(_DEFAULT_DOMAINS_LOCK)
 _CFG_SEVERITIES: set[str] = set(_DEFAULT_SEVERITY_LOCK)
 _CFG_PATH: Path | None = None
@@ -90,12 +88,8 @@ def _parse_config(
         w_cfg = {}
     try:
         lock = data.get("lock", {})  # type: ignore[assignment]
-        d_set = {
-            str(x).strip().upper() for x in lock.get("domains", []) if str(x).strip()
-        }
-        s_set = {
-            str(x).strip().lower() for x in lock.get("severities", []) if str(x).strip()
-        }
+        d_set = {str(x).strip().upper() for x in lock.get("domains", []) if str(x).strip()}
+        s_set = {str(x).strip().lower() for x in lock.get("severities", []) if str(x).strip()}
     except Exception:
         d_set = set()
         s_set = set()
@@ -135,9 +129,7 @@ def _refresh_config_if_changed() -> None:
         _CFG_MTIME = mtime
 
 
-def _load_external_config() -> (
-    tuple[dict[str, dict[str, float]], set[str] | None, set[str] | None]
-):
+def _load_external_config() -> tuple[dict[str, dict[str, float]], set[str] | None, set[str] | None]:
     """Return merged external weights and (domains,severities) override sets.
 
     Reads from cached state; refreshes if file mtime changed.

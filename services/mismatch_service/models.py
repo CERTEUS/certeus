@@ -145,12 +145,7 @@ class MismatchTicket(BaseModel):
         results = values.get("results", [])
 
         statuses = [
-            (
-                getattr(r, "status", None)
-                if isinstance(r, SolverResult)
-                else (r or {}).get("status")
-            )
-            for r in results
+            (getattr(r, "status", None) if isinstance(r, SolverResult) else (r or {}).get("status")) for r in results
         ]
 
         statuses = [s for s in statuses if s]
