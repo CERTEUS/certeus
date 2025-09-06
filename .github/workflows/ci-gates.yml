@@ -313,11 +313,11 @@ jobs:
         continue-on-error: true
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
-          # Report-only for ci-gates; blocking in security-scan.yml
-          args: detect --verbose --redact --no-banner --exit-code 1 --config gitleaks.toml
-      - name: Tests
+          # Report-only for ci-gates; use repo config
+          args: detect --verbose --redact --no-banner --exit-code 1 -c .gitleaks.toml
+      - name: Tests (single-process to avoid shared-state flakiness)
         env:
-          PYTEST_ADDOPTS: "-n auto --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"
+          PYTEST_ADDOPTS: "-n 0 --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"
           OTEL_ENABLED: "1"
           OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
           FINE_GRAINED_ROLES: "0"

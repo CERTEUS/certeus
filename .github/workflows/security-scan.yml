@@ -102,4 +102,4 @@ jobs:
       - name: Run gitleaks
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
-          args: detect --verbose --redact --no-banner --exit-code 0
+          args: detect --verbose --redact --no-banner --exit-code 0 -c .gitleaks.toml

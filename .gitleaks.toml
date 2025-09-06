@@ -1,0 +1,14 @@
+# Gitleaks config: use allowlist to avoid false positives on documented ENV names
+
+[allowlist]
+  description = "Global allowlist for docs and SDK stubs"
+  # Allow common ENV variable names in docs without values
+  regexes = [
+    '''ED25519_(PRIVKEY_PEM|PUBKEY_B64URL|PUBKEY_HEX)''',
+    '''PCO_JWKS_B64URL'''
+  ]
+  # Ignore devkeys and specific generated scripts directories
+  paths = [
+    '''^\.devkeys/''',
+    '''^clients/web/'''
+  ]
