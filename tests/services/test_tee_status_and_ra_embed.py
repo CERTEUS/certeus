@@ -69,6 +69,8 @@ def test_publish_embeds_ra_when_bunker_on(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("TEE_RA_REQUIRE", raising=False)
     c = TestClient(proofgate_app)
     pco = _base_pco()
+    # Add minimal TEE attestation info to PCO as expected by bunker mode
+    pco["tee"] = {"attested": True}
     r = c.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10})
     r.raise_for_status()
     body = r.json()

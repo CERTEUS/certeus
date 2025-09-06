@@ -24,7 +24,7 @@
     "workbench.list.smoothScrolling": true,
     "terminal.integrated.fontSize": 14,
     "terminal.integrated.lineHeight": 1.2,
-    "workbench.activityBar.location": "top",
+    "workbench.activityBar.location": "default",
     "workbench.sideBar.location": "left",
     "editor.mouseWheelZoom": true,
     "editor.renderControlCharacters": false,
@@ -130,39 +130,12 @@
     "telemetry.telemetryLevel": "off",
     "update.mode": "manual",
     "python.analysis.diagnosticMode": "openFilesOnly",
-    "python.analysis.typeCheckingMode": "off",
     "python.analysis.logLevel": "Error",
-    "python.analysis.stubPath": "typings",
-    // Python analysis exclusions - fix for 18K+ problems
-    "python.analysis.exclude": [
-        ".venv/**",
-        "**/.venv/**",
-        "**/node_modules/**",
-        "**/__pycache__/**",
-        "**/.*",
-        ".git/**",
-        "**/.git/**"
-    ],
-    "python.analysis.ignore": [
-        "**/.venv",
-        "**/.venv/**"
-    ],
-    "python.analysis.autoSearchPaths": false,
+    // Python analysis - konfiguracja przeniesiona do pyrightconfig.json
     "python.analysis.indexing": false,
     "python.analysis.enableExtensions": false,
-    "python.languageServer": "None",
-    "python.analysis.disabled": [
-        "unresolved-import",
-        "undefined-variable",
-        "import-error",
-        "no-member"
-    ],
+    "python.languageServer": "Pylance",
     "python.linting.enabled": false,
-    "python.analysis.include": [
-        "__init__.py",
-        "main.py",
-        "conftest.py"
-    ],
     // GitHub Copilot
     "github.copilot.enable": {
         "*": true
@@ -234,24 +207,6 @@
     "python.terminal.activateEnvironment": true,
     "python.analysis.persistAllIndices": false,
     "python.analysis.userFileIndexingLimit": 200,
-    "python.analysis.packageIndexDepths": [
-        {
-            "name": ".",
-            "depth": 2
-        },
-        {
-            "name": "certeus",
-            "depth": 3
-        },
-        {
-            "name": "core",
-            "depth": 3
-        },
-        {
-            "name": "services",
-            "depth": 3
-        }
-    ],
     // Cross-platform file handling
     "files.eol": "\n",
     "files.trimTrailingWhitespace": true,

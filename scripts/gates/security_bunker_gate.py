@@ -102,7 +102,11 @@ def _write_summary(text: str) -> None:
 
 
 def main() -> int:
-    repo = Path(__file__).resolve().parents[2]
+    # Try to detect repo root from __file__ if available, otherwise use current directory
+    try:
+        repo = Path(__file__).resolve().parents[2]
+    except NameError:
+        repo = Path.cwd()
 
     bunker = _is_on(os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER"))
     pq_ready = _is_on(os.getenv("PQCRYPTO_READY"))
