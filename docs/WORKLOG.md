@@ -471,3 +471,9 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-06 14:36:28Z [agent] (work/daily): W7 — ProofFS: Linux xattrs + Cockpit mount UI
   - core/pfs/xattrs.py: OS xattrs (user.*) best-effort; sidecar/PNIP fallback
   - clients/web/public/pfs_mount.html: mock mount/unmount helper (contract)
+- 2025-09-06 15:28:18Z [agent] (work/daily): Enterprise enforce + QUIC e2e + merge to main
+  - CI: enforce PQ‑crypto, Bunker RA, SPIFFE SVID, A11y; SLO Trend (endpoint/tenant), Marketplace Policy, Plugin Supply; QUIC echo e2e; P2P turbulence enforce; ProofFS FUSE Linux smoke
+  - ProofGate: PQ block embedding (crypto.pq) without affecting ledger hash
+  - ProofFS: OS xattrs + Cockpit mount; FUSE RO FS + smoke
+  - Merge: feature/enterprise-enforce -> main (conflicts resolved by feature)
+  - Tests: 353 passed, 6 skipped
