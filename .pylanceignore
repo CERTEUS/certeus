@@ -1,0 +1,80 @@
+# Pylance ignore patterns for CERTEUS project # Virtual environments .venv **/.venv .venv
+/**
+**/
+.venv
+/**
+venv
+**/
+venv venv
+/**
+**/
+venv
+/**
+env
+**/
+env env
+/**
+**/
+env
+/**
+.env
+**/
+.env .env
+/**
+**/
+.env
+/**
+
+# Python cache and compiled files
+__pycache__
+**/
+__pycache__ __pycache__
+/**
+**/
+__pycache__
+/**
+*.pyc
+**/
+*.pyc *.pyo **
+/*.pyo
+*.pyd
+**/
+*.pyd # Git directories .git **/.git .git
+/**
+**/
+.git
+/**
+
+# Node modules
+node_modules
+**/
+node_modules node_modules
+/**
+**/
+node_modules
+/**
+
+# Build artifacts
+build
+**/
+build build
+/**
+**/
+build
+/**
+dist
+**/
+dist dist
+/**
+**/
+dist
+/**
+
+# IDE and editor files
+.vscode/settings.json.bak
+**/
+.DS_Store *.swp *.swo *~# Temporary files *.tmp **
+/*.tmp
+*.temp
+**/
+*.temp

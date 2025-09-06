@@ -104,29 +104,41 @@
     "files.autoSave": "afterDelay",
     "files.autoSaveDelay": 1000,
     "editor.formatOnSave": true,
-    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.logLevel": "Warning",
+    "python.analysis.stubPath": "typings",
     // Python analysis exclusions - fix for 18K+ problems
     "python.analysis.exclude": [
-        "**/.venv",
+        ".venv/**",
         "**/.venv/**",
-        "**/venv",
-        "**/venv/**",
-        "**/.env",
-        "**/.env/**",
-        "**/env",
-        "**/env/**",
-        "**/site-packages",
-        "**/site-packages/**",
-        "**/__pycache__",
+        "**/node_modules/**",
         "**/__pycache__/**",
-        "**/.pytest_cache",
-        "**/.pytest_cache/**",
-        "**/node_modules",
-        "**/node_modules/**"
+        "**/.*",
+        ".git/**",
+        "**/.git/**"
     ],
     "python.analysis.ignore": [
         "**/.venv",
         "**/.venv/**"
+    ],
+    "python.analysis.autoSearchPaths": false,
+    "python.analysis.indexing": false,
+    "python.analysis.include": [
+        "core",
+        "tests",
+        "services",
+        "scripts",
+        "billing",
+        "certeus",
+        "cje",
+        "clients",
+        "conftest.py",
+        "main.py",
+        "repo_to_packs.py",
+        "sitecustomize.py",
+        "test_pco.py",
+        "__init__.py"
     ],
     // GitHub Copilot
     "github.copilot.enable": {
@@ -193,5 +205,43 @@
         "welcomeMessage": "none"
     },
     "gemini.suggestInRealTime": true,
-    "gemini.inlineSuggest.enable": true
+    "gemini.inlineSuggest.enable": true,
+    
+    // Environment consistency settings
+    "python.defaultInterpreterPath": "./.venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.persistAllIndices": false,
+    "python.analysis.userFileIndexingLimit": 200,
+    "python.analysis.packageIndexDepths": [
+        {"name": ".", "depth": 2},
+        {"name": "certeus", "depth": 3},
+        {"name": "core", "depth": 3},
+        {"name": "services", "depth": 3}
+    ],
+    
+    // Cross-platform file handling
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.encoding": "utf8",
+    
+    // Performance optimizations
+    "search.exclude": {
+        "**/.venv": true,
+        "**/venv": true,
+        "**/env": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/node_modules": true,
+        "**/.git": true
+    },
+    "files.watcherExclude": {
+        "**/.venv/**": true,
+        "**/venv/**": true,
+        "**/env/**": true,
+        "**/__pycache__/**": true,
+        "**/*.pyc": true,
+        "**/node_modules/**": true,
+        "**/.git/**": true
+    }
 }

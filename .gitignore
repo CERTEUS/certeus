@@ -62,7 +62,8 @@ data/lexqft_coverage_state.json
 data/packs_state.json
 
 # IDE / OS
-.vscode/
+.vscode/settings.json.bak
+.vscode/settings.local.json
 .env
 .git-credentials
 node_modules

@@ -4,6 +4,12 @@
   "stubPath": "typings",
   "include": ["."],
   "exclude": [
+    ".venv",
+    "**/venv",
+    "**/env",
+    "**/__pycache__",
+    "**/node_modules",
+    "**/.git",
     "exports",
     "artifacts",
     "reports",
