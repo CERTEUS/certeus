@@ -202,6 +202,12 @@ jobs:
           npm -g i markdownlint-cli >/dev/null 2>&1 || true
           markdownlint "**/*.md" --ignore "clients/web/**" || true
 
+      - name: pre-commit (report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip pre-commit || true
+          pre-commit run --all-files --show-diff-on-failure || true
+
       - name: Asset-Integrity Gate (report-only)
         continue-on-error: true
         run: |
