@@ -16,7 +16,7 @@
             "tab.inactiveBackground": "#f0f0f0"
         }
     },
-    "workbench.statusBar.visible": true,
+    "workbench.statusBar.visible": false,
     "window.zoomLevel": 0.5,
     "editor.accessibilitySupport": "on",
     "editor.scrollBeyondLastLine": false,
