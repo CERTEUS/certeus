@@ -55,7 +55,7 @@
         "github.vscode-github-actions",
         "google.geminicodeassist",
         "github.copilot-chat"
-      ]
+      ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/${localWorkspaceFolderBasename}/.venv/bin/python",
         "python.analysis.diagnosticMode": "workspace",
@@ -70,7 +70,6 @@
         "remote.autoForwardPorts": true,
         "remote.autoForwardPortsSource": "process"
       }
-      ]
     }
   }
 }
