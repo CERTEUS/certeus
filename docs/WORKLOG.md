@@ -480,3 +480,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-06 15:33:00Z [agent] (work/daily): SLO gate enforce + CI hardening
   - Added SLO measure and enforce to ci-gates; PQ/Bunker/SPIFFE/A11y enforce; QUIC echo e2e; P2P turbulence enforce; Marketplace/Plugin policy enforce
 - 2025-09-06 15:36:11Z [agent] (work/daily): CI: enforce additional gates (Decorator split, PCO Validation, SDK & OpenAPI Contracts, Compliance Mapping)
+- 2025-09-06 15:43:00Z [agent] (work/daily): Self-hosted runners bootstrap + signatures
+  - Scripts: macOS runner + macFUSE (scripts/runners/mac/bootstrap_macos_runner.sh); Windows runner + Dokan (scripts/runners/windows/bootstrap_windows_runner.ps1)
+  - CI: ProofFS self-hosted workflow (macOS/Windows labels)
+  - ProofGate: Ed25519 signature embedding (crypto.ed25519) in PCO

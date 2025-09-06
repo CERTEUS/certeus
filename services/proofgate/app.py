@@ -647,6 +647,48 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             pass
 
+    # Optionally embed Ed25519 signature over provenance hash
+    if isinstance(req.pco, dict):
+        try:
+            _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+            from core.pco.crypto import ed25519_sign_b64u  # type: ignore
+
+            sk_hex = (os.getenv("ED25519_SK_HEX") or "").strip()
+            sk_b64 = (os.getenv("ED25519_SK_B64URL") or os.getenv("ED25519_SK_B64U") or "").strip()
+            pk_b64 = (os.getenv("ED25519_PUBKEY_B64URL") or os.getenv("ED25519_PUBKEY_B64U") or "").strip()
+
+            def _b64u_to_bytes(s: str) -> bytes:
+                import base64 as _b64
+
+                return _b64.urlsafe_b64decode((s + "=" * (-len(s) % 4)).encode("ascii"))
+
+            sk_bytes: bytes | None = None
+            if sk_hex:
+                try:
+                    sk_bytes = bytes.fromhex(sk_hex)
+                except Exception:
+                    sk_bytes = None
+            if sk_bytes is None and sk_b64:
+                try:
+                    sk_bytes = _b64u_to_bytes(sk_b64)
+                except Exception:
+                    sk_bytes = None
+            if sk_bytes:
+                try:
+                    sig = ed25519_sign_b64u(sk_bytes, _doc_hash)
+                    crypto = dict((pco_out.get("crypto") or {}))
+                    ed = dict((crypto.get("ed25519") or {}))
+                    ed.setdefault("sig_b64", sig)
+                    if pk_b64:
+                        ed.setdefault("pub_b64", pk_b64)
+                    crypto["ed25519"] = ed
+                    pco_out = dict(pco_out)
+                    pco_out["crypto"] = crypto
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
     ledger: str | None = None
 
     # On PUBLISH, persist a ledger event with a provenance hash of the PCO

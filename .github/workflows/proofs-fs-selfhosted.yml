@@ -1,0 +1,29 @@
+name: ProofFS Self-Hosted
+
+on:
+  workflow_dispatch:
+
+jobs:
+  macos_selfhosted:
+    name: macOS ProofFS (self-hosted)
+    runs-on: [self-hosted, macos, macfuse]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Mount smoke (macFUSE)
+        run: |
+          bash scripts/pfs/osx_mount_smoke.sh
+
+  windows_selfhosted:
+    name: Windows Dokan (self-hosted)
+    runs-on: [self-hosted, windows, dokan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dokan smoke
+        shell: pwsh
+        run: |
+          pwsh -File scripts/pfs/win_dokan_smoke.ps1
+
