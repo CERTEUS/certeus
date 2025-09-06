@@ -160,15 +160,24 @@ jobs:
         if: success()
         run: |
           mkdir -p out && echo ok > out/plugin_supply_ok.txt
-      - name: PQ-crypto Gate (report-only; auto-detect pyoqs)
-        continue-on-error: true
+      - name: Install PQ libs (pyoqs)
         run: |
-          python scripts/gates/pqcrypto_gate.py || true
-          test -f out/pqcrypto.txt && echo ok > out/pqcrypto_gate_ok.txt || true
+          python -m pip install oqs || python -m pip install oqs --only-binary=:all:
+      - name: PQ-crypto Gate (enforce)
+        env:
+          PQCRYPTO_REQUIRE: '1'
+        run: |
+          python scripts/gates/pqcrypto_gate.py
       - name: Supply-Chain Enforce (required)
         run: |
           python scripts/gates/supply_chain_enforce.py
           echo ok > out/supply_chain_enforce_ok.txt
+      - name: Security Bunker Gate (enforce)
+        env:
+          BUNKER: '1'
+          TEE_RA_REQUIRE: '1'
+        run: |
+          python scripts/gates/security_bunker_gate.py
       - name: ProofFS FUSE Smoke (Ubuntu, report-only)
         if: startsWith(runner.os, 'Linux')
         continue-on-error: true

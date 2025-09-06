@@ -57,7 +57,10 @@ def main() -> int:
     out = Path("out")
     out.mkdir(parents=True, exist_ok=True)
     (out / "pqcrypto.txt").write_text(status, encoding="utf-8")
-    # Never fail here (informational). If enforcement desired, flip in CI.
+    # Enforce if required
+    if require and not ready:
+        print("PQ-crypto gate: FAIL (require=1, not ready)")
+        return 2
     return 0
 
 

@@ -1,19 +1,9 @@
 {
-    "vendor": "intel",
-    "product": "sgx",
-    "claims": {
-        "mr_enclave": "deadbeefcafebabe1234567890abcdef1234567890abcdef1234567890abcdef",
-        "mr_signer": "fedcba0987654321abcdef0123456789abcdef0123456789abcdef0123456789",
-        "prod_id": 1,
-        "svn": 2,
-        "attributes": "0x0000000000000001",
-        "misc_mask": "0x00000000",
-        "config_id": "0000000000000000000000000000000000000000000000000000000000000000",
-        "config_svn": 0
-    },
-    "quote": "deadbeef1234567890abcdef",
-    "signature": "stubbed_signature_for_ci_testing",
-    "timestamp": "2025-09-06T00:00:00Z",
-    "issuer": "stub-tee-attestation-service",
-    "note": "Updated attestation for CI tests with vendor/product fields"
+  "vendor": "CERT-EUS",
+  "product": "BUNKER-TEE-DEMO",
+  "claims": {
+    "api": "proofgate",
+    "profile": "bunker",
+    "version": "1.0.0"
+  }
 }
