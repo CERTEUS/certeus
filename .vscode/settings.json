@@ -1,5 +1,27 @@
 {
-    // Optymalizacje wydajności
+    // Ustawienia dla urządzeń mobilnych
+    "editor.fontSize": 14,
+    "editor.lineHeight": 24,
+    "editor.minimap.enabled": false,
+    "editor.wordWrap": "on",
+    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.statusBar.visible": true,
+    "window.zoomLevel": 0.5,
+    "editor.accessibilitySupport": "on",
+    "editor.scrollBeyondLastLine": false,
+    "editor.smoothScrolling": true,
+    "workbench.list.smoothScrolling": true,
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.lineHeight": 1.2,
+    "workbench.activityBar.location": "top",
+    "workbench.sideBar.location": "right",
+    "editor.mouseWheelZoom": true,
+    "editor.renderControlCharacters": false,
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorBlinking": "smooth",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.renderWhitespace": "selection",
+    // Optymalizacje wydajności dla urządzeń mobilnych
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -28,7 +50,6 @@
         "**/__pycache__": true,
         "**/.pytest_cache": true
     },
-    
     // Port forwarding i serwery
     "remote.autoForward": true,
     "remote.restoreForwardedPorts": true,
@@ -39,7 +60,6 @@
             "onAutoForward": "openPreview"
         }
     },
-    
     // Wspólne ustawienia dla wszystkich AI
     "editor.inlineSuggest.enabled": true,
     "editor.acceptSuggestionOnEnter": "on",
@@ -57,7 +77,6 @@
     "editor.suggest.showWords": true,
     "editor.suggest.preview": true,
     "editor.suggest.shareSuggestSelections": true,
-
     // Optymalizacje wydajności VS Code
     "workbench.editor.closeOnFileDelete": true,
     "workbench.editor.enablePreview": false,
@@ -69,7 +88,6 @@
     "editor.formatOnSave": true,
     "python.analysis.diagnosticMode": "workspace",
     "python.analysis.typeCheckingMode": "basic",
-    
     // GitHub Copilot
     "github.copilot.enable": {
         "*": true
@@ -89,7 +107,6 @@
     "github.copilot.chat.autoFollowUpSuggestions": true,
     "github.copilot.chat.clearOnSend": false,
     "github.copilot.chat.welcomeMessage": "none",
-    
     // OpenAI Codex
     "openai.enable": {
         "*": true
@@ -115,7 +132,6 @@
         "noConfirm": true,
         "welcomeMessage": "none"
     },
-    
     // Google Gemini
     "gemini.enable": {
         "*": true
