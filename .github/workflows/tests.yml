@@ -20,7 +20,7 @@ name: Tests
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, work/daily]
   pull_request:
     branches: [main, master, work/daily]
 
