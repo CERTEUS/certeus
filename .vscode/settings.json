@@ -277,12 +277,18 @@
     "terminal.integrated.persistentSessionReviveProcess": "never",
     "terminal.integrated.automationProfile.linux": {
         "path": "/bin/bash",
-        "args": ["-c"]
+        "args": [
+            "-c"
+        ]
     },
     "terminal.integrated.profiles.linux": {
         "bash": {
             "path": "/bin/bash",
-            "args": ["-l", "-c", "exec bash --norc --noprofile"]
+            "args": [
+                "-l",
+                "-c",
+                "exec bash --norc --noprofile"
+            ]
         }
     },
     "terminal.integrated.defaultProfile.linux": "bash",
@@ -325,7 +331,9 @@
     "git.pullBeforeCheckout": true,
     "git.rebaseWhenSync": true,
     // Extensions Autonomous Mode
-    "extensions.confirmedUriHandlerExtensionIds": ["*"],
+    "extensions.confirmedUriHandlerExtensionIds": [
+        "*"
+    ],
     "extensions.supportUntrustedWorkspaces": {
         "*": {
             "supported": true,

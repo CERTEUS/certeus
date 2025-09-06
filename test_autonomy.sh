@@ -13,7 +13,7 @@ git status --porcelain >/dev/null 2>&1 && echo "✅ Git status - OK" || echo "�
 # Test 2: Environment variables
 echo "Test 2: Autonomous environment variables"
 [ "$CERTEUS_AUTONOMOUS_MODE" = "true" ] && echo "✅ CERTEUS_AUTONOMOUS_MODE - OK" || echo "❌ CERTEUS_AUTONOMOUS_MODE - FAILED"
-[ "$NO_CONFIRM" = "true" ] && echo "✅ NO_CONFIRM - OK" || echo "❌ NO_CONFIRM - FAILED" 
+[ "$NO_CONFIRM" = "true" ] && echo "✅ NO_CONFIRM - OK" || echo "❌ NO_CONFIRM - FAILED"
 [ "$DEBIAN_FRONTEND" = "noninteractive" ] && echo "✅ DEBIAN_FRONTEND - OK" || echo "❌ DEBIAN_FRONTEND - FAILED"
 [ "$GIT_TERMINAL_PROMPT" = "0" ] && echo "✅ GIT_TERMINAL_PROMPT - OK" || echo "❌ GIT_TERMINAL_PROMPT - FAILED"
 

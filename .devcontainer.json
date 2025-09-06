@@ -23,7 +23,9 @@
                 "git.smartCommitChanges": "all",
                 "git.confirmEmptyCommits": false,
                 "git.confirmNoVerifyCommit": false,
-                "extensions.confirmedUriHandlerExtensionIds": ["*"],
+                "extensions.confirmedUriHandlerExtensionIds": [
+                    "*"
+                ],
                 "window.confirmBeforeClose": "never",
                 "window.confirmSaveUntitledWorkspace": false,
                 "explorer.confirmDelete": false,

@@ -1,0 +1,34 @@
+[advice]
+	addIgnoredFile = false
+	addEmptyPathspec = false
+	pushUpdateRejected = false
+	pushNonFFCurrent = false
+	pushNonFFMatching = false
+	pushAlreadyExists = false
+	pushFetchFirst = false
+	pushNeedsForce = false
+	statusHints = false
+	statusUoption = false
+	commitBeforeMerge = false
+	resolveConflict = false
+	implicitIdentity = false
+	detachedHead = false
+	amWorkDir = false
+	rmHints = false
+	addEmbeddedRepo = false
+[core]
+	askpass = 
+	editor = /bin/true
+[merge]
+	tool = /bin/true
+[diff]
+	tool = /bin/true
+[init]
+	defaultBranch = main
+[pull]
+	rebase = false
+[push]
+	default = current
+[branch]
+	autosetupmerge = always
+	autosetuprebase = always
