@@ -76,11 +76,10 @@ jobs:
         run: |
           python scripts/dr/drill_boundary_failure.py --max-rto-sec 120 --max-rpo-sec 300 || true
           test -f out/drill_boundary.json && echo ok > out/gameday_ok.txt || true
-      - name: P2P Turbulence Smoke (report-only)
-        continue-on-error: true
+      - name: P2P Turbulence Smoke (enforce)
         run: |
-          python scripts/dr/turbulence_p2p_smoke.py --iters 30 --out out/turbulence_p2p.json || true
-          test -f out/turbulence_p2p.json && echo ok > out/p2p_turbulence_ok.txt || true
+          python scripts/dr/turbulence_p2p_smoke.py --iters 30 --out out/turbulence_p2p.json
+          test -f out/turbulence_p2p.json
       - name: Tenant SLO Smoke (report-only)
         continue-on-error: true
         run: |
@@ -91,44 +90,37 @@ jobs:
         run: |
           python scripts/slo_gate/endpoint_slo_sanity.py --iters 10 --out out/endpoint_slo.json || true
           test -f out/endpoint_slo.json && echo ok > out/endpoint_slo_ok.txt || true
-      - name: Endpoint SLO Trend Gate (report-only)
-        continue-on-error: true
+      - name: Endpoint SLO Trend Gate (enforce)
         run: |
           set -e
           git fetch origin ci-status || true
           if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
             git show origin/ci-status:ci/endpoint_slo.json > out/prev_endpoint_slo.json 2>/dev/null || true
           fi
-          python scripts/slo_gate/endpoint_slo_trend_gate.py || true
+          python scripts/slo_gate/endpoint_slo_trend_gate.py
           echo ok > out/endpoint_slo_trend_ok.txt
       - name: Burn-rate Gate (report-only)
         continue-on-error: true
         run: |
           python scripts/slo_gate/error_burn_gate.py || true
           echo ok > out/burn_ok.txt
-      - name: Tenant SLO Trend Gate (report-only)
-        continue-on-error: true
+      - name: Tenant SLO Trend Gate (enforce)
         run: |
           set -e
           git fetch origin ci-status || true
           if git rev-parse --verify origin/ci-status >/dev/null 2>&1; then
             git show origin/ci-status:ci/tenant_slo.json > out/prev_tenant_slo.json 2>/dev/null || true
           fi
-          python scripts/slo_gate/tenant_slo_trend_gate.py || true
+          python scripts/slo_gate/tenant_slo_trend_gate.py
       - name: Mark Tenant SLO Trend OK
-        if: success()
         run: |
           mkdir -p out && echo ok > out/tenant_slo_trend_ok.txt
 
-      - name: Marketplace Policy Gate (report-only)
-        continue-on-error: true
+      - name: Marketplace Policy Gate (enforce)
+        env:
+          ENFORCE_MARKETPLACE_POLICY: '1'
         run: |
-          python scripts/gates/marketplace_policy_gate.py || true
-
-      - name: Mark Marketplace OK
-        if: success()
-        run: |
-          mkdir -p out && echo ok > out/marketplace_ok.txt
+          python scripts/gates/marketplace_policy_gate.py
 
       - name: PCO Validation Gate (report-only)
         continue-on-error: true
@@ -147,14 +139,11 @@ jobs:
           python scripts/gates/asset_integrity_gate.py
           test -f out/asset_integrity_ok.txt
 
-      - name: Plugin Supply-Chain Gate (report-only)
-        continue-on-error: true
+      - name: Plugin Supply-Chain Gate (enforce)
+        env:
+          ENFORCE_PLUGIN_SUPPLY: '1'
         run: |
-          python scripts/gates/plugin_supply_chain_gate.py || true
-      - name: Mark Plugin Supply-Chain OK
-        if: success()
-        run: |
-          mkdir -p out && echo ok > out/plugin_supply_ok.txt
+          python scripts/gates/plugin_supply_chain_gate.py
       - name: Install PQ libs (pyoqs) or set readiness
         run: |
           set -e
@@ -195,17 +184,15 @@ jobs:
           python -m pip install fusepy || true
           python -m pytest -q tests/services/test_pfs_fuse_linux.py || true
           echo ok > out/pfs_fuse_smoke_ok.txt
-      - name: P2P QUIC Smoke (report-only)
-        continue-on-error: true
+      - name: QUIC Echo E2E (enforce)
         run: |
-          python -m pip install aioquic || true
-          python - << 'PY'
-          try:
-              import aioquic  # noqa: F401
-              print('aioquic: OK')
-          except Exception as e:
-              print('aioquic: FAIL', e)
-          PY
+          set -e
+          python -m pip install aioquic
+          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 1 -nodes -subj "/CN=localhost"
+          nohup python scripts/p2p/quic_echo.py serve --host 127.0.0.1 --port 4443 --cert cert.pem --key key.pem >/dev/null 2>&1 &
+          sleep 1
+          OUT=$(python scripts/p2p/quic_echo.py echo --host 127.0.0.1 --port 4443 --message hello)
+          test "$OUT" = "hello"
       - name: FROST 2-of-3 Gate (enforce)
         run: |
           python scripts/gates/proof_frost_enforce.py
