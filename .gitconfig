@@ -19,6 +19,8 @@
 [core]
 	askpass = 
 	editor = /bin/true
+	autocrlf = false
+	safecrlf = false
 [merge]
 	tool = /bin/true
 [diff]
@@ -32,3 +34,5 @@
 [branch]
 	autosetupmerge = always
 	autosetuprebase = always
+[safe]
+	directory = *

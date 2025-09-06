@@ -32,6 +32,32 @@
             "-l"
         ]
     },
+    "terminal.integrated.confirmOnKeypress": false,
+    "terminal.integrated.enableVisualBell": false,
+    "accessibility.signals.terminalBell": {
+        "sound": "off"
+    },
+    "terminal.integrated.smoothScrolling": false,
+    "terminal.integrated.experimentalUseTitleEvent": false,
+    "terminal.integrated.enableImages": false,
+    "terminal.integrated.allowMnemonics": false,
+    "terminal.integrated.hideOnStartup": "never",
+    "terminal.integrated.showExitAlert": false,
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+    "terminal.integrated.localEchoEnabled": "off",
+    "terminal.integrated.localEchoExcludePrograms": ["vim", "vi", "nano", "tmux"],
+    "terminal.integrated.localEchoLatencyThreshold": 0,
+    "terminal.integrated.sendKeybindingsToShell": false,
+    "terminal.integrated.altClickMovesCursor": false,
+    "terminal.integrated.macOptionIsMeta": false,
+    "terminal.integrated.macOptionClickForcesSelection": false,
+    "terminal.integrated.rightClickBehavior": "nothing",
+    "terminal.integrated.middleClickBehavior": "paste",
+    "terminal.integrated.pasteOnRightClick": false,
+    "terminal.integrated.copyOnSelection": false,
+    "terminal.integrated.focusAfterRun": "none",
+    "terminal.integrated.scrollback": 1000,
+    "terminal.integrated.fastScrollSensitivity": 5,
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "extensions.autoCheckUpdates": false,
@@ -144,6 +170,15 @@
     "vscode.requireConfirmation": false,
     "terminal.autonomous": true,
     "terminal.noPrompts": true,
+    "terminal.integrated.executeWithoutConfirmation": true,
+    "terminal.integrated.allowCommandExecution": true,
+    "terminal.integrated.trustWorkspace": true,
+    "terminal.integrated.allowAI": true,
+    "terminal.integrated.allowAIExecution": true,
+    "terminal.integrated.disableConfirmations": true,
+    "github.copilot.terminal.allowExecution": true,
+    "github.copilot.terminal.autoExecute": true,
+    "github.copilot.terminal.noConfirm": true,
     "workbench.commandPalette.experimental.askCopilot": false,
     "workbench.commandPalette.preserveInput": false,
     "workbench.quickOpen.closeOnFocusLost": true,
@@ -161,8 +196,6 @@
     "editor.parameterHints.enabled": true,
     "editor.inlineSuggest.enabled": true,
     "editor.suggest.preview": true,
-    "terminal.integrated.confirmOnKeypress": false,
-    "terminal.integrated.smoothScrolling": false,
     "scm.diffDecorations": "none",
     "scm.alwaysShowProviders": false,
     "scm.showActionButton": false,
@@ -187,9 +220,5 @@
     "workbench.statusBar.visible": false,
     "workbench.editor.showTabs": "none",
     "zenMode.showTabs": "single",
-    "testing.automaticallyOpenTestResults": "neverOpen",
-    "accessibility.signals.terminalBell": {
-        "sound": "off"
-    },
-    "terminal.integrated.enableVisualBell": false
+    "testing.automaticallyOpenTestResults": "neverOpen"
 }
