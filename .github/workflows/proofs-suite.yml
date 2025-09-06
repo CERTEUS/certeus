@@ -1,0 +1,30 @@
+name: Proofs Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  proofs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Proofs Suite
+        run: |
+          bash scripts/run_proofs_suite.sh
+      - name: Upload proof artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proof-artifacts
+          path: out/proof_artifacts
