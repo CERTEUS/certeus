@@ -1,0 +1,81 @@
+{
+    // Wspólne ustawienia dla wszystkich AI
+    "editor.inlineSuggest.enabled": true,
+    "editor.acceptSuggestionOnEnter": "on",
+    "editor.quickSuggestions": {
+        "other": "on",
+        "comments": "on",
+        "strings": "on"
+    },
+    "editor.suggestSelection": "first",
+    "editor.suggest.showWords": true,
+    "editor.suggest.preview": true,
+    "editor.suggest.shareSuggestSelections": true,
+
+    // GitHub Copilot
+    "github.copilot.enable": {
+        "*": true
+    },
+    "github.copilot.advanced": {
+        "automaticPanelFocus": true,
+        "indentationMode": true,
+        "showEditorCompletions": true,
+        "enableAutoCompletions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true
+    },
+    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.chat.autoFollowUpSuggestions": true,
+    "github.copilot.chat.clearOnSend": false,
+    "github.copilot.chat.welcomeMessage": "none",
+    
+    // OpenAI Codex
+    "openai.enable": {
+        "*": true
+    },
+    "openai.codex.suggestInRealTime": true,
+    "openai.codex.inlineSuggest.enable": true,
+    "openai.codex.maxTokens": 800,
+    "openai.codex.temperature": 0.7,
+    "openai.codex.autoTrigger": true,
+    "openai.codex.advanced": {
+        "automaticPanelFocus": true,
+        "indentationMode": true,
+        "showEditorCompletions": true,
+        "enableAutoCompletions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true
+    },
+    "openai.codex.chat": {
+        "autoFollowUpSuggestions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true,
+        "welcomeMessage": "none"
+    },
+    
+    // Google Gemini
+    "gemini.enable": {
+        "*": true
+    },
+    "gemini.advanced": {
+        "automaticPanelFocus": true,
+        "indentationMode": true,
+        "showEditorCompletions": true,
+        "enableAutoCompletions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true
+    },
+    "gemini.chat": {
+        "autoFollowUpSuggestions": true,
+        "clearOnSend": false,
+        "saveHistory": true,
+        "noConfirm": true,
+        "welcomeMessage": "none"
+    },
+    "gemini.suggestInRealTime": true,
+    "gemini.inlineSuggest.enable": true
+}
