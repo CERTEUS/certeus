@@ -500,3 +500,7 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-06 15:56:50Z [agent] (work/daily): Enforced signatures required; dispatched ProofFS Self-Hosted; all CI gates hardened
 - 2025-09-06 19:54:01Z [agent] (work/daily): Trigger CI gates for green run
   - CI: Tests, UI Smoke, Canary-Gate, truth-gates; Proofs Suite (informacyjnie).
+- 2025-09-06 19:59:08Z [agent] (work/daily): CI green run in progress (PR #84)
+  - Required: Tests, UI Smoke, Canary-Gate, truth-gates. Proofs Suite informacyjnie (Linux).
+  - Auto-promotion enabled: work/daily → main when gates green.
+
