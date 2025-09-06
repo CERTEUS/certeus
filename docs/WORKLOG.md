@@ -2,6 +2,14 @@
 
 Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, skrót).
 
+- 2025-09-06 18:35:00Z [agent] (work/daily): Integracja macOS runner pack + Proofs suite + aktualizacja agent_plan
+  - Runners: dodano `scripts/agent_up.sh`, `scripts/agent_down.sh`, `scripts/aws-find-macos-ami.sh`, Terraform `infra/aws-mac-runner/*`; przewodnik `RUNNERS_DEPLOYMENT.md` (Codespaces→AWS→SSM→runner z etykietami `self-hosted,macos,macfuse`).
+  - Terraform: `infra/aws-mac-runner/main.tf` zgodny z AWS provider v6 (data aws_vpc/subnet), public IP dla bootstrapu; `validate` OK.
+  - CI: `.github/workflows/selfhosted-macos-ci.yml` (runs-on: [self-hosted, macos, macfuse]).
+  - Proofs: skrypt `scripts/run_proofs_suite.sh` (generate→sha256→check→pytest subset); uruchomione lokalnie — OK.
+  - Tests: `tests/truth/test_solvers.py::{function,cli}` — PASS; `tests/services/test_proofgate_frost_enforce.py` — PASS; `tests/policies/test_plugin_supply_chain_gate.py` — PASS.
+  - Plan: `docs/agent_plan.md` — dodana sekcja „Status Realizacji (skrót)” z listą zrobione/WIP; wskazane kolejne kroki (TEE/RA, P2P, SDK 2.0, LEXENITH pipeline, dashboardy FIN/LEX).
+
 - 2025-09-05 19:45:00Z [A5] (feat/prooffs-mount-xattrs): ProofFS xattrs + mock mount + UI + CI gate
   - Core: `core/pfs/xattrs.py` (PNIP/PCO RO, sidecar), `core/pfs/mount.py` (mock), adaptery stub FUSE/Dokan
   - API: `/v1/pfs/xattrs`, `/v1/pfs/materialize`, `/v1/pfs/mount|unmount`; list używa resolvera

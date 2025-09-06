@@ -1,0 +1,26 @@
+name: SelfHosted-MacOS-CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: [self-hosted, macos, macfuse]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Print runner context
+        run: |
+          uname -a
+          sw_vers || true
+          whoami
+          echo "Labels: $RUNNER_LABELS"
+      - name: Verify macFUSE presence
+        run: |
+          kextstat 2>/dev/null | grep -i fuse || echo "kext not loaded (may require approval)"
+          brew --version || true
+      - name: Basic Build Step
+        run: echo "Build placeholder on self-hosted macOS runner"

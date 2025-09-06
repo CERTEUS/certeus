@@ -58,6 +58,29 @@
 
 ---
 
+## Status Realizacji (skrót)
+
+- ProofFS xattrs + mock mount + UI + CI gate: zrealizowane.
+  - Odniesienie: `docs/WORKLOG.md:5`
+  - Pliki: `core/pfs/xattrs.py:1`, `core/pfs/mount.py:1`, `clients/web/public/pfs_inspector.html:1`, `scripts/gates/asset_integrity_gate.py:1`
+- FROST 2‑z‑3 w ProofGate — enforce publish: zrealizowane (ENV).
+  - Odniesienie: `security/frost.py:1`, `tests/services/test_proofgate_frost_enforce.py:1`
+  - CI: `scripts/gates/proof_frost_enforce.py:1`, `.github/workflows/ci-gates.yml:254`
+- Supply‑chain enforce: dostępne kroki egzekwujące; plugin gate raportowy domyślnie.
+  - Enforce: `scripts/gates/supply_chain_enforce.py:1`, `.github/workflows/ci-gates.yml:223`
+  - Plugin SC Gate (report‑only): `scripts/gates/plugin_supply_chain_gate.py:1`, `.github/workflows/ci-gates.yml:164`
+  - Tryb enforce on‑demand: `.github/workflows/security-enforce.yml:1`
+- Proofs toolchain (DRAT/LFSC): gotowe skrypty i testy.
+  - Generowanie: `scripts/generate_proofs.py:1`, weryfikacja: `scripts/check_proofs.py:1`, bundle: `scripts/verify_bundle.py:1`
+  - Testy: `tests/truth/test_solvers.py:59`
+- Otwarte (WIP / kolejka):
+  - TEE/RA integracja ProofGate/bunker (częściowo; RA nagłówki w devices): `security/ra.py:1`
+  - SYNAPSY P2P transport (QUIC/Noise) i SPIFFE/SPIRE: brak implementacji transportu/IDP (szkielet P2P routera istnieje).
+  - SDK 2.0 (TS/Go): brak; kontrakty i smoki do dowiezienia.
+  - LEXENITH pipeline: lock→motion→publish→Why‑Not ze ścieżką PCO — częściowo.
+  - Dedykowane dashboardy FIN/LEX: częściowo (SRE p95); brak paneli domenowych.
+
+
 ## **1\) Rytm dnia (wszyscy agenci)**
 
 - **09:00** stand‑up (10′), **11:30** cross‑sync tech‑leadów (10′), **16:30** gate‑check (10′).
@@ -351,6 +374,41 @@ Poniżej rozpiska **per tydzień**: co dostarcza **każdy agent**. Każdy tydzie
 - **A8:** Canary→progressive (5→25→100%), post‑mortem & roadmap 2.1.
 
 ---
+## Runnery Self‑Hosted (macOS/Windows) — Bootstrap
+
+Cel: uruchomienie ProofFS mount smoke na runnerach self‑hosted i (docelowo) ENFORCE w CI.
+
+- macOS (macFUSE):
+  - Wymagania: Homebrew + GitHub CLI (`brew install gh`).
+  - Autoryzacja: `gh auth login --hostname github.com --web --git-protocol https`.
+  - Bootstrap (w repo):
+    - `REPO_SLUG=CERTEUS/certeus bash scripts/runners/mac/bootstrap_macos_runner.sh`
+  - Jednorazowo na hoście:
+    - System Settings → Privacy & Security → macFUSE → Allow → reboot
+    - Po restarcie: `cd ~/actions-runner && ./svc.sh status && ./svc.sh start`
+  - Etykiety: `self-hosted, macos, macfuse` (ustawia skrypt).
+
+- Windows (Dokan):
+  - PowerShell (Admin):
+    - `winget install GitHub.cli -e`
+    - `gh auth login --hostname github.com --web --git-protocol https`
+    - `Set-ExecutionPolicy Bypass -Scope Process -Force`
+    - `pwsh -File scripts/runners/windows/bootstrap_windows_runner.ps1 -RepoSlug 'CERTEUS/certeus'`
+  - Etykiety: `self-hosted, windows, dokan`.
+
+- Workflow ProofFS (self‑hosted): `.github/workflows/proofs-fs-selfhosted.yml` (push/PR + ręczny dispatch).
+  - macOS job: `runs-on: [self-hosted, macos, macfuse]` → `scripts/pfs/osx_mount_smoke.sh`.
+  - Windows job: `runs-on: [self-hosted, windows, dokan]` → `scripts/pfs/win_dokan_smoke.ps1`.
+
+Po pojawieniu się runnerów online: przełącz ENFORCE i dodaj required checks (konteksty):
+- `ProofFS Self-Hosted / macOS ProofFS (self-hosted)`
+- `ProofFS Self-Hosted / Windows Dokan (self-hosted)`
+
+Możesz użyć pomocnika:
+- `GITHUB_REPOSITORY=OWNER/REPO BRANCH=main bash scripts/github/set_required_checks.sh`
+
+Uwaga: pełne zero‑klik dla macFUSE wymaga MDM (Jamf/Kandji) i profilu Kernel Extension Policy; na Apple Silicon obowiązuje „Reduced Security” z Recovery (wymóg Apple).
+
 
 ## **3\) Testy – „sami tworzą” (bez Twojej ingerencji)**
 

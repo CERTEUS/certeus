@@ -2,6 +2,9 @@ name: ProofFS Self-Hosted
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
 
 jobs:
   macos_selfhosted:
@@ -26,4 +29,3 @@ jobs:
         shell: pwsh
         run: |
           pwsh -File scripts/pfs/win_dokan_smoke.ps1
-
