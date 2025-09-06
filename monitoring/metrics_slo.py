@@ -47,7 +47,9 @@ _REQ_AGG: dict[tuple[str, str], dict[str, float]] = {}
 _SERIES: dict[tuple[str, str], deque[float]] = {}
 
 
-def record_http_observation(path: str, method: str, status: str, tenant: str, dur_ms: float) -> None:
+def record_http_observation(
+    path: str, method: str, status: str, tenant: str, dur_ms: float
+) -> None:
     """Record a simple aggregate for (path, method): count, sum_ms, last_ms.
 
     This is supplementary to Prometheus metrics and intended for quick JSON
@@ -97,7 +99,9 @@ def http_series(top: int = 5) -> dict[str, object]:
 
     with _REQ_AGG_LOCK:
         counts = [(k, int(v.get("count", 0.0))) for k, v in _REQ_AGG.items()]
-        top_keys = [k for (k, _) in sorted(counts, key=lambda x: x[1], reverse=True)[:top]]
+        top_keys = [
+            k for (k, _) in sorted(counts, key=lambda x: x[1], reverse=True)[:top]
+        ]
         out = []
         for k in top_keys:
             pts = list(_SERIES.get(k, deque()))
@@ -108,7 +112,15 @@ def http_series(top: int = 5) -> dict[str, object]:
                 p95 = s[idx]
             else:
                 p95 = 0.0
-            out.append({"path": k[0], "method": k[1], "points": pts, "p95": p95, "count": len(pts)})
+            out.append(
+                {
+                    "path": k[0],
+                    "method": k[1],
+                    "points": pts,
+                    "p95": p95,
+                    "count": len(pts),
+                }
+            )
     return {"series": out}
 
 
@@ -152,19 +164,25 @@ certeus_proof_verification_failed_total = Counter(
     "certeus_proof_verification_failed_total", "Proof verification failures"
 )
 
-certeus_source_fetch_errors_total = Counter("certeus_source_fetch_errors_total", "Source retrieval/digest errors")
+certeus_source_fetch_errors_total = Counter(
+    "certeus_source_fetch_errors_total", "Source retrieval/digest errors"
+)
 
 # Gauge for missing digests (alias for SLO Gate input). Kept at 0 unless
 
 # validation flows explicitly set it.
 
-certeus_sources_digest_missing = Gauge("certeus_sources_digest_missing", "Count of sources missing required digests")
+certeus_sources_digest_missing = Gauge(
+    "certeus_sources_digest_missing", "Count of sources missing required digests"
+)
 
 # Decision counters (ProofGate)
 
 certeus_publish_total = Counter("certeus_publish_total", "Number of PUBLISH decisions")
 
-certeus_conditional_total = Counter("certeus_conditional_total", "Number of CONDITIONAL decisions")
+certeus_conditional_total = Counter(
+    "certeus_conditional_total", "Number of CONDITIONAL decisions"
+)
 
 certeus_pending_total = Counter("certeus_pending_total", "Number of PENDING decisions")
 
@@ -235,7 +253,9 @@ certeus_http_shed_total = Counter(
 )
 
 # QTMP: Uncertainty bound and operator priorities
-certeus_qtm_ub_lt = Gauge("certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",))
+certeus_qtm_ub_lt = Gauge(
+    "certeus_qtm_ub_lt", "QTMP uncertainty bound L_T", labelnames=("source",)
+)
 certeus_qtm_operator_priority = Gauge(
     "certeus_qtm_operator_priority",
     "QTMP operator priority",
@@ -273,21 +293,35 @@ certeus_qtm_cfe_correlation = Gauge(
 )
 
 # LexQFT: Coverage (gamma, uncaptured) + energy debt
-certeus_lexqft_coverage_gamma = Gauge("certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)")
-certeus_lexqft_uncaptured_mass = Gauge("certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)")
-certeus_lexqft_energy_debt = Gauge("certeus_lexqft_energy_debt", "LexQFT energy debt (per case)", labelnames=("case",))
+certeus_lexqft_coverage_gamma = Gauge(
+    "certeus_lexqft_coverage_gamma", "LexQFT coverage gamma (aggregated)"
+)
+certeus_lexqft_uncaptured_mass = Gauge(
+    "certeus_lexqft_uncaptured_mass", "LexQFT uncaptured mass (aggregated)"
+)
+certeus_lexqft_energy_debt = Gauge(
+    "certeus_lexqft_energy_debt", "LexQFT energy debt (per case)", labelnames=("case",)
+)
 
 # QOC: Vacuum pairs rate
-certeus_qoc_vacuum_rate = Gauge("certeus_qoc_vacuum_rate", "QOC vacuum pairs generation rate")
+certeus_qoc_vacuum_rate = Gauge(
+    "certeus_qoc_vacuum_rate", "QOC vacuum pairs generation rate"
+)
 
 # LexQFT: tunnel events (logged)
-certeus_lexqft_tunnel_events_total = Counter("certeus_lexqft_tunnel_events_total", "LexQFT tunneling events logged")
+certeus_lexqft_tunnel_events_total = Counter(
+    "certeus_lexqft_tunnel_events_total", "LexQFT tunneling events logged"
+)
 
 # FINENITH: entanglement MI and commutator
 certeus_fin_entanglement_mi = Gauge(
-    "certeus_fin_entanglement_mi", "FIN entanglement mutual information", labelnames=("a", "b")
+    "certeus_fin_entanglement_mi",
+    "FIN entanglement mutual information",
+    labelnames=("a", "b"),
 )
-certeus_fin_commutator_rs = Gauge("certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)")
+certeus_fin_commutator_rs = Gauge(
+    "certeus_fin_commutator_rs", "FIN commutator [R,S] norm (non-commuting -> >0)"
+)
 
 # Billing: tokens requests/allocations and pending gauge
 certeus_billing_token_requests_total = Counter(
@@ -296,9 +330,13 @@ certeus_billing_token_requests_total = Counter(
 certeus_billing_token_allocations_total = Counter(
     "certeus_billing_token_allocations_total", "Billing tokens: requests allocated"
 )
-certeus_billing_token_pending = Gauge("certeus_billing_token_pending", "Billing tokens: currently pending requests")
+certeus_billing_token_pending = Gauge(
+    "certeus_billing_token_pending", "Billing tokens: currently pending requests"
+)
 
 # Idempotency metrics (Devices/API)
 certeus_idempotent_replay_total = Counter(
-    "certeus_idempotent_replay_total", "Idempotent replay counter", labelnames=("path", "hit")
+    "certeus_idempotent_replay_total",
+    "Idempotent replay counter",
+    labelnames=("path", "hit"),
 )

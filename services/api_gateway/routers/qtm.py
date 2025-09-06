@@ -51,7 +51,9 @@ class InitCaseRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier (optional)")
     state_uri: str | None = None
 
-    basis: list[str] | None = Field(default=None, description="Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']")
+    basis: list[str] | None = Field(
+        default=None, description="Measurement basis, e.g. ['ALLOW','DENY','ABSTAIN']"
+    )
 
 
 class InitCaseResponse(BaseModel):
@@ -62,8 +64,12 @@ class InitCaseResponse(BaseModel):
 
 class MeasureRequest(BaseModel):
     operator: str = Field(description="One of W/I/C/L/T (domain-dependent)")
-    source: str | None = Field(default="ui", description="ui | chatops:<cmd> | mail:<id>")
-    case: str | None = Field(default=None, description="Optional case identifier to bind decoherence/presets")
+    source: str | None = Field(
+        default="ui", description="ui | chatops:<cmd> | mail:<id>"
+    )
+    case: str | None = Field(
+        default=None, description="Optional case identifier to bind decoherence/presets"
+    )
     basis: list[str] | None = None
 
 
@@ -89,7 +95,9 @@ class SequenceRequest(BaseModel):
     operators: list[str] = Field(..., min_length=1)
     case: str | None = Field(default=None)
     basis: list[str] | None = None
-    no_collapse: bool = Field(default=False, description="If true, do not collapse after each step")
+    no_collapse: bool = Field(
+        default=False, description="If true, do not collapse after each step"
+    )
 
 
 class SequenceStep(BaseModel):
@@ -168,7 +176,9 @@ def _basis_probs_for_case(case_id: str, basis: list[str]) -> list[float]:
     return _uniform_probs(basis)
 
 
-def _apply_decoherence(probs: list[float], case_id: str, basis: list[str]) -> list[float]:
+def _apply_decoherence(
+    probs: list[float], case_id: str, basis: list[str]
+) -> list[float]:
     deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default")
     if not deco:
         return probs
@@ -203,7 +213,9 @@ def _stable_index(key: str, mod: int) -> int:
 
 
 @router.post("/init_case", response_model=InitCaseResponse)
-async def init_case(req: InitCaseRequest, request: Request, response: Response) -> InitCaseResponse:
+async def init_case(
+    req: InitCaseRequest, request: Request, response: Response
+) -> InitCaseResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -237,7 +249,9 @@ async def init_case(req: InitCaseRequest, request: Request, response: Response) 
 
 
 @router.post("/measure", response_model=MeasureResponse)
-async def measure(req: MeasureRequest, request: Request, response: Response) -> MeasureResponse:
+async def measure(
+    req: MeasureRequest, request: Request, response: Response
+) -> MeasureResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -279,7 +293,11 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     ]
 
     # Decoherence: use registry if available for this case
-    deco = DECOHERENCE_REGISTRY.get(case_id) or DECOHERENCE_REGISTRY.get("default") or {"channel": "dephasing"}
+    deco = (
+        DECOHERENCE_REGISTRY.get(case_id)
+        or DECOHERENCE_REGISTRY.get("default")
+        or {"channel": "dephasing"}
+    )
     collapse_log = CollapseLog(sequence=sequence, decoherence=deco)
 
     # Bridge CFE↔QTMP: use CFE curvature to influence uncertainty/priorities
@@ -295,7 +313,13 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     latency_ms = round((perf_counter() - t0) * 1000.0, 3)
 
-    resp = MeasureResponse(verdict=verdict, p=p, collapse_log=collapse_log, uncertainty_bound=ub, latency_ms=latency_ms)
+    resp = MeasureResponse(
+        verdict=verdict,
+        p=p,
+        collapse_log=collapse_log,
+        uncertainty_bound=ub,
+        latency_ms=latency_ms,
+    )
 
     # PCO headers: collapse event and optional predistribution from case-graph
     try:
@@ -316,8 +340,12 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
         boost = 1.0 + min(0.25, kappa * 10.0)
         base_pri["L"] = round(base_pri["L"] * boost, 3)
         base_pri["T"] = round(base_pri["T"] * boost, 3)
-        response.headers["X-CERTEUS-PCO-qtmp.priorities"] = _json.dumps(base_pri, separators=(",", ":"))
-        response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(round(kappa * 0.1, 6))
+        response.headers["X-CERTEUS-PCO-qtmp.priorities"] = _json.dumps(
+            base_pri, separators=(",", ":")
+        )
+        response.headers["X-CERTEUS-PCO-correlation.cfe_qtmp"] = str(
+            round(kappa * 0.1, 6)
+        )
         response.headers["X-CERTEUS-PCO-qtm.collapse_prob"] = str(p)
         response.headers["X-CERTEUS-PCO-qtm.collapse_latency_ms"] = str(latency_ms)
     except Exception:
@@ -327,14 +355,23 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     try:
         from monitoring.shedder import update_from_qtmp
 
-        update_from_qtmp(ub_lt=float(ub.get("L_T", 0.0)), collapse_latency_ms=float(latency_ms))
+        update_from_qtmp(
+            ub_lt=float(ub.get("L_T", 0.0)), collapse_latency_ms=float(latency_ms)
+        )
     except Exception:
         pass
 
     # Append to in-memory history for this case
     try:
         hist = CASE_GRAPH.setdefault(case_id, {}).setdefault("history", [])
-        hist.append({"operator": op_effective, "verdict": verdict, "p": p, "ts": datetime.now(UTC).isoformat()})
+        hist.append(
+            {
+                "operator": op_effective,
+                "verdict": verdict,
+                "p": p,
+                "ts": datetime.now(UTC).isoformat(),
+            }
+        )
     except Exception:
         pass
 
@@ -372,19 +409,35 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
     # Record qtm.sequence into Ledger as provenance input (hash of sequence)
     try:
-        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+        from services.ledger_service.ledger import (
+            compute_provenance_hash,
+            ledger_service,
+        )
 
-        seq_hash = "sha256:" + compute_provenance_hash({"qtm.sequence": sequence}, include_timestamp=False)
+        seq_hash = "sha256:" + compute_provenance_hash(
+            {"qtm.sequence": sequence}, include_timestamp=False
+        )
         ledger_service.record_input(case_id=case_id, document_hash=seq_hash)
     except Exception:
         pass
 
     # Record collapse event into Ledger
     try:
-        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+        from services.ledger_service.ledger import (
+            compute_provenance_hash,
+            ledger_service,
+        )
 
-        collapse_event = {"qtm.collapse_event": {"operator": req.operator, "verdict": verdict, "decoherence": deco}}
-        ev_hash = "sha256:" + compute_provenance_hash(collapse_event, include_timestamp=False)
+        collapse_event = {
+            "qtm.collapse_event": {
+                "operator": req.operator,
+                "verdict": verdict,
+                "decoherence": deco,
+            }
+        }
+        ev_hash = "sha256:" + compute_provenance_hash(
+            collapse_event, include_timestamp=False
+        )
         ledger_service.record_input(case_id=case_id, document_hash=ev_hash)
     except Exception:
         pass
@@ -397,7 +450,9 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
 
 
 @router.post("/measure_sequence", response_model=SequenceResponse)
-async def measure_sequence(req: SequenceRequest, request: Request, response: Response) -> SequenceResponse:
+async def measure_sequence(
+    req: SequenceRequest, request: Request, response: Response
+) -> SequenceResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=max(1, len(req.operators)))
@@ -451,11 +506,15 @@ async def measure_sequence(req: SequenceRequest, request: Request, response: Res
         hist_len = len(CASE_GRAPH.get(case_id, {}).get("history", []))
         certeus_qtm_history_len.labels(case=case_id).set(hist_len)
         for s in steps:
-            certeus_qtm_collapse_total.labels(operator=s.operator, verdict=s.verdict).inc()
+            certeus_qtm_collapse_total.labels(
+                operator=s.operator, verdict=s.verdict
+            ).inc()
             certeus_qtm_collapse_prob.labels(operator=s.operator).observe(float(s.p))
     except Exception:
         pass
-    return SequenceResponse(steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub)
+    return SequenceResponse(
+        steps=steps, final_latency_ms=latency_ms, uncertainty_bound=ub
+    )
 
 
 class QtmStateOut(BaseModel):
@@ -571,14 +630,18 @@ def _validate_basis_for_operator(operator: str, basis: list[str]) -> None:
         return
     keys = set(eigs.keys())
     if any(b not in keys for b in basis):
-        raise HTTPException(status_code=400, detail=f"Basis not compatible with operator {operator}")
+        raise HTTPException(
+            status_code=400, detail=f"Basis not compatible with operator {operator}"
+        )
 
 
 class SetStateRequest(BaseModel):
     case: str = Field(..., min_length=1)
     psi: str | None = Field(default=None, description="State URI or descriptor")
     basis: list[str]
-    probs: list[float] = Field(description="Probabilities aligned with basis; will be normalized")
+    probs: list[float] = Field(
+        description="Probabilities aligned with basis; will be normalized"
+    )
 
 
 @router.post("/state", response_model=QtmStateOut)
@@ -589,7 +652,9 @@ async def set_state(req: SetStateRequest, response: Response) -> QtmStateOut:
     if s <= 0.0:
         raise HTTPException(status_code=400, detail="sum(probs) must be > 0")
     probs = [round(float(x) / s, 6) for x in req.probs]
-    predistribution = [{"state": b, "p": p} for b, p in zip(req.basis, probs, strict=False)]
+    predistribution = [
+        {"state": b, "p": p} for b, p in zip(req.basis, probs, strict=False)
+    ]
     CASE_GRAPH[req.case] = {
         "psi": req.psi or "psi://custom",
         "basis": list(req.basis),
@@ -600,7 +665,10 @@ async def set_state(req: SetStateRequest, response: Response) -> QtmStateOut:
     except Exception:
         pass
     return QtmStateOut(
-        case=req.case, psi=CASE_GRAPH[req.case]["psi"], basis=list(req.basis), predistribution=predistribution
+        case=req.case,
+        psi=CASE_GRAPH[req.case]["psi"],
+        basis=list(req.basis),
+        predistribution=predistribution,
     )
 
 
@@ -638,7 +706,9 @@ async def expectation(req: ExpectationRequest, response: Response) -> Expectatio
     try:
         from monitoring.metrics_slo import certeus_qtm_expectation_value
 
-        certeus_qtm_expectation_value.labels(case=req.case, operator=req.operator).set(out)
+        certeus_qtm_expectation_value.labels(case=req.case, operator=req.operator).set(
+            out
+        )
     except Exception:
         pass
     try:
@@ -702,7 +772,9 @@ async def commutator(req: CommutatorRequest, request: Request) -> CommutatorResp
 class DecoherenceRequest(BaseModel):
     case: str | None = Field(default=None, description="Case identifier or 'default'")
     channel: str = Field(description="dephasing | depolarizing | damping")
-    gamma: float | None = Field(default=None, description="Channel parameter (optional)")
+    gamma: float | None = Field(
+        default=None, description="Channel parameter (optional)"
+    )
 
 
 class DecoherenceResponse(BaseModel):
@@ -713,7 +785,9 @@ class DecoherenceResponse(BaseModel):
 
 
 @router.post("/decoherence", response_model=DecoherenceResponse)
-async def set_decoherence(req: DecoherenceRequest, request: Request) -> DecoherenceResponse:
+async def set_decoherence(
+    req: DecoherenceRequest, request: Request
+) -> DecoherenceResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
@@ -748,7 +822,9 @@ def _save_presets(d: dict[str, str]) -> None:
         import json as _json
 
         _PRESET_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        _PRESET_STORE_PATH.write_text(_json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8")
+        _PRESET_STORE_PATH.write_text(
+            _json.dumps(d, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
     except Exception:
         pass
 
@@ -787,7 +863,9 @@ async def list_presets() -> list[PresetOut]:
 
 
 @router.post("/find_entanglement", response_model=FindEntanglementResponse)
-async def find_entanglement(req: FindEntanglementRequest, request: Request) -> FindEntanglementResponse:
+async def find_entanglement(
+    req: FindEntanglementRequest, request: Request
+) -> FindEntanglementResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -803,7 +881,9 @@ async def find_entanglement(req: FindEntanglementRequest, request: Request) -> F
 
     # Provide low MI/negativity placeholders
 
-    return FindEntanglementResponse(pairs=pairs, mi=0.05 if pairs else 0.0, negativity=0.03 if pairs else 0.0)
+    return FindEntanglementResponse(
+        pairs=pairs, mi=0.05 if pairs else 0.0, negativity=0.03 if pairs else 0.0
+    )
 
 
 # === I/O / ENDPOINTS ===
@@ -818,7 +898,9 @@ class CommutatorExpRequest(BaseModel):
 
 
 @router.post("/commutator_expectation", response_model=CommutatorResponse)
-async def commutator_expectation(req: CommutatorExpRequest, request: Request) -> CommutatorResponse:
+async def commutator_expectation(
+    req: CommutatorExpRequest, request: Request
+) -> CommutatorResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)

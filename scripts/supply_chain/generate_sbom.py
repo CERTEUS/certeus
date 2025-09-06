@@ -26,8 +26,8 @@ from typing import Any
 
 def _sha256_hex(p: Path) -> str:
     h = hashlib.sha256()
-    with p.open('rb') as fh:
-        for chunk in iter(lambda: fh.read(65536), b''):
+    with p.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
 
@@ -40,12 +40,18 @@ def main() -> int:
         d = root / pat
         if not d.exists():
             continue
-        for p in d.rglob('*'):
+        for p in d.rglob("*"):
             if not p.is_file():
                 continue
             try:
                 hx = _sha256_hex(p)
-                files.append({"path": str(p.relative_to(root)), "sha256": hx, "size": p.stat().st_size})
+                files.append(
+                    {
+                        "path": str(p.relative_to(root)),
+                        "sha256": hx,
+                        "size": p.stat().st_size,
+                    }
+                )
             except Exception:
                 continue
     sbom = {

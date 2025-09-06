@@ -39,8 +39,12 @@ def _repo() -> Path:
 
 def test_dpco_mco_schemas_validate_examples() -> None:
     # Load schemas
-    dpco_schema = json.loads((_repo() / "schemas" / "data_pco_v0.1.json").read_text(encoding="utf-8"))
-    mco_schema = json.loads((_repo() / "schemas" / "model_pco_v0.1.json").read_text(encoding="utf-8"))
+    dpco_schema = json.loads(
+        (_repo() / "schemas" / "data_pco_v0.1.json").read_text(encoding="utf-8")
+    )
+    mco_schema = json.loads(
+        (_repo() / "schemas" / "model_pco_v0.1.json").read_text(encoding="utf-8")
+    )
 
     # Create validators
     v_dpco = Draft7Validator(dpco_schema)  # type: ignore[call-arg]

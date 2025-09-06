@@ -80,9 +80,13 @@ class CerteusClient:
         for attempt in range(self.retries + 1):
             try:
                 if files is not None:
-                    r = self.session.post(self._url(path), files=files, headers=h, timeout=self.timeout)
+                    r = self.session.post(
+                        self._url(path), files=files, headers=h, timeout=self.timeout
+                    )
                 else:
-                    r = self.session.post(self._url(path), json=json_body, headers=h, timeout=self.timeout)
+                    r = self.session.post(
+                        self._url(path), json=json_body, headers=h, timeout=self.timeout
+                    )
                 r.raise_for_status()
                 return r
             except Exception as e:  # noqa: BLE001 - SDK toleruje sieć
@@ -166,12 +170,16 @@ class CerteusClient:
         return r.json()
 
     def refund(self, tenant: str, units: int) -> dict[str, Any]:
-        r = self._post("/v1/billing/refund", json_body={"tenant": tenant, "units": int(units)})
+        r = self._post(
+            "/v1/billing/refund", json_body={"tenant": tenant, "units": int(units)}
+        )
         r.raise_for_status()
         return r.json()
 
     def set_quota(self, tenant: str, units: int) -> dict[str, Any]:
-        r = self._post("/v1/billing/quota", json_body={"tenant": tenant, "units": int(units)})
+        r = self._post(
+            "/v1/billing/quota", json_body={"tenant": tenant, "units": int(units)}
+        )
         r.raise_for_status()
         return r.json()
 

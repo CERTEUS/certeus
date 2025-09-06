@@ -66,7 +66,10 @@ import sys
 from typing import Any, TypedDict
 
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
+)
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -93,7 +96,11 @@ def _hx_text(s: str) -> str:
 
 
 def _is_hex64(x: str) -> bool:
-    return isinstance(x, str) and len(x) == 64 and all(c in "0123456789abcdef" for c in x.lower())
+    return (
+        isinstance(x, str)
+        and len(x) == 64
+        and all(c in "0123456789abcdef" for c in x.lower())
+    )
 
 
 def sha256_hex_utf8(s: str) -> str:
@@ -101,7 +108,10 @@ def sha256_hex_utf8(s: str) -> str:
 
 
 def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
-    payload = {"smt2_hash": pub["smt2_hash"], "lfsc_sha256": sha256_hex_utf8(pub["lfsc"])}
+    payload = {
+        "smt2_hash": pub["smt2_hash"],
+        "lfsc_sha256": sha256_hex_utf8(pub["lfsc"]),
+    }
 
     if pub.get("drat") is not None:
         payload["drat_sha256"] = sha256_hex_utf8(pub["drat"])
@@ -173,11 +183,15 @@ def make_bundle(
     # Materiał: LFSC/SMT2 – z pliku lub inline albo fallback demo
 
     lfsc = lfsc_text or (
-        Path(lfsc_path).read_text(encoding="utf-8") if lfsc_path and Path(lfsc_path).exists() else None
+        Path(lfsc_path).read_text(encoding="utf-8")
+        if lfsc_path and Path(lfsc_path).exists()
+        else None
     )
 
     smt2 = smt2_text or (
-        Path(smt2_path).read_text(encoding="utf-8") if smt2_path and Path(smt2_path).exists() else None
+        Path(smt2_path).read_text(encoding="utf-8")
+        if smt2_path and Path(smt2_path).exists()
+        else None
     )
 
     if not allow_missing and (lfsc is None or smt2 is None):
@@ -209,7 +223,9 @@ def make_bundle(
 
     bundle_hash_hex = compute_bundle_hash_hex(pub)
 
-    leaf_hex = hashlib.sha256(bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)).hexdigest()
+    leaf_hex = hashlib.sha256(
+        bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)
+    ).hexdigest()
 
     merkle_root_hex = merkle_root_from_path(leaf_hex, path)
 
@@ -225,7 +241,9 @@ def make_bundle(
 
             raise SystemExit(2)
 
-        sk_any = serialization.load_pem_private_key(Path(pem_path).read_bytes(), password=None)
+        sk_any = serialization.load_pem_private_key(
+            Path(pem_path).read_bytes(), password=None
+        )
 
         if not isinstance(sk_any, Ed25519PrivateKey):
             print("PEM is not Ed25519 private key", file=sys.stderr)
@@ -254,7 +272,9 @@ def make_bundle(
 
 
 def _parse_args() -> Any:
-    p = ArgumentParser(description="Build demo public bundle (non-empty Merkle path) and sign it.")
+    p = ArgumentParser(
+        description="Build demo public bundle (non-empty Merkle path) and sign it."
+    )
 
     p.add_argument("--rid", help="Resource ID (64-hex). If absent, derived from seed.")
 
@@ -266,15 +286,33 @@ def _parse_args() -> Any:
 
     p.add_argument("--signature", help="Detached signature (>= 40 chars)", default=None)
 
-    p.add_argument("--outdir", help="Output dir (defaults to PROOF_BUNDLE_DIR)", default=DEFAULT_DIR)
+    p.add_argument(
+        "--outdir",
+        help="Output dir (defaults to PROOF_BUNDLE_DIR)",
+        default=DEFAULT_DIR,
+    )
 
     p.add_argument("--echo-url", action="store_true", help="Print GET URL for API")
 
-    p.add_argument("--allow-missing", action="store_true", help="Use default text if --lfsc/--smt2 files are missing")
+    p.add_argument(
+        "--allow-missing",
+        action="store_true",
+        help="Use default text if --lfsc/--smt2 files are missing",
+    )
 
-    p.add_argument("--lfsc-text", dest="lfsc_text", default=None, help="Inline LFSC text (overrides --lfsc file)")
+    p.add_argument(
+        "--lfsc-text",
+        dest="lfsc_text",
+        default=None,
+        help="Inline LFSC text (overrides --lfsc file)",
+    )
 
-    p.add_argument("--smt2-text", dest="smt2_text", default=None, help="Inline SMT2 text (overrides --smt2 file)")
+    p.add_argument(
+        "--smt2-text",
+        dest="smt2_text",
+        default=None,
+        help="Inline SMT2 text (overrides --smt2 file)",
+    )
 
     return p.parse_args()
 

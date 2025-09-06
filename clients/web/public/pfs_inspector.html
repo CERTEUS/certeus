@@ -26,6 +26,8 @@
     </style>
   </head>
   <body>
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <main id="main" role="main">
     <div class="wrap">
       <div class="card">
         <h1>ProofFS Inspector</h1>
@@ -61,5 +63,6 @@
       $("inspect").addEventListener('click', doInspect);
       (function init(){ const u=q('uri'); if(u){ $("uri").value=u; } if(u){ doInspect(); } teeStatus(); })();
     </script>
+    </main>
   </body>
   </html>

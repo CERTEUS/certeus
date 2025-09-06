@@ -36,7 +36,11 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     allow = set()
     try:
-        js = json.loads((repo / "policies" / "security" / "licenses.allowlist.json").read_text(encoding="utf-8"))
+        js = json.loads(
+            (repo / "policies" / "security" / "licenses.allowlist.json").read_text(
+                encoding="utf-8"
+            )
+        )
         allow = set(js.get("allowed", []))
     except Exception:
         allow = set()
@@ -72,8 +76,12 @@ def main() -> int:
                 miss.append("license:not-allowed")
         if miss:
             ok_all = False
-        results.append({"file": fp, "missing": miss, "license": lic, "license_ok": lic_ok})
-    (out / "license_report.json").write_text(json.dumps({"ok": ok_all, "results": results}, indent=2), encoding="utf-8")
+        results.append(
+            {"file": fp, "missing": miss, "license": lic, "license_ok": lic_ok}
+        )
+    (out / "license_report.json").write_text(
+        json.dumps({"ok": ok_all, "results": results}, indent=2), encoding="utf-8"
+    )
     return 0
 
 

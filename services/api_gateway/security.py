@@ -84,9 +84,13 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
             if b'"EdDSA"' not in header and b"EdDSA" not in header:
                 return False
             pk = load_pubkey_bytes_from_env()
-            from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+            from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+                Ed25519PublicKey,
+            )
 
-            Ed25519PublicKey.from_public_bytes(pk).verify(b64u_decode(sig_b64u), signing_input)
+            Ed25519PublicKey.from_public_bytes(pk).verify(
+                b64u_decode(sig_b64u), signing_input
+            )
             return True
         except Exception:
             return False
@@ -104,7 +108,11 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
                 tok = _extract_token(request)
                 if not tok or not _verify_ed25519_jws(tok):
                     try:
-                        logger.warning("DROP: missing/invalid PCO token path=%s method=%s", path, method)
+                        logger.warning(
+                            "DROP: missing/invalid PCO token path=%s method=%s",
+                            path,
+                            method,
+                        )
                     except Exception:
                         pass
                     return Response(status_code=403, content="DROP: proof-required")
@@ -130,7 +138,10 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
 
             resp.headers.setdefault("Content-Security-Policy", csp)
 
-            resp.headers.setdefault("Strict-Transport-Security", f"max-age={hsts_max_age}; includeSubDomains")
+            resp.headers.setdefault(
+                "Strict-Transport-Security",
+                f"max-age={hsts_max_age}; includeSubDomains",
+            )
 
             resp.headers.setdefault("X-Content-Type-Options", "nosniff")
 
@@ -155,7 +166,11 @@ def attach_proof_only_middleware(app: FastAPI) -> None:
 
     if rl_per_min > 0:
         _rl_state: dict[str, tuple[float, int]] = {}
-        _rl_paths = {p.strip() for p in (os.getenv("RATE_LIMIT_PATHS") or "/health").split(",") if p.strip()}
+        _rl_paths = {
+            p.strip()
+            for p in (os.getenv("RATE_LIMIT_PATHS") or "/health").split(",")
+            if p.strip()
+        }
 
         @app.middleware("http")
         async def _rate_limit(  # type: ignore[override]

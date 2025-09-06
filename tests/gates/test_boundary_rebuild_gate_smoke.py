@@ -23,10 +23,19 @@ import subprocess
 
 def test_boundary_gate_ok_with_zero_report(tmp_path: Path) -> None:
     out = tmp_path / "boundary_report.json"
-    out.write_text(json.dumps({"boundary": {"delta_bits": 0, "bits_delta_map": {}}}), encoding="utf-8")
+    out.write_text(
+        json.dumps({"boundary": {"delta_bits": 0, "bits_delta_map": {}}}),
+        encoding="utf-8",
+    )
 
     proc = subprocess.run(
-        ["python", "scripts/gates/boundary_rebuild_gate.py", "--must-zero", "--report", str(out)],
+        [
+            "python",
+            "scripts/gates/boundary_rebuild_gate.py",
+            "--must-zero",
+            "--report",
+            str(out),
+        ],
         capture_output=True,
         text=True,
     )
@@ -35,10 +44,19 @@ def test_boundary_gate_ok_with_zero_report(tmp_path: Path) -> None:
 
 def test_boundary_gate_fail_on_nonzero(tmp_path: Path) -> None:
     out = tmp_path / "boundary_report.json"
-    out.write_text(json.dumps({"boundary": {"delta_bits": 2, "bits_delta_map": {"shard-0": 2}}}), encoding="utf-8")
+    out.write_text(
+        json.dumps({"boundary": {"delta_bits": 2, "bits_delta_map": {"shard-0": 2}}}),
+        encoding="utf-8",
+    )
 
     proc = subprocess.run(
-        ["python", "scripts/gates/boundary_rebuild_gate.py", "--must-zero", "--report", str(out)],
+        [
+            "python",
+            "scripts/gates/boundary_rebuild_gate.py",
+            "--must-zero",
+            "--report",
+            str(out),
+        ],
         capture_output=True,
         text=True,
     )

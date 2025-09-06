@@ -21,7 +21,12 @@ def main() -> int:
     print(cli.set_quota("sdk-demo", 5))
     print(cli.allocate(2))
     # publish alias (no strict proof-only expected in dev)
-    print(cli._post("/v1/proofgate/publish", json_body={"pco": {"hello": True}, "budget_tokens": 2}).json())
+    print(
+        cli._post(
+            "/v1/proofgate/publish",
+            json_body={"pco": {"hello": True}, "budget_tokens": 2},
+        ).json()
+    )
     return 0
 
 

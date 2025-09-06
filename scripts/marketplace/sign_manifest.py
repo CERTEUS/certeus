@@ -49,7 +49,9 @@ def sign_text(priv_pem: str, text: str) -> str:
 
 def embed_signature(yaml_text: str, signature_b64u: str) -> str:
     # Dodaj/aktualizuj linię `signature: <b64u>` na końcu (MVP).
-    lines = [ln for ln in yaml_text.splitlines() if not ln.strip().startswith("signature:")]
+    lines = [
+        ln for ln in yaml_text.splitlines() if not ln.strip().startswith("signature:")
+    ]
     lines.append(f"signature: {signature_b64u}")
     return "\n".join(lines) + "\n"
 
@@ -57,9 +59,24 @@ def embed_signature(yaml_text: str, signature_b64u: str) -> str:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="Sign plugin manifest (YAML) with Ed25519")
     ap.add_argument("--in", dest="in_path", required=True, help="Path to manifest YAML")
-    ap.add_argument("--key", dest="key_path", required=True, help="Path to Ed25519 private key (PEM)")
-    ap.add_argument("--print", dest="do_print", action="store_true", help="Print signature to stdout")
-    ap.add_argument("--embed", dest="do_embed", action="store_true", help="Embed signature into YAML file")
+    ap.add_argument(
+        "--key",
+        dest="key_path",
+        required=True,
+        help="Path to Ed25519 private key (PEM)",
+    )
+    ap.add_argument(
+        "--print",
+        dest="do_print",
+        action="store_true",
+        help="Print signature to stdout",
+    )
+    ap.add_argument(
+        "--embed",
+        dest="do_embed",
+        action="store_true",
+        help="Embed signature into YAML file",
+    )
     args = ap.parse_args(argv)
 
     p = Path(args.in_path)

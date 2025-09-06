@@ -45,7 +45,11 @@ def main() -> int:
     # 2) SLO check (thresholds)
     rc_slo, out_slo_txt, _ = _run(
         ["python", "scripts/slo_gate/check_slo.py"],
-        env={"SLO_OUT": str(out_slo / "slo.json"), "SLO_MAX_P95_MS": "300", "SLO_MAX_ERROR_RATE": "0.01"},
+        env={
+            "SLO_OUT": str(out_slo / "slo.json"),
+            "SLO_MAX_P95_MS": "300",
+            "SLO_MAX_ERROR_RATE": "0.01",
+        },
     )
     # 3) Quick perf bench (in-proc)
     rc_perf, out_perf, _ = _run(

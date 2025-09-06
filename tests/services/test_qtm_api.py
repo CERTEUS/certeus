@@ -33,7 +33,11 @@ client = TestClient(app)
 def test_qtm_init_case_uniform_predistribution() -> None:
     r = client.post(
         "/v1/qtm/init_case",
-        json={"case": "LEX-QTMP-1", "basis": ["ALLOW", "DENY", "ABSTAIN"], "state_uri": "psi://uniform"},
+        json={
+            "case": "LEX-QTMP-1",
+            "basis": ["ALLOW", "DENY", "ABSTAIN"],
+            "state_uri": "psi://uniform",
+        },
     )
     assert r.status_code == 200
     body = r.json()
@@ -47,12 +51,20 @@ def test_qtm_init_case_uniform_predistribution() -> None:
 
 def test_qtm_measure_headers_and_fields() -> None:
     # set decoherence for this case
-    client.post("/v1/qtm/decoherence", json={"case": "ui", "channel": "dephasing", "gamma": 0.1})
+    client.post(
+        "/v1/qtm/decoherence", json={"case": "ui", "channel": "dephasing", "gamma": 0.1}
+    )
 
     r = client.post("/v1/qtm/measure", json={"operator": "L", "source": "ui"})
     assert r.status_code == 200
     body = r.json()
-    assert set(body.keys()) >= {"verdict", "p", "collapse_log", "uncertainty_bound", "latency_ms"}
+    assert set(body.keys()) >= {
+        "verdict",
+        "p",
+        "collapse_log",
+        "uncertainty_bound",
+        "latency_ms",
+    }
     # Headers with PCO snippets should be present
     hdrs = r.headers
     assert "X-CERTEUS-PCO-qtm.collapse_event" in hdrs
@@ -62,7 +74,9 @@ def test_qtm_measure_headers_and_fields() -> None:
 def test_qtm_measure_uses_preset_operator_if_available() -> None:
     case_id = "LEX-QTMP-PRESET-FALLBACK"
     client.post("/v1/qtm/preset", json={"case": case_id, "operator": "T"})
-    r = client.post("/v1/qtm/measure", json={"operator": "W", "source": "ui", "case": case_id})
+    r = client.post(
+        "/v1/qtm/measure", json={"operator": "W", "source": "ui", "case": case_id}
+    )
     assert r.status_code == 200
     hdr = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event", "{}")
     # very small parser to avoid json import; string contains operator":"T"
@@ -103,8 +117,13 @@ def test_qtm_decoherence_gamma_uniformizes_probabilities() -> None:
     )
     assert r_set.status_code == 200
     # Strong decoherence -> uniform smoothing
-    client.post("/v1/qtm/decoherence", json={"case": case_id, "channel": "dephasing", "gamma": 1.0})
-    r = client.post("/v1/qtm/measure", json={"operator": "W", "source": "ui", "case": case_id})
+    client.post(
+        "/v1/qtm/decoherence",
+        json={"case": case_id, "channel": "dephasing", "gamma": 1.0},
+    )
+    r = client.post(
+        "/v1/qtm/measure", json={"operator": "W", "source": "ui", "case": case_id}
+    )
     assert r.status_code == 200
     body = r.json()
     p = float(body["p"])
@@ -141,7 +160,9 @@ def test_qtm_preset_delete_and_state_delete() -> None:
     r_del = client.delete(f"/v1/qtm/preset/{case_id}")
     assert r_del.status_code == 200 and r_del.json()["ok"] is True
     # Now measuring should not use preset 'T' but the provided operator
-    r = client.post("/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": case_id})
+    r = client.post(
+        "/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": case_id}
+    )
     assert r.status_code == 200
     hdr = r.headers.get("X-CERTEUS-PCO-qtm.collapse_event", "{}")
     assert '"operator":"L"' in hdr
@@ -166,7 +187,9 @@ def test_qtm_commutator_simple_rule() -> None:
 
 
 def test_qtm_find_entanglement_pairs() -> None:
-    r = client.post("/v1/qtm/find_entanglement", json={"variables": ["a", "b", "c", "d", "e"]})
+    r = client.post(
+        "/v1/qtm/find_entanglement", json={"variables": ["a", "b", "c", "d", "e"]}
+    )
     assert r.status_code == 200
     body = r.json()
     assert body["pairs"] == [["a", "b"], ["c", "d"]]

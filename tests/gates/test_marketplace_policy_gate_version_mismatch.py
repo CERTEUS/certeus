@@ -44,7 +44,10 @@ register: register
     # Overlay state: installed_version=0.9.0
     (repo / "data").mkdir(parents=True, exist_ok=True)
     (repo / "data" / "packs_state.json").write_text(
-        json.dumps({"my_pack": {"enabled": True, "installed_version": "0.9.0"}}, indent=2), encoding="utf-8"
+        json.dumps(
+            {"my_pack": {"enabled": True, "installed_version": "0.9.0"}}, indent=2
+        ),
+        encoding="utf-8",
     )
 
     vio, warn = check(repo_root=repo)

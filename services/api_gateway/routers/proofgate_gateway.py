@@ -44,7 +44,9 @@ router = APIRouter(tags=["ProofGate"])
 
 
 @router.post("/v1/proofgate/publish", response_model=PublishResponse)
-def publish_stub(req: PublishRequest, request: Request) -> PublishResponse:  # pragma: no cover (kontrakt/openapi)
+def publish_stub(
+    req: PublishRequest, request: Request
+) -> PublishResponse:  # pragma: no cover (kontrakt/openapi)
     """
     PL: Minimalny alias publikacji w bramce API – zapewnia zgodność OpenAPI.
     EN: Minimal publication alias in the API gateway – ensures OpenAPI compliance.

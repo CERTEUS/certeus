@@ -241,15 +241,33 @@ def _parse_args() -> argparse.Namespace:
 
     p.add_argument("--signature", help="Detached signature (>= 40 chars)", default=None)
 
-    p.add_argument("--outdir", help="Output dir (defaults to PROOF_BUNDLE_DIR)", default=DEFAULT_DIR)
+    p.add_argument(
+        "--outdir",
+        help="Output dir (defaults to PROOF_BUNDLE_DIR)",
+        default=DEFAULT_DIR,
+    )
 
     p.add_argument("--echo-url", action="store_true", help="Print GET URL for API")
 
-    p.add_argument("--allow-missing", action="store_true", help="Use default text if --lfsc/--smt2 files are missing")
+    p.add_argument(
+        "--allow-missing",
+        action="store_true",
+        help="Use default text if --lfsc/--smt2 files are missing",
+    )
 
-    p.add_argument("--lfsc-text", dest="lfsc_text", default=None, help="Inline LFSC text (overrides --lfsc file)")
+    p.add_argument(
+        "--lfsc-text",
+        dest="lfsc_text",
+        default=None,
+        help="Inline LFSC text (overrides --lfsc file)",
+    )
 
-    p.add_argument("--smt2-text", dest="smt2_text", default=None, help="Inline SMT2 text (overrides --smt2 file)")
+    p.add_argument(
+        "--smt2-text",
+        dest="smt2_text",
+        default=None,
+        help="Inline SMT2 text (overrides --smt2 file)",
+    )
 
     return p.parse_args()
 

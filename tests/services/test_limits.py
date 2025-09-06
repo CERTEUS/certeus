@@ -20,7 +20,11 @@ from fastapi import HTTPException
 import pytest
 from starlette.requests import Request
 
-from services.api_gateway.limits import enforce_limits, get_tenant_balance, set_tenant_quota
+from services.api_gateway.limits import (
+    enforce_limits,
+    get_tenant_balance,
+    set_tenant_quota,
+)
 
 
 def _req_for(tenant: str) -> Request:

@@ -66,7 +66,11 @@ def main() -> int:  # pragma: no cover
         r = c.get(p)
         if not (200 <= r.status_code < 300):
             bad.append(f"{p} -> {r.status_code}")
-    enforce = (os.getenv("ENFORCE_OPENAPI_GET_SANITY") or "").strip() in {"1", "true", "True"}
+    enforce = (os.getenv("ENFORCE_OPENAPI_GET_SANITY") or "").strip() in {
+        "1",
+        "true",
+        "True",
+    }
     if bad:
         print("OpenAPI GET sanity: FAIL")
         for b in bad:

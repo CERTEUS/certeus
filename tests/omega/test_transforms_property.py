@@ -26,7 +26,11 @@ from core.omega.transforms import compute_gauge_drift, normalize_text
 @settings(max_examples=25, deadline=None)
 @given(
     st.lists(
-        st.text(alphabet=st.characters(blacklist_categories=("Cs", "Zs")), min_size=1, max_size=8),
+        st.text(
+            alphabet=st.characters(blacklist_categories=("Cs", "Zs")),
+            min_size=1,
+            max_size=8,
+        ),
         min_size=3,
         max_size=10,
     )
@@ -53,7 +57,9 @@ _PUNCT = [",", ".", ";", ":", "-", "—", "–", "(", ")", "[", "]", '"', "'", "
     ),
     st.lists(st.sampled_from(_PUNCT), min_size=2, max_size=6),
 )
-def test_normalize_limits_drift_under_punctuation_noise(words: list[str], punct: list[str]) -> None:
+def test_normalize_limits_drift_under_punctuation_noise(
+    words: list[str], punct: list[str]
+) -> None:
     base = " ".join(words)
     noisy = base
     for p in punct:

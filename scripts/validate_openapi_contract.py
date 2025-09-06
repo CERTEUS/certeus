@@ -42,7 +42,11 @@ def _read_docs_spec(path: Path) -> dict[str, Any]:
 
 
 def _collect_methods(path_item: dict[str, Any]) -> set[str]:
-    return {k.lower() for k in path_item.keys() if k.lower() in {"get", "post", "put", "patch", "delete"}}
+    return {
+        k.lower()
+        for k in path_item.keys()
+        if k.lower() in {"get", "post", "put", "patch", "delete"}
+    }
 
 
 def main() -> int:

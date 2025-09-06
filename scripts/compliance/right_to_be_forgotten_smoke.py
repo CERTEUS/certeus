@@ -41,7 +41,13 @@ def _run_redaction(payload: dict, strict: bool) -> int:
     gate = repo / "scripts" / "gates" / "redaction_gate.py"
     env = os.environ.copy()
     env["STRICT_REDACTION"] = "1" if strict else "0"
-    p = subprocess.run([sys.executable, str(gate)], input=json.dumps(payload), text=True, capture_output=True, env=env)
+    p = subprocess.run(
+        [sys.executable, str(gate)],
+        input=json.dumps(payload),
+        text=True,
+        capture_output=True,
+        env=env,
+    )
     # stderr/stdout are not printed to keep CI tidy; return code conveys result
     return p.returncode
 
@@ -64,8 +70,14 @@ def main() -> int:
     outdir = Path("out")
     outdir.mkdir(parents=True, exist_ok=True)
 
-    pii_payload = {"subject": {"name": "Jan Kowalski", "pesel": "99010112345"}, "content": "test"}
-    clean_payload = {"subject": {"name": "Jan TEST"}, "content": "Brak wrazliwych danych."}
+    pii_payload = {
+        "subject": {"name": "Jan Kowalski", "pesel": "99010112345"},
+        "content": "test",
+    }
+    clean_payload = {
+        "subject": {"name": "Jan TEST"},
+        "content": "Brak wrazliwych danych.",
+    }
 
     rc_detect = _run_redaction(pii_payload, strict=False)
     rc_clean = _run_redaction(clean_payload, strict=True)
@@ -75,7 +87,9 @@ def main() -> int:
         "clean_strict_rc": rc_clean,
         "ok": (rc_detect == 0 and rc_clean == 0),
     }
-    (reports / "rtbf_smoke.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    (reports / "rtbf_smoke.json").write_text(
+        json.dumps(result, indent=2), encoding="utf-8"
+    )
     (outdir / "dpia_summary.txt").write_text(_dpia_summary(), encoding="utf-8")
     print(json.dumps(result))
     return 0 if result["ok"] else 1

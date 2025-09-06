@@ -20,14 +20,18 @@ def main() -> int:
 
     r_ins = rq.get(base + "/v1/pfs/inspect", timeout=3)
     r_ins.raise_for_status()
-    (out / "pfs_inspect.json").write_text(json.dumps(r_ins.json(), indent=2), encoding="utf-8")
+    (out / "pfs_inspect.json").write_text(
+        json.dumps(r_ins.json(), indent=2), encoding="utf-8"
+    )
 
     cases = r_ins.json().get("cases") or []
     if cases:
         case = cases[0]
         r_case = rq.get(base + f"/v1/pfs/case/{case}", timeout=3)
         r_case.raise_for_status()
-        (out / "pfs_case.json").write_text(json.dumps(r_case.json(), indent=2), encoding="utf-8")
+        (out / "pfs_case.json").write_text(
+            json.dumps(r_case.json(), indent=2), encoding="utf-8"
+        )
     return 0
 
 

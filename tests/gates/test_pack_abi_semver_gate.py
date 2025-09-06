@@ -29,7 +29,9 @@ def _write(p: Path, content: str) -> None:
     p.write_text(content, encoding="utf-8")
 
 
-def test_pack_abi_semver_gate_detects_abi_change_requires_major(tmp_path: Path, monkeypatch) -> None:
+def test_pack_abi_semver_gate_detects_abi_change_requires_major(
+    tmp_path: Path, monkeypatch
+) -> None:
     # Prepare a temporary plugin structure
     repo = tmp_path
     plug = repo / "plugins" / "my_pack"

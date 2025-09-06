@@ -171,7 +171,10 @@ def post_solve(
     if att.get("passed", False):
         return "PUBLISH", {"att": att, "mtv": mtv, "pco": artifacts.get("pco", {})}
 
-    plan = {"summary": "Need additional tests/evidence", "steps": att.get("missing_tests", [])}
+    plan = {
+        "summary": "Need additional tests/evidence",
+        "steps": att.get("missing_tests", []),
+    }
 
     return "CONDITIONAL", {"plan": plan, "att": att, "mtv": mtv}
 

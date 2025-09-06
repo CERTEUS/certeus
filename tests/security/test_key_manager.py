@@ -61,7 +61,10 @@ def test_key_manager_env_fallback(monkeypatch):
 
     monkeypatch.setenv("ED25519_PRIVKEY_PEM", pem)
 
-    monkeypatch.setenv("ED25519_PUBKEY_B64URL", base64.urlsafe_b64encode(pk_raw).rstrip(b"=").decode("ascii"))
+    monkeypatch.setenv(
+        "ED25519_PUBKEY_B64URL",
+        base64.urlsafe_b64encode(pk_raw).rstrip(b"=").decode("ascii"),
+    )
 
     assert load_ed25519_private_pem().startswith("-----BEGIN PRIVATE KEY-----")
 

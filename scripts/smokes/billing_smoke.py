@@ -34,12 +34,20 @@ def main() -> int:
     out = {}
     with TestClient(app) as c:
         t = "smoke-tenant"
-        out["quota"] = c.post("/v1/billing/quota", json={"tenant": t, "units": 10}).json()
+        out["quota"] = c.post(
+            "/v1/billing/quota", json={"tenant": t, "units": 10}
+        ).json()
         out["bal0"] = c.get("/v1/billing/balance", headers={"X-Tenant-ID": t}).json()
-        out["alloc"] = c.post("/v1/billing/allocate", json={"units": 3}, headers={"X-Tenant-ID": t}).json()
-        out["refund"] = c.post("/v1/billing/refund", json={"tenant": t, "units": 2}).json()
+        out["alloc"] = c.post(
+            "/v1/billing/allocate", json={"units": 3}, headers={"X-Tenant-ID": t}
+        ).json()
+        out["refund"] = c.post(
+            "/v1/billing/refund", json={"tenant": t, "units": 2}
+        ).json()
         out["bal1"] = c.get("/v1/billing/balance", headers={"X-Tenant-ID": t}).json()
-    (reports / "smoke_billing.json").write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+    (reports / "smoke_billing.json").write_text(
+        json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print("smoke_billing -> reports/smoke_billing.json")
     return 0
 

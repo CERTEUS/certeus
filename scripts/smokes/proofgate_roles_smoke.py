@@ -36,8 +36,14 @@ def _pco(domain: str, case_prefix: str, roles: list[str]) -> dict[str, Any]:
         "case_id": f"CER-{case_prefix}-SMOKE",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.1},
         "sources": [{"digest": "d1", "retrieved_at": "now"}],
-        "derivations": [{"solver": "z3", "proof_format": "LFSC", "artifact_digest": "h"}],
-        "reproducibility": {"image": "img", "image_digest": "sha256:deadbeef", "seed": "42"},
+        "derivations": [
+            {"solver": "z3", "proof_format": "LFSC", "artifact_digest": "h"}
+        ],
+        "reproducibility": {
+            "image": "img",
+            "image_digest": "sha256:deadbeef",
+            "seed": "42",
+        },
         "signatures": [{"role": r} for r in roles],
     }
 
@@ -47,14 +53,20 @@ def main() -> int:
     c = TestClient(app)
 
     # LEX should publish with AFV + counsel
-    r1 = c.post("/v1/proofgate/publish", json={"pco": _pco("lex", "LEX", ["counsel", "AFV"]), "budget_tokens": 10})
+    r1 = c.post(
+        "/v1/proofgate/publish",
+        json={"pco": _pco("lex", "LEX", ["counsel", "AFV"]), "budget_tokens": 10},
+    )
     r1.raise_for_status()
     if r1.json().get("status") != "PUBLISH":
         print("ProofGate roles smoke: FAIL (lex expected PUBLISH)")
         return 1
 
     # SEC should abstain even with AFV + counsel
-    r2 = c.post("/v1/proofgate/publish", json={"pco": _pco("sec", "SEC", ["counsel", "AFV"]), "budget_tokens": 10})
+    r2 = c.post(
+        "/v1/proofgate/publish",
+        json={"pco": _pco("sec", "SEC", ["counsel", "AFV"]), "budget_tokens": 10},
+    )
     r2.raise_for_status()
     if r2.json().get("status") != "ABSTAIN":
         print("ProofGate roles smoke: FAIL (sec expected ABSTAIN)")

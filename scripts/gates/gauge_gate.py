@@ -55,7 +55,9 @@ def main() -> int:
     data = _read_or_default(args.input)
     drift = float(((data or {}).get("gauge") or {}).get("holonomy_drift", 0.0))
     ok = drift <= float(args.epsilon)
-    print(f"Gauge holonomy_drift={drift} epsilon={args.epsilon} -> {'OK' if ok else 'FAIL'}")
+    print(
+        f"Gauge holonomy_drift={drift} epsilon={args.epsilon} -> {'OK' if ok else 'FAIL'}"
+    )
     return 0 if ok else 1
 
 

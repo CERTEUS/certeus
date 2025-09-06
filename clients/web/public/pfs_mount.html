@@ -1,0 +1,61 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: clients/web/public/pfs_mount.html                     |
+| ROLE: ProofFS mount/unmount helper                          |
+| PLIK: clients/web/public/pfs_mount.html                     |
+| ROLA: Pomocnik mount/unmount dla ProofFS                    |
++-------------------------------------------------------------+
+-->
+<!doctype html>
+<html lang="pl" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CERTEUS • ProofFS Mount</title>
+    <style>
+      body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#0f1114;color:#f2f2f3}
+      .wrap{max-width:1000px;margin:24px auto;padding:0 12px}
+      .card{background:#151922;border:1px solid #232832;border-radius:12px;padding:12px;margin-bottom:12px}
+      input{background:#0f1114;border:1px solid #232832;border-radius:8px;color:#f2f2f3;padding:8px;min-width:360px}
+      .btn{padding:8px 12px;border:1px solid #232832;border-radius:8px;background:#1a1f29;color:#f2f2f3;cursor:pointer}
+      .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+      .tag{display:inline-block;border:1px solid #232832;border-radius:6px;padding:2px 6px;background:#10141b}
+      .muted{color:#9aa4b2}
+      table{width:100%;border-collapse:collapse}
+      th,td{border-bottom:1px solid #232832;padding:6px 8px;text-align:left}
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="sr-only sr-only-focusable">Pomiń do treści głównej</a>
+    <main id="main" role="main">
+    <div class="wrap">
+      <div class="card">
+        <h1>ProofFS • Mount / Unmount</h1>
+        <p class="muted">Mock mount/unmount over /v1/pfs/mount (contract only; no kernel driver).</p>
+        <div class="row">
+          <button id="mount" class="btn">Mount (mock)</button>
+          <input id="mount_id" placeholder="mount_id" />
+          <button id="unmount" class="btn">Unmount</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>State</h2>
+        <div id="state"></div>
+      </div>
+    </div>
+    <script>
+      const $=id=>document.getElementById(id);
+      async function j(method, url, body){ const opts={method}; if(body){opts.headers={'content-type':'application/json'}; opts.body=JSON.stringify(body);} const r=await fetch(url,opts); const t=await r.text(); let d=t; try{ d=JSON.parse(t)}catch{} return {ok:r.ok,data:d,status:r.status}; }
+      function renderState(obj){ const el=$("state"); el.innerHTML=''; const o=obj||{}; const rows=[['mounted', o.mounted],['mount_id', o.mount_id],['mount_path', o.mount_path]]; el.innerHTML='<table>'+rows.map(([k,v])=>`<tr><th>${k}</th><td>${v??'-'}</td></tr>`).join('')+'</table>'; if(o.mount_id){ $("mount_id").value=o.mount_id; }
+      }
+      async function doMount(){ const r=await j('POST','/v1/pfs/mount',{}); if(!r.ok){ alert('Mount failed: '+(r.data?.detail||r.status)); return;} renderState(r.data); }
+      async function doUnmount(){ const mid=$("mount_id").value.trim(); if(!mid){ alert('Provide mount_id'); return;} const r=await j('POST','/v1/pfs/unmount',{mount_id:mid}); if(!r.ok){ alert('Unmount failed: '+(r.data?.detail||r.status)); return;} renderState({mounted:false,mount_id:mid}); }
+      $("mount").addEventListener('click', doMount);
+      $("unmount").addEventListener('click', doUnmount);
+      renderState({});
+    </script>
+    </main>
+  </body>
+  </html>

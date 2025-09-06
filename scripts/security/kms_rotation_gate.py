@@ -42,14 +42,25 @@ def main() -> int:
             prev = js.get("previous")
             algo = js.get("algo")
             if cur and algo:
-                rep |= {"present": True, "mode": "metadata", "current": cur, "previous": prev, "algo": algo}
+                rep |= {
+                    "present": True,
+                    "mode": "metadata",
+                    "current": cur,
+                    "previous": prev,
+                    "algo": algo,
+                }
         except Exception as e:
             rep = {"present": False, "mode": "metadata", "error": str(e)}
     else:
         cur = sorted(glob.glob(str(base / "current.*")))
         prev = sorted(glob.glob(str(base / "prev.*")))
         if cur:
-            rep |= {"present": True, "mode": "files", "current_files": cur, "prev_files": prev}
+            rep |= {
+                "present": True,
+                "mode": "files",
+                "current_files": cur,
+                "prev_files": prev,
+            }
     (out / "kms_rotation.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")
     return 0
 

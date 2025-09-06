@@ -47,11 +47,18 @@ def diff_snapshots(base: dict[str, Any], head: dict[str, Any]) -> dict[str, Any]
             changed.append(sid)
             details[sid] = {"base": b, "head": h}
 
-    status = "IDENTICAL" if not changed and (base.get("global_digest") == head.get("global_digest")) else "DIFFERENT"
+    status = (
+        "IDENTICAL"
+        if not changed and (base.get("global_digest") == head.get("global_digest"))
+        else "DIFFERENT"
+    )
     return {
         "status": status,
         "changed": changed,
-        "global": {"base": base.get("global_digest"), "head": head.get("global_digest")},
+        "global": {
+            "base": base.get("global_digest"),
+            "head": head.get("global_digest"),
+        },
         "details": details,
     }
 

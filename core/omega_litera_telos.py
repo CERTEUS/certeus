@@ -64,7 +64,10 @@ class LTText:
     def from_obj(cls, obj: Mapping[str, Any] | str, default_mode: str = "l") -> LTText:
         if isinstance(obj, str):
             return cls(text=obj, lt=default_mode)
-        return cls(text=str(obj.get("text") or ""), lt=str(obj.get("lt") or default_mode).lower())
+        return cls(
+            text=str(obj.get("text") or ""),
+            lt=str(obj.get("lt") or default_mode).lower(),
+        )
 
     def to_obj(self) -> dict[str, Any]:
         return {"text": self.text, "lt": self.lt}
@@ -106,7 +109,9 @@ def transform_litera_telos(obj: Mapping[str, Any] | str, target: str) -> dict[st
     return unit.to_obj()
 
 
-def holonomy_drift_lt(obj: Mapping[str, Any] | str, *, cycle: tuple[str, str] = ("l", "t")) -> float:
+def holonomy_drift_lt(
+    obj: Mapping[str, Any] | str, *, cycle: tuple[str, str] = ("l", "t")
+) -> float:
     """
     PL: Zmierz drift po cyklu L→T→L (lub odwrotnie).
 

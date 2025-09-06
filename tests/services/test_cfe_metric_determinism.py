@@ -28,10 +28,14 @@ def test_cfe_curvature_and_geodesic_deterministic() -> None:
     r1 = client.get(f"/v1/cfe/curvature?case_id={cid}")
     r2 = client.get(f"/v1/cfe/curvature?case_id={cid}")
     assert r1.status_code == 200 and r2.status_code == 200
-    assert float(r1.json()["kappa_max"]) == float(r2.json()["kappa_max"])  # deterministic
+    assert float(r1.json()["kappa_max"]) == float(
+        r2.json()["kappa_max"]
+    )  # deterministic
 
     g1 = client.post("/v1/cfe/geodesic", json={"case": cid})
     g2 = client.post("/v1/cfe/geodesic", json={"case": cid})
     assert g1.status_code == 200 and g2.status_code == 200
     assert g1.json()["path"] == g2.json()["path"]
-    assert float(g1.json()["geodesic_action"]) == float(g2.json()["geodesic_action"])  # deterministic
+    assert float(g1.json()["geodesic_action"]) == float(
+        g2.json()["geodesic_action"]
+    )  # deterministic

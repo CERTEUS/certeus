@@ -40,12 +40,25 @@ def parse_attestation_json(p: str | os.PathLike[str]) -> dict[str, Any]:
 
 
 def extract_fingerprint(attestation: dict[str, Any]) -> RAFingerprint:
-    vendor = str(attestation.get("vendor") or attestation.get("tee_vendor") or "unknown").strip()
-    product = str(attestation.get("product") or attestation.get("tee") or "unknown").strip()
+    vendor = str(
+        attestation.get("vendor") or attestation.get("tee_vendor") or "unknown"
+    ).strip()
+    product = str(
+        attestation.get("product") or attestation.get("tee") or "unknown"
+    ).strip()
     hwid = attestation.get("hwid") or attestation.get("device_id")
-    claims = attestation.get("claims") if isinstance(attestation.get("claims"), dict) else attestation
+    claims = (
+        attestation.get("claims")
+        if isinstance(attestation.get("claims"), dict)
+        else attestation
+    )
     meas = _h_json(claims)
-    return RAFingerprint(vendor=vendor, product=product, measurement=meas, hwid=str(hwid) if hwid else None)
+    return RAFingerprint(
+        vendor=vendor,
+        product=product,
+        measurement=meas,
+        hwid=str(hwid) if hwid else None,
+    )
 
 
 def verify_fingerprint(obj: dict[str, Any]) -> bool:
@@ -53,13 +66,18 @@ def verify_fingerprint(obj: dict[str, Any]) -> bool:
         vendor = obj.get("vendor")
         product = obj.get("product")
         measurement = obj.get("measurement")
-        return all(isinstance(x, str) and x for x in (vendor, product, measurement)) and len(measurement) == 64
+        return (
+            all(isinstance(x, str) and x for x in (vendor, product, measurement))
+            and len(measurement) == 64
+        )
     except Exception:
         return False
 
 
 def attestation_from_env() -> dict[str, Any] | None:
-    cand = os.getenv("BUNKER_ATTESTATION_PATH") or (Path("security/bunker/attestation.json").as_posix())
+    cand = os.getenv("BUNKER_ATTESTATION_PATH") or (
+        Path("security/bunker/attestation.json").as_posix()
+    )
     try:
         p = Path(cand)
         if p.exists():

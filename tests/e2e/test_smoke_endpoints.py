@@ -54,7 +54,9 @@ def _gen_ed25519() -> tuple[str, str]:
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
 
-    pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    pub = sk.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+    )
 
     return pem, pub.hex()
 
@@ -103,7 +105,12 @@ def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
 
     # CFE
 
-    assert client.post("/v1/cfe/geodesic", json={"case": "CER-SMOKE", "facts": {}, "norms": {}}).status_code == 200
+    assert (
+        client.post(
+            "/v1/cfe/geodesic", json={"case": "CER-SMOKE", "facts": {}, "norms": {}}
+        ).status_code
+        == 200
+    )
 
     assert client.post("/v1/cfe/horizon", json={}).status_code == 200
 
@@ -111,13 +118,30 @@ def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
 
     # QTMP
 
-    assert client.post("/v1/qtm/init_case", json={"basis": ["ALLOW", "DENY", "ABSTAIN"]}).status_code == 200
+    assert (
+        client.post(
+            "/v1/qtm/init_case", json={"basis": ["ALLOW", "DENY", "ABSTAIN"]}
+        ).status_code
+        == 200
+    )
 
-    assert client.post("/v1/qtm/measure", json={"operator": "W", "source": "ui"}).status_code == 200
+    assert (
+        client.post(
+            "/v1/qtm/measure", json={"operator": "W", "source": "ui"}
+        ).status_code
+        == 200
+    )
 
-    assert client.post("/v1/qtm/commutator", json={"A": "X", "B": "Y"}).status_code == 200
+    assert (
+        client.post("/v1/qtm/commutator", json={"A": "X", "B": "Y"}).status_code == 200
+    )
 
-    assert client.post("/v1/qtm/find_entanglement", json={"variables": ["A", "B"]}).status_code == 200
+    assert (
+        client.post(
+            "/v1/qtm/find_entanglement", json={"variables": ["A", "B"]}
+        ).status_code
+        == 200
+    )
 
     # Devices
 
@@ -133,12 +157,19 @@ def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
 
     assert (
         client.post(
-            "/v1/devices/entangle", json={"variables": ["RISK", "SENTIMENT"], "target_negativity": 0.1}
+            "/v1/devices/entangle",
+            json={"variables": ["RISK", "SENTIMENT"], "target_negativity": 0.1},
         ).status_code
         == 200
     )
 
-    assert client.post("/v1/devices/chronosync/reconcile", json={"coords": {"t": 0}, "pc_delta": {}}).status_code == 200
+    assert (
+        client.post(
+            "/v1/devices/chronosync/reconcile",
+            json={"coords": {"t": 0}, "pc_delta": {}},
+        ).status_code
+        == 200
+    )
 
     # Ethics
 
@@ -160,17 +191,32 @@ def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
 
     # DR
 
-    assert client.post("/v1/dr/replay", json={"case": "CER-1", "timestamp": "2023-10-01T00:00:00Z"}).status_code == 200
+    assert (
+        client.post(
+            "/v1/dr/replay", json={"case": "CER-1", "timestamp": "2023-10-01T00:00:00Z"}
+        ).status_code
+        == 200
+    )
 
     assert client.post("/v1/dr/recall", json={"upn": "UPN-TEST"}).status_code == 200
 
     # Export
 
-    assert client.post("/v1/export", json={"case_id": "CER-1", "analysis_result": {"ok": True}}).status_code == 200
+    assert (
+        client.post(
+            "/v1/export", json={"case_id": "CER-1", "analysis_result": {"ok": True}}
+        ).status_code
+        == 200
+    )
 
     # ChatOps
 
-    assert client.post("/v1/chatops/command", json={"cmd": "cfe.geodesic", "args": {}}).status_code == 200
+    assert (
+        client.post(
+            "/v1/chatops/command", json={"cmd": "cfe.geodesic", "args": {}}
+        ).status_code
+        == 200
+    )
 
     # Ledger
 
@@ -190,7 +236,10 @@ def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
 
     smt = "(set-logic QF_UF) (declare-fun x () Bool) (assert x) (check-sat)"
 
-    assert client.post("/v1/verify", json={"formula": smt, "lang": "smt2"}).status_code == 200
+    assert (
+        client.post("/v1/verify", json={"formula": smt, "lang": "smt2"}).status_code
+        == 200
+    )
 
     # PCO bundle + public verify
 

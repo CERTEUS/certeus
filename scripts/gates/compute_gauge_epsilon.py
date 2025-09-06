@@ -97,7 +97,9 @@ def _safe_import_components() -> dict[str, float]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--input", help="Opcjonalny plik metryk gauge.json (z compute_gauge_drift)")
+    ap.add_argument(
+        "--input", help="Opcjonalny plik metryk gauge.json (z compute_gauge_drift)"
+    )
     ap.add_argument("--out", required=True, help="Plik wynikowy JSON z epsilonem")
     ap.add_argument(
         "--margin",

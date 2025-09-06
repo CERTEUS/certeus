@@ -45,7 +45,11 @@ def metrics() -> Response:
 
     data = generate_latest()  # type: ignore[arg-type]
 
-    return Response(content=data, media_type=CONTENT_TYPE_LATEST, headers={"Cache-Control": "no-store"})
+    return Response(
+        content=data,
+        media_type=CONTENT_TYPE_LATEST,
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @router.get("/v1/metrics/summary", summary="Quick in-proc metrics summary")

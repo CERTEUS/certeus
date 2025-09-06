@@ -29,9 +29,14 @@ from services.api_gateway.main import app  # noqa: E402
 
 def main() -> int:
     c = TestClient(app)
-    r = c.post("/v1/qtm/init_case", json={"case": "SMOKE-QTMP", "basis": ["ALLOW", "DENY", "ABSTAIN"]})
+    r = c.post(
+        "/v1/qtm/init_case",
+        json={"case": "SMOKE-QTMP", "basis": ["ALLOW", "DENY", "ABSTAIN"]},
+    )
     assert r.status_code == 200
-    r2 = c.post("/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": "SMOKE-QTMP"})
+    r2 = c.post(
+        "/v1/qtm/measure", json={"operator": "L", "source": "ui", "case": "SMOKE-QTMP"}
+    )
     assert r2.status_code == 200
     # PCO headers: collapse event and priorities should be present
     assert "X-CERTEUS-PCO-qtm.collapse_event" in r2.headers

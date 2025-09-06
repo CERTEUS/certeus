@@ -5,3 +5,4 @@ python-multipart>=0.0.20,<0.0.21
 prometheus-client>=0.20
 requests>=2.32
 openapi-spec-validator>=0.7
+black

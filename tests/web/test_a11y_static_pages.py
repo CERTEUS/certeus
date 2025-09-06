@@ -49,21 +49,29 @@ def test_has_doctype_html_lang_title_viewport(path: Path) -> None:
     mt = re.search(r"<title>([^<]+)</title>", text, flags=re.IGNORECASE)
     assert mt and mt.group(1).strip(), "<title> must be present and non-empty"
     # viewport
-    assert re.search(r"<meta[^>]+name=\"viewport\"", text, flags=re.IGNORECASE), "viewport meta required"
+    assert re.search(
+        r"<meta[^>]+name=\"viewport\"", text, flags=re.IGNORECASE
+    ), "viewport meta required"
 
 
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_has_h1_and_links_have_text_or_label(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
-    assert re.search(r"<h1[^>]*>.*?</h1>", text, flags=re.IGNORECASE | re.DOTALL), "at least one <h1> required"
+    assert re.search(
+        r"<h1[^>]*>.*?</h1>", text, flags=re.IGNORECASE | re.DOTALL
+    ), "at least one <h1> required"
     # Links: at least one anchor; ensure no empty-text anchors without aria-label/title
-    anchors: Iterable[str] = re.findall(r"<a\s+[^>]*>(.*?)</a>", text, flags=re.IGNORECASE | re.DOTALL)
+    anchors: Iterable[str] = re.findall(
+        r"<a\s+[^>]*>(.*?)</a>", text, flags=re.IGNORECASE | re.DOTALL
+    )
     if anchors:
         # consider visible text present if any non-whitespace in content
         has_discernible = any(bool(re.sub(r"\s+", "", a)) for a in anchors)
         if not has_discernible:
             # Fallback: allow aria-label or title on <a>
-            assert re.search(r"<a[^>]+(aria-label|title)=\"[^\"]+\"", text, flags=re.IGNORECASE)
+            assert re.search(
+                r"<a[^>]+(aria-label|title)=\"[^\"]+\"", text, flags=re.IGNORECASE
+            )
 
 
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
@@ -78,7 +86,9 @@ def test_images_have_alt_when_present(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
     imgs = re.findall(r"<img\s+([^>]*?)>", text, flags=re.IGNORECASE)
     for attrs in imgs:
-        assert re.search(r"\balt=\"[^\"]*\"", attrs, flags=re.IGNORECASE), "<img> must have alt attribute"
+        assert re.search(
+            r"\balt=\"[^\"]*\"", attrs, flags=re.IGNORECASE
+        ), "<img> must have alt attribute"
 
 
 # === I/O / ENDPOINTS ===

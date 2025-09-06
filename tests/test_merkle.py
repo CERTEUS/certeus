@@ -38,7 +38,11 @@ from __future__ import annotations
 
 from hashlib import sha256
 
-from services.ledger_service.cosmic_merkle import anchor_bundle, get_bundle_proof, verify_proof
+from services.ledger_service.cosmic_merkle import (
+    anchor_bundle,
+    get_bundle_proof,
+    verify_proof,
+)
 
 
 def _hx(s: str) -> str:

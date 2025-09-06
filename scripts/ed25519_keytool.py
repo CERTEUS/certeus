@@ -91,7 +91,7 @@ def main() -> None:
         else:
             print(f'$env:ED25519_PRIVKEY_PEM = "{Path(args.out_pem).resolve()}"')
 
-            print(f"$env:ED25519_PUBKEY_B64URL = \"{b64u}\"")
+            print(f'$env:ED25519_PUBKEY_B64URL = "{b64u}"')
 
     else:
         # Print Base64URL for an existing PEM (public key)

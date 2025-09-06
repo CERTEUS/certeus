@@ -43,7 +43,11 @@ def _gen_keys_env() -> Ed25519PrivateKey:
     ).decode("utf-8")
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = (
-        sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
+        sk.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+        )
+        .hex()
     )
     return sk
 
@@ -75,7 +79,11 @@ def run() -> dict[str, Any]:
     # Inspect saved bundle: signature and ledger_ref
     saved = json.loads(Path(path).read_text(encoding="utf-8")) if path else {}
     signature = saved.get("signature") or saved.get("signatures")
-    ledger_ref = ((saved.get("ledger") or {}).get("pco_tx_id")) if isinstance(saved.get("ledger"), dict) else None
+    ledger_ref = (
+        ((saved.get("ledger") or {}).get("pco_tx_id"))
+        if isinstance(saved.get("ledger"), dict)
+        else None
+    )
 
     rep = {
         "rid": rid,
@@ -85,8 +93,18 @@ def run() -> dict[str, Any]:
         "ledger_ref": ledger_ref,
     }
     Path("reports").mkdir(parents=True, exist_ok=True)
-    Path("reports/w2_audit.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")
-    print(json.dumps({"ok": (delta == 0 and bool(signature)), "delta_bits": delta, "has_signature": bool(signature)}))
+    Path("reports/w2_audit.json").write_text(
+        json.dumps(rep, indent=2), encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "ok": (delta == 0 and bool(signature)),
+                "delta_bits": delta,
+                "has_signature": bool(signature),
+            }
+        )
+    )
     return rep
 
 

@@ -27,7 +27,11 @@ def register():  # noqa: D401 - simple register
         if sent < sent_min:
             ok = False
             viol.append("sentiment_below_min")
-        return {"policy_ok": ok, "violations": viol, "thresholds": {"risk_max": risk_max, "sentiment_min": sent_min}}
+        return {
+            "policy_ok": ok,
+            "violations": viol,
+            "thresholds": {"risk_max": risk_max, "sentiment_min": sent_min},
+        }
 
     def handle(kind: str, payload: dict[str, Any]) -> dict[str, Any]:
         k = (kind or "").strip().lower()

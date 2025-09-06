@@ -46,7 +46,9 @@ def _p95(vals: list[float]) -> float:
     return s[k]
 
 
-def _call(c: TestClient, method: str, path: str, body: dict[str, Any] | None) -> tuple[float, bool]:
+def _call(
+    c: TestClient, method: str, path: str, body: dict[str, Any] | None
+) -> tuple[float, bool]:
     t0 = time.perf_counter()
     try:
         if method == "GET":

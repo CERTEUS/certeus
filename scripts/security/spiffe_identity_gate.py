@@ -53,7 +53,9 @@ def main() -> int:
         else:
             info = {"source": "none"}
     report = {"present": present, **info}
-    (out / "spiffe_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (out / "spiffe_report.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
     return 0
 
 

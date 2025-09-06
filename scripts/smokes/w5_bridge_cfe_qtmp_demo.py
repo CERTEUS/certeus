@@ -45,27 +45,30 @@ def _pp(title: str, data) -> None:
 
 def main() -> int:
     c = TestClient(gateway_app)
-    case = 'W5-bridge'
-    r_k = c.get('/v1/cfe/curvature', params={'case_id': case})
+    case = "W5-bridge"
+    r_k = c.get("/v1/cfe/curvature", params={"case_id": case})
     r_k.raise_for_status()
-    kappa = float(r_k.json().get('kappa_max', 0.0))
-    _pp('CFE curvature', r_k.json())
+    kappa = float(r_k.json().get("kappa_max", 0.0))
+    _pp("CFE curvature", r_k.json())
 
-    r_m = c.post('/v1/qtm/measure', json={'operator': 'LT', 'source': case})
+    r_m = c.post("/v1/qtm/measure", json={"operator": "LT", "source": case})
     r_m.raise_for_status()
     hdr = r_m.headers
-    corr = hdr.get('X-CERTEUS-PCO-correlation.cfe_qtmp')
-    pri_raw = hdr.get('X-CERTEUS-PCO-qtmp.priorities') or '{}'
+    corr = hdr.get("X-CERTEUS-PCO-correlation.cfe_qtmp")
+    pri_raw = hdr.get("X-CERTEUS-PCO-qtmp.priorities") or "{}"
     try:
         pri = json.loads(pri_raw)
     except Exception:
         pri = {}
-    dL = (float(pri.get('L', 1.0)) - 1.0) if pri else 0.0
-    dT = (float(pri.get('T', 1.0)) - 1.0) if pri else 0.0
-    _pp('QTMP measure', {'corr': corr, 'priorities': pri, 'delta_L': dL, 'delta_T': dT, 'kappa': kappa})
-    print('\nOK: Week-5 CFE↔QTMP bridge demo complete')
+    dL = (float(pri.get("L", 1.0)) - 1.0) if pri else 0.0
+    dT = (float(pri.get("T", 1.0)) - 1.0) if pri else 0.0
+    _pp(
+        "QTMP measure",
+        {"corr": corr, "priorities": pri, "delta_L": dL, "delta_T": dT, "kappa": kappa},
+    )
+    print("\nOK: Week-5 CFE↔QTMP bridge demo complete")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     raise SystemExit(main())

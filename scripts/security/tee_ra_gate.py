@@ -46,7 +46,9 @@ def main() -> int:
             info = {"source": "env", "measurement": fp}
         else:
             info = {"source": "none"}
-    (out / "tee_ra.json").write_text(json.dumps({"present": present, **info}, indent=2), encoding="utf-8")
+    (out / "tee_ra.json").write_text(
+        json.dumps({"present": present, **info}, indent=2), encoding="utf-8"
+    )
     return 0
 
 

@@ -53,7 +53,9 @@ from services.api_gateway import idempotency as idem
 class HDEPlanRequest(BaseModel):
     case: str | None = None
 
-    target_horizon: float | None = Field(default=0.2, description="Desired horizon mass threshold")
+    target_horizon: float | None = Field(
+        default=0.2, description="Desired horizon mass threshold"
+    )
 
 
 class HDEPlanAlternative(BaseModel):
@@ -90,7 +92,9 @@ class EntangleRequest(BaseModel):
 
     target_negativity: float = 0.1
 
-    scenario: str | None = Field(default=None, description="Scenario label (e.g., 'pairwise', 'global')")
+    scenario: str | None = Field(
+        default=None, description="Scenario label (e.g., 'pairwise', 'global')"
+    )
 
 
 class EntangleResponse(BaseModel):
@@ -110,7 +114,9 @@ class ChronoSyncRequest(BaseModel):
 
     treaty_clause_skeleton: dict[str, Any] | None = None
 
-    protocol: str | None = Field(default=None, description="Protocol tag (e.g., 'mediation.v1')")
+    protocol: str | None = Field(
+        default=None, description="Protocol tag (e.g., 'mediation.v1')"
+    )
 
 
 class ChronoSyncResponse(BaseModel):
@@ -147,7 +153,9 @@ _IDEMP_STORE: dict[str, tuple[float, dict[str, Any]]] = {}
 
 
 def _get_idemp_key(request: Request) -> str | None:
-    key = request.headers.get("X-Idempotency-Key") or request.headers.get("Idempotency-Key")
+    key = request.headers.get("X-Idempotency-Key") or request.headers.get(
+        "Idempotency-Key"
+    )
     key = (key or "").strip()
     return key or None
 
@@ -191,7 +199,9 @@ def _cache_set(path: str, key: str, payload: dict[str, Any]) -> None:
 
 
 @router.post("/horizon_drive/plan", response_model=HDEPlanResponse)
-async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -> HDEPlanResponse:
+async def hde_plan(
+    _req: HDEPlanRequest, request: Request, response: Response
+) -> HDEPlanResponse:
     from services.api_gateway.limits import enforce_limits
 
     idem_key = request.headers.get("Idempotency-Key")
@@ -244,8 +254,14 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
     cost_bal = max(30, int(200 * target))
     cost_aggr = max(40, int(280 * target))
     alt: list[HDEPlanAlternative] = [
-        HDEPlanAlternative(strategy="balanced", cost_tokens=cost_bal, expected_kappa=kappa),
-        HDEPlanAlternative(strategy="aggressive", cost_tokens=cost_aggr, expected_kappa=min(0.05, kappa * 1.1)),
+        HDEPlanAlternative(
+            strategy="balanced", cost_tokens=cost_bal, expected_kappa=kappa
+        ),
+        HDEPlanAlternative(
+            strategy="aggressive",
+            cost_tokens=cost_aggr,
+            expected_kappa=min(0.05, kappa * 1.1),
+        ),
     ]
     # Comparative planner: balance cost vs. reaching target horizon mass (proxy via expected_kappa)
     max_cost = max(a.cost_tokens for a in alt) or 1
@@ -289,7 +305,9 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
             sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)
             assert isinstance(sk, Ed25519PrivateKey)
             body = out.model_dump()
-            canon = _json.dumps(body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            canon = _json.dumps(body, sort_keys=True, separators=(",", ":")).encode(
+                "utf-8"
+            )
             sig = sk.sign(canon)
             sig_b64u = base64.urlsafe_b64encode(sig).rstrip(b"=").decode("ascii")
             meta = {"alg": "EdDSA", "sig": sig_b64u}
@@ -310,7 +328,9 @@ async def hde_plan(_req: HDEPlanRequest, request: Request, response: Response) -
 
 
 @router.post("/qoracle/expectation", response_model=QOracleResponse)
-async def qoracle_expectation(req: QOracleRequest, request: Request, response: Response) -> QOracleResponse:
+async def qoracle_expectation(
+    req: QOracleRequest, request: Request, response: Response
+) -> QOracleResponse:
     from services.api_gateway.limits import enforce_limits
 
     idem_key = request.headers.get("Idempotency-Key")
@@ -402,7 +422,9 @@ async def qoracle_expectation(req: QOracleRequest, request: Request, response: R
 
 
 @router.post("/entangle", response_model=EntangleResponse)
-async def entangle(req: EntangleRequest, request: Request, response: Response) -> EntangleResponse:
+async def entangle(
+    req: EntangleRequest, request: Request, response: Response
+) -> EntangleResponse:
     from services.api_gateway.limits import enforce_limits
 
     idem_key = request.headers.get("Idempotency-Key")
@@ -488,7 +510,9 @@ async def entangle(req: EntangleRequest, request: Request, response: Response) -
 
 
 @router.post("/chronosync/reconcile", response_model=ChronoSyncResponse)
-async def chronosync_reconcile(req: ChronoSyncRequest, request: Request, response: Response) -> ChronoSyncResponse:
+async def chronosync_reconcile(
+    req: ChronoSyncRequest, request: Request, response: Response
+) -> ChronoSyncResponse:
     from services.api_gateway.limits import enforce_limits
 
     idem_key = request.headers.get("Idempotency-Key")

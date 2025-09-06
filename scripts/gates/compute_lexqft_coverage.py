@@ -46,16 +46,26 @@ def main() -> int:
     base = os.getenv("CER_BASE")
     if base:
         try:
-            with urllib.request.urlopen(base.rstrip("/") + "/v1/lexqft/coverage/state", timeout=3) as resp:
+            with urllib.request.urlopen(
+                base.rstrip("/") + "/v1/lexqft/coverage/state", timeout=3
+            ) as resp:
                 data = _json.loads(resp.read().decode("utf-8"))
-                payload["coverage"]["coverage_gamma"] = float(data.get("coverage_gamma", 0.0))
-                payload["coverage"]["uncaptured_mass"] = float(data.get("uncaptured_mass", 0.0))
+                payload["coverage"]["coverage_gamma"] = float(
+                    data.get("coverage_gamma", 0.0)
+                )
+                payload["coverage"]["uncaptured_mass"] = float(
+                    data.get("uncaptured_mass", 0.0)
+                )
         except Exception:
             # Fallback to /coverage if /coverage/state not available
             try:
-                with urllib.request.urlopen(base.rstrip("/") + "/v1/lexqft/coverage", timeout=3) as resp:
+                with urllib.request.urlopen(
+                    base.rstrip("/") + "/v1/lexqft/coverage", timeout=3
+                ) as resp:
                     data = _json.loads(resp.read().decode("utf-8"))
-                    payload["coverage"]["coverage_gamma"] = float(data.get("coverage_gamma", 0.0))
+                    payload["coverage"]["coverage_gamma"] = float(
+                        data.get("coverage_gamma", 0.0)
+                    )
             except Exception:
                 pass
     out.write_text(json.dumps(payload, indent=2), encoding="utf-8")

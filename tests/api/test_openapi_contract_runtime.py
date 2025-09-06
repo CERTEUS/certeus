@@ -27,11 +27,17 @@ import yaml
 from services.api_gateway.main import app
 
 # Suppress noisy FastAPI OpenAPI duplicate operation id warnings during schema build
-warnings.filterwarnings("ignore", message="Duplicate Operation ID*", category=UserWarning)
+warnings.filterwarnings(
+    "ignore", message="Duplicate Operation ID*", category=UserWarning
+)
 
 
 def _collect_methods(item: dict[str, Any]) -> set[str]:
-    return {k.lower() for k in item.keys() if k.lower() in {"get", "post", "put", "patch", "delete"}}
+    return {
+        k.lower()
+        for k in item.keys()
+        if k.lower() in {"get", "post", "put", "patch", "delete"}
+    }
 
 
 def _norm_path(p: str) -> str:
@@ -58,7 +64,9 @@ def test_runtime_openapi_matches_docs_contract() -> None:
 
     doc_norm = {_norm_path(p): p for p in doc_paths.keys() if p not in SKIP}
     rt_norm = {_norm_path(p): p for p in rt_paths.keys()}
-    missing_paths: list[str] = [orig for norm, orig in doc_norm.items() if norm not in rt_norm]
+    missing_paths: list[str] = [
+        orig for norm, orig in doc_norm.items() if norm not in rt_norm
+    ]
     assert not missing_paths, f"Missing runtime paths: {missing_paths}"
 
     # Best-effort method presence check
@@ -66,6 +74,10 @@ def test_runtime_openapi_matches_docs_contract() -> None:
         if p in SKIP:
             continue
         # method comparison with normalization
-        rt_methods = _collect_methods(rt_paths.get(rt_norm.get(_norm_path(p), "")) or {})
+        rt_methods = _collect_methods(
+            rt_paths.get(rt_norm.get(_norm_path(p), "")) or {}
+        )
         doc_methods = _collect_methods(item or {})
-        assert doc_methods.issubset(rt_methods), f"Missing methods for {p}: {sorted(doc_methods - rt_methods)}"
+        assert doc_methods.issubset(
+            rt_methods
+        ), f"Missing methods for {p}: {sorted(doc_methods - rt_methods)}"

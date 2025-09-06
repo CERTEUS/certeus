@@ -90,7 +90,9 @@ def _hash_text(s: str) -> str:
 
 
 @router.post("/motion/generate", response_model=MotionResponse)
-async def motion_generate(req: MotionRequest, request: Request, response: Response) -> MotionResponse:
+async def motion_generate(
+    req: MotionRequest, request: Request, response: Response
+) -> MotionResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -98,7 +100,9 @@ async def motion_generate(req: MotionRequest, request: Request, response: Respon
     body = _MOTIONS.get(req.pattern_id, _MOTIONS["motion-dismiss"])
     facts = req.facts or {}
 
-    doc = body + "\n\nFakty (skrót):\n" + json.dumps(facts, ensure_ascii=False, indent=2)
+    doc = (
+        body + "\n\nFakty (skrót):\n" + json.dumps(facts, ensure_ascii=False, indent=2)
+    )
 
     cites: list[dict[str, str]] = []
     for c in req.citations:
@@ -107,7 +111,9 @@ async def motion_generate(req: MotionRequest, request: Request, response: Respon
 
     # PCO: nagłówek z cytatami (hash/uri)
     try:
-        response.headers["X-CERTEUS-PCO-lex.motion.citations"] = json.dumps(cites, separators=(",", ":"))
+        response.headers["X-CERTEUS-PCO-lex.motion.citations"] = json.dumps(
+            cites, separators=(",", ":")
+        )
     except Exception:
         pass
 
@@ -176,7 +182,9 @@ _CASEBOOK: list[dict[str, Any]] = []  # newest-first entries: {case_id, path}
 
 
 @router.post("/micro_court/lock", response_model=MicroCourtLockResponse)
-async def micro_court_lock(req: MicroCourtLockRequest, request: Request, response: Response) -> MicroCourtLockResponse:
+async def micro_court_lock(
+    req: MicroCourtLockRequest, request: Request, response: Response
+) -> MicroCourtLockResponse:
     from services.api_gateway.limits import enforce_limits, get_tenant_id
 
     enforce_limits(request, cost_units=1)
@@ -230,7 +238,10 @@ async def micro_court_publish(
 
     # Ledger zapis (hash PCO) – best‑effort
     try:
-        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+        from services.ledger_service.ledger import (
+            compute_provenance_hash,
+            ledger_service,
+        )
 
         doc_hash = "sha256:" + compute_provenance_hash(pco, include_timestamp=False)
         ledger_service.record_input(case_id=case, document_hash=doc_hash)
@@ -257,7 +268,9 @@ async def micro_court_publish(
             del _CASEBOOK[20:]
     except Exception:
         pass
-    return MicroCourtPublishResponse(ok=True, case_id=case, published=True, path=path, pco=pco)
+    return MicroCourtPublishResponse(
+        ok=True, case_id=case, published=True, path=path, pco=pco
+    )
 
 
 # --- Casebook (W12): lista ostatnich spraw Micro‑Court ------------------------
@@ -281,7 +294,11 @@ async def casebook(request: Request) -> CasebookResponse:
     # zwróć kopię, newest-first (już utrzymywane newest-first)
     out: list[CasebookEntry] = []
     for it in _CASEBOOK[:10]:
-        out.append(CasebookEntry(case_id=str(it.get("case_id") or ""), path=list(it.get("path") or [])))
+        out.append(
+            CasebookEntry(
+                case_id=str(it.get("case_id") or ""), path=list(it.get("path") or [])
+            )
+        )
     return CasebookResponse(cases=out)
 
 
@@ -311,9 +328,21 @@ class PilotFeedbackResponse(BaseModel):
 
 
 _PILOT_CASES: list[PilotCase] = [
-    PilotCase(case_id="LEX-PILOT-001", title="Umowa pożyczki — spór o odsetki", status="IN_PROGRESS"),
-    PilotCase(case_id="LEX-PILOT-002", title="Odszkodowanie komunikacyjne — regres", status="IN_PROGRESS"),
-    PilotCase(case_id="LEX-PILOT-003", title="Naruszenie dóbr osobistych — przeprosiny", status="IN_PROGRESS"),
+    PilotCase(
+        case_id="LEX-PILOT-001",
+        title="Umowa pożyczki — spór o odsetki",
+        status="IN_PROGRESS",
+    ),
+    PilotCase(
+        case_id="LEX-PILOT-002",
+        title="Odszkodowanie komunikacyjne — regres",
+        status="IN_PROGRESS",
+    ),
+    PilotCase(
+        case_id="LEX-PILOT-003",
+        title="Naruszenie dóbr osobistych — przeprosiny",
+        status="IN_PROGRESS",
+    ),
 ]
 
 _PILOT_FEEDBACK: dict[str, list[int]] = {}
@@ -328,7 +357,9 @@ async def pilot_cases(request: Request) -> PilotCasesResponse:
 
 
 @router.post("/pilot/feedback", response_model=PilotFeedbackResponse)
-async def pilot_feedback(req: PilotFeedbackRequest, request: Request, response: Response) -> PilotFeedbackResponse:
+async def pilot_feedback(
+    req: PilotFeedbackRequest, request: Request, response: Response
+) -> PilotFeedbackResponse:
     from services.api_gateway.limits import enforce_limits, get_tenant_id
 
     enforce_limits(request, cost_units=1)
@@ -338,15 +369,21 @@ async def pilot_feedback(req: PilotFeedbackRequest, request: Request, response: 
 
     # Metryki + PCO
     try:
-        from monitoring.metrics_slo import certeus_lex_pilot_feedback_total, certeus_lex_pilot_last_rating
+        from monitoring.metrics_slo import (
+            certeus_lex_pilot_feedback_total,
+            certeus_lex_pilot_last_rating,
+        )
 
         certeus_lex_pilot_feedback_total.labels(case=req.case_id, tenant=tenant).inc()
-        certeus_lex_pilot_last_rating.labels(case=req.case_id, tenant=tenant).set(float(rating))
+        certeus_lex_pilot_last_rating.labels(case=req.case_id, tenant=tenant).set(
+            float(rating)
+        )
     except Exception:
         pass
     try:
         response.headers["X-CERTEUS-PCO-lex.pilot.feedback"] = json.dumps(
-            {"case": req.case_id, "rating": rating, "tenant": tenant}, separators=(",", ":")
+            {"case": req.case_id, "rating": rating, "tenant": tenant},
+            separators=(",", ":"),
         )
     except Exception:
         pass

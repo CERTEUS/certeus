@@ -42,7 +42,9 @@ def test_roles_allow_publish_afv() -> None:
 
 
 def test_roles_deny_manage_keys_by_atc() -> None:
-    payload = '{"user":{"role":"ATC"},"action":"manage_keys","resource":{"kind":"keys"}}'
+    payload = (
+        '{"user":{"role":"ATC"},"action":"manage_keys","resource":{"kind":"keys"}}'
+    )
     res = run_gate(payload)
     assert res.returncode != 0
     assert "not permitted" in (res.stdout + res.stderr)

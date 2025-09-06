@@ -116,14 +116,22 @@ _FIN_PAPER: dict[str, _PaperState] = {}
 
 
 @router.post("/measure", response_model=MeasureResponse)
-async def measure(req: MeasureRequest, request: Request, response: Response) -> MeasureResponse:
+async def measure(
+    req: MeasureRequest, request: Request, response: Response
+) -> MeasureResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
 
     s = req.signals or {}
     risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
-    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
+    sent = float(
+        sum(
+            v
+            for k, v in s.items()
+            if ("sent" in k.lower()) or ("sentiment" in k.lower())
+        )
+    )
     score = sent - risk
     outcome = "BUY" if score >= 0 else "SELL"
     p = min(0.95, max(0.05, 0.5 + score / 10.0))
@@ -169,8 +177,12 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     try:
         import json as _json
 
-        response.headers["X-CERTEUS-PCO-fin.measure"] = _json.dumps(pco["fin.alpha.measure"], separators=(",", ":"))
-        response.headers["X-CERTEUS-Policy-FIN"] = _json.dumps(policy, separators=(",", ":"))
+        response.headers["X-CERTEUS-PCO-fin.measure"] = _json.dumps(
+            pco["fin.alpha.measure"], separators=(",", ":")
+        )
+        response.headers["X-CERTEUS-Policy-FIN"] = _json.dumps(
+            policy, separators=(",", ":")
+        )
     except Exception:
         pass
     try:
@@ -180,9 +192,14 @@ async def measure(req: MeasureRequest, request: Request, response: Response) -> 
     except Exception:
         pass
     try:
-        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+        from services.ledger_service.ledger import (
+            compute_provenance_hash,
+            ledger_service,
+        )
 
-        doc_hash = "sha256:" + compute_provenance_hash(pco["fin.alpha.measure"], include_timestamp=False)
+        doc_hash = "sha256:" + compute_provenance_hash(
+            pco["fin.alpha.measure"], include_timestamp=False
+        )
         ledger_service.record_input(case_id="FIN-ALPHA", document_hash=doc_hash)
     except Exception:
         pass
@@ -204,13 +221,21 @@ class OperatorsRSResponse(BaseModel):
 
 
 @router.post("/operators_rs", response_model=OperatorsRSResponse)
-async def operators_rs(req: OperatorsRSRequest, request: Request, response: Response) -> OperatorsRSResponse:
+async def operators_rs(
+    req: OperatorsRSRequest, request: Request, response: Response
+) -> OperatorsRSResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)
     s = req.signals or {}
     risk = float(sum(v for k, v in s.items() if "risk" in k.lower()))
-    sent = float(sum(v for k, v in s.items() if ("sent" in k.lower()) or ("sentiment" in k.lower())))
+    sent = float(
+        sum(
+            v
+            for k, v in s.items()
+            if ("sent" in k.lower()) or ("sentiment" in k.lower())
+        )
+    )
     # Simple non‑commutation surrogate: absolute difference normalized
     denom = max(1.0, abs(risk) + abs(sent))
     comm = abs(risk - sent) / denom
@@ -220,7 +245,9 @@ async def operators_rs(req: OperatorsRSRequest, request: Request, response: Resp
         certeus_fin_commutator_rs.set(float(comm))
     except Exception:
         pass
-    return OperatorsRSResponse(R=round(risk, 6), S=round(sent, 6), commutator_norm=round(comm, 6))
+    return OperatorsRSResponse(
+        R=round(risk, 6), S=round(sent, 6), commutator_norm=round(comm, 6)
+    )
 
 
 # --- W7: Entanglement MI (pairs) ---------------------------------------------
@@ -334,7 +361,9 @@ async def operators_commutator() -> dict[str, float]:
 
 
 @router.post("/simulate", response_model=SimulateResponse)
-async def simulate(req: SimulateRequest, request: Request, response: Response) -> SimulateResponse:
+async def simulate(
+    req: SimulateRequest, request: Request, response: Response
+) -> SimulateResponse:
     """
     PL: Symulacja 2 strategii Q-Alpha (stub): qalpha-momentum, qalpha-arb.
     EN: Simulate 2 Q-Alpha strategies (stub): qalpha-momentum, qalpha-arb.
@@ -371,7 +400,11 @@ async def simulate(req: SimulateRequest, request: Request, response: Response) -
             "capital_end": round(capT, 2),
             "horizon_days": days,
             "params": req.params or {},
-            "metrics": {"pnl_abs": round(pnl_abs, 2), "pnl_pct": round(pnl_pct, 6), "sharpe_stub": round(sharpe, 3)},
+            "metrics": {
+                "pnl_abs": round(pnl_abs, 2),
+                "pnl_pct": round(pnl_pct, 6),
+                "sharpe_stub": round(sharpe, 3),
+            },
         }
     }
 
@@ -494,7 +527,9 @@ async def paper_open(req: PaperOpenRequest, request: Request) -> PaperOpenRespon
 
 
 @router.post("/paper/order", response_model=PaperOrderResponse)
-async def paper_order(req: PaperOrderRequest, request: Request, response: Response) -> PaperOrderResponse:
+async def paper_order(
+    req: PaperOrderRequest, request: Request, response: Response
+) -> PaperOrderResponse:
     from services.api_gateway.limits import enforce_limits, get_tenant_id
 
     enforce_limits(request, cost_units=1)
@@ -530,7 +565,10 @@ async def paper_order(req: PaperOrderRequest, request: Request, response: Respon
 
     # Metryki + PCO
     try:
-        from monitoring.metrics_slo import certeus_fin_paper_equity, certeus_fin_paper_orders_total
+        from monitoring.metrics_slo import (
+            certeus_fin_paper_equity,
+            certeus_fin_paper_orders_total,
+        )
 
         certeus_fin_paper_orders_total.labels(tenant=tenant, side=side).inc()
         certeus_fin_paper_equity.labels(tenant=tenant).set(float(equity))

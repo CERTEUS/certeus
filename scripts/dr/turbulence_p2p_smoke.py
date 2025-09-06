@@ -65,7 +65,11 @@ def run_turbulence(iters: int = 30) -> tuple[dict[str, Any], float, float]:
             errors += 1
     p95 = _p95(durs)
     erate = errors / max(1, len(durs))
-    return {"count": len(durs), "p95_ms": round(p95, 2), "error_rate": round(erate, 4)}, p95, erate
+    return (
+        {"count": len(durs), "p95_ms": round(p95, 2), "error_rate": round(erate, 4)},
+        p95,
+        erate,
+    )
 
 
 def main() -> int:  # pragma: no cover (integration)
@@ -82,7 +86,7 @@ def main() -> int:  # pragma: no cover (integration)
     outp.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     ok = (p95 <= args.p95_max_ms) and (er <= args.max_error_rate)
-    status = 'OK' if ok else 'WARN'
+    status = "OK" if ok else "WARN"
     print(
         f"P2P turbulence: p95={p95:.2f} ms (<= {args.p95_max_ms}), er={er:.4f} (<= {args.max_error_rate}) => {status}"
     )

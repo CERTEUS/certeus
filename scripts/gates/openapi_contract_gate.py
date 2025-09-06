@@ -110,7 +110,11 @@ def main() -> int:  # pragma: no cover (integration)
         print("OpenAPI Contract: VIOLATIONS")
         for v in vio:
             print(" -", v)
-    enforce = (os.getenv("ENFORCE_OPENAPI_CONTRACT") or "").strip() in {"1", "true", "True"}
+    enforce = (os.getenv("ENFORCE_OPENAPI_CONTRACT") or "").strip() in {
+        "1",
+        "true",
+        "True",
+    }
     if vio and enforce:
         return 1
     print(

@@ -29,11 +29,20 @@ def main() -> int:
     out = Path("reports/w7_fin_demo.json")
     out.parent.mkdir(parents=True, exist_ok=True)
     c = TestClient(app)
-    r_m = c.post("/v1/fin/alpha/measure", json={"signals": {"risk": 0.2, "sentiment": 0.5}})
+    r_m = c.post(
+        "/v1/fin/alpha/measure", json={"signals": {"risk": 0.2, "sentiment": 0.5}}
+    )
     r_m.raise_for_status()
     r_mi = c.post(
         "/v1/fin/alpha/entanglement/mi",
-        json=[{"a": "A", "b": "B", "series_a": [0.1, 0.2, 0.3], "series_b": [0.15, 0.22, 0.31]}],
+        json=[
+            {
+                "a": "A",
+                "b": "B",
+                "series_a": [0.1, 0.2, 0.3],
+                "series_b": [0.15, 0.22, 0.31],
+            }
+        ],
     )
     r_mi.raise_for_status()
     r_s = c.post(

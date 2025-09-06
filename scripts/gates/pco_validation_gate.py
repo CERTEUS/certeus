@@ -73,7 +73,9 @@ def main() -> int:
         missing.append(mco_schema_path.as_posix())
     if missing:
         report["errors"] = [f"missing schema: {p}" for p in missing]
-        (out_dir / "pco_validation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+        (out_dir / "pco_validation.json").write_text(
+            json.dumps(report, indent=2), encoding="utf-8"
+        )
         print("PCO Validation: schema missing:", ", ".join(missing))
         return 1
 
@@ -126,7 +128,9 @@ def main() -> int:
     mco_errors = [f"MCO: {e.message}" for e in v_mco.iter_errors(mco)]
     report["mco"]["ok"] = len(mco_errors) == 0
     report["mco"]["errors"] = mco_errors
-    (out_dir / "pco_validation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (out_dir / "pco_validation.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
     all_ok = bool(report["sec"]["ok"] and report["dpco"]["ok"] and report["mco"]["ok"])
     print("PCO Validation:", "OK" if all_ok else "FAIL")
     return 0 if all_ok else 1

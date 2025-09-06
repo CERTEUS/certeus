@@ -88,7 +88,9 @@ class TokenStatusOut(BaseModel):
 router_tokens = APIRouter(prefix="/v1/fin/tokens", tags=["billing"])
 
 
-@router_tokens.post("/request", response_model=TokenRequestOut, operation_id="fin_request_tokens")
+@router_tokens.post(
+    "/request", response_model=TokenRequestOut, operation_id="fin_request_tokens"
+)
 async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestOut:
     from services.api_gateway.limits import enforce_limits
 
@@ -118,7 +120,9 @@ async def request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestO
     return TokenRequestOut(**entry)
 
 
-@router_tokens.post("/allocate", response_model=TokenStatusOut, operation_id="fin_allocate_tokens")
+@router_tokens.post(
+    "/allocate", response_model=TokenStatusOut, operation_id="fin_allocate_tokens"
+)
 async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatusOut:
     from services.api_gateway.limits import enforce_limits
 
@@ -128,7 +132,11 @@ async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatus
     if not entry:
         raise HTTPException(status_code=404, detail="unknown request_id")
     if entry.get("status") == "ALLOCATED":
-        return TokenStatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
+        return TokenStatusOut(
+            request_id=req.request_id,
+            status="ALLOCATED",
+            allocated_by=entry.get("allocated_by"),
+        )
     entry["status"] = "ALLOCATED"
     if req.allocated_by:
         entry["allocated_by"] = req.allocated_by
@@ -150,10 +158,18 @@ async def allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatus
             pass
     except Exception:
         pass
-    return TokenStatusOut(request_id=req.request_id, status="ALLOCATED", allocated_by=entry.get("allocated_by"))
+    return TokenStatusOut(
+        request_id=req.request_id,
+        status="ALLOCATED",
+        allocated_by=entry.get("allocated_by"),
+    )
 
 
-@router_tokens.get("/{request_id}", response_model=TokenStatusOut, operation_id="fin_get_token_request_status")
+@router_tokens.get(
+    "/{request_id}",
+    response_model=TokenStatusOut,
+    operation_id="fin_get_token_request_status",
+)
 async def get_request_status(request_id: str, request: Request) -> TokenStatusOut:
     from services.api_gateway.limits import enforce_limits
 
@@ -163,7 +179,9 @@ async def get_request_status(request_id: str, request: Request) -> TokenStatusOu
     if not entry:
         raise HTTPException(status_code=404, detail="unknown request_id")
     return TokenStatusOut(
-        request_id=request_id, status=str(entry.get("status")), allocated_by=entry.get("allocated_by")
+        request_id=request_id,
+        status=str(entry.get("status")),
+        allocated_by=entry.get("allocated_by"),
     )
 
 
@@ -198,7 +216,11 @@ async def quota(request: Request) -> dict[str, Any]:
 
 @router.post("/quota", operation_id="billing_set_quota")
 async def set_quota_api(req: QuotaRequest, request: Request) -> dict[str, Any]:
-    from services.api_gateway.limits import get_tenant_balance, get_tenant_id, set_tenant_quota
+    from services.api_gateway.limits import (
+        get_tenant_balance,
+        get_tenant_id,
+        set_tenant_quota,
+    )
 
     tenant = (req.tenant or get_tenant_id(request)).strip() or get_tenant_id(request)
     set_tenant_quota(tenant, max(0, int(req.units)))
@@ -207,20 +229,40 @@ async def set_quota_api(req: QuotaRequest, request: Request) -> dict[str, Any]:
 
 @router.post("/allocate", operation_id="billing_allocate_units")
 async def allocate(req: AllocateRequest, request: Request) -> dict[str, Any]:
-    from services.api_gateway.limits import allocate_tenant_cost, get_tenant_balance, get_tenant_id
+    from services.api_gateway.limits import (
+        allocate_tenant_cost,
+        get_tenant_balance,
+        get_tenant_id,
+    )
 
     tenant = get_tenant_id(request)
     if req.cost_units == 0:
-        return {"status": "ALLOCATED", "tenant": tenant, "balance": get_tenant_balance(tenant)}
+        return {
+            "status": "ALLOCATED",
+            "tenant": tenant,
+            "balance": get_tenant_balance(tenant),
+        }
     ok = allocate_tenant_cost(tenant, int(req.cost_units))
     if not ok:
-        return {"status": "PENDING", "tenant": tenant, "balance": get_tenant_balance(tenant)}
-    return {"status": "ALLOCATED", "tenant": tenant, "balance": get_tenant_balance(tenant)}
+        return {
+            "status": "PENDING",
+            "tenant": tenant,
+            "balance": get_tenant_balance(tenant),
+        }
+    return {
+        "status": "ALLOCATED",
+        "tenant": tenant,
+        "balance": get_tenant_balance(tenant),
+    }
 
 
 @router.post("/refund", operation_id="billing_refund_units")
 async def refund(req: RefundRequest, request: Request) -> dict[str, Any]:
-    from services.api_gateway.limits import get_tenant_balance, get_tenant_id, refund_tenant_units
+    from services.api_gateway.limits import (
+        get_tenant_balance,
+        get_tenant_id,
+        refund_tenant_units,
+    )
 
     tenant = get_tenant_id(request)
     if req.units > 0:
@@ -235,7 +277,11 @@ _POLICY_CACHE: dict[str, Any] | None = None
 
 def _policy_file_path() -> Path:
     p = os.getenv("BILLING_POLICY_FILE")
-    return Path(p) if p else (Path(__file__).resolve().parents[3] / "data" / "billing_policy.json")
+    return (
+        Path(p)
+        if p
+        else (Path(__file__).resolve().parents[3] / "data" / "billing_policy.json")
+    )
 
 
 def _load_policy() -> dict[str, Any]:
@@ -299,7 +345,9 @@ async def estimate(body: dict[str, Any], request: Request) -> dict[str, Any]:
 
 
 @router.get("/recommendation", summary="Recommend tier based on action and volume")
-async def recommendation(action: str, monthly: int = 0, days: int = 30) -> dict[str, Any]:
+async def recommendation(
+    action: str, monthly: int = 0, days: int = 30
+) -> dict[str, Any]:
     pol = _load_policy()
     # progi proste: enterprise dla bardzo wysokiego wolumenu, pro dla średniego
     rec = "free"
@@ -327,7 +375,9 @@ async def admin_set_tier(body: SetTierIn) -> dict[str, Any]:
     pol = _load_policy()
     tenants = pol.setdefault("tenants", {})
     tenants[str(body.tenant)] = str(body.tier)
-    persisted = bool(body.persist) and (os.getenv("BILLING_POLICY_FILE_WRITE") or "").strip() in {"1", "true", "True"}
+    persisted = bool(body.persist) and (
+        os.getenv("BILLING_POLICY_FILE_WRITE") or ""
+    ).strip() in {"1", "true", "True"}
     if persisted:
         _save_policy(pol)
     else:

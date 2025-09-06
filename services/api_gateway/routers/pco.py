@@ -35,7 +35,10 @@ async def _create_and_sign_bundle(bundle_request: dict) -> dict:
     errors = sorted(_VALIDATOR.iter_errors(bundle_request), key=lambda e: e.path)
     if errors:
         # Zwróć pierwszy błąd walidacji dla lepszego debugowania
-        error_details = [f"Validation error at `{' -> '.join(map(str, e.path))}`: {e.message}" for e in errors]
+        error_details = [
+            f"Validation error at `{' -> '.join(map(str, e.path))}`: {e.message}"
+            for e in errors
+        ]
         raise HTTPException(
             status_code=422,  # Unprocessable Entity
             detail={"code": "validation_error", "errors": error_details},

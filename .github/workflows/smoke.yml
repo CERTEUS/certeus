@@ -170,11 +170,4 @@ jobs:
             } catch (err) {
               core.warning(`Could not create PR comment: ${err?.message || err}`);
             }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
-=======
->>>>>>> origin/work/daily
 

@@ -15,7 +15,11 @@ def test_med_phi_redact_pack() -> None:
     c = TestClient(app)
     r = c.post(
         "/v1/packs/handle",
-        json={"pack": "med_demo", "kind": "med.phi.redact", "payload": {"text": "PESEL: 123 DOB: 2001-01-01"}},
+        json={
+            "pack": "med_demo",
+            "kind": "med.phi.redact",
+            "payload": {"text": "PESEL: 123 DOB: 2001-01-01"},
+        },
     )
     assert r.status_code == 200
     body = r.json().get("result") or {}
@@ -28,7 +32,11 @@ def test_sec_risk_assess_pack() -> None:
     c = TestClient(app)
     r = c.post(
         "/v1/packs/handle",
-        json={"pack": "sec_demo", "kind": "sec.risk.assess", "payload": {"vulns": ["a", "b", "c"]}},
+        json={
+            "pack": "sec_demo",
+            "kind": "sec.risk.assess",
+            "payload": {"vulns": ["a", "b", "c"]},
+        },
     )
     assert r.status_code == 200
     body = r.json().get("result") or {}
@@ -42,7 +50,11 @@ def test_code_static_check_pack() -> None:
     src = "line1\n# TODO: refactor\npass\n"
     r = c.post(
         "/v1/packs/handle",
-        json={"pack": "code_demo", "kind": "code.static.check", "payload": {"source": src}},
+        json={
+            "pack": "code_demo",
+            "kind": "code.static.check",
+            "payload": {"source": src},
+        },
     )
     assert r.status_code == 200
     body = r.json().get("result") or {}

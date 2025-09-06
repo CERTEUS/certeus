@@ -38,7 +38,9 @@ def _repo() -> Path:
 
 
 def test_security_pco_schema_valid_example() -> None:
-    schema = json.loads((_repo() / "schemas" / "security_pco_v0.1.json").read_text(encoding="utf-8"))
+    schema = json.loads(
+        (_repo() / "schemas" / "security_pco_v0.1.json").read_text(encoding="utf-8")
+    )
     validator = Draft7Validator(schema)  # type: ignore[call-arg]
 
     sec = {
@@ -46,7 +48,13 @@ def test_security_pco_schema_valid_example() -> None:
         "severity": "HIGH",
         "status": "OPEN",
         "controls": ["ISO27001:A.12.6", "SOC2:Security"],
-        "evidence": [{"digest": "sha256:" + ("a" * 64), "type": "artifact", "uri": "pfs://mail/M-1/rep.pdf"}],
+        "evidence": [
+            {
+                "digest": "sha256:" + ("a" * 64),
+                "type": "artifact",
+                "uri": "pfs://mail/M-1/rep.pdf",
+            }
+        ],
         "cwe": ["CWE-79"],
         "cve": ["CVE-2025-0001"],
         "cvss": 8.2,

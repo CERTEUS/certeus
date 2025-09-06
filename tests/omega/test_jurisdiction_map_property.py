@@ -33,12 +33,19 @@ JUR_WORDS = [
 ]
 
 
-_NOISE = st.text(alphabet=st.characters(blacklist_categories=("Cs", "Zs")), min_size=3, max_size=8)
+_NOISE = st.text(
+    alphabet=st.characters(blacklist_categories=("Cs", "Zs")), min_size=3, max_size=8
+)
 
 
 @settings(max_examples=25, deadline=None)
-@given(st.lists(st.sampled_from(JUR_WORDS), min_size=3, max_size=10), st.lists(_NOISE, min_size=1, max_size=5))
-def test_jurisdiction_map_idempotent_and_count_stable(words: list[str], noise: list[str]) -> None:
+@given(
+    st.lists(st.sampled_from(JUR_WORDS), min_size=3, max_size=10),
+    st.lists(_NOISE, min_size=1, max_size=5),
+)
+def test_jurisdiction_map_idempotent_and_count_stable(
+    words: list[str], noise: list[str]
+) -> None:
     src = " ".join(words + noise)
     once, _ = apply_transform(src, "jurisdiction_map")
     twice, _ = apply_transform(once, "jurisdiction_map")

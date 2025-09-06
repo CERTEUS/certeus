@@ -31,7 +31,9 @@ _RE_MAIN = re.compile(r"<(main|[^>]*role=\"main\")[^>]*>", re.IGNORECASE)
 _RE_SKIP = re.compile(r"<a[^>]*href=\"#main\"", re.IGNORECASE)
 
 
-def check_public_html(root: str | Path | None = None) -> tuple[dict[str, list[str]], int]:
+def check_public_html(
+    root: str | Path | None = None,
+) -> tuple[dict[str, list[str]], int]:
     """PL/EN: Zwraca (issues_by_file, checked_count). Nie rzuca wyjątków."""
     repo = Path(root or ".").resolve()
     web = repo / "clients" / "web" / "public"
@@ -48,7 +50,7 @@ def check_public_html(root: str | Path | None = None) -> tuple[dict[str, list[st
         if not _RE_LANG.search(html):
             errs.append("missing <html lang=…>")
         if not _RE_VIEWPORT.search(html):
-            errs.append("missing <meta name=\"viewport\">")
+            errs.append('missing <meta name="viewport">')
         if not (_RE_MAIN.search(html) or _RE_SKIP.search(html)):
             errs.append("missing <main>/role=main or skip link")
         if errs:

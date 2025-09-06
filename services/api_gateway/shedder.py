@@ -46,7 +46,9 @@ def attach_shedder_middleware(app: FastAPI) -> None:
     @app.middleware("http")
     async def _shedder(request: Request, call_next: Callable):  # type: ignore
         try:
-            if _env_flag("SHED_ENABLE") and _is_heavy_endpoint(request.url.path, request.method):
+            if _env_flag("SHED_ENABLE") and _is_heavy_endpoint(
+                request.url.path, request.method
+            ):
                 force_rate = max(0.0, min(1.0, _env_float("SHED_FORCE_RATE", 0.0)))
                 max_rate = max(0.0, min(1.0, _env_float("SHED_MAX_RATE", 1.0)))
                 rate = min(force_rate, max_rate)

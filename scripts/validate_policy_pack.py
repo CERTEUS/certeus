@@ -146,7 +146,9 @@ def _ensure_no_pii(fields: list[str], ctx: str, messages: list[dict[str, Any]]) 
         )
 
 
-def _check_required_fields(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
+def _check_required_fields(
+    fields: list[str], ctx: str, messages: list[dict[str, Any]]
+) -> None:
     s = set(x.replace("?", "") for x in fields)
 
     missing = sorted(REQUIRED_PUBLIC_FIELDS - s)
@@ -162,7 +164,9 @@ def _check_required_fields(fields: list[str], ctx: str, messages: list[dict[str,
         )
 
 
-def _check_unknown_fields(fields: list[str], ctx: str, messages: list[dict[str, Any]]) -> None:
+def _check_unknown_fields(
+    fields: list[str], ctx: str, messages: list[dict[str, Any]]
+) -> None:
     s = set(x.replace("?", "") for x in fields)
 
     unknown = sorted(s - ALLOWED_PUBLIC_FIELDS)
@@ -178,7 +182,9 @@ def _check_unknown_fields(fields: list[str], ctx: str, messages: list[dict[str, 
         )
 
 
-def _check_endpoint_pattern(endpoint: str, ctx: str, messages: list[dict[str, Any]]) -> None:
+def _check_endpoint_pattern(
+    endpoint: str, ctx: str, messages: list[dict[str, Any]]
+) -> None:
     if not ENDPOINT_PATTERN.fullmatch(endpoint):
         messages.append(
             {
@@ -196,14 +202,26 @@ def run_invariants(pack: dict[str, Any]) -> list[dict[str, Any]]:
     use_cases = pack.get("use_cases", {})
 
     if not isinstance(use_cases, dict):
-        msgs.append({"level": "error", "code": "USE_CASES_TYPE", "where": "use_cases", "detail": "must be object"})
+        msgs.append(
+            {
+                "level": "error",
+                "code": "USE_CASES_TYPE",
+                "where": "use_cases",
+                "detail": "must be object",
+            }
+        )
 
         return msgs
 
     for uc_name, uc in use_cases.items():
         if not isinstance(uc, dict):
             msgs.append(
-                {"level": "error", "code": "UC_TYPE", "where": f"use_cases.{uc_name}", "detail": "must be object"}
+                {
+                    "level": "error",
+                    "code": "UC_TYPE",
+                    "where": f"use_cases.{uc_name}",
+                    "detail": "must be object",
+                }
             )
 
             continue
@@ -272,9 +290,13 @@ def _parse_args() -> argparse.Namespace:
         description="Validate PCO Policy Pack (schema + invariants).",
     )
 
-    p.add_argument("--schema", type=Path, default=Path(os.getenv(ENV_SCHEMA) or DEFAULT_SCHEMA))
+    p.add_argument(
+        "--schema", type=Path, default=Path(os.getenv(ENV_SCHEMA) or DEFAULT_SCHEMA)
+    )
 
-    p.add_argument("--pack", type=Path, default=Path(os.getenv(ENV_PACK) or DEFAULT_PACK))
+    p.add_argument(
+        "--pack", type=Path, default=Path(os.getenv(ENV_PACK) or DEFAULT_PACK)
+    )
 
     p.add_argument("--format", choices=["text", "json"], default="text")
 
@@ -285,7 +307,9 @@ def _parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def _emit_text(schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]) -> None:
+def _emit_text(
+    schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]
+) -> None:
     if use_cases:
         print("[use_cases] " + ", ".join(use_cases))
 
@@ -304,7 +328,9 @@ def _emit_text(schema_errors: list[str], messages: list[dict[str, Any]], use_cas
         print(f"[{lvl}] {code} @ {where}: {detail}")
 
 
-def _emit_json(schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]) -> None:
+def _emit_json(
+    schema_errors: list[str], messages: list[dict[str, Any]], use_cases: list[str]
+) -> None:
     out = {"use_cases": use_cases, "schema_errors": schema_errors, "messages": messages}
 
     print(json.dumps(out, ensure_ascii=False, indent=2))

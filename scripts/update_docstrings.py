@@ -133,7 +133,10 @@ def describe(rel: str) -> tuple[str, str]:
             "verify": ("weryfikacja dowodów", "proof verification"),
             "well_known_jwks": ("/.well-known/jwks.json", "JWKS endpoint"),
             "chatops": ("interfejs ChatOps", "ChatOps interface"),
-            "devices": ("urządzenia HDE/Q-Oracle/Entangle/Chronosync", "HDE/Q-Oracle/Entangle/Chronosync devices"),
+            "devices": (
+                "urządzenia HDE/Q-Oracle/Entangle/Chronosync",
+                "HDE/Q-Oracle/Entangle/Chronosync devices",
+            ),
             "dr": ("Disaster Recovery: replay/revoke", "DR: replay/revoke"),
             "ethics": ("Equity Meter / HHE", "Equity Meter / HHE"),
             "fin": ("FINENITH (quantum alpha)", "FINENITH (quantum alpha)"),
@@ -177,8 +180,14 @@ def describe(rel: str) -> tuple[str, str]:
         stem = Path(r).stem
 
         desc = {
-            "ledger": ("operacje ledger (zapis/weryfikacja)", "ledger ops (record/verify)"),
-            "cosmic_merkle": ("Merkle snapshoty i dowody", "Merkle snapshots and proofs"),
+            "ledger": (
+                "operacje ledger (zapis/weryfikacja)",
+                "ledger ops (record/verify)",
+            ),
+            "cosmic_merkle": (
+                "Merkle snapshoty i dowody",
+                "Merkle snapshots and proofs",
+            ),
         }.get(stem, ("moduł serwisu ledger", "ledger service module"))
 
         return (f"Ledger Service: {desc[0]}.", f"Ledger Service: {desc[1]}.")

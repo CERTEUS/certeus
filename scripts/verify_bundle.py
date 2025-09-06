@@ -115,11 +115,18 @@ def sha256_hex_utf8(s: str) -> str:
 
 
 def is_hex64(x: str) -> bool:
-    return isinstance(x, str) and len(x) == 64 and all(c in "0123456789abcdef" for c in x.lower())
+    return (
+        isinstance(x, str)
+        and len(x) == 64
+        and all(c in "0123456789abcdef" for c in x.lower())
+    )
 
 
 def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
-    payload = {"smt2_hash": pub["smt2_hash"], "lfsc_sha256": sha256_hex_utf8(pub["lfsc"])}
+    payload = {
+        "smt2_hash": pub["smt2_hash"],
+        "lfsc_sha256": sha256_hex_utf8(pub["lfsc"]),
+    }
 
     if pub.get("drat") is not None:
         payload["drat_sha256"] = sha256_hex_utf8(pub["drat"])
@@ -176,18 +183,25 @@ def ed25519_from_b64url(x_b64u: str) -> Ed25519PublicKey:
 
 
 def main() -> int:
-    ap = ArgumentParser(description="Verify public PCO bundle (Merkle + Ed25519 signature).")
+    ap = ArgumentParser(
+        description="Verify public PCO bundle (Merkle + Ed25519 signature)."
+    )
 
     ap.add_argument("--rid", required=True)
 
-    ap.add_argument("--bundle-dir", default=os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco"))
+    ap.add_argument(
+        "--bundle-dir", default=os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
+    )
 
     ap.add_argument("--pub-b64url", default=os.getenv("ED25519_PUBKEY_B64URL"))
 
     args = ap.parse_args()
 
     if not args.pub_b64url:
-        print("ERR: missing public key (use --pub-b64url or ED25519_PUBKEY_B64URL)", file=sys.stderr)
+        print(
+            "ERR: missing public key (use --pub-b64url or ED25519_PUBKEY_B64URL)",
+            file=sys.stderr,
+        )
 
         return 2
 
@@ -214,7 +228,9 @@ def main() -> int:
 
     bundle_hash_hex = compute_bundle_hash_hex(pub)
 
-    leaf_hex = hashlib.sha256(bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)).hexdigest()
+    leaf_hex = hashlib.sha256(
+        bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)
+    ).hexdigest()
 
     # 2) merkle_root (MVP: path może być [] lub L/R ścieżka)
 

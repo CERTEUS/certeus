@@ -114,7 +114,13 @@ def test_post_pco_bundle_builds_valid_proofbundle(tmp_path: Path, monkeypatch) -
 
     # Validate ProofBundle v0.2
 
-    schema_path = Path(__file__).resolve().parents[2] / "services" / "api_gateway" / "schemas" / "proofbundle_v0.2.json"
+    schema_path = (
+        Path(__file__).resolve().parents[2]
+        / "services"
+        / "api_gateway"
+        / "schemas"
+        / "proofbundle_v0.2.json"
+    )
 
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
 

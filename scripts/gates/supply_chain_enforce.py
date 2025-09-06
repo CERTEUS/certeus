@@ -87,7 +87,9 @@ def main() -> int:
         "enforce": bool(enforce),
         "require_cosign": bool(require_cosign),
     }
-    (out / "supply_chain_enforce.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (out / "supply_chain_enforce.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
 
     if not repo_ok and enforce:
         print("supply-chain: FAIL (missing sbom.json/artifact.json)")

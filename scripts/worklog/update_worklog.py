@@ -32,8 +32,18 @@ def main() -> int:
     repo = Path(__file__).resolve().parents[2]
     p = repo / "WORKLOG.md"
     ts = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%SZ")
-    actor = os.getenv("GITHUB_ACTOR") or os.getenv("USER") or os.getenv("USERNAME") or "agent"
-    branch = os.getenv("GITHUB_REF_NAME") or os.getenv("CI_BRANCH") or os.getenv("BRANCH") or "work/daily"
+    actor = (
+        os.getenv("GITHUB_ACTOR")
+        or os.getenv("USER")
+        or os.getenv("USERNAME")
+        or "agent"
+    )
+    branch = (
+        os.getenv("GITHUB_REF_NAME")
+        or os.getenv("CI_BRANCH")
+        or os.getenv("BRANCH")
+        or "work/daily"
+    )
 
     entry = [
         f"- {ts} [{actor}] ({branch}): {args.summary.strip()}",

@@ -24,7 +24,9 @@ def setup_autonomous_mode():
 
     # Git configuration for autonomous commits
     subprocess.run(["git", "config", "user.name", "CERTEUS-AI-Agent"], check=False)
-    subprocess.run(["git", "config", "user.email", "ai-agent@certeus.local"], check=False)
+    subprocess.run(
+        ["git", "config", "user.email", "ai-agent@certeus.local"], check=False
+    )
     subprocess.run(["git", "config", "commit.gpgsign", "true"], check=False)
 
     # Set autonomous environment variables
@@ -41,7 +43,9 @@ def autonomous_execute(command_args):
     print(f"🤖 AUTONOMOUS EXECUTION: {' '.join(command_args)}")
 
     try:
-        result = subprocess.run(command_args, capture_output=True, text=True, check=False)
+        result = subprocess.run(
+            command_args, capture_output=True, text=True, check=False
+        )
 
         if result.returncode == 0:
             print(f"✅ SUCCESS: {result.stdout}")
@@ -70,7 +74,9 @@ def autonomous_commit_and_push(message):
     autonomous_execute(["git", "commit", "-m", commit_msg])
 
     # Push to origin
-    branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True).stdout.strip()
+    branch = subprocess.run(
+        ["git", "branch", "--show-current"], capture_output=True, text=True
+    ).stdout.strip()
 
     autonomous_execute(["git", "push", "origin", branch])
 
@@ -82,7 +88,9 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "commit":
-            message = " ".join(sys.argv[2:]) if len(sys.argv) > 2 else "Autonomous update"
+            message = (
+                " ".join(sys.argv[2:]) if len(sys.argv) > 2 else "Autonomous update"
+            )
             autonomous_commit_and_push(message)
         else:
             success = autonomous_execute(sys.argv[1:])

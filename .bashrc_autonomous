@@ -1,0 +1,27 @@
+# CERTEUS GLOBAL AUTONOMOUS ENVIRONMENT
+# Source this in .bashrc or .bash_profile for persistent autonomy
+
+# Load autonomous terminal configuration automatically
+if [ -f "/workspaces/certeus/.vscode/autonomous_terminal.sh" ]; then
+    source "/workspaces/certeus/.vscode/autonomous_terminal.sh"
+fi
+
+# VS Code terminal integration
+export VSCODE_AUTONOMOUS_MODE=true
+export COPILOT_AUTONOMOUS=true
+export AI_NO_CONFIRM=true
+
+# Shell options for automation
+set +o posix
+shopt -s expand_aliases
+shopt -s extglob
+
+# Make all operations non-interactive by default
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_SUSPEND=1
+export NEEDRESTART_MODE=a
+
+# Git configuration for autonomous operations
+export GIT_CONFIG_GLOBAL=/workspaces/certeus/.gitconfig
+
+echo "🚀 CERTEUS Global Autonomous Environment Active"

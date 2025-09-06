@@ -48,17 +48,27 @@ def main() -> int:
         os.environ["ED25519_PUBKEY_B64URL"] = _b64u(pub)
         # manifest unsigned
         man = Path("plugins/demo_alpha/plugin.yaml").read_text(encoding="utf-8")
-        unsigned = "\n".join([ln for ln in man.splitlines() if not ln.strip().startswith("signature:")])
+        unsigned = "\n".join(
+            [ln for ln in man.splitlines() if not ln.strip().startswith("signature:")]
+        )
         sig = _b64u(sk.sign(unsigned.encode("utf-8")))
         out = {}
         out["verify"] = c.post(
-            "/v1/marketplace/verify_manifest", json={"manifest_yaml": unsigned, "signature_b64u": sig}
+            "/v1/marketplace/verify_manifest",
+            json={"manifest_yaml": unsigned, "signature_b64u": sig},
         ).json()
         out["install"] = c.post(
-            "/v1/marketplace/install", json={"name": "demo_alpha", "manifest_yaml": unsigned, "signature_b64u": sig}
+            "/v1/marketplace/install",
+            json={
+                "name": "demo_alpha",
+                "manifest_yaml": unsigned,
+                "signature_b64u": sig,
+            },
         ).json()
         out["plugins_len"] = len(c.get("/v1/marketplace/plugins").json() or [])
-        (reports / "smoke_marketplace.json").write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+        (reports / "smoke_marketplace.json").write_text(
+            json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
     print("smoke_marketplace -> reports/smoke_marketplace.json")
     return 0
 

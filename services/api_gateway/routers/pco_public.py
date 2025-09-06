@@ -125,7 +125,9 @@ def _b64u(data: bytes) -> str:
     return b64u_encode(data)
 
 
-def _bundle_hash_hex(smt2_hash_hex: str, lfsc_text: str, drat_text: str | None = None) -> str:
+def _bundle_hash_hex(
+    smt2_hash_hex: str, lfsc_text: str, drat_text: str | None = None
+) -> str:
     """Alias pod testy → wywołuje kanoniczną funkcję."""
 
     return canonical_bundle_hash_hex(smt2_hash_hex, lfsc_text, drat_text)
@@ -185,7 +187,9 @@ def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
             cur = _h(cur + sib)
 
         else:
-            raise HTTPException(status_code=400, detail=f"Invalid merkle step.dir: {step.dir}")
+            raise HTTPException(
+                status_code=400, detail=f"Invalid merkle step.dir: {step.dir}"
+            )
 
     return cur.hex()
 
@@ -243,7 +247,9 @@ def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
 
         return norm
 
-    raise HTTPException(status_code=400, detail="merkle_proof must be list or {path:[...] }")
+    raise HTTPException(
+        status_code=400, detail="merkle_proof must be list or {path:[...] }"
+    )
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -349,13 +355,17 @@ def get_public_pco(rid: str, request: Request) -> PublicPCO:
 
 
 @router.get("/{case_id}", response_model=PublicPCO, include_in_schema=True)
-def get_public_pco_by_case_id(case_id: str, request: Request) -> PublicPCO:  # pragma: no cover (alias)
+def get_public_pco_by_case_id(
+    case_id: str, request: Request
+) -> PublicPCO:  # pragma: no cover (alias)
     return get_public_pco(case_id, request)
 
 
 # Alias ścieżki: zgodność z dokumentacją /pco/public/{case_id}
 @router.get("/{case_id}", response_model=PublicPCO, include_in_schema=True)
-def get_public_pco_alias(case_id: str, request: Request) -> PublicPCO:  # pragma: no cover - alias
+def get_public_pco_alias(
+    case_id: str, request: Request
+) -> PublicPCO:  # pragma: no cover - alias
     return get_public_pco(case_id, request)
 
 

@@ -59,7 +59,13 @@ def _gen_ed25519_env() -> tuple[str, str]:
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
-    pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
+    pub = (
+        sk.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+        )
+        .hex()
+    )
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = pub
     return pem, pub
@@ -90,7 +96,9 @@ def run_demo() -> dict[str, Any]:
     # Env: proof-only + local verification mocks off by default
     os.environ.setdefault("STRICT_PROOF_ONLY", "1")
     os.environ.setdefault("FINE_GRAINED_ROLES", "0")
-    os.environ.setdefault("PROOF_BUNDLE_DIR", str((Path("out") / "public_pco").resolve()))
+    os.environ.setdefault(
+        "PROOF_BUNDLE_DIR", str((Path("out") / "public_pco").resolve())
+    )
 
     pem, pub_hex = _gen_ed25519_env()
     sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)
@@ -107,11 +115,21 @@ def run_demo() -> dict[str, Any]:
     # 1) Ingest (PDF)
     files = {"file": ("doc.pdf", _make_pdf_bytes(), "application/pdf")}
     r = client.post("/v1/ingest", files=files)
-    steps.append({"ingest.status": r.status_code, "ledger_chain_header": r.headers.get("X-CERTEUS-Ledger-Chain")})
+    steps.append(
+        {
+            "ingest.status": r.status_code,
+            "ledger_chain_header": r.headers.get("X-CERTEUS-Ledger-Chain"),
+        }
+    )
 
     # 2) Analyze (PDF)
     r = client.post("/v1/analyze?case_id=CER-DEMO-W1", files=files)
-    steps.append({"analyze.status": r.status_code, "analysis": r.json() if r.status_code == 200 else None})
+    steps.append(
+        {
+            "analyze.status": r.status_code,
+            "analysis": r.json() if r.status_code == 200 else None,
+        }
+    )
 
     # 3) ProofGate publish (PUBLISH path)
     from hashlib import sha256
@@ -143,8 +161,15 @@ def run_demo() -> dict[str, Any]:
         "signatures": [{"role": "counsel", "by": "demo", "sig": "ok"}],
     }
 
-    r = client.post("/v1/proofgate/publish", headers=auth, json={"pco": pco, "budget_tokens": 1})
-    steps.append({"publish.gateway.status": r.status_code, "decision": (r.json() if r.status_code == 200 else None)})
+    r = client.post(
+        "/v1/proofgate/publish", headers=auth, json={"pco": pco, "budget_tokens": 1}
+    )
+    steps.append(
+        {
+            "publish.gateway.status": r.status_code,
+            "decision": (r.json() if r.status_code == 200 else None),
+        }
+    )
 
     # Publish via ProofGate service (real decision + ledger write on PUBLISH)
     from services.proofgate.app import app as pg_app  # lazy import
@@ -160,7 +185,12 @@ def run_demo() -> dict[str, Any]:
 
     # 4) Ledger: list records for case
     r = client.get("/v1/ledger/CER-DEMO-W1/records")
-    steps.append({"ledger.status": r.status_code, "records": r.json() if r.status_code == 200 else None})
+    steps.append(
+        {
+            "ledger.status": r.status_code,
+            "records": r.json() if r.status_code == 200 else None,
+        }
+    )
 
     # Optional: run gates locally (non-fatal)
     gates: dict[str, Any] = {}
@@ -171,7 +201,8 @@ def run_demo() -> dict[str, Any]:
         out_dir = Path("out")
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "boundary_report.json").write_text(
-            json.dumps({"boundary": {"delta_bits": 0, "bits_delta_map": {}}}), encoding="utf-8"
+            json.dumps({"boundary": {"delta_bits": 0, "bits_delta_map": {}}}),
+            encoding="utf-8",
         )
 
         gg = subprocess.run(

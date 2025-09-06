@@ -26,8 +26,16 @@ def test_idempotency_ttl_zero_disables_replay(monkeypatch) -> None:
     monkeypatch.setenv("IDEMP_TTL_SEC", "0")
     c = TestClient(app)
     key = "idem-ttl-0"
-    r1 = c.post("/v1/devices/horizon_drive/plan", json={"target_horizon": 0.2}, headers={"X-Idempotency-Key": key})
-    r2 = c.post("/v1/devices/horizon_drive/plan", json={"target_horizon": 0.2}, headers={"X-Idempotency-Key": key})
+    r1 = c.post(
+        "/v1/devices/horizon_drive/plan",
+        json={"target_horizon": 0.2},
+        headers={"X-Idempotency-Key": key},
+    )
+    r2 = c.post(
+        "/v1/devices/horizon_drive/plan",
+        json={"target_horizon": 0.2},
+        headers={"X-Idempotency-Key": key},
+    )
     assert r1.status_code == r2.status_code == 200
     # With TTL=0, the second call should not be served from cache
     assert r2.headers.get("X-Idempotent-Replay") == "0"

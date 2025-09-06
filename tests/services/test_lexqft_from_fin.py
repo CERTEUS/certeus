@@ -29,7 +29,11 @@ def test_coverage_from_fin_high_sentiment_low_risk() -> None:
     client.post("/v1/lexqft/coverage/reset")
     r = client.post(
         "/v1/lexqft/coverage/from_fin",
-        json={"signals": {"sentiment": 0.8, "risk": 0.1}, "weight": 2.0, "uncaptured_base": 0.08},
+        json={
+            "signals": {"sentiment": 0.8, "risk": 0.1},
+            "weight": 2.0,
+            "uncaptured_base": 0.08,
+        },
     )
     assert r.status_code == 200
     body = r.json()
@@ -44,7 +48,11 @@ def test_coverage_from_fin_high_risk_low_sentiment() -> None:
     client.post("/v1/lexqft/coverage/reset")
     r = client.post(
         "/v1/lexqft/coverage/from_fin",
-        json={"signals": {"sent": 0.1, "risk_factor": 0.9}, "weight": 1.0, "uncaptured_base": 0.1},
+        json={
+            "signals": {"sent": 0.1, "risk_factor": 0.9},
+            "weight": 1.0,
+            "uncaptured_base": 0.1,
+        },
     )
     assert r.status_code == 200
     body = r.json()

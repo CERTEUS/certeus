@@ -22,7 +22,10 @@ from services.api_gateway.main import app
 
 def test_billing_recommendation() -> None:
     c = TestClient(app)
-    r = c.get("/v1/billing/recommendation", params={"action": "qtm.measure", "monthly": 100000, "days": 30})
+    r = c.get(
+        "/v1/billing/recommendation",
+        params={"action": "qtm.measure", "monthly": 100000, "days": 30},
+    )
     assert r.status_code == 200
     j = r.json()
     assert j.get("action") == "qtm.measure"

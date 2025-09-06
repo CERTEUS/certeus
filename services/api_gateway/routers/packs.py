@@ -140,7 +140,9 @@ async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
     sig = (req.signature or "").strip()
     # Require at least 64 hex chars (report-only semantics preserved for tests using 'a'*64/'A'*64)
     if not _re.fullmatch(r"[0-9a-fA-F]{64,}", sig):
-        raise HTTPException(status_code=400, detail="invalid signature: expected hex(64+) string")
+        raise HTTPException(
+            status_code=400, detail="invalid signature: expected hex(64+) string"
+        )
 
     # Persist signature and installed_version in state
     state = _load_state()
@@ -151,7 +153,12 @@ async def install_pack(req: InstallRequest, request: Request) -> dict[str, Any]:
     state[req.pack] = cur
     _save_state(state)
 
-    return {"ok": True, "pack": req.pack, "signature": True, "installed_version": cur.get("installed_version")}
+    return {
+        "ok": True,
+        "pack": req.pack,
+        "signature": True,
+        "installed_version": cur.get("installed_version"),
+    }
 
 
 @router.post("/enable", summary="Enable or disable a pack")
@@ -236,7 +243,9 @@ class _MiniAPI:
         self.adapters: dict[str, Any] = {}
         self.exporters: dict[str, Any] = {}
 
-    def register_plugin(self, name: str, meta: Any) -> None:  # compat for plugin.register(api)
+    def register_plugin(
+        self, name: str, meta: Any
+    ) -> None:  # compat for plugin.register(api)
         self.plugins[name] = meta
 
     def register_adapter(self, key: str, fn: Any) -> None:
@@ -294,7 +303,11 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
             res = fn(sample, **kwargs)  # type: ignore[misc]
             return {"ok": True, "used": {"type": "exporter", "key": key}, "result": res}
         except Exception as e:  # pragma: no cover
-            return {"ok": False, "used": {"type": "exporter", "key": key}, "reason": str(e)}
+            return {
+                "ok": False,
+                "used": {"type": "exporter", "key": key},
+                "reason": str(e),
+            }
 
     # Fallback: adapters
     if api.adapters:
@@ -320,7 +333,11 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
             res = fn(*args)  # type: ignore[misc]
             return {"ok": True, "used": {"type": "adapter", "key": key}, "result": res}
         except Exception as e:  # pragma: no cover
-            return {"ok": False, "used": {"type": "adapter", "key": key}, "reason": str(e)}
+            return {
+                "ok": False,
+                "used": {"type": "adapter", "key": key},
+                "reason": str(e),
+            }
 
     return {"ok": False, "reason": "no exporters/adapters registered"}
 

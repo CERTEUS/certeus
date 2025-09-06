@@ -80,7 +80,9 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 # +=====================================================================+
 
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
-_COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
+_COVERAGE_STORE = (
+    Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
+)
 _TUNNEL_LOG = Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
 
 
@@ -92,7 +94,9 @@ def _persist_coverage_state() -> None:
         pass
 
 
-def append_coverage_contribution(gamma: float, weight: float = 1.0, uncaptured: float = 0.0) -> None:
+def append_coverage_contribution(
+    gamma: float, weight: float = 1.0, uncaptured: float = 0.0
+) -> None:
     """PL/EN: Dodaj wkład do agregatora pokrycia i zapisz stan (bez FastAPI request).
 
     Safe to import and call from other routers (e.g., FIN) to feed coverage.
@@ -116,8 +120,12 @@ async def tunnel_scenarios() -> list[BarrierScenario]:
     """
     return [
         BarrierScenario(model_id="thin", energy=0.8, model_uri="lexqft://barrier/thin"),
-        BarrierScenario(model_id="thick", energy=1.5, model_uri="lexqft://barrier/thick"),
-        BarrierScenario(model_id="stepped", energy=1.2, model_uri="lexqft://barrier/stepped"),
+        BarrierScenario(
+            model_id="thick", energy=1.5, model_uri="lexqft://barrier/thick"
+        ),
+        BarrierScenario(
+            model_id="stepped", energy=1.2, model_uri="lexqft://barrier/stepped"
+        ),
     ]
 
 
@@ -150,7 +158,9 @@ async def coverage() -> CoverageResponse:
 
 
 @router.post("/tunnel", response_model=TunnelResponse)
-async def tunnel(req: TunnelRequest, request: Request, response: Response) -> TunnelResponse:
+async def tunnel(
+    req: TunnelRequest, request: Request, response: Response
+) -> TunnelResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=2)
@@ -168,7 +178,9 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
             # Height/width form
             v0_raw = req.barrier_model.get("V0")
             w_raw = req.barrier_model.get("w")
-            be = req.barrier_model.get("energy") or req.barrier_model.get("barrier_energy")
+            be = req.barrier_model.get("energy") or req.barrier_model.get(
+                "barrier_energy"
+            )
             if v0_raw is not None:
                 v0 = max(0.0, float(v0_raw))
                 min_e = v0
@@ -219,9 +231,13 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
             # Optional model URI passthrough
             model_uri = None
             if isinstance(req.barrier_model, dict):
-                model_uri = req.barrier_model.get("model_uri") or req.barrier_model.get("uri")
+                model_uri = req.barrier_model.get("model_uri") or req.barrier_model.get(
+                    "uri"
+                )
             if model_uri:
-                response.headers["X-CERTEUS-PCO-qlaw.tunneling.model_uri"] = str(model_uri)
+                response.headers["X-CERTEUS-PCO-qlaw.tunneling.model_uri"] = str(
+                    model_uri
+                )
         except Exception:
             pass
     except Exception:
@@ -229,9 +245,14 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
 
     # Record to Ledger (hash of tunneling outcome)
     try:
-        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+        from services.ledger_service.ledger import (
+            compute_provenance_hash,
+            ledger_service,
+        )
 
-        payload = {"qlaw.tunneling": {"p": resp.p_tunnel, "path": path, "min_energy": min_e}}
+        payload = {
+            "qlaw.tunneling": {"p": resp.p_tunnel, "path": path, "min_energy": min_e}
+        }
         doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
         case_id = req.state_uri or "lexqft-case"
         ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
@@ -285,7 +306,9 @@ async def coverage_update(items: list[CoverageItem], request: Request) -> dict:
 
     enforce_limits(request, cost_units=1)
     global _COVERAGE_AGG
-    _COVERAGE_AGG = [(float(it.gamma), float(it.weight), float(it.uncaptured)) for it in items]
+    _COVERAGE_AGG = [
+        (float(it.gamma), float(it.weight), float(it.uncaptured)) for it in items
+    ]
     # persist state
     try:
         _COVERAGE_STORE.parent.mkdir(parents=True, exist_ok=True)
@@ -347,8 +370,14 @@ async def coverage_from_fin(body: FinCoverageIn, request: Request) -> dict:
     unc = 0.2 * (1.0 - score01)
     unc = max(0.0, min(0.2, float(unc)))
 
-    append_coverage_contribution(gamma=float(gamma), weight=float(body.weight), uncaptured=float(unc))
-    return {"gamma": round(float(gamma), 6), "uncaptured": round(float(unc), 6), "weight": float(body.weight)}
+    append_coverage_contribution(
+        gamma=float(gamma), weight=float(body.weight), uncaptured=float(unc)
+    )
+    return {
+        "gamma": round(float(gamma), 6),
+        "uncaptured": round(float(unc), 6),
+        "weight": float(body.weight),
+    }
 
 
 # === I/O / ENDPOINTS ===
@@ -368,7 +397,10 @@ async def coverage_state() -> CoverageState:
         tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
         gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
         unc = sum(u * w for _, w, u in _COVERAGE_AGG) / tot_w
-        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma, certeus_lexqft_uncaptured_mass
+        from monitoring.metrics_slo import (
+            certeus_lexqft_coverage_gamma,
+            certeus_lexqft_uncaptured_mass,
+        )
 
         try:
             certeus_lexqft_coverage_gamma.set(float(gamma))
@@ -376,7 +408,9 @@ async def coverage_state() -> CoverageState:
         except Exception:
             pass
 
-        return CoverageState(coverage_gamma=round(gamma, 6), uncaptured_mass=round(unc, 6))
+        return CoverageState(
+            coverage_gamma=round(gamma, 6), uncaptured_mass=round(unc, 6)
+        )
     return CoverageState(coverage_gamma=0.953, uncaptured_mass=0.02)
 
 
@@ -391,7 +425,9 @@ async def coverage_contributions() -> list[CoverageContribution]:
     """PL/EN: Surowa lista wkładów do pokrycia (gamma, weight, uncaptured)."""
     out: list[CoverageContribution] = []
     for g, w, u in _COVERAGE_AGG:
-        out.append(CoverageContribution(gamma=float(g), weight=float(w), uncaptured=float(u)))
+        out.append(
+            CoverageContribution(gamma=float(g), weight=float(w), uncaptured=float(u))
+        )
     return out
 
 
@@ -459,7 +495,9 @@ async def vp_reset() -> dict:
 
 @router.post("/virtual_pairs/budget")
 async def vp_budget(body: VPBudgetIn) -> dict:
-    st = _VP_STATE.setdefault(str(body.case), {"budget": 0.0, "energy_debt": 0.0, "pairs": 0})
+    st = _VP_STATE.setdefault(
+        str(body.case), {"budget": 0.0, "energy_debt": 0.0, "pairs": 0}
+    )
     st["budget"] = float(max(0.0, body.budget))
     st["energy_debt"] = float(st.get("energy_debt") or 0.0)
     st["pairs"] = int(st.get("pairs") or 0)
@@ -481,7 +519,9 @@ async def vp_state(case: str) -> dict:
 
 @router.post("/virtual_pairs/spawn")
 async def vp_spawn(body: VPSpawnIn) -> dict:
-    st = _VP_STATE.setdefault(str(body.case), {"budget": 0.0, "energy_debt": 0.0, "pairs": 0})
+    st = _VP_STATE.setdefault(
+        str(body.case), {"budget": 0.0, "energy_debt": 0.0, "pairs": 0}
+    )
     energy = float(max(0.0, body.energy_per_pair)) * max(0, int(body.pairs))
     remaining = float(st["budget"]) - float(st["energy_debt"])
     if energy > remaining + 1e-12:
@@ -536,7 +576,9 @@ async def renorm(body: RenormRequest) -> dict:
     else:
         maxv = 0.0
     REL_EPS = 1e-15
-    ABS_EPS = 0.0  # avoid introducing a fixed floor that breaks invariance
+    # Absolute floor to eliminate denormals that are not stably representable across
+    # scales in IEEE-754 doubles. This preserves practical scale invariance.
+    ABS_EPS = 2e-308  # ~ below normal double minimum (2.225e-308)
     thr = max(ABS_EPS, maxv * REL_EPS)
     vals = [v if v >= thr else 0.0 for v in vals]
     total = sum(vals)
@@ -550,4 +592,8 @@ async def renorm(body: RenormRequest) -> dict:
     dist = [RenormItemOut(uid=str(items[i].uid), p=probs[i]) for i in range(n)]
     # Shannon entropy (nats); ignore p=0 terms
     ent = -sum((p * _math.log(p)) for p in probs if p > 0.0)
-    return {"case": body.case, "dist": [d.model_dump() for d in dist], "entropy": float(ent)}
+    return {
+        "case": body.case,
+        "dist": [d.model_dump() for d in dist],
+        "entropy": float(ent),
+    }

@@ -29,8 +29,12 @@ from pathlib import Path
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--report", required=False, help="Raport JSON z compute_boundary_report")
-    ap.add_argument("--must-zero", action="store_true", help="Wymagaj delta_bits==0 (alias)")
+    ap.add_argument(
+        "--report", required=False, help="Raport JSON z compute_boundary_report"
+    )
+    ap.add_argument(
+        "--must-zero", action="store_true", help="Wymagaj delta_bits==0 (alias)"
+    )
     args = ap.parse_args()
 
     # Defaults if no report provided
@@ -61,12 +65,22 @@ def main() -> int:
 
     # Per-shard check (if available)
     if bits_map is not None and bits_map:
-        per_shard_ok = all((v == 0) for v in bits_map.values()) if strict else all((v <= 0) for v in bits_map.values())
+        per_shard_ok = (
+            all((v == 0) for v in bits_map.values())
+            if strict
+            else all((v <= 0) for v in bits_map.values())
+        )
     else:
         per_shard_ok = True
 
-    ok = ((delta_bits == 0) and per_shard_ok) if strict else ((delta_bits <= 0) and per_shard_ok)
-    print(f"Boundary delta_bits={delta_bits} per_shard_ok={per_shard_ok} strict={strict} -> {'OK' if ok else 'FAIL'}")
+    ok = (
+        ((delta_bits == 0) and per_shard_ok)
+        if strict
+        else ((delta_bits <= 0) and per_shard_ok)
+    )
+    print(
+        f"Boundary delta_bits={delta_bits} per_shard_ok={per_shard_ok} strict={strict} -> {'OK' if ok else 'FAIL'}"
+    )
     return 0 if ok else 1
 
 

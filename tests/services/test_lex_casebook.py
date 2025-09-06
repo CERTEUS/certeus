@@ -28,7 +28,10 @@ def test_lex_casebook_lists_latest_three_cases() -> None:
     cases = ["LEX-CB-001", "LEX-CB-002", "LEX-CB-003"]
     for cid in cases:
         c.post("/v1/lexenith/micro_court/lock", json={"case_id": cid})
-        r = c.post("/v1/lexenith/micro_court/publish", json={"case_id": cid, "footnotes": ["note"]})
+        r = c.post(
+            "/v1/lexenith/micro_court/publish",
+            json={"case_id": cid, "footnotes": ["note"]},
+        )
         assert r.status_code == 200
 
     r = c.get("/v1/lexenith/casebook")

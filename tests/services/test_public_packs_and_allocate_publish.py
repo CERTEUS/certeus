@@ -22,7 +22,11 @@ def test_public_packs_and_allocate_publish_roundtrip(monkeypatch) -> None:
     # lex_casebook pack
     r = c.post(
         "/v1/packs/handle",
-        json={"pack": "lex_casebook", "kind": "lex.casebook.latest", "payload": {"limit": 1}},
+        json={
+            "pack": "lex_casebook",
+            "kind": "lex.casebook.latest",
+            "payload": {"limit": 1},
+        },
     )
     assert r.status_code == 200 and r.json().get("ok") is True
     assert r.json()["result"].get("count", 0) >= 1
@@ -42,7 +46,9 @@ def test_public_packs_and_allocate_publish_roundtrip(monkeypatch) -> None:
     # allocate→publish (budget_tokens)
     r = c.post("/v1/billing/quota", json={"tenant": "packs-demo", "units": 10})
     assert r.status_code == 200
-    r = c.post("/v1/billing/allocate", json={"units": 2}, headers={"X-Tenant-ID": "packs-demo"})
+    r = c.post(
+        "/v1/billing/allocate", json={"units": 2}, headers={"X-Tenant-ID": "packs-demo"}
+    )
     assert r.status_code == 200
     # disable strict proof-only for this publish alias test (we only exercise billing path)
     monkeypatch.setenv("STRICT_PROOF_ONLY", "0")

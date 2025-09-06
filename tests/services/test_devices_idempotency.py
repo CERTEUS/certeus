@@ -29,11 +29,17 @@ def _assert_replay_headers(h1: str | None, h2: str | None) -> None:
 def test_hde_idempotent_replay_flag() -> None:
     c = TestClient(app)
     key = "idem-abc-1"
-    r1 = c.post("/v1/devices/horizon_drive/plan", json={}, headers={"X-Idempotency-Key": key})
-    r2 = c.post("/v1/devices/horizon_drive/plan", json={}, headers={"X-Idempotency-Key": key})
+    r1 = c.post(
+        "/v1/devices/horizon_drive/plan", json={}, headers={"X-Idempotency-Key": key}
+    )
+    r2 = c.post(
+        "/v1/devices/horizon_drive/plan", json={}, headers={"X-Idempotency-Key": key}
+    )
     assert r1.status_code == r2.status_code == 200
     assert r1.json() == r2.json()
-    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+    _assert_replay_headers(
+        r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay")
+    )
 
 
 def test_qoracle_idempotent_replay_flag() -> None:
@@ -51,7 +57,9 @@ def test_qoracle_idempotent_replay_flag() -> None:
     )
     assert r1.status_code == r2.status_code == 200
     assert r1.json() == r2.json()
-    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+    _assert_replay_headers(
+        r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay")
+    )
 
 
 def test_entangle_idempotent_replay_flag() -> None:
@@ -62,18 +70,30 @@ def test_entangle_idempotent_replay_flag() -> None:
     r2 = c.post("/v1/devices/entangle", json=body, headers={"X-Idempotency-Key": key})
     assert r1.status_code == r2.status_code == 200
     assert r1.json() == r2.json()
-    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+    _assert_replay_headers(
+        r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay")
+    )
 
 
 def test_chronosync_idempotent_replay_flag() -> None:
     c = TestClient(app)
     key = "idem-abc-4"
     body = {"coords": {"a": 1}, "pc_delta": {"x": 1}}
-    r1 = c.post("/v1/devices/chronosync/reconcile", json=body, headers={"X-Idempotency-Key": key})
-    r2 = c.post("/v1/devices/chronosync/reconcile", json=body, headers={"X-Idempotency-Key": key})
+    r1 = c.post(
+        "/v1/devices/chronosync/reconcile",
+        json=body,
+        headers={"X-Idempotency-Key": key},
+    )
+    r2 = c.post(
+        "/v1/devices/chronosync/reconcile",
+        json=body,
+        headers={"X-Idempotency-Key": key},
+    )
     assert r1.status_code == r2.status_code == 200
     assert r1.json() == r2.json()
-    _assert_replay_headers(r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay"))
+    _assert_replay_headers(
+        r1.headers.get("X-Idempotent-Replay"), r2.headers.get("X-Idempotent-Replay")
+    )
 
 
 # === I/O / ENDPOINTS ===

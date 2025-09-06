@@ -30,8 +30,14 @@ def _minimal_ok_pco(domain: str, case_prefix: str) -> dict:
         "case_id": case,
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.1},
         "sources": [{"digest": "d1", "retrieved_at": "now"}],
-        "derivations": [{"solver": "z3", "proof_format": "LFSC", "artifact_digest": "h"}],
-        "reproducibility": {"image": "img", "image_digest": "sha256:deadbeef", "seed": "42"},
+        "derivations": [
+            {"solver": "z3", "proof_format": "LFSC", "artifact_digest": "h"}
+        ],
+        "reproducibility": {
+            "image": "img",
+            "image_digest": "sha256:deadbeef",
+            "seed": "42",
+        },
         "signatures": [{"role": "counsel"}, {"role": "AFV"}],
     }
 
@@ -45,7 +51,9 @@ def test_publish_denied_for_sec_domain_even_with_afv() -> None:
     try:
         client = TestClient(app)
         pco = _minimal_ok_pco("sec", "SEC")
-        resp = client.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10})
+        resp = client.post(
+            "/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10}
+        )
         assert resp.status_code == 200
         body = resp.json()
         assert body["status"] == "ABSTAIN"
@@ -58,7 +66,9 @@ def test_publish_allowed_for_lex_with_afv_and_counsel() -> None:
     try:
         client = TestClient(app)
         pco = _minimal_ok_pco("lex", "LEX")
-        resp = client.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10})
+        resp = client.post(
+            "/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10}
+        )
         assert resp.status_code == 200
         body = resp.json()
         assert body["status"] == "PUBLISH"

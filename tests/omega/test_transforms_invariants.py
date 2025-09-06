@@ -32,7 +32,7 @@ def test_identity_no_drift() -> None:
 
 
 def test_normalize_low_drift() -> None:
-    txt = '“Ustawa” z dnia 20 lipca 2018 r. – Prawo'
+    txt = "“Ustawa” z dnia 20 lipca 2018 r. – Prawo"
     out = normalize_text(txt, lang="pl")
     drift = compute_gauge_drift(txt, out)
     # Normalizacja nie zmienia znacząco zbioru tokenów

@@ -113,7 +113,9 @@ class RecordInputRequest(BaseModel):
 
     """
 
-    case_id: str = Field(..., min_length=1, description="PL: Id sprawy. / EN: Case identifier.")
+    case_id: str = Field(
+        ..., min_length=1, description="PL: Id sprawy. / EN: Case identifier."
+    )
 
     document_hash: str = Field(
         ...,
@@ -172,7 +174,9 @@ def record_input(payload: RecordInputRequest, request: Request) -> RecordInputRe
         # Soft-fail PNIP in non-strict mode
         pass
 
-    result = ledger_service.record_input(case_id=payload.case_id, document_hash=payload.document_hash)
+    result = ledger_service.record_input(
+        case_id=payload.case_id, document_hash=payload.document_hash
+    )
 
     return RecordInputResponse(**result)
 

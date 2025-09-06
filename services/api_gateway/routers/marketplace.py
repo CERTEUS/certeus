@@ -106,7 +106,11 @@ def get_pubkey() -> dict[str, str] | dict[str, bool]:
         b = load_ed25519_public_bytes()
         import base64
 
-        return {"ed25519_pubkey_b64url": base64.urlsafe_b64encode(b).rstrip(b"=").decode("ascii")}
+        return {
+            "ed25519_pubkey_b64url": base64.urlsafe_b64encode(b)
+            .rstrip(b"=")
+            .decode("ascii")
+        }
     except Exception:
         return {"ok": False}
 
@@ -134,13 +138,19 @@ def list_plugins() -> list[dict[str, Any]]:
             data = yaml.safe_load(man_text) or {}
             signature = data.get("signature")
             if isinstance(signature, str) and signature:
-                signed = _verify_manifest(man_text.replace(f"signature: {signature}", "signature:"), signature)
+                signed = _verify_manifest(
+                    man_text.replace(f"signature: {signature}", "signature:"), signature
+                )
         except Exception:
             signed = False
         out.append(
             PluginEntry(
                 name=name,
-                module=str(getattr(spec, "module", None)) if getattr(spec, "module", None) else None,
+                module=(
+                    str(getattr(spec, "module", None))
+                    if getattr(spec, "module", None)
+                    else None
+                ),
                 version=getattr(spec, "version", None),
                 signed=signed,
                 caps=caps_map.get(name, []),
@@ -196,7 +206,11 @@ def sign_manifest(payload: dict[str, Any]) -> dict[str, Any]:
 
     EN: Signs YAML with Ed25519 (DEV only). Enable via MARKETPLACE_SIGNING_ENABLED=1.
     """
-    if (os.getenv("MARKETPLACE_SIGNING_ENABLED") or "").strip() not in {"1", "true", "True"}:
+    if (os.getenv("MARKETPLACE_SIGNING_ENABLED") or "").strip() not in {
+        "1",
+        "true",
+        "True",
+    }:
         raise HTTPException(status_code=403, detail="Signing disabled")
     import base64
 

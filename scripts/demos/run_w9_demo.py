@@ -24,7 +24,9 @@ from pathlib import Path
 import subprocess
 
 
-def _run(cmd: list[str], *, input_json: dict | None = None, env: dict[str, str] | None = None) -> tuple[int, str, str]:
+def _run(
+    cmd: list[str], *, input_json: dict | None = None, env: dict[str, str] | None = None
+) -> tuple[int, str, str]:
     e = os.environ.copy()
     if env:
         e.update(env)
@@ -47,12 +49,20 @@ def main() -> int:
     # Roles gate (expect OK for AFV publish)
     rc_roles_ok, out_roles_ok, _ = _run(
         ["python", "scripts/gates/roles_policy_gate.py"],
-        input_json={"user": {"role": "AFV"}, "action": "publish", "resource": {"kind": "pco", "scope": "lex"}},
+        input_json={
+            "user": {"role": "AFV"},
+            "action": "publish",
+            "resource": {"kind": "pco", "scope": "lex"},
+        },
     )
     # Roles gate (expect FAIL for unknown role)
     rc_roles_fail, out_roles_fail, _ = _run(
         ["python", "scripts/gates/roles_policy_gate.py"],
-        input_json={"user": {"role": "XXX"}, "action": "merge", "resource": {"kind": "pco", "scope": "lex"}},
+        input_json={
+            "user": {"role": "XXX"},
+            "action": "merge",
+            "resource": {"kind": "pco", "scope": "lex"},
+        },
     )
     rep["roles_gate"] = {
         "ok_rc": rc_roles_ok,
@@ -62,7 +72,9 @@ def main() -> int:
     }
 
     # Bunker gate (off)
-    rc_bunker_off, out_bunker_off, _ = _run(["python", "scripts/gates/security_bunker_gate.py"], env={"BUNKER": "0"})
+    rc_bunker_off, out_bunker_off, _ = _run(
+        ["python", "scripts/gates/security_bunker_gate.py"], env={"BUNKER": "0"}
+    )
     # Bunker gate (on, with attestation)
     att = Path("out")
     att.mkdir(parents=True, exist_ok=True)
@@ -81,12 +93,15 @@ def main() -> int:
 
     # PQ‑crypto gate (informational)
     rc_pq, out_pq, _ = _run(
-        ["python", "scripts/gates/pqcrypto_gate.py"], env={"PQCRYPTO_REQUIRE": "1", "PQCRYPTO_READY": "1"}
+        ["python", "scripts/gates/pqcrypto_gate.py"],
+        env={"PQCRYPTO_REQUIRE": "1", "PQCRYPTO_READY": "1"},
     )
     rep["pqcrypto_gate"] = {"rc": rc_pq, "out": out_pq.strip()}
 
     (out_dir / "w9_demo.json").write_text(json.dumps(rep, indent=2), encoding="utf-8")
-    print(json.dumps({"ok": True, "roles": rc_roles_ok == 0, "bunker": rc_bunker_on == 0}))
+    print(
+        json.dumps({"ok": True, "roles": rc_roles_ok == 0, "bunker": rc_bunker_on == 0})
+    )
     return 0
 
 
