@@ -247,7 +247,9 @@
     "workbench.enableExperiments": false,
     "workbench.settings.enableNaturalLanguageSearch": false,
     "security.workspace.trust.enabled": false,
-    "security.allowedUNCHosts": ["*"],
+    "security.allowedUNCHosts": [
+        "*"
+    ],
     "security.restrictUNCAccess": false,
     "extensions.ignoreRecommendations": true,
     "extensions.showRecommendationsOnlyOnDemand": true,

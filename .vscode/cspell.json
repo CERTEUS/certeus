@@ -1,0 +1,35 @@
+{
+  "version": "0.2",
+  "language": "en,pl",
+  "words": [
+    "CERTEUS",
+    "PLIK",
+    "ROLA", 
+    "promocja",
+    "zielonym",
+    "pwsh",
+    "WORKLOG",
+    "worklog",
+    "LASTEXITCODE",
+    "certeus",
+    "datetime",
+    "github",
+    "automerge",
+    "fastforward",
+    "automate",
+    "workflow",
+    "config",
+    "gitconfig"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "*.log"
+  ],
+  "ignoreWords": [
+    "sha",
+    "ctx",
+    "env"
+  ]
+}
