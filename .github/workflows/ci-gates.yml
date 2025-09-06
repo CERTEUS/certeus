@@ -104,6 +104,15 @@ jobs:
         run: |
           python scripts/slo_gate/error_burn_gate.py || true
           echo ok > out/burn_ok.txt
+      - name: SLO Measure (enforce)
+        run: |
+          python scripts/slo_gate/measure_api.py
+      - name: SLO Gate (enforce)
+        env:
+          SLO_MAX_P95_MS: '300'
+          SLO_MAX_ERROR_RATE: '0.01'
+        run: |
+          python scripts/slo_gate/check_slo.py
       - name: Tenant SLO Trend Gate (enforce)
         run: |
           set -e
