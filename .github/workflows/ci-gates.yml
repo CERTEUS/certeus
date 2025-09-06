@@ -205,9 +205,6 @@ jobs:
           PQCRYPTO_REQUIRE: '1'
         run: |
           python scripts/gates/pqcrypto_gate.py
-      - name: Require PCO signatures (Ed25519+PQ)
-        run: |
-          echo 'SIGNATURES_REQUIRE=1' >> $GITHUB_ENV
       - name: Supply-Chain Enforce (required)
         run: |
           python scripts/gates/supply_chain_enforce.py
@@ -596,6 +593,9 @@ jobs:
         if: success()
         run: |
           echo ok > out/openapi_contract_ok.txt
+      - name: Require PCO signatures (Ed25519+PQ)
+        run: |
+          echo 'SIGNATURES_REQUIRE=1' >> $GITHUB_ENV
       - name: QTMP smoke (in-proc)
         run: |
           python scripts/smokes/qtm_smoke.py
