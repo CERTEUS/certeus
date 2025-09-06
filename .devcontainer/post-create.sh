@@ -65,3 +65,8 @@ fi
 
 # 6) Enforce local git hooks (block secrets & enforce conv. commits)
 git config core.hooksPath .githooks || true
+
+# 7) Ensure global git identity (from .devkeys or env)
+if [ -f "scripts/setup_git_identity.sh" ]; then
+  bash scripts/setup_git_identity.sh || true
+fi

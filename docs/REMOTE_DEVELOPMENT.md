@@ -170,6 +170,18 @@ code tunnel --name "certeus-home"
 }
 ```
 
+### **Persistent GitHub Push (Everywhere)**
+- Preferred: set a Codespaces User Secret once (applies to all new Codespaces)
+  - Go to: https://github.com/settings/codespaces/secrets
+  - Add secret name: `ADMIN_TOKEN` (or `GITHUB_PUSH_TOKEN`), value: fine‑grained PAT with repo `contents:write`
+  - Our devcontainer auto-picks it up via `scripts/setup_github_auth.sh`
+- Alternative: keep a local file (ignored by git):
+  - `.devkeys/github_user.txt` → your GitHub login (e.g., `Certeus`)
+  - `.devkeys/admin_token.txt` → PAT (scope: repo)
+  - Then run: `bash scripts/setup_github_auth.sh`
+- Fallback: `gh auth login` + `gh auth token` is detected automatically
+
+
 ### **Mobile Security:**
 ```json
 {
