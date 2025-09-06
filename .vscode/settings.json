@@ -2,6 +2,11 @@
     // Wspólne ustawienia dla wszystkich AI
     "editor.inlineSuggest.enabled": true,
     "editor.acceptSuggestionOnEnter": "on",
+    "security.workspace.trust.enabled": false,
+    "security.workspace.trust.startupPrompt": "never",
+    "security.workspace.trust.banner": "never",
+    "security.workspace.trust.emptyWindow": true,
+    "security.workspace.trust.untrustedFiles": "open",
     "editor.quickSuggestions": {
         "other": "on",
         "comments": "on",
@@ -19,6 +24,8 @@
     "github.copilot.advanced": {
         "automaticPanelFocus": true,
         "indentationMode": true,
+        "showUnauthorizedModal": false,
+        "showAuthorizedModal": false,
         "showEditorCompletions": true,
         "enableAutoCompletions": true,
         "clearOnSend": false,
