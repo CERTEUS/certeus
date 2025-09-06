@@ -20,7 +20,7 @@ def merge_settings():
             current = json.load(f)
     except:
         current = {}
-    
+
     # Load autonomous profile
     try:
         with open('/workspaces/certeus/.vscode/autonomous_profile.json', 'r') as f:
@@ -29,10 +29,10 @@ def merge_settings():
     except Exception as e:
         print(f"Error loading autonomous profile: {e}")
         sys.exit(1)
-    
+
     # Merge settings - autonomous profile overrides everything
     current.update(autonomous_settings)
-    
+
     # Add extra autonomous flags
     extra_autonomous = {
         "workbench.commandPalette.experimental.askCopilot": False,
@@ -44,7 +44,7 @@ def merge_settings():
         "editor.acceptSuggestionOnEnter": "on",
         "editor.quickSuggestions": {
             "other": "on",
-            "comments": "on", 
+            "comments": "on",
             "strings": "on"
         },
         "editor.suggestOnTriggerCharacters": True,
@@ -80,13 +80,13 @@ def merge_settings():
         "workbench.statusBar.visible": False,
         "workbench.editor.showTabs": "none"
     }
-    
+
     current.update(extra_autonomous)
-    
+
     # Write merged settings
     with open('/workspaces/certeus/.vscode/settings.json', 'w') as f:
         json.dump(current, f, indent=4)
-    
+
     print("✅ Autonomous settings merged successfully")
     print(f"📊 Total settings: {len(current)}")
 

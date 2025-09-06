@@ -5,6 +5,8 @@
 # | ROLE: Auto-promote work/daily to main (gated by CI)         |
 # | PLIK: .github/workflows/promote-daily-to-main.yml          |
 # | ROLA: Auto-promocja work/daily → main (po zielonym CI)      |
+# | NOTE: Linter warnings about context access are expected    |
+# | NOTA: Ostrzeżenia lintera o dostępie do contextu są OK     |
 # +-------------------------------------------------------------+
 
 name: Promote-Daily-To-Main
@@ -31,6 +33,8 @@ permissions:
 jobs:
   promote:
     runs-on: ubuntu-latest
+    outputs:
+      should_promote: ${{ steps.marker.outputs.promote }}
     steps:
       - name: Decide whether to evaluate promotion
         id: cond
@@ -46,15 +50,16 @@ jobs:
               ok = (context.ref === 'refs/heads/work/daily');
             }
             core.setOutput('ok', ok ? 'true' : 'false');
+            console.log(`Setting ok output to: ${ok ? 'true' : 'false'}`);
 
       - name: Checkout repository
-        if: ${{ steps.cond.outputs.ok == 'true' }}
+        if: steps.cond.outputs.ok == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Configure git user
-        if: ${{ steps.cond.outputs.ok == 'true' }}
+        if: steps.cond.outputs.ok == 'true'
         shell: pwsh
         run: |
           git config user.name "github-actions[bot]"
@@ -62,7 +67,7 @@ jobs:
 
       - name: Determine SHA for evaluation
         id: sha
-        if: ${{ steps.cond.outputs.ok == 'true' }}
+        if: steps.cond.outputs.ok == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -74,7 +79,7 @@ jobs:
 
       - name: Determine if weekly promotion is requested
         id: marker
-        if: ${{ steps.cond.outputs.ok == 'true' }}
+        if: steps.cond.outputs.ok == 'true'
         env:
           SHA_VALUE: ${{ steps.sha.outputs.sha }}
         uses: actions/github-script@v7

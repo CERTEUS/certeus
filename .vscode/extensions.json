@@ -7,7 +7,7 @@
         "ms-python.black-formatter",
         "ms-python.isort",
         "charliermarsh.ruff",
-        // === AI ASSISTANCE ===
+        // === AI ASSISTANCE - AUTONOMOUS MODE ===
         "github.copilot",
         "github.copilot-chat",
         // === GIT & COLLABORATION ===
