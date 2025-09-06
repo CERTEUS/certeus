@@ -4,7 +4,18 @@
     "editor.lineHeight": 24,
     "editor.minimap.enabled": false,
     "editor.wordWrap": "on",
-    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.colorTheme": "Default Light Modern",
+    "workbench.preferredLightColorTheme": "Default Light Modern",
+    "workbench.preferredDarkColorTheme": "Default Light Modern",
+    "workbench.colorCustomizations": {
+        "[Default Light Modern]": {
+            "editor.background": "#ffffff",
+            "sideBar.background": "#f8f8f8",
+            "activityBar.background": "#f8f8f8",
+            "tab.activeBackground": "#ffffff",
+            "tab.inactiveBackground": "#f0f0f0"
+        }
+    },
     "workbench.statusBar.visible": true,
     "window.zoomLevel": 0.5,
     "editor.accessibilitySupport": "on",
