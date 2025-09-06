@@ -150,6 +150,25 @@ jobs:
         run: |
           python scripts/gates/sdk_contract_gate.py || true
           test -f out/sdk_contract_ok.txt || true
+      - name: Type-check TS SDK (report-only)
+        continue-on-error: true
+        run: |
+          pushd sdk/ts >/dev/null
+          npm -g i typescript >/dev/null 2>&1 || true
+          tsc -p tsconfig.json || true
+          popd >/dev/null
+      - name: Build Go SDK (report-only)
+        continue-on-error: true
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+      - name: Go build (report-only)
+        continue-on-error: true
+        run: |
+          pushd sdk/go >/dev/null
+          go mod tidy || true
+          go build ./... || true
+          popd >/dev/null
       - name: OpenAPI Contract Gate (report-only)
         continue-on-error: true
         run: |
