@@ -57,3 +57,8 @@ grep -q '^PQCRYPTO_READY=' .env   || echo "PQCRYPTO_READY=0" >> .env
 git lfs install || true
 # Nie uruchamiamy automatycznie testów ani formatowania, żeby nie produkować szumu przy starcie
 echo "Devcontainer provisioning done. Activate venv: 'source .venv/bin/activate'"
+
+# 5) Optional: Configure GitHub auth for seamless git push (if token provided)
+if [ -f "scripts/setup_github_auth.sh" ]; then
+  bash scripts/setup_github_auth.sh || true
+fi

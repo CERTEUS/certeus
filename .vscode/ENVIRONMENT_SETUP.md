@@ -182,3 +182,14 @@ data_management:
     - "All configs in git"
     - "Cross-device consistency"
     - "Rollback capability"
+
+# === GITHUB AUTH (SEAMLESS PUSH) ===
+github_auth:
+  recommended:
+    - "Place user in .devkeys/github_user.txt"
+    - "Place PAT in .devkeys/admin_token.txt (scope: repo)"
+    - "Run: bash scripts/setup_github_auth.sh"
+    - "Then: git push (no prompts)"
+  alternatives:
+    - "gh auth login --hostname github.com --web --git-protocol https"
+    - "Or set env: GITHUB_PUSH_TOKEN / GITHUB_TOKEN / GH_TOKEN"

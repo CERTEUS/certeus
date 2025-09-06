@@ -116,12 +116,36 @@ def main() -> int:
     except Exception:
         pass
 
-    # Write credentials to .git-credentials for credential.helper=store
-    cred_file = Path(".git-credentials")
-    cred_file.write_text(f"https://{user}:{token}@github.com\n", encoding="utf-8")
+    # Write credentials to ~/.git-credentials for credential.helper=store
+    home = os.path.expanduser("~") or "/root"
+    cred_file = Path(home) / ".git-credentials"
+    cred_file.parent.mkdir(parents=True, exist_ok=True)
+    # Append idempotently host-level and repo-level entries
+    host_line = f"https://{user}:{token}@github.com\n"
+    repo_line = None
+    try:
+        _proc2 = subprocess.run(["git", "remote", "get-url", "origin"], check=True, capture_output=True, text=True)
+        origin2 = (_proc2.stdout or "").strip()
+        if origin2.startswith("http"):
+            repo_line = f"https://{user}:{token}@{origin2.split('://',1)[1]}\n"
+    except Exception:
+        pass
+    cur = ""
+    if cred_file.exists():
+        try:
+            cur = cred_file.read_text(encoding="utf-8")
+        except Exception:
+            cur = ""
+    new_content = cur
+    if host_line not in cur:
+        new_content += host_line
+    if repo_line and repo_line not in cur:
+        new_content += repo_line
+    cred_file.write_text(new_content, encoding="utf-8")
 
-    # Configure helper locally (do not leak secrets in logs)
-    _run(["git", "config", "credential.helper", "store"])
+    # Configure helper globally (do not leak secrets in logs)
+    _run(["git", "config", "--global", "credential.helper", "store"])
+    _run(["git", "config", "--global", "credential.useHttpPath", "true"])
 
     # Push current HEAD to target branch
     _run(["git", "push", "-u", "origin", f"HEAD:{args.to}"])
