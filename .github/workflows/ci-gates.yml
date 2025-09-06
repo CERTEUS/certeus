@@ -179,6 +179,29 @@ jobs:
         run: |
           python scripts/gates/openapi_contract_gate.py || true
 
+      - name: ShellCheck (report-only)
+        continue-on-error: true
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y shellcheck || true
+          files=$(git ls-files "*.sh" | tr '\n' ' ')
+          if [ -n "$files" ]; then
+            shellcheck -e SC1091 -S warning $files || true
+          else
+            echo "No shell scripts to check"
+          fi
+
+      - name: Codespell (report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip codespell || true
+          codespell -q 2 --skip .git,.venv,venv,dist,build,node_modules,docs/openapi || true
+
+      - name: Markdownlint (report-only)
+        continue-on-error: true
+        run: |
+          npm -g i markdownlint-cli >/dev/null 2>&1 || true
+          markdownlint "**/*.md" --ignore "clients/web/**" || true
+
       - name: Asset-Integrity Gate (report-only)
         continue-on-error: true
         run: |
