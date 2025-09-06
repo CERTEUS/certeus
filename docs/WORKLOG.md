@@ -477,3 +477,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ProofFS: OS xattrs + Cockpit mount; FUSE RO FS + smoke
   - Merge: feature/enterprise-enforce -> main (conflicts resolved by feature)
   - Tests: 353 passed, 6 skipped
+- 2025-09-06 15:33:00Z [agent] (work/daily): SLO gate enforce + CI hardening
+  - Added SLO measure and enforce to ci-gates; PQ/Bunker/SPIFFE/A11y enforce; QUIC echo e2e; P2P turbulence enforce; Marketplace/Plugin policy enforce
