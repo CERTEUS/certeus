@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   ci-gates:
-    runs-on: ${{ fromJSON(vars.CI_GATES_RUNS_ON || '"ubuntu-latest"') }}
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
