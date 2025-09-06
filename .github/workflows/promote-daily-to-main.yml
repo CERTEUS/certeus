@@ -77,24 +77,22 @@ jobs:
             else sha = context.sha;
             core.setOutput('sha', sha);
 
-      - name: Determine if weekly promotion is requested
+      - name: Decide promotion (auto for green gates on work/daily)
         id: marker
         if: steps.cond.outputs.ok == 'true'
-        env:
-          SHA_VALUE: ${{ steps.sha.outputs.sha }}
         uses: actions/github-script@v7
         with:
           script: |
+            // Auto-promote when this workflow is evaluating a successful gates run for work/daily,
+            // or when manually dispatched with force=true.
+            const evt = context.eventName;
             const force = (context.payload?.inputs?.force === 'true');
-            let promote = false;
-            if (force) {
-              promote = true;
-            } else {
-              const sha = process.env.SHA_VALUE;
-              const { data: commit } = await github.rest.repos.getCommit({ owner: context.repo.owner, repo: context.repo.repo, ref: sha });
-              const msg = commit?.commit?.message || '';
-              core.info('Commit message for '+sha+':\n'+msg);
-              promote = /\[week-end\]/i.test(msg) || /^weekly-promote:\s*(true|1)/mi.test(msg);
+            let promote = force;
+            if (!promote && evt === 'workflow_run') {
+              const wr = context.payload.workflow_run || {};
+              promote = (wr.head_branch === 'work/daily' && wr.conclusion === 'success');
+            } else if (!promote && evt === 'push') {
+              promote = (context.ref === 'refs/heads/work/daily');
             }
             core.setOutput('promote', promote ? 'true' : 'false');
       # ci-gates conclusion is already 'success' by job condition above${insert}
