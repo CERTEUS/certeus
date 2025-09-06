@@ -486,3 +486,6 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - ProofGate: Ed25519 signature embedding (crypto.ed25519) in PCO
 - 2025-09-06 15:48:22Z [agent] (work/daily): Installed Linux self-hosted runner in Codespaces; dispatched SelfHosted-CI
   - Runner labels: self-hosted, linux, codespaces; workflow: .github/workflows/selfhosted-ci.yml
+- 2025-09-06 15:53:58Z [agent] (work/daily): Enforcement: signatures verify + Bandit/Gitleaks
+  - ProofGate: enforce SIGNATURES_REQUIRE=1 (verify Ed25519 + ML-DSA)
+  - CI: generate keys, set env, Bandit enforce (bandit.yml), Gitleaks enforce (allowlist tuned)
