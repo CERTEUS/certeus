@@ -62,3 +62,6 @@ echo "Devcontainer provisioning done. Activate venv: 'source .venv/bin/activate'
 if [ -f "scripts/setup_github_auth.sh" ]; then
   bash scripts/setup_github_auth.sh || true
 fi
+
+# 6) Enforce local git hooks (block secrets & enforce conv. commits)
+git config core.hooksPath .githooks || true
