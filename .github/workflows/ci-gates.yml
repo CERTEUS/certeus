@@ -50,9 +50,9 @@ jobs:
       - name: Start mock OTLP receiver (background)
         run: |
           nohup python scripts/otel/mock_otlp.py >/dev/null 2>&1 &
-      - name: Decorator split scan (report-only)
+      - name: Decorator split scan (enforce)
         run: |
-          python scripts/fix_decorator_split.py --check || true
+          python scripts/fix_decorator_split.py --check
       - name: Premium Style Gate (sec.21)
         continue-on-error: true
         run: |
@@ -131,17 +131,18 @@ jobs:
         run: |
           python scripts/gates/marketplace_policy_gate.py
 
-      - name: PCO Validation Gate (report-only)
-        continue-on-error: true
+      - name: PCO Validation Gate (enforce)
         run: |
-          python scripts/gates/pco_validation_gate.py || true
-          test -f out/pco_validation.json && echo ok > out/pco_validation_ok.txt || true
+          python scripts/gates/pco_validation_gate.py
+          test -f out/pco_validation.json
 
-      - name: SDK Contract Gate (report-only)
-        continue-on-error: true
+      - name: SDK Contract Gate (enforce)
         run: |
-          python scripts/gates/sdk_contract_gate.py || true
-          test -f out/sdk_contract_ok.txt && echo ok > out/sdk_contract_ok.txt || true
+          python scripts/gates/sdk_contract_gate.py
+          test -f out/sdk_contract_ok.txt
+      - name: OpenAPI Contract Gate (enforce)
+        run: |
+          python scripts/gates/openapi_contract_gate.py
 
       - name: Asset-Integrity Gate (enforce)
         run: |
@@ -206,14 +207,9 @@ jobs:
         run: |
           python scripts/gates/proof_frost_enforce.py
           test -f out/proof_frost_enforce_ok.txt
-      - name: Compliance Mapping (report-only)
-        continue-on-error: true
+      - name: Compliance Mapping (enforce)
         run: |
-          python scripts/gates/compliance_mapping_gate.py || true
-      - name: Mark Compliance OK
-        if: success()
-        run: |
-          mkdir -p out && echo ok > out/compliance_ok.txt
+          python scripts/gates/compliance_mapping_gate.py
       - name: Bandit security scan (report-only)
         continue-on-error: true
         run: |
