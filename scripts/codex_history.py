@@ -29,6 +29,8 @@ import json
 import os
 from pathlib import Path
 import sys
+import threading
+import time
 import uuid
 
 
@@ -179,9 +181,112 @@ def main(argv: list[str] | None = None) -> int:
     p_md.add_argument("--session", help="Plik sesji (domyślna: latest)")
     p_md.set_defaults(func=cmd_export_md)
 
+    # tryb: daemon (zbiera wiadomości ze strumienia/pipe i scala w rekordy co ~1 min)
+    p_da = sub.add_parser("daemon", help="Tryb autosave (czyta z pipe i zapisuje do sesji)")
+    p_da.add_argument("--session", help="Plik sesji (domyślna: latest)")
+    p_da.add_argument("--pipe", default=str(_history_dir() / "inbox.pipe"), help="Ścieżka do named pipe (FIFO)")
+    p_da.add_argument("--idle-sec", type=int, default=60, help="Timeout łączenia chunków (sekundy)")
+    p_da.set_defaults(func=cmd_daemon)
+
+    # tryb: push (zapisz wiadomość do pipe; ułatwia integrację z Taskiem)
+    p_push = sub.add_parser("push", help="Wyślij wiadomość do pipe (dla daemon)")
+    p_push.add_argument("--pipe", default=str(_history_dir() / "inbox.pipe"), help="Ścieżka do named pipe (FIFO)")
+    p_push.add_argument("--role", default="assistant", choices=["user", "assistant", "system"], help="Rola")
+    p_push.add_argument("--text", required=True, help="Treść")
+    p_push.set_defaults(func=cmd_push)
+
     args = ap.parse_args(argv)
     return int(args.func(args))
 
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
+
+# === Implementacja trybu daemon/push ===
+
+
+def _ensure_fifo(path: Path) -> None:
+    try:
+        if path.exists():
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        os.mkfifo(path)
+    except FileExistsError:
+        pass
+
+
+def cmd_push(args: argparse.Namespace) -> int:
+    p = Path(args.pipe)
+    _ensure_fifo(p)
+    payload = json.dumps({"ts": _now_iso(), "role": args.role, "text": args.text}, ensure_ascii=False)
+    # Otwórz FIFO i zapisz linię (blokuje, jeśli daemon nie czyta)
+    with p.open("w", encoding="utf-8") as f:
+        f.write(payload + "\n")
+    return 0
+
+
+def cmd_daemon(args: argparse.Namespace) -> int:
+    session = _resolve_session(args.session)
+    fifo = Path(args.pipe)
+    _ensure_fifo(fifo)
+
+    buf_role: str | None = None
+    buf_text: list[str] = []
+    last_at = 0.0
+    idle = float(max(1, int(args.idle_sec)))
+    stop = threading.Event()
+
+    def _flush() -> None:
+        nonlocal buf_role, buf_text, last_at
+        if buf_role and buf_text:
+            _append_message(session, buf_role, "\n".join(buf_text))
+        buf_role = None
+        buf_text = []
+        last_at = 0.0
+
+    def _ticker() -> None:
+        while not stop.is_set():
+            time.sleep(1.0)
+            try:
+                if buf_role and (time.time() - last_at) >= idle:
+                    _flush()
+            except Exception:
+                pass
+
+    th = threading.Thread(target=_ticker, daemon=True)
+    th.start()
+
+    print(f"[codex-history] daemon started → session={session.name} fifo={fifo}")
+    try:
+        with fifo.open("r", encoding="utf-8") as f:
+            for line in f:
+                line = line.rstrip("\n")
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                    role = str(obj.get("role") or "assistant")
+                    text = str(obj.get("text") or "")
+                except Exception:
+                    role = "assistant"
+                    text = line
+                now = time.time()
+                if (buf_role == role) and (now - last_at) < idle:
+                    buf_text.append(text)
+                    last_at = now
+                else:
+                    _flush()
+                    buf_role = role
+                    buf_text = [text]
+                    last_at = now
+    except KeyboardInterrupt:
+        pass
+    finally:
+        stop.set()
+        try:
+            th.join(timeout=1.0)
+        except Exception:
+            pass
+        _flush()
+    print("[codex-history] daemon stopped")
+    return 0

@@ -22,6 +22,32 @@
             }
         },
         {
+            "label": "Codex: Start autosave daemon",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "daemon",
+                "--idle-sec",
+                "60"
+            ],
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Codex: Push (prompt → pipe)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "push",
+                "--role",
+                "assistant",
+                "--text",
+                "${input:codexMessage}"
+            ]
+        },
+        {
             "label": "Python: Run Tests",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/python",

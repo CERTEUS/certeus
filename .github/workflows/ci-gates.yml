@@ -319,11 +319,14 @@ jobs:
           python -m pip install bandit || true
           bandit -q -r . -c bandit.yml || true
       - name: Gitleaks (secrets scan)
+        if: ${{ secrets.GITLEAKS_LICENSE != '' }}
         continue-on-error: true
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
-          # Report-only for ci-gates; use repo config
           args: detect --verbose --redact --no-banner --exit-code 1 -c .gitleaks.toml
+      - name: Gitleaks (skipped — no license)
+        if: ${{ secrets.GITLEAKS_LICENSE == '' }}
+        run: echo "Skipping gitleaks (no GITLEAKS_LICENSE secret)"
       - name: Tests (single-process + JUnit)
         env:
           PYTEST_ADDOPTS: "-n 0 --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"

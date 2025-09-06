@@ -93,12 +93,10 @@ repos:
       # Szybkie testy (uruchamiaj tylko, gdy zmieniają się pliki Pythona)
       - id: pytest
         name: "pytest (fast)"
-        entry: uv run pytest -q
+        entry: bash -lc 'UV_NO_SYNC=1 uv run pytest -q'
         language: system
         types: [python]
         pass_filenames: false
         stages: [pre-commit]
-        env:
-          UV_NO_SYNC: "1"
         # Wykluczenia dla testów uruchamianych przez hooki
         exclude: "(^node_modules/|^dist/|^build/|^coverage/|^\\.venv/|^proof_artifacts/|^ingest_repo/)"
