@@ -16,10 +16,15 @@ HOME_DIR=${HOME:-$(getent passwd "$(id -u)" | cut -d: -f6 || echo "/root")}
 CRED_FILE="$HOME_DIR/.git-credentials"
 
 # Try to discover username/token
-USER_CAND="${GITHUB_USER:-${GH_USER:-${GIT_USER:-}}}"
+USER_CAND="${GITHUB_USER:-${GH_USER:-${GIT_USER:-${USER:-}}}}"
 TOKEN_CAND="${GITHUB_PUSH_TOKEN:-${GITHUB_TOKEN:-${GH_TOKEN:-${ADMIN_TOKEN:-}}}}"
 
 # Local files (ignored by git)
+# Sanitize common container usernames
+case "${USER_CAND:-}" in
+  vscode|root|codespace|code) USER_CAND="" ;;
+esac
+
 if [ -z "${USER_CAND}" ] && [ -f .devkeys/github_user.txt ]; then
   USER_CAND=$(sed -n '1p' .devkeys/github_user.txt | tr -d '\r\n')
 fi
@@ -83,4 +88,3 @@ git config --global credential.useHttpPath true
 msg "Configured git credential store at: $CRED_FILE"
 msg "GitHub user: ${USER_CAND}"
 msg "You can now run: git push"
-

@@ -40,6 +40,11 @@ def main() -> int:
     # Prefer explicit user/token; support ADMIN_TOKEN fallback
 
     user = os.getenv("GITHUB_USER") or os.getenv("GH_USER") or os.getenv("GIT_USER")
+    # Consider USER as last resort (avoid common container users)
+    if not user:
+        u = os.getenv("USER")
+        if u and u not in {"root", "vscode", "codespace", "code"}:
+            user = u
     token = (
         os.getenv("GITHUB_PUSH_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("ADMIN_TOKEN")
     )
