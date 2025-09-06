@@ -57,7 +57,14 @@ def _root() -> Path:
 
 
 def _tunnel_log_path() -> Path:
-    return Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
+    base = Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
+    # Utrzymaj parytet z lexqft.py: jeśli ustawiony jest sufiks CI,
+    # korzystaj z wariantu z sufiksem, aby czytać ten sam plik, do którego
+    # zapisuje router lexqft podczas testów/CI.
+    suffix = (os.getenv("CI_TUNNEL_LOG_SUFFIX") or os.getenv("GITHUB_RUN_ID") or "").strip()
+    if suffix:
+        return base.with_name(f"lexqft_tunnel_log.{suffix}.jsonl")
+    return base
 
 
 @router.get("/list", operation_id="pfs_list_entries")
