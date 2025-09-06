@@ -29,6 +29,7 @@ EN: FastAPI router for lexqft / geometry of meaning.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request, Response
@@ -81,7 +82,12 @@ router = APIRouter(prefix="/v1/lexqft", tags=["lexqft"])
 
 _COVERAGE_AGG: list[tuple[float, float, float]] = []  # (gamma, weight, uncaptured)
 _COVERAGE_STORE = Path(__file__).resolve().parents[3] / "data" / "lexqft_coverage_state.json"
-_TUNNEL_LOG = Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
+_TUNNEL_LOG_BASE = Path(__file__).resolve().parents[3] / "data" / "lexqft_tunnel_log.jsonl"
+_suffix = (os.getenv("CI_TUNNEL_LOG_SUFFIX") or os.getenv("GITHUB_RUN_ID") or "").strip()
+if _suffix:
+    _TUNNEL_LOG = _TUNNEL_LOG_BASE.with_name(f"lexqft_tunnel_log.{_suffix}.jsonl")
+else:
+    _TUNNEL_LOG = _TUNNEL_LOG_BASE
 
 
 def _persist_coverage_state() -> None:

@@ -13,6 +13,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +21,8 @@ concurrency:
 
 jobs:
   ci-gates:
+    env:
+      CI_TUNNEL_LOG_SUFFIX: "${{ github.run_id }}-${{ github.run_attempt }}"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -321,14 +324,21 @@ jobs:
         with:
           # Report-only for ci-gates; use repo config
           args: detect --verbose --redact --no-banner --exit-code 1 -c .gitleaks.toml
-      - name: Tests (single-process to avoid shared-state flakiness)
+      - name: Tests (single-process + JUnit)
         env:
           PYTEST_ADDOPTS: "-n 0 --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"
           OTEL_ENABLED: "1"
           OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
           FINE_GRAINED_ROLES: "0"
         run: |
-          python -m pytest -q
+          python -m pytest -q --junitxml=out/tests_junit.xml
+      - name: Upload Tests JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-ci-gates-${{ github.sha }}
+          path: out/tests_junit.xml
+          if-no-files-found: ignore
       - name: CFE Smoke (in-proc)
         run: |
           python scripts/smokes/cfe_smoke.py > out/cfe_smoke.json
