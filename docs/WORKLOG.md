@@ -479,3 +479,4 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Tests: 353 passed, 6 skipped
 - 2025-09-06 15:33:00Z [agent] (work/daily): SLO gate enforce + CI hardening
   - Added SLO measure and enforce to ci-gates; PQ/Bunker/SPIFFE/A11y enforce; QUIC echo e2e; P2P turbulence enforce; Marketplace/Plugin policy enforce
+- 2025-09-06 15:36:11Z [agent] (work/daily): CI: enforce additional gates (Decorator split, PCO Validation, SDK & OpenAPI Contracts, Compliance Mapping)
