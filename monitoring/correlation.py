@@ -24,13 +24,13 @@ EN: Middleware that adds and propagates `X-Correlation-ID` and, if available,
 
 from __future__ import annotations
 
+import logging
 import os
 import typing as _t
 import uuid
 
 from fastapi import FastAPI, Request, Response
 
-import logging
 from monitoring.otel_setup import set_span_attrs
 
 # === LOGIKA / LOGIC ===

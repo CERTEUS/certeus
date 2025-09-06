@@ -59,7 +59,7 @@ ignore = []
 "services/api_gateway/routers/devices.py" = ["I001"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["packs_core", "services", "core"]
+known-first-party = ["packs_core", "services", "core", "monitoring", "certeus"]
 combine-as-imports = true
 force-sort-within-sections = true
 
