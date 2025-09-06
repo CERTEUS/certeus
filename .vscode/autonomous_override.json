@@ -2,7 +2,7 @@
     "workbench.dialogs.useSimpleDialogs": true,
     "security.workspace.trust.enabled": false,
     "terminal.integrated.confirmOnExit": "never",
-    "terminal.integrated.confirmOnKill": "never", 
+    "terminal.integrated.confirmOnKill": "never",
     "terminal.integrated.allowWorkspaceConfiguration": true,
     "chat.experimental.autoExecuteCommands": true,
     "chat.experimental.requireConfirmation": false,

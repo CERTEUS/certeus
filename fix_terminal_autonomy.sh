@@ -56,7 +56,7 @@ source ~/.bashrc 2>/dev/null || true
 
 echo "✅ Terminal autonomy configuration applied"
 echo "🤖 Environment variables set for AI automation"
-echo "🔧 Git configured for autonomous operations" 
+echo "🔧 Git configured for autonomous operations"
 echo "⚡ Shell profiles updated for persistent autonomy"
 
 echo ""

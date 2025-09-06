@@ -17,7 +17,7 @@ fi
 if grep -q "autonomousExecution.*true" /workspaces/certeus/.vscode/settings.json; then
     echo "✅ Autonomous execution enabled - OK"
 else
-    echo "❌ Autonomous execution not enabled - FAILED"  
+    echo "❌ Autonomous execution not enabled - FAILED"
 fi
 
 if grep -q "requireManualApproval.*false" /workspaces/certeus/.vscode/settings.json; then
@@ -42,7 +42,7 @@ else
 fi
 
 if grep -q "chat.experimental.autoExecuteCommands.*true" /workspaces/certeus/.vscode/settings.json; then
-    echo "✅ Auto-execute commands enabled - OK"  
+    echo "✅ Auto-execute commands enabled - OK"
 else
     echo "❌ Auto-execute commands not enabled - FAILED"
 fi
@@ -68,7 +68,7 @@ echo "🎯 COPILOT AUTONOMY TEST COMPLETE!"
 echo "🤖 If all tests show ✅, Copilot should work autonomously"
 echo ""
 echo "CURRENT COPILOT SETTINGS SUMMARY:"
-echo "🔧 Autonomous Execution: $(grep -o 'autonomousExecution.*' /workspaces/certeus/.vscode/settings.json | head -1)"  
+echo "🔧 Autonomous Execution: $(grep -o 'autonomousExecution.*' /workspaces/certeus/.vscode/settings.json | head -1)"
 echo "🔧 Manual Approval: $(grep -o 'requireManualApproval.*' /workspaces/certeus/.vscode/settings.json | head -1)"
 echo "🔧 Chat Autonomous: $(grep -o 'github.copilot.chat.autonomousMode.*' /workspaces/certeus/.vscode/settings.json | head -1)"
 echo "🔧 Auto Execute: $(grep -o 'chat.experimental.autoExecuteCommands.*' /workspaces/certeus/.vscode/settings.json | head -1)"
