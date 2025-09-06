@@ -35,13 +35,16 @@ def _base_pco() -> dict[str, Any]:
         "case_id": "CER-TEE-EMBED-1",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
         "sources": [
-            {"id": "s1", "uri": "hash://sha256/aa", "digest": "a" * 64, "retrieved_at": "2025-01-01T00:00:00Z"}
+            {"id": "s1", "uri": "hash://sha256/aa", "digest": "a" *
+                64, "retrieved_at": "2025-01-01T00:00:00Z"}
         ],
         "derivations": [{"claim_id": "c1", "solver": "z3", "proof_format": "LFSC", "artifact_digest": "b" * 64}],
         "reproducibility": {"image": "img:dev", "image_digest": "sha256:deadbeef", "seed": "0"},
         "signatures": [
-            {"role": "producer", "alg": "ed25519", "key_id": "kid1", "signature": "sig1"},
-            {"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"},
+            {"role": "producer", "alg": "ed25519",
+                "key_id": "kid1", "signature": "sig1"},
+            {"role": "counsel", "alg": "ed25519",
+                "key_id": "kid2", "signature": "sig2"},
         ],
     }
 
@@ -57,8 +60,10 @@ def test_tee_status_reports_bunker_and_ra(tmp_path: Path, monkeypatch) -> None:
     assert body.get("bunker_on") is True
     assert body.get("attested") is True
     ra = body.get("ra") or {}
-    assert isinstance(ra.get("vendor"), str) and isinstance(ra.get("product"), str)
-    assert isinstance(ra.get("measurement"), str) and len(ra.get("measurement")) == 64
+    assert isinstance(ra.get("vendor"), str) and isinstance(
+        ra.get("product"), str)
+    assert isinstance(ra.get("measurement"), str) and len(
+        ra.get("measurement")) == 64
 
 
 def test_publish_embeds_ra_when_bunker_on(tmp_path: Path, monkeypatch) -> None:
@@ -80,5 +85,7 @@ def test_publish_embeds_ra_when_bunker_on(tmp_path: Path, monkeypatch) -> None:
     tee = out.get("tee") or {}
     assert tee.get("attested") is True
     ra = tee.get("ra") or {}
-    assert isinstance(ra.get("vendor"), str) and isinstance(ra.get("product"), str)
-    assert isinstance(ra.get("measurement"), str) and len(ra.get("measurement")) == 64
+    assert isinstance(ra.get("vendor"), str) and isinstance(
+        ra.get("product"), str)
+    assert isinstance(ra.get("measurement"), str) and len(
+        ra.get("measurement")) == 64
