@@ -132,7 +132,7 @@ def main() -> int:
         _proc2 = subprocess.run(["git", "remote", "get-url", "origin"], check=True, capture_output=True, text=True)
         origin2 = (_proc2.stdout or "").strip()
         if origin2.startswith("http"):
-            repo_line = f"https://{user}:{token}@{origin2.split('://',1)[1]}\n"
+            repo_line = f"https://{user}:{token}@{origin2.split('://', 1)[1]}\n"
     except Exception:
         pass
     cur = ""
