@@ -24,11 +24,11 @@ from __future__ import annotations
 from dataclasses import asdict
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Any
 
-import logging
 from .resolve import resolve_uri
 
 try:  # optional import; keep loose coupling in CI
