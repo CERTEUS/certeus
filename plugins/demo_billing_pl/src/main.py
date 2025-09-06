@@ -29,7 +29,11 @@ class _Pack:
             return {"ok": ok, "verified_request": rid}
         if kind == "quote":
             amt = int(payload.get("amount") or 0)
-            return {"ok": True, "amount": amt, "price_usd": round(max(1, amt) * 0.01, 2)}
+            return {
+                "ok": True,
+                "amount": amt,
+                "price_usd": round(max(1, amt) * 0.01, 2),
+            }
         return {"ok": False, "reason": f"unknown kind: {kind}"}
 
 

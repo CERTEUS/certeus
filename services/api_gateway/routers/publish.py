@@ -29,7 +29,9 @@ from core.truthops.engine import post_solve, pre_solve
 
 try:
     from runtime.proof_queue import PROOF_QUEUE
-except Exception:  # pragma: no cover - fallback stub to avoid hard import failures in demos/tests
+except (
+    Exception
+):  # pragma: no cover - fallback stub to avoid hard import failures in demos/tests
     from dataclasses import dataclass
 
     @dataclass
@@ -100,9 +102,17 @@ def reason(
 
             import yaml
 
-            pack = Path(__file__).resolve().parents[3] / "policies" / "pco" / "policy_pack.yaml"
+            pack = (
+                Path(__file__).resolve().parents[3]
+                / "policies"
+                / "pco"
+                / "policy_pack.yaml"
+            )
             doc = yaml.safe_load(pack.read_text(encoding="utf-8")) or {}
-            pats = [re.compile(str(p)) for p in (((doc.get("redaction") or {}).get("pii_patterns")) or [])]
+            pats = [
+                re.compile(str(p))
+                for p in (((doc.get("redaction") or {}).get("pii_patterns")) or [])
+            ]
 
             def _mask(v: Any) -> Any:
                 if isinstance(v, dict):
@@ -123,7 +133,10 @@ def reason(
 
     if pre.heat != "HOT":
         task = PROOF_QUEUE.enqueue(
-            tenant=body.get("tenant", "anon"), heat=pre.heat, payload=body, sla=body.get("sla", "basic")
+            tenant=body.get("tenant", "anon"),
+            heat=pre.heat,
+            payload=body,
+            sla=body.get("sla", "basic"),
         )
 
         return {
@@ -131,7 +144,10 @@ def reason(
             "proof_task_id": task.id,
             "eta_hint": task.eta_hint,
             "pco.plan": pre.plan,
-            "headers": {"X-Norm-Pack-ID": x_norm_pack_id, "X-Jurisdiction": x_jurisdiction},
+            "headers": {
+                "X-Norm-Pack-ID": x_norm_pack_id,
+                "X-Jurisdiction": x_jurisdiction,
+            },
         }
 
     artifacts: dict[str, Any] = {}  # plug: wyniki z szybkich solverów

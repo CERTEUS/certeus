@@ -62,7 +62,9 @@ def _wait(url: str, timeout: float = 30.0) -> None:
 
 
 def _rid(prefix: str = "case") -> str:
-    return f"{prefix}-" + "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
+    return f"{prefix}-" + "".join(
+        random.choices(string.ascii_lowercase + string.digits, k=6)
+    )
 
 
 def main() -> int:
@@ -73,7 +75,10 @@ def main() -> int:
 
         # 2) ProofGate publish (via API route)
 
-        pco = {"case_id": _rid(), "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05}}
+        pco = {
+            "case_id": _rid(),
+            "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
+        }
 
         r = requests.post(
             BASE + "/v1/proofgate/publish",
@@ -127,7 +132,12 @@ def main() -> int:
 
             r = requests.post(
                 BASE + "/v1/pco/bundle",
-                json={"rid": rid, "smt2_hash": smt2_hash, "lfsc": "(lfsc proof)", "merkle_proof": []},
+                json={
+                    "rid": rid,
+                    "smt2_hash": smt2_hash,
+                    "lfsc": "(lfsc proof)",
+                    "merkle_proof": [],
+                },
                 timeout=15,
             )
 

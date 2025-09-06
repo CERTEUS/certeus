@@ -94,7 +94,9 @@ def find_banner_block(lines: list[str]) -> tuple[int, int] | None:
 
     j = start
 
-    while j < len(lines) and (lines[j].lstrip().startswith("#") or lines[j].strip() == ""):
+    while j < len(lines) and (
+        lines[j].lstrip().startswith("#") or lines[j].strip() == ""
+    ):
         j += 1
 
     return (start, j)
@@ -199,10 +201,16 @@ def main() -> None:
                 if not ds_content:
                     # Ensure non-empty
 
-                    doc_part = [build_default_docstring(str(f.relative_to(root)).replace("\\", "/"))]
+                    doc_part = [
+                        build_default_docstring(
+                            str(f.relative_to(root)).replace("\\", "/")
+                        )
+                    ]
 
             else:
-                doc_part = [build_default_docstring(str(f.relative_to(root)).replace("\\", "/"))]
+                doc_part = [
+                    build_default_docstring(str(f.relative_to(root)).replace("\\", "/"))
+                ]
 
             # Remove original banner/docstring occurrences
 

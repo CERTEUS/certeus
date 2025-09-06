@@ -51,7 +51,9 @@ router = APIRouter(prefix="/v1/fin/tokens", tags=["billing"])
     operation_id="fin_legacy_request_tokens",
     include_in_schema=False,
 )
-async def legacy_request_tokens(req: TokenRequestIn, request: Request) -> TokenRequestOut:
+async def legacy_request_tokens(
+    req: TokenRequestIn, request: Request
+) -> TokenRequestOut:
     return await billing.request_tokens(req, request)
 
 
@@ -61,7 +63,9 @@ async def legacy_request_tokens(req: TokenRequestIn, request: Request) -> TokenR
     operation_id="fin_legacy_allocate_tokens",
     include_in_schema=False,
 )
-async def legacy_allocate_tokens(req: TokenAllocateIn, request: Request) -> TokenStatusOut:
+async def legacy_allocate_tokens(
+    req: TokenAllocateIn, request: Request
+) -> TokenStatusOut:
     return await billing.allocate_tokens(req, request)
 
 
@@ -71,7 +75,9 @@ async def legacy_allocate_tokens(req: TokenAllocateIn, request: Request) -> Toke
     operation_id="fin_legacy_get_token_request_status",
     include_in_schema=False,
 )
-async def legacy_get_token_request_status(request_id: str, request: Request) -> TokenStatusOut:
+async def legacy_get_token_request_status(
+    request_id: str, request: Request
+) -> TokenStatusOut:
     return await billing.get_request_status(request_id, request)
 
 

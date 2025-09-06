@@ -32,7 +32,9 @@ def _root_dir() -> Path:
     return Path(os.getenv("PROOFS_FS_ROOT") or "data/proof_fs").resolve()
 
 
-def materialize_mail_attachment(mail_id: str, filename: str, meta: dict[str, Any] | None = None) -> Path:
+def materialize_mail_attachment(
+    mail_id: str, filename: str, meta: dict[str, Any] | None = None
+) -> Path:
     """
     PL: Tworzy stub pliku pod data/proof_fs/mail/<mail_id>/<filename> z JSON‑em metadanych.
     EN: Creates a stub file under data/proof_fs/mail/<mail_id>/<filename> with JSON metadata.
@@ -50,7 +52,9 @@ def materialize_mail_attachment(mail_id: str, filename: str, meta: dict[str, Any
         **(meta or {}),
     }
     # Idempotent write (overwrite ok for stub)
-    p.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    p.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     return p
 
 

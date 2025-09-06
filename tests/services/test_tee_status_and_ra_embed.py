@@ -35,13 +35,39 @@ def _base_pco() -> dict[str, Any]:
         "case_id": "CER-TEE-EMBED-1",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
         "sources": [
-            {"id": "s1", "uri": "hash://sha256/aa", "digest": "a" * 64, "retrieved_at": "2025-01-01T00:00:00Z"}
+            {
+                "id": "s1",
+                "uri": "hash://sha256/aa",
+                "digest": "a" * 64,
+                "retrieved_at": "2025-01-01T00:00:00Z",
+            }
         ],
-        "derivations": [{"claim_id": "c1", "solver": "z3", "proof_format": "LFSC", "artifact_digest": "b" * 64}],
-        "reproducibility": {"image": "img:dev", "image_digest": "sha256:deadbeef", "seed": "0"},
+        "derivations": [
+            {
+                "claim_id": "c1",
+                "solver": "z3",
+                "proof_format": "LFSC",
+                "artifact_digest": "b" * 64,
+            }
+        ],
+        "reproducibility": {
+            "image": "img:dev",
+            "image_digest": "sha256:deadbeef",
+            "seed": "0",
+        },
         "signatures": [
-            {"role": "producer", "alg": "ed25519", "key_id": "kid1", "signature": "sig1"},
-            {"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"},
+            {
+                "role": "producer",
+                "alg": "ed25519",
+                "key_id": "kid1",
+                "signature": "sig1",
+            },
+            {
+                "role": "counsel",
+                "alg": "ed25519",
+                "key_id": "kid2",
+                "signature": "sig2",
+            },
         ],
     }
 

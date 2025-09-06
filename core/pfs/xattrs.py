@@ -37,8 +37,8 @@ except Exception:  # pragma: no cover - fallback lightweight struct
 
 def _sha256_hex_path(p: Path) -> str:
     h = hashlib.sha256()
-    with p.open('rb') as f:
-        for chunk in iter(lambda: f.read(65536), b''):
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
             h.update(chunk)
     return h.hexdigest()
 
@@ -50,7 +50,7 @@ def _load_sidecar(p: Path) -> dict[str, Any] | None:
     sidecar = p.with_suffix(p.suffix + ".xattrs.json")
     try:
         if sidecar.exists():
-            raw = json.loads(sidecar.read_text(encoding='utf-8'))
+            raw = json.loads(sidecar.read_text(encoding="utf-8"))
             if isinstance(raw, dict):
                 return raw
     except Exception:

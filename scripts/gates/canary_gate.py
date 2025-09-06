@@ -65,11 +65,26 @@ def main() -> int:
     from services.api_gateway.main import app  # lazy import
 
     ap = argparse.ArgumentParser(description="Canary/progressive readiness gate")
-    ap.add_argument("--phases", type=int, default=3, help="Number of phases (e.g. 3 => [1,5,25]%)")
-    ap.add_argument("--count", type=int, default=int(os.getenv("CANARY_COUNT", "60") or 60), help="Requests per phase")
-    ap.add_argument("--p95-max", type=float, default=float(os.getenv("CANARY_MAX_P95_MS", "250")), help="Max p95 ms")
     ap.add_argument(
-        "--error-rate-max", type=float, default=float(os.getenv("CANARY_MAX_ERROR_RATE", "0.01")), help="Max error rate"
+        "--phases", type=int, default=3, help="Number of phases (e.g. 3 => [1,5,25]%)"
+    )
+    ap.add_argument(
+        "--count",
+        type=int,
+        default=int(os.getenv("CANARY_COUNT", "60") or 60),
+        help="Requests per phase",
+    )
+    ap.add_argument(
+        "--p95-max",
+        type=float,
+        default=float(os.getenv("CANARY_MAX_P95_MS", "250")),
+        help="Max p95 ms",
+    )
+    ap.add_argument(
+        "--error-rate-max",
+        type=float,
+        default=float(os.getenv("CANARY_MAX_ERROR_RATE", "0.01")),
+        help="Max error rate",
     )
     ap.add_argument("--out", default=os.getenv("CANARY_OUT", "out/canary.json"))
     args = ap.parse_args()

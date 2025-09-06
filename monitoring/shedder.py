@@ -41,7 +41,9 @@ _STATE: dict[str, float] = {
 }
 
 
-def update_from_qtmp(ub_lt: float | None = None, collapse_latency_ms: float | None = None) -> None:
+def update_from_qtmp(
+    ub_lt: float | None = None, collapse_latency_ms: float | None = None
+) -> None:
     if ub_lt is not None:
         try:
             _STATE["qtmp_last_ub_lt"] = float(ub_lt)
@@ -111,7 +113,11 @@ def _is_sheddable(path: str, method: str) -> bool:
     # Focus on heavy/compute or mutating endpoints
     if m != "GET":
         return True
-    if path.startswith("/v1/qtm") or path.startswith("/v1/cfe") or path.startswith("/v1/lexqft"):
+    if (
+        path.startswith("/v1/qtm")
+        or path.startswith("/v1/cfe")
+        or path.startswith("/v1/lexqft")
+    ):
         return True
     return False
 
@@ -140,8 +146,14 @@ def attach_shedder_middleware(app: FastAPI) -> None:
                         tenant = get_tenant_id(request)
                     except Exception:
                         pass
-                    certeus_http_shed_total.labels(tenant=tenant, path=path, method=method, reason="adaptive").inc()
-                    return Response(status_code=503, content="Service Busy (shed)", headers={"Retry-After": "0"})
+                    certeus_http_shed_total.labels(
+                        tenant=tenant, path=path, method=method, reason="adaptive"
+                    ).inc()
+                    return Response(
+                        status_code=503,
+                        content="Service Busy (shed)",
+                        headers={"Retry-After": "0"},
+                    )
         except Exception:
             # Safety net: never block traffic due to shedder errors
             pass

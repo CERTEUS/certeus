@@ -23,7 +23,9 @@ def test_sdk_contract_gate_report_ok(tmp_path: Path, monkeypatch) -> None:
     # No errors expected in current tree
     assert rep.get("errors") == []
     # Fetch live spec and validate presence of key operationIds
-    from fastapi.testclient import TestClient  # local import to avoid global dependency at module load
+    from fastapi.testclient import (
+        TestClient,
+    )  # local import to avoid global dependency at module load
 
     from services.api_gateway.main import app  # type: ignore
 

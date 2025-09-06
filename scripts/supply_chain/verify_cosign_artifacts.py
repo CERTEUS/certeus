@@ -26,7 +26,12 @@ from pathlib import Path
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--require", nargs="+", default=["sbom.json.sig", "sbom.json.cert"], help="Files that must exist")
+    ap.add_argument(
+        "--require",
+        nargs="+",
+        default=["sbom.json.sig", "sbom.json.cert"],
+        help="Files that must exist",
+    )
     args = ap.parse_args()
     missing = [p for p in args.require if not Path(p).exists()]
     if missing:

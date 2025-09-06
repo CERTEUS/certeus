@@ -65,14 +65,19 @@ def run_marketplace_demo(client: TestClient) -> dict[str, Any]:
     man_path = Path("plugins/demo_alpha/plugin.yaml")
     manifest = man_path.read_text(encoding="utf-8")
     # Usuń linię signature: jeśli istnieje
-    unsigned = "\n".join([ln for ln in manifest.splitlines() if not ln.strip().startswith("signature:")])
+    unsigned = "\n".join(
+        [ln for ln in manifest.splitlines() if not ln.strip().startswith("signature:")]
+    )
 
     sk = serialization.load_pem_private_key(pem.encode("utf-8"), password=None)
     sig = _b64u(sk.sign(unsigned.encode("utf-8")))
 
     out: dict[str, Any] = {}
 
-    r_ver = client.post("/v1/marketplace/verify_manifest", json={"manifest_yaml": unsigned, "signature_b64u": sig})
+    r_ver = client.post(
+        "/v1/marketplace/verify_manifest",
+        json={"manifest_yaml": unsigned, "signature_b64u": sig},
+    )
     out["alpha_verify"] = {"status": r_ver.status_code, "body": r_ver.json()}
 
     r_inst = client.post(
@@ -84,15 +89,26 @@ def run_marketplace_demo(client: TestClient) -> dict[str, Any]:
     # demo_beta
     man_path_b = Path("plugins/demo_beta/plugin.yaml")
     manifest_b = man_path_b.read_text(encoding="utf-8")
-    unsigned_b = "\n".join([ln for ln in manifest_b.splitlines() if not ln.strip().startswith("signature:")])
+    unsigned_b = "\n".join(
+        [
+            ln
+            for ln in manifest_b.splitlines()
+            if not ln.strip().startswith("signature:")
+        ]
+    )
     sig_b = _b64u(sk.sign(unsigned_b.encode("utf-8")))
     r_ver_b = client.post(
-        "/v1/marketplace/verify_manifest", json={"manifest_yaml": unsigned_b, "signature_b64u": sig_b}
+        "/v1/marketplace/verify_manifest",
+        json={"manifest_yaml": unsigned_b, "signature_b64u": sig_b},
     )
     out["beta_verify"] = {"status": r_ver_b.status_code, "body": r_ver_b.json()}
     r_inst_b = client.post(
         "/v1/marketplace/install",
-        json={"name": "demo_beta", "manifest_yaml": unsigned_b, "signature_b64u": sig_b},
+        json={
+            "name": "demo_beta",
+            "manifest_yaml": unsigned_b,
+            "signature_b64u": sig_b,
+        },
     )
     out["beta_install"] = {"status": r_inst_b.status_code, "body": r_inst_b.json()}
 
@@ -107,7 +123,9 @@ def run_billing_demo(client: TestClient) -> dict[str, Any]:
     out: dict[str, Any] = {}
     r_quota = client.post("/v1/billing/quota", json={"tenant": tenant, "units": 100})
     r_bal1 = client.get("/v1/billing/balance", headers={"X-Tenant-ID": tenant})
-    r_alloc = client.post("/v1/billing/allocate", json={"units": 25}, headers={"X-Tenant-ID": tenant})
+    r_alloc = client.post(
+        "/v1/billing/allocate", json={"units": 25}, headers={"X-Tenant-ID": tenant}
+    )
     r_ref = client.post("/v1/billing/refund", json={"tenant": tenant, "units": 5})
     r_bal2 = client.get("/v1/billing/balance", headers={"X-Tenant-ID": tenant})
     out["quota"] = {"status": r_quota.status_code, "body": r_quota.json()}
@@ -124,10 +142,14 @@ def main() -> int:
 
     with TestClient(app) as client:
         mp = run_marketplace_demo(client)
-        (reports / "w14_marketplace.json").write_text(json.dumps(mp, indent=2, ensure_ascii=False), encoding="utf-8")
+        (reports / "w14_marketplace.json").write_text(
+            json.dumps(mp, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
 
         bill = run_billing_demo(client)
-        (reports / "w14_billing.json").write_text(json.dumps(bill, indent=2, ensure_ascii=False), encoding="utf-8")
+        (reports / "w14_billing.json").write_text(
+            json.dumps(bill, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
 
     print("W14 demo outputs -> reports/w14_marketplace.json, reports/w14_billing.json")
     return 0

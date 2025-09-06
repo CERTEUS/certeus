@@ -33,11 +33,17 @@ def main() -> int:
     # Set state
     r = c.post(
         "/v1/qtm/state",
-        json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"], "probs": [0.6, 0.3, 0.1]},
+        json={
+            "case": case,
+            "basis": ["ALLOW", "DENY", "ABSTAIN"],
+            "probs": [0.6, 0.3, 0.1],
+        },
     )
     assert r.status_code == 200
     # Sequence
-    r2 = c.post("/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]})
+    r2 = c.post(
+        "/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]}
+    )
     assert r2.status_code == 200
     assert "X-CERTEUS-PCO-qtm.sequence" in r2.headers
     # Expectation

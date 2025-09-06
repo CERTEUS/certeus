@@ -30,13 +30,39 @@ def _base_ok_pco_with_security() -> dict:
         # Required for decision path → PUBLISH
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
         "sources": [
-            {"id": "s1", "uri": "hash://sha256/aa", "digest": "a" * 64, "retrieved_at": "2025-01-01T00:00:00Z"}
+            {
+                "id": "s1",
+                "uri": "hash://sha256/aa",
+                "digest": "a" * 64,
+                "retrieved_at": "2025-01-01T00:00:00Z",
+            }
         ],
-        "derivations": [{"claim_id": "c1", "solver": "z3", "proof_format": "LFSC", "artifact_digest": "b" * 64}],
-        "reproducibility": {"image": "img:dev", "image_digest": "sha256:deadbeef", "seed": "0"},
+        "derivations": [
+            {
+                "claim_id": "c1",
+                "solver": "z3",
+                "proof_format": "LFSC",
+                "artifact_digest": "b" * 64,
+            }
+        ],
+        "reproducibility": {
+            "image": "img:dev",
+            "image_digest": "sha256:deadbeef",
+            "seed": "0",
+        },
         "signatures": [
-            {"role": "producer", "alg": "ed25519", "key_id": "kid1", "signature": "sig1"},
-            {"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"},
+            {
+                "role": "producer",
+                "alg": "ed25519",
+                "key_id": "kid1",
+                "signature": "sig1",
+            },
+            {
+                "role": "counsel",
+                "alg": "ed25519",
+                "key_id": "kid2",
+                "signature": "sig2",
+            },
         ],
         # Optional TEE attestation flag (passes when BUNKER=1)
         "tee": {"attested": True},
@@ -73,10 +99,15 @@ def test_publish_with_security_extension(monkeypatch) -> None:
     assert isinstance(body.get("ledger_ref"), str) and len(body["ledger_ref"]) == 64
     # Ledger contains publish event for case
     records = ledger_service.get_records_for_case(case_id=pco["case_id"])
-    assert any(rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"] for rec in records)
+    assert any(
+        rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"]
+        for rec in records
+    )
 
 
-def test_publish_still_ok_when_security_extension_invalid_report_only(monkeypatch) -> None:
+def test_publish_still_ok_when_security_extension_invalid_report_only(
+    monkeypatch,
+) -> None:
     # VALIDATE_PCO enables report-only validation; decision path should remain unaffected
     monkeypatch.setenv("VALIDATE_PCO", "1")
     client = TestClient(app)

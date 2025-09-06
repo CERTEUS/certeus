@@ -45,7 +45,9 @@ def _load_patterns() -> list[str]:
         return []
 
 
-def _scan(obj: Any, patterns: list[re.Pattern[str]], hits: list[str], path: str = "$") -> None:
+def _scan(
+    obj: Any, patterns: list[re.Pattern[str]], hits: list[str], path: str = "$"
+) -> None:
     if isinstance(obj, dict):
         for k, v in obj.items():
             _scan(v, patterns, hits, path=f"{path}.{k}")

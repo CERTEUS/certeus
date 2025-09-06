@@ -84,7 +84,9 @@ def main() -> int:
         "case_id": "CER-LEX-DEMO-0001",
         "domain": "lex",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
-        "sources": [{"digest": "sha256:deadbeef", "retrieved_at": "2025-09-04T12:00:00Z"}],
+        "sources": [
+            {"digest": "sha256:deadbeef", "retrieved_at": "2025-09-04T12:00:00Z"}
+        ],
         "derivations": [
             {
                 "solver": "z3",

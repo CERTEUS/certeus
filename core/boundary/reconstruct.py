@@ -144,9 +144,15 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
                     ledger = obj.get("ledger") or {}
                     mr_expected = None
                     if isinstance(ledger, dict):
-                        mr_expected = ledger.get("merkle_root") or ledger.get("merkleRoot")
+                        mr_expected = ledger.get("merkle_root") or ledger.get(
+                            "merkleRoot"
+                        )
 
-                    if not (isinstance(rid, str) and isinstance(smt2_hash, str) and isinstance(lfsc, str)):
+                    if not (
+                        isinstance(rid, str)
+                        and isinstance(smt2_hash, str)
+                        and isinstance(lfsc, str)
+                    ):
                         mismatches += 1
                         continue
 
@@ -160,7 +166,10 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
                         mismatches += 1
                         continue
 
-                    if not isinstance(mr_expected, str) or mr_expected.lower() != mr_computed.lower():
+                    if (
+                        not isinstance(mr_expected, str)
+                        or mr_expected.lower() != mr_computed.lower()
+                    ):
                         mismatches += 1
                 except Exception:
                     mismatches += 1
@@ -172,9 +181,11 @@ def bulk_reconstruct(bundle_dir: str | Path) -> dict[str, Any]:
         stats[shard_id] = {
             "files": files,
             "bytes": total_bytes,
-            "gzip_ratio": _gzip_ratio(str(stats).encode("utf-8"))
-            if files == 0
-            else _gzip_ratio(b"0" * (total_bytes // max(1, files))),
+            "gzip_ratio": (
+                _gzip_ratio(str(stats).encode("utf-8"))
+                if files == 0
+                else _gzip_ratio(b"0" * (total_bytes // max(1, files)))
+            ),
         }
 
     delta_bits = sum(bits_delta_map.values())

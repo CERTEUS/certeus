@@ -36,9 +36,15 @@ def _renorm(items, case: str = "HP-RENORM"):
 
 @given(
     xs=st.lists(
-        st.floats(min_value=0.0, max_value=100.0, allow_nan=False, allow_infinity=False), min_size=2, max_size=8
+        st.floats(
+            min_value=0.0, max_value=100.0, allow_nan=False, allow_infinity=False
+        ),
+        min_size=2,
+        max_size=8,
     ),
-    scale=st.floats(min_value=0.1, max_value=10.0, allow_nan=False, allow_infinity=False),
+    scale=st.floats(
+        min_value=0.1, max_value=10.0, allow_nan=False, allow_infinity=False
+    ),
 )
 @settings(deadline=None, max_examples=50)
 def test_scale_invariance_and_entropy_bounds(xs, scale) -> None:
@@ -51,7 +57,9 @@ def test_scale_invariance_and_entropy_bounds(xs, scale) -> None:
     assert 0.0 <= ent <= math.log(max(1, n)) + 1e-9
 
     # scale invariance
-    items2 = [{"uid": f"U{i}", "authority": float(x) * float(scale)} for i, x in enumerate(xs)]
+    items2 = [
+        {"uid": f"U{i}", "authority": float(x) * float(scale)} for i, x in enumerate(xs)
+    ]
     dist2, ent2 = _renorm(items2, case="HP-RENORM-2")
     for k in dist:
         assert abs(dist2[k] - dist[k]) < 1e-9

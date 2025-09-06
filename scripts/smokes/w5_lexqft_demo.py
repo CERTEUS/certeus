@@ -46,20 +46,20 @@ def _pp(title: str, data) -> None:
 def main() -> int:
     c = TestClient(gateway_app)
     # Low energy: expect reflection / lower p_tunnel
-    r_low = c.post('/v1/lexqft/tunnel', json={'evidence_energy': 0.6})
+    r_low = c.post("/v1/lexqft/tunnel", json={"evidence_energy": 0.6})
     r_low.raise_for_status()
-    _pp('Tunnel (low energy)', r_low.json())
+    _pp("Tunnel (low energy)", r_low.json())
     # High energy: expect p_tunnel ~ 0.95
-    r_high = c.post('/v1/lexqft/tunnel', json={'evidence_energy': 1.2})
+    r_high = c.post("/v1/lexqft/tunnel", json={"evidence_energy": 1.2})
     r_high.raise_for_status()
-    _pp('Tunnel (high energy)', r_high.json())
+    _pp("Tunnel (high energy)", r_high.json())
     # Coverage snapshot
-    r_cov = c.get('/v1/lexqft/coverage')
+    r_cov = c.get("/v1/lexqft/coverage")
     r_cov.raise_for_status()
-    _pp('Coverage', r_cov.json())
-    print('\nOK: Week-5 demo complete (LexQFT tunnel + coverage)')
+    _pp("Coverage", r_cov.json())
+    print("\nOK: Week-5 demo complete (LexQFT tunnel + coverage)")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     raise SystemExit(main())

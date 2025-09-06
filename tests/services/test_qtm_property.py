@@ -35,7 +35,9 @@ def _norm(dist: list[float]) -> list[float]:
     return [max(0.0, x) / s for x in dist]
 
 
-ops_strategy = st.lists(st.sampled_from(["L", "T", "W", "I", "C"]), min_size=1, max_size=5)
+ops_strategy = st.lists(
+    st.sampled_from(["L", "T", "W", "I", "C"]), min_size=1, max_size=5
+)
 
 
 @composite
@@ -45,7 +47,9 @@ def basis_and_dist(draw):
     basis = list(perm[:n])
     dist = draw(
         st.lists(
-            st.floats(min_value=0, max_value=10, allow_nan=False, allow_infinity=False), min_size=n, max_size=n
+            st.floats(min_value=0, max_value=10, allow_nan=False, allow_infinity=False),
+            min_size=n,
+            max_size=n,
         ).filter(lambda xs: sum(xs) > 0)
     )
     return basis, dist
@@ -53,7 +57,9 @@ def basis_and_dist(draw):
 
 @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
 @given(bd=basis_and_dist(), ops=ops_strategy)
-def test_qtm_sequence_property_holds(bd: tuple[list[str], list[float]], ops: list[str]) -> None:
+def test_qtm_sequence_property_holds(
+    bd: tuple[list[str], list[float]], ops: list[str]
+) -> None:
     from services.api_gateway.main import app
 
     c = TestClient(app)

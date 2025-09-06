@@ -31,7 +31,9 @@ def test_mailops_ingest_returns_pfs_uri() -> None:
         "to": ["b@example.com"],
         "subject": "Hello",
         "body_text": "Hi",
-        "attachments": [{"filename": "file.pdf", "content_type": "application/pdf", "size": 10}],
+        "attachments": [
+            {"filename": "file.pdf", "content_type": "application/pdf", "size": 10}
+        ],
     }
     r = client.post("/v1/mailops/ingest", json=payload)
     assert r.status_code == 200

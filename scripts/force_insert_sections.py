@@ -55,7 +55,9 @@ def insert_after_docstring_or_banner(text: str) -> str:
     while i < n and (lines[i].lstrip().startswith("#") or lines[i].strip() == ""):
         i += 1
     # if next line starts docstring
-    if i < n and (lines[i].lstrip().startswith('"""') or lines[i].lstrip().startswith("'''")):
+    if i < n and (
+        lines[i].lstrip().startswith('"""') or lines[i].lstrip().startswith("'''")
+    ):
         quote = lines[i].lstrip()[:3]
         # move to end of docstring
         i += 1

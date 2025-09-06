@@ -19,7 +19,10 @@ EN: CFE package (geometry of meaning): graph metric, Ricci curvatures,
 
 # === IMPORTY / IMPORTS ===
 
-from .metric import CurvatureSummary as CurvatureSummary, kappa_max_for_case as kappa_max_for_case  # re-export helpers
+from .metric import (
+    CurvatureSummary as CurvatureSummary,
+    kappa_max_for_case as kappa_max_for_case,
+)  # re-export helpers
 
 # === KONFIGURACJA / CONFIGURATION ===
 

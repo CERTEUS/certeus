@@ -65,7 +65,10 @@ def sha256_hex_utf8(s: str) -> str:
 
 
 def compute_bundle_hash_hex(pub: dict[str, Any]) -> str:
-    payload = {"smt2_hash": pub["smt2_hash"], "lfsc_sha256": sha256_hex_utf8(pub["lfsc"])}
+    payload = {
+        "smt2_hash": pub["smt2_hash"],
+        "lfsc_sha256": sha256_hex_utf8(pub["lfsc"]),
+    }
 
     if pub.get("drat") is not None:
         payload["drat_sha256"] = sha256_hex_utf8(pub["drat"])
@@ -96,13 +99,21 @@ def canonical_digest_hex(pub: dict[str, Any], merkle_root_hex: str) -> str:
 
 
 def main() -> None:
-    ap = ArgumentParser(description="Sign public PCO bundle (Ed25519 detached signature).")
+    ap = ArgumentParser(
+        description="Sign public PCO bundle (Ed25519 detached signature)."
+    )
 
     ap.add_argument("--rid", required=True)
 
-    ap.add_argument("--bundle-dir", default=os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco"))
+    ap.add_argument(
+        "--bundle-dir", default=os.getenv("PROOF_BUNDLE_DIR", "./data/public_pco")
+    )
 
-    ap.add_argument("--key", default="ed25519-private.pem", help="PEM private key (PKCS8, no password)")
+    ap.add_argument(
+        "--key",
+        default="ed25519-private.pem",
+        help="PEM private key (PKCS8, no password)",
+    )
 
     args = ap.parse_args()
 
@@ -118,13 +129,17 @@ def main() -> None:
 
     rid_hash_hex = hashlib.sha256(pub["rid"].encode("utf-8")).hexdigest()
 
-    leaf_hex = hashlib.sha256(bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)).hexdigest()
+    leaf_hex = hashlib.sha256(
+        bytes.fromhex(rid_hash_hex) + bytes.fromhex(bundle_hash_hex)
+    ).hexdigest()
 
     merkle_root_hex = leaf_hex
 
     digest_hex = canonical_digest_hex(pub, merkle_root_hex)
 
-    sk_any = serialization.load_pem_private_key(Path(args.key).read_bytes(), password=None)
+    sk_any = serialization.load_pem_private_key(
+        Path(args.key).read_bytes(), password=None
+    )
 
     if not isinstance(sk_any, Ed25519PrivateKey):
         raise TypeError("Loaded key is not Ed25519 (expected Ed25519PrivateKey).")
@@ -135,7 +150,9 @@ def main() -> None:
 
     pub["signature"] = base64.urlsafe_b64encode(sig).rstrip(b"=").decode()
 
-    bundle_path.write_text(json.dumps(pub, ensure_ascii=False, indent=2), encoding="utf-8")
+    bundle_path.write_text(
+        json.dumps(pub, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     print(f"OK: signed {bundle_path}")
 

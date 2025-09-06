@@ -38,14 +38,27 @@ def main() -> int:
     reports = Path("reports")
     reports.mkdir(exist_ok=True)
     with TestClient(app) as c:
-        out["bad_name"] = c.post("/v1/marketplace/dry_run", json=_req("../evil", "plugins.x.src.main", "1.0.0")).json()
+        out["bad_name"] = c.post(
+            "/v1/marketplace/dry_run",
+            json=_req("../evil", "plugins.x.src.main", "1.0.0"),
+        ).json()
         out["missing_module"] = c.post(
             "/v1/marketplace/dry_run",
-            json={"name": "safe", "manifest_yaml": "name: safe\nversion: '1.0.0'\n", "signature_b64u": "sig"},
+            json={
+                "name": "safe",
+                "manifest_yaml": "name: safe\nversion: '1.0.0'\n",
+                "signature_b64u": "sig",
+            },
         ).json()
-        out["bad_semver"] = c.post("/v1/marketplace/dry_run", json=_req("safe", "plugins.x.src.main", "abc")).json()
-        out["ok_semver"] = c.post("/v1/marketplace/dry_run", json=_req("safe", "plugins.x.src.main", "1.2.3")).json()
-    (reports / "smoke_dryrun.json").write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+        out["bad_semver"] = c.post(
+            "/v1/marketplace/dry_run", json=_req("safe", "plugins.x.src.main", "abc")
+        ).json()
+        out["ok_semver"] = c.post(
+            "/v1/marketplace/dry_run", json=_req("safe", "plugins.x.src.main", "1.2.3")
+        ).json()
+    (reports / "smoke_dryrun.json").write_text(
+        json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print("smoke_dryrun -> reports/smoke_dryrun.json")
     return 0
 

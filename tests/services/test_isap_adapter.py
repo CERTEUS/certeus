@@ -78,14 +78,18 @@ def test_extract_title() -> None:
     assert extract_title(html) == "Ustawa Testowa"
 
 
-def test_fetch_and_cache_isap_sets_title(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, dummy_urlopen) -> None:
+def test_fetch_and_cache_isap_sets_title(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, dummy_urlopen
+) -> None:
     monkeypatch.setenv("LAW_CACHE_DIR", str(tmp_path))
 
     dummy_urlopen(b"<html><head><title>Test Dz.U.</title></head></html>")
 
     c = FileCache(tmp_path)
 
-    doc = fetch_and_cache_isap("https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19970880553", c)
+    doc = fetch_and_cache_isap(
+        "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19970880553", c
+    )
 
     assert doc.title == "Test Dz.U."
 

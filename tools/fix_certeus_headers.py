@@ -107,7 +107,9 @@ DOCSTRING_NEAR_TOP_RE = re.compile(r'(?ms)^\s*(["\'])\1\1(?P<body>.*?)(\1\1\1)\s
 
 
 def needs_banner(text: str) -> bool:
-    return not text.lstrip().startswith("# +=====================================================================")
+    return not text.lstrip().startswith(
+        "# +====================================================================="
+    )
 
 
 def needs_docstring(text: str) -> bool:

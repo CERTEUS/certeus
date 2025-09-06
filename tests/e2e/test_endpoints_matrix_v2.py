@@ -36,7 +36,9 @@ def _gen_ed25519() -> tuple[str, str]:
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
-    pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    pub = sk.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+    )
     return pem, pub.hex()
 
 
@@ -77,19 +79,37 @@ POST_JSON_ENDPOINTS: list[tuple[str, dict[str, Any]]] = [
     ("/v1/qtm/commutator", {"A": "X", "B": "Y"}),
     ("/v1/qtm/find_entanglement", {"variables": ["A", "B"]}),
     ("/v1/devices/horizon_drive/plan", {}),
-    ("/v1/devices/qoracle/expectation", {"objective": "maximize fairness", "constraints": {}}),
-    ("/v1/devices/entangle", {"variables": ["RISK", "SENTIMENT"], "target_negativity": 0.1}),
+    (
+        "/v1/devices/qoracle/expectation",
+        {"objective": "maximize fairness", "constraints": {}},
+    ),
+    (
+        "/v1/devices/entangle",
+        {"variables": ["RISK", "SENTIMENT"], "target_negativity": 0.1},
+    ),
     ("/v1/devices/chronosync/reconcile", {"coords": {"t": 0}, "pc_delta": {}}),
-    ("/v1/ethics/equity_meter", {"distribution_a": [0.2, 0.8], "distribution_b": [0.5, 0.5]}),
-    ("/v1/ethics/double_verdict", {"W_litera": "ALLOW", "T_telos": "TRUTH", "rationale": "smoke"}),
+    (
+        "/v1/ethics/equity_meter",
+        {"distribution_a": [0.2, 0.8], "distribution_b": [0.5, 0.5]},
+    ),
+    (
+        "/v1/ethics/double_verdict",
+        {"W_litera": "ALLOW", "T_telos": "TRUTH", "rationale": "smoke"},
+    ),
     ("/v1/dr/replay", {"case": "CER-1", "timestamp": "2023-10-01T00:00:00Z"}),
     ("/v1/dr/recall", {"upn": "UPN-TEST"}),
     ("/v1/export", {"case_id": "CER-1", "analysis_result": {"ok": True}}),
-    ("/v1/verify", {"formula": "(set-logic QF_UF) (assert true) (check-sat)", "lang": "smt2"}),
+    (
+        "/v1/verify",
+        {"formula": "(set-logic QF_UF) (assert true) (check-sat)", "lang": "smt2"},
+    ),
     ("/v1/lexqft/coverage/update", [{"gamma": 0.9, "weight": 1.0, "uncaptured": 0.05}]),
     ("/v1/lexqft/coverage/reset", {}),
     # Ledger input (valid sha256 placeholder)
-    ("/v1/ledger/record-input", {"case_id": "CER-1", "document_hash": "sha256:" + ("0" * 64)}),
+    (
+        "/v1/ledger/record-input",
+        {"case_id": "CER-1", "document_hash": "sha256:" + ("0" * 64)},
+    ),
 ]
 
 # === LOGIKA / LOGIC ===
@@ -106,12 +126,16 @@ def test_get_endpoints_respond_2xx(client: TestClient, path: str) -> None:
     POST_JSON_ENDPOINTS,
     ids=[p for p, _ in POST_JSON_ENDPOINTS],
 )
-def test_post_endpoints_json_2xx(client: TestClient, path: str, payload: dict[str, Any] | list[dict[str, Any]]) -> None:
+def test_post_endpoints_json_2xx(
+    client: TestClient, path: str, payload: dict[str, Any] | list[dict[str, Any]]
+) -> None:
     r = client.post(path, json=payload)
     assert 200 <= r.status_code < 300
 
 
-def test_post_preview_and_ingest_minimal_pdf(client: TestClient, tmp_path: Path) -> None:
+def test_post_preview_and_ingest_minimal_pdf(
+    client: TestClient, tmp_path: Path
+) -> None:
     # Preview
     files = {"file": ("hello.txt", b"hello", "text/plain")}
     rp = client.post("/v1/preview", files=files)
@@ -144,8 +168,12 @@ def test_lexqft_tunnel_energy_bounds(client: TestClient, e: float) -> None:
     ],
     ids=["n=0.05", "n=0.10", "n=0.20", "n=0.50"],
 )
-def test_devices_entangle_negativity_bounds(client: TestClient, neg: float, vars_: list[str]) -> None:
-    r = client.post("/v1/devices/entangle", json={"variables": vars_, "target_negativity": neg})
+def test_devices_entangle_negativity_bounds(
+    client: TestClient, neg: float, vars_: list[str]
+) -> None:
+    r = client.post(
+        "/v1/devices/entangle", json={"variables": vars_, "target_negativity": neg}
+    )
     assert r.status_code == 200
     val = float(r.json().get("achieved_negativity", 0.0))
     assert 0.0 <= val <= 0.12
@@ -214,9 +242,16 @@ def test_qtm_measure_various_operators(client: TestClient, op: str, src: str) ->
     ],
 )
 def test_mailops_ingest_variants(
-    client: TestClient, spf: str | None, dkim: str | None, dmarc: str | None, att_count: int
+    client: TestClient,
+    spf: str | None,
+    dkim: str | None,
+    dmarc: str | None,
+    att_count: int,
 ) -> None:
-    atts = [{"filename": f"a{i}.txt", "content_type": "text/plain", "size": 5 + i} for i in range(att_count)]
+    atts = [
+        {"filename": f"a{i}.txt", "content_type": "text/plain", "size": 5 + i}
+        for i in range(att_count)
+    ]
     r = client.post(
         "/v1/mailops/ingest",
         json={

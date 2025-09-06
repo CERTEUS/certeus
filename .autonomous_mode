@@ -1,0 +1,23 @@
+# CERTEUS AUTONOMOUS MODE CONFIGURATION
+# This file enables fully autonomous AI operation
+
+AUTONOMOUS_MODE=enabled
+REQUIRE_MANUAL_APPROVAL=false
+GITHUB_COPILOT_AUTONOMOUS=true
+OPENAI_CODEX_AUTONOMOUS=true
+AUTO_COMMIT=true
+AUTO_PUSH=true
+AUTO_MERGE=true
+AUTO_FORMAT=true
+AUTO_TEST=true
+AUTO_FIX=true
+
+# AI Agents with full authority
+AUTHORIZED_AGENTS=github_copilot,openai_codex,gemini
+
+# No confirmation required for these operations
+AUTONOMOUS_OPERATIONS=commit,push,merge,format,test,fix,install,update
+
+# Status
+STATUS=FULLY_AUTONOMOUS
+LAST_UPDATED=2025-09-06

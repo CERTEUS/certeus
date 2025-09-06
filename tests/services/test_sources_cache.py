@@ -84,7 +84,9 @@ def test_sources_cache_writes_and_returns_digest(
 
     client = TestClient(app)
 
-    r = client.post("/v1/sources/cache", json={"uri": "https://isap.sejm.gov.pl/some-act"})
+    r = client.post(
+        "/v1/sources/cache", json={"uri": "https://isap.sejm.gov.pl/some-act"}
+    )
 
     assert r.status_code == 200
 

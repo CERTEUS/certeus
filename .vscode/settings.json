@@ -136,7 +136,7 @@
     "python.analysis.enableExtensions": false,
     "python.languageServer": "Pylance",
     "python.linting.enabled": false,
-    // GitHub Copilot
+    // GitHub Copilot - FULL AUTONOMOUS MODE
     "github.copilot.enable": {
         "*": true
     },
@@ -149,13 +149,17 @@
         "enableAutoCompletions": true,
         "clearOnSend": false,
         "saveHistory": true,
-        "noConfirm": true
+        "noConfirm": true,
+        "autonomousExecution": true,
+        "requireManualApproval": false
     },
     "github.copilot.editor.enableAutoCompletions": true,
     "github.copilot.chat.autoFollowUpSuggestions": true,
     "github.copilot.chat.clearOnSend": false,
     "github.copilot.chat.welcomeMessage": "none",
-    // OpenAI Codex
+    "github.copilot.chat.autonomousMode": true,
+    "github.copilot.chat.requireConfirmation": false,
+    // OpenAI Codex - FULL AUTONOMOUS MODE
     "openai.enable": {
         "*": true
     },
@@ -171,16 +175,20 @@
         "enableAutoCompletions": true,
         "clearOnSend": false,
         "saveHistory": true,
-        "noConfirm": true
+        "noConfirm": true,
+        "autonomousExecution": true,
+        "requireManualApproval": false
     },
     "openai.codex.chat": {
         "autoFollowUpSuggestions": true,
         "clearOnSend": false,
         "saveHistory": true,
         "noConfirm": true,
-        "welcomeMessage": "none"
+        "welcomeMessage": "none",
+        "autonomousMode": true,
+        "requireConfirmation": false
     },
-    // Google Gemini
+    // Google Gemini - FULL AUTONOMOUS MODE
     "gemini.enable": {
         "*": true
     },
@@ -191,14 +199,18 @@
         "enableAutoCompletions": true,
         "clearOnSend": false,
         "saveHistory": true,
-        "noConfirm": true
+        "noConfirm": true,
+        "autonomousExecution": true,
+        "requireManualApproval": false
     },
     "gemini.chat": {
         "autoFollowUpSuggestions": true,
         "clearOnSend": false,
         "saveHistory": true,
         "noConfirm": true,
-        "welcomeMessage": "none"
+        "welcomeMessage": "none",
+        "autonomousMode": true,
+        "requireConfirmation": false
     },
     "gemini.suggestInRealTime": true,
     "gemini.inlineSuggest.enable": true,
@@ -230,5 +242,24 @@
         "**/*.pyc": true,
         "**/node_modules/**": true,
         "**/.git/**": true
-    }
+    },
+    // 🤖 AUTONOMOUS MODE - CRITICAL SETTINGS
+    "workbench.enableExperiments": false,
+    "workbench.settings.enableNaturalLanguageSearch": false,
+    "security.workspace.trust.enabled": false,
+    "security.allowedUNCHosts": ["*"],
+    "security.restrictUNCAccess": false,
+    "extensions.ignoreRecommendations": true,
+    "extensions.showRecommendationsOnlyOnDemand": true,
+    "workbench.dialogs.useSimpleDialogs": true,
+    "workbench.welcome.enabled": false,
+    "workbench.releaseNotes.enabled": false,
+    "chat.experimental.autoExecuteCommands": true,
+    "chat.experimental.requireConfirmation": false,
+    "copilot.autonomousMode": true,
+    "copilot.requireConfirmation": false,
+    "ai.autonomousExecution": true,
+    "ai.requireManualApproval": false,
+    "automation.enabled": true,
+    "automation.requireConfirmation": false
 }

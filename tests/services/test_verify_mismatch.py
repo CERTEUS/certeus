@@ -53,7 +53,9 @@ def test_verify_returns_409_on_mismatch(monkeypatch):
 
     client = TestClient(app)
 
-    r = client.post("/v1/verify", json={"formula": "(set-logic QF_LIA)", "lang": "smt2"})
+    r = client.post(
+        "/v1/verify", json={"formula": "(set-logic QF_LIA)", "lang": "smt2"}
+    )
 
     assert r.status_code == 409
 

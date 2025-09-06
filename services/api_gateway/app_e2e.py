@@ -50,7 +50,9 @@ class SimpleFact(BaseModel):
 
     export: bool = Field(False, description="Export report file after solve")
 
-    force_mismatch: bool = Field(False, description="Flip Core-2 to trigger mismatch protocol (testing)")
+    force_mismatch: bool = Field(
+        False, description="Flip Core-2 to trigger mismatch protocol (testing)"
+    )
 
 
 class SolveResponse(BaseModel):

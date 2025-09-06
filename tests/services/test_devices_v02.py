@@ -34,7 +34,9 @@ def test_hde_plan_alternatives_and_best() -> None:
     from services.api_gateway.main import app
 
     c = TestClient(app)
-    r = c.post("/v1/devices/horizon_drive/plan", json={"case": "D13", "target_horizon": 0.25})
+    r = c.post(
+        "/v1/devices/horizon_drive/plan", json={"case": "D13", "target_horizon": 0.25}
+    )
     assert r.status_code == 200
     js = r.json()
     assert isinstance(js.get("alternatives"), list) and len(js["alternatives"]) >= 2
@@ -48,7 +50,9 @@ def test_qoracle_generalized_question_distribution() -> None:
     from services.api_gateway.main import app
 
     c = TestClient(app)
-    r = c.post("/v1/devices/qoracle/expectation", json={"question": "Should we appeal?"})
+    r = c.post(
+        "/v1/devices/qoracle/expectation", json={"question": "Should we appeal?"}
+    )
     assert r.status_code == 200
     js = r.json()
     assert "optimum" in js and isinstance(js["distribution"], list)
@@ -60,7 +64,9 @@ def test_entangle_negativity_metric_and_bounds() -> None:
     from services.api_gateway.main import app
 
     c = TestClient(app)
-    r = c.post("/v1/devices/entangle", json={"variables": ["X", "Y"], "target_negativity": 0.2})
+    r = c.post(
+        "/v1/devices/entangle", json={"variables": ["X", "Y"], "target_negativity": 0.2}
+    )
     assert r.status_code == 200
     val = float(r.json().get("achieved_negativity", 0.0))
     assert 0.0 <= val <= 0.12

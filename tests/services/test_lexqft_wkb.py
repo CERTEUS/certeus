@@ -60,7 +60,10 @@ def test_wkb_clamp_and_energy_above_barrier_yields_high_p() -> None:
     # Parametry ujemne -> klamrowane do 0
     r1 = client.post(
         "/v1/lexqft/tunnel",
-        json={"evidence_energy": 0.4, "barrier_model": {"V0": -1.0, "w": -2.0, "m": -3.0}},
+        json={
+            "evidence_energy": 0.4,
+            "barrier_model": {"V0": -1.0, "w": -2.0, "m": -3.0},
+        },
     )
     assert r1.status_code == 200
     # Wynik ma być w [0,1] i poprawny

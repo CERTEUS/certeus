@@ -73,7 +73,9 @@ def _load_pubkey_bytes() -> bytes:
     if hexv:
         return bytes.fromhex(hexv)
 
-    raise RuntimeError("Brak klucza publicznego: ustaw ED25519_PUBKEY_B64URL lub ED25519_PUBKEY_HEX")
+    raise RuntimeError(
+        "Brak klucza publicznego: ustaw ED25519_PUBKEY_B64URL lub ED25519_PUBKEY_HEX"
+    )
 
 
 def _kid_from_key(pub: bytes) -> str:

@@ -39,7 +39,11 @@ from fastapi import APIRouter, HTTPException, Request
 from jsonschema import Draft202012Validator
 from pydantic import BaseModel, Field, field_validator
 
-from core.pco.crypto import canonical_bundle_hash_hex, canonical_digest_hex, compute_leaf_hex
+from core.pco.crypto import (
+    canonical_bundle_hash_hex,
+    canonical_digest_hex,
+    compute_leaf_hex,
+)
 from monitoring.metrics_slo import (
     certeus_compile_duration_ms,
     certeus_proof_verification_failed_total,
@@ -113,16 +117,22 @@ def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
             sib = step.get("sibling")
 
             if d not in ("L", "R"):
-                raise HTTPException(status_code=400, detail="Invalid merkle step.dir/position")
+                raise HTTPException(
+                    status_code=400, detail="Invalid merkle step.dir/position"
+                )
 
             if not isinstance(sib, str) or not sib:
-                raise HTTPException(status_code=400, detail="Invalid merkle step: missing 'sibling'")
+                raise HTTPException(
+                    status_code=400, detail="Invalid merkle step: missing 'sibling'"
+                )
 
             norm.append(MerkleStep(sibling=sib, dir=str(d)))
 
         return norm
 
-    raise HTTPException(status_code=400, detail="merkle_proof must be list or {path:[...] }")
+    raise HTTPException(
+        status_code=400, detail="merkle_proof must be list or {path:[...] }"
+    )
 
 
 def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
@@ -141,7 +151,9 @@ def _apply_merkle_path(leaf_hex: str, path: list[MerkleStep]) -> str:
             cur = hashlib.sha256(cur + sib).digest()
 
         else:
-            raise HTTPException(status_code=400, detail=f"Invalid merkle step.dir: {step.dir}")
+            raise HTTPException(
+                status_code=400, detail=f"Invalid merkle step.dir: {step.dir}"
+            )
 
     return cur.hex()
 
@@ -150,20 +162,28 @@ def _load_private_key_from_pem() -> Ed25519PrivateKey:
     pem_env = os.getenv("ED25519_PRIVKEY_PEM")
 
     if pem_env and "BEGIN" in pem_env:
-        key_any = serialization.load_pem_private_key(pem_env.encode("utf-8"), password=None)
+        key_any = serialization.load_pem_private_key(
+            pem_env.encode("utf-8"), password=None
+        )
 
         if not isinstance(key_any, Ed25519PrivateKey):
-            raise HTTPException(status_code=500, detail="PEM from env is not Ed25519 private key")
+            raise HTTPException(
+                status_code=500, detail="PEM from env is not Ed25519 private key"
+            )
 
         return key_any
 
     pem_path = os.getenv("ED25519_PRIVKEY_PEM_PATH") or os.getenv("ED25519_PRIVKEY_PEM")
 
     if pem_path and Path(pem_path).exists():
-        key_any = serialization.load_pem_private_key(Path(pem_path).read_bytes(), password=None)
+        key_any = serialization.load_pem_private_key(
+            Path(pem_path).read_bytes(), password=None
+        )
 
         if not isinstance(key_any, Ed25519PrivateKey):
-            raise HTTPException(status_code=500, detail="PEM file is not an Ed25519 private key")
+            raise HTTPException(
+                status_code=500, detail="PEM file is not an Ed25519 private key"
+            )
 
         return key_any
 
@@ -171,7 +191,9 @@ def _load_private_key_from_pem() -> Ed25519PrivateKey:
     try:
         dev_pem = Path(".devkeys") / "ed25519_priv.pem"
         if dev_pem.exists():
-            key_any = serialization.load_pem_private_key(dev_pem.read_bytes(), password=None)
+            key_any = serialization.load_pem_private_key(
+                dev_pem.read_bytes(), password=None
+            )
             if isinstance(key_any, Ed25519PrivateKey):
                 return key_any
     except Exception:
@@ -193,11 +215,15 @@ def _load_pb_schema() -> dict[str, Any]:
         return json.loads(p.read_text(encoding="utf-8"))
 
     except Exception as e:  # pragma: no cover
-        raise HTTPException(status_code=500, detail=f"Cannot load ProofBundle schema: {e}") from e
+        raise HTTPException(
+            status_code=500, detail=f"Cannot load ProofBundle schema: {e}"
+        ) from e
 
 
 def _kid_from_pubkey(sk: Ed25519PrivateKey) -> str:
-    pk = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    pk = sk.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+    )
 
     return hashlib.sha256(pk).hexdigest()[:16]
 
@@ -256,7 +282,9 @@ def _build_proofbundle(
                 "claim_id": "claim-1",
                 "solver": "z3",
                 "proof_format": "DRAT",
-                "artifact_digest": hashlib.sha256(payload.drat.encode("utf-8")).hexdigest(),
+                "artifact_digest": hashlib.sha256(
+                    payload.drat.encode("utf-8")
+                ).hexdigest(),
             }
         )
 
@@ -264,7 +292,10 @@ def _build_proofbundle(
         "version": "0.2",
         "case_id": payload.rid,
         "created_at": _now_iso(),
-        "jurisdiction": {"country": jurisdiction_country, "domain": jurisdiction_domain},
+        "jurisdiction": {
+            "country": jurisdiction_country,
+            "domain": jurisdiction_domain,
+        },
         "claims": [
             {
                 "id": "claim-1",
@@ -285,7 +316,12 @@ def _build_proofbundle(
                 "signature": signature_b64u,
             }
         ],
-        "reproducibility": {"image": image, "image_digest": image_digest, "seed": seed, "env": {}},
+        "reproducibility": {
+            "image": image,
+            "image_digest": image_digest,
+            "seed": seed,
+            "env": {},
+        },
         "attachments": [],
         "status": status,
     }
@@ -308,7 +344,9 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
 
     path = _parse_merkle_proof(payload.merkle_proof)
 
-    bundle_hash_hex = canonical_bundle_hash_hex(payload.smt2_hash, payload.lfsc, payload.drat)
+    bundle_hash_hex = canonical_bundle_hash_hex(
+        payload.smt2_hash, payload.lfsc, payload.drat
+    )
 
     leaf_hex = compute_leaf_hex(payload.rid, bundle_hash_hex)
 
@@ -324,7 +362,11 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
 
     sk = _load_private_key_from_pem()
 
-    signature_b64u = base64.urlsafe_b64encode(sk.sign(bytes.fromhex(digest_hex))).rstrip(b"=").decode("ascii")
+    signature_b64u = (
+        base64.urlsafe_b64encode(sk.sign(bytes.fromhex(digest_hex)))
+        .rstrip(b"=")
+        .decode("ascii")
+    )
 
     out_obj: dict[str, Any] = {
         "rid": payload.rid,
@@ -348,7 +390,9 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
         try:
             from kernel.truth_engine import DualCoreVerifier  # type: ignore
 
-            _ = DualCoreVerifier().verify(payload.smt2 or "", lang="smt2", case_id=payload.rid)
+            _ = DualCoreVerifier().verify(
+                payload.smt2 or "", lang="smt2", case_id=payload.rid
+            )
 
         except Exception:
             certeus_proof_verification_failed_total.inc()
@@ -394,7 +438,9 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     # Zbuduj pełny ProofBundle wg schematu i dołącz do payloadu publicznego (kompatybilnie)
 
     try:
-        proofbundle = _build_proofbundle(payload, merkle_root_hex, digest_hex, signature_b64u, sk, status=pb_status)
+        proofbundle = _build_proofbundle(
+            payload, merkle_root_hex, digest_hex, signature_b64u, sk, status=pb_status
+        )
 
         out_obj.update(proofbundle)
 
@@ -434,7 +480,9 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
 
     out_path = out_dir / f"{payload.rid}.json"
 
-    out_path.write_text(json.dumps(out_obj, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path.write_text(
+        json.dumps(out_obj, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     return {
         "ok": True,

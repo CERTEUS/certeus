@@ -100,7 +100,9 @@ async def replay(req: ReplayRequest, request: Request) -> ReplayResponse:
 
     enforce_limits(request, cost_units=1)
 
-    return ReplayResponse(ok=True, state_uri=f"boundary://snapshot/{req.case}/{req.timestamp}")
+    return ReplayResponse(
+        ok=True, state_uri=f"boundary://snapshot/{req.case}/{req.timestamp}"
+    )
 
 
 @router.post("/recall", response_model=RecallResponse)
@@ -126,7 +128,9 @@ async def lock(req: LockRequest, request: Request, response: Response) -> LockRe
 
 
 @router.post("/revoke", response_model=RevokeResponse)
-async def revoke(req: RevokeRequest, request: Request, response: Response) -> RevokeResponse:
+async def revoke(
+    req: RevokeRequest, request: Request, response: Response
+) -> RevokeResponse:
     from services.api_gateway.limits import enforce_limits
 
     enforce_limits(request, cost_units=1)

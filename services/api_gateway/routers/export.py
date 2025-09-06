@@ -58,7 +58,9 @@ class ExportPayload(BaseModel):
         description="Output format: report|file|docx|json (default: report)",
     )
 
-    write_ledger: bool = Field(default=False, description="If true, record provenance hash in Ledger")
+    write_ledger: bool = Field(
+        default=False, description="If true, record provenance hash in Ledger"
+    )
 
 
 class ExportResponse(BaseModel):
@@ -86,7 +88,9 @@ def _now_iso_utc() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Path) -> Path:
+def _write_report(
+    case_id: str, analysis_result: Mapping[str, Any], out_dir: Path
+) -> Path:
     """
 
     PL: Zapis raportu jako .txt z podstawowym podsumowaniem i pretty JSON.
@@ -108,7 +112,9 @@ def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Pat
     lines.append(f"Case: {case_id}")
 
     try:
-        pretty = json.dumps(analysis_result, ensure_ascii=False, indent=2, sort_keys=True)
+        pretty = json.dumps(
+            analysis_result, ensure_ascii=False, indent=2, sort_keys=True
+        )
 
     except Exception:
         pretty = str(analysis_result)
@@ -151,14 +157,18 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
         export_path = out_dir / f"{case_id}.json"
         out_dir.mkdir(parents=True, exist_ok=True)
         export_path.write_text(
-            json.dumps(payload.analysis_result, ensure_ascii=False, indent=2, sort_keys=True),
+            json.dumps(
+                payload.analysis_result, ensure_ascii=False, indent=2, sort_keys=True
+            ),
             encoding="utf-8",
         )
     elif payload.fmt == "docx":
         export_path = out_dir / f"{case_id}.docx"
         out_dir.mkdir(parents=True, exist_ok=True)
         export_path.write_text(
-            json.dumps(payload.analysis_result, ensure_ascii=False, indent=2, sort_keys=True),
+            json.dumps(
+                payload.analysis_result, ensure_ascii=False, indent=2, sort_keys=True
+            ),
             encoding="utf-8",
         )
     elif payload.fmt == "json":
@@ -172,11 +182,17 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
     timestamp = _now_iso_utc()
     if export_path and export_path.exists():
         h = _hash_file_sha256(export_path)
-        artifacts = {"report": str(export_path)} if payload.fmt == "report" else {"artifact": str(export_path)}
+        artifacts = (
+            {"report": str(export_path)}
+            if payload.fmt == "report"
+            else {"artifact": str(export_path)}
+        )
     else:
         # Hash JSON content when no file was created
         try:
-            content = json.dumps(payload.analysis_result, ensure_ascii=False, sort_keys=True)
+            content = json.dumps(
+                payload.analysis_result, ensure_ascii=False, sort_keys=True
+            )
         except Exception:
             content = str(payload.analysis_result)
         h = hashlib.sha256(content.encode("utf-8")).hexdigest()
@@ -191,7 +207,10 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
     # Optional ledger record
     if payload.write_ledger:
         try:
-            from services.ledger_service.ledger import compute_provenance_hash, ledger_service
+            from services.ledger_service.ledger import (
+                compute_provenance_hash,
+                ledger_service,
+            )
 
             # Ledger hash over analysis summary + export info
             ledger_doc = {
@@ -202,7 +221,9 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
                     "timestamp": timestamp,
                 }
             }
-            doc_hash = "sha256:" + compute_provenance_hash(ledger_doc, include_timestamp=False)
+            doc_hash = "sha256:" + compute_provenance_hash(
+                ledger_doc, include_timestamp=False
+            )
             ledger_service.record_input(case_id=case_id, document_hash=doc_hash)
         except Exception:
             # Non-fatal for export
@@ -222,7 +243,9 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
         message=(
             f"Report generated at {export_path}"
             if payload.fmt == "report"
-            else (f"Artifact written to {export_path}" if export_path else "JSON returned")
+            else (
+                f"Artifact written to {export_path}" if export_path else "JSON returned"
+            )
         ),
         provenance=prov,
     )

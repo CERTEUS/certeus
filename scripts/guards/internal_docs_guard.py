@@ -52,7 +52,9 @@ def main() -> int:
             continue
         # exclude internal/private
         rel = p.relative_to(repo)
-        if str(rel).startswith("docs/internal/") or str(rel).startswith("docs/private/"):
+        if str(rel).startswith("docs/internal/") or str(rel).startswith(
+            "docs/private/"
+        ):
             continue
         if not is_text(p):
             continue
@@ -63,7 +65,9 @@ def main() -> int:
         if any(rx.search(txt) for rx in MARKER_PATTERNS):
             offenders.append(rel)
     if offenders:
-        sys.stderr.write("Internal-docs-guard: found internal markers in public docs:\n")
+        sys.stderr.write(
+            "Internal-docs-guard: found internal markers in public docs:\n"
+        )
         for o in offenders:
             sys.stderr.write(f" - {o}\n")
         return 1

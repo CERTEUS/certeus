@@ -113,7 +113,9 @@ def main() -> int:
         report["samples"] = _eval_samples()
     except Exception:
         pass
-    (out / "dp_policy_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (out / "dp_policy_report.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
     if ok:
         (out / "dp_policy_ok.txt").write_text("ok", encoding="utf-8")
     if enforce and not ok:

@@ -21,7 +21,12 @@ def test_dht_ttl_and_capacity_assignment() -> None:
     # Expired node (ttl=0) should not match
     client.post(
         "/v1/pfs/dht/announce",
-        json={"node": "node-expired", "competencies": ["lexqft.*"], "capacity": 10, "ttl_sec": 0},
+        json={
+            "node": "node-expired",
+            "competencies": ["lexqft.*"],
+            "capacity": 10,
+            "ttl_sec": 0,
+        },
     )
     q = client.get("/v1/pfs/dht/query", params={"competency": "lexqft.tunnel"}).json()
     assert "node-expired" not in q.get("nodes", [])
@@ -29,15 +34,33 @@ def test_dht_ttl_and_capacity_assignment() -> None:
     # Two nodes: capacity 1 vs 3; assign 4 steps → prefer higher capacity
     client.post(
         "/v1/pfs/dht/announce",
-        json={"node": "node-low", "competencies": ["proof.*"], "capacity": 1, "ttl_sec": 3600},
+        json={
+            "node": "node-low",
+            "competencies": ["proof.*"],
+            "capacity": 1,
+            "ttl_sec": 3600,
+        },
     )
     client.post(
         "/v1/pfs/dht/announce",
-        json={"node": "node-high", "competencies": ["proof.*"], "capacity": 3, "ttl_sec": 3600},
+        json={
+            "node": "node-high",
+            "competencies": ["proof.*"],
+            "capacity": 3,
+            "ttl_sec": 3600,
+        },
     )
     pub = client.post(
         "/v1/pfs/dht/publish_path",
-        json={"case": "DHT-CAP", "path": ["proof.publish", "proof.publish", "proof.publish", "proof.publish"]},
+        json={
+            "case": "DHT-CAP",
+            "path": [
+                "proof.publish",
+                "proof.publish",
+                "proof.publish",
+                "proof.publish",
+            ],
+        },
     )
     assert pub.status_code == 200
     body = pub.json()

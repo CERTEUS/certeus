@@ -36,7 +36,10 @@ def test_install_signature_must_be_hex_64() -> None:
 
     # Valid hex 64 chars should pass
     ok_sig = "a1" * 32  # 64 hex chars
-    r3 = c.post("/v1/packs/install", json={"pack": name, "signature": ok_sig, "version": "1.0.0"})
+    r3 = c.post(
+        "/v1/packs/install",
+        json={"pack": name, "signature": ok_sig, "version": "1.0.0"},
+    )
     assert r3.status_code == 200
 
 

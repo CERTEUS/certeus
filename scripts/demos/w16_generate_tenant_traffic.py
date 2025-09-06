@@ -38,7 +38,14 @@ SLEEP_S: float = float(os.getenv("SLEEP_S", "0.05"))
 # === LOGIKA / LOGIC ===
 
 
-def _do(method: str, path: str, *, tenant: str, json: dict | None = None, files: dict | None = None) -> int:
+def _do(
+    method: str,
+    path: str,
+    *,
+    tenant: str,
+    json: dict | None = None,
+    files: dict | None = None,
+) -> int:
     url = f"{BASE}{path}"
     headers = {"X-Tenant-ID": tenant}
     try:
@@ -58,7 +65,11 @@ def _drive_fin(tenant: str) -> None:
         "POST",
         "/v1/fin/alpha/simulate",
         tenant=tenant,
-        json={"strategy_id": random.choice(["qalpha-momentum", "qalpha-arb"]), "capital": 100_000, "horizon_days": 30},
+        json={
+            "strategy_id": random.choice(["qalpha-momentum", "qalpha-arb"]),
+            "capital": 100_000,
+            "horizon_days": 30,
+        },
     )
     _do("GET", "/v1/fin/alpha/pnl", tenant=tenant)
 

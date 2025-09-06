@@ -30,12 +30,12 @@ import subprocess
 
 # === LOGIKA / LOGIC ===
 
-SCRIPT = r'''
+SCRIPT = r"""
 tracepoint:syscalls:sys_enter_* /comm == "uvicorn"/ {
   @sys[probe] = count();
 }
 interval:s:5 { exit(); }
-'''
+"""
 
 
 def main() -> int:

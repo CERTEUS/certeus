@@ -148,7 +148,11 @@ def is_endpoint_func(node: ast.FunctionDef) -> bool:
         try:
             expr = dec.func if isinstance(dec, ast.Call) else dec
 
-            if isinstance(expr, ast.Attribute) and isinstance(expr.value, ast.Name) and expr.value.id == "router":
+            if (
+                isinstance(expr, ast.Attribute)
+                and isinstance(expr.value, ast.Name)
+                and expr.value.id == "router"
+            ):
                 return True
 
             if (
@@ -225,7 +229,9 @@ def rebuild(text: str, rel: str) -> str | None:
         if isinstance(node, ast.Import) or isinstance(node, ast.ImportFrom):
             imports_spans.append((s, e))
 
-        elif (isinstance(node, ast.Assign) or isinstance(node, ast.AnnAssign)) and is_upper_name_target(node):
+        elif (
+            isinstance(node, ast.Assign) or isinstance(node, ast.AnnAssign)
+        ) and is_upper_name_target(node):
             config_spans.append((s, e))
 
         elif isinstance(node, ast.ClassDef) and is_model_class(node):

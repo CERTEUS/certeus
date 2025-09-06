@@ -64,7 +64,9 @@ class Z3Adapter:
             "time_ms": None,
             "model": None,
             "error": None,
-            "version": z3.get_version_string() if hasattr(z3, "get_version_string") else None,
+            "version": (
+                z3.get_version_string() if hasattr(z3, "get_version_string") else None
+            ),
         }
 
         try:
@@ -104,7 +106,9 @@ def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     if validate:
         validate_ast(cast(Any, ast_root))
 
-    expr, symbols = compile_bool_ast(cast(Any, ast_root), declare_on_use=True, validate=False)
+    expr, symbols = compile_bool_ast(
+        cast(Any, ast_root), declare_on_use=True, validate=False
+    )
 
     logger.debug("Z3 adapter compiled expr with symbols: %s", list(symbols.keys()))
 

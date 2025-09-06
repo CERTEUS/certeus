@@ -102,7 +102,12 @@ async def register(req: RegisterRequest, request: Request) -> RegisterResponse:
 
     _COUNTER += 1
 
-    _REGISTRY[upn] = {"subject": req.subject, "claims": req.claims or [], "revoked": False, "ts": ts}
+    _REGISTRY[upn] = {
+        "subject": req.subject,
+        "claims": req.claims or [],
+        "revoked": False,
+        "ts": ts,
+    }
 
     return RegisterResponse(upn=upn, ts=ts, ledger_ref=None)
 

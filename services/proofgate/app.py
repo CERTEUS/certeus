@@ -49,7 +49,11 @@ except Exception:  # pragma: no cover - optional
 
 
 try:  # optional: RA helpers for TEE status
-    from security.ra import attestation_from_env, extract_fingerprint, verify_fingerprint
+    from security.ra import (
+        attestation_from_env,
+        extract_fingerprint,
+        verify_fingerprint,
+    )
 except Exception:  # pragma: no cover - optional
 
     def attestation_from_env():  # type: ignore
@@ -65,13 +69,16 @@ except Exception:  # pragma: no cover - optional
     def verify_fingerprint(_obj):  # type: ignore
         return False
 
+
 # === KONFIGURACJA / CONFIGURATION ===
 
 # === MODELE / MODELS ===
 
 
 class PublishRequest(BaseModel):
-    pco: dict[str, Any] | None = Field(default=None, description="Proof-Carrying Object")
+    pco: dict[str, Any] | None = Field(
+        default=None, description="Proof-Carrying Object"
+    )
 
     policy: dict[str, Any] | None = None
 
@@ -120,7 +127,9 @@ def healthz() -> dict[str, Any]:
 @app.get("/v1/tee/status")
 def tee_status() -> dict[str, Any]:
     """PL/EN: Report bunker/TEE status for UI badges (best-effort)."""
-    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True", "on"}
+    bunker_on = (
+        os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or ""
+    ).strip() in {"1", "true", "True", "on"}
     ra_req = (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True", "on"}
     att = attestation_from_env()
     fp = None
@@ -135,11 +144,20 @@ def tee_status() -> dict[str, Any]:
                 if verify_fingerprint(fpd):
                     fp = fpd
                 else:
-                    fp = {k: fpd.get(k) for k in ("vendor", "product", "measurement") if k in fpd}
+                    fp = {
+                        k: fpd.get(k)
+                        for k in ("vendor", "product", "measurement")
+                        if k in fpd
+                    }
     except Exception:
         attested = False
         fp = None
-    return {"bunker_on": bunker_on, "ra_required": ra_req, "attested": bool(attested), "ra": fp}
+    return {
+        "bunker_on": bunker_on,
+        "ra_required": ra_req,
+        "attested": bool(attested),
+        "ra": fp,
+    }
 
 
 def _repo_root() -> Path:
@@ -154,7 +172,11 @@ def _load_rtbf_store() -> set[str]:
     try:
         import json
 
-        data = json.loads(_RTBF_STORE.read_text(encoding="utf-8")) if _RTBF_STORE.exists() else []
+        data = (
+            json.loads(_RTBF_STORE.read_text(encoding="utf-8"))
+            if _RTBF_STORE.exists()
+            else []
+        )
         return {str(x) for x in (data or [])}
     except Exception:
         return set()
@@ -180,7 +202,11 @@ def _load_appeals() -> dict[str, dict[str, str]]:
     try:
         import json
 
-        data = {} if not _RTBF_APPEALS.exists() else json.loads(_RTBF_APPEALS.read_text(encoding="utf-8"))
+        data = (
+            {}
+            if not _RTBF_APPEALS.exists()
+            else json.loads(_RTBF_APPEALS.read_text(encoding="utf-8"))
+        )
         if not isinstance(data, dict):
             return {}
         # Ensure mapping of case -> {received_at, reason}
@@ -369,7 +395,13 @@ def _derivations_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
 
 
 def _repro_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
-    req = bool(_get(policy, ["publish_contract", "thresholds", "reproducibility", "required"], False))
+    req = bool(
+        _get(
+            policy,
+            ["publish_contract", "thresholds", "reproducibility", "required"],
+            False,
+        )
+    )
 
     if not req:
         return True
@@ -379,10 +411,15 @@ def _repro_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
     if not isinstance(r, Mapping):
         return False
 
-    return all(isinstance(r.get(k), str) and r.get(k) for k in ("image", "image_digest", "seed"))
+    return all(
+        isinstance(r.get(k), str) and r.get(k)
+        for k in ("image", "image_digest", "seed")
+    )
 
 
-def _evaluate_decision(pco: Mapping[str, Any], policy: Mapping[str, Any], budget_tokens: int | None) -> str:
+def _evaluate_decision(
+    pco: Mapping[str, Any], policy: Mapping[str, Any], budget_tokens: int | None
+) -> str:
     thr = _get(policy, ["publish_contract", "thresholds", "risk"], {}) or {}
 
     e_max = float(thr.get("ece_max", 0.02))
@@ -444,7 +481,9 @@ def publish(req: PublishRequest) -> PublishResponse:
     policy = req.policy or _load_policy_pack()
 
     # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
-    bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
+    bunker_on = (
+        os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or ""
+    ).strip() in {"1", "true", "True"}
     if bunker_on:
         # Attestation stub: in this variant we cannot access headers directly (no Request).
         # Require that PCO carries a tee.attested flag. If TEE_RA_REQUIRE=1, also require
@@ -462,7 +501,9 @@ def publish(req: PublishRequest) -> PublishResponse:
                     and isinstance(ra.get("measurement"), str)
                 )
                 if not ok_ra:
-                    return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
+                    return PublishResponse(
+                        status="ABSTAIN", pco=req.pco, ledger_ref=None
+                    )
         except Exception:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
@@ -477,7 +518,11 @@ def publish(req: PublishRequest) -> PublishResponse:
         try:
             pq_ready_pco = False
             if isinstance(req.pco, dict):
-                crypto = req.pco.get("crypto") if isinstance(req.pco.get("crypto"), dict) else {}
+                crypto = (
+                    req.pco.get("crypto")
+                    if isinstance(req.pco.get("crypto"), dict)
+                    else {}
+                )
                 pq = crypto.get("pq") if isinstance(crypto, dict) else None
                 pq_ready_pco = bool((pq or {}).get("ready", False))
             if not (pq_ready_pco or pq_ready_env):
@@ -486,7 +531,11 @@ def publish(req: PublishRequest) -> PublishResponse:
             decision = "ABSTAIN"
 
     # W9: Fine-grained role enforcement (optional)
-    enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
+    enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {
+        "1",
+        "true",
+        "True",
+    }
 
     # Opcjonalna walidacja PCO (report-only)
     if (os.getenv("VALIDATE_PCO") or "").strip() in {"1", "true", "True"}:
@@ -503,7 +552,9 @@ def publish(req: PublishRequest) -> PublishResponse:
     decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
 
     # FROST 2-of-3 (optional enforce)
-    frost_env = (os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or "").strip()
+    frost_env = (
+        os.getenv("REQUIRE_COSIGN_ATTESTATIONS") or os.getenv("FROST_REQUIRE") or ""
+    ).strip()
     frost_require = frost_env in {"1", "true", "True"}
     if frost_require and decision in ("PUBLISH", "CONDITIONAL"):
         try:
@@ -517,13 +568,19 @@ def publish(req: PublishRequest) -> PublishResponse:
         # Governance‑aware enforcement: require at least one allowed role per governance pack
         try:
             sigs = req.pco.get("signatures") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
-            roles_present = {s.get("role") for s in sigs if isinstance(s, dict)} if isinstance(sigs, list) else set()
+            roles_present = (
+                {s.get("role") for s in sigs if isinstance(s, dict)}
+                if isinstance(sigs, list)
+                else set()
+            )
             if not roles_present:
                 decision = "ABSTAIN"
             else:
                 gov = _load_governance_pack()
                 dom = _infer_domain(req.pco)
-                allow_map = ((gov.get("domains") or {}).get(dom) or {}).get("allow") or {}
+                allow_map = ((gov.get("domains") or {}).get(dom) or {}).get(
+                    "allow"
+                ) or {}
                 allowed = set(map(str, (allow_map.get("publish") or [])))
                 # 'counsel' sygnatura jest wymagana osobno wcześniej; nie nadaje uprawnień publish
                 if not (roles_present & allowed):
@@ -552,11 +609,15 @@ def publish(req: PublishRequest) -> PublishResponse:
     # On PUBLISH, persist a ledger event with a provenance hash of the PCO
 
     if decision == "PUBLISH":
-        case_id = str((pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or "")
+        case_id = str(
+            (pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or ""
+        )
 
         doc_hash = compute_provenance_hash(pco_out, include_timestamp=False)
 
-        rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
+        rec = ledger_service.record_event(
+            event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash
+        )
 
         ledger = rec.get("chain_self")
 
@@ -571,7 +632,11 @@ def publish(req: PublishRequest) -> PublishResponse:
     # OTel: correlate trace with PCO (best-effort)
     try:
         attrs = {}
-        case_id = str(req.pco.get("case_id") or req.pco.get("rid") or "") if isinstance(req.pco, dict) else ""
+        case_id = (
+            str(req.pco.get("case_id") or req.pco.get("rid") or "")
+            if isinstance(req.pco, dict)
+            else ""
+        )
         if case_id:
             attrs["pco.case_id"] = case_id
         attrs["pco.decision"] = decision
@@ -593,7 +658,10 @@ def rtbf_appeal(req: RtbfAppealRequest) -> RtbfAppealResponse:
     """
 
     appeals = _load_appeals()
-    appeals[req.case_id] = {"received_at": _now_iso(), **({"reason": req.reason} if req.reason else {})}
+    appeals[req.case_id] = {
+        "received_at": _now_iso(),
+        **({"reason": req.reason} if req.reason else {}),
+    }
     _save_appeals(appeals)
     return RtbfAppealResponse(status="RECEIVED", case_id=req.case_id, reason=req.reason)
 
@@ -635,7 +703,9 @@ def rtbf_appeal_sla(case_id: str) -> dict[str, str | float | bool]:
         return {"present": False, "sla_hours": sla_h}
     try:
         received_at = rec.get("received_at") or _now_iso()
-        t = _dt.datetime.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=_dt.UTC)
+        t = _dt.datetime.strptime(received_at, "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=_dt.UTC
+        )
     except Exception:
         t = _dt.datetime.now(tz=_dt.UTC)
         received_at = _now_iso()

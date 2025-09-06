@@ -63,6 +63,9 @@ def test_redaction_gate_detects_pii_and_enforces_strict() -> None:
 
 
 def test_redaction_gate_ok_on_clean_payload() -> None:
-    clean_payload = {"subject": {"name": "Jan TEST"}, "content": "Brak wrazliwych danych."}
+    clean_payload = {
+        "subject": {"name": "Jan TEST"},
+        "content": "Brak wrazliwych danych.",
+    }
     assert _run_gate(clean_payload, strict=False) == 0
     assert _run_gate(clean_payload, strict=True) == 0

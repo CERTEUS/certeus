@@ -41,4 +41,6 @@ def test_micro_court_lock_and_publish() -> None:
     js = r.json()
     assert js.get("published") and js.get("case_id") == case
     path = js.get("path")
-    assert isinstance(path, list) and any(step.get("step") == "publish" for step in path)
+    assert isinstance(path, list) and any(
+        step.get("step") == "publish" for step in path
+    )

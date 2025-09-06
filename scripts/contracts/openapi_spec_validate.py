@@ -99,10 +99,16 @@ def main() -> int:  # pragma: no cover
             vio += 1
             print(f"OpenAPI validate: runtime INVALID: {e}")
 
-    enforce = (os.getenv("ENFORCE_OPENAPI_SPEC_VALIDATE") or "").strip() in {"1", "true", "True"}
+    enforce = (os.getenv("ENFORCE_OPENAPI_SPEC_VALIDATE") or "").strip() in {
+        "1",
+        "true",
+        "True",
+    }
     if vio and enforce:
         return 1
-    print(f"OpenAPI validate: {'OK (report-only)' if not enforce else ('FAIL' if vio else 'OK')}")
+    print(
+        f"OpenAPI validate: {'OK (report-only)' if not enforce else ('FAIL' if vio else 'OK')}"
+    )
     return 0
 
 

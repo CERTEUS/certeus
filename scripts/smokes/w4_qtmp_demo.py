@@ -44,7 +44,10 @@ def main() -> int:
     c = TestClient(gateway_app)
     case_id = "LEX-001-qtmp"
 
-    r_init = c.post("/v1/qtm/init_case", json={"case": case_id, "basis": ["ALLOW", "DENY", "ABSTAIN"]})
+    r_init = c.post(
+        "/v1/qtm/init_case",
+        json={"case": case_id, "basis": ["ALLOW", "DENY", "ABSTAIN"]},
+    )
     r_init.raise_for_status()
     _pp("init_case", r_init.json())
 
@@ -57,7 +60,10 @@ def main() -> int:
     _pp("measure T->L", r_tl.json())
 
     # Apply decoherence and re-measure
-    c.post("/v1/qtm/decoherence", json={"case": case_id, "channel": "dephasing", "gamma": 0.2}).raise_for_status()
+    c.post(
+        "/v1/qtm/decoherence",
+        json={"case": case_id, "channel": "dephasing", "gamma": 0.2},
+    ).raise_for_status()
     r_lt2 = c.post("/v1/qtm/measure", json={"operator": "LT", "source": case_id})
     r_tl2 = c.post("/v1/qtm/measure", json={"operator": "TL", "source": case_id})
     r_lt2.raise_for_status()

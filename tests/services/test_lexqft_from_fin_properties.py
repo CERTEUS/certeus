@@ -26,7 +26,11 @@ client = TestClient(app)
 def _from_fin(sent: float, risk: float):
     r = client.post(
         "/v1/lexqft/coverage/from_fin",
-        json={"signals": {"sentiment": float(sent), "risk": float(risk)}, "weight": 1.0, "uncaptured_base": 0.1},
+        json={
+            "signals": {"sentiment": float(sent), "risk": float(risk)},
+            "weight": 1.0,
+            "uncaptured_base": 0.1,
+        },
     )
     assert r.status_code == 200
     body = r.json()
@@ -34,10 +38,18 @@ def _from_fin(sent: float, risk: float):
 
 
 @given(
-    sent1=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
-    risk1=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
-    sent2=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
-    risk2=st.floats(min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False),
+    sent1=st.floats(
+        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
+    ),
+    risk1=st.floats(
+        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
+    ),
+    sent2=st.floats(
+        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
+    ),
+    risk2=st.floats(
+        min_value=-2.0, max_value=2.0, allow_nan=False, allow_infinity=False
+    ),
 )
 @settings(deadline=None, max_examples=60)
 def test_fin_coverage_ranges_and_monotonicity(sent1, risk1, sent2, risk2) -> None:

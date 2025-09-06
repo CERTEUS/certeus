@@ -43,14 +43,23 @@ class CerteusClient:
 
     # --- Generic ---
     def get(self, path: str, params: dict[str, Any] | None = None) -> httpx.Response:
-        return self._client.get(f"{self.base_url}{path}", headers=self.headers, params=params)
+        return self._client.get(
+            f"{self.base_url}{path}", headers=self.headers, params=params
+        )
 
     def post(self, path: str, json: dict[str, Any] | None = None) -> httpx.Response:
-        return self._client.post(f"{self.base_url}{path}", headers=self.headers, json=json)
+        return self._client.post(
+            f"{self.base_url}{path}", headers=self.headers, json=json
+        )
 
     # --- Devices ---
-    def devices_hde_plan(self, case: str, target_horizon: float = 0.2) -> dict[str, Any]:
-        r = self.post("/v1/devices/horizon_drive/plan", {"case": case, "target_horizon": target_horizon})
+    def devices_hde_plan(
+        self, case: str, target_horizon: float = 0.2
+    ) -> dict[str, Any]:
+        r = self.post(
+            "/v1/devices/horizon_drive/plan",
+            {"case": case, "target_horizon": target_horizon},
+        )
         r.raise_for_status()
         return r.json()
 
@@ -62,15 +71,22 @@ class CerteusClient:
         r.raise_for_status()
         return r.json()
 
-    def devices_entangle(self, variables: list[str], target_negativity: float = 0.1) -> dict[str, Any]:
-        r = self.post("/v1/devices/entangle", {"variables": variables, "target_negativity": target_negativity})
+    def devices_entangle(
+        self, variables: list[str], target_negativity: float = 0.1
+    ) -> dict[str, Any]:
+        r = self.post(
+            "/v1/devices/entangle",
+            {"variables": variables, "target_negativity": target_negativity},
+        )
         r.raise_for_status()
         return r.json()
 
     def devices_chronosync_reconcile(
         self, coords: dict[str, Any], pc_delta: dict[str, Any] | None = None
     ) -> dict[str, Any]:
-        r = self.post("/v1/devices/chronosync/reconcile", {"coords": coords, "pc_delta": pc_delta})
+        r = self.post(
+            "/v1/devices/chronosync/reconcile", {"coords": coords, "pc_delta": pc_delta}
+        )
         r.raise_for_status()
         return r.json()
 
@@ -85,7 +101,9 @@ class CerteusClient:
         r.raise_for_status()
         return r.json()
 
-    def packs_install(self, pack: str, signature: str, version: str | None = None) -> dict[str, Any]:
+    def packs_install(
+        self, pack: str, signature: str, version: str | None = None
+    ) -> dict[str, Any]:
         payload: dict[str, Any] = {"pack": pack, "signature": signature}
         if version:
             payload["version"] = version
@@ -100,7 +118,9 @@ class CerteusClient:
         r.raise_for_status()
         return r.json()
 
-    def billing_set_quota(self, units: int, tenant: str | None = None) -> dict[str, Any]:
+    def billing_set_quota(
+        self, units: int, tenant: str | None = None
+    ) -> dict[str, Any]:
         r = self.post("/v1/billing/quota", {"tenant": tenant, "units": units})
         r.raise_for_status()
         return r.json()
@@ -116,13 +136,23 @@ class CerteusClient:
         return r.json()
 
     # --- FIN tokens demo ---
-    def fin_tokens_request(self, user_id: str, amount: int, purpose: str | None = None) -> dict[str, Any]:
-        r = self.post("/v1/fin/tokens/request", {"user_id": user_id, "amount": amount, "purpose": purpose})
+    def fin_tokens_request(
+        self, user_id: str, amount: int, purpose: str | None = None
+    ) -> dict[str, Any]:
+        r = self.post(
+            "/v1/fin/tokens/request",
+            {"user_id": user_id, "amount": amount, "purpose": purpose},
+        )
         r.raise_for_status()
         return r.json()
 
-    def fin_tokens_allocate(self, request_id: str, allocated_by: str | None = None) -> dict[str, Any]:
-        r = self.post("/v1/fin/tokens/allocate", {"request_id": request_id, "allocated_by": allocated_by})
+    def fin_tokens_allocate(
+        self, request_id: str, allocated_by: str | None = None
+    ) -> dict[str, Any]:
+        r = self.post(
+            "/v1/fin/tokens/allocate",
+            {"request_id": request_id, "allocated_by": allocated_by},
+        )
         r.raise_for_status()
         return r.json()
 

@@ -44,7 +44,11 @@ def main() -> int:
     inp = _read_input()
     signals = inp.get("signals") or {}
     risk = float(signals.get("risk", 0.0))
-    dp_eps = float(inp.get("dp_epsilon", 10.0)) if inp.get("dp_epsilon") is not None else None
+    dp_eps = (
+        float(inp.get("dp_epsilon", 10.0))
+        if inp.get("dp_epsilon") is not None
+        else None
+    )
 
     errs: list[str] = []
 

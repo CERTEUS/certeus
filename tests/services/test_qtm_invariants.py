@@ -38,11 +38,17 @@ def test_qtm_sequence_uncertainty_and_probs_bounds() -> None:
     # Set explicit state with valid distribution
     r = c.post(
         "/v1/qtm/state",
-        json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"], "probs": [0.5, 0.3, 0.2]},
+        json={
+            "case": case,
+            "basis": ["ALLOW", "DENY", "ABSTAIN"],
+            "probs": [0.5, 0.3, 0.2],
+        },
     )
     assert r.status_code == 200
     # Measure sequence
-    r2 = c.post("/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]})
+    r2 = c.post(
+        "/v1/qtm/measure_sequence", json={"case": case, "operators": ["L", "T", "W"]}
+    )
     assert r2.status_code == 200
     body = r2.json()
     ub = body.get("uncertainty_bound", {})
@@ -57,7 +63,11 @@ def test_qtm_expectation_in_range() -> None:
     case = "INV-EXP"
     c.post(
         "/v1/qtm/state",
-        json={"case": case, "basis": ["ALLOW", "DENY", "ABSTAIN"], "probs": [0.6, 0.2, 0.2]},
+        json={
+            "case": case,
+            "basis": ["ALLOW", "DENY", "ABSTAIN"],
+            "probs": [0.6, 0.2, 0.2],
+        },
     )
     r = c.post("/v1/qtm/expectation", json={"case": case, "operator": "W"})
     assert r.status_code == 200

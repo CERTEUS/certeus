@@ -36,7 +36,14 @@ def test_gauge_gate_ok_and_fail(tmp_path: Path) -> None:
 
     # OK when epsilon >= drift
     proc_ok = subprocess.run(
-        ["python", "scripts/gates/gauge_gate.py", "--epsilon", f"{drift + 0.01}", "--input", str(out)],
+        [
+            "python",
+            "scripts/gates/gauge_gate.py",
+            "--epsilon",
+            f"{drift + 0.01}",
+            "--input",
+            str(out),
+        ],
         capture_output=True,
         text=True,
     )
@@ -45,7 +52,14 @@ def test_gauge_gate_ok_and_fail(tmp_path: Path) -> None:
     # FAIL when epsilon < drift
     bad_eps = max(0.0, drift - 0.0001)
     proc_fail = subprocess.run(
-        ["python", "scripts/gates/gauge_gate.py", "--epsilon", f"{bad_eps}", "--input", str(out)],
+        [
+            "python",
+            "scripts/gates/gauge_gate.py",
+            "--epsilon",
+            f"{bad_eps}",
+            "--input",
+            str(out),
+        ],
         capture_output=True,
         text=True,
     )

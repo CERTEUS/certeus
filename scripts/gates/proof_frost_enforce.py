@@ -29,13 +29,39 @@ def _base_ok_pco() -> dict[str, Any]:
         "case_id": "CER-LEX-FROST-GATE",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
         "sources": [
-            {"id": "s1", "uri": "hash://sha256/aa", "digest": "a" * 64, "retrieved_at": "2025-01-01T00:00:00Z"}
+            {
+                "id": "s1",
+                "uri": "hash://sha256/aa",
+                "digest": "a" * 64,
+                "retrieved_at": "2025-01-01T00:00:00Z",
+            }
         ],
-        "derivations": [{"claim_id": "c1", "solver": "z3", "proof_format": "LFSC", "artifact_digest": "b" * 64}],
-        "reproducibility": {"image": "img:dev", "image_digest": "sha256:deadbeef", "seed": "0"},
+        "derivations": [
+            {
+                "claim_id": "c1",
+                "solver": "z3",
+                "proof_format": "LFSC",
+                "artifact_digest": "b" * 64,
+            }
+        ],
+        "reproducibility": {
+            "image": "img:dev",
+            "image_digest": "sha256:deadbeef",
+            "seed": "0",
+        },
         "signatures": [
-            {"role": "producer", "alg": "ed25519", "key_id": "kid1", "signature": "sig1"},
-            {"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"},
+            {
+                "role": "producer",
+                "alg": "ed25519",
+                "key_id": "kid1",
+                "signature": "sig1",
+            },
+            {
+                "role": "counsel",
+                "alg": "ed25519",
+                "key_id": "kid2",
+                "signature": "sig2",
+            },
         ],
     }
 
@@ -48,7 +74,9 @@ def main() -> None:
     client = TestClient(app)
     # Case 1: missing quorum → ABSTAIN
     pco_bad = _base_ok_pco()
-    r1 = client.post("/v1/proofgate/publish", json={"pco": pco_bad, "budget_tokens": 10})
+    r1 = client.post(
+        "/v1/proofgate/publish", json={"pco": pco_bad, "budget_tokens": 10}
+    )
     ok1 = r1.status_code == 200 and r1.json().get("status") == "ABSTAIN"
     # Case 2: quorum present → PUBLISH
     pco_ok = _base_ok_pco()
@@ -57,7 +85,9 @@ def main() -> None:
     r2 = client.post("/v1/proofgate/publish", json={"pco": pco_ok, "budget_tokens": 10})
     ok2 = r2.status_code == 200 and r2.json().get("status") == "PUBLISH"
     report = {"missing_quorum_abstain": ok1, "with_quorum_publish": ok2}
-    (out_dir / "proof_frost_enforce.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (out_dir / "proof_frost_enforce.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
     if not (ok1 and ok2):
         print("FROST Gate failed:", report, file=sys.stderr)
         sys.exit(1)

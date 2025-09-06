@@ -56,7 +56,9 @@ def test_w13_devices_lexqft_flow() -> None:
     assert 0.0 <= float(state["uncaptured_mass"]) <= 1.0
 
     # 2) Devices: HDE plan
-    r = c.post("/v1/devices/horizon_drive/plan", json={"case": "D13", "target_horizon": 0.30})
+    r = c.post(
+        "/v1/devices/horizon_drive/plan", json={"case": "D13", "target_horizon": 0.30}
+    )
     assert r.status_code == 200
     hde = r.json()
     assert hde.get("best_strategy") in {"balanced", "aggressive"}
@@ -75,7 +77,9 @@ def test_w13_devices_lexqft_flow() -> None:
     assert abs(max(ps) - float(q.get("payoff", 0.0))) <= 1e-6
 
     # 4) Devices: Entangle
-    r = c.post("/v1/devices/entangle", json={"variables": ["X", "Y"], "target_negativity": 0.2})
+    r = c.post(
+        "/v1/devices/entangle", json={"variables": ["X", "Y"], "target_negativity": 0.2}
+    )
     assert r.status_code == 200
     ent = r.json()
     assert isinstance(ent.get("certificate"), str)
@@ -92,7 +96,9 @@ def test_w13_devices_lexqft_flow() -> None:
     assert isinstance(cs.get("sketch", {}).get("treaty", {}), dict)
 
     # 6) lexqft tunnel + PCO headers present
-    r = c.post("/v1/lexqft/tunnel", json={"state_uri": "lexqft-case-1", "evidence_energy": 1.2})
+    r = c.post(
+        "/v1/lexqft/tunnel", json={"state_uri": "lexqft-case-1", "evidence_energy": 1.2}
+    )
     assert r.status_code == 200
     t = r.json()
     assert 0.5 <= float(t["p_tunnel"]) <= 0.95

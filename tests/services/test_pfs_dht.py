@@ -30,7 +30,11 @@ def test_announce_and_query_and_publish() -> None:
     assert a1.status_code == 200
     a2 = client.post(
         "/v1/pfs/dht/announce",
-        json={"node": "node-B", "competencies": ["cfe.geodesic", "lexenith.*"], "capacity": 1},
+        json={
+            "node": "node-B",
+            "competencies": ["cfe.geodesic", "lexenith.*"],
+            "capacity": 1,
+        },
     )
     assert a2.status_code == 200
 
@@ -43,7 +47,10 @@ def test_announce_and_query_and_publish() -> None:
     # Publish path
     pub = client.post(
         "/v1/pfs/dht/publish_path",
-        json={"case": "DHT-1", "path": ["lexqft.tunnel", "cfe.geodesic", "proof.publish"]},
+        json={
+            "case": "DHT-1",
+            "path": ["lexqft.tunnel", "cfe.geodesic", "proof.publish"],
+        },
     )
     assert pub.status_code == 200
     body = pub.json()

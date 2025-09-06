@@ -27,7 +27,9 @@ def test_global_no_store_headers() -> None:
     assert r1.status_code == 200
     assert r1.headers.get("Cache-Control") == "no-store"
 
-    r2 = c.post("/v1/mailops/ingest", json={"mail_id": "m1", "from_addr": "a@b", "to": []})
+    r2 = c.post(
+        "/v1/mailops/ingest", json={"mail_id": "m1", "from_addr": "a@b", "to": []}
+    )
     assert r2.status_code == 200
     assert r2.headers.get("Cache-Control") == "no-store"
 

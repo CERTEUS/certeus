@@ -25,7 +25,11 @@ def test_pfs_inspect_after_tunnel() -> None:
     case = "pfs-demo-1"
     r = client.post(
         "/v1/lexqft/tunnel",
-        json={"state_uri": case, "evidence_energy": 1.1, "barrier_model": {"V0": 1.0, "w": 2.0, "m": 1.0}},
+        json={
+            "state_uri": case,
+            "evidence_energy": 1.1,
+            "barrier_model": {"V0": 1.0, "w": 2.0, "m": 1.0},
+        },
     )
     assert r.status_code == 200
 

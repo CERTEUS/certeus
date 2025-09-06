@@ -57,7 +57,11 @@ def main() -> int:
     rto = dur
     rpo = 60.0  # placeholder: would come from snapshot lag in real setup
 
-    result = {"rto_sec": rto, "rpo_sec": rpo, "ok": (rto <= args.max_rto_sec and rpo <= args.max_rpo_sec)}
+    result = {
+        "rto_sec": rto,
+        "rpo_sec": rpo,
+        "ok": (rto <= args.max_rto_sec and rpo <= args.max_rpo_sec),
+    }
     out.write_text(json.dumps(result, indent=2), encoding="utf-8")
 
     if not result["ok"]:

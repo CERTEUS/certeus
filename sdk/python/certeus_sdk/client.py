@@ -75,7 +75,12 @@ class CerteusClient:
             data = r.json()
         except Exception:
             data = None
-        return SDKResponse(ok=r.ok, status=r.status_code, data=data, pco_headers=self._extract_pco_headers(r.headers))
+        return SDKResponse(
+            ok=r.ok,
+            status=r.status_code,
+            data=data,
+            pco_headers=self._extract_pco_headers(r.headers),
+        )
 
     def _get(self, path: str) -> SDKResponse:
         r = self._s.get(f"{self.base_url}{path}")
@@ -84,12 +89,21 @@ class CerteusClient:
             data = r.json()
         except Exception:
             data = None
-        return SDKResponse(ok=r.ok, status=r.status_code, data=data, pco_headers=self._extract_pco_headers(r.headers))
+        return SDKResponse(
+            ok=r.ok,
+            status=r.status_code,
+            data=data,
+            pco_headers=self._extract_pco_headers(r.headers),
+        )
 
     # --- QTMP ---------------------------------------------------------------
 
     def qtm_init_case(
-        self, *, case: str | None = None, basis: list[str] | None = None, state_uri: str | None = None
+        self,
+        *,
+        case: str | None = None,
+        basis: list[str] | None = None,
+        state_uri: str | None = None,
     ) -> SDKResponse:
         payload: dict[str, Any] = {}
         if case:
@@ -101,7 +115,12 @@ class CerteusClient:
         return self._post("/v1/qtm/init_case", json=payload)
 
     def qtm_measure(
-        self, *, operator: str, case: str | None = None, source: str | None = None, basis: list[str] | None = None
+        self,
+        *,
+        operator: str,
+        case: str | None = None,
+        source: str | None = None,
+        basis: list[str] | None = None,
     ) -> SDKResponse:
         payload: dict[str, Any] = {"operator": operator}
         if case:
@@ -138,7 +157,12 @@ class CerteusClient:
             data = r.json()
         except Exception:
             data = None
-        return SDKResponse(ok=r.ok, status=r.status_code, data=data, pco_headers=self._extract_pco_headers(r.headers))
+        return SDKResponse(
+            ok=r.ok,
+            status=r.status_code,
+            data=data,
+            pco_headers=self._extract_pco_headers(r.headers),
+        )
 
     def qtm_operators(self) -> SDKResponse:
         return self._get("/v1/qtm/operators")
@@ -146,7 +170,9 @@ class CerteusClient:
     def qtm_uncertainty(self) -> SDKResponse:
         return self._get("/v1/qtm/uncertainty")
 
-    def qtm_decoherence(self, *, case: str | None, channel: str, gamma: float | None = None) -> SDKResponse:
+    def qtm_decoherence(
+        self, *, case: str | None, channel: str, gamma: float | None = None
+    ) -> SDKResponse:
         payload: dict[str, Any] = {"channel": channel}
         if case:
             payload["case"] = case
@@ -161,10 +187,14 @@ class CerteusClient:
         return self._post("/v1/qtm/commutator", json={"A": A, "B": B})
 
     def qtm_commutator_expectation(self, *, case: str, A: str, B: str) -> SDKResponse:
-        return self._post("/v1/qtm/commutator_expectation", json={"case": case, "A": A, "B": B})
+        return self._post(
+            "/v1/qtm/commutator_expectation", json={"case": case, "A": A, "B": B}
+        )
 
     def qtm_expectation(self, *, case: str, operator: str) -> SDKResponse:
-        return self._post("/v1/qtm/expectation", json={"case": case, "operator": operator})
+        return self._post(
+            "/v1/qtm/expectation", json={"case": case, "operator": operator}
+        )
 
     def qtm_find_entanglement(self, *, variables: list[str]) -> SDKResponse:
         return self._post("/v1/qtm/find_entanglement", json={"variables": variables})
@@ -184,14 +214,21 @@ class CerteusClient:
             data = r.json()
         except Exception:
             data = None
-        return SDKResponse(ok=r.ok, status=r.status_code, data=data, pco_headers=self._extract_pco_headers(r.headers))
+        return SDKResponse(
+            ok=r.ok,
+            status=r.status_code,
+            data=data,
+            pco_headers=self._extract_pco_headers(r.headers),
+        )
 
     # --- lexqft -------------------------------------------------------------
 
     def lexqft_coverage(self) -> SDKResponse:
         return self._get("/v1/lexqft/coverage")
 
-    def lexqft_tunnel(self, *, evidence_energy: float, state_uri: str | None = None) -> SDKResponse:
+    def lexqft_tunnel(
+        self, *, evidence_energy: float, state_uri: str | None = None
+    ) -> SDKResponse:
         payload: dict[str, Any] = {"evidence_energy": float(evidence_energy)}
         if state_uri:
             payload["state_uri"] = state_uri
@@ -226,7 +263,11 @@ class CerteusClient:
         limit: int = 1000,
         mime: str | None = None,
     ) -> SDKResponse:
-        q = [f"prefix={prefix}", f"recursive={'true' if recursive else 'false'}", f"limit={int(limit)}"]
+        q = [
+            f"prefix={prefix}",
+            f"recursive={'true' if recursive else 'false'}",
+            f"limit={int(limit)}",
+        ]
         if mime:
             q.append(f"mime={mime}")
         return self._get(f"/v1/pfs/list?{'&'.join(q)}")
@@ -238,7 +279,9 @@ class CerteusClient:
 
     # --- ChatOps ------------------------------------------------------------
 
-    def chatops_command(self, *, cmd: str, args: dict | None = None, text_context: str | None = None) -> SDKResponse:
+    def chatops_command(
+        self, *, cmd: str, args: dict | None = None, text_context: str | None = None
+    ) -> SDKResponse:
         payload: dict[str, Any] = {"cmd": cmd}
         if args is not None:
             payload["args"] = args

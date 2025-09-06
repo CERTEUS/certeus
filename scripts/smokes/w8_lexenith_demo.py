@@ -43,18 +43,38 @@ def main() -> int:
     )
     r_cldf = c.post(
         "/v1/lexenith/cldf/renormalize",
-        json={"citations": [{"text": "K 2001", "weight": 1.0}, {"text": "III 2020", "weight": 0.5}], "damping": 0.9},
+        json={
+            "citations": [
+                {"text": "K 2001", "weight": 1.0},
+                {"text": "III 2020", "weight": 0.5},
+            ],
+            "damping": 0.9,
+        },
     )
     r_wn = c.post(
         "/v1/lexenith/why_not/export",
         json={"claim": "A", "counter_arguments": ["B", "C"]},
     )
     data = {
-        "lock": r_lock.json() if r_lock.status_code == 200 else {"status": r_lock.status_code},
-        "publish": r_pub.json() if r_pub.status_code == 200 else {"status": r_pub.status_code},
-        "motion": r_mot.json() if r_mot.status_code == 200 else {"status": r_mot.status_code},
-        "cldf": r_cldf.json() if r_cldf.status_code == 200 else {"status": r_cldf.status_code},
-        "why_not": r_wn.json() if r_wn.status_code == 200 else {"status": r_wn.status_code},
+        "lock": (
+            r_lock.json()
+            if r_lock.status_code == 200
+            else {"status": r_lock.status_code}
+        ),
+        "publish": (
+            r_pub.json() if r_pub.status_code == 200 else {"status": r_pub.status_code}
+        ),
+        "motion": (
+            r_mot.json() if r_mot.status_code == 200 else {"status": r_mot.status_code}
+        ),
+        "cldf": (
+            r_cldf.json()
+            if r_cldf.status_code == 200
+            else {"status": r_cldf.status_code}
+        ),
+        "why_not": (
+            r_wn.json() if r_wn.status_code == 200 else {"status": r_wn.status_code}
+        ),
     }
     out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Saved {out}")

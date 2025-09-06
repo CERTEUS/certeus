@@ -28,13 +28,20 @@ def test_admin_set_tier_and_reload(monkeypatch) -> None:
     c = TestClient(app)
 
     # Without admin flag should be forbidden
-    r_forbidden = c.post("/v1/billing/admin/set_tier", json={"tenant": "demo", "tier": "pro"})
+    r_forbidden = c.post(
+        "/v1/billing/admin/set_tier", json={"tenant": "demo", "tier": "pro"}
+    )
     assert r_forbidden.status_code == 403
 
     with TemporaryDirectory() as td:
         pol_path = Path(td) / "pol.json"
         pol_path.write_text(
-            json.dumps({"tiers": {"free": {"daily_quota": 10}, "pro": {"daily_quota": 100}}, "tenants": {}}),
+            json.dumps(
+                {
+                    "tiers": {"free": {"daily_quota": 10}, "pro": {"daily_quota": 100}},
+                    "tenants": {},
+                }
+            ),
             encoding="utf-8",
         )
 
@@ -43,7 +50,10 @@ def test_admin_set_tier_and_reload(monkeypatch) -> None:
         monkeypatch.setenv("BILLING_POLICY_FILE_WRITE", "1")
 
         # Set tier and persist
-        r1 = c.post("/v1/billing/admin/set_tier", json={"tenant": "demo", "tier": "pro", "persist": True})
+        r1 = c.post(
+            "/v1/billing/admin/set_tier",
+            json={"tenant": "demo", "tier": "pro", "persist": True},
+        )
         assert r1.status_code == 200
         j1 = r1.json()
         assert j1.get("tenant") == "demo" and j1.get("tier") == "pro"

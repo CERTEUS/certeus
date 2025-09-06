@@ -34,7 +34,9 @@ def _run(cmd: list[str]) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--to", default="work/daily", help="Target branch (default: work/daily)")
+    ap.add_argument(
+        "--to", default="work/daily", help="Target branch (default: work/daily)"
+    )
     args = ap.parse_args()
 
     # Prefer explicit user/token; support ADMIN_TOKEN fallback
@@ -46,12 +48,17 @@ def main() -> int:
         if u and u not in {"root", "vscode", "codespace", "code"}:
             user = u
     token = (
-        os.getenv("GITHUB_PUSH_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("ADMIN_TOKEN")
+        os.getenv("GITHUB_PUSH_TOKEN")
+        or os.getenv("GITHUB_TOKEN")
+        or os.getenv("GH_TOKEN")
+        or os.getenv("ADMIN_TOKEN")
     )
     if not token:
         # Fallback: try GitHub CLI token if available
         try:
-            out = subprocess.run(["gh", "auth", "token"], check=True, capture_output=True, text=True)
+            out = subprocess.run(
+                ["gh", "auth", "token"], check=True, capture_output=True, text=True
+            )
             cand = (out.stdout or "").strip()
             if cand:
                 token = cand
@@ -59,17 +66,28 @@ def main() -> int:
             pass
     if not token:
         # Fallback: read token from local files (ignored by Git)
-        for name in (".devkeys/admin_token.txt", ".devkeys/github_pat.txt", ".devkeys/token.txt"):
+        for name in (
+            ".devkeys/admin_token.txt",
+            ".devkeys/github_pat.txt",
+            ".devkeys/token.txt",
+        ):
             p = Path(name)
             if p.exists():
                 token = p.read_text(encoding="utf-8").strip()
                 if token:
                     break
     if not token:
-        raise SystemExit("Missing push token: set ADMIN_TOKEN/GITHUB_PUSH_TOKEN or provide .devkeys/admin_token.txt")
+        raise SystemExit(
+            "Missing push token: set ADMIN_TOKEN/GITHUB_PUSH_TOKEN or provide .devkeys/admin_token.txt"
+        )
 
     # Resolve repo owner/name from origin
-    _proc = subprocess.run(["git", "remote", "get-url", "origin"], check=True, capture_output=True, text=True)
+    _proc = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
     origin = (_proc.stdout or "").strip()
     # Accept https://github.com/owner/repo(.git)
     owner = "CERTEUS"
@@ -96,7 +114,10 @@ def main() -> int:
     if not user:
         # 2) query GitHub API to get login owner of token
         try:
-            req = urllib.request.Request("https://api.github.com/user", headers={"Authorization": f"token {token}"})
+            req = urllib.request.Request(
+                "https://api.github.com/user",
+                headers={"Authorization": f"token {token}"},
+            )
             with urllib.request.urlopen(req, timeout=5) as resp:  # nosec B310
                 you = json.loads(resp.read().decode("utf-8"))
                 cand = you.get("login")
@@ -111,13 +132,16 @@ def main() -> int:
     # Optional: verify token has push permission
     try:
         req = urllib.request.Request(
-            f"https://api.github.com/repos/{owner}/{repo}", headers={"Authorization": f"token {token}"}
+            f"https://api.github.com/repos/{owner}/{repo}",
+            headers={"Authorization": f"token {token}"},
         )
         with urllib.request.urlopen(req, timeout=5) as resp:  # nosec B310
             meta = json.loads(resp.read().decode("utf-8"))
             perms = meta.get("permissions") or {}
             if not perms.get("push", False):
-                print("warning: token may lack push permission for repo; proceeding anyway")
+                print(
+                    "warning: token may lack push permission for repo; proceeding anyway"
+                )
     except Exception:
         pass
 
@@ -129,7 +153,12 @@ def main() -> int:
     host_line = f"https://{user}:{token}@github.com\n"
     repo_line = None
     try:
-        _proc2 = subprocess.run(["git", "remote", "get-url", "origin"], check=True, capture_output=True, text=True)
+        _proc2 = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
         origin2 = (_proc2.stdout or "").strip()
         if origin2.startswith("http"):
             repo_line = f"https://{user}:{token}@{origin2.split('://', 1)[1]}\n"

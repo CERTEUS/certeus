@@ -67,7 +67,12 @@ def main() -> int:
     p95 = statistics.quantiles(lat_ms, n=100)[94] if lat_ms else 0.0
     error_rate = errors / max(1, len(lat_ms))
 
-    payload = {"p95_ms": p95, "error_rate": error_rate, "count": len(lat_ms), "observed_at": time.time()}
+    payload = {
+        "p95_ms": p95,
+        "error_rate": error_rate,
+        "count": len(lat_ms),
+        "observed_at": time.time(),
+    }
     out_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(json.dumps(payload))
     return 0

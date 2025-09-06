@@ -32,7 +32,11 @@ from core.boundary.reconstruct import bulk_reconstruct
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", required=False, help="Ścieżka raportu JSON (domyślnie: out/boundary_report.json)")
+    ap.add_argument(
+        "--out",
+        required=False,
+        help="Ścieżka raportu JSON (domyślnie: out/boundary_report.json)",
+    )
     args = ap.parse_args()
 
     out = Path(args.out) if args.out else Path("out") / "boundary_report.json"

@@ -63,7 +63,9 @@ class TextUnit:
     def from_obj(cls, obj: Mapping[str, Any] | str) -> TextUnit:
         if isinstance(obj, str):
             return cls(text=obj, lang="pl")
-        return cls(text=str(obj.get("text") or ""), lang=str(obj.get("lang") or "pl").lower())
+        return cls(
+            text=str(obj.get("text") or ""), lang=str(obj.get("lang") or "pl").lower()
+        )
 
     def to_obj(self) -> dict[str, Any]:
         return {"text": self.text, "lang": self.lang}
@@ -108,7 +110,9 @@ def transform_lang(obj: Mapping[str, Any] | str, target_lang: str) -> dict[str, 
     return unit.to_obj()
 
 
-def holonomy_drift(obj: Mapping[str, Any] | str, *, cycle: tuple[str, str] = ("pl", "en")) -> float:
+def holonomy_drift(
+    obj: Mapping[str, Any] | str, *, cycle: tuple[str, str] = ("pl", "en")
+) -> float:
     """
     PL: Zmierz drift holonomii po cyklu transformacji językowej, np. pl→en→pl.
 

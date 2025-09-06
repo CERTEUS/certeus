@@ -94,7 +94,9 @@ def _summarize(vals: list[float]) -> dict[str, float]:
     }
 
 
-def calibrate(pairs: Iterable[tuple[str, str]], domain: str | None, q: float, margin: float) -> dict:
+def calibrate(
+    pairs: Iterable[tuple[str, str]], domain: str | None, q: float, margin: float
+) -> dict:
     # late import for repo‑root path friendliness
     from pathlib import Path as _Path
     import sys as _sys
@@ -125,9 +127,15 @@ def calibrate(pairs: Iterable[tuple[str, str]], domain: str | None, q: float, ma
 
     def _rec(vals: _Metrics) -> dict[str, float]:
         return {
-            "jaccard_max": round(_quantile(vals.jaccard, q) * margin, 6) if vals.jaccard else 0.0,
-            "entropy_max": round(_quantile(vals.entropy, q) * margin, 6) if vals.entropy else 0.0,
-            "entity_jaccard_max": round(_quantile(vals.entity, q) * margin, 6) if vals.entity else 0.0,
+            "jaccard_max": (
+                round(_quantile(vals.jaccard, q) * margin, 6) if vals.jaccard else 0.0
+            ),
+            "entropy_max": (
+                round(_quantile(vals.entropy, q) * margin, 6) if vals.entropy else 0.0
+            ),
+            "entity_jaccard_max": (
+                round(_quantile(vals.entity, q) * margin, 6) if vals.entity else 0.0
+            ),
         }
 
     out: dict[str, object] = {
@@ -154,11 +162,25 @@ def calibrate(pairs: Iterable[tuple[str, str]], domain: str | None, q: float, ma
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pairs", action="append", help="Plik par: 'before|||after' per linia (można powtarzać)")
+    ap.add_argument(
+        "--pairs",
+        action="append",
+        help="Plik par: 'before|||after' per linia (można powtarzać)",
+    )
     ap.add_argument("--out", required=True, help="Ścieżka pliku wynikowego JSON")
     ap.add_argument("--domain", help="Opcjonalna domena: med|sec|code")
-    ap.add_argument("--percentile", type=float, default=0.95, help="Percentyl do rekomendacji progów (domyślnie 0.95)")
-    ap.add_argument("--margin", type=float, default=1.0, help="Margines mnożnik do progów (domyślnie 1.0)")
+    ap.add_argument(
+        "--percentile",
+        type=float,
+        default=0.95,
+        help="Percentyl do rekomendacji progów (domyślnie 0.95)",
+    )
+    ap.add_argument(
+        "--margin",
+        type=float,
+        default=1.0,
+        help="Margines mnożnik do progów (domyślnie 1.0)",
+    )
     args = ap.parse_args()
 
     pair_files: list[Path] = [Path(p) for p in (args.pairs or [])]
@@ -174,7 +196,12 @@ def main() -> int:
     if not all_pairs:
         data = calibrate([], args.domain, args.percentile, args.margin)
     else:
-        data = calibrate(all_pairs, (args.domain or "").strip().lower() or None, args.percentile, args.margin)
+        data = calibrate(
+            all_pairs,
+            (args.domain or "").strip().lower() or None,
+            args.percentile,
+            args.margin,
+        )
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

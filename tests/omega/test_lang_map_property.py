@@ -20,7 +20,15 @@ from hypothesis import given, settings, strategies as st
 
 from core.omega.transforms import apply_transform, compute_gauge_drift
 
-PL_LEX = ["ustawa", "Ustawa", "USTAWA", "rozporządzenie", "Rozporządzenie", "kodeks", "Kodeks"]
+PL_LEX = [
+    "ustawa",
+    "Ustawa",
+    "USTAWA",
+    "rozporządzenie",
+    "Rozporządzenie",
+    "kodeks",
+    "Kodeks",
+]
 
 
 @settings(max_examples=25, deadline=None)

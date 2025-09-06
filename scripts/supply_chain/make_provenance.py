@@ -48,7 +48,9 @@ def main() -> int:
             {"name": "tests", "status": "success"},
         ],
     }
-    (out / "provenance.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    (out / "provenance.json").write_text(
+        json.dumps(payload, indent=2), encoding="utf-8"
+    )
     print("wrote out/provenance.json")
     return 0
 

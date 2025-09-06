@@ -255,7 +255,9 @@ async def _correlation_headers(request, call_next):  # type: ignore[no-redef]
         response = await call_next(request)
         try:
             response.headers.setdefault("X-Correlation-ID", corr)
-            response.headers.setdefault("X-CERTEUS-PCO-correlation.correlation_id", corr)
+            response.headers.setdefault(
+                "X-CERTEUS-PCO-correlation.correlation_id", corr
+            )
             # Optional simple trace id mirror
             response.headers.setdefault("X-Trace-Id", corr)
         except Exception:
@@ -421,7 +423,9 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
             certeus_http_requests_total,
             record_http_observation,
         )
-        from services.api_gateway.limits import get_tenant_id  # lazy import to avoid cycles
+        from services.api_gateway.limits import (
+            get_tenant_id,
+        )  # lazy import to avoid cycles
 
         route = request.scope.get("route")
         path_tmpl = getattr(route, "path", request.url.path)
@@ -431,12 +435,16 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
         tenant = get_tenant_id(request)
 
         # Global histogram (per-path/method/status)
-        certeus_http_request_duration_ms.labels(path=path_tmpl, method=method, status=status).observe(dur_ms)
+        certeus_http_request_duration_ms.labels(
+            path=path_tmpl, method=method, status=status
+        ).observe(dur_ms)
         # Per-tenant histogram and counter (W16 SLO per tenant)
         certeus_http_request_duration_ms_tenant.labels(
             tenant=tenant, path=path_tmpl, method=method, status=status
         ).observe(dur_ms)
-        certeus_http_requests_total.labels(tenant=tenant, path=path_tmpl, method=method, status=status).inc()
+        certeus_http_requests_total.labels(
+            tenant=tenant, path=path_tmpl, method=method, status=status
+        ).inc()
         # In-proc quick summary aggregator (for /v1/metrics/summary)
         record_http_observation(path_tmpl, method, status, tenant, dur_ms)
 

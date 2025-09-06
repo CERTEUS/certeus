@@ -105,7 +105,9 @@ def _detect_rule_id_from_text(text: str, prefer_token: str = "286") -> str | Non
     return ids[0]
 
 
-def _call_evaluate(ast: Any, rule_id: str | None, flags: Mapping[str, bool], ctx: Any) -> Any:
+def _call_evaluate(
+    ast: Any, rule_id: str | None, flags: Mapping[str, bool], ctx: Any
+) -> Any:
     """
 
     PL: Wywołaj evaluate_rule zgodnie z aktualną sygnaturą (różne wersje).
@@ -195,7 +197,9 @@ def main() -> None:
         help="Output JSON file",
     )
 
-    parser.add_argument("--rule-id", default=None, help="Explicit rule_id (overrides auto-detection)")
+    parser.add_argument(
+        "--rule-id", default=None, help="Explicit rule_id (overrides auto-detection)"
+    )
 
     parser.add_argument(
         "--prefer-token",
@@ -203,7 +207,9 @@ def main() -> None:
         help="Token preferred when auto-selecting RULE id",
     )
 
-    parser.add_argument("--max-iter", type=int, default=10, help="Max refinement iterations")
+    parser.add_argument(
+        "--max-iter", type=int, default=10, help="Max refinement iterations"
+    )
 
     args = parser.parse_args()
 
@@ -219,13 +225,17 @@ def main() -> None:
 
     ctx = load_mapping(map_path)
 
-    rule_id = args.rule_id or _detect_rule_id_from_text(rules_text, prefer_token=args.prefer_token)
+    rule_id = args.rule_id or _detect_rule_id_from_text(
+        rules_text, prefer_token=args.prefer_token
+    )
 
     if rule_id:
         print(f"[INFO] Using rule_id: {rule_id}")
 
     else:
-        print("[WARN] Could not detect rule_id from .lex; trying evaluator without rule_id")
+        print(
+            "[WARN] Could not detect rule_id from .lex; trying evaluator without rule_id"
+        )
 
     flags: dict[str, bool] = {}
 
@@ -237,7 +247,9 @@ def main() -> None:
 
         if miss:
             for p in miss:
-                engine_flag = ctx.premise_to_flag.get(p)  # P_* -> ZNAMIE_* jeśli dostępne
+                engine_flag = ctx.premise_to_flag.get(
+                    p
+                )  # P_* -> ZNAMIE_* jeśli dostępne
 
                 key = str(engine_flag or p)
 
@@ -249,7 +261,9 @@ def main() -> None:
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    out_path.write_text(json.dumps({"flags": flags}, ensure_ascii=True, indent=2), encoding="utf-8")
+    out_path.write_text(
+        json.dumps({"flags": flags}, ensure_ascii=True, indent=2), encoding="utf-8"
+    )
 
     print("[OK] wrote", out_path)
 

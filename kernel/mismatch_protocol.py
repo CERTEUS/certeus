@@ -45,7 +45,9 @@ def handle_mismatch(case_id: str, formula_str: str, results: dict[str, Any]) -> 
         formula_ast=None,
     )
 
-    raise MismatchError(f"Solver results are inconsistent. See ticket {ticket.ticket_id}.")
+    raise MismatchError(
+        f"Solver results are inconsistent. See ticket {ticket.ticket_id}."
+    )
 
 
 # === I/O / ENDPOINTS ===

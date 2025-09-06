@@ -71,7 +71,10 @@ def test_cldf_renormalize() -> None:
 def test_why_not_export() -> None:
     r = client.post(
         "/v1/lexenith/why_not/export",
-        json={"claim": "Powództwo o zapłatę", "counter_arguments": ["brak legitymacji"]},
+        json={
+            "claim": "Powództwo o zapłatę",
+            "counter_arguments": ["brak legitymacji"],
+        },
     )
     assert r.status_code == 200
     body = r.json()

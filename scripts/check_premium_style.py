@@ -233,7 +233,9 @@ def main() -> int:
         try:
             outdir = REPO / "out"
             outdir.mkdir(parents=True, exist_ok=True)
-            (outdir / "premium_violations.txt").write_text("\n".join(issues), encoding="utf-8")
+            (outdir / "premium_violations.txt").write_text(
+                "\n".join(issues), encoding="utf-8"
+            )
         except Exception:
             pass
         print("Premium Code Style violations (sec.21):", file=sys.stderr)

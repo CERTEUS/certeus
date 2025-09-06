@@ -57,7 +57,9 @@ MAP_PATH = Path("packs/jurisdictions/PL/rules/kk.mapping.json")
 def main() -> None:
     ap = argparse.ArgumentParser()
 
-    ap.add_argument("--flags", type=str, default="", help="Ścieżka do pliku JSON z kluczem 'flags'")
+    ap.add_argument(
+        "--flags", type=str, default="", help="Ścieżka do pliku JSON z kluczem 'flags'"
+    )
 
     args = ap.parse_args()
 

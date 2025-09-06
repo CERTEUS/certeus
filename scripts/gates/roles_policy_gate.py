@@ -37,7 +37,10 @@ except Exception:  # pragma: no cover
 ALLOWED_ROLES: set[str] = {"AFV", "ASE", "ATC", "ATS", "AVR"}
 DEFAULT_DOMAIN = os.getenv("GOV_DOMAIN") or "lex"
 DEFAULT_GOV_PACK = os.getenv("GOV_PACK") or str(
-    Path(__file__).resolve().parents[2] / "policies" / "governance" / "governance_pack.v0.1.yaml"
+    Path(__file__).resolve().parents[2]
+    / "policies"
+    / "governance"
+    / "governance_pack.v0.1.yaml"
 )
 
 # === LOGIKA / LOGIC ===
@@ -69,7 +72,9 @@ def _load_governance() -> dict[str, Any] | None:
         return None
 
 
-def _allow_by_pack(role: str, action: str, resource_kind: str, scope: str | None) -> bool | None:
+def _allow_by_pack(
+    role: str, action: str, resource_kind: str, scope: str | None
+) -> bool | None:
     pack = _load_governance()
     if not pack:
         return None
@@ -86,7 +91,9 @@ def _allow_by_pack(role: str, action: str, resource_kind: str, scope: str | None
     return role in set(map(str, allowed_roles))
 
 
-def _allow(user_role: str, action: str, *, resource_kind: str, scope: str | None) -> bool:
+def _allow(
+    user_role: str, action: str, *, resource_kind: str, scope: str | None
+) -> bool:
     # Governance pack first (if present)
     by_pack = _allow_by_pack(user_role, action, resource_kind, scope)
     if isinstance(by_pack, bool):

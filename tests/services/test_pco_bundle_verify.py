@@ -61,7 +61,9 @@ def _pem(sk: Ed25519PrivateKey) -> str:
     )
 
 
-def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatch) -> None:
+def test_pco_bundle_verification_success_sets_pending(
+    tmp_path: Path, monkeypatch
+) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
 
     sk = Ed25519PrivateKey.generate()
@@ -88,7 +90,9 @@ def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatc
     assert saved.get("status") in {"PENDING", "CONDITIONAL", "PUBLISH", "ABSTAIN"}
 
 
-def test_pco_bundle_verification_failure_sets_abstain(tmp_path: Path, monkeypatch) -> None:
+def test_pco_bundle_verification_failure_sets_abstain(
+    tmp_path: Path, monkeypatch
+) -> None:
     monkeypatch.setenv("PROOF_BUNDLE_DIR", str(tmp_path))
 
     sk = Ed25519PrivateKey.generate()

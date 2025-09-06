@@ -35,7 +35,9 @@ def main() -> int:
     p95 = float(data.get("p95_ms", 0.0))
     er = float(data.get("error_rate", 0.0))
     ok = (p95 <= max_p95) and (er <= max_err)
-    print(f"SLO p95={p95:.2f}ms (<= {max_p95}) error_rate={er:.4f} (<= {max_err}) => {'OK' if ok else 'FAIL'}")
+    print(
+        f"SLO p95={p95:.2f}ms (<= {max_p95}) error_rate={er:.4f} (<= {max_err}) => {'OK' if ok else 'FAIL'}"
+    )
     return 0 if ok else 1
 
 

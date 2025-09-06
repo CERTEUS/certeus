@@ -30,13 +30,39 @@ def _base_ok_pco() -> dict[str, Any]:
         "case_id": "CER-LEX-FROST-1",
         "risk": {"ece": 0.01, "brier": 0.05, "abstain_rate": 0.05},
         "sources": [
-            {"id": "s1", "uri": "hash://sha256/aa", "digest": "a" * 64, "retrieved_at": "2025-01-01T00:00:00Z"}
+            {
+                "id": "s1",
+                "uri": "hash://sha256/aa",
+                "digest": "a" * 64,
+                "retrieved_at": "2025-01-01T00:00:00Z",
+            }
         ],
-        "derivations": [{"claim_id": "c1", "solver": "z3", "proof_format": "LFSC", "artifact_digest": "b" * 64}],
-        "reproducibility": {"image": "img:dev", "image_digest": "sha256:deadbeef", "seed": "0"},
+        "derivations": [
+            {
+                "claim_id": "c1",
+                "solver": "z3",
+                "proof_format": "LFSC",
+                "artifact_digest": "b" * 64,
+            }
+        ],
+        "reproducibility": {
+            "image": "img:dev",
+            "image_digest": "sha256:deadbeef",
+            "seed": "0",
+        },
         "signatures": [
-            {"role": "producer", "alg": "ed25519", "key_id": "kid1", "signature": "sig1"},
-            {"role": "counsel", "alg": "ed25519", "key_id": "kid2", "signature": "sig2"},
+            {
+                "role": "producer",
+                "alg": "ed25519",
+                "key_id": "kid1",
+                "signature": "sig1",
+            },
+            {
+                "role": "counsel",
+                "alg": "ed25519",
+                "key_id": "kid2",
+                "signature": "sig2",
+            },
         ],
     }
 
@@ -71,4 +97,7 @@ def test_publish_with_frost_env_requires_quorum(monkeypatch) -> None:
     # Ledger includes hash of PCO containing quorum (stabilize by recomputation)
     expect_hash = compute_provenance_hash(pco_ok, include_timestamp=False)
     recs = ledger_service.get_records_for_case(case_id=pco_ok["case_id"])
-    assert any(r.get("type") == "PCO_PUBLISH" and r.get("document_hash") == expect_hash for r in recs)
+    assert any(
+        r.get("type") == "PCO_PUBLISH" and r.get("document_hash") == expect_hash
+        for r in recs
+    )

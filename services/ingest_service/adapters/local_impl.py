@@ -107,7 +107,9 @@ class LocalDriveAdapter(DriveAdapter):
 
     """
 
-    def __init__(self, base_dir: str | Path = "static", base_url_prefix: str = "/static"):
+    def __init__(
+        self, base_dir: str | Path = "static", base_url_prefix: str = "/static"
+    ):
         self.base_dir = Path(base_dir)
 
         self.base_url_prefix = base_url_prefix.rstrip("/")
@@ -124,7 +126,9 @@ class LocalDriveAdapter(DriveAdapter):
         try:
             salt = "det" if deterministic else _stable_hexdigest(filename)
 
-            file_id = _stable_hexdigest(data, filename, content_type, case_id or "", salt)
+            file_id = _stable_hexdigest(
+                data, filename, content_type, case_id or "", salt
+            )
 
             ext = infer_extension(content_type)
 
@@ -294,7 +298,10 @@ class StubLLMAdapter(LLMAdapter):
                 att_summary.append(f"{a.kind}:{a.name}:{size}")
 
             answer = {
-                "summary": {"prompt_len": len(request.prompt), "attachments": att_summary},
+                "summary": {
+                    "prompt_len": len(request.prompt),
+                    "attachments": att_summary,
+                },
                 "satisfied": [],
                 "missing": [],
             }

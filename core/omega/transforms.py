@@ -224,7 +224,9 @@ def compute_entropy_drift(before: str, after: str) -> EntropyDrift:
     eb = _token_entropy(tb)
     ea = _token_entropy(ta)
     return EntropyDrift(
-        token_entropy_before=round(eb, 6), token_entropy_after=round(ea, 6), entropy_drift=round(abs(ea - eb), 6)
+        token_entropy_before=round(eb, 6),
+        token_entropy_after=round(ea, 6),
+        entropy_drift=round(abs(ea - eb), 6),
     )
 
 
@@ -295,7 +297,9 @@ def normalize_text(text: str, lang: str = "pl") -> str:
     return txt
 
 
-def apply_transform(text: str, transform: str = "identity", **params: Any) -> tuple[str, GaugeDrift]:
+def apply_transform(
+    text: str, transform: str = "identity", **params: Any
+) -> tuple[str, GaugeDrift]:
     """Apply a named transform and return (result, drift_metrics)."""
 
     if transform == "identity":
@@ -309,7 +313,11 @@ def apply_transform(text: str, transform: str = "identity", **params: Any) -> tu
         dst = str(params.get("dst", "en")).lower()
         pl_en = {"ustawa": "act", "rozporządzenie": "regulation", "kodeks": "code"}
         en_pl = {v: k for k, v in pl_en.items()}
-        mapping = pl_en if (src, dst) == ("pl", "en") else en_pl if (src, dst) == ("en", "pl") else {}
+        mapping = (
+            pl_en
+            if (src, dst) == ("pl", "en")
+            else en_pl if (src, dst) == ("en", "pl") else {}
+        )
         out = text
         for s, t in mapping.items():
             out = re.sub(rf"\b{re.escape(s)}\b", t, out, flags=re.IGNORECASE)

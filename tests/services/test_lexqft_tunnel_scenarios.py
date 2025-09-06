@@ -57,7 +57,10 @@ def test_thick_barrier_reflects_at_low_energy() -> None:
     body = r.json()
     assert body["path"][-1] == "reflect"
     # PCO includes model_uri header when provided
-    assert r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.model_uri") == "lexqft://barrier/thick"
+    assert (
+        r.headers.get("X-CERTEUS-PCO-qlaw.tunneling.model_uri")
+        == "lexqft://barrier/thick"
+    )
     # log file should have one line
     try:
         with Path(_TUNNEL_LOG).open("r", encoding="utf-8") as fh:  # type: ignore[arg-type]

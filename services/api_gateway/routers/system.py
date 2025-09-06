@@ -210,7 +210,9 @@ async def ingest_document(
 
 
 @router.post("/v1/analyze")
-async def analyze(request: Request, case_id: str, file: Annotated[UploadFile, File(...)]) -> dict[str, Any]:
+async def analyze(
+    request: Request, case_id: str, file: Annotated[UploadFile, File(...)]
+) -> dict[str, Any]:
     """
 
     Minimalny stub E2E: przyjmuje PDF i zwraca wynik SAT z prostym modelem.
@@ -285,7 +287,9 @@ def cache_source(req: SourceCacheRequest) -> SourceCacheResponse:
 
     cs = cache_from_uri(req.uri)
 
-    return SourceCacheResponse(uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at)
+    return SourceCacheResponse(
+        uri=cs.uri, digest=cs.digest, path=str(cs.path), retrieved_at=cs.retrieved_at
+    )
 
 
 # === TESTY / TESTS ===

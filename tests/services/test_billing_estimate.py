@@ -22,7 +22,11 @@ from services.api_gateway.main import app
 
 def test_estimate_qtm_measure() -> None:
     c = TestClient(app)
-    r = c.post("/v1/billing/estimate", json={"action": "qtm.measure"}, headers={"X-Tenant-ID": "acme"})
+    r = c.post(
+        "/v1/billing/estimate",
+        json={"action": "qtm.measure"},
+        headers={"X-Tenant-ID": "acme"},
+    )
     assert r.status_code == 200
     out = r.json()
     assert out.get("tenant") == "acme"

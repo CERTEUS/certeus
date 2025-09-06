@@ -57,7 +57,9 @@ def main() -> int:  # pragma: no cover
     if violations:
         print("Endpoint SLO trend: VIOLATIONS (report-only)")
         for k, p, c in violations:
-            print(f" - {k}: p95 {c:.2f} ms > allowed {(p * (1.0 + thr_pct)):.2f} ms (base {p:.2f})")
+            print(
+                f" - {k}: p95 {c:.2f} ms > allowed {(p * (1.0 + thr_pct)):.2f} ms (base {p:.2f})"
+            )
     else:
         print("Endpoint SLO trend: OK")
     return 0

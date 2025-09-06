@@ -37,7 +37,9 @@ def test_merkle_sign_and_verify_roundtrip() -> None:
         format=serialization.PrivateFormat.Raw,
         encryption_algorithm=serialization.NoEncryption(),
     )
-    pk_b = pk.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
+    pk_b = pk.public_bytes(
+        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
+    )
 
     path = ["lexqft.tunnel", "cfe.geodesic", "proofgate.publish"]
 
@@ -52,6 +54,11 @@ def test_merkle_sign_and_verify_roundtrip() -> None:
 
     rv = client.post(
         "/v1/pfs/verify_path",
-        json={"case": "MERKLE-1", "path": path, "pk_b64url": _b64u(pk_b), "signature_b64": sig},
+        json={
+            "case": "MERKLE-1",
+            "path": path,
+            "pk_b64url": _b64u(pk_b),
+            "signature_b64": sig,
+        },
     )
     assert rv.status_code == 200 and rv.json().get("ok") is True

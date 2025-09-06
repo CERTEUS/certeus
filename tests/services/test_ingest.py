@@ -92,7 +92,9 @@ def test_ingest_document_endpoint_success() -> None:
 
     """
 
-    files: dict[str, FileTuple] = {"file": make_file("test.pdf", b"%PDF-1.4 dummy", "application/pdf")}
+    files: dict[str, FileTuple] = {
+        "file": make_file("test.pdf", b"%PDF-1.4 dummy", "application/pdf")
+    }
 
     resp = client.post("/v1/ingest", files=files)
 
@@ -118,7 +120,9 @@ def test_ingest_document_endpoint_success() -> None:
 
     assert "thesis" in first and isinstance(first["thesis"], str)
 
-    assert "confidence_score" in first and isinstance(first["confidence_score"], int | float)
+    assert "confidence_score" in first and isinstance(
+        first["confidence_score"], int | float
+    )
 
     # ledger header
 
@@ -145,7 +149,9 @@ def test_ingest_rejects_unsupported_mime() -> None:
 
     """
 
-    files_bad: dict[str, FileTuple] = {"file": make_file("x.exe", b"MZ...", "application/x-msdownload")}
+    files_bad: dict[str, FileTuple] = {
+        "file": make_file("x.exe", b"MZ...", "application/x-msdownload")
+    }
 
     resp = client.post("/v1/ingest", files=files_bad)
 
@@ -168,7 +174,9 @@ def test_ingest_rejects_too_large() -> None:
 
     big: bytes = b"0" * (10 * 1024 * 1024 + 1)
 
-    files_big: dict[str, FileTuple] = {"file": make_file("big.pdf", big, "application/pdf")}
+    files_big: dict[str, FileTuple] = {
+        "file": make_file("big.pdf", big, "application/pdf")
+    }
 
     resp = client.post("/v1/ingest", files=files_big)
 
