@@ -576,7 +576,9 @@ async def renorm(body: RenormRequest) -> dict:
     else:
         maxv = 0.0
     REL_EPS = 1e-15
-    ABS_EPS = 0.0  # avoid introducing a fixed floor that breaks invariance
+    # Absolute floor to eliminate denormals that are not stably representable across
+    # scales in IEEE-754 doubles. This preserves practical scale invariance.
+    ABS_EPS = 2e-308  # ~ below normal double minimum (2.225e-308)
     thr = max(ABS_EPS, maxv * REL_EPS)
     vals = [v if v >= thr else 0.0 for v in vals]
     total = sum(vals)
