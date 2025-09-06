@@ -484,3 +484,5 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
   - Scripts: macOS runner + macFUSE (scripts/runners/mac/bootstrap_macos_runner.sh); Windows runner + Dokan (scripts/runners/windows/bootstrap_windows_runner.ps1)
   - CI: ProofFS self-hosted workflow (macOS/Windows labels)
   - ProofGate: Ed25519 signature embedding (crypto.ed25519) in PCO
+- 2025-09-06 15:48:22Z [agent] (work/daily): Installed Linux self-hosted runner in Codespaces; dispatched SelfHosted-CI
+  - Runner labels: self-hosted, linux, codespaces; workflow: .github/workflows/selfhosted-ci.yml
