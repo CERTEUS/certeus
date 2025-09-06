@@ -44,7 +44,11 @@
         "**/*.pyc": true,
         "**/.pytest_cache": true,
         "**/.coverage": true,
-        "**/node_modules": true
+        "**/node_modules": true,
+        "**/.venv": true,
+        "**/venv": true,
+        "**/.env": true,
+        "**/env": true
     },
     "files.watcherExclude": {
         "**/.git/objects/**": true,
@@ -59,7 +63,11 @@
         "**/bower_components": true,
         "**/*.code-search": true,
         "**/__pycache__": true,
-        "**/.pytest_cache": true
+        "**/.pytest_cache": true,
+        "**/.venv": true,
+        "**/venv": true,
+        "**/.env": true,
+        "**/env": true
     },
     // Port forwarding i serwery
     "remote.autoForward": true,
@@ -97,6 +105,29 @@
     "files.autoSaveDelay": 1000,
     "editor.formatOnSave": true,
     "python.analysis.diagnosticMode": "workspace",
+    // Python analysis exclusions - fix for 18K+ problems
+    "python.analysis.exclude": [
+        "**/.venv",
+        "**/.venv/**",
+        "**/venv",
+        "**/venv/**",
+        "**/.env",
+        "**/.env/**",
+        "**/env",
+        "**/env/**",
+        "**/site-packages",
+        "**/site-packages/**",
+        "**/__pycache__",
+        "**/__pycache__/**",
+        "**/.pytest_cache",
+        "**/.pytest_cache/**",
+        "**/node_modules",
+        "**/node_modules/**"
+    ],
+    "python.analysis.ignore": [
+        "**/.venv",
+        "**/.venv/**"
+    ],
     // GitHub Copilot
     "github.copilot.enable": {
         "*": true

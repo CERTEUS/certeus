@@ -29,23 +29,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = [
-  "architectus",
-  "cje",
-  "clients",
-  "core",
-  "docs",
-  "kernel",
-  "ops",
-  "packs",
-  "plugins",
-  "schemas",
-  "scripts",
-  "security",
-  "services",
-  "templates",
-  "tests",
-]
+packages = ["certeus"]
 
 [dependency-groups]
 dev = [
