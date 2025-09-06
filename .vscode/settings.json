@@ -97,7 +97,6 @@
     "files.autoSaveDelay": 1000,
     "editor.formatOnSave": true,
     "python.analysis.diagnosticMode": "workspace",
-    "python.analysis.typeCheckingMode": "basic",
     // GitHub Copilot
     "github.copilot.enable": {
         "*": true
