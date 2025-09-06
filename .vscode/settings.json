@@ -1,4 +1,15 @@
 {
+    // Port forwarding i serwery
+    "remote.autoForward": true,
+    "remote.restoreForwardedPorts": true,
+    "remote.portsAttributes": {
+        "3056": {
+            "protocol": "http",
+            "label": "Pylance Server",
+            "onAutoForward": "openPreview"
+        }
+    },
+    
     // Wspólne ustawienia dla wszystkich AI
     "editor.inlineSuggest.enabled": true,
     "editor.acceptSuggestionOnEnter": "on",
