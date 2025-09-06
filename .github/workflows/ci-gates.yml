@@ -64,6 +64,11 @@ jobs:
       - name: Ruff Lint (no fix)
         run: |
           python -m ruff check .
+      - name: mypy (type-check, report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install mypy types-requests || true
+          mypy --install-types --non-interactive --ignore-missing-imports core services scripts sdk/python || true
       - name: Mark Lint OK
         if: success()
         run: |
