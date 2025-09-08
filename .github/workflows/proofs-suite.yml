@@ -1,6 +1,7 @@
 name: Proofs Suite
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
   pull_request:
@@ -19,6 +20,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Ensure test deps present
+          pip install -U pytest hypothesis
           pip install pytest
       - name: Run Proofs Suite
         shell: bash
@@ -31,7 +34,16 @@ jobs:
             sha256sum cvc5.lfsc > cvc5.lfsc.sha256
           )
           python scripts/check_proofs.py --dir out/proof_artifacts
-          pytest -q tests/truth/test_solvers.py::test_generate_proofs_function_creates_expected_artifacts tests/truth/test_solvers.py::test_generate_proofs_cli_smoke_test -q
+          pytest -q \
+            --junitxml=out/proofs_junit.xml \
+            tests/truth/test_solvers.py::test_generate_proofs_function_creates_expected_artifacts \
+            tests/truth/test_solvers.py::test_generate_proofs_cli_smoke_test -q
+      - name: Upload proofs junit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proofs-junit
+          path: out/proofs_junit.xml
       - name: Upload proof artifacts
         if: always()
         uses: actions/upload-artifact@v4

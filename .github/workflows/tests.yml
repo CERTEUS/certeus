@@ -23,6 +23,7 @@ on:
     branches: [main, master, work/daily]
   pull_request:
     branches: [main, master, work/daily]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -35,6 +36,7 @@ env:
   PYTHON_VERSION: "3.11"
   UV_LINK_MODE: copy # stabilniej na CI
   PYTEST_JUNIT_XML: reports/junit.xml
+  CI_TUNNEL_LOG_SUFFIX: "${{ github.run_id }}-${{ github.run_attempt }}"
 
 jobs:
   tests:

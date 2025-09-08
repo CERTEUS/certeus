@@ -53,6 +53,7 @@ data/public_pco/*.json
 data/lexqft_coverage_state.json
 static/previews/
 .devkeys/
+data/lexqft_tunnel_log.jsonl
 
 # Artefakty
 reports/

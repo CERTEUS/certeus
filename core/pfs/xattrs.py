@@ -24,6 +24,7 @@ from __future__ import annotations
 from dataclasses import asdict
 import hashlib
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Any
@@ -54,8 +55,8 @@ def _load_sidecar(p: Path) -> dict[str, Any] | None:
             raw = json.loads(sidecar.read_text(encoding="utf-8"))
             if isinstance(raw, dict):
                 return raw
-    except Exception:
-        pass
+    except Exception as exc:
+        logging.getLogger(__name__).debug("sidecar load failed for %s: %s", sidecar, exc)
     return None
 
 
@@ -71,7 +72,8 @@ def _load_os_xattrs(p: Path) -> dict[str, Any] | None:
         names = []
         try:
             names = os.listxattr(p.as_posix())  # type: ignore[attr-defined]
-        except Exception:
+        except Exception as exc:
+            logging.getLogger(__name__).debug("listxattr failed for %s: %s", p, exc)
             names = []
         if not names:
             return None
@@ -82,11 +84,13 @@ def _load_os_xattrs(p: Path) -> dict[str, Any] | None:
                 if isinstance(v, (bytes | bytearray)):
                     try:
                         raw[n] = v.decode("utf-8", errors="replace")
-                    except Exception:
+                    except Exception as exc:
+                        logging.getLogger(__name__).debug("xattr decode failed (%s): %s", n, exc)
                         raw[n] = ""
                 else:
                     raw[n] = str(v)
-            except Exception:
+            except Exception as exc:
+                logging.getLogger(__name__).debug("getxattr failed (%s) on %s: %s", n, p, exc)
                 continue
         if not raw:
             return None
@@ -99,11 +103,13 @@ def _load_os_xattrs(p: Path) -> dict[str, Any] | None:
         if pco_raw:
             try:
                 out["pco"] = json.loads(pco_raw)
-            except Exception:
+            except Exception as exc:
+                logging.getLogger(__name__).debug("pco JSON parse failed: %s", exc)
                 # keep as string if not JSON
                 out["pco"] = pco_raw
         return out
-    except Exception:
+    except Exception as exc:
+        logging.getLogger(__name__).debug("_load_os_xattrs error for %s: %s", p, exc)
         return None
 
 
@@ -137,8 +143,8 @@ def _synthesize_pco(*, rid: str, pnip_hex: str) -> dict[str, Any]:
                 drat=None,
             )
             return asdict(pc)
-        except Exception:
-            pass
+        except Exception as exc:
+            logging.getLogger(__name__).debug("PublicPCO conversion failed: %s", exc)
     return payload
 
 

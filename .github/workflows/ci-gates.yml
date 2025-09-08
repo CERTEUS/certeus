@@ -1,4 +1,4 @@
-﻿# +-------------------------------------------------------------+
+# +-------------------------------------------------------------+
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
 # | FILE: .github/workflows/ci-gates.yml                      |
@@ -13,6 +13,7 @@ on:
   push:
     branches: [ main ]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +21,8 @@ concurrency:
 
 jobs:
   ci-gates:
+    env:
+      CI_TUNNEL_LOG_SUFFIX: "${{ github.run_id }}-${{ github.run_attempt }}"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -64,6 +67,11 @@ jobs:
       - name: Ruff Lint (no fix)
         run: |
           python -m ruff check .
+      - name: mypy (type-check, report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install mypy types-requests || true
+          mypy --install-types --non-interactive --ignore-missing-imports core services scripts sdk/python || true
       - name: Mark Lint OK
         if: success()
         run: |
@@ -150,10 +158,58 @@ jobs:
         run: |
           python scripts/gates/sdk_contract_gate.py || true
           test -f out/sdk_contract_ok.txt || true
+      - name: Type-check TS SDK (report-only)
+        continue-on-error: true
+        run: |
+          pushd sdk/ts >/dev/null
+          npm -g i typescript >/dev/null 2>&1 || true
+          tsc -p tsconfig.json || true
+          popd >/dev/null
+      - name: Build Go SDK (report-only)
+        continue-on-error: true
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21.x'
+      - name: Go build (report-only)
+        continue-on-error: true
+        run: |
+          pushd sdk/go >/dev/null
+          go mod tidy || true
+          go build ./... || true
+          popd >/dev/null
       - name: OpenAPI Contract Gate (report-only)
         continue-on-error: true
         run: |
           python scripts/gates/openapi_contract_gate.py || true
+
+      - name: ShellCheck (report-only)
+        continue-on-error: true
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y shellcheck || true
+          files=$(git ls-files "*.sh" | tr '\n' ' ')
+          if [ -n "$files" ]; then
+            shellcheck -e SC1091 -S warning $files || true
+          else
+            echo "No shell scripts to check"
+          fi
+
+      - name: Codespell (report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip codespell || true
+          codespell -q 2 --skip .git,.venv,venv,dist,build,node_modules,docs/openapi || true
+
+      - name: Markdownlint (report-only)
+        continue-on-error: true
+        run: |
+          npm -g i markdownlint-cli >/dev/null 2>&1 || true
+          markdownlint "**/*.md" --ignore "clients/web/**" || true
+
+      - name: pre-commit (report-only)
+        continue-on-error: true
+        run: |
+          python -m pip install --upgrade pip pre-commit || true
+          pre-commit run --all-files --show-diff-on-failure || true
 
       - name: Asset-Integrity Gate (report-only)
         continue-on-error: true
@@ -263,19 +319,29 @@ jobs:
           python -m pip install bandit || true
           bandit -q -r . -c bandit.yml || true
       - name: Gitleaks (secrets scan)
+        if: ${{ secrets.GITLEAKS_LICENSE != '' }}
         continue-on-error: true
         uses: zricethezav/gitleaks-action@v2.3.7
         with:
-          # Report-only for ci-gates; blocking in security-scan.yml
-          args: detect --verbose --redact --no-banner --exit-code 1 --config gitleaks.toml
-      - name: Tests
+          args: detect --verbose --redact --no-banner --exit-code 1 -c .gitleaks.toml
+      - name: Gitleaks (skipped — no license)
+        if: ${{ secrets.GITLEAKS_LICENSE == '' }}
+        run: echo "Skipping gitleaks (no GITLEAKS_LICENSE secret)"
+      - name: Tests (single-process + JUnit)
         env:
-          PYTEST_ADDOPTS: "-n auto --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"
+          PYTEST_ADDOPTS: "-n 0 --durations=15 -k 'not test_generate_proofs_cli_smoke_test'"
           OTEL_ENABLED: "1"
           OTEL_EXPORTER_OTLP_ENDPOINT: "http://127.0.0.1:4318"
           FINE_GRAINED_ROLES: "0"
         run: |
-          python -m pytest -q
+          python -m pytest -q --junitxml=out/tests_junit.xml
+      - name: Upload Tests JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-ci-gates-${{ github.sha }}
+          path: out/tests_junit.xml
+          if-no-files-found: ignore
       - name: CFE Smoke (in-proc)
         run: |
           python scripts/smokes/cfe_smoke.py > out/cfe_smoke.json

@@ -2,6 +2,70 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Codex: Zapisz notatkę (historia)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "append",
+                "--role",
+                "user",
+                "--text",
+                "${input:codexMessage}"
+            ],
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Codex: Remember last 5",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "remember",
+                "--count",
+                "5"
+            ],
+            "group": "none",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Codex: Start autosave daemon",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "daemon",
+                "--idle-sec",
+                "60"
+            ],
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Codex: Push (prompt → pipe)",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "scripts/codex_history.py",
+                "push",
+                "--role",
+                "assistant",
+                "--text",
+                "${input:codexMessage}"
+            ]
+        },
+        {
             "label": "Python: Run Tests",
             "type": "shell",
             "command": "${workspaceFolder}/.venv/bin/python",
@@ -95,6 +159,15 @@
                     "PYTHONUNBUFFERED": "1"
                 }
             }
+        }
+    ]
+    ,
+    "inputs": [
+        {
+            "id": "codexMessage",
+            "type": "promptString",
+            "description": "Wpisz treść do zapisania w historii (Codex)",
+            "default": ""
         }
     ]
 }
