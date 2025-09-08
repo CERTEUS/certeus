@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://certeus.dev/schemas/pco-v0.3.json",
+  "title": "Proof of Compliance Object (PCO) v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "inputs_digest", "outputs_digest", "model_fingerprint"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "0.3",
+      "description": "Semantic version of PCO schema"
+    },
+    "policy": {
+      "type": "object",
+      "description": "Policy binding information",
+      "additionalProperties": true
+    },
+    "inputs_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 digest (hex) of normalized inputs"
+    },
+    "outputs_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 digest (hex) of normalized outputs"
+    },
+    "model_fingerprint": {
+      "type": "string",
+      "minLength": 8,
+      "description": "Opaque model fingerprint/version identifier"
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["alg", "sig"],
+        "additionalProperties": false,
+        "properties": {
+          "alg": { "type": "string", "enum": ["ed25519", "rsa-pss", "ecdsa"] },
+          "key_id": { "type": "string" },
+          "sig": { "type": "string", "minLength": 16 }
+        }
+      },
+      "description": "Optional list of detached signatures"
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Non-validated metadata"
+    }
+  }
+}
+
