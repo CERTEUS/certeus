@@ -49,7 +49,7 @@ except Exception:  # pragma: no cover - optional
 
 
 try:  # optional: RA helpers for TEE status
-    from security.ra import (
+    from certeus.security.ra import (
         attestation_from_env,
         extract_fingerprint,
         verify_fingerprint,
@@ -624,8 +624,13 @@ def publish(req: PublishRequest) -> PublishResponse:
     if bunker_on and isinstance(req.pco, dict):
         try:
             att = attestation_from_env()
+            fp = None
             if att:
                 fp = extract_fingerprint(att).to_dict()
+            else:
+                # Fallback minimal RA when bunker is on but no attestation file
+                fp = extract_fingerprint({"vendor": "unknown", "product": "unknown", "claims": {}}).to_dict()
+            if fp:
                 # Merge into tee block without overwriting explicit client-provided RA
                 tee = dict(req.pco.get("tee") or {})
                 tee.setdefault("attested", True)
