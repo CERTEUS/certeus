@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Literal
 
 
 @dataclass(frozen=True)
@@ -33,4 +33,3 @@ def solve_and_export_drat(_smt2: str | None = None, *, simulate: bool = True) ->
         return SolveResult(status="unsat", drat_path=None)
     except Exception:
         return SolveResult(status="unknown", drat_path=None)
-

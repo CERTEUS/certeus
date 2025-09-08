@@ -17,7 +17,7 @@ def main() -> int:
     out_dir = Path(os.getenv("OUT_DIR") or "out")
     man = out_dir / "anchor_manifest.json"
     try:
-        data = json.loads(man.read_text(encoding="utf-8"))
+        _ = json.loads(man.read_text(encoding="utf-8"))
     except Exception:
         print("anchor: missing manifest")
         return 1
@@ -29,4 +29,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -20,8 +20,25 @@ def test_proof_only_protected_endpoints_are_enforced(monkeypatch) -> None:
 
     # Enumerate endpoints we consider protected (must be in sync with middleware)
     protected = [
-        ("POST", "/v1/pco/bundle", {"rid": "RID-1", "smt2_hash": "0" * 64, "lfsc": "()", "merkle_proof": [], "smt2": "()"}),
-        ("POST", "/v1/proofgate/publish", {"pco": {"case_id": "CER-SEC-1"}, "budget_tokens": 1}),
+        (
+            "POST",
+            "/v1/pco/bundle",
+            {
+                "rid": "RID-1",
+                "smt2_hash": "0" * 64,
+                "lfsc": "()",
+                "merkle_proof": [],
+                "smt2": "()",
+            },
+        ),
+        (
+            "POST",
+            "/v1/proofgate/publish",
+            {
+                "pco": {"case_id": "CER-SEC-1"},
+                "budget_tokens": 1,
+            },
+        ),
     ]
 
     enforced = 0
@@ -35,4 +52,3 @@ def test_proof_only_protected_endpoints_are_enforced(monkeypatch) -> None:
 
     # All protected endpoints must be enforced
     assert enforced == len(protected)
-

@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from services.ledger_service.cosmic_merkle import get_bundle_proof, verify_proof
+# Merkle helpers can be used in extended variants; not required for stub
 
 
 def _now() -> str:
@@ -45,4 +45,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
