@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Mapping
 
 from .parser import AST
 
@@ -35,4 +35,3 @@ def evaluate_rule(ast: AST, rule_id: str, flags: Mapping[str, bool], ctx: EvalCo
 def choose_article_for_kk(ast: AST, flags: Mapping[str, bool], _ctx: EvalContext) -> str | None:
     res = evaluate_rule(ast, "R_286_OSZUSTWO", flags, EvalContext({}, {}))
     return "art286" if res.satisfied else None
-

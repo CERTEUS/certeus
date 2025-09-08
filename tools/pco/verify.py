@@ -15,8 +15,8 @@ try:
     from jsonschema import Draft202012Validator
 except Exception:  # pragma: no cover - fallback for Windows CI invoking via `python3`
     # Attempt to locate local venv site-packages when invoked via a shim
-    import sys as _sys
     from pathlib import Path as _Path
+    import sys as _sys
 
     # Repo root (three levels up from certeus/tools/pco)
     _root = _Path(__file__).resolve().parents[3]

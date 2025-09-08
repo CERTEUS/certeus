@@ -65,4 +65,3 @@ class LexlogParser:
             "premises": ast.rules[0].premises,
             "smt_assertion": "z3.And(x, y)",
         }
-

@@ -8,4 +8,3 @@ from typing import Any
 
 def load_mapping(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
-
