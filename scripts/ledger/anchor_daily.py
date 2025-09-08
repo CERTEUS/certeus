@@ -36,9 +36,7 @@ def main() -> int:
         "created_at": _now(),
         "receipts": [],
     }
-    (out_dir / "anchor_manifest.json").write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    (out_dir / "anchor_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print("anchor: OK", (out_dir / "anchor_manifest.json").as_posix())
     return 0
 

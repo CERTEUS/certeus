@@ -24,8 +24,8 @@ def solve_and_export_lfsc(_smt2: str | None = None, *, simulate: bool = True) ->
     try:
         # cvc5 python bindings may be unavailable; keep optional
         import cvc5  # type: ignore
+
         _ = cvc5.Solver()
         return SolveResult(status="unsat", lfsc_path=None)
     except Exception:
         return SolveResult(status="unknown", lfsc_path=None)
-

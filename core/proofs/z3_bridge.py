@@ -27,6 +27,7 @@ def solve_and_export_drat(_smt2: str | None = None, *, simulate: bool = True) ->
     try:
         # Lazy import to avoid hard dependency when not available
         import z3  # type: ignore
+
         s = z3.Solver()
         s.add(z3.BoolVal(True))
         _ = s.check()
