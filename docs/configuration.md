@@ -14,4 +14,20 @@ Poniżej lista kluczowych zmiennych środowiskowych (ENV) i ich rola.
 - PROOF_BUNDLE_DIR: katalog z publicznymi bundlami PCO (domyślnie data/public_pco)
 - CER_BASE: bazowy adres Gateway (np. http://localhost:8081)
 
+## Bezpieczeństwo / Bramki
+
+- PQCRYPTO_READY: "1" jeśli środowisko ma działające PQ-crypto (auto‑detekcja ML‑DSA)
+- PQCRYPTO_REQUIRE: "1" aby egzekwować gotowość PQ w gate'ach
+- BUNKER: "1" aby wymagać bunkra/TEE w gate'ach bezpieczeństwa
+- BUNKER_ATTESTATION_PATH: ścieżka do pliku JSON z attestation
+- BUNKER_MARKER_PATH: alternatywny marker (istnienie pliku)
+- TEE_RA_REQUIRE: "1" aby wymusić poprawność struktury odcisku RA (vendor/product/measurement)
+- PROFILE/ENV: jeśli "prod" — automatycznie egzekwuje PQCRYPTO_REQUIRE w bramce bezpieczeństwa
+
+## PCO / Reproducibility
+
+- CERTEUS_IMAGE: identyfikator obrazu (np. certeus/local:dev)
+- CERTEUS_IMAGE_DIGEST: digest obrazu (np. sha256:...); jeśli brak, demo policzy deterministyczny digest
+- CERTEUS_SEED: ziarno RNG dla demo/testów
+
 Uwaga: dla środowisk CI (GitHub Actions) kroki cosign używają trybu keyless. Weryfikacja artefaktów odbywa się przez `cosign verify-blob` na parach (plik, .sig, .cert).

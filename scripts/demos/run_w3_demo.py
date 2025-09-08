@@ -68,6 +68,25 @@ def _sign_ed25519_jws(sk: Ed25519PrivateKey, payload: dict[str, Any]) -> str:
     return f"{h}.{p}.{_b64u(sig)}"
 
 
+def _image_digest_fallback() -> str:
+    env_val = os.getenv("CERTEUS_IMAGE_DIGEST")
+    if env_val:
+        return env_val
+    try:
+        import subprocess
+        sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    except Exception:
+        sha = ""
+    from hashlib import sha256 as _sha256
+    if not sha:
+        try:
+            data = (Path(__file__).resolve().parents[2] / "README.md").read_bytes()
+        except Exception:
+            data = b"certeus"
+        return "sha256:" + _sha256(data).hexdigest()
+    return "sha256:" + _sha256(sha.encode("ascii")).hexdigest()
+
+
 def run_demo() -> dict[str, Any]:
     os.environ.setdefault("STRICT_PROOF_ONLY", "1")
     os.environ.setdefault("FINE_GRAINED_ROLES", "0")
@@ -116,7 +135,7 @@ def run_demo() -> dict[str, Any]:
         ],
         "reproducibility": {
             "image": os.getenv("CERTEUS_IMAGE", "certeus/local:dev"),
-            "image_digest": os.getenv("CERTEUS_IMAGE_DIGEST", "sha256:placeholder"),
+            "image_digest": _image_digest_fallback(),
             "seed": os.getenv("CERTEUS_SEED", "0"),
         },
         "signatures": [{"role": "counsel", "by": "demo", "sig": "ok"}],

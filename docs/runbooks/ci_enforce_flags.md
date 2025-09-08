@@ -18,6 +18,14 @@ Krótki runbook dla maintainerów — jak włączyć egzekwowanie wybranych bram
   - Gate: `scripts/gates/compliance_mapping_gate.py`
   - Efekt: brak wymaganych dokumentów DPIA/ISO27001/SOC2 stanie się błędem (exit 1).
 
+- `PQCRYPTO_REQUIRE=1`
+  - Gate: `scripts/gates/pqcrypto_gate.py` oraz `scripts/gates/security_bunker_gate.py`
+  - Efekt: egzekwuje gotowość PQ-crypto (pyoqs/ML‑DSA lub `PQCRYPTO_READY=1`).
+
+- `BUNKER=1` (oraz opcjonalnie `TEE_RA_REQUIRE=1`)
+  - Gate: `scripts/gates/security_bunker_gate.py`
+  - Efekt: wymaga markerów bunkra/attestation; z `TEE_RA_REQUIRE=1` sprawdza strukturę odcisku RA.
+
 ## Jak użyć w GitHub Actions
 
 Przykład (krok w dedykowanym workflow blokującym):
