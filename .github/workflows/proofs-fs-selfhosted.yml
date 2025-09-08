@@ -9,6 +9,7 @@ on:
 jobs:
   macos_selfhosted:
     name: macOS ProofFS (self-hosted)
+    if: ${{ vars.ENABLE_SELF_HOSTED == '1' }}
     runs-on: [self-hosted, macos, macfuse]
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +23,7 @@ jobs:
 
   windows_selfhosted:
     name: Windows Dokan (self-hosted)
+    if: ${{ vars.ENABLE_SELF_HOSTED_WINDOWS == '1' }}
     runs-on: [self-hosted, windows, dokan]
     steps:
       - uses: actions/checkout@v4
