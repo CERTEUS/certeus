@@ -74,10 +74,12 @@ def _image_digest_fallback() -> str:
         return env_val
     try:
         import subprocess
+
         sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     except Exception:
         sha = ""
     from hashlib import sha256 as _sha256
+
     if not sha:
         try:
             data = (Path(__file__).resolve().parents[2] / "README.md").read_bytes()

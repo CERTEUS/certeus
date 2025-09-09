@@ -31,9 +31,7 @@ def _gen_ed25519_pair() -> tuple[bytes, bytes]:
         format=serialization.PrivateFormat.Raw,
         encryption_algorithm=serialization.NoEncryption(),
     )
-    pk_raw = sk.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
-    )
+    pk_raw = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
     return sk_raw, pk_raw
 
 
@@ -94,7 +92,7 @@ def test_public_pco_viewer_merkle_step(tmp_path: Path, monkeypatch) -> None:
     bundle_hash = canonical_bundle_hash_hex(smt2_hash, lfsc, drat)
     leaf = compute_leaf_hex(rid, bundle_hash)
     # One-step path to the left: root = H(sib || leaf)
-    sibling_hex = ("b" * 64)
+    sibling_hex = "b" * 64
     import hashlib
 
     root_bytes = hashlib.sha256(bytes.fromhex(sibling_hex) + bytes.fromhex(leaf)).digest()
