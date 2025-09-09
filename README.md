@@ -351,6 +351,16 @@ make gates-all
   └── Documentation (mkdocs, OpenAPI)
 ```
 
+### Server Smoke Test
+
+```bash
+# in-tree FastAPI TestClient e2e smoke
+pytest -q tests/e2e/test_smoke_endpoints.py
+
+# or only smoke marker
+pytest -q -k smoke_endpoints
+```
+
 ### Continuous Integration
 
 ```yaml
