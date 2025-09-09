@@ -1,7 +1,10 @@
 # CERTEUS
 ## Verifiable Cognitive Intelligence Platform
 
-![CERTEUS Logo](assets/brand/certeus-logo.svg)
+<picture>
+  <source type="image/svg+xml" srcset="assets/brand/certeus-logo.svg" />
+  <img src="assets/brand/certeus-og.png" alt="CERTEUS Logo" />
+</picture>
 
 CERTEUS is an enterprise-grade Verifiable Cognitive Intelligence platform that combines modern AI with formal verification and quantum‑inspired reasoning.
 
