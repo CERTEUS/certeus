@@ -503,4 +503,10 @@ Zbiorczy dziennik prac — krótkie wpisy po każdej zmianie (gałąź, data, sk
 - 2025-09-06 19:59:08Z [agent] (work/daily): CI green run in progress (PR #84)
   - Required: Tests, UI Smoke, Canary-Gate, truth-gates. Proofs Suite informacyjnie (Linux).
   - Auto-promotion enabled: work/daily → main when gates green.
-
+- 2025-09-09 08:30Z [ops] (main/work/daily): Konsolidacja gałęzi i stabilizacja CI
+  - Gałęzie: `main` zaktualizowany stanem `work/daily`; pozostawiono wyłącznie `work/daily` jako roboczą.
+  - CI: `Tests` deterministyczny (pip + python); cięższe `ci-gates` uruchamiane na PR/main.
+  - Bramki PQ/Bunker: spójne flagi (`PQCRYPTO_REQUIRE`, `BUNKER`, `TEE_RA_REQUIRE`, `PROFILE=prod`) — enforce w prod, report‑only gdzie sensowne w CI.
+  - RAaaS + ZKP: realne implementacje i testy (raas_service/main.py, zkp_service/stub.py, tests/*).
+  - Dema: deterministyczne `image_digest` (ENV/git/README fallback), brak placeholderów.
+  - OpenAPI: kontrakt zsynchronizowany; narzędzie sync/verify w Control (`tools/openapi-sync.sh`).

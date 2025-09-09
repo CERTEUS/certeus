@@ -124,14 +124,10 @@ def prove(data: bytes | str, sk_pem: str | None = None, *, subject: str = "zkp")
     else:
         sk = Ed25519PrivateKey.generate()
 
-    pk_hex = (
-        sk.public_key()
-        .public_bytes(
-            encoding=serialization.Encoding.Raw,
-            format=serialization.PublicFormat.Raw,
-        )
-        .hex()
-    )
+    pk_hex = sk.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
 
     payload = {
         "typ": "CERTEUS/POK",
@@ -188,6 +184,5 @@ def verify(data: bytes | str, proof: bytes) -> bool:
         return True
     except Exception:
         return False
-
 
 __all__ = ["prove", "verify", "generate_keypair", "KeyPair"]

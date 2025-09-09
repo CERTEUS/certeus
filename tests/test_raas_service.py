@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -38,3 +39,4 @@ def test_ra_verify_roundtrip() -> None:
     assert fp["vendor"]
     assert fp["product"]
     assert isinstance(fp["measurement"], str) and len(fp["measurement"]) == 64
+

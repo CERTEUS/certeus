@@ -74,11 +74,15 @@ def _post_comment(owner: str, repo: str, pr: int, token: str, text: str) -> None
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Watch all PRs in a repo until checks are green.")
+    ap = argparse.ArgumentParser(
+        description="Watch all PRs in a repo until checks are green."
+    )
     ap.add_argument("--owner", default="CERTEUS")
     ap.add_argument("--repo", default="certeus")
     ap.add_argument("--interval", type=int, default=30)
-    ap.add_argument("--comment", type=int, default=0, help="Post success comment to each PR (0/1)")
+    ap.add_argument(
+        "--comment", type=int, default=0, help="Post success comment to each PR (0/1)"
+    )
     args = ap.parse_args()
 
     repo_root = Path(__file__).resolve().parents[2]
@@ -104,7 +108,9 @@ def main() -> int:
                 sha = str(pr.get("head", {}).get("sha") or "")
                 runs = _check_runs(args.owner, args.repo, sha, token)
                 ok = _all_success(runs)
-                summary["prs"].append({"number": num, "sha": sha, "runs": len(runs), "green": ok})
+                summary["prs"].append(
+                    {"number": num, "sha": sha, "runs": len(runs), "green": ok}
+                )
                 if not ok:
                     all_ok = False
             status_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")

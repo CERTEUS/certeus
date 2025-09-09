@@ -458,6 +458,12 @@ CI integracja:
 
 Pełna lista: `docs/configuration.md`.
 
+## Gałęzie i CI (polityka)
+
+- Jedna gałąź robocza: `work/daily`.
+- `main` = stabilny stan; sync po zielonych przebiegach.
+- `Tests` (pip + python) na `work/daily` oraz `main`; cięższe `ci-gates` na PR/main.
+
 ---
 
 ## Struktura repo

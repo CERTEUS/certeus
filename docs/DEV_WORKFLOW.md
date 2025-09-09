@@ -9,13 +9,13 @@ Checklist (release/publish)
 
 - [ ] Ustaw/zweryfikuj Social preview (og.png) w `CERTEUS/certeus-public` (Settings → General → Social preview).
 
-1) Work locally on branch `work/daily`.
-2) Before end of week (W13/W14): run local lint/tests; ensure green.
-3) Commit with weekly marker: include "[week-end]" or a trailer line `weekly-promote: true`.
-4) Push to `work/daily`:
-   - Public repo: free runners run Smoke/Tests/ci-gates.
-   - Autopromotion workflow syncs `work/daily` with `main` and fast-forwards `main` if possible (no PR, no bot commits).
-5) Private repo mode: build/deploy runs on self-hosted runner via `Build-Private` workflow.
+1) Pracuj lokalnie na gałęzi `work/daily`.
+2) Uruchom lint/testy lokalnie (`ruff`, `pytest -q`) i upewnij się, że zielone.
+3) Commit/push na `work/daily`.
+4) CI:
+   - `Tests` (pip + python) bieg na `work/daily` i `main`.
+   - Cięższe `ci-gates` — na PR/main (enforce bramki).
+5) Promocja: zmerguj/synchronizuj `work/daily` → `main` po zielonych przebiegach.
 
 Public-only CI: `.github/workflows/ci_public.yml` (runs when repo is public).
 Private-only build: `.github/workflows/build_private.yml` (runs when repo is private).

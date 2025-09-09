@@ -11,19 +11,19 @@
 
 # G1 — Raport audytu (PASS/FAIL)
 
-Wynik: READY (czeka na potwierdzenie zielonych checks PR)
+Wynik: PENDING (wypełnić po audycie)
 
 ## Kryteria G1 (checklista)
-- [ ] ci‑gates zielone (Smoke ubuntu/windows + `ci-gates`) — do potwierdzenia na PR
-- [x] PCO v0.3 przyjęte + testy E2E PASS
-- [x] VALIDATE_PCO (SEC‑PCO) — report‑only włączone, bez krytycznych ostrzeżeń
-- [x] Governance: OPA roles + Governance Pack — spójne, gate PASS
-- [x] SLO/Perf: smoki PASS; próg enforce na tagach release
-- [x] Marketplace Policy Gate / Pack ABI/SemVer Gate — PASS (report‑only)
-- [x] SBOM + provenance artefakty obecne i podpisane (release)
-- [x] OpenAPI contract lint/smoke PASS (lokalnie)
-- [x] A11y/i18n baseline PASS (report‑only)
-- [x] Dokumenty governance (roadmapa, RACI, risks, VERSIONING, ADR, G1_pre_review) — kompletne
+- [ ] ci‑gates zielone (Smoke ubuntu/windows + `ci-gates`)
+- [ ] PCO v0.3 przyjęte + testy E2E PASS
+- [ ] VALIDATE_PCO (SEC‑PCO) — report‑only włączone, bez krytycznych ostrzeżeń
+- [ ] Governance: OPA roles + Governance Pack — spójne, gate PASS
+- [ ] SLO/Perf: smoki PASS; brak krytycznych regresji p95
+- [ ] Marketplace Policy Gate / Pack ABI/SemVer Gate — PASS (report‑only)
+- [ ] SBOM + provenance artefakty obecne i zweryfikowane (report‑only)
+- [ ] OpenAPI contract lint/smoke PASS
+- [ ] A11y/i18n baseline PASS
+- [ ] Dokumenty governance (roadmapa, RACI, risks, VERSIONING, ADR, G1_pre_review) — kompletne
 
 ## Artefakty i dowody
 - Raporty perf/SLO: `out/perf_bench.json`, `out/slo_metrics.json`
@@ -36,6 +36,6 @@ Wynik: READY (czeka na potwierdzenie zielonych checks PR)
 - CI local (skróty): patrz `docs/runbooks/ci_local.md`
 
 ## Podpisy
-- A0: Codex CLI (bot)  Data: 2025‑09‑08   Decyzja: READY
-- A4: Codex CLI (bot)  A5: Codex CLI (bot)  A6: Codex CLI (bot)  A9: Codex CLI (bot)
+- A0: …  Data: …   Decyzja: PASS/FAIL
+- A4: …  A5: …  A6: …  A9: …
 

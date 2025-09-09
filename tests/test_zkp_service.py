@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import os
 from certeus.services.zkp_service import stub as zkp
 
 
@@ -15,7 +16,7 @@ def test_prove_and_verify_roundtrip_str() -> None:
     kp = zkp.generate_keypair()
     msg = "hello-certeus"
     proof = zkp.prove(msg, sk_pem=kp.sk_pem, subject="ut")
-    assert isinstance(proof, bytes | bytearray)
+    assert isinstance(proof, (bytes, bytearray))
     assert zkp.verify(msg, proof) is True
 
 
@@ -33,3 +34,4 @@ def test_verify_rejects_corrupted_token() -> None:
     proof = zkp.prove(data, sk_pem=kp.sk_pem)
     bad = proof[:-2] + b"xx"
     assert zkp.verify(data, bad) is False
+
