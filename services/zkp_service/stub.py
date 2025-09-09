@@ -29,8 +29,8 @@ EN: Minimal, real ZK-like proof service based on Ed25519. It produces a JWS
 from __future__ import annotations
 
 import base64
-import json
 from dataclasses import dataclass
+import json
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization
@@ -38,7 +38,6 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
     Ed25519PublicKey,
 )
-
 
 # === MODELE / MODELS ===
 
@@ -125,7 +124,10 @@ def prove(data: bytes | str, sk_pem: str | None = None, *, subject: str = "zkp")
     else:
         sk = Ed25519PrivateKey.generate()
 
-    pk_hex = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
+    pk_hex = sk.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    ).hex()
 
     payload = {
         "typ": "CERTEUS/POK",
@@ -150,7 +152,7 @@ def verify(data: bytes | str, proof: bytes) -> bool:
       przekazanym `data`. Następnie weryfikuje podpis Ed25519.
     """
 
-    token = proof.decode("ascii") if isinstance(proof, (bytes, bytearray)) else str(proof)
+    token = proof.decode("ascii") if isinstance(proof, bytes | bytearray) else str(proof)
     try:
         parts = token.split(".")
         assert len(parts) == 3
