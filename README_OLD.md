@@ -456,7 +456,13 @@ CI integracja:
 - Adresy: `CER_BASE=http://localhost:8000` (Gateway), ProofGate domyślnie `:8085`.
 - ProofGate walidacja PCO (report-only): `VALIDATE_PCO=1` — włącza walidację rozszerzeń PCO (np. SEC‑PCO) w ProofGate bez wpływu na decyzję (loguje ostrzeżenia).
 
-Pełna lista: `docs/configuration.md` (w przygotowaniu).
+Pełna lista: `docs/configuration.md`.
+
+## Gałęzie i CI (polityka)
+
+- Jedna gałąź robocza: `work/daily`.
+- `main` = stabilny stan; sync po zielonych przebiegach.
+- `Tests` (pip + python) na `work/daily` oraz `main`; cięższe `ci-gates` na PR/main.
 
 ---
 
@@ -656,3 +662,5 @@ curl -sX POST "$CER_BASE/v1/proofgate/publish" \
 ```
 
 Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
+
+
