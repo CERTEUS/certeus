@@ -5,11 +5,16 @@
   # Allow common ENV variable names in docs without values
   regexes = [
     '''ED25519_(PRIVKEY_PEM|PUBKEY_B64URL|PUBKEY_HEX)''',
-    '''PCO_JWKS_B64URL'''
+    '''PCO_JWKS_B64URL''',
+    '''GH_APP_PRIVATE_KEY(_B64)?''',
+    '''private_key_b64'''
   ]
   # Ignore devkeys and specific generated scripts directories
   paths = [
     '''^\.devkeys/''',
     '''^clients/web/''',
-    '''^tests/security/test_key_manager\.py$'''
+    '''^tests/security/test_key_manager\.py$''',
+    '''^tools/remote-bot/gh_app_token\.sh$''',
+    '''^tools/remote-bot/setup\.sh$''',
+    '''^tools/remote-bot/pack-secret\.sh$'''
   ]
