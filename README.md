@@ -662,3 +662,5 @@ curl -sX POST "$CER_BASE/v1/proofgate/publish" \
 ```
 
 Uwaga (W9): gdy aktywny profil Bunkra (`BUNKER=1`), wymagane jest `tee.attested=true` w PCO lub nagłówek atestacji (stub). Bez tego ProofGate zwróci `ABSTAIN`.
+
+
