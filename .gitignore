@@ -79,3 +79,13 @@ Sat Sep  6 12:19:32 UTC 2025: Auto merge configuration verified
 
 # Terraform local state/providers
 **/.terraform/
+
+# Coverage reports
+.coverage
+coverage.xml
+
+
+# Coverage reports
+.coverage
+coverage.xml
+
