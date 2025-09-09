@@ -1,0 +1,120 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> services\zkp_service\stub.py:29:1
+   |
+27 |   """
+28 |
+29 | / from __future__ import annotations
+30 | |
+31 | | import base64
+32 | | import json
+33 | | from dataclasses import dataclass
+34 | | from typing import Any
+35 | |
+36 | | from cryptography.hazmat.primitives import serialization
+37 | | from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+38 | |     Ed25519PrivateKey,
+39 | |     Ed25519PublicKey,
+40 | | )
+   | |_^
+   |
+help: Organize imports
+
+E501 Line too long (123 > 120)
+   --> services\zkp_service\stub.py:128:121
+    |
+126 |         sk = Ed25519PrivateKey.generate()
+127 |
+128 |     pk_hex = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
+    |                                                                                                                         ^^^
+129 |
+130 |     payload = {
+    |
+
+UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+   --> services\zkp_service\stub.py:153:38
+    |
+151 |     """
+152 |
+153 |     token = proof.decode("ascii") if isinstance(proof, (bytes, bytearray)) else str(proof)
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+154 |     try:
+155 |         parts = token.split(".")
+    |
+help: Convert to `X | Y`
+
+F401 [*] `os` imported but unused
+  --> tests\test_raas_service.py:12:8
+   |
+11 | import json
+12 | import os
+   |        ^^
+13 | from pathlib import Path
+   |
+help: Remove unused import: `os`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests\test_zkp_service.py:9:1
+   |
+ 7 |   # +-------------------------------------------------------------+
+ 8 |
+ 9 | / from __future__ import annotations
+10 | |
+11 | | import os
+12 | | from certeus.services.zkp_service import stub as zkp
+   | |____________________________________________________^
+   |
+help: Organize imports
+
+F401 [*] `os` imported but unused
+  --> tests\test_zkp_service.py:11:8
+   |
+ 9 | from __future__ import annotations
+10 |
+11 | import os
+   |        ^^
+12 | from certeus.services.zkp_service import stub as zkp
+   |
+help: Remove unused import: `os`
+
+UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+  --> tests\test_zkp_service.py:19:12
+   |
+17 |     msg = "hello-certeus"
+18 |     proof = zkp.prove(msg, sk_pem=kp.sk_pem, subject="ut")
+19 |     assert isinstance(proof, (bytes, bytearray))
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |     assert zkp.verify(msg, proof) is True
+   |
+help: Convert to `X | Y`
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tools\agents\watch_all_green.py:2:1
+   |
+ 1 |   #!/usr/bin/env python3
+ 2 | / from __future__ import annotations
+ 3 | |
+ 4 | | import argparse
+ 5 | | import json
+ 6 | | import os
+ 7 | | import sys
+ 8 | | import time
+ 9 | | from datetime import datetime, timezone
+10 | | from pathlib import Path
+11 | | from typing import Any
+12 | | from urllib.error import HTTPError
+13 | | from urllib.request import Request, urlopen
+   | |___________________________________________^
+   |
+help: Organize imports
+
+UP017 [*] Use `datetime.UTC` alias
+  --> tools\agents\watch_all_green.py:17:25
+   |
+16 | def _now_iso() -> str:
+17 |     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+   |                         ^^^^^^^^^^^^
+   |
+help: Convert to `datetime.UTC` alias
+
+Found 9 errors.
+[*] 6 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).
