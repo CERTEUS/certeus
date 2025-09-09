@@ -8,6 +8,7 @@
 
 from pathlib import Path
 import subprocess
+import sys
 
 
 def test_verify_hello_ok():
@@ -15,5 +16,6 @@ def test_verify_hello_ok():
     pco = repo_root / "examples" / "pco" / "hello.json"
     cli = repo_root / "tools" / "pco" / "verify.py"
     assert pco.exists()
-    out = subprocess.run(["python3", str(cli), str(pco)], capture_output=True, text=True, check=True)
+    # Use sys.executable to get current Python interpreter
+    out = subprocess.run([sys.executable, str(cli), str(pco)], capture_output=True, text=True, check=True)
     assert "PCO: OK" in out.stdout
