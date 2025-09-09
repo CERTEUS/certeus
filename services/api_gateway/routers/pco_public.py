@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from core.pco.crypto import (
     b64u_encode,
@@ -92,6 +92,20 @@ class PublicPCO(BaseModel):
         int(v, 16)  # raises on invalid hex
 
         return v.lower()
+
+    # OpenAPI example for documentation
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "rid": "demo-001",
+                "smt2_hash": "d" * 64,
+                "lfsc": "(proof ...)\n",
+                "drat": None,
+                "merkle_proof": [],
+                "signature": "SGVsbG9TaWduYXR1cmU",  # base64url stub
+            }
+        }
+    )
 
 
 # === LOGIKA / LOGIC ===

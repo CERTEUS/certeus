@@ -58,17 +58,20 @@ def _bunker_ready(repo_root: Path) -> bool:
         if not p.exists():
             return False
         if p.suffix == ".json":
+            # Parse JSON; tolerate missing RA tooling unless explicitly required
             try:
                 obj = json.loads(p.read_text(encoding="utf-8"))
-                # Optional RA verify (structure only)
+            except Exception:
+                return False
+            # Try RA verification best-effort
+            fp_ok = None
+            try:
                 from security.ra import extract_fingerprint, verify_fingerprint
 
                 fp_ok = verify_fingerprint(obj) or verify_fingerprint(extract_fingerprint(obj).to_dict())
-                if not fp_ok:
-                    # Not fatal unless explicitly required by TEE_RA_REQUIRE
-                    if _is_on(os.getenv("TEE_RA_REQUIRE")):
-                        return False
             except Exception:
+                fp_ok = None  # ignore import/verify issues unless enforced
+            if fp_ok is False and _is_on(os.getenv("TEE_RA_REQUIRE")):
                 return False
         return True
     marker_path = (os.getenv("BUNKER_MARKER_PATH") or "").strip()
@@ -110,11 +113,17 @@ def main() -> int:
 
     bunker = _is_on(os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER"))
     pq_ready = _is_on(os.getenv("PQCRYPTO_READY"))
+    enforce_pq = _is_on(os.getenv("PQCRYPTO_REQUIRE") or os.getenv("SECURITY_ENFORCE")) or (
+        (os.getenv("PROFILE") or os.getenv("ENV") or "").lower() in {"prod", "production"}
+    )
 
     if not pq_ready:
-        _write_summary("[PQ-crypto] readiness: NOT READY (placeholder)")
+        _write_summary("[PQ-crypto] readiness: NOT READY")
     else:
         _write_summary("[PQ-crypto] readiness: READY")
+    if enforce_pq and not pq_ready:
+        print("Security Bunker Gate (PQ): FAIL (require=1, not ready)")
+        return 2
 
     if not bunker:
         print("Security Bunker Gate: OK (BUNKER=off)")

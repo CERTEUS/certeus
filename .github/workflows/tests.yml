@@ -76,6 +76,10 @@ jobs:
           # Prefer uv; if it fails (np. chwilowy błąd indeksu) – fallback do pip
           uv sync --dev --all-extras || python -m pip install -e ".[dev]"
 
+      - name: 📦 Ensure dev deps (pip safety net)
+        run: |
+          python -m pip install -e ".[dev]"
+
       - name: 🧬 Generate OpenAPI spec (FastAPI import)
         run: |
           mkdir -p reports
@@ -105,12 +109,12 @@ jobs:
       - name: Install test deps (uv env)
         run: |
           # Install into the uv-managed environment
-          uv pip install pytest>=8 pytest-asyncio openapi-spec-validator PyYAML
+          uv pip install pytest>=8 pytest-asyncio openapi-spec-validator PyYAML pytest-cov
 
       - name: 🧪 Pytest (JUnit report)
         run: |
           mkdir -p "$(dirname "$PYTEST_JUNIT_XML")"
-          uv run pytest -q --junitxml="$PYTEST_JUNIT_XML"
+          uv run python -m pytest -q --junitxml="$PYTEST_JUNIT_XML"
 
       - name: 📤 Upload test report
         if: always()
@@ -119,3 +123,4 @@ jobs:
           name: junit-${{ github.sha }}
           path: ${{ env.PYTEST_JUNIT_XML }}
           if-no-files-found: ignore
+

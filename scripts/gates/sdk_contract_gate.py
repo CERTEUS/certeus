@@ -59,6 +59,12 @@ def main() -> int:
     repo = Path(__file__).resolve().parents[2]
     out = repo / "out"
     out.mkdir(parents=True, exist_ok=True)
+    # Also ensure CWD/out exists for callers that expect relative output
+    cwd_out = Path.cwd() / "out"
+    try:
+        cwd_out.mkdir(parents=True, exist_ok=True)
+    except Exception:
+        pass
 
     # Import app lazily to avoid circular imports in CI
     from services.api_gateway.main import app  # type: ignore
@@ -110,7 +116,13 @@ def main() -> int:
         "ops_present": sorted(list(ops.keys()))[:20],
         "errors": errors,
     }
-    (out / "sdk_contract_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    # Write report to repo/out and mirror to CWD/out to satisfy tests that read relative path
+    report_json = json.dumps(report, indent=2)
+    (out / "sdk_contract_report.json").write_text(report_json, encoding="utf-8")
+    try:
+        (cwd_out / "sdk_contract_report.json").write_text(report_json, encoding="utf-8")
+    except Exception:
+        pass
     if errors:
         _fail("SDK Contract Gate: WARN " + json.dumps(errors))
     else:

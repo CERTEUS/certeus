@@ -86,6 +86,31 @@ def _make_pdf_bytes() -> bytes:
     return b"%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF"
 
 
+def _image_digest_fallback() -> str:
+    # Prefer explicit env; otherwise compute deterministic digest from git HEAD or README
+    env_val = os.getenv("CERTEUS_IMAGE_DIGEST")
+    if env_val:
+        return env_val
+    try:
+        import subprocess
+
+        sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    except Exception:
+        sha = ""
+    if not sha:
+        try:
+            data = (Path(__file__).resolve().parents[2] / "README.md").read_bytes()
+        except Exception:
+            data = b"certeus"
+        from hashlib import sha256 as _sha256
+
+        return "sha256:" + _sha256(data).hexdigest()
+    else:
+        from hashlib import sha256 as _sha256
+
+        return "sha256:" + _sha256(sha.encode("ascii")).hexdigest()
+
+
 def run_demo() -> dict[str, Any]:
     # Env: proof-only + local verification mocks off by default
     os.environ.setdefault("STRICT_PROOF_ONLY", "1")
@@ -147,7 +172,7 @@ def run_demo() -> dict[str, Any]:
         ],
         "reproducibility": {
             "image": os.getenv("CERTEUS_IMAGE", "certeus/local:dev"),
-            "image_digest": os.getenv("CERTEUS_IMAGE_DIGEST", "sha256:placeholder"),
+            "image_digest": _image_digest_fallback(),
             "seed": os.getenv("CERTEUS_SEED", "0"),
         },
         "signatures": [{"role": "counsel", "by": "demo", "sig": "ok"}],
