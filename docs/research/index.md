@@ -30,6 +30,6 @@
 
 ## Academic Resources
 
-- [Research Blog](https://research.certeus.io)
+- Research Blog: [research.certeus.io](https://research.certeus.io) *(coming soon)*
 - [Preprints](https://arxiv.org/search/?query=certeus)
-- [Code Artifacts](https://github.com/CERTEUS/research-artifacts)
+- Code Artifacts: [github.com/CERTEUS/research-artifacts](https://github.com/CERTEUS/research-artifacts) *(coming soon)*

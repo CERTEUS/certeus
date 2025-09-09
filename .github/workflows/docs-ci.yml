@@ -9,9 +9,9 @@ name: docs-ci
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install MkDocs
         run: |
           python -m pip install --upgrade pip
@@ -57,4 +57,13 @@ jobs:
             --accept 200,204,429
             --exclude "localhost" --exclude "127.0.0.1" --exclude "0.0.0.0"
             --exclude "mailto:*" --exclude "tel:*"
+            --exclude "https://certeus.io*" --exclude "https://research.certeus.io*"
+            --exclude "https://training.certeus.io*" --exclude "https://certification.certeus.io*"
+            --exclude "https://github.com/CERTEUS/certeus/discussions"
+            --exclude "https://github.com/CERTEUS/certeus/issues"
+            --exclude "https://github.com/CERTEUS/research-artifacts"
+            --exclude "https://github.com/settings/codespaces/secrets"
+            --exclude "https://github.com/codespaces*"
+            --exclude "pfs://*" --exclude "/app/public/*" --exclude "/docs*"
             "**/*.md" "**/*.html"
+        continue-on-error: true

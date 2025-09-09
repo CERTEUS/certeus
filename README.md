@@ -528,13 +528,13 @@ measurement = await qtmp.measure(
 #### For Enterprise
 - **Enterprise Guide**: [docs/ENTERPRISE.md](docs/ENTERPRISE.md)
 - **Support**: enterprise@certeus.io
-- **Training**: [training.certeus.io](https://training.certeus.io)
-- **Certification**: [certification.certeus.io](https://certification.certeus.io)
+- **Training**: [training.certeus.io](https://training.certeus.io) *(coming soon)*
+- **Certification**: [certification.certeus.io](https://certification.certeus.io) *(coming soon)*
 
 ### Community Channels
 
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/CERTEUS/certeus/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/CERTEUS/certeus/discussions)
+- 💡 **Feature Requests**: [GitHub Issues](https://github.com/CERTEUS/certeus/issues) (use feature request template)
 - 💬 **Community Chat**: [Discord](https://discord.gg/certeus)
 - 📧 **Security Issues**: security@certeus.io (GPG key in repo)
 - 🐦 **Updates**: [@CerteusAI](https://twitter.com/CerteusAI)
