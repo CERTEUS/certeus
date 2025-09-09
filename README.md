@@ -11,7 +11,7 @@
 
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/CERTEUS/certeus/main/docs/assets/brand/certeus-logo-simple.svg?v=1" alt="CERTEUS Logo" width="400" height="100">
+[![CERTEUS](https://img.shields.io/badge/CERTEUS-Verifiable%20Cognitive%20Intelligence-1a365d?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnoiIGZpbGw9IiM0Mjk5ZTEiLz4KICA8dGV4dCB4PSIxMiIgeT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmZmZmYiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPkM8L3RleHQ+Cjwvc3ZnPgo=)](https://github.com/CERTEUS/certeus)
 
 # CERTEUS
 ## Verifiable Cognitive Intelligence
