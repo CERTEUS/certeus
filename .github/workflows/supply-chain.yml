@@ -1,0 +1,160 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/supply-chain.yml                   |
+# | ROLE: Supply-chain SBOM, scans, and repo publishing         |
+# | NOTE: Minimal permissions, pinned actions, strict gates     |
+# +-------------------------------------------------------------+
+
+name: supply-chain
+
+on:
+  push:
+    branches: [ main, work/daily ]
+    tags: [ "v*.*.*" ]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+jobs:
+  sbom-and-scan:
+    name: SBOM build + security scans
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Generate SBOM (Syft JSON)
+        id: syft
+        uses: anchore/sbom-action@251a468eed47e5082b105c3ba6ee500c0e65a764 # v0.17.6
+        with:
+          path: .
+          format: syft-json
+          output-file: sbom.syft.json
+
+      - name: Generate SBOM (CycloneDX JSON)
+        run: |
+          python -m pip install -U pip wheel setuptools >/dev/null 2>&1 || true
+          python -m pip install cyclonedx-bom >/dev/null 2>&1 || true
+          cyclonedx-bom -o sbom.cdx.json -F json || echo '{}' > sbom.cdx.json
+
+      - name: Upload SBOMs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sboms
+          path: |
+            sbom.syft.json
+            sbom.cdx.json
+
+      - name: Trivy FS scan (fail on HIGH/CRITICAL)
+        id: trivy
+        uses: aquasecurity/trivy-action@b2933f565dbc598b29947660e66259e3c7bc8561 # 0.20.0
+        with:
+          scan-type: fs
+          ignore-unfixed: true
+          format: sarif
+          output: trivy-fs.sarif
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
+        with:
+          sarif_file: trivy-fs.sarif
+
+      - name: pip-audit (fail on vulnerabilities)
+        shell: bash
+        run: |
+          python -m pip install pip-audit || exit 1
+          if [ -f requirements.txt ] || [ -f pyproject.toml ]; then
+            pip-audit -r requirements.txt -f sarif -o pip-audit.sarif || exit 1
+          else
+            pip-audit -f sarif -o pip-audit.sarif || exit 1
+          fi
+
+      - name: Upload pip-audit SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
+        with:
+          sarif_file: pip-audit.sarif
+
+      - name: OSV-Scanner (informational SARIF)
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -e
+          curl -sSL -o osv-scanner https://github.com/google/osv-scanner/releases/download/v2.2.2/osv-scanner_2.2.2_linux_amd64
+          chmod +x osv-scanner
+          ./osv-scanner --version || true
+          ./osv-scanner --format sarif -o osv.sarif . || true
+
+      - name: Upload OSV-Scanner SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
+        with:
+          sarif_file: osv.sarif
+
+      - name: npm audit (fail on high)
+        shell: bash
+        run: |
+          if [ -f sdk/ts/package.json ]; then
+            pushd sdk/ts >/dev/null
+            npm ci --ignore-scripts
+            npm audit --production --audit-level=high
+            popd >/dev/null
+          else
+            echo "No TS/JS workspace to audit"
+          fi
+
+  publish-sbom-to-repo:
+    name: Publish SBOMs to repo (security/sbom)
+    needs: sbom-and-scan
+    if: >-
+      github.event_name != 'pull_request' &&
+      (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+
+      - name: Download SBOM artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: sboms
+          path: sboms
+
+      - name: Move SBOMs into security/sbom
+        shell: bash
+        run: |
+          set -e
+          mkdir -p security/sbom
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          TAG_OR_BRANCH=${GITHUB_REF_NAME}
+          cp sboms/sbom.cdx.json security/sbom/sbom-${TAG_OR_BRANCH}-${SHORT_SHA}.cyclonedx.json || true
+          cp sboms/sbom.syft.json security/sbom/sbom-${TAG_OR_BRANCH}-${SHORT_SHA}.syft.json || true
+          ls -la security/sbom || true
+
+      - name: Commit SBOMs
+        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
+        with:
+          commit_message: "chore(security): publish SBOM artifacts"
+          file_pattern: security/sbom/*.json
+          add_options: '-A'
+

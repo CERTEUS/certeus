@@ -30,9 +30,9 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
           cache: pip
@@ -47,6 +47,9 @@ jobs:
           python -m pip install -e .
           # Install test/dev helpers explicitly used by the suite
           python -m pip install ruff pytest pytest-xdist pytest-asyncio httpx z3-solver hypothesis openapi-spec-validator PyYAML
+      - name: Deny unpinned GitHub Actions (enforced)
+        run: |
+          python scripts/ci/deny_unpinned_actions.py
 
       - name: Load CI defaults (non-secrets)
         run: |
@@ -604,7 +607,7 @@ jobs:
 
       - name: Append RTBF + DPIA summary to PR comment
         if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const fs = require('fs');
@@ -629,7 +632,7 @@ jobs:
             });
 
       - name: Setup OPA CLI
-        uses: open-policy-agent/setup-opa@v2
+        uses: open-policy-agent/setup-opa@34a30e8a924d1b03ce2cf7abe97250bbb1f332b5 # v2.2.0
         with:
           version: latest
       - name: OPA policy tests (roles)
@@ -856,7 +859,7 @@ jobs:
 
       - name: Comment PR with perf bench
         if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const fs = require('fs');
@@ -1218,7 +1221,7 @@ jobs:
           test -f out/bench.json && echo ok > out/bench_ok.txt || true
       - name: Comment PR with SLO/Smokes/Perf
         if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const fs = require('fs');

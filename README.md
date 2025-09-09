@@ -17,6 +17,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI/CD](https://github.com/CERTEUS/certeus/actions/workflows/ci-gates.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/ci-gates.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/CERTEUS/certeus/badge)](https://securityscorecards.dev/viewer/?uri=github.com/CERTEUS/certeus)
 [![Security Rating](https://img.shields.io/badge/Security-A+-green.svg)](#security-compliance)
 [![API Coverage](https://img.shields.io/badge/API_Coverage-96%25-brightgreen.svg)](#testing-quality)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
