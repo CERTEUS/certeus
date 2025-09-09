@@ -4,7 +4,7 @@ site_url: https://certeus.io
 
 theme:
   name: material
-  logo: assets/brand/certeus-favicon.svg
+  logo: docs/assets/brand/certeus-favicon.svg
   features:
     - navigation.tabs
     - navigation.sections

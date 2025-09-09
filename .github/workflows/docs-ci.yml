@@ -36,12 +36,12 @@ jobs:
           python -m pip install mkdocs mkdocs-material
       - name: Build docs
         run: |
-          mkdocs build -f certeus/mkdocs.yml
+          mkdocs build
       - name: Upload site artifact
         uses: actions/upload-artifact@v4
         with:
           name: site-${{ github.sha }}
-          path: certeus/site
+          path: site
 
   link-check:
     name: Link Check (Markdown/HTML)
@@ -53,8 +53,8 @@ jobs:
         with:
           # Accept 200/204 and rate-limited 429; be gentle on concurrency
           args: >-
-            --no-progress --verbose --max-concurrency 8 --retry 2 --timeout 20
+            --no-progress --verbose --max-concurrency 8 --retry-wait-time 2 --timeout 20
             --accept 200,204,429
             --exclude "localhost" --exclude "127.0.0.1" --exclude "0.0.0.0"
             --exclude "mailto:*" --exclude "tel:*"
-            "certeus/**/*.md" "certeus/**/*.html"
+            "**/*.md" "**/*.html"
