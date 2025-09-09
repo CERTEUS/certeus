@@ -12,7 +12,7 @@
 <div align="center">
 
 <a href="https://github.com/CERTEUS/certeus">
-  <img src="https://img.shields.io/badge/🔐_CERTEUS-Verifiable_Cognitive_Intelligence-1a365d?style=for-the-badge&labelColor=2b77e5&color=1a365d" alt="CERTEUS - Verifiable Cognitive Intelligence" width="600">
+  <img src="https://img.shields.io/badge/CERTEUS-Verifiable_Cognitive_Intelligence-1a365d?style=for-the-badge&labelColor=2b77e5&color=1a365d" alt="CERTEUS - Verifiable Cognitive Intelligence" width="600">
 </a>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
