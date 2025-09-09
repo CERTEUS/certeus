@@ -21,14 +21,14 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI/CD](https://github.com/CERTEUS/certeus/actions/workflows/ci-gates.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/ci-gates.yml)
-[![Security Rating](https://img.shields.io/badge/Security-A+-green.svg)](#security--compliance)
-[![API Coverage](https://img.shields.io/badge/API_Coverage-96%25-brightgreen.svg)](#testing--quality)
+[![Security Rating](https://img.shields.io/badge/Security-A+-green.svg)](#security-compliance)
+[![API Coverage](https://img.shields.io/badge/API_Coverage-96%25-brightgreen.svg)](#testing-quality)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue.svg)](https://typescriptlang.org)
 
 **Dowód, nie opinia** • Production-ready enterprise cognitive intelligence platform with formal verification and quantum-inspired algorithms.
 
-[🚀 Quick Start](#quick-start) • [📚 Documentation](#documentation) • [🔧 API Reference](#api-reference) • [🛡️ Security](#security--compliance) • [🌍 Community](#community)
+[🚀 Quick Start](#quick-start) • [📚 Documentation](#documentation) • [🔧 API Reference](#api-reference) • [🛡️ Security](#security-compliance) • [🌍 Community](#community)
 
 </div>
 
