@@ -10,5 +10,6 @@
   # Ignore devkeys and specific generated scripts directories
   paths = [
     '''^\.devkeys/''',
-    '''^clients/web/'''
+    '''^clients/web/''',
+    '''^tests/security/test_key_manager\.py$'''
   ]
