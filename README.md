@@ -456,7 +456,7 @@ CI integracja:
 - Adresy: `CER_BASE=http://localhost:8000` (Gateway), ProofGate domyślnie `:8085`.
 - ProofGate walidacja PCO (report-only): `VALIDATE_PCO=1` — włącza walidację rozszerzeń PCO (np. SEC‑PCO) w ProofGate bez wpływu na decyzję (loguje ostrzeżenia).
 
-Pełna lista: `docs/configuration.md` (w przygotowaniu).
+Pełna lista: `docs/configuration.md`.
 
 ---
 

@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    # Gate self-hosted macOS job to avoid queueing when runner is unavailable
+    if: ${{ vars.ENABLE_SELF_HOSTED == '1' }}
     runs-on: [self-hosted, macos, macfuse]
     steps:
       - name: Checkout

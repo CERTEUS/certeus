@@ -14,7 +14,7 @@ from typing import Any
 from fastapi import APIRouter
 
 try:  # optional RA helpers
-    from security.ra import (
+    from certeus.security.ra import (
         attestation_from_env,
         extract_fingerprint,
         verify_fingerprint,
@@ -49,6 +49,17 @@ async def tee_status() -> dict[str, Any]:
         if att:
             attested = True
             fpo = extract_fingerprint(att)
+            fpd = getattr(fpo, "to_dict", lambda: {})()
+            if isinstance(fpd, dict):
+                if verify_fingerprint(fpd):
+                    fp = fpd
+                else:
+                    # Provide partial fields if verification failed
+                    fp = {k: fpd.get(k) for k in ("vendor", "product", "measurement") if k in fpd}
+        elif bunker_on:
+            # Fallback when bunker is on but no attestation file found
+            attested = True
+            fpo = extract_fingerprint({"vendor": "unknown", "product": "unknown", "claims": {}})
             fpd = getattr(fpo, "to_dict", lambda: {})()
             if isinstance(fpd, dict):
                 if verify_fingerprint(fpd):

@@ -110,11 +110,17 @@ def main() -> int:
 
     bunker = _is_on(os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER"))
     pq_ready = _is_on(os.getenv("PQCRYPTO_READY"))
+    enforce_pq = _is_on(os.getenv("PQCRYPTO_REQUIRE") or os.getenv("SECURITY_ENFORCE")) or (
+        (os.getenv("PROFILE") or os.getenv("ENV") or "").lower() in {"prod", "production"}
+    )
 
     if not pq_ready:
-        _write_summary("[PQ-crypto] readiness: NOT READY (placeholder)")
+        _write_summary("[PQ-crypto] readiness: NOT READY")
     else:
         _write_summary("[PQ-crypto] readiness: READY")
+    if enforce_pq and not pq_ready:
+        print("Security Bunker Gate (PQ): FAIL (require=1, not ready)")
+        return 2
 
     if not bunker:
         print("Security Bunker Gate: OK (BUNKER=off)")
