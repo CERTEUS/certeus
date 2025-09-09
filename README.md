@@ -11,7 +11,7 @@
 
 <div align="center">
 
-![CERTEUS Logo](docs/assets/brand/certeus-logo.svg)
+<img src="https://raw.githubusercontent.com/CERTEUS/certeus/main/docs/assets/brand/certeus-logo-simple.svg?v=1" alt="CERTEUS Logo" width="400" height="100">
 
 # CERTEUS
 ## Verifiable Cognitive Intelligence
