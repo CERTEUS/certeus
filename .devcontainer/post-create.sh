@@ -17,7 +17,7 @@ set -euo pipefail
 # 1) Virtualenv + narzędzia
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install -U pip wheel setuptools
+python -m pip install -U pip wheel setuptools ruff pytest pytest-cov black isort mypy jsonschema cryptography fastapi uvicorn jupyterlab ipykernel
 
 # 2) Zależności projektu dokładnie jak w CI
 #    (instalacja edytowalna + requirements)

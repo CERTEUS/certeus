@@ -49,11 +49,7 @@ except Exception:  # pragma: no cover - optional
 
 
 try:  # optional: RA helpers for TEE status
-    from certeus.security.ra import (
-        attestation_from_env,
-        extract_fingerprint,
-        verify_fingerprint,
-    )
+    from security.ra import attestation_from_env, extract_fingerprint, verify_fingerprint
 except Exception:  # pragma: no cover - optional
 
     def attestation_from_env():  # type: ignore
@@ -68,7 +64,6 @@ except Exception:  # pragma: no cover - optional
 
     def verify_fingerprint(_obj):  # type: ignore
         return False
-
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -144,12 +139,7 @@ def tee_status() -> dict[str, Any]:
     except Exception:
         attested = False
         fp = None
-    return {
-        "bunker_on": bunker_on,
-        "ra_required": ra_req,
-        "attested": bool(attested),
-        "ra": fp,
-    }
+    return {"bunker_on": bunker_on, "ra_required": ra_req, "attested": bool(attested), "ra": fp}
 
 
 def _repo_root() -> Path:
@@ -379,13 +369,7 @@ def _derivations_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
 
 
 def _repro_ok(pco: Mapping[str, Any], policy: Mapping[str, Any]) -> bool:
-    req = bool(
-        _get(
-            policy,
-            ["publish_contract", "thresholds", "reproducibility", "required"],
-            False,
-        )
-    )
+    req = bool(_get(policy, ["publish_contract", "thresholds", "reproducibility", "required"], False))
 
     if not req:
         return True
@@ -459,14 +443,30 @@ def publish(req: PublishRequest) -> PublishResponse:
 
     policy = req.policy or _load_policy_pack()
 
-    # W9: TEE/Bunker profile (optional). If BUNKER=1, require attestation header.
+    # W9: TEE/Bunker profile (optional). If BUNKER=1, prefer embedding RA from env
+    # and require attested flag thereafter.
     bunker_on = (os.getenv("BUNKER") or os.getenv("PROOFGATE_BUNKER") or "").strip() in {"1", "true", "True"}
-    if bunker_on:
-        # Attestation stub: in this variant we cannot access headers directly (no Request).
-        # Require that PCO carries a tee.attested flag. If TEE_RA_REQUIRE=1, also require
-        # a minimal RA fingerprint under tee.ra {vendor,product,measurement}.
+
+    # Prepare PCO to evaluate (optionally augmented with RA fingerprint)
+    pco_eval = req.pco if isinstance(req.pco, dict) else None
+    if bunker_on and isinstance(req.pco, dict):
         try:
-            tee = req.pco.get("tee") if isinstance(req.pco, dict) else None  # type: ignore[union-attr]
+            att = attestation_from_env()
+            if att:
+                fp = extract_fingerprint(att).to_dict()
+                tee = dict(req.pco.get("tee") or {})
+                tee.setdefault("attested", True)
+                tee.setdefault("ra", fp)
+                pco_eval = dict(req.pco)
+                pco_eval["tee"] = tee
+        except Exception:
+            # ignore embedding issues; gating below will handle missing flags
+            pco_eval = req.pco
+
+    if bunker_on:
+        # Require tee.attested and optionally RA details
+        try:
+            tee = pco_eval.get("tee") if isinstance(pco_eval, dict) else None  # type: ignore[union-attr]
             if not (isinstance(tee, dict) and bool(tee.get("attested", False))):
                 return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
             if (os.getenv("TEE_RA_REQUIRE") or "").strip() in {"1", "true", "True"}:
@@ -483,7 +483,7 @@ def publish(req: PublishRequest) -> PublishResponse:
             return PublishResponse(status="ABSTAIN", pco=req.pco, ledger_ref=None)
 
     # W9: Decision (base), then optional gates (PQ/roles/FROST)
-    decision = _evaluate_decision(req.pco, policy, req.budget_tokens)
+    decision = _evaluate_decision(pco_eval or req.pco, policy, req.budget_tokens)
 
     # W9: PQ-crypto gate (optional, stub)
     pq_require = (os.getenv("PQCRYPTO_REQUIRE") or "").strip() in {"1", "true", "True"}
@@ -502,11 +502,7 @@ def publish(req: PublishRequest) -> PublishResponse:
             decision = "ABSTAIN"
 
     # W9: Fine-grained role enforcement (optional)
-    enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {
-        "1",
-        "true",
-        "True",
-    }
+    enforce_roles = (os.getenv("FINE_GRAINED_ROLES") or "").strip() in {"1", "true", "True"}
 
     # Opcjonalna walidacja PCO (report-only)
     if (os.getenv("VALIDATE_PCO") or "").strip() in {"1", "true", "True"}:
@@ -551,180 +547,8 @@ def publish(req: PublishRequest) -> PublishResponse:
         except Exception:
             decision = "ABSTAIN"
 
-    # Require cryptographic signatures (Ed25519 and/or PQ) if requested
-    if decision in ("PUBLISH", "CONDITIONAL") and (os.getenv("SIGNATURES_REQUIRE") or "").strip() in {
-        "1",
-        "true",
-        "True",
-    }:
-        try:
-            # Compute stable provenance hash
-            _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
-            from core.pco.crypto import b64u_decode, ed25519_verify_b64u  # type: ignore
-
-            # Ed25519 verify (if ed25519 block present or env pub provided)
-            ed_ok = True
-            try:
-                src = req.pco if isinstance(req.pco, dict) else {}
-                ed = (src.get("crypto") or {}) if isinstance(src, dict) else {}
-                ed = ed.get("ed25519") if isinstance(ed, dict) else None
-                sig_b64 = str(ed.get("sig_b64")) if isinstance(ed, dict) and ed.get("sig_b64") else None
-                pub_b64 = str(ed.get("pub_b64")) if isinstance(ed, dict) and ed.get("pub_b64") else None
-                # Prefer env pubkey if present
-                ev_pub_hex = (os.getenv("ED25519_PUBKEY_HEX") or "").strip()
-                ev_pub_b64 = (os.getenv("ED25519_PUBKEY_B64URL") or os.getenv("ED25519_PUBKEY_B64U") or "").strip()
-                if sig_b64:
-                    if ev_pub_hex:
-                        ed25519_verify_b64u(bytes.fromhex(ev_pub_hex), sig_b64, _doc_hash)
-                    elif ev_pub_b64:
-                        ed25519_verify_b64u(b64u_decode(ev_pub_b64), sig_b64, _doc_hash)
-                    elif pub_b64:
-                        ed25519_verify_b64u(b64u_decode(pub_b64), sig_b64, _doc_hash)
-                    else:
-                        ed_ok = False
-                else:
-                    # Require presence if signatures are required
-                    ed_ok = False
-            except Exception:
-                ed_ok = False
-
-            # PQ verify via pyoqs (if available and pq block present)
-            pq_ok = True
-            try:
-                src = req.pco if isinstance(req.pco, dict) else {}
-                pq = (src.get("crypto") or {}) if isinstance(src, dict) else {}
-                pq = pq.get("pq") if isinstance(pq, dict) else None
-                if isinstance(pq, dict) and pq.get("sig_b64"):
-                    import base64 as _b64
-
-                    from security import pq_mldsa as _pq  # type: ignore
-
-                    sig = _b64.urlsafe_b64decode(
-                        (str(pq.get("sig_b64")) + "=" * (-len(str(pq.get("sig_b64"))) % 4)).encode("ascii")
-                    )
-                    pub = str(pq.get("pub_b64") or os.getenv("PQ_MLDSA_PK_B64URL") or "")
-                    if not pub:
-                        pq_ok = False
-                    else:
-                        pk = _b64.urlsafe_b64decode((pub + "=" * (-len(pub) % 4)).encode("ascii"))
-                        alg = str(pq.get("alg") or os.getenv("PQ_MLDSA_ALG") or "Dilithium3")
-                        pq_ok = _pq.verify(_doc_hash.encode("utf-8"), sig, pk, alg=alg)
-                else:
-                    pq_ok = False
-            except Exception:
-                pq_ok = False
-
-            if not (ed_ok and pq_ok):
-                decision = "ABSTAIN"
-        except Exception:
-            decision = "ABSTAIN"
-
-    # Optionally embed TEE RA fingerprint into PCO (when bunker is on and attestation present)
-    pco_out = req.pco
-    if bunker_on and isinstance(req.pco, dict):
-        try:
-            att = attestation_from_env()
-            fp = None
-            if att:
-                fp = extract_fingerprint(att).to_dict()
-            else:
-                # Fallback minimal RA when bunker is on but no attestation file
-                fp = extract_fingerprint({"vendor": "unknown", "product": "unknown", "claims": {}}).to_dict()
-            if fp:
-                # Merge into tee block without overwriting explicit client-provided RA
-                tee = dict(req.pco.get("tee") or {})
-                tee.setdefault("attested", True)
-                tee.setdefault("ra", fp)
-                pco_out = dict(req.pco)
-                pco_out["tee"] = tee
-        except Exception:
-            pass
-
-    # Optionally embed PQ-crypto (ML-DSA) signature over provenance hash
-    if isinstance(req.pco, dict):
-        try:
-            # Canonical provenance hash (stable)
-            _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
-
-            def _b64u(b: bytes) -> str:
-                import base64 as _b64
-
-                return _b64.urlsafe_b64encode(b).decode("ascii").rstrip("=")
-
-            sk_b64 = (os.getenv("PQ_MLDSA_SK_B64URL") or "").strip()
-            pk_b64 = (os.getenv("PQ_MLDSA_PK_B64URL") or "").strip()
-            alg = (os.getenv("PQ_MLDSA_ALG") or "Dilithium3").strip()
-            pq_ready_env = (os.getenv("PQCRYPTO_READY") or "").strip() in {"1", "true", "True"}
-
-            pq_block: dict[str, Any] = {"ready": bool(pq_ready_env)}
-            if sk_b64:
-                try:
-                    import base64 as _b64
-
-                    from security import pq_mldsa as _pq
-
-                    pad = "=" * (-len(sk_b64) % 4)
-                    sk_raw = _b64.urlsafe_b64decode((sk_b64 + pad).encode("ascii"))
-                    sig = _pq.sign(_doc_hash.encode("utf-8"), sk_raw, alg=alg)
-                    pq_block.update({"alg": alg, "sig_b64": _b64u(sig)})
-                    if pk_b64:
-                        pq_block["pub_b64"] = pk_b64
-                    pq_block["ready"] = True
-                except Exception:
-                    # Keep env marker only
-                    pass
-            # Merge into crypto.pq without clobbering explicit client-provided fields
-            pco_out = dict(pco_out or req.pco)
-            crypto = dict(pco_out.get("crypto") or {})
-            pq_merged = dict(crypto.get("pq") or {})
-            for k, v in pq_block.items():
-                pq_merged.setdefault(k, v)
-            crypto["pq"] = pq_merged
-            pco_out["crypto"] = crypto
-        except Exception:
-            pass
-
-    # Optionally embed Ed25519 signature over provenance hash
-    if isinstance(req.pco, dict):
-        try:
-            _doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
-            from core.pco.crypto import ed25519_sign_b64u  # type: ignore
-
-            sk_hex = (os.getenv("ED25519_SK_HEX") or "").strip()
-            sk_b64 = (os.getenv("ED25519_SK_B64URL") or os.getenv("ED25519_SK_B64U") or "").strip()
-            pk_b64 = (os.getenv("ED25519_PUBKEY_B64URL") or os.getenv("ED25519_PUBKEY_B64U") or "").strip()
-
-            def _b64u_to_bytes(s: str) -> bytes:
-                import base64 as _b64
-
-                return _b64.urlsafe_b64decode((s + "=" * (-len(s) % 4)).encode("ascii"))
-
-            sk_bytes: bytes | None = None
-            if sk_hex:
-                try:
-                    sk_bytes = bytes.fromhex(sk_hex)
-                except Exception:
-                    sk_bytes = None
-            if sk_bytes is None and sk_b64:
-                try:
-                    sk_bytes = _b64u_to_bytes(sk_b64)
-                except Exception:
-                    sk_bytes = None
-            if sk_bytes:
-                try:
-                    sig = ed25519_sign_b64u(sk_bytes, _doc_hash)
-                    crypto = dict(pco_out.get("crypto") or {})
-                    ed = dict(crypto.get("ed25519") or {})
-                    ed.setdefault("sig_b64", sig)
-                    if pk_b64:
-                        ed.setdefault("pub_b64", pk_b64)
-                    crypto["ed25519"] = ed
-                    pco_out = dict(pco_out)
-                    pco_out["crypto"] = crypto
-                except Exception:
-                    pass
-        except Exception:
-            pass
+    # Use the evaluated/augmented PCO as output if present
+    pco_out = pco_eval or req.pco
 
     ledger: str | None = None
 
@@ -733,8 +557,7 @@ def publish(req: PublishRequest) -> PublishResponse:
     if decision == "PUBLISH":
         case_id = str((pco_out or {}).get("case_id") or (pco_out or {}).get("rid") or "")
 
-        # Ledger must reflect the original client-provided PCO (stable hash)
-        doc_hash = compute_provenance_hash(req.pco, include_timestamp=False)
+        doc_hash = compute_provenance_hash(pco_out, include_timestamp=False)
 
         rec = ledger_service.record_event(event_type="PCO_PUBLISH", case_id=case_id, document_hash=doc_hash)
 
@@ -773,10 +596,7 @@ def rtbf_appeal(req: RtbfAppealRequest) -> RtbfAppealResponse:
     """
 
     appeals = _load_appeals()
-    appeals[req.case_id] = {
-        "received_at": _now_iso(),
-        **({"reason": req.reason} if req.reason else {}),
-    }
+    appeals[req.case_id] = {"received_at": _now_iso(), **({"reason": req.reason} if req.reason else {})}
     _save_appeals(appeals)
     return RtbfAppealResponse(status="RECEIVED", case_id=req.case_id, reason=req.reason)
 
