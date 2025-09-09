@@ -11,10 +11,9 @@
 
 <div align="center">
 
-[![CERTEUS](https://img.shields.io/badge/CERTEUS-Verifiable%20Cognitive%20Intelligence-1a365d?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnoiIGZpbGw9IiM0Mjk5ZTEiLz4KICA8dGV4dCB4PSIxMiIgeT0iMTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNmZmZmZmYiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPkM8L3RleHQ+Cjwvc3ZnPgo=)](https://github.com/CERTEUS/certeus)
-
-# CERTEUS
-## Verifiable Cognitive Intelligence
+<a href="https://github.com/CERTEUS/certeus">
+  <img src="https://img.shields.io/badge/🔐_CERTEUS-Verifiable_Cognitive_Intelligence-1a365d?style=for-the-badge&labelColor=2b77e5&color=1a365d" alt="CERTEUS - Verifiable Cognitive Intelligence" width="600">
+</a>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![CI/CD](https://github.com/CERTEUS/certeus/actions/workflows/ci-gates.yml/badge.svg)](https://github.com/CERTEUS/certeus/actions/workflows/ci-gates.yml)
