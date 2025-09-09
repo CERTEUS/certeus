@@ -63,6 +63,11 @@
 - Ewentualne wzmocnienie gate’ów (Proof Gate) o twarde warunki dla PQ/DP w zależności od zmiennych repo.
 - Dalsze optymalizacje p95 i paneli SRE.
 
+### G1 — status i decyzje
+
+- Status: READY — komplet artefaktów i checklist wg A0–A9. Ci‑gates skonfigurowane (część kroków enforce na tagach), testy lokalne zielone. Wymagane: potwierdzenie zielonych checks na PR do `main`.
+- After‑G1: podnieść progi coverage dla krytycznych modułów; rozważyć enforce wybranych SLO w ścieżkach release.
+
 ## Status W14 (UX/A11y/i18n/Marketplace) — A8
 
 - A11y/i18n: baseline smoke włączone w `ci-gates` (report-only) i testy zielone.

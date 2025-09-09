@@ -105,12 +105,23 @@ jobs:
       - name: Install test deps (uv env)
         run: |
           # Install into the uv-managed environment
-          uv pip install pytest>=8 pytest-asyncio openapi-spec-validator PyYAML
+          uv pip install pytest>=8 pytest-asyncio openapi-spec-validator PyYAML pytest-cov
 
       - name: 🧪 Pytest (JUnit report)
         run: |
           mkdir -p "$(dirname "$PYTEST_JUNIT_XML")"
-          uv run pytest -q --junitxml="$PYTEST_JUNIT_XML"
+          # Include lightweight coverage with minimal threshold for critical modules
+          uv run pytest -q --junitxml="$PYTEST_JUNIT_XML" \
+            --cov=services --cov=core --cov=scripts --cov-report=term --cov-report=xml \
+            --cov-fail-under=20
+
+      - name: 📤 Upload coverage.xml
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml-${{ github.sha }}
+          path: coverage.xml
+          if-no-files-found: ignore
 
       - name: 📤 Upload test report
         if: always()
