@@ -32,11 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, Field, field_validator
-try:  # Pydantic v2
-    from pydantic import ConfigDict  # type: ignore
-except Exception:  # pragma: no cover - fallback for older tooling
-    ConfigDict = dict  # type: ignore[assignment]
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from core.pco.crypto import (
     b64u_encode,
