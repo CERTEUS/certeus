@@ -20,7 +20,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Read AssetRev from PROVENANCE.md
         id: rev
         run: |
@@ -41,4 +41,3 @@ jobs:
           gh issue create \
             -t "Asset health failed" \
             -b "Hashed assets not 200/301 for rev=${{ steps.rev.outputs.rev }}"
-

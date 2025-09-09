@@ -171,7 +171,7 @@ jobs:
           popd >/dev/null
       - name: Build Go SDK (report-only)
         continue-on-error: true
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5
         with:
           go-version: '1.21.x'
       - name: Go build (report-only)
@@ -325,7 +325,7 @@ jobs:
       - name: Gitleaks (secrets scan)
         if: ${{ secrets.GITLEAKS_LICENSE != '' }}
         continue-on-error: true
-        uses: zricethezav/gitleaks-action@v2.3.7
+        uses: zricethezav/gitleaks-action@83373cf2f8c4db6e24b41c1a9b086bb9619e9cd3 # v2.3.7
         with:
           args: detect --verbose --redact --no-banner --exit-code 1 -c .gitleaks.toml
       - name: Gitleaks (skipped — no license)
@@ -341,7 +341,7 @@ jobs:
           python -m pytest -q --junitxml=out/tests_junit.xml
       - name: Upload Tests JUnit
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: junit-ci-gates-${{ github.sha }}
           path: out/tests_junit.xml
@@ -361,7 +361,7 @@ jobs:
           mkdir -p out && echo ok > out/smokes_ok.txt
       - name: Upload CFE smoke artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: cfe-smoke-${{ github.sha }}
           path: out/cfe_smoke.json
@@ -419,7 +419,7 @@ jobs:
           echo ok > out/boundary_trend_ok.txt
       - name: Upload boundary snapshot
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: boundary-snapshot-${{ github.sha }}
           path: out/boundary_snapshot.json
@@ -538,14 +538,14 @@ jobs:
 
       - name: Upload perf report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: perf-bench-${{ github.sha }}
           path: out/perf_bench.json
 
       - name: Upload snapshot artifacts (coverage/tunneling/corr/devices)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: snapshots-${{ github.sha }}
           path: |
