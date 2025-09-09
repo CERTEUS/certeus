@@ -1,59 +1,43 @@
 # CERTEUS
+## Verifiable Cognitive Intelligence Platform
 
-> Dowód, nie opinia.
-> Verifiable Cognitive Intelligence: weryfikowalność, polityki publikacji, odpowiedzialna automatyzacja.
+![CERTEUS Logo](assets/brand/certeus-logo.svg)
 
-## Po co?
-- Zaufanie: twierdzenia z dowodem i polityką.
-- Kontrola: publiczny front jest lekki; pełna moc działa w prywatnym core.
-- Higiena: publikację poprzedza policy-scan, link-check i health.
+CERTEUS is an enterprise-grade Verifiable Cognitive Intelligence platform that combines modern AI with formal verification and quantum‑inspired reasoning.
 
-## Co tu znajdziesz?
-- [API — overview](api/overview.md) — kierunek (bez pełnej specyfikacji).
-- PROVENANCE — z jakiego SHA i kiedy powstał mirror.
-- Roadmap — najbliższe kroki.
-- [90 dni — Final Status](reports/90dni_final_status.md)
-- [90 dni — Raport pokrycia](reports/90dni_coverage_report.md)
-- [90 dni — Status matrix](reports/90dni_status_matrix.md)
+## Highlights
 
-### Motto
-"Nie gonimy za szumem. Publikujemy to, co możemy podpisać." — Radosław Skarżycki / CERTEUS
+- Proof‑Only outputs with cryptographic verification
+- Zero‑trust security, PQ‑crypto ready, SLSA‑3 supply chain
+- Observability with SLO metrics and distributed tracing
+- Pluggable domain packs: Law, Finance, Security, Medicine, Code
 
----
+## Get Started
 
-CERTEUS Documentation (EN)
+- Quick Start: [QUICKSTART.md](QUICKSTART.md)
+- Concepts: [CONCEPTS.md](CONCEPTS.md)
+- Architecture: [ARCHITECTURE.md](ARCHITECTURE.md)
 
-Welcome to the CERTEUS docs.
+## Develop & Deploy
 
-- API: see API section (rendered from OpenAPI).
-- Observability: quickstart and dashboards.
+- Development Guide: [DEVELOPMENT.md](DEVELOPMENT.md)
+- Deployment: [DEPLOYMENT.md](DEPLOYMENT.md)
+- SDKs Overview: [SDK.md](SDK.md)
+- API Reference: [api/openapi.md](api/openapi.md)
 
-## Run Locally (Quickstart)
+## Operations
 
-```
-python -m venv .venv && source .venv/bin/activate
-python -m pip install -U pip wheel setuptools fastapi uvicorn ruff pytest jsonschema cryptography
-python -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
-```
+- Security: [SECURITY.md](SECURITY.md)
+- Monitoring: [MONITORING.md](MONITORING.md)
+- Runbooks: [runbooks/](runbooks/)
+- Troubleshooting: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-Windows (PowerShell):
+## Legal & Enterprise
 
-```
-py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1
-.\.venv\Scripts\python.exe -m pip install -U pip wheel setuptools fastapi uvicorn ruff pytest jsonschema cryptography
-.\.venv\Scripts\python.exe -m uvicorn services.api_gateway.main:app --host 127.0.0.1 --port 8000
-```
+- SLA: [sla.md](sla.md)
+- ToS: [legal/ToS.md](legal/ToS.md)
+- DPA: [legal/DPA.md](legal/DPA.md)
 
-Open Cockpit UI:
+—
 
-- Geometry: `/app/public/geometry.html`
-- Quantum: `/app/public/quantum.html`
- - ChatOps: `/app/public/chatops.html`
- - MailOps: `/app/public/mailops.html`
- - FIN Dashboard: `/app/public/fin_dashboard.html`
- - LEX Generator: `/app/public/lex_generator.html`
-
-Smoke tests:
-
-- PowerShell: `pwsh -File scripts/smoke_api.ps1`
-- Bash: `bash scripts/smoke_api.sh`
+For more, visit the repository on GitHub: https://github.com/CERTEUS/certeus

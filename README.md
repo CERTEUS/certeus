@@ -11,7 +11,7 @@
 
 <div align="center">
 
-![CERTEUS Logo](docs/assets/brand/certeus-og.png)
+![CERTEUS Logo](docs/assets/brand/certeus-logo.svg)
 
 # CERTEUS
 ## Verifiable Cognitive Intelligence

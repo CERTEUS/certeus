@@ -1,0 +1,67 @@
+<!--
++-------------------------------------------------------------+
+|                          CERTEUS                            |
++-------------------------------------------------------------+
+| FILE: certeus-logo.svg                                    |
+| ROLE: Enterprise Big Tech grade logo for GitHub README     |
++-------------------------------------------------------------+
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200" viewBox="0 0 800 200">
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a365d;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2b77e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4299e1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e53e3e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f56500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffd700;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="200" fill="#0f1419" rx="20"/>
+  
+  <!-- CERTEUS Icon -->
+  <g transform="translate(60, 50)">
+    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#gradient1)" stroke-width="4" opacity="0.8"/>
+    <circle cx="50" cy="50" r="25" fill="url(#gradient1)" opacity="0.6"/>
+    <path d="M 35 50 L 45 60 L 65 40" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+    <circle cx="30" cy="30" r="3" fill="url(#gradient2)" opacity="0.8"/>
+    <circle cx="70" cy="30" r="3" fill="url(#gradient2)" opacity="0.8"/>
+    <circle cx="30" cy="70" r="3" fill="url(#gradient2)" opacity="0.8"/>
+    <circle cx="70" cy="70" r="3" fill="url(#gradient2)" opacity="0.8"/>
+  </g>
+  
+  <!-- CERTEUS Text -->
+  <g transform="translate(180, 50)">
+    <text x="0" y="40" font-family="'Segoe UI', Arial, sans-serif" 
+          font-size="48" font-weight="700" fill="url(#gradient1)" filter="url(#glow)">CERTEUS</text>
+    <text x="0" y="70" font-family="'Segoe UI', Arial, sans-serif" 
+          font-size="18" font-weight="400" fill="#a0aec0">Verifiable Cognitive Intelligence Platform</text>
+    <text x="0" y="95" font-family="'Segoe UI', Arial, sans-serif" 
+          font-size="14" font-weight="300" fill="#718096">Enterprise-Grade • Quantum-Inspired • Zero-Trust</text>
+  </g>
+  
+  <!-- Enterprise badge -->
+  <g transform="translate(650, 20)">
+    <rect x="0" y="0" width="130" height="30" rx="15" fill="url(#gradient2)" opacity="0.9"/>
+    <text x="65" y="20" text-anchor="middle" font-family="'Segoe UI', sans-serif" 
+          font-size="12" font-weight="600" fill="#ffffff">ENTERPRISE</text>
+  </g>
+  
+  <!-- Version badge -->
+  <g transform="translate(650, 60)">
+    <rect x="0" y="0" width="130" height="25" rx="12" fill="#2d3748" stroke="url(#gradient1)" stroke-width="1"/>
+    <text x="65" y="17" text-anchor="middle" font-family="'Segoe UI', sans-serif" 
+          font-size="11" font-weight="500" fill="#e2e8f0">v1.0.0-RC1</text>
+  </g>
+</svg>

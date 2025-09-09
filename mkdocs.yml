@@ -1,26 +1,56 @@
-# +-------------------------------------------------------------+
-# |                          CERTEUS                            |
-# +-------------------------------------------------------------+
-# | FILE: mkdocs.yml                                            |
-# | ROLE: Docs site config (Material)                           |
-# | PLIK: mkdocs.yml                                            |
-# | ROLA: Konfiguracja strony dokumentacji                      |
-# +-------------------------------------------------------------+
+site_name: CERTEUS Documentation
+site_description: Enterprise-Grade Verifiable Cognitive Intelligence Platform
+site_url: https://certeus.io
 
-site_name: CERTEUS Docs
-site_url: https://CERTEUS.github.io/certeus
 theme:
   name: material
-  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.follow
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: blue
+      accent: cyan
+
 nav:
   - Home: index.md
+  - Getting Started:
+      - Quick Start: QUICKSTART.md
+      - Concepts: CONCEPTS.md
+  - Architecture: ARCHITECTURE.md
+  - Deployment: DEPLOYMENT.md
+  - SDK:
+      - Overview: SDK.md
+      - Python: sdk/python.md
+      - TypeScript: sdk/typescript.md
+      - Go: sdk/go.md
   - API:
-      - Overview: api/overview.md
-      - Spec (OpenAPI): api/openapi.md
-  - Runbooks:
-      - CI Local: runbooks/ci_local.md
+      - Reference: api/openapi.md
+      - Endpoints: ENDPOINTS.md
+  - Security: SECURITY.md
+  - Monitoring: MONITORING.md
+  - Runbooks: runbooks/index.md
+  - Tutorials: tutorials/index.md
+  - Enterprise: ENTERPRISE.md
+  - Troubleshooting: TROUBLESHOOTING.md
+
 plugins:
   - search
+
 markdown_extensions:
   - admonition
-  - toc
+  - attr_list
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/CERTEUS/certeus
+
+copyright: |
+  &copy; 2024 CERTEUS Inc.
