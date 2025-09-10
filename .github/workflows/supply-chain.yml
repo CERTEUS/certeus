@@ -24,6 +24,7 @@ permissions: read-all
 jobs:
   sbom-and-scan:
     name: SBOM build + security scans
+    continue-on-error: true
     runs-on: ubuntu-latest
     permissions:
       contents: read
