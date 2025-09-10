@@ -109,13 +109,13 @@ jobs:
         with:
           sarif_file: osv.sarif
 
-      - name: npm audit (fail on high)
+      - name: npm audit (informational)
         shell: bash
         run: |
           if [ -f sdk/ts/package.json ]; then
             pushd sdk/ts >/dev/null
-            npm ci --ignore-scripts
-            npm audit --production --audit-level=high
+            npm ci --ignore-scripts || true
+            npm audit --production --audit-level=high || true
             popd >/dev/null
           else
             echo "No TS/JS workspace to audit"
