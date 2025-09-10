@@ -12,7 +12,6 @@ on:
   push:
     branches: [ main, work/daily ]
     tags: [ "v*.*.*" ]
-  pull_request:
   workflow_dispatch:
 
 concurrency:
