@@ -12,7 +12,7 @@ on:
   schedule:
     - cron: '0 2 * * 1'
   push:
-    branches: [ main, work/daily ]
+    branches: [ main ]
   pull_request:
 
 concurrency:
@@ -26,6 +26,8 @@ jobs:
     name: OpenSSF Scorecard
     runs-on: ubuntu-latest
     continue-on-error: true
+    # Skip push events on non-default branches to avoid Scorecard limitations
+    if: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
       security-events: write
@@ -40,10 +42,10 @@ jobs:
         with:
           results_file: scorecard.sarif
           results_format: sarif
-          publish_results: true
+          publish_results: ${{ github.event_name != 'pull_request' }}
 
       - name: Upload SARIF
-        if: always()
+        if: ${{ steps.scorecard_sarif.outcome == 'success' }}
         uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
         with:
           sarif_file: scorecard.sarif
@@ -57,6 +59,7 @@ jobs:
           publish_results: false
 
       - name: Enforce minimum Scorecard score (informational)
+        if: ${{ steps.scorecard_json.outcome == 'success' }}
         shell: bash
         run: |
           set +e
