@@ -26,7 +26,7 @@ jobs:
     name: OpenSSF Scorecard
     runs-on: ubuntu-latest
     continue-on-error: true
-    # Skip push events on non-default branches to avoid Scorecard limitations
+    # Skip push events on non-default branches to avoid Scorecard limitations  
     if: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
