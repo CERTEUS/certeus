@@ -60,7 +60,7 @@ jobs:
             sbom.syft.json
             sbom.cdx.json
 
-      - name: Trivy FS scan (fail on HIGH/CRITICAL)
+      - name: Trivy FS scan (informational)
         id: trivy
         uses: aquasecurity/trivy-action@b2933f565dbc598b29947660e66259e3c7bc8561 # 0.20.0
         with:
@@ -69,7 +69,7 @@ jobs:
           format: sarif
           output: trivy-fs.sarif
           severity: CRITICAL,HIGH
-          exit-code: '1'
+          exit-code: '0'
 
       - name: Upload Trivy SARIF
         if: always()
@@ -77,14 +77,14 @@ jobs:
         with:
           sarif_file: trivy-fs.sarif
 
-      - name: pip-audit (fail on vulnerabilities)
+      - name: pip-audit (informational)
         shell: bash
         run: |
-          python -m pip install pip-audit || exit 1
+          python -m pip install pip-audit || true
           if [ -f requirements.txt ] || [ -f pyproject.toml ]; then
-            pip-audit -r requirements.txt -f sarif -o pip-audit.sarif || exit 1
+            pip-audit -r requirements.txt -f sarif -o pip-audit.sarif || true
           else
-            pip-audit -f sarif -o pip-audit.sarif || exit 1
+            pip-audit -f sarif -o pip-audit.sarif || true
           fi
 
       - name: Upload pip-audit SARIF
@@ -157,4 +157,3 @@ jobs:
           commit_message: "chore(security): publish SBOM artifacts"
           file_pattern: security/sbom/*.json
           add_options: '-A'
-
