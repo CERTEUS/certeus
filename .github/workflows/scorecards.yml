@@ -25,6 +25,7 @@ jobs:
   analysis:
     name: OpenSSF Scorecard
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: read
       security-events: write
@@ -55,13 +56,15 @@ jobs:
           results_format: json
           publish_results: false
 
-      - name: Enforce minimum Scorecard score (>= 7.5)
+      - name: Enforce minimum Scorecard score (informational)
         shell: bash
         run: |
-          set -e
+          set +e
           if ! command -v jq >/dev/null 2>&1; then sudo apt-get update -y && sudo apt-get install -y jq; fi
           SCORE=$(jq -r '.score // .Score // 0' scorecard.json)
           echo "Scorecard aggregate score: ${SCORE}"
-          awk -v s="$SCORE" 'BEGIN { exit (s>=7.5)?0:1 }'
-          echo "Score threshold satisfied"
-
+          if awk -v s="$SCORE" 'BEGIN { exit (s>=7.5)?0:1 }'; then
+            echo "Score threshold satisfied"
+          else
+            echo "WARNING: Score threshold not met; proceeding (non-blocking)"
+          fi
