@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -44,14 +44,14 @@ jobs:
           python scripts/gates/canary_gate.py --phases 3 --count "$CANARY_COUNT" --p95-max "$CANARY_MAX_P95_MS" --error-rate-max "$CANARY_MAX_ERROR_RATE" --out out/canary.json
       - name: Upload canary report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: canary-${{ github.sha }}
           path: out/canary.json
           if-no-files-found: warn
       - name: Comment PR with Canary p95 summary
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
             const fs = require('fs');
@@ -81,4 +81,3 @@ jobs:
             } catch (e) {
               core.warning('Could not create PR comment: ' + (e?.message || e));
             }
-

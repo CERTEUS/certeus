@@ -20,10 +20,11 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -39,9 +40,10 @@ jobs:
           echo "tag=${ref}" >> $GITHUB_OUTPUT
           echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
       - name: Build & push API image
-        uses: docker/build-push-action@v6
+        id: build_api
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           context: .
           file: infra/services/api_gateway/Dockerfile
@@ -50,8 +52,15 @@ jobs:
             ghcr.io/${{ github.repository }}-api:${{ steps.vars.outputs.tag }}
             ghcr.io/${{ github.repository }}-api:latest
             ghcr.io/${{ github.repository }}-api:${{ steps.vars.outputs.sha }}
+          provenance: false
+          push-by-digest: true
+      - name: Compute API digest
+        id: api_digest
+        run: |
+          echo "digest=${{ steps.build_api.outputs.digest }}" >> $GITHUB_OUTPUT
       - name: Build & push ProofGate image
-        uses: docker/build-push-action@v6
+        id: build_proofgate
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6
         with:
           context: .
           file: infra/services/proofgate/Dockerfile
@@ -60,6 +69,60 @@ jobs:
             ghcr.io/${{ github.repository }}-proofgate:${{ steps.vars.outputs.tag }}
             ghcr.io/${{ github.repository }}-proofgate:latest
             ghcr.io/${{ github.repository }}-proofgate:${{ steps.vars.outputs.sha }}
+          provenance: false
+          push-by-digest: true
+      - name: Compute ProofGate digest
+        id: proofgate_digest
+        run: |
+          echo "digest=${{ steps.build_proofgate.outputs.digest }}" >> $GITHUB_OUTPUT
+
+      - name: Attest image provenance (API)
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}-api
+          subject-digest: ${{ steps.api_digest.outputs.digest }}
+          push-to-registry: true
+      - name: Attest image provenance (ProofGate)
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-name: ghcr.io/${{ github.repository }}-proofgate
+          subject-digest: ${{ steps.proofgate_digest.outputs.digest }}
+          push-to-registry: true
+      - name: Install cosign
+        uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9 # v3
+        with:
+          cosign-release: 'v2.2.4'
+      - name: Cosign sign container images (keyless)
+        env:
+          COSIGN_EXPERIMENTAL: '1'
+        run: |
+          set -euo pipefail
+          API_REF=ghcr.io/${{ github.repository }}-api@${{ steps.api_digest.outputs.digest }}
+          PROOFGATE_REF=ghcr.io/${{ github.repository }}-proofgate@${{ steps.proofgate_digest.outputs.digest }}
+          echo "Signing images to Rekor transparency log"
+          cosign version
+          cosign sign --yes "$API_REF"
+          cosign sign --yes "$PROOFGATE_REF"
+      - name: Verify image attestations (SLSA + issuer policy)
+        env:
+          COSIGN_EXPERIMENTAL: '1'
+          COSIGN_EXPECT_ISSUER: 'https://token.actions.githubusercontent.com'
+        run: |
+          set -euo pipefail
+          API_REF=ghcr.io/${{ github.repository }}-api@${{ steps.api_digest.outputs.digest }}
+          PROOFGATE_REF=ghcr.io/${{ github.repository }}-proofgate@${{ steps.proofgate_digest.outputs.digest }}
+          ID_RE="^https://github.com/${{ github.repository }}/.github/workflows/.*$"
+          echo "Verifying SLSA attestations and issuer identity"
+          cosign verify-attestation --type slsaprovenance \
+            --certificate-oidc-issuer "$COSIGN_EXPECT_ISSUER" \
+            --certificate-identity-regexp "$ID_RE" \
+            --policy policies/supply_chain/cosign_policy.rego \
+            "$API_REF"
+          cosign verify-attestation --type slsaprovenance \
+            --certificate-oidc-issuer "$COSIGN_EXPECT_ISSUER" \
+            --certificate-identity-regexp "$ID_RE" \
+            --policy policies/supply_chain/cosign_policy.rego \
+            "$PROOFGATE_REF"
   create-release:
     runs-on: [self-hosted, linux, docker, build]
     needs: build-and-push-images
@@ -67,9 +130,9 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.11'
       - name: Generate SBOM (CycloneDX JSON)
@@ -98,7 +161,7 @@ jobs:
           python scripts/supply_chain/make_provenance.py
           test -s out/provenance.json
       - name: Install cosign
-        uses: sigstore/cosign-installer@v3
+        uses: sigstore/cosign-installer@f713795cb21599bc4e5c4b58cbad1da852d7eeb9 # v3
         with:
           cosign-release: 'v2.2.4'
       - name: Cosign sign SBOM and provenance (keyless)
@@ -114,7 +177,15 @@ jobs:
         run: |
           python scripts/make_pco_bundle.py --seed "release-${GITHUB_REF_NAME}" --allow-missing --echo-url
           ls -la out/release_pco || true
+      - name: GitHub Attestation for SBOM
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-path: sbom.json
+      - name: GitHub Attestation for custom provenance
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-path: out/provenance.json
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@6cbd405e2c4e67a21c47fa9e383d020e4e28b836 # v2
         with:
           generate_release_notes: true

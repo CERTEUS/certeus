@@ -18,9 +18,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
       - name: Install project
@@ -43,3 +43,23 @@ jobs:
         run: |
           python scripts/gates/compliance_mapping_gate.py
 
+      - name: Enable Secret Scanning + Push Protection (if ADMIN_TOKEN)
+        if: ${{ secrets.ADMIN_TOKEN != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          owner_repo='${{ github.repository }}'
+          owner="${owner_repo%%/*}"
+          repo="${owner_repo##*/}"
+          data='{
+            "security_and_analysis": {
+              "secret_scanning": {"status": "enabled"},
+              "secret_scanning_push_protection": {"status": "enabled"}
+            }
+          }'
+          curl -sS -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            https://api.github.com/repos/${owner}/${repo} \
+            -d "$data"
