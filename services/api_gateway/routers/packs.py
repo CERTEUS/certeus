@@ -28,14 +28,15 @@ from __future__ import annotations
 import inspect
 import json
 import os
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from packs_core.loader import discover, load as load_pack
+from packs_core.loader import discover
+from packs_core.loader import load as load_pack
 from services.api_gateway.limits import enforce_limits
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -288,7 +289,7 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
     try:
         reg(api)  # type: ignore[misc]
     except Exception as e:
-        # Log detailed error server-side, return generic message to user  
+        # Log detailed error server-side, return generic message to user
         logger.error(f"Register error for pack {req.pack}: {e}")
         return {"ok": False, "reason": "pack registration failed"}
 

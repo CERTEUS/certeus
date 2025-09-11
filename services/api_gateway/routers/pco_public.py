@@ -35,15 +35,10 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from core.pco.crypto import (
-    b64u_encode,
-    canonical_bundle_hash_hex,
-    canonical_digest_hex,
-    compute_leaf_hex,
-    ed25519_verify_b64u,
-    load_pubkey_bytes_from_env,
-    sha256_hex,
-)
+from core.pco.crypto import (b64u_encode, canonical_bundle_hash_hex,
+                             canonical_digest_hex, compute_leaf_hex,
+                             ed25519_verify_b64u, load_pubkey_bytes_from_env,
+                             sha256_hex)
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -271,11 +266,11 @@ def _bundle_path(rid: str) -> Path:
     sanitized_rid = re.sub(r'[^a-zA-Z0-9_-]', '', rid.strip())
     if not sanitized_rid:
         raise HTTPException(status_code=400, detail="Invalid resource ID")
-    
+
     # Ensure the final path is within the bundle directory
     bundle_dir = _bundle_dir()
     candidate_path = bundle_dir / f"{sanitized_rid}.json"
-    
+
     # Resolve and check if it's within the allowed directory
     try:
         resolved_path = candidate_path.resolve()

@@ -24,8 +24,9 @@ from __future__ import annotations
 import base64
 import json
 import os
-from pathlib import Path, Path as _P
 import sys as _sys
+from pathlib import Path
+from pathlib import Path as _P
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization

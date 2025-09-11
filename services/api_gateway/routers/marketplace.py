@@ -25,19 +25,21 @@ EN: FastAPI router – Plugin Marketplace (list, verify, install).
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import os
-from pathlib import Path
 import re
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any
 
+import yaml
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-import yaml
 
-from core.plugin_loader import _discover_plugins as discover_plugins  # type: ignore[attr-defined]
-from packs_core.loader import PackInfo, discover as discover_packs
+from core.plugin_loader import \
+    _discover_plugins as discover_plugins  # type: ignore[attr-defined]
+from packs_core.loader import PackInfo
+from packs_core.loader import discover as discover_packs
 from security.key_manager import load_ed25519_public_bytes
 
 # === KONFIGURACJA / CONFIGURATION ===
@@ -205,7 +207,8 @@ def sign_manifest(payload: dict[str, Any]) -> dict[str, Any]:
     import base64
 
     from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import \
+        Ed25519PrivateKey
 
     from security.key_manager import load_ed25519_private_pem
 

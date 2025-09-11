@@ -16,20 +16,20 @@ EN: W3 — Geodesic proof + lock → publish.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from hashlib import sha256
 import json
 import os
-from pathlib import Path, Path as _P
 import sys as _sys
+from datetime import UTC, datetime
+from hashlib import sha256
+from pathlib import Path
+from pathlib import Path as _P
 from typing import Any
 
 _sys.path.insert(0, str(_P(__file__).resolve().parents[2]))  # noqa: E402
 
 from cryptography.hazmat.primitives import serialization  # noqa: E402
-from cryptography.hazmat.primitives.asymmetric.ed25519 import (  # noqa: E402
-    Ed25519PrivateKey,
-)
+from cryptography.hazmat.primitives.asymmetric.ed25519 import \
+    Ed25519PrivateKey  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from services.api_gateway.main import app  # noqa: E402

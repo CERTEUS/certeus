@@ -51,8 +51,8 @@ EN: Bulk injector for CERTEUS banners and module docstrings (idempotent).
 from __future__ import annotations
 
 import datetime
-from pathlib import Path
 import re
+from pathlib import Path
 
 # Lista naprawianych plików (z poprzednich runów gate’a)
 
