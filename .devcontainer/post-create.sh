@@ -17,7 +17,7 @@ set -euo pipefail
 # 1) Virtualenv + narzędzia
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install -U pip wheel setuptools ruff pytest pytest-cov black isort mypy jsonschema cryptography fastapi uvicorn jupyterlab ipykernel
+python -m pip install -U pip==24.2 wheel==0.44.0 setuptools==75.1.0 ruff==0.6.8 pytest==8.3.3 pytest-cov==5.0.0 black==24.8.0 isort==5.13.2 mypy==1.11.2 jsonschema==4.23.0 cryptography==43.0.1 fastapi==0.114.2 uvicorn==0.30.6 jupyterlab==4.2.5 ipykernel==6.29.5
 
 # 2) Zależności projektu dokładnie jak w CI
 #    (instalacja edytowalna + requirements)
@@ -26,7 +26,7 @@ if [ -f requirements.txt ]; then
   python -m pip install -r requirements.txt
 fi
 #    Narzędzia deweloperskie/testowe używane w CI
-python -m pip install -U ruff pytest pytest-xdist pytest-asyncio httpx z3-solver hypothesis openapi-spec-validator PyYAML
+python -m pip install -U ruff==0.6.8 pytest==8.3.3 pytest-xdist==3.6.0 pytest-asyncio==0.24.0 httpx==0.27.2 z3-solver==4.13.0.0 hypothesis==6.112.1 openapi-spec-validator==0.7.1 PyYAML==6.0.2
 
 # 3) Pliki i zmienne środowiskowe dla DEV (niecommitowalne)
 mkdir -p .devkeys data/public_pco reports
