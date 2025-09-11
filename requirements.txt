@@ -1,5 +1,5 @@
 fastapi==0.115.*
-uvicorn[standard]==0.30.*
+uvicorn[standard]==0.35.*
 z3-solver>=4.12
 python-multipart>=0.0.20,<0.0.21
 prometheus-client>=0.20
