@@ -1,3 +1,9 @@
+# +-------------------------------------------------------------+
+# | CERTEUS Control System | ForgeHeader v3 - Enterprise     |
+# | FILE: workspaces/certeus/mkdocs.yml                                      |
+# | ROLE: Documentation configuration                                        |
+# +-------------------------------------------------------------+
+
 site_name: CERTEUS Documentation
 site_description: Enterprise-Grade Verifiable Cognitive Intelligence Platform
 site_url: https://certeus.io

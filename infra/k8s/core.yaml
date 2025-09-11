@@ -2,9 +2,10 @@
 # |                          CERTEUS                            |
 # +-------------------------------------------------------------+
 # | FILE: infra/k8s/core.yaml                                 |
-# | ROLE: Project YAML manifest.                                |
-# | PLIK: infra/k8s/core.yaml                                 |
-# | ROLA: Manifest YAML projektu.                               |
+# +-------------------------------------------------------------+
+# | CERTEUS Control System | ForgeHeader v3 - Enterprise     |
+# | FILE: infra/k8s/core.yaml                                 |
+# | ROLE: Core Kubernetes manifests for CERTEUS deployment    |
 # +-------------------------------------------------------------+
 
 apiVersion: v1

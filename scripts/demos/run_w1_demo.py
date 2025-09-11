@@ -16,20 +16,19 @@ EN: W1 — weekly demo (10 min): ingest → analyze → ProofGate → Ledger.
 # === IMPORTY / IMPORTS ===
 from __future__ import annotations
 
+from datetime import UTC, datetime
 import json
 import os
-import sys as _sys
-from datetime import UTC, datetime
+
 # Repo-root on sys.path (run as script)
-from pathlib import Path
-from pathlib import Path as _P
+from pathlib import Path, Path as _P
+import sys as _sys
 from typing import Any
 
 _sys.path.insert(0, str(_P(__file__).resolve().parents[2]))  # noqa: E402
 
 from cryptography.hazmat.primitives import serialization  # noqa: E402
-from cryptography.hazmat.primitives.asymmetric.ed25519 import \
-    Ed25519PrivateKey  # noqa: E402
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from services.api_gateway.main import app  # noqa: E402

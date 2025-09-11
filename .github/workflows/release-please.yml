@@ -9,7 +9,7 @@ name: release-please
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -31,6 +31,6 @@ jobs:
         uses: googleapis/release-please-action@v4
         with:
           # Prefer PAT if provided to bypass repo setting restrictions
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json

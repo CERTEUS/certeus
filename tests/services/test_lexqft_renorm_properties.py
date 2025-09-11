@@ -19,8 +19,7 @@ from __future__ import annotations
 import math
 
 from fastapi.testclient import TestClient
-from hypothesis import assume, given, settings
-from hypothesis import strategies as st
+from hypothesis import assume, given, settings, strategies as st
 
 from services.api_gateway.main import app
 

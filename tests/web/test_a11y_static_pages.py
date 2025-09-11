@@ -20,9 +20,9 @@ EN: Minimal A11y tests (WCAG 2.2 AA baseline) for static pages
 
 from __future__ import annotations
 
-import re
 from collections.abc import Iterable
 from pathlib import Path
+import re
 
 import pytest
 

@@ -33,12 +33,12 @@ EN: Export endpoint. Accepts `case_id` and `analysis_result`, writes a text
 
 from __future__ import annotations
 
-import hashlib
-import json
-import re
 from collections.abc import Mapping
 from datetime import UTC, datetime
+import hashlib
+import json
 from pathlib import Path
+import re
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Response
@@ -206,8 +206,7 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
     # Optional ledger record
     if payload.write_ledger:
         try:
-            from services.ledger_service.ledger import (
-                compute_provenance_hash, ledger_service)
+            from services.ledger_service.ledger import compute_provenance_hash, ledger_service
 
             # Ledger hash over analysis summary + export info
             ledger_doc = {

@@ -15,7 +15,7 @@ def test_prove_and_verify_roundtrip_str() -> None:
     kp = zkp.generate_keypair()
     msg = "hello-certeus"
     proof = zkp.prove(msg, sk_pem=kp.sk_pem, subject="ut")
-    assert isinstance(proof, (bytes, bytearray))
+    assert isinstance(proof, bytes | bytearray)
     assert zkp.verify(msg, proof) is True
 
 

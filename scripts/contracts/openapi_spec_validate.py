@@ -36,9 +36,8 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from openapi_spec_validator.schemas import read_yaml_file
-
     from openapi_spec_validator import validate_spec
+    from openapi_spec_validator.schemas import read_yaml_file
 except Exception:  # pragma: no cover
     validate_spec = None  # type: ignore
     read_yaml_file = None  # type: ignore

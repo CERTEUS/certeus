@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# | CERTEUS Control System | ForgeHeader v3 - Enterprise     |
+# | FILE: workspaces/certeus/services/lexlog_parser/evaluator.py                                      |
+# | ROLE: Evaluation engine implementation                                        |
+# +-------------------------------------------------------------+
+
 from __future__ import annotations
 
 from collections.abc import Mapping

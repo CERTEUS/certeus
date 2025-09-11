@@ -278,8 +278,8 @@ def _bundle_path(rid: str) -> Path:
         if not str(resolved_path).startswith(str(bundle_dir_resolved)):
             raise HTTPException(status_code=400, detail="Invalid path")
         return resolved_path
-    except (OSError, ValueError):
-        raise HTTPException(status_code=400, detail="Invalid path")
+    except (OSError, ValueError) as err:
+        raise HTTPException(status_code=400, detail="Invalid path") from err
 
 
 def _load_public_bundle_from_fs(rid: str) -> dict[str, Any]:

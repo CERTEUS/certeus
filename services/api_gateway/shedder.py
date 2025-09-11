@@ -18,10 +18,9 @@ EN: Simple adaptive shedder controlled via ENV.
 
 from __future__ import annotations
 
-import os
-import random
-import secrets
 from collections.abc import Callable
+import os
+import secrets
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse

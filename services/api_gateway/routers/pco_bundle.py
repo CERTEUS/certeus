@@ -29,9 +29,9 @@ import base64
 import hashlib
 import json
 import os
+from pathlib import Path
 import re
 import time
-from pathlib import Path
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization
@@ -40,10 +40,8 @@ from fastapi import APIRouter, HTTPException, Request
 from jsonschema import Draft202012Validator
 from pydantic import BaseModel, Field, field_validator
 
-from core.pco.crypto import (canonical_bundle_hash_hex, canonical_digest_hex,
-                             compute_leaf_hex)
-from monitoring.metrics_slo import (certeus_compile_duration_ms,
-                                    certeus_proof_verification_failed_total)
+from core.pco.crypto import canonical_bundle_hash_hex, canonical_digest_hex, compute_leaf_hex
+from monitoring.metrics_slo import certeus_compile_duration_ms, certeus_proof_verification_failed_total
 from services.api_gateway.limits import enforce_limits
 from services.proof_verifier import verify_drat, verify_lfsc
 from services.proofgate.app import PublishRequest, PublishResponse, publish

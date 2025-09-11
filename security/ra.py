@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# | CERTEUS Control System | ForgeHeader v3 - Enterprise     |
+# | FILE: workspaces/certeus/security/ra.py                                      |
+# | ROLE: Implementation file                                        |
+# +-------------------------------------------------------------+
+
 
 """
 PL: Remote Attestation (TEE) — minimalna obsługa odcisku RA na potrzeby CI/ProofGate.

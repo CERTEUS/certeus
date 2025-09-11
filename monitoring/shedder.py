@@ -26,7 +26,6 @@ EN: Adaptive HTTP traffic shedder driven by p95 and QTMP signals.
 from __future__ import annotations
 
 import os
-import random
 import secrets
 import typing as _t
 

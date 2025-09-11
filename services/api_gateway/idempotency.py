@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# +-------------------------------------------------------------+
+# | CERTEUS Control System | ForgeHeader v3 - Enterprise     |
+# | FILE: workspaces/certeus/services/api_gateway/idempotency.py                                      |
+# | ROLE: Service implementation                                        |
+# +-------------------------------------------------------------+
+
 """
 PL: Prosty magazyn idempotencyjny in‑proc (MVP) dla POST (Devices).
 EN: Simple in‑proc idempotency store (MVP) for POST (Devices).

@@ -1,3 +1,9 @@
+# +-------------------------------------------------------------+
+# | CERTEUS Control System | ForgeHeader v3 - Enterprise     |
+# | FILE: workspaces/certeus/bandit.yml                                      |
+# | ROLE: Security scanning configuration                                        |
+# +-------------------------------------------------------------+
+
 # Bandit configuration (new style)
 # See: https://bandit.readthedocs.io/en/latest/config.html
 
