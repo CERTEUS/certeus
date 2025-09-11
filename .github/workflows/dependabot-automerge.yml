@@ -20,9 +20,12 @@ jobs:
     if: github.actor == 'dependabot[bot]' || github.event_name == 'schedule'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Auto-merge all ready Dependabot PRs
         run: |
-          echo "��� Processing Dependabot PRs..."
+          echo "🤖 Processing Dependabot PRs..."
 
           # Get all open Dependabot PRs with their status
           gh pr list --author "app/dependabot" --json number,title,statusCheckRollup,autoMergeRequest | \
@@ -44,12 +47,12 @@ jobs:
           done
 
           # Force merge PRs that are stuck with all green checks
-          echo "��� Checking for PRs ready to merge immediately..."
+          echo "🚀 Checking for PRs ready to merge immediately..."
           gh pr list --author "app/dependabot" --json number,title,statusCheckRollup,mergeable | \
           jq -r '.[] | select(.mergeable == "MERGEABLE") | select(.statusCheckRollup | length > 0) | select(.statusCheckRollup | map(.conclusion) | all(. == "SUCCESS" or . == "NEUTRAL" or . == "SKIPPED")) | .number' | \
           while read pr_number; do
             if [[ -n "$pr_number" ]]; then
-              echo "��� Force merging ready PR #$pr_number"
+              echo "🔥 Force merging ready PR #$pr_number"
               gh pr merge $pr_number --squash --delete-branch || echo "⚠️ Failed to merge PR #$pr_number"
             fi
           done
