@@ -1,6 +1,8 @@
 ﻿# Git/venv
 .git
 .venv
+.venv_ci
+.venv_cli
 __pycache__
 *.pyc
 *.pyo

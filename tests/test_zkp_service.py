@@ -8,7 +8,6 @@
 
 from __future__ import annotations
 
-import os
 from certeus.services.zkp_service import stub as zkp
 
 
