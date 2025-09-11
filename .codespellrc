@@ -1,0 +1,7 @@
+[codespell]
+skip = .git,.venv,venv,dist,build,node_modules,docs,out,exports,__pycache__,.hypothesis
+ignore-words-list = serwer,dokument,maks,te,strat,adres,TE,codespell,config,checking,configuration,venv,dist,build,node,modules,docs,openapi,exports,pycache,hypothesis,ignore,words,selektor,tekst,omeg,modul,pary,wew,nowe,statics,parametr,blok
+quiet-level = 2espell]
+skip = .git,.venv,venv,dist,build,node_modules,docs,out,exports,__pycache__,.hypothesis
+ignore-words-list = serwer,dokument,maks,te,strat,adres,TE,codespell,config,checking,configuration,venv,dist,build,node,modules,docs,openapi,exports,pycache,hypothesis,ignore,words,selektor,tekst,omeg,modul,pary,wew,nowe
+quiet-level = 2
