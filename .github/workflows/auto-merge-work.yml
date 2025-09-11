@@ -13,13 +13,13 @@ on:
   workflow_dispatch:
     inputs:
       source_branch:
-        description: 'Source branch to merge from'
+        description: "Source branch to merge from"
         required: true
-        default: 'work/daily'
+        default: "work/daily"
       target_branch:
-        description: 'Target branch to merge to'
+        description: "Target branch to merge to"
         required: true
-        default: 'main'
+        default: "main"
 
 permissions:
   contents: write
@@ -58,16 +58,16 @@ jobs:
         run: |
           SOURCE="${{ steps.branches.outputs.source }}"
           TARGET="${{ steps.branches.outputs.target }}"
-          
+
           echo "Attempting merge from $SOURCE to $TARGET"
-          
+
           # Fetch latest
           git fetch origin $SOURCE:$SOURCE
           git fetch origin $TARGET:$TARGET
-          
+
           # Switch to target branch
           git checkout $TARGET
-          
+
           # Try fast-forward merge first
           if git merge --ff-only $SOURCE; then
             echo "✅ Fast-forward merge successful"
