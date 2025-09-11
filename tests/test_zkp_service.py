@@ -33,4 +33,3 @@ def test_verify_rejects_corrupted_token() -> None:
     proof = zkp.prove(data, sk_pem=kp.sk_pem)
     bad = proof[:-2] + b"xx"
     assert zkp.verify(data, bad) is False
-
