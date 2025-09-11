@@ -110,7 +110,7 @@ def append_coverage_contribution(gamma: float, weight: float = 1.0, uncaptured: 
 
 class BarrierScenario(BaseModel):
     model_config = {"protected_namespaces": ()}
-    
+
     model_id: str
     energy: float
     model_uri: str
@@ -237,10 +237,7 @@ async def tunnel(req: TunnelRequest, request: Request, response: Response) -> Tu
 
     # Record to Ledger (hash of tunneling outcome)
     try:
-        from services.ledger_service.ledger import (
-            compute_provenance_hash,
-            ledger_service,
-        )
+        from services.ledger_service.ledger import compute_provenance_hash, ledger_service
 
         payload = {"qlaw.tunneling": {"p": resp.p_tunnel, "path": path, "min_energy": min_e}}
         doc_hash = "sha256:" + compute_provenance_hash(payload, include_timestamp=False)
@@ -383,10 +380,7 @@ async def coverage_state() -> CoverageState:
         tot_w = sum(w for _, w, _ in _COVERAGE_AGG) or 1.0
         gamma = sum(g * w for g, w, _ in _COVERAGE_AGG) / tot_w
         unc = sum(u * w for _, w, u in _COVERAGE_AGG) / tot_w
-        from monitoring.metrics_slo import (
-            certeus_lexqft_coverage_gamma,
-            certeus_lexqft_uncaptured_mass,
-        )
+        from monitoring.metrics_slo import certeus_lexqft_coverage_gamma, certeus_lexqft_uncaptured_mass
 
         try:
             certeus_lexqft_coverage_gamma.set(float(gamma))

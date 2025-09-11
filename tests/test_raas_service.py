@@ -38,4 +38,3 @@ def test_ra_verify_roundtrip() -> None:
     assert fp["vendor"]
     assert fp["product"]
     assert isinstance(fp["measurement"], str) and len(fp["measurement"]) == 64
-

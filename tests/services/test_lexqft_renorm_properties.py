@@ -19,7 +19,8 @@ from __future__ import annotations
 import math
 
 from fastapi.testclient import TestClient
-from hypothesis import assume, given, settings, strategies as st
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 from services.api_gateway.main import app
 
@@ -47,7 +48,7 @@ def test_scale_invariance_and_entropy_bounds(xs, scale) -> None:
     # Skip if all values are effectively zero after scaling
     if all(x * scale < 1e-10 for x in xs):
         assume(False)
-        
+
     items = [{"uid": f"U{i}", "authority": float(x)} for i, x in enumerate(xs)]
     dist, ent = _renorm(items, case="HP-RENORM-1")
     n = len(dist)
@@ -60,7 +61,7 @@ def test_scale_invariance_and_entropy_bounds(xs, scale) -> None:
     scaled_values = [float(x) * float(scale) for x in xs]
     if all(v < 1e-10 for v in scaled_values):
         return  # Skip scale invariance test for degenerate case
-        
+
     items2 = [{"uid": f"U{i}", "authority": v} for i, v in enumerate(scaled_values)]
     dist2, ent2 = _renorm(items2, case="HP-RENORM-2")
     for k in dist:

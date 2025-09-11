@@ -68,17 +68,28 @@ def test_has_h1_and_links_have_text_or_label(path: Path) -> None:
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_has_language_selector(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
-    
+
     # Check if this page actually has a language selector
     has_lang_selector = bool(re.search(r"<select[^>]+id=\"lang\"", text, flags=re.IGNORECASE))
-    
+
     # Pages that are expected to have language selectors (main interactive apps)
     app_pages = {
-        "alpha.html", "boundary.html", "chatops.html", "code.html", "export.html",
-        "geometry.html", "lexenith.html", "mailops.html", "marketplace.html", 
-        "med.html", "playground.html", "qtm.html", "quantum.html", "sec.html"
+        "alpha.html",
+        "boundary.html",
+        "chatops.html",
+        "code.html",
+        "export.html",
+        "geometry.html",
+        "lexenith.html",
+        "mailops.html",
+        "marketplace.html",
+        "med.html",
+        "playground.html",
+        "qtm.html",
+        "quantum.html",
+        "sec.html",
     }
-    
+
     if path.name in app_pages:
         # These pages MUST have language selector
         assert has_lang_selector, f"App page {path.name} should have language selector"
@@ -86,6 +97,8 @@ def test_has_language_selector(path: Path) -> None:
         # For utility/dashboard pages, language selector is optional
         # Test passes regardless of whether it has selector or not
         pass  # No assertion needed for utility pages
+
+
 @pytest.mark.parametrize("path", _html_files(), ids=lambda p: p.name)
 def test_images_have_alt_when_present(path: Path) -> None:
     text = path.read_text(encoding="utf-8")
