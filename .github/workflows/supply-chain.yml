@@ -41,7 +41,7 @@ jobs:
       - name: Generate SBOM (Syft JSON)
         id: syft
         continue-on-error: true
-        uses: anchore/sbom-action@251a468eed47e5082b105c3ba6ee500c0e65a764 # v0.17.6
+        uses: anchore/sbom-action@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
         with:
           path: .
           format: syft-json
