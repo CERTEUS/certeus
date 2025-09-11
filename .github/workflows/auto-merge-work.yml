@@ -1,0 +1,95 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/workflows/auto-merge-work.yml               |
+# | ROLE: Auto-merge from work branches to main                |
+# +-------------------------------------------------------------+
+
+name: auto-merge-work
+
+on:
+  push:
+    branches: [work/daily, work/daily-new]
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: "Source branch to merge from"
+        required: true
+        default: "work/daily"
+      target_branch:
+        description: "Target branch to merge to"
+        required: true
+        default: "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge work branch
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "certeus-merge-bot[bot]"
+          git config user.email "certeus-merge-bot[bot]@users.noreply.github.com"
+
+      - name: Determine branches
+        id: branches
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "source=${{ github.event.inputs.source_branch }}" >> $GITHUB_OUTPUT
+            echo "target=${{ github.event.inputs.target_branch }}" >> $GITHUB_OUTPUT
+          else
+            echo "source=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+            echo "target=main" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fast-forward merge to main
+        continue-on-error: true
+        run: |
+          SOURCE="${{ steps.branches.outputs.source }}"
+          TARGET="${{ steps.branches.outputs.target }}"
+
+          echo "Attempting merge from $SOURCE to $TARGET"
+
+          # Fetch latest remote refs
+          git fetch origin $TARGET:refs/remotes/origin/$TARGET
+          git fetch origin $SOURCE:refs/remotes/origin/$SOURCE
+
+          # Switch to target branch
+          git checkout $TARGET
+          git pull origin $TARGET
+
+          # Get the source branch content
+          git checkout $SOURCE
+          git pull origin $SOURCE
+
+          # Switch back to target and merge
+          git checkout $TARGET
+
+          # Try fast-forward merge first
+          if git merge --ff-only $SOURCE; then
+            echo "✅ Fast-forward merge successful"
+            git push origin $TARGET
+            echo "✅ Pushed to $TARGET"
+          else
+            echo "⚠️ Fast-forward not possible, creating merge commit"
+            if git merge --no-ff $SOURCE -m "auto: Merge $SOURCE into $TARGET [auto-merge]"; then
+              echo "✅ Merge commit successful"
+              git push origin $TARGET
+              echo "✅ Pushed to $TARGET"
+            else
+              echo "❌ Merge failed - conflicts detected"
+              echo "Manual intervention required"
+              exit 1
+            fi
+          fi

@@ -10,9 +10,9 @@ name: scorecards
 on:
   branch_protection_rule:
   schedule:
-    - cron: '0 2 * * 1'
+    - cron: "0 2 * * 1"
   push:
-    branches: [ main, work/daily ]
+    branches: [main]
   pull_request:
 
 concurrency:
@@ -26,6 +26,8 @@ jobs:
     name: OpenSSF Scorecard
     runs-on: ubuntu-latest
     continue-on-error: true
+    # Skip push events on non-default branches to avoid Scorecard limitations
+    if: ${{ github.event_name != 'push' || github.ref == 'refs/heads/main' }}
     permissions:
       contents: read
       security-events: write
@@ -40,10 +42,42 @@ jobs:
         with:
           results_file: scorecard.sarif
           results_format: sarif
-          publish_results: true
+          publish_results: ${{ github.event_name != 'pull_request' }}
+
+      - name: Validate SARIF before upload (debug)
+        if: ${{ steps.scorecard_sarif.outcome == 'success' }}
+        id: validate_sarif
+        shell: bash
+        run: |
+          SARIF_VALID=false
+          if [ -f scorecard.sarif ]; then
+            echo "SARIF file exists, size: $(wc -c < scorecard.sarif) bytes"
+            if [ -s scorecard.sarif ]; then
+              echo "SARIF file is not empty"
+              if jq empty scorecard.sarif 2>/dev/null; then
+                echo "SARIF file is valid JSON"
+                # Check if it has required SARIF structure
+                if jq -e '.version and .runs' scorecard.sarif >/dev/null 2>&1; then
+                  echo "SARIF file has valid structure"
+                  SARIF_VALID=true
+                else
+                  echo "WARNING: SARIF file missing required structure"
+                fi
+              else
+                echo "WARNING: SARIF file is not valid JSON"
+                head -5 scorecard.sarif || true
+              fi
+            else
+              echo "WARNING: SARIF file is empty"
+            fi
+          else
+            echo "WARNING: SARIF file does not exist"
+          fi
+          echo "sarif_valid=$SARIF_VALID" >> $GITHUB_OUTPUT
 
       - name: Upload SARIF
-        if: always()
+        if: ${{ steps.scorecard_sarif.outcome == 'success' && steps.validate_sarif.outputs.sarif_valid == 'true' }}
+        continue-on-error: true # Don't fail workflow on SARIF upload issues
         uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
         with:
           sarif_file: scorecard.sarif
@@ -57,6 +91,7 @@ jobs:
           publish_results: false
 
       - name: Enforce minimum Scorecard score (informational)
+        if: ${{ steps.scorecard_json.outcome == 'success' }}
         shell: bash
         run: |
           set +e
