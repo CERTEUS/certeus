@@ -10,7 +10,7 @@ name: supply-chain
 
 on:
   push:
-    branches: [main, work/daily]
+    branches: [main, work/daily, final/github-actions-fix]
     tags: ["v*.*.*"]
   workflow_dispatch:
 
@@ -18,7 +18,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions: read-all
+# Remove global read-all to allow job-specific permissions
 
 jobs:
   sbom-and-scan:
