@@ -22,7 +22,7 @@ on:
         default: "main"
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -30,6 +30,9 @@ jobs:
     name: Auto-merge work branch
     runs-on: ubuntu-latest
     continue-on-error: true
+    permissions:
+      contents: write
+      pull-requests: read
     steps:
       - name: Checkout
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4

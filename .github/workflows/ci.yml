@@ -38,10 +38,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip==24.2 wheel==0.44.0 setuptools==75.1.0
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install -e . || echo "No setup.py/pyproject.toml found"
-          python -m pip install pytest pytest-xdist ruff mypy || true
+          python -m pip install pytest==8.3.3 pytest-xdist==3.6.0 ruff==0.6.7 mypy==1.11.2 || true
 
       - name: Lint with Ruff
         continue-on-error: true
@@ -74,5 +74,5 @@ jobs:
       - name: Build package
         continue-on-error: true
         run: |
-          python -m pip install --upgrade pip wheel setuptools build
+          python -m pip install --upgrade pip==24.2 wheel==0.44.0 setuptools==75.1.0 build==1.2.2
           python -m build || true
