@@ -10,8 +10,8 @@ name: supply-chain
 
 on:
   push:
-    branches: [ main, work/daily ]
-    tags: [ "v*.*.*" ]
+    branches: [main, work/daily]
+    tags: ["v*.*.*"]
   workflow_dispatch:
 
 concurrency:
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
           cache: pip
 
       - name: Generate SBOM (Syft JSON)
@@ -71,7 +71,7 @@ jobs:
           format: sarif
           output: trivy-fs.sarif
           severity: CRITICAL,HIGH
-          exit-code: '0'
+          exit-code: "0"
 
       - name: Upload Trivy SARIF
         if: always()
@@ -166,4 +166,4 @@ jobs:
         with:
           commit_message: "chore(security): publish SBOM artifacts"
           file_pattern: security/sbom/*.json
-          add_options: '-A'
+          add_options: "-A"
