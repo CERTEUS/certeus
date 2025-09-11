@@ -22,7 +22,7 @@ jobs:
 
       - name: Monitor all test types
         run: |
-          echo "��� Comprehensive Test Gate Monitor"
+          echo "🔬 Comprehensive Test Gate Monitor"
           echo "Ensuring all critical tests pass before any merge"
 
           # Define all required test categories
@@ -44,7 +44,7 @@ jobs:
 
       - name: Report test status
         run: |
-          echo "��� Test Status Summary:"
+          echo "📊 Test Status Summary:"
           echo "All defined workflows must complete successfully"
           echo "Auto-merge will only proceed when this gate passes"
 

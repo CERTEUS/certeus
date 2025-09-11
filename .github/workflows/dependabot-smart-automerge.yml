@@ -21,16 +21,19 @@ jobs:
     if: github.actor == 'dependabot[bot]' || github.event_name == 'schedule'
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Smart merge with comprehensive test checking
         run: |
-          echo "��� Smart processing of Dependabot PRs..."
+          echo "🤖 Smart processing of Dependabot PRs..."
 
           # Get all open Dependabot PRs
           gh pr list --author "app/dependabot" --json number,title | while read -r line; do
             pr_number=$(echo "$line" | grep -o '"number":[0-9]*' | cut -d':' -f2)
 
             if [[ -n "$pr_number" ]]; then
-              echo "��� Analyzing PR #$pr_number..."
+              echo "🔍 Analyzing PR #$pr_number..."
 
               # Get comprehensive status
               pr_status=$(gh pr view $pr_number --json statusCheckRollup,autoMergeRequest,mergeable,reviewDecision)
@@ -63,7 +66,7 @@ jobs:
 
                 # Try immediate merge if everything is ready
                 if [[ "$mergeable" == "MERGEABLE" ]]; then
-                  echo "��� Attempting immediate merge for PR #$pr_number"
+                  echo "🚀 Attempting immediate merge for PR #$pr_number"
                   if gh pr merge $pr_number --squash --delete-branch --admin; then
                     echo "✅ Successfully merged PR #$pr_number"
                   else
