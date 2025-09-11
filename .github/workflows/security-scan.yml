@@ -132,10 +132,20 @@ jobs:
           fi
       - name: Upload pip-audit SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
-        with:
-          sarif_file: pip-audit.sarif
-          category: pip-audit
+        run: |
+          # Only upload SARIF if it contains actual results
+          if [ -s pip-audit.sarif ] && [ "$(jq '.runs[0].results | length' pip-audit.sarif 2>/dev/null || echo 0)" -gt 0 ]; then
+            echo "SARIF contains results, uploading..."
+            gh api --method POST \
+              repos/CERTEUS/certeus/code-scanning/sarifs \
+              -f sarif="$(cat pip-audit.sarif | base64 -w 0)" \
+              -f ref=refs/heads/main \
+              -f commit_sha="${GITHUB_SHA}"
+          else
+            echo "SARIF is empty or contains no results, skipping upload"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: safety (JSON informational)
         run: |
           python -m pip install safety
@@ -176,7 +186,17 @@ jobs:
           fi
       - name: Upload OSV SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
-        with:
-          sarif_file: osv-node.sarif
-          category: osv-scanner-node
+        run: |
+          # Only upload SARIF if it contains actual results
+          if [ -s osv-node.sarif ] && [ "$(jq '.runs[0].results | length' osv-node.sarif 2>/dev/null || echo 0)" -gt 0 ]; then
+            echo "SARIF contains results, uploading..."
+            gh api --method POST \
+              repos/CERTEUS/certeus/code-scanning/sarifs \
+              -f sarif="$(cat osv-node.sarif | base64 -w 0)" \
+              -f ref=refs/heads/main \
+              -f commit_sha="${GITHUB_SHA}"
+          else
+            echo "SARIF is empty or contains no results, skipping upload"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
