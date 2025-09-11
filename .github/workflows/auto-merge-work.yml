@@ -61,11 +61,19 @@ jobs:
 
           echo "Attempting merge from $SOURCE to $TARGET"
 
-          # Fetch latest
-          git fetch origin $SOURCE:$SOURCE
-          git fetch origin $TARGET:$TARGET
+          # Fetch latest remote refs
+          git fetch origin $TARGET:refs/remotes/origin/$TARGET
+          git fetch origin $SOURCE:refs/remotes/origin/$SOURCE
 
           # Switch to target branch
+          git checkout $TARGET
+          git pull origin $TARGET
+
+          # Get the source branch content
+          git checkout $SOURCE
+          git pull origin $SOURCE
+
+          # Switch back to target and merge
           git checkout $TARGET
 
           # Try fast-forward merge first
