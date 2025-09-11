@@ -10,7 +10,7 @@ name: supply-chain
 
 on:
   push:
-    branches: [main, work/daily, final/github-actions-fix]
+    branches: [main, work/daily, final/github-actions-fix, work/daily-new]
     tags: ["v*.*.*"]
   workflow_dispatch:
 
