@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import logging
 import os
 import re
 from pathlib import Path
@@ -40,6 +41,8 @@ from packs_core.loader import load as load_pack
 from services.api_gateway.limits import enforce_limits
 
 # === KONFIGURACJA / CONFIGURATION ===
+
+logger = logging.getLogger(__name__)
 
 # === MODELE / MODELS ===
 
