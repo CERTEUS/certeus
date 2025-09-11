@@ -48,7 +48,7 @@ jobs:
         run: |
           python -m ruff check . || true
 
-      - name: Type check with MyPy  
+      - name: Type check with MyPy
         continue-on-error: true
         run: |
           python -m mypy --ignore-missing-imports . || true
