@@ -59,7 +59,7 @@ jobs:
       - name: Auto-merge via Pull Request
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
           SOURCE="${{ steps.branches.outputs.source }}"
           TARGET="${{ steps.branches.outputs.target }}"
