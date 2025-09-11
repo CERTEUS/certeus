@@ -1,0 +1,33 @@
+name: dependabot-bulk-automerge
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bulk-automerge:
+    name: Enable auto-merge for all Dependabot PRs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Enable auto-merge for all Dependabot PRs
+        run: |
+          echo "Ì¥ñ Bulk enabling auto-merge for all Dependabot PRs..."
+          
+          pr_count=0
+          gh pr list --author "app/dependabot" --json number,title | jq -r '.[] | .number' | while read pr_number; do
+            if [[ -n "$pr_number" ]]; then
+              echo "‚ö° Enabling auto-merge for PR #$pr_number"
+              gh pr merge $pr_number --auto --squash --delete-branch || echo "‚ö†Ô∏è Auto-merge already enabled or failed for PR #$pr_number"
+              ((pr_count++))
+            fi
+          done
+          
+          echo "‚úÖ Processed $pr_count Dependabot PRs"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
