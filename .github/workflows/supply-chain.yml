@@ -139,12 +139,11 @@ jobs:
           fi
 
   publish-sbom-to-repo:
-    name: Publish SBOMs to repo (security/sbom)
+    name: Publish SBOMs to repo (security/sbom) - DISABLED
     needs: sbom-and-scan
-    if: >-
-      github.event_name != 'pull_request' &&
-      (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
+    if: false # Disabled - main branch is protected, cannot auto-commit
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: write
     steps:
@@ -169,8 +168,12 @@ jobs:
           ls -la security/sbom || true
 
       - name: Commit SBOMs
+        if: false # Disabled due to protected branch
+        continue-on-error: true
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
         with:
           commit_message: "chore(security): publish SBOM artifacts"
           file_pattern: security/sbom/*.json
           add_options: "-A"
+          # Skip on protected branches to avoid push failures
+          skip_dirty_check: true
