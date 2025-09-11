@@ -15,9 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: Enable auto-merge for all Dependabot PRs
         run: |
-          echo "í´– Bulk enabling auto-merge for all Dependabot PRs..."
+          echo "ï¿½ï¿½ï¿½ Bulk enabling auto-merge for all Dependabot PRs..."
           
           pr_count=0
           gh pr list --author "app/dependabot" --json number,title | jq -r '.[] | .number' | while read pr_number; do

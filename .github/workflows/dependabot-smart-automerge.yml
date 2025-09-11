@@ -24,17 +24,17 @@ jobs:
       - name: Smart merge with comprehensive test checking
         run: |
           echo "��� Smart processing of Dependabot PRs..."
-          
+
           # Get all open Dependabot PRs
           gh pr list --author "app/dependabot" --json number,title | while read -r line; do
             pr_number=$(echo "$line" | grep -o '"number":[0-9]*' | cut -d':' -f2)
-            
+
             if [[ -n "$pr_number" ]]; then
               echo "��� Analyzing PR #$pr_number..."
-              
+
               # Get comprehensive status
               pr_status=$(gh pr view $pr_number --json statusCheckRollup,autoMergeRequest,mergeable,reviewDecision)
-              
+
               # Count different types of check results
               total_checks=$(echo "$pr_status" | grep -o '"conclusion":"[^"]*"' | wc -l)
               success_checks=$(echo "$pr_status" | grep -c '"conclusion":"SUCCESS"' || echo "0")
@@ -42,25 +42,25 @@ jobs:
               skipped_checks=$(echo "$pr_status" | grep -c '"conclusion":"SKIPPED"' || echo "0")
               failure_checks=$(echo "$pr_status" | grep -c '"conclusion":"FAILURE"' || echo "0")
               pending_checks=$(echo "$pr_status" | grep -c '"conclusion":"PENDING"' || echo "0")
-              
+
               passed_checks=$((success_checks + neutral_checks + skipped_checks))
-              
+
               echo "PR #$pr_number: Total=$total_checks, Passed=$passed_checks, Failed=$failure_checks, Pending=$pending_checks"
-              
+
               # Determine if PR is ready for merge
               if [[ $failure_checks -eq 0 && $pending_checks -eq 0 && $total_checks -gt 0 ]]; then
                 echo "✅ All checks completed successfully for PR #$pr_number"
-                
+
                 # Check merge status
                 mergeable=$(echo "$pr_status" | grep -o '"mergeable":"[^"]*"' | cut -d'"' -f4)
                 auto_merge=$(echo "$pr_status" | grep -o '"autoMergeRequest":[^}]*')
-                
+
                 # Enable auto-merge if not already enabled
                 if [[ "$auto_merge" == *"null"* || -z "$auto_merge" ]]; then
                   echo "⚡ Enabling auto-merge for PR #$pr_number"
                   gh pr merge $pr_number --auto --squash --delete-branch || echo "⚠️ Auto-merge setup failed"
                 fi
-                
+
                 # Try immediate merge if everything is ready
                 if [[ "$mergeable" == "MERGEABLE" ]]; then
                   echo "��� Attempting immediate merge for PR #$pr_number"
@@ -77,6 +77,6 @@ jobs:
               fi
             fi
           done
-          
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

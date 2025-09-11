@@ -6,7 +6,7 @@ on:
   check_suite:
     types: [completed]
   schedule:
-    - cron: '*/15 * * * *'  # Check every 15 minutes
+    - cron: "*/15 * * * *" # Check every 15 minutes
 
 permissions:
   contents: write
@@ -18,22 +18,22 @@ jobs:
     name: Auto-merge Dependabot PRs
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]' || github.event_name == 'schedule'
-    
+
     steps:
       - name: Auto-merge all ready Dependabot PRs
         run: |
-          echo "Ì¥ñ Processing Dependabot PRs..."
-          
+          echo "ÔøΩÔøΩÔøΩ Processing Dependabot PRs..."
+
           # Get all open Dependabot PRs with their status
           gh pr list --author "app/dependabot" --json number,title,statusCheckRollup,autoMergeRequest | \
           jq -r '.[] | select(.statusCheckRollup | length > 0) | select(.statusCheckRollup | map(.conclusion) | all(. == "SUCCESS" or . == "NEUTRAL" or . == "SKIPPED")) | .number' | \
           while read pr_number; do
             if [[ -n "$pr_number" ]]; then
               echo "‚úÖ All checks passed for PR #$pr_number"
-              
+
               # Check if auto-merge is already enabled
               auto_merge=$(gh pr view $pr_number --json autoMergeRequest --jq '.autoMergeRequest')
-              
+
               if [[ "$auto_merge" == "null" ]]; then
                 echo "‚ö° Enabling auto-merge for PR #$pr_number"
                 gh pr merge $pr_number --auto --squash --delete-branch
@@ -42,17 +42,17 @@ jobs:
               fi
             fi
           done
-          
+
           # Force merge PRs that are stuck with all green checks
-          echo "Ì¥Ñ Checking for PRs ready to merge immediately..."
+          echo "ÔøΩÔøΩÔøΩ Checking for PRs ready to merge immediately..."
           gh pr list --author "app/dependabot" --json number,title,statusCheckRollup,mergeable | \
           jq -r '.[] | select(.mergeable == "MERGEABLE") | select(.statusCheckRollup | length > 0) | select(.statusCheckRollup | map(.conclusion) | all(. == "SUCCESS" or . == "NEUTRAL" or . == "SKIPPED")) | .number' | \
           while read pr_number; do
             if [[ -n "$pr_number" ]]; then
-              echo "Ì∫Ä Force merging ready PR #$pr_number"
+              echo "ÔøΩÔøΩÔøΩ Force merging ready PR #$pr_number"
               gh pr merge $pr_number --squash --delete-branch || echo "‚ö†Ô∏è Failed to merge PR #$pr_number"
             fi
           done
-          
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

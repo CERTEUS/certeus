@@ -17,9 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: Monitor all test types
         run: |
-          echo "Ì¥ç Comprehensive Test Gate Monitor"
+          echo "ÔøΩÔøΩÔøΩ Comprehensive Test Gate Monitor"
           echo "Ensuring all critical tests pass before any merge"
           
           # Define all required test categories
@@ -41,7 +44,7 @@ jobs:
           
       - name: Report test status
         run: |
-          echo "Ì≥ä Test Status Summary:"
+          echo "ÔøΩÔøΩÔøΩ Test Status Summary:"
           echo "All defined workflows must complete successfully"
           echo "Auto-merge will only proceed when this gate passes"
           
