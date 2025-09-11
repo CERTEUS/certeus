@@ -29,9 +29,9 @@ import base64
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import time
+from pathlib import Path
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization
@@ -40,15 +40,10 @@ from fastapi import APIRouter, HTTPException, Request
 from jsonschema import Draft202012Validator
 from pydantic import BaseModel, Field, field_validator
 
-from core.pco.crypto import (
-    canonical_bundle_hash_hex,
-    canonical_digest_hex,
-    compute_leaf_hex,
-)
-from monitoring.metrics_slo import (
-    certeus_compile_duration_ms,
-    certeus_proof_verification_failed_total,
-)
+from core.pco.crypto import (canonical_bundle_hash_hex, canonical_digest_hex,
+                             compute_leaf_hex)
+from monitoring.metrics_slo import (certeus_compile_duration_ms,
+                                    certeus_proof_verification_failed_total)
 from services.api_gateway.limits import enforce_limits
 from services.proof_verifier import verify_drat, verify_lfsc
 from services.proofgate.app import PublishRequest, PublishResponse, publish
@@ -91,18 +86,18 @@ def _sanitize_rid(rid: str) -> str:
     """Sanitize resource ID for safe file path usage."""
     if not rid or not isinstance(rid, str):
         return ""
-    
+
     # Remove any characters that could be dangerous in file paths
     sanitized = re.sub(r'[^a-zA-Z0-9_\-.]', '', rid.strip())
-    
+
     # Prevent directory traversal
     if '..' in sanitized or sanitized.startswith('.'):
         return ""
-    
+
     # Limit length
     if len(sanitized) > 64:
         sanitized = sanitized[:64]
-    
+
     return sanitized
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
@@ -467,7 +462,7 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     safe_rid = _sanitize_rid(payload.rid)
     if not safe_rid:
         raise HTTPException(status_code=400, detail="Invalid resource ID")
-    
+
     out_path = out_dir / f"{safe_rid}.json"
 
     out_path.write_text(json.dumps(out_obj, ensure_ascii=False, indent=2), encoding="utf-8")
