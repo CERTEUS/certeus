@@ -1,0 +1,77 @@
+# +-------------------------------------------------------------+
+# |                          CERTEUS                            |
+# +-------------------------------------------------------------+
+# | FILE: .github/dependabot.yml                               |
+# | ROLE: Automated dependency updates                         |
+# +-------------------------------------------------------------+
+
+version: 2
+updates:
+  # === PYTHON DEPENDENCIES ===
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # === GITHUB ACTIONS ===
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # === DOCKER DEPENDENCIES ===
+  - package-ecosystem: "docker"
+    directory: "/infra/services/api_gateway"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "06:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/infra/services/proofgate"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "06:30"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/infra/services/boundary_service"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "07:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/.devcontainer"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "07:30"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "devcontainer"
+      include: "scope"
