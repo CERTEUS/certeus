@@ -109,6 +109,8 @@ def append_coverage_contribution(gamma: float, weight: float = 1.0, uncaptured: 
 
 
 class BarrierScenario(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    
     model_id: str
     energy: float
     model_uri: str
