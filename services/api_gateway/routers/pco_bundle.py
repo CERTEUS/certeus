@@ -30,6 +30,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import time
 from typing import Any
 
@@ -85,6 +86,24 @@ class PublicBundleIn(BaseModel):
 
 
 # === LOGIKA / LOGIC ===
+
+def _sanitize_rid(rid: str) -> str:
+    """Sanitize resource ID for safe file path usage."""
+    if not rid or not isinstance(rid, str):
+        return ""
+    
+    # Remove any characters that could be dangerous in file paths
+    sanitized = re.sub(r'[^a-zA-Z0-9_\-.]', '', rid.strip())
+    
+    # Prevent directory traversal
+    if '..' in sanitized or sanitized.startswith('.'):
+        return ""
+    
+    # Limit length
+    if len(sanitized) > 64:
+        sanitized = sanitized[:64]
+    
+    return sanitized
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
@@ -444,7 +463,12 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    out_path = out_dir / f"{payload.rid}.json"
+    # Sanitize rid for secure file path
+    safe_rid = _sanitize_rid(payload.rid)
+    if not safe_rid:
+        raise HTTPException(status_code=400, detail="Invalid resource ID")
+    
+    out_path = out_dir / f"{safe_rid}.json"
 
     out_path.write_text(json.dumps(out_obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
