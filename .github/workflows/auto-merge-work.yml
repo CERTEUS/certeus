@@ -31,8 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
-      contents: write
-      pull-requests: read
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
@@ -56,43 +56,45 @@ jobs:
             echo "target=main" >> $GITHUB_OUTPUT
           fi
 
-      - name: Fast-forward merge to main
+      - name: Direct merge to main
         continue-on-error: true
         run: |
           SOURCE="${{ steps.branches.outputs.source }}"
           TARGET="${{ steps.branches.outputs.target }}"
 
-          echo "Attempting merge from $SOURCE to $TARGET"
+          echo "Attempting direct merge from $SOURCE to $TARGET"
 
-          # Fetch latest remote refs
-          git fetch origin $TARGET:refs/remotes/origin/$TARGET
-          git fetch origin $SOURCE:refs/remotes/origin/$SOURCE
+          # Fetch all branches
+          git fetch --all
 
           # Switch to target branch
           git checkout $TARGET
           git pull origin $TARGET
 
-          # Get the source branch content
-          git checkout $SOURCE
+          # Get latest source
+          git checkout $SOURCE  
           git pull origin $SOURCE
 
-          # Switch back to target and merge
+          # Back to target and merge
           git checkout $TARGET
 
-          # Try fast-forward merge first
-          if git merge --ff-only $SOURCE; then
-            echo "✅ Fast-forward merge successful"
-            git push origin $TARGET
-            echo "✅ Pushed to $TARGET"
+          echo "Attempting rebase strategy merge..."
+          if git rebase origin/$SOURCE; then
+            echo "✅ Rebase successful"
+            git push origin $TARGET --force-with-lease
+            echo "✅ Force pushed rebased $TARGET"
           else
-            echo "⚠️ Fast-forward not possible, creating merge commit"
-            if git merge --no-ff $SOURCE -m "auto: Merge $SOURCE into $TARGET [auto-merge]"; then
-              echo "✅ Merge commit successful"
+            echo "⚠️ Rebase failed, trying merge strategy..."
+            git rebase --abort 2>/dev/null || true
+            
+            if git merge origin/$SOURCE --no-ff -m "auto: Merge $SOURCE into $TARGET [auto-merge]"; then
+              echo "✅ Merge successful"
               git push origin $TARGET
-              echo "✅ Pushed to $TARGET"
+              echo "✅ Pushed merged $TARGET"
             else
-              echo "❌ Merge failed - conflicts detected"
+              echo "❌ Both rebase and merge failed"
               echo "Manual intervention required"
+              git merge --abort 2>/dev/null || true
               exit 1
             fi
           fi
