@@ -251,7 +251,7 @@ def dry_run(req: InstallRequest) -> dict[str, Any]:
         ver = str(data.get("version") or "").strip()
         if not mod:
             result.setdefault("errors", []).append("missing_module")
-        if ver and not re.fullmatch(r"\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?", ver):
+        if ver and not re.fullmatch(r"\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.\-]{1,32})?", ver):
             result.setdefault("errors", []).append("invalid_version_semver")
         result["module"] = mod
         result["version"] = ver

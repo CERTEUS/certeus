@@ -190,7 +190,7 @@ def inject_header_and_docstring(path: Path) -> bool:
     # usuń WSZYSTKIE istniejące banery CERTEUS gdziekolwiek
 
     rest = re.sub(
-        r"(?ms)^# \+={69}\+\n(?:# \|.*\n)+# \+={69}\+\n\n?",
+        r"(?ms)^# \+={69}\+\n(?:# \|[^\n]*\n)+# \+={69}\+\n\n?",
         "",
         rest,
     )
@@ -240,7 +240,7 @@ def inject_header_and_docstring(path: Path) -> bool:
             # usuwaj kolejne docstringi PL/EN od razu po sobie
 
             while True:
-                skip = re.match(r"(?ms)^(?:[ \t]*#.*\n|[ \t]*\n)*", tail2)
+                skip = re.match(r"(?ms)^(?:[ \t]*#[^\n]*\n|[ \t]*\n)*", tail2)
 
                 s = skip.end() if skip else 0
 

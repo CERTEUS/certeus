@@ -37,6 +37,7 @@ from collections.abc import Mapping
 from datetime import UTC, datetime
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -83,7 +84,19 @@ def _hash_file_sha256(path: Path) -> str:
 
 
 def _now_iso_utc() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+
+
+def _sanitize_case_id(case_id: str) -> str:
+    """Sanitize case_id to prevent path traversal attacks."""
+    # Remove any path separators and dangerous characters
+    sanitized = re.sub(r'[<>:"/\|?*]', '_', case_id.strip())
+    # Remove .. patterns
+    sanitized = re.sub(r'\.\.+', '_', sanitized)
+    # Ensure it's not empty and not just dots/spaces
+    if not sanitized or sanitized.strip('.') == '':
+        sanitized = f"case_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
+    return sanitized[:100]  # Limit length
 
 
 def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Path) -> Path:
@@ -97,7 +110,9 @@ def _write_report(case_id: str, analysis_result: Mapping[str, Any], out_dir: Pat
 
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    filename = f"raport_{case_id}.txt"
+    # Sanitize case_id for filename safety
+    safe_case_id = _sanitize_case_id(case_id)
+    filename = f"raport_{safe_case_id}.txt"
 
     path = out_dir / filename
 
@@ -137,7 +152,7 @@ def export_endpoint(payload: ExportPayload, response: Response) -> ExportRespons
 
     """
 
-    case_id = payload.case_id.strip()
+    case_id = _sanitize_case_id(payload.case_id)
 
     if not case_id:
         raise HTTPException(status_code=400, detail="case_id required")

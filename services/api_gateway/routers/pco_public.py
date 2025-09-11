@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 from typing import Any
 
@@ -266,7 +267,24 @@ def _parse_merkle_proof(raw: object) -> list[MerkleStep]:
 
 
 def _bundle_path(rid: str) -> Path:
-    return _bundle_dir() / f"{rid}.json"
+    # Sanitize rid to prevent path traversal
+    sanitized_rid = re.sub(r'[^a-zA-Z0-9_-]', '', rid.strip())
+    if not sanitized_rid:
+        raise HTTPException(status_code=400, detail="Invalid resource ID")
+    
+    # Ensure the final path is within the bundle directory
+    bundle_dir = _bundle_dir()
+    candidate_path = bundle_dir / f"{sanitized_rid}.json"
+    
+    # Resolve and check if it's within the allowed directory
+    try:
+        resolved_path = candidate_path.resolve()
+        bundle_dir_resolved = bundle_dir.resolve()
+        if not str(resolved_path).startswith(str(bundle_dir_resolved)):
+            raise HTTPException(status_code=400, detail="Invalid path")
+        return resolved_path
+    except (OSError, ValueError):
+        raise HTTPException(status_code=400, detail="Invalid path")
 
 
 def _load_public_bundle_from_fs(rid: str) -> dict[str, Any]:

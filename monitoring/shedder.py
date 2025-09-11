@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import os
 import random
+import secrets
 import typing as _t
 
 from fastapi import FastAPI, Request, Response
@@ -132,7 +133,7 @@ def attach_shedder_middleware(app: FastAPI) -> None:
             method = request.method
             if _is_sheddable(path, method):
                 rate = _compute_shed_rate()
-                if rate > 0.0 and random.random() < rate:
+                if rate > 0.0 and secrets.SystemRandom().random() < rate:
                     tenant = "anonymous"
                     try:
                         from services.api_gateway.limits import get_tenant_id

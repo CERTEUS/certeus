@@ -21,6 +21,7 @@ from __future__ import annotations
 from collections.abc import Callable
 import os
 import random
+import secrets
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -50,7 +51,7 @@ def attach_shedder_middleware(app: FastAPI) -> None:
                 force_rate = max(0.0, min(1.0, _env_float("SHED_FORCE_RATE", 0.0)))
                 max_rate = max(0.0, min(1.0, _env_float("SHED_MAX_RATE", 1.0)))
                 rate = min(force_rate, max_rate)
-                if rate > 0.0 and random.random() < rate:
+                if rate > 0.0 and secrets.SystemRandom().random() < rate:
                     return JSONResponse({"detail": "shed"}, status_code=503)
         except Exception:
             pass

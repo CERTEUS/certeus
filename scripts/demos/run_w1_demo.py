@@ -60,6 +60,7 @@ def _gen_ed25519_env() -> tuple[str, str]:
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
     pub = sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
+    # WARNING: For demo purposes only - in production, use secure key storage
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = pub
     return pem, pub

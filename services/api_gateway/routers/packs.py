@@ -278,7 +278,9 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
     try:
         mod = __import__(mod_path, fromlist=["*"])  # nosec - local manifest
     except Exception as e:
-        return {"ok": False, "reason": f"import error: {e}"}
+        # Log detailed error server-side, return generic message to user
+        logger.error(f"Import error for pack {req.pack}: {e}")
+        return {"ok": False, "reason": "module import failed"}
     api = _MiniAPI()
     reg = getattr(mod, "register", None)
     if not callable(reg):
@@ -286,7 +288,9 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
     try:
         reg(api)  # type: ignore[misc]
     except Exception as e:
-        return {"ok": False, "reason": f"register() error: {e}"}
+        # Log detailed error server-side, return generic message to user  
+        logger.error(f"Register error for pack {req.pack}: {e}")
+        return {"ok": False, "reason": "pack registration failed"}
 
     # Prefer exporters (format JSON)
     if api.exporters:
@@ -299,10 +303,12 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
             res = fn(sample, **kwargs)  # type: ignore[misc]
             return {"ok": True, "used": {"type": "exporter", "key": key}, "result": res}
         except Exception as e:  # pragma: no cover
+            # Log detailed error server-side, return generic message to user
+            logger.error(f"Exporter error for pack {req.pack}, key {key}: {e}")
             return {
                 "ok": False,
                 "used": {"type": "exporter", "key": key},
-                "reason": str(e),
+                "reason": "pack exporter execution failed",
             }
 
     # Fallback: adapters
@@ -329,10 +335,12 @@ async def try_pack(req: TryRequest, request: Request) -> dict[str, Any]:
             res = fn(*args)  # type: ignore[misc]
             return {"ok": True, "used": {"type": "adapter", "key": key}, "result": res}
         except Exception as e:  # pragma: no cover
+            # Log detailed error server-side, return generic message to user
+            logger.error(f"Adapter error for pack {req.pack}, key {key}: {e}")
             return {
                 "ok": False,
                 "used": {"type": "adapter", "key": key},
-                "reason": str(e),
+                "reason": "pack adapter execution failed",
             }
 
     return {"ok": False, "reason": "no exporters/adapters registered"}

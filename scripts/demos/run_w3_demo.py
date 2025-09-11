@@ -46,6 +46,7 @@ def _gen_keys_env() -> Ed25519PrivateKey:
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption(),
     ).decode("utf-8")
+    # WARNING: For demo purposes only - in production, use secure key storage
     os.environ["ED25519_PRIVKEY_PEM"] = pem
     os.environ["ED25519_PUBKEY_HEX"] = (
         sk.public_key().public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()

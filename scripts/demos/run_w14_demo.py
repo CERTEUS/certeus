@@ -59,6 +59,7 @@ def gen_keypair() -> tuple[str, str]:
 
 
 def run_marketplace_demo(client: TestClient) -> dict[str, Any]:
+    # WARNING: For demo purposes only - in production, use secure key storage
     pem, pub_b64u = gen_keypair()
     os.environ["ED25519_PUBKEY_B64URL"] = pub_b64u
 
