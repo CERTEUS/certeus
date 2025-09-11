@@ -74,7 +74,8 @@ jobs:
           exit-code: "0"
 
       - name: Upload Trivy SARIF
-        if: always()
+        if: false # Temporarily disabled due to SARIF upload issues
+        continue-on-error: true # Don't fail entire workflow if SARIF upload fails
         uses: github/codeql-action/upload-sarif@34d76e91962e8cb2510669cd96bebd94e796a11f # v3
         with:
           sarif_file: trivy-fs.sarif
