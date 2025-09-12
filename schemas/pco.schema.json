@@ -1,0 +1,337 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://certeus.dev/schemas/pco/v1.0.json",
+  "title": "CERTEUS PCO v1.0",
+  "description": "Proof Carrying Object - kanoniczny dowód w systemie CERTEUS",
+  "type": "object",
+  "required": [
+    "version",
+    "case_id",
+    "created_at",
+    "jurisdiction",
+    "claims",
+    "sources",
+    "derivations",
+    "risk",
+    "ledger",
+    "signatures",
+    "reproducibility",
+    "status"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Wersja schematu PCO"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}-[0-9]{6}$",
+      "description": "Unikalny identyfikator sprawy (format: ABC-123456)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp utworzenia w formacie ISO 8601"
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["country", "domain", "law_time"],
+      "properties": {
+        "country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$",
+          "description": "Kod kraju ISO 3166-1 alpha-2"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["civil", "criminal", "commercial", "administrative", "labor", "regulatory", "other"],
+          "description": "Dziedzina prawna"
+        },
+        "law_time": {
+          "type": "string",
+          "format": "date",
+          "description": "Data obowiązywania prawa (YYYY-MM-DD)"
+        },
+        "court": {
+          "type": "string",
+          "description": "Identyfikator sądu (opcjonalny)"
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "text", "legal_basis", "confidence"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^claim-[0-9]+$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Treść roszczenia/tezy"
+          },
+          "legal_basis": {
+            "type": "object",
+            "required": ["statutes", "cases"],
+            "properties": {
+              "statutes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["code", "article"],
+                  "properties": {
+                    "code": {"type": "string"},
+                    "article": {"type": "string"},
+                    "text": {"type": "string"}
+                  }
+                }
+              },
+              "cases": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["court", "signature", "date"],
+                  "properties": {
+                    "court": {"type": "string"},
+                    "signature": {"type": "string"},
+                    "date": {"type": "string", "format": "date"},
+                    "summary": {"type": "string"}
+                  }
+                }
+              }
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Poziom pewności (0-1)"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "uri", "digest", "retrieved_at", "license"],
+        "properties": {
+          "id": {"type": "string"},
+          "uri": {"type": "string", "format": "uri"},
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "retrieved_at": {"type": "string", "format": "date-time"},
+          "license": {"type": "string"},
+          "content_type": {"type": "string"},
+          "size_bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "derivations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "solver", "proof_format", "artifact_digest"],
+        "properties": {
+          "claim_id": {"type": "string"},
+          "solver": {
+            "type": "string",
+            "enum": ["z3", "cvc5", "vampire", "eprover", "lean4", "coq"]
+          },
+          "solver_version": {"type": "string"},
+          "proof_format": {
+            "type": "string",
+            "enum": ["LFSC", "DRAT", "ALETHE", "COQ", "LEAN"]
+          },
+          "artifact_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "verification_time_ms": {"type": "integer", "minimum": 0},
+          "memory_mb": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": ["ece", "brier", "p95_latency_ms", "abstain_rate"],
+      "properties": {
+        "ece": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Expected Calibration Error"
+        },
+        "brier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Brier Score"
+        },
+        "p95_latency_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "95. percentyl latencji"
+        },
+        "abstain_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Częstość wstrzymania się od decyzji"
+        },
+        "uncertainty_bound": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Górna granica niepewności"
+        }
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "required": ["merkle_root", "block_height", "timestamp"],
+      "properties": {
+        "pco_tx_id": {"type": "string"},
+        "merkle_root": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "block_height": {"type": "integer", "minimum": 0},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "prev_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "alg", "signature", "key_id", "timestamp"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["producer", "auditor", "counsel", "court", "insurer", "witness"]
+          },
+          "alg": {
+            "type": "string",
+            "enum": ["ed25519", "p256", "p384", "rsa2048", "rsa4096"]
+          },
+          "key_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{16}$"
+          },
+          "signature": {
+            "type": "string",
+            "description": "Podpis w formacie base64url"
+          },
+          "timestamp": {"type": "string", "format": "date-time"},
+          "tsa_response": {
+            "type": "string",
+            "description": "Odpowiedź TSA (RFC3161) w base64"
+          }
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["image", "image_digest", "seed", "build_info"],
+      "properties": {
+        "image": {"type": "string"},
+        "image_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "seed": {"type": "string"},
+        "build_info": {
+          "type": "object",
+          "required": ["commit_sha", "build_time", "toolchain"],
+          "properties": {
+            "commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+            "build_time": {"type": "string", "format": "date-time"},
+            "toolchain": {"type": "string"},
+            "sbom_digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        },
+        "env": {"type": "object"}
+      }
+    },
+    "evidence_graph": {
+      "type": "object",
+      "description": "PROV JSON-LD reprezentacja evidence graph",
+      "required": ["@context", "@graph"],
+      "properties": {
+        "@context": {
+          "type": ["object", "array", "string"]
+        },
+        "@graph": {
+          "type": "array",
+          "items": {"type": "object"}
+        }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "mime", "digest", "size_bytes"],
+        "properties": {
+          "name": {"type": "string"},
+          "mime": {"type": "string"},
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "size_bytes": {"type": "integer", "minimum": 0},
+          "encryption": {
+            "type": "object",
+            "properties": {
+              "algorithm": {"type": "string"},
+              "key_id": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN", "REJECTED"],
+      "description": "Status publikacji ProofGate"
+    },
+    "extensions": {
+      "type": "object",
+      "description": "Pole dla rozszerzeń (QTMP, CFE, etc.)",
+      "properties": {
+        "qtmp": {
+          "type": "object",
+          "description": "Quantum Truth Measurement Protocol data"
+        },
+        "cfe": {
+          "type": "object",
+          "description": "Case Field Equations data"
+        },
+        "compliance": {
+          "type": "object",
+          "description": "Compliance frameworks mapping"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

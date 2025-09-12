@@ -27,8 +27,8 @@ EN: Main FastAPI app for CERTEUS: statics, routers, CORS (DEV), health.
 
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, UploadFile
@@ -37,9 +37,6 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from core.version import __version__
-from monitoring.otel_setup import setup_fastapi_otel
-from services.api_gateway.rate_limit import attach_rate_limit_middleware
 import services.api_gateway.routers.billing as billing
 import services.api_gateway.routers.billing_api as billing_api
 import services.api_gateway.routers.billing_quota as billing_quota
@@ -71,6 +68,9 @@ import services.api_gateway.routers.system as system  # /v1/ingest, /v1/analyze,
 import services.api_gateway.routers.tee as tee
 import services.api_gateway.routers.upn as upn
 import services.api_gateway.routers.verify as verify
+from core.version import __version__
+from monitoring.otel_setup import setup_fastapi_otel
+from services.api_gateway.rate_limit import attach_rate_limit_middleware
 from services.api_gateway.routers.well_known_jwks import router as jwks_router
 from services.api_gateway.security import attach_proof_only_middleware
 from services.api_gateway.shedder import attach_shedder_middleware
@@ -83,9 +83,11 @@ try:  # optional legacy alias; may be absent in some trees
 except Exception:
     fin_tokens_api = None  # type: ignore[assignment]
 try:  # optional: avoid hard fail if core/pco deps are unavailable
+    import services.api_gateway.routers.jwks as jwks  # type: ignore
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
 except Exception:
     pco_public = None  # type: ignore[assignment]
+    jwks = None  # type: ignore[assignment]
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -326,6 +328,8 @@ if pco_public is not None:
     app.include_router(pco_public.router)
 if pco_bundle is not None:
     app.include_router(pco_bundle.router)
+if jwks is not None:
+    app.include_router(jwks.router)
 app.include_router(export.router)
 app.include_router(ledger.router)
 app.include_router(mismatch.router)
@@ -418,12 +422,9 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
         from monitoring.metrics_slo import (
             certeus_http_request_duration_ms,
             certeus_http_request_duration_ms_tenant,
-            certeus_http_requests_total,
-            record_http_observation,
-        )
-        from services.api_gateway.limits import (
-            get_tenant_id,
-        )  # lazy import to avoid cycles
+            certeus_http_requests_total, record_http_observation)
+        from services.api_gateway.limits import \
+            get_tenant_id  # lazy import to avoid cycles
 
         route = request.scope.get("route")
         path_tmpl = getattr(route, "path", request.url.path)

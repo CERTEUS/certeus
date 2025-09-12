@@ -58,6 +58,218 @@ tags:
   - name: LEXENITH
     description: LEXENITH pilot endpoints
 paths:
+  # === PCO v1.0 Endpoints ===
+  /v1/pco/bundle:
+    post:
+      summary: Create and publish PCO Bundle v1.0
+      description: >-
+        Tworzy, waliduje, podpisuje i publikuje ProofBundle v1.0.
+        Zawiera pełny dowód z podpisami Ed25519 i zapisem do Ledgera.
+      tags: [PCO]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rid, smt2_hash, lfsc]
+              properties:
+                rid:
+                  type: string
+                  pattern: '^[A-Z]{3}-[0-9]{6}$'
+                  description: 'Unikalny identyfikator sprawy'
+                  example: 'CER-123456'
+                smt2_hash:
+                  type: string
+                  pattern: '^[a-f0-9]{64}$'
+                  description: 'SHA256 hash formuly SMT2'
+                lfsc:
+                  type: string
+                  description: 'Dowód w formacie LFSC'
+                drat:
+                  type: string
+                  nullable: true
+                  description: 'Opcjonalny dowód w formacie DRAT'
+                smt2:
+                  type: string
+                  nullable: true
+                  description: 'Pełna formuła SMT2 (opcjonalna)'
+                merkle_proof:
+                  type: array
+                  items:
+                    type: object
+                  description: 'Dowód Merkle dla weryfikacji'
+                jurisdiction:
+                  type: object
+                  properties:
+                    country:
+                      type: string
+                      pattern: '^[A-Z]{2}$'
+                    domain:
+                      type: string
+                      enum: [civil, criminal, commercial, administrative, labor, regulatory, other]
+                    law_time:
+                      type: string
+                      format: date
+                extensions:
+                  type: object
+                  description: 'Rozszerzenia (QTMP, CFE, etc.)'
+      responses:
+        '200':
+          description: PCO Bundle utworzony pomyślnie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PCOBundleResponse'
+        '400':
+          description: Błąd walidacji
+        '422':
+          description: Błąd weryfikacji dowodu
+        '500':
+          description: Błąd serwera
+
+  /v1/pco/public/{case_id}:
+    get:
+      summary: Get public PCO payload
+      description: >-
+        Zwraca publiczny (zredagowany) payload PCO dla danego case_id.
+        Wszystkie dane osobowe (PII) są usunięte zgodnie z polityką redakcji.
+      tags: [PCO]
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Z]{3}-[0-9]{6}$'
+          description: 'Identyfikator sprawy'
+          example: 'CER-123456'
+        - name: include_evidence
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: 'Czy dołączyć publiczne fragmenty evidence graph'
+      responses:
+        '200':
+          description: Publiczny PCO
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: 'Entity tag dla cache'
+            Last-Modified:
+              schema:
+                type: string
+                format: date-time
+              description: 'Data ostatniej modyfikacji'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PCOPublicResponse'
+        '404':
+          description: PCO nie znaleziono
+        '403':
+          description: Brak dostępu do PCO
+
+  /v1/verify:
+    post:
+      summary: Verify PCO Bundle or public payload
+      description: >-
+        Weryfikuje podpisy, dowody i spójność PCO Bundle lub publicznego payload.
+        Obsługuje weryfikację offline i online.
+      tags: [PCO]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [data, verification_type]
+              properties:
+                data:
+                  oneOf:
+                    - $ref: '#/components/schemas/PCOBundle'
+                    - $ref: '#/components/schemas/PCOPublic'
+                  description: 'Dane PCO do weryfikacji'
+                verification_type:
+                  type: string
+                  enum: [full, signatures_only, proofs_only, public_only]
+                  description: 'Typ weryfikacji'
+                offline:
+                  type: boolean
+                  default: false
+                  description: 'Czy przeprowadzić weryfikację offline'
+                trusted_keys:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Lista zaufanych kluczy publicznych'
+      responses:
+        '200':
+          description: Wynik weryfikacji
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResult'
+        '400':
+          description: Błąd w danych wejściowych
+
+  /.well-known/jwks.json:
+    get:
+      summary: Get JWKS with Ed25519 public keys
+      description: >-
+        Zwraca JSON Web Key Set z kluczami publicznymi Ed25519
+        używanymi do podpisywania PCO.
+      tags: [PCO]
+      responses:
+        '200':
+          description: JWKS
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [keys]
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      required: [kty, use, kid, x]
+                      properties:
+                        kty:
+                          type: string
+                          enum: [OKP]
+                        use:
+                          type: string
+                          enum: [sig]
+                        kid:
+                          type: string
+                        crv:
+                          type: string
+                          enum: [Ed25519]
+                        x:
+                          type: string
+                          description: 'Base64url encoded public key'
+
+  # === Legacy PCO Endpoints (backward compatibility) ===
+  /pco/public/{case_id}:
+    get:
+      summary: '[DEPRECATED] Get public PCO payload'
+      deprecated: true
+      description: 'Use /v1/pco/public/{case_id} instead'
+      tags: [PCO]
+      parameters:
+        - name: case_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '301':
+          description: 'Redirect to /v1/pco/public/{case_id}'
   /v1/cfe/geodesic:
     post:
       summary: Compute legal geodesic (CFE)
@@ -507,3 +719,324 @@ components:
             type: object
             properties: { sibling: { type: string }, dir: { type: string } }
         signature: { type: string }
+
+    # === PCO v1.0 Schemas ===
+    PCOBundle:
+      type: object
+      description: 'Pełny PCO Bundle v1.0'
+      required: [version, case_id, created_at, jurisdiction, claims, sources, risk, signatures, reproducibility, status]
+      properties:
+        version:
+          type: string
+          const: '1.0'
+        case_id:
+          type: string
+          pattern: '^[A-Z]{3}-[0-9]{6}$'
+        created_at:
+          type: string
+          format: date-time
+        jurisdiction:
+          type: object
+          required: [country, domain, law_time]
+          properties:
+            country:
+              type: string
+              pattern: '^[A-Z]{2}$'
+            domain:
+              type: string
+              enum: [civil, criminal, commercial, administrative, labor, regulatory, other]
+            law_time:
+              type: string
+              format: date
+        claims:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [id, text, legal_basis, confidence]
+            properties:
+              id:
+                type: string
+                pattern: '^claim-[0-9]+$'
+              text:
+                type: string
+                minLength: 10
+              legal_basis:
+                type: object
+                required: [statutes, cases]
+                properties:
+                  statutes:
+                    type: array
+                    items:
+                      type: object
+                      required: [code, article]
+                      properties:
+                        code: { type: string }
+                        article: { type: string }
+                        text: { type: string }
+                  cases:
+                    type: array
+                    items:
+                      type: object
+                      required: [court, signature, date]
+                      properties:
+                        court: { type: string }
+                        signature: { type: string }
+                        date: { type: string, format: date }
+                        summary: { type: string }
+              confidence:
+                type: number
+                minimum: 0
+                maximum: 1
+        sources:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [id, uri, digest, retrieved_at, license]
+            properties:
+              id: { type: string }
+              uri: { type: string, format: uri }
+              digest:
+                type: string
+                pattern: '^sha256:[a-f0-9]{64}$'
+              retrieved_at: { type: string, format: date-time }
+              license: { type: string }
+        derivations:
+          type: array
+          items:
+            type: object
+            required: [claim_id, solver, proof_format, artifact_digest]
+            properties:
+              claim_id: { type: string }
+              solver:
+                type: string
+                enum: [z3, cvc5, vampire, eprover, lean4, coq]
+              proof_format:
+                type: string
+                enum: [LFSC, DRAT, ALETHE, COQ, LEAN]
+              artifact_digest:
+                type: string
+                pattern: '^sha256:[a-f0-9]{64}$'
+        risk:
+          type: object
+          required: [ece, brier, p95_latency_ms, abstain_rate]
+          properties:
+            ece: { type: number, minimum: 0, maximum: 1 }
+            brier: { type: number, minimum: 0, maximum: 2 }
+            p95_latency_ms: { type: number, minimum: 0 }
+            abstain_rate: { type: number, minimum: 0, maximum: 1 }
+        ledger:
+          type: object
+          required: [merkle_root, block_height, timestamp]
+          properties:
+            merkle_root:
+              type: string
+              pattern: '^[a-f0-9]{64}$'
+            block_height: { type: integer, minimum: 0 }
+            timestamp: { type: string, format: date-time }
+        signatures:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [role, alg, signature, key_id, timestamp]
+            properties:
+              role:
+                type: string
+                enum: [producer, auditor, counsel, court, insurer, witness]
+              alg:
+                type: string
+                enum: [ed25519, p256, p384, rsa2048, rsa4096]
+              key_id:
+                type: string
+                pattern: '^[a-f0-9]{16}$'
+              signature: { type: string }
+              timestamp: { type: string, format: date-time }
+        reproducibility:
+          type: object
+          required: [image, image_digest, seed, build_info]
+          properties:
+            image: { type: string }
+            image_digest:
+              type: string
+              pattern: '^sha256:[a-f0-9]{64}$'
+            seed: { type: string }
+            build_info:
+              type: object
+              required: [commit_sha, build_time, toolchain]
+              properties:
+                commit_sha:
+                  type: string
+                  pattern: '^[a-f0-9]{40}$'
+                build_time: { type: string, format: date-time }
+                toolchain: { type: string }
+        status:
+          type: string
+          enum: [PUBLISH, CONDITIONAL, PENDING, ABSTAIN, REJECTED]
+        extensions:
+          type: object
+          description: 'Rozszerzenia (QTMP, CFE, etc.)'
+
+    PCOPublic:
+      type: object
+      description: 'Publiczny PCO z redakcją PII'
+      required: [version, case_id, created_at, jurisdiction, claims_summary, sources_summary, risk, ledger, signatures, reproducibility, status, redaction_info]
+      properties:
+        version:
+          type: string
+          const: '1.0'
+        case_id:
+          type: string
+          pattern: '^[A-Z]{3}-[0-9]{6}$'
+        created_at:
+          type: string
+          format: date-time
+        jurisdiction:
+          type: object
+          required: [country, domain]
+          properties:
+            country:
+              type: string
+              pattern: '^[A-Z]{2}$'
+            domain:
+              type: string
+              enum: [civil, criminal, commercial, administrative, labor, regulatory, other]
+        claims_summary:
+          type: object
+          required: [count, avg_confidence, domains]
+          properties:
+            count: { type: integer, minimum: 1 }
+            avg_confidence: { type: number, minimum: 0, maximum: 1 }
+            domains: { type: array, items: { type: string } }
+        sources_summary:
+          type: object
+          required: [count, total_size_bytes, types]
+          properties:
+            count: { type: integer, minimum: 1 }
+            total_size_bytes: { type: integer, minimum: 0 }
+            types: { type: array, items: { type: string } }
+        risk:
+          type: object
+          required: [ece, brier, p95_latency_ms, abstain_rate]
+          properties:
+            ece: { type: number, minimum: 0, maximum: 1 }
+            brier: { type: number, minimum: 0, maximum: 2 }
+            p95_latency_ms: { type: number, minimum: 0 }
+            abstain_rate: { type: number, minimum: 0, maximum: 1 }
+        ledger:
+          type: object
+          required: [merkle_root, block_height, timestamp]
+          properties:
+            merkle_root:
+              type: string
+              pattern: '^[a-f0-9]{64}$'
+            block_height: { type: integer, minimum: 0 }
+            timestamp: { type: string, format: date-time }
+            bundle_location:
+              type: string
+              format: uri
+        signatures:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [role, alg, signature, key_id, timestamp]
+            properties:
+              role:
+                type: string
+                enum: [producer, auditor, counsel, court, insurer, witness]
+              alg:
+                type: string
+                enum: [ed25519, p256, p384, rsa2048, rsa4096]
+              signature: { type: string }
+              timestamp: { type: string, format: date-time }
+        reproducibility:
+          type: object
+          required: [image, image_digest, build_info]
+          properties:
+            image: { type: string }
+            image_digest:
+              type: string
+              pattern: '^sha256:[a-f0-9]{64}$'
+            build_info:
+              type: object
+              required: [commit_sha, build_time, toolchain]
+              properties:
+                commit_sha:
+                  type: string
+                  pattern: '^[a-f0-9]{40}$'
+                build_time: { type: string, format: date-time }
+                toolchain: { type: string }
+        status:
+          type: string
+          enum: [PUBLISH, CONDITIONAL, PENDING, ABSTAIN, REJECTED]
+        redaction_info:
+          type: object
+          required: [redacted_at, redaction_policy, pii_removed]
+          properties:
+            redacted_at: { type: string, format: date-time }
+            redaction_policy: { type: string }
+            pii_removed:
+              type: array
+              items:
+                type: string
+                enum: [names, addresses, phone_numbers, emails, ids, financial_data, health_data, biometric_data]
+            etag: { type: string }
+
+    PCOBundleResponse:
+      allOf:
+        - $ref: '#/components/schemas/PCOBundle'
+        - type: object
+          properties:
+            # Legacy compatibility fields
+            rid: { type: string }
+            smt2_hash: { type: string }
+            lfsc: { type: string }
+            signature: { type: string }
+            ok: { type: boolean }
+
+    PCOPublicResponse:
+      $ref: '#/components/schemas/PCOPublic'
+
+    VerificationResult:
+      type: object
+      required: [valid, verification_time_ms]
+      properties:
+        valid:
+          type: boolean
+          description: 'Czy weryfikacja przeszła pomyślnie'
+        verification_time_ms:
+          type: number
+          minimum: 0
+        errors:
+          type: array
+          items:
+            type: string
+          description: 'Lista błędów weryfikacji'
+        warnings:
+          type: array
+          items:
+            type: string
+          description: 'Lista ostrzeżeń'
+        details:
+          type: object
+          properties:
+            signatures_valid:
+              type: boolean
+            proofs_valid:
+              type: boolean
+            schema_valid:
+              type: boolean
+            ledger_valid:
+              type: boolean
+            tsa_timestamps_valid:
+              type: boolean
+        verified_at:
+          type: string
+          format: date-time
+        verifier_info:
+          type: object
+          properties:
+            version: { type: string }
+            mode: { type: string, enum: [online, offline] }

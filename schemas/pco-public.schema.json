@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://certeus.dev/schemas/pco-public/v1.0.json",
+  "title": "CERTEUS PCO Public v1.0",
+  "description": "Public PCO - wersja z redakcją danych osobowych (PII)",
+  "type": "object",
+  "required": [
+    "version",
+    "case_id",
+    "created_at",
+    "jurisdiction",
+    "claims_summary",
+    "sources_summary",
+    "risk",
+    "ledger",
+    "signatures",
+    "reproducibility",
+    "status",
+    "redaction_info"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}-[0-9]{6}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["country", "domain"],
+      "properties": {
+        "country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["civil", "criminal", "commercial", "administrative", "labor", "regulatory", "other"]
+        },
+        "law_time": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "claims_summary": {
+      "type": "object",
+      "required": ["count", "avg_confidence", "domains"],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "avg_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "domains": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "redacted_texts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "redacted_length", "summary"],
+            "properties": {
+              "id": {"type": "string"},
+              "redacted_length": {"type": "integer"},
+              "summary": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Krótkie streszczenie bez PII"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sources_summary": {
+      "type": "object",
+      "required": ["count", "total_size_bytes", "types"],
+      "properties": {
+        "count": {"type": "integer", "minimum": 1},
+        "total_size_bytes": {"type": "integer", "minimum": 0},
+        "types": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "public_sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "uri", "digest"],
+            "properties": {
+              "id": {"type": "string"},
+              "uri": {"type": "string", "format": "uri"},
+              "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+              "license": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "derivations_summary": {
+      "type": "object",
+      "properties": {
+        "solvers_used": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "total_verification_time_ms": {"type": "integer", "minimum": 0},
+        "proof_formats": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": ["ece", "brier", "p95_latency_ms", "abstain_rate"],
+      "properties": {
+        "ece": {"type": "number", "minimum": 0, "maximum": 1},
+        "brier": {"type": "number", "minimum": 0, "maximum": 2},
+        "p95_latency_ms": {"type": "number", "minimum": 0},
+        "abstain_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "uncertainty_bound": {"type": "number", "minimum": 0}
+      }
+    },
+    "ledger": {
+      "type": "object",
+      "required": ["merkle_root", "block_height", "timestamp"],
+      "properties": {
+        "pco_tx_id": {"type": "string"},
+        "merkle_root": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "block_height": {"type": "integer", "minimum": 0},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "bundle_location": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI do pełnego bundla w Ledgerze"
+        }
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "alg", "signature", "key_id", "timestamp"],
+        "properties": {
+          "role": {"type": "string", "enum": ["producer", "auditor", "counsel", "court", "insurer", "witness"]},
+          "alg": {"type": "string", "enum": ["ed25519", "p256", "p384", "rsa2048", "rsa4096"]},
+          "key_id": {"type": "string", "pattern": "^[a-f0-9]{16}$"},
+          "signature": {"type": "string"},
+          "timestamp": {"type": "string", "format": "date-time"},
+          "tsa_response": {"type": "string", "description": "TSA timestamp (opcjonalny)"}
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "required": ["image", "image_digest", "build_info"],
+      "properties": {
+        "image": {"type": "string"},
+        "image_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "build_info": {
+          "type": "object",
+          "required": ["commit_sha", "build_time", "toolchain"],
+          "properties": {
+            "commit_sha": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+            "build_time": {"type": "string", "format": "date-time"},
+            "toolchain": {"type": "string"},
+            "sbom_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+          }
+        }
+      }
+    },
+    "evidence_graph_summary": {
+      "type": "object",
+      "description": "Publiczne streszczenie evidence graph",
+      "properties": {
+        "node_count": {"type": "integer", "minimum": 0},
+        "edge_count": {"type": "integer", "minimum": 0},
+        "public_nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "type": {"type": "string"},
+              "public_attributes": {"type": "object"}
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PUBLISH", "CONDITIONAL", "PENDING", "ABSTAIN", "REJECTED"]
+    },
+    "redaction_info": {
+      "type": "object",
+      "required": ["redacted_at", "redaction_policy", "pii_removed"],
+      "properties": {
+        "redacted_at": {"type": "string", "format": "date-time"},
+        "redaction_policy": {"type": "string"},
+        "pii_removed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["names", "addresses", "phone_numbers", "emails", "ids", "financial_data", "health_data", "biometric_data"]
+          }
+        },
+        "retention_period": {"type": "string"},
+        "etag": {
+          "type": "string",
+          "description": "ETag dla cache i wersjonowania"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "generated_at": {"type": "string", "format": "date-time"},
+        "generator_version": {"type": "string"},
+        "public_access_level": {
+          "type": "string",
+          "enum": ["public", "restricted", "confidential"]
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -26,6 +26,19 @@ dependencies = [
   "cryptography>=45,<46",
   "requests>=2.32.0",
   "prometheus_client>=0.22.0",
+  # A2 - Ledger dependencies
+  "asyncpg>=0.29.0",
+  "boto3>=1.35.0", 
+  "aiohttp>=3.10.0",
+  # A3 - PFS dependencies (optional)
+  "fusepy>=3.0.1; sys_platform == 'linux'",
+  # A4 - Formal Proofs dependencies (optional)
+  "z3-solver>=4.12.0",
+  "cvc5>=1.0.0",
+  "psutil>=5.9.0",
+  # A5 - QTMP dependencies
+  "numpy>=1.24.0",
+  "scipy>=1.10.0",
 ]
 
 [tool.setuptools]
