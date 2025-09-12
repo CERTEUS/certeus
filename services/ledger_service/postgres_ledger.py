@@ -66,6 +66,7 @@ class LedgerConfig:
     # TSA Configuration
     tsa_url: str | None = None
     tsa_enabled: bool = False
+    tsa_timeout: float = 10.0
 
     # Performance
     batch_size: int = 100
@@ -92,6 +93,7 @@ class LedgerConfig:
 
             tsa_url=os.getenv("CERTEUS_TSA_URL"),
             tsa_enabled=os.getenv("CERTEUS_TSA_ENABLED", "false").lower() == "true",
+            tsa_timeout=float(os.getenv("CERTEUS_TSA_TIMEOUT", "10.0")),
 
             batch_size=int(os.getenv("CERTEUS_BATCH_SIZE", "100")),
             merkle_anchor_interval=int(os.getenv("CERTEUS_MERKLE_ANCHOR_INTERVAL", "1000")),
