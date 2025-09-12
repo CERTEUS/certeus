@@ -18,11 +18,11 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import subprocess
 import sys
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -39,8 +39,8 @@ class ContractTestResult:
         self.total_tests = 0
         self.passed_tests = 0
         self.failed_tests = 0
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
         self.execution_time = 0.0
         self.coverage_percentage = 0.0
 
@@ -71,10 +71,10 @@ class ContractTester:
             # Try to parse YAML/JSON
             if self.spec_path.suffix == '.yaml':
                 import yaml
-                with open(self.spec_path, 'r', encoding='utf-8') as f:
+                with open(self.spec_path, encoding='utf-8') as f:
                     spec = yaml.safe_load(f)
             else:
-                with open(self.spec_path, 'r', encoding='utf-8') as f:
+                with open(self.spec_path, encoding='utf-8') as f:
                     spec = json.load(f)
             
             # Basic validation
@@ -163,7 +163,7 @@ class ContractTester:
             
             # Parse results
             if output_file.exists():
-                with open(output_file, 'r', encoding='utf-8') as f:
+                with open(output_file, encoding='utf-8') as f:
                     report_data = json.load(f)
                     self._parse_schemathesis_report(report_data)
             
@@ -179,7 +179,7 @@ class ContractTester:
             self.result.errors.append(f"Failed to run Schemathesis tests: {e}")
             return False
     
-    def _parse_schemathesis_report(self, report_data: Dict[str, Any]) -> None:
+    def _parse_schemathesis_report(self, report_data: dict[str, Any]) -> None:
         """Parse Schemathesis JSON report."""
         try:
             # Extract test statistics
@@ -304,7 +304,7 @@ class ContractTester:
         
         print(f"Markdown report saved: {md_report_file}")
     
-    def _generate_markdown_report(self, report_data: Dict[str, Any]) -> str:
+    def _generate_markdown_report(self, report_data: dict[str, Any]) -> str:
         """Generate markdown test report."""
         summary = report_data['summary']
         status_icon = 'PASS' if report_data['status'] == 'PASS' else 'FAIL'
@@ -430,7 +430,7 @@ def main() -> int:
     
     # Print summary
     print("\n" + "=" * 60)
-    print(f"A8 Contract Testing Summary:")
+    print("A8 Contract Testing Summary:")
     print(f"  Validation Steps: {steps_passed}/{total_steps} passed")
     print(f"  API Tests: {tester.result.passed_tests}/{tester.result.total_tests} passed")
     print(f"  Success Rate: {(tester.result.passed_tests / max(tester.result.total_tests, 1)) * 100:.1f}%")

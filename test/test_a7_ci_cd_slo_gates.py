@@ -9,13 +9,10 @@
 
 import json
 import os
+from pathlib import Path
 import subprocess
 import tempfile
-import time
 import unittest
-from pathlib import Path
-from typing import Any, Dict, List
-from unittest.mock import MagicMock, patch
 
 
 class TestA7SLOGateCheck(unittest.TestCase):

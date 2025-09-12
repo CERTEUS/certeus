@@ -24,23 +24,17 @@ DoD Requirements tested:
 """
 
 import asyncio
+from datetime import datetime
 import json
 import random
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
 from uuid import uuid4
 
-import asyncpg
-import pytest
-from fastapi.testclient import TestClient
 from httpx import AsyncClient
+import pytest
 
 from main import app
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
-from services.ledger_service.s3_storage import S3Config, S3StorageManager
-from services.ledger_service.tsa_client import RFC3161TSAClient
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 # === TEST FIXTURES ===
 
@@ -254,12 +248,12 @@ class TestA2LedgerIntegration:
         assert metrics_response["total_cases"] >= 1
         assert metrics_response["total_bundles"] >= 1
         
-        print(f"\n=== COMPLETE WORKFLOW INTEGRATION SUCCESS ===")
+        print("\n=== COMPLETE WORKFLOW INTEGRATION SUCCESS ===")
         print(f"Case: {case_id}")
         print(f"Events recorded: {events_to_record}")
         print(f"Bundle stored: {bundle_id}")
-        print(f"Chain integrity: ✓ Valid")
-        print(f"All API endpoints: ✓ Working")
+        print("Chain integrity: ✓ Valid")
+        print("All API endpoints: ✓ Working")
     
     @pytest.mark.asyncio
     async def test_performance_dod_validation(self, integration_ledger):
@@ -308,7 +302,7 @@ class TestA2LedgerIntegration:
         print(f"Events recorded: {target_events}")
         print(f"Duration: {duration:.2f}s")
         print(f"Performance: {events_per_second:.1f} events/s")
-        print(f"DoD Target: ≥1000 events/s")
+        print("DoD Target: ≥1000 events/s")
         print(f"Status: {'✓ PASS' if events_per_second >= 1000 else '✗ FAIL'}")
         
         # DoD Assertion
@@ -347,7 +341,7 @@ class TestA2LedgerIntegration:
         backup_start = time.time()
         
         # Create backup
-        backup_result = await integration_ledger._s3_client.create_backup(
+        await integration_ledger._s3_client.create_backup(
             backup_name=f"rpo_test_{int(backup_start)}",
             include_bundles=True
         )
@@ -356,7 +350,7 @@ class TestA2LedgerIntegration:
         backup_duration = backup_end - backup_start
         
         print(f"Backup duration: {backup_duration:.2f}s")
-        print(f"RPO Target: ≤15min (900s)")
+        print("RPO Target: ≤15min (900s)")
         print(f"RPO Status: {'✓ PASS' if backup_duration <= 900 else '✗ FAIL'}")
         
         assert backup_duration <= 900, f"RPO DoD not met: {backup_duration:.2f}s > 900s"
@@ -386,7 +380,7 @@ class TestA2LedgerIntegration:
         recovery_duration = recovery_end - recovery_start
         
         print(f"Recovery duration: {recovery_duration:.2f}s")
-        print(f"RTO Target: ≤30min (1800s)")
+        print("RTO Target: ≤30min (1800s)")
         print(f"RTO Status: {'✓ PASS' if recovery_duration <= 1800 else '✗ FAIL'}")
         
         assert recovery_duration <= 1800, f"RTO DoD not met: {recovery_duration:.2f}s > 1800s"
@@ -717,7 +711,7 @@ class TestA2LedgerStress:
         duration = end_time - start_time
         final_rate = events_recorded / duration
         
-        print(f"\n=== STRESS TEST RESULTS ===")
+        print("\n=== STRESS TEST RESULTS ===")
         print(f"Target events: {total_events}")
         print(f"Events recorded: {events_recorded}")
         print(f"Success rate: {events_recorded/total_events*100:.1f}%")

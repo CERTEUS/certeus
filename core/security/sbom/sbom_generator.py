@@ -2,17 +2,15 @@
 # Quantum-Resistance Temporal & Security Protocol
 # SBOM: CycloneDX format with CVE scanning integration
 
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
 import hashlib
 import json
 import logging
-import subprocess
-import sys
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+import uuid
 
 import pkg_resources
 
@@ -47,15 +45,15 @@ class ExternalReference:
     """External reference for component"""
     type: str  # vcs, website, documentation, etc.
     url: str
-    comment: Optional[str] = None
+    comment: str | None = None
 
 @dataclass
 class License:
     """License information"""
-    license_id: Optional[str] = None  # SPDX license ID
-    license_name: Optional[str] = None
-    license_text: Optional[str] = None
-    license_url: Optional[str] = None
+    license_id: str | None = None  # SPDX license ID
+    license_name: str | None = None
+    license_text: str | None = None
+    license_url: str | None = None
 
 @dataclass
 class Vulnerability:
@@ -63,11 +61,11 @@ class Vulnerability:
     id: str  # CVE-2023-1234
     source: str  # NVD, GitHub, etc.
     severity: str  # LOW, MEDIUM, HIGH, CRITICAL
-    cvss_score: Optional[float] = None
-    description: Optional[str] = None
-    recommendation: Optional[str] = None
-    published: Optional[datetime] = None
-    updated: Optional[datetime] = None
+    cvss_score: float | None = None
+    description: str | None = None
+    recommendation: str | None = None
+    published: datetime | None = None
+    updated: datetime | None = None
 
 @dataclass
 class Component:
@@ -76,19 +74,19 @@ class Component:
     name: str
     version: str
     bom_ref: str = field(default_factory=lambda: str(uuid.uuid4()))
-    supplier: Optional[str] = None
-    author: Optional[str] = None
-    publisher: Optional[str] = None
-    group: Optional[str] = None  # namespace/organization
-    description: Optional[str] = None
+    supplier: str | None = None
+    author: str | None = None
+    publisher: str | None = None
+    group: str | None = None  # namespace/organization
+    description: str | None = None
     scope: str = "required"  # required, optional, excluded
-    hashes: List[ComponentHash] = field(default_factory=list)
-    licenses: List[License] = field(default_factory=list)
-    copyright: Optional[str] = None
-    cpe: Optional[str] = None  # Common Platform Enumeration
-    purl: Optional[str] = None  # Package URL
-    external_references: List[ExternalReference] = field(default_factory=list)
-    vulnerabilities: List[Vulnerability] = field(default_factory=list)
+    hashes: list[ComponentHash] = field(default_factory=list)
+    licenses: list[License] = field(default_factory=list)
+    copyright: str | None = None
+    cpe: str | None = None  # Common Platform Enumeration
+    purl: str | None = None  # Package URL
+    external_references: list[ExternalReference] = field(default_factory=list)
+    vulnerabilities: list[Vulnerability] = field(default_factory=list)
     
 class SBOMGenerator:
     """
@@ -103,16 +101,16 @@ class SBOMGenerator:
     - Supply chain provenance tracking
     """
     
-    def __init__(self, project_path: Optional[Path] = None):
+    def __init__(self, project_path: Path | None = None):
         self.project_path = project_path or Path.cwd()
-        self.components: List[Component] = []
+        self.components: list[Component] = []
         self.metadata = {
-            "timestamp": datetime.now(timezone.utc),
+            "timestamp": datetime.now(UTC),
             "tools": ["certeus-sbom-generator"],
             "authors": [{"name": "CERTEUS Security Team"}]
         }
     
-    def analyze_python_dependencies(self) -> List[Component]:
+    def analyze_python_dependencies(self) -> list[Component]:
         """Analyze Python dependencies from installed packages"""
         
         components = []
@@ -131,7 +129,7 @@ class SBOMGenerator:
         
         return components
     
-    def _create_python_component(self, package: pkg_resources.Distribution) -> Optional[Component]:
+    def _create_python_component(self, package: pkg_resources.Distribution) -> Component | None:
         """Create CycloneDX component from Python package"""
         
         try:
@@ -165,7 +163,7 @@ class SBOMGenerator:
             logger.warning(f"Failed to create component for {package.project_name}: {e}")
             return None
     
-    def _get_package_description(self, package: pkg_resources.Distribution) -> Optional[str]:
+    def _get_package_description(self, package: pkg_resources.Distribution) -> str | None:
         """Get package description from metadata"""
         try:
             if hasattr(package, '_dep_map'):
@@ -177,7 +175,7 @@ class SBOMGenerator:
             pass
         return None
     
-    def _get_package_license(self, package: pkg_resources.Distribution) -> Optional[License]:
+    def _get_package_license(self, package: pkg_resources.Distribution) -> License | None:
         """Extract license information from package metadata"""
         try:
             if hasattr(package, '_dep_map'):
@@ -207,7 +205,7 @@ class SBOMGenerator:
             pass
         return None
     
-    def _get_package_references(self, package: pkg_resources.Distribution) -> List[ExternalReference]:
+    def _get_package_references(self, package: pkg_resources.Distribution) -> list[ExternalReference]:
         """Get external references for package"""
         references = []
         
@@ -238,7 +236,7 @@ class SBOMGenerator:
         
         return references
     
-    def _calculate_package_hash(self, location: str) -> Optional[ComponentHash]:
+    def _calculate_package_hash(self, location: str) -> ComponentHash | None:
         """Calculate hash for package integrity verification"""
         try:
             # For wheel files, calculate SHA-256
@@ -256,7 +254,7 @@ class SBOMGenerator:
         
         return None
     
-    def scan_vulnerabilities(self, component: Component) -> List[Vulnerability]:
+    def scan_vulnerabilities(self, component: Component) -> list[Vulnerability]:
         """
         Scan component for known vulnerabilities
         
@@ -303,7 +301,7 @@ class SBOMGenerator:
     
     def generate_sbom(self, 
                      include_dev_dependencies: bool = False,
-                     scan_for_vulnerabilities: bool = True) -> Dict[str, Any]:
+                     scan_for_vulnerabilities: bool = True) -> dict[str, Any]:
         """
         Generate complete SBOM in CycloneDX format
         
@@ -387,7 +385,7 @@ class SBOMGenerator:
         logger.info(f"Generated SBOM with {len(python_components)} components, {len(all_vulns)} vulnerabilities")
         return sbom
     
-    def _component_to_dict(self, component: Component) -> Dict[str, Any]:
+    def _component_to_dict(self, component: Component) -> dict[str, Any]:
         """Convert Component to CycloneDX dictionary format"""
         
         comp_dict = {
@@ -459,7 +457,7 @@ class SBOMGenerator:
         
         return comp_dict
     
-    def save_sbom(self, sbom: Dict[str, Any], output_path: Path):
+    def save_sbom(self, sbom: dict[str, Any], output_path: Path):
         """Save SBOM to file"""
         
         with open(output_path, 'w') as f:
@@ -467,7 +465,7 @@ class SBOMGenerator:
         
         logger.info(f"SBOM saved to {output_path}")
     
-    def validate_sbom(self, sbom: Dict[str, Any]) -> List[str]:
+    def validate_sbom(self, sbom: dict[str, Any]) -> list[str]:
         """Validate SBOM against CycloneDX schema"""
         
         validation_errors = []
@@ -492,7 +490,7 @@ class SBOMGenerator:
         
         return validation_errors
     
-    def get_vulnerability_summary(self, sbom: Dict[str, Any]) -> Dict[str, int]:
+    def get_vulnerability_summary(self, sbom: dict[str, Any]) -> dict[str, int]:
         """Get vulnerability count summary by severity"""
         
         summary = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}

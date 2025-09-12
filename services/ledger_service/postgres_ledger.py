@@ -25,23 +25,20 @@ DoD Requirements:
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from dataclasses import dataclass
+from datetime import UTC, datetime
 import hashlib
 import json
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
-from dataclasses import dataclass
-from datetime import UTC, datetime
-from typing import Any, AsyncGenerator, Dict, List, Optional
-from uuid import UUID, uuid4
+from typing import Any
 
 import asyncpg
 import boto3
 from botocore.exceptions import ClientError
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.x509.oid import NameOID
 
 # === CONFIGURATION ===
 
@@ -62,12 +59,12 @@ class LedgerConfig:
 
     # Optional S3 settings
     s3_region: str = "us-east-1"
-    s3_endpoint_url: Optional[str] = None  # For MinIO
-    s3_access_key: Optional[str] = None
-    s3_secret_key: Optional[str] = None
+    s3_endpoint_url: str | None = None  # For MinIO
+    s3_access_key: str | None = None
+    s3_secret_key: str | None = None
 
     # TSA Configuration
-    tsa_url: Optional[str] = None
+    tsa_url: str | None = None
     tsa_enabled: bool = False
 
     # Performance
@@ -112,19 +109,19 @@ class ChainEvent:
     event_id: int
     event_type: str
     case_id: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     timestamp: datetime
 
     # Chain integrity
     chain_position: int
-    chain_prev_hash: Optional[str]
+    chain_prev_hash: str | None
     chain_self_hash: str
 
     # Optional fields
-    document_hash: Optional[str] = None
-    bundle_id: Optional[str] = None
-    actor: Optional[str] = None
-    tsa_timestamp: Optional[bytes] = None
+    document_hash: str | None = None
+    bundle_id: str | None = None
+    actor: str | None = None
+    tsa_timestamp: bytes | None = None
 
 @dataclass
 class BundleRecord:
@@ -139,8 +136,8 @@ class BundleRecord:
     # S3 storage
     s3_bucket: str
     s3_key: str
-    s3_etag: Optional[str] = None
-    s3_version_id: Optional[str] = None
+    s3_etag: str | None = None
+    s3_version_id: str | None = None
 
     # Metadata
     size_bytes: int = 0
@@ -148,8 +145,8 @@ class BundleRecord:
     status: str = "STORED"
 
     # Timestamps
-    created_at: Optional[datetime] = None
-    published_at: Optional[datetime] = None
+    created_at: datetime | None = None
+    published_at: datetime | None = None
 
 @dataclass
 class ChainIntegrityResult:
@@ -157,7 +154,7 @@ class ChainIntegrityResult:
 
     is_valid: bool
     total_events: int
-    chain_breaks: List[int]
+    chain_breaks: list[int]
     last_verified_position: int
     verification_time: float
 
@@ -198,7 +195,7 @@ class PostgreSQLLedger:
     def __init__(self, config: LedgerConfig):
         self.config = config
         self.logger = logging.getLogger("certeus.ledger")
-        self._pool: Optional[asyncpg.Pool] = None
+        self._pool: asyncpg.Pool | None = None
         self._s3_client = None
         self._performance_metrics = {
             "events_ingested": 0,
@@ -252,10 +249,10 @@ class PostgreSQLLedger:
     async def create_case(
         self,
         case_id: str,
-        jurisdiction: Dict[str, Any],
-        metadata: Optional[Dict[str, Any]] = None,
-        actor: Optional[str] = None
-    ) -> Dict[str, Any]:
+        jurisdiction: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
+        actor: str | None = None
+    ) -> dict[str, Any]:
         """Create new legal case in ledger"""
 
         async with self.get_connection() as conn:
@@ -286,7 +283,7 @@ class PostgreSQLLedger:
                 "chain_hash": chain_hash
             }
 
-    async def get_case(self, case_id: str) -> Optional[Dict[str, Any]]:
+    async def get_case(self, case_id: str) -> dict[str, Any] | None:
         """Get case details"""
 
         async with self.get_connection() as conn:
@@ -305,10 +302,10 @@ class PostgreSQLLedger:
         self,
         event_type: str,
         case_id: str,
-        payload: Optional[Dict[str, Any]] = None,
-        document_hash: Optional[str] = None,
-        bundle_id: Optional[str] = None,
-        actor: Optional[str] = None
+        payload: dict[str, Any] | None = None,
+        document_hash: str | None = None,
+        bundle_id: str | None = None,
+        actor: str | None = None
     ) -> ChainEvent:
         """Record new event in ledger with chain integrity"""
 
@@ -332,10 +329,10 @@ class PostgreSQLLedger:
         conn: asyncpg.Connection,
         event_type: str,
         case_id: str,
-        payload: Dict[str, Any],
-        document_hash: Optional[str] = None,
-        bundle_id: Optional[str] = None,
-        actor: Optional[str] = None
+        payload: dict[str, Any],
+        document_hash: str | None = None,
+        bundle_id: str | None = None,
+        actor: str | None = None
     ) -> ChainEvent:
         """Internal event recording with database transaction"""
 
@@ -450,7 +447,7 @@ class PostgreSQLLedger:
             created_at=row["created_at"]
         )
 
-    async def get_bundle(self, bundle_id: str) -> Optional[BundleRecord]:
+    async def get_bundle(self, bundle_id: str) -> BundleRecord | None:
         """Get bundle metadata"""
 
         async with self.get_connection() as conn:
@@ -478,7 +475,7 @@ class PostgreSQLLedger:
                 published_at=row["published_at"]
             )
 
-    async def download_bundle(self, bundle_id: str) -> Optional[bytes]:
+    async def download_bundle(self, bundle_id: str) -> bytes | None:
         """Download bundle data from S3"""
 
         bundle = await self.get_bundle(bundle_id)
@@ -500,7 +497,7 @@ class PostgreSQLLedger:
     async def verify_chain_integrity(
         self,
         from_position: int = 0,
-        to_position: Optional[int] = None
+        to_position: int | None = None
     ) -> ChainIntegrityResult:
         """Verify cryptographic chain integrity"""
 
@@ -546,7 +543,7 @@ class PostgreSQLLedger:
 
     # === HEALTH AND MONITORING ===
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Comprehensive health check"""
 
         async with self.get_connection() as conn:
@@ -566,7 +563,7 @@ class PostgreSQLLedger:
 
             return health_data
 
-    async def get_performance_stats(self) -> Dict[str, Any]:
+    async def get_performance_stats(self) -> dict[str, Any]:
         """Get detailed performance statistics"""
 
         async with self.get_connection() as conn:
@@ -583,8 +580,8 @@ class PostgreSQLLedger:
     def _compute_case_hash(
         self,
         case_id: str,
-        jurisdiction: Dict[str, Any],
-        metadata: Dict[str, Any]
+        jurisdiction: dict[str, Any],
+        metadata: dict[str, Any]
     ) -> str:
         """Compute deterministic hash for case"""
 
@@ -598,7 +595,7 @@ class PostgreSQLLedger:
         canonical_json = json.dumps(hash_input, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(canonical_json.encode()).hexdigest()
 
-    async def _get_tsa_timestamp(self, payload: Dict[str, Any]) -> bytes:
+    async def _get_tsa_timestamp(self, payload: dict[str, Any]) -> bytes:
         """Get RFC3161 TSA timestamp"""
 
         if not self.config.tsa_url:
@@ -623,7 +620,7 @@ class PostgreSQLLedger:
 
 # === FACTORY AND GLOBAL INSTANCE ===
 
-_global_ledger: Optional[PostgreSQLLedger] = None
+_global_ledger: PostgreSQLLedger | None = None
 
 async def get_ledger() -> PostgreSQLLedger:
     """Get global ledger instance"""

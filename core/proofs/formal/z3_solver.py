@@ -20,14 +20,9 @@ Dependencies:
 - z3-solver: Microsoft Z3 SMT solver Python bindings
 """
 
-import asyncio
-import os
-import subprocess
-import tempfile
+from datetime import UTC, datetime
 import time
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     import z3
@@ -37,9 +32,7 @@ except ImportError:
     z3 = None
 
 from core.logging import get_logger
-from core.proofs.formal.solver_interface import (ProofArtifact, ProofResult,
-                                                 SMTSolverInterface,
-                                                 SolverConfig, SolverType)
+from core.proofs.formal.solver_interface import ProofArtifact, ProofResult, SMTSolverInterface, SolverConfig, SolverType
 
 logger = get_logger("z3_solver")
 
@@ -101,7 +94,7 @@ class Z3Solver(SMTSolverInterface):
             return "z3-unknown"
     
     async def solve(self, smt_formula: str, 
-                   problem_id: Optional[str] = None) -> ProofArtifact:
+                   problem_id: str | None = None) -> ProofArtifact:
         """
         Solve SMT formula using Z3 and generate proof artifact
         
@@ -182,7 +175,7 @@ class Z3Solver(SMTSolverInterface):
             
             artifact = ProofArtifact(
                 id=artifact_id,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=SolverType.Z3,
                 solver_version=self.get_version(),
                 smt_formula=smt_formula,
@@ -211,7 +204,7 @@ class Z3Solver(SMTSolverInterface):
             
             artifact = ProofArtifact(
                 id=artifact_id,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=SolverType.Z3,
                 solver_version=self.get_version(),
                 smt_formula=smt_formula,
@@ -231,7 +224,7 @@ class Z3Solver(SMTSolverInterface):
             
             artifact = ProofArtifact(
                 id=artifact_id,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=SolverType.Z3,
                 solver_version=self.get_version(),
                 smt_formula=smt_formula,
@@ -297,7 +290,7 @@ class Z3Solver(SMTSolverInterface):
             self.logger.error(f"Proof verification error: {e}")
             return False
     
-    def _model_to_dict(self, model: Any) -> Dict[str, Any]:
+    def _model_to_dict(self, model: Any) -> dict[str, Any]:
         """Convert Z3 model to dictionary format"""
         
         result = {}
@@ -344,7 +337,7 @@ class Z3Solver(SMTSolverInterface):
         complexity_ratio = len(lines1) / max(len(lines2), 1)
         return 0.8 <= complexity_ratio <= 1.2
     
-    async def _verify_model(self, smt_formula: str, model: Dict[str, Any]) -> bool:
+    async def _verify_model(self, smt_formula: str, model: dict[str, Any]) -> bool:
         """Verify that a model satisfies the formula"""
         
         try:
@@ -372,7 +365,7 @@ class Z3Solver(SMTSolverInterface):
             return False
     
     async def _simulate_solve(self, smt_formula: str, 
-                            problem_id: Optional[str] = None) -> ProofArtifact:
+                            problem_id: str | None = None) -> ProofArtifact:
         """Simulate solve when Z3 is not available"""
         
         problem_hash = self.generate_problem_hash(smt_formula)
@@ -394,7 +387,7 @@ class Z3Solver(SMTSolverInterface):
         
         artifact = ProofArtifact(
             id=artifact_id,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             solver_type=SolverType.SIMULATE,
             solver_version="simulate-1.0",
             smt_formula=smt_formula,

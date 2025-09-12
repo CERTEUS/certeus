@@ -2,24 +2,20 @@
 # Quantum-Resistance Temporal & Security Protocol
 # Keys: Ed25519 cryptography with KMS/HSM support and rotation
 
-import base64
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
 import hashlib
 import json
 import logging
 import os
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 # Ed25519 cryptography
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives.serialization import (Encoding,
-                                                          NoEncryption,
-                                                          PrivateFormat,
-                                                          PublicFormat)
+from cryptography.hazmat.primitives.serialization import Encoding, NoEncryption, PrivateFormat, PublicFormat
 
 logger = logging.getLogger(__name__)
 
@@ -49,16 +45,16 @@ class KeyMetadata:
     key_id: str
     key_type: KeyType
     created_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     status: KeyStatus = KeyStatus.ACTIVE
     purpose: str = "signing"
     algorithm: str = "Ed25519"
     key_size: int = 256  # bits
     owner: str = "certeus-system"
-    rotation_policy_id: Optional[str] = None
-    parent_key_id: Optional[str] = None  # For key hierarchy
-    tags: Dict[str, str] = field(default_factory=dict)
-    access_permissions: List[str] = field(default_factory=list)
+    rotation_policy_id: str | None = None
+    parent_key_id: str | None = None  # For key hierarchy
+    tags: dict[str, str] = field(default_factory=dict)
+    access_permissions: list[str] = field(default_factory=list)
 
 @dataclass
 class KeyRotationPolicy:
@@ -69,7 +65,7 @@ class KeyRotationPolicy:
     auto_rotate: bool = False
     max_key_age_days: int = 365
     backup_count: int = 3
-    notification_endpoints: List[str] = field(default_factory=list)
+    notification_endpoints: list[str] = field(default_factory=list)
     
     def __post_init__(self):
         if self.rotation_interval_days > self.max_key_age_days:
@@ -90,18 +86,18 @@ class KeyManager:
     
     def __init__(self, 
                  store_type: KeyStoreType = KeyStoreType.SOFTWARE,
-                 key_store_path: Optional[str] = None,
-                 kms_config: Optional[Dict[str, Any]] = None):
+                 key_store_path: str | None = None,
+                 kms_config: dict[str, Any] | None = None):
         self.store_type = store_type
         self.key_store_path = Path(key_store_path or "./keys")
         self.kms_config = kms_config or {}
         
         # In-memory key cache for performance
-        self._key_cache: Dict[str, Any] = {}
-        self._metadata_cache: Dict[str, KeyMetadata] = {}
+        self._key_cache: dict[str, Any] = {}
+        self._metadata_cache: dict[str, KeyMetadata] = {}
         
         # Rotation policies
-        self._rotation_policies: Dict[str, KeyRotationPolicy] = {}
+        self._rotation_policies: dict[str, KeyRotationPolicy] = {}
         
         # Initialize key store
         self._initialize_key_store()
@@ -138,9 +134,9 @@ class KeyManager:
                     key_id: str,
                     key_type: KeyType = KeyType.ED25519,
                     purpose: str = "signing",
-                    expires_in_days: Optional[int] = None,
-                    rotation_policy_id: Optional[str] = None,
-                    tags: Optional[Dict[str, str]] = None) -> KeyMetadata:
+                    expires_in_days: int | None = None,
+                    rotation_policy_id: str | None = None,
+                    tags: dict[str, str] | None = None) -> KeyMetadata:
         """
         Generate new cryptographic key pair
         
@@ -170,7 +166,7 @@ class KeyManager:
             raise ValueError(f"Unsupported key type: {key_type}")
         
         # Create metadata
-        created_at = datetime.now(timezone.utc)
+        created_at = datetime.now(UTC)
         expires_at = None
         if expires_in_days:
             expires_at = created_at + timedelta(days=expires_in_days)
@@ -364,7 +360,7 @@ class KeyManager:
             if not metadata_path.exists():
                 raise FileNotFoundError(f"Key metadata not found: {key_id}")
             
-            with open(metadata_path, 'r') as f:
+            with open(metadata_path) as f:
                 metadata_dict = json.load(f)
             
             metadata = KeyMetadata(
@@ -390,7 +386,7 @@ class KeyManager:
         else:
             raise NotImplementedError(f"Metadata loading for {self.store_type.value} not implemented")
     
-    def list_keys(self, status_filter: Optional[KeyStatus] = None) -> List[KeyMetadata]:
+    def list_keys(self, status_filter: KeyStatus | None = None) -> list[KeyMetadata]:
         """List all keys with optional status filtering"""
         
         keys = []
@@ -409,7 +405,7 @@ class KeyManager:
         
         return sorted(keys, key=lambda k: k.created_at)
     
-    def rotate_key(self, key_id: str, new_key_id: Optional[str] = None) -> KeyMetadata:
+    def rotate_key(self, key_id: str, new_key_id: str | None = None) -> KeyMetadata:
         """
         Rotate key by generating new key and deprecating old one
         
@@ -424,7 +420,7 @@ class KeyManager:
         old_metadata = self.get_key_metadata(key_id)
         
         if new_key_id is None:
-            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
             new_key_id = f"{key_id}_rotated_{timestamp}"
         
         # Generate new key with same properties
@@ -457,7 +453,7 @@ class KeyManager:
         if self.store_type == KeyStoreType.SOFTWARE:
             metadata_path = self.key_store_path / "metadata" / f"{key_id}.json"
             
-            with open(metadata_path, 'r') as f:
+            with open(metadata_path) as f:
                 metadata_dict = json.load(f)
             
             metadata_dict['status'] = status.value
@@ -472,11 +468,11 @@ class KeyManager:
         self._rotation_policies[policy.policy_id] = policy
         logger.info(f"Created rotation policy: {policy.policy_id}")
     
-    def get_keys_needing_rotation(self) -> List[KeyMetadata]:
+    def get_keys_needing_rotation(self) -> list[KeyMetadata]:
         """Get keys that need rotation based on policies"""
         
         keys_to_rotate = []
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         
         for metadata in self.list_keys(KeyStatus.ACTIVE):
             if metadata.rotation_policy_id:

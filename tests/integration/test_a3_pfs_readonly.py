@@ -23,43 +23,42 @@ DoD Requirements tested:
 """
 
 import asyncio
+from datetime import datetime
 import hashlib
 import os
 import platform
-import subprocess
 import tempfile
-import time
-from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-from unittest.mock import Mock, patch
 
 import pytest
 
-from core.pfs.filesystem_interface import (ExtendedAttributes, FileHash,
-                                           FileNotFoundError, PFSConfig,
-                                           PFSFilesystemFactory,
-                                           PFSFilesystemInterface,
-                                           ReadOnlyViolationError,
-                                           SupportedPlatform,
-                                           VirtualDirectoryInfo,
-                                           VirtualFileInfo,
-                                           get_current_platform)
+from core.pfs.filesystem_interface import (
+    ExtendedAttributes,
+    FileHash,
+    FileNotFoundError,
+    PFSConfig,
+    PFSFilesystemFactory,
+    PFSFilesystemInterface,
+    ReadOnlyViolationError,
+    SupportedPlatform,
+    VirtualDirectoryInfo,
+    VirtualFileInfo,
+    get_current_platform,
+)
 
 # Platform-specific imports with fallbacks
 try:
-    from services.pfs_service.linux_fuse import (LinuxFUSEFilesystem,
-                                                 is_fuse_available)
+    from services.pfs_service.linux_fuse import LinuxFUSEFilesystem, is_fuse_available
 except ImportError:
     LinuxFUSEFilesystem = None
-    is_fuse_available = lambda: False
+    def is_fuse_available():
+        return False
 
 try:
-    from services.pfs_service.windows_dokan import (WindowsDokanFilesystem,
-                                                    is_dokan_available)
+    from services.pfs_service.windows_dokan import WindowsDokanFilesystem, is_dokan_available
 except ImportError:
     WindowsDokanFilesystem = None
-    is_dokan_available = lambda: False
+    def is_dokan_available():
+        return False
 
 # === TEST FIXTURES ===
 
@@ -627,7 +626,7 @@ class TestCISmokeTests:
             print("5. Verifying read-only enforcement...")
             try:
                 await fs.create("/illegal_file.txt", 0o644)
-                assert False, "Create should have failed"
+                raise AssertionError("Create should have failed")
             except ReadOnlyViolationError:
                 smoke_test_results["readonly_enforcement"] = True
                 print("   ✓ Read-only enforcement working")
@@ -639,7 +638,7 @@ class TestCISmokeTests:
             print("   ✓ Unmount successful")
             
             # Generate CI report
-            print(f"\n=== CI SMOKE TEST RESULTS ===")
+            print("\n=== CI SMOKE TEST RESULTS ===")
             all_passed = all(smoke_test_results.values())
             
             for test, passed in smoke_test_results.items():
@@ -677,7 +676,7 @@ class TestCISmokeTests:
             "dependencies_installed": False
         }
         
-        print(f"\n=== PLATFORM CAPABILITIES CHECK ===")
+        print("\n=== PLATFORM CAPABILITIES CHECK ===")
         print(f"Detected platform: {current_platform.value}")
         
         # Check filesystem availability
@@ -699,7 +698,7 @@ class TestCISmokeTests:
         
         # Try creating filesystem instance
         try:
-            fs = PFSFilesystemFactory.create_filesystem()
+            PFSFilesystemFactory.create_filesystem()
             print("✓ Filesystem factory working")
         except Exception as e:
             print(f"✗ Filesystem factory failed: {str(e)}")

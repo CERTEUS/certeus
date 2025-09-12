@@ -15,18 +15,15 @@ EN: Contract tests ensuring 100% API ↔ Schema compliance for PCO v1.0.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any, Dict
-from unittest.mock import MagicMock, patch
+from typing import Any
+from unittest.mock import patch
 
-import pytest
 from fastapi.testclient import TestClient
-from jsonschema import Draft202012Validator, ValidationError
+import pytest
 
 from core.pco.evidence_graph import EvidenceGraphBuilder
-from core.pco.validators import (PCOContractValidator, PCOPublicValidator,
-                                 PCOValidator)
+from core.pco.validators import PCOContractValidator, PCOPublicValidator, PCOValidator
 from services.api_gateway.main import app
 
 
@@ -77,14 +74,13 @@ class TestPCOContractCompliance:
     @pytest.fixture
     def mock_ed25519_key(self):
         """Mock klucza Ed25519."""
-        from cryptography.hazmat.primitives.asymmetric.ed25519 import \
-            Ed25519PrivateKey
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
         return Ed25519PrivateKey.generate()
 
     def test_bundle_endpoint_schema_compliance(
         self,
         client: TestClient,
-        valid_pco_request: Dict[str, Any],
+        valid_pco_request: dict[str, Any],
         contract_validator: PCOContractValidator,
         mock_ed25519_key
     ):
@@ -210,15 +206,10 @@ class TestPCOContractCompliance:
     def test_verify_endpoint_contract_compliance(
         self,
         client: TestClient,
-        valid_pco_request: Dict[str, Any]
+        valid_pco_request: dict[str, Any]
     ):
         """Test: /v1/verify endpoint contract compliance."""
 
-        verify_request = {
-            "data": valid_pco_request,
-            "verification_type": "full",
-            "offline": False
-        }
 
         # Mock response structure
         expected_response_structure = {
@@ -275,7 +266,7 @@ class TestPCOContractCompliance:
 
     def test_evidence_graph_in_pco_schema_compliance(
         self,
-        valid_pco_request: Dict[str, Any]
+        valid_pco_request: dict[str, Any]
     ):
         """Test: Evidence Graph w PCO jest zgodny z PROV JSON-LD."""
 
@@ -300,7 +291,7 @@ class TestPCOContractCompliance:
 
     def test_pco_to_public_redaction_compliance(
         self,
-        valid_pco_request: Dict[str, Any],
+        valid_pco_request: dict[str, Any],
         pco_public_validator: PCOPublicValidator
     ):
         """Test: Redakcja PCO → PCO Public zachowuje zgodność schematów."""
@@ -436,7 +427,7 @@ class TestPCOContractCompliance:
 
         if openapi_path.exists():
             import yaml
-            with open(openapi_path, 'r', encoding='utf-8') as f:
+            with open(openapi_path, encoding='utf-8') as f:
                 openapi_spec = yaml.safe_load(f)
 
             paths = openapi_spec.get("paths", {})
@@ -470,7 +461,7 @@ class TestPCOContractCompliance:
     def test_end_to_end_contract_flow(
         self,
         client: TestClient,
-        valid_pco_request: Dict[str, Any],
+        valid_pco_request: dict[str, Any],
         contract_validator: PCOContractValidator,
         mock_ed25519_key
     ):
@@ -500,7 +491,7 @@ class TestPCOContractCompliance:
         assert len(bundle_errors) == 0
 
         # Step 2: Get public PCO (mocked)
-        case_id = bundle_data.get("case_id", valid_pco_request["rid"])
+        bundle_data.get("case_id", valid_pco_request["rid"])
 
         # In real implementation, this would fetch from ledger
         # For contract testing, we verify the expected structure

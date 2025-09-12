@@ -29,22 +29,20 @@ DoD Requirements Tested:
 5. Artifact limits (time, memory) enforcement
 """
 
-import asyncio
-import hashlib
-import json
-import tempfile
-import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+import tempfile
 
 import pytest
 
 from core.proofs.formal.cvc5_solver import CVC5_AVAILABLE, CVC5Solver
-from core.proofs.formal.solver_interface import (ProofArtifact,
-                                                 ProofArtifactManager,
-                                                 ProofResult, SolverConfig,
-                                                 SolverType)
+from core.proofs.formal.solver_interface import (
+    ProofArtifact,
+    ProofArtifactManager,
+    ProofResult,
+    SolverConfig,
+    SolverType,
+)
 from core.proofs.formal.z3_solver import Z3_AVAILABLE, Z3Solver
 from services.proof_service.formal_proof_service import FormalProofService
 
@@ -109,7 +107,7 @@ class TestSolverInterface:
         
         artifact = ProofArtifact(
             id="test_proof_001",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             solver_type=SolverType.Z3,
             solver_version="z3-4.12.0",
             smt_formula="(assert true)",
@@ -154,7 +152,7 @@ class TestProofArtifactManager:
         # Create test artifact
         artifact = ProofArtifact(
             id="storage_test_001",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             solver_type=SolverType.Z3,
             solver_version="z3-4.12.0",
             smt_formula="(assert (> x 0))",
@@ -195,7 +193,7 @@ class TestProofArtifactManager:
         
         artifact = ProofArtifact(
             id="large_proof_001",
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             solver_type=SolverType.Z3,
             solver_version="z3-4.12.0",
             smt_formula="(assert false)",
@@ -236,7 +234,7 @@ class TestProofArtifactManager:
             
             artifact = ProofArtifact(
                 id=artifact_id,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=solver_type,
                 solver_version="test-1.0",
                 smt_formula=f"(assert (> x {i}))",
@@ -492,7 +490,7 @@ class TestFormalProofService:
         
         # Generate a proof
         smt_formula = "(assert true)"
-        artifact = await proof_service.prove_formula(smt_formula, "verify_test_001")
+        await proof_service.prove_formula(smt_formula, "verify_test_001")
         
         # Verify the proof
         is_valid = await proof_service.verify_proof("verify_test_001")

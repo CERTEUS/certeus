@@ -18,10 +18,10 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Dict, Optional, Union
-from urllib.parse import urljoin, urlencode
-import urllib.request
+from typing import Any
 import urllib.error
+from urllib.parse import urlencode, urljoin
+import urllib.request
 
 # === TYPY / TYPES ===
 
@@ -36,7 +36,7 @@ class CerteusAPIError(Exception):
 class APIResponse:
     """API response wrapper."""
     
-    def __init__(self, data: Any, status: int, headers: Dict[str, str]):
+    def __init__(self, data: Any, status: int, headers: dict[str, str]):
         self.data = data
         self.status = status
         self.headers = headers
@@ -49,8 +49,8 @@ class CerteusClient:
     def __init__(
         self,
         base_url: str = "http://127.0.0.1:8000",
-        api_key: Optional[str] = None,
-        tenant_id: Optional[str] = None,
+        api_key: str | None = None,
+        tenant_id: str | None = None,
         timeout_seconds: int = 30,
         retry_count: int = 3,
         retry_delay_seconds: float = 1.0,
@@ -66,9 +66,9 @@ class CerteusClient:
         self,
         method: str,
         path: str,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         body: Any = None,
-        headers: Optional[Dict[str, str]] = None,
+        headers: dict[str, str] | None = None,
     ) -> APIResponse:
         """Execute HTTP request with retry logic."""
         url = urljoin(self.base_url, path.lstrip("/"))
@@ -186,7 +186,7 @@ class CerteusClient:
         path = "/v1/pco/bundle"
         return self._request("POST", path, body=body)
 
-    def get_pco_public_case_id(self, case_id: str, params: Optional[Dict[str, Any]] = None) -> APIResponse:
+    def get_pco_public_case_id(self, case_id: str, params: dict[str, Any] | None = None) -> APIResponse:
         """
         Get public PCO payload
         
@@ -214,7 +214,7 @@ class CerteusClient:
         path = "/v1/verify"
         return self._request("POST", path, body=body)
 
-    def get_.well-known_jwks.json(self) -> APIResponse:
+    def get_well_known_jwks_json(self) -> APIResponse:
         """
         JWKS
         

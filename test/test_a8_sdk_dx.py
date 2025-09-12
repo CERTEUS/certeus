@@ -17,15 +17,12 @@ EN: Comprehensive test suite for A8 SDK & Developer Experience.
 from __future__ import annotations
 
 import json
-import os
+from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import time
 import unittest
-from pathlib import Path
-from typing import Any, Dict, List
-from unittest.mock import Mock, patch
 
 # Add repo root to path for imports
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -324,7 +321,7 @@ class TestA8EnterpriseStandards(unittest.TestCase):
         
         if scripts_dir.exists():
             for script_file in scripts_dir.glob("*.py"):
-                with open(script_file, 'r', encoding='utf-8') as f:
+                with open(script_file, encoding='utf-8') as f:
                     content = f.read()
                 
                 # Check for enterprise header
@@ -341,7 +338,7 @@ class TestA8EnterpriseStandards(unittest.TestCase):
         
         if scripts_dir.exists():
             for script_file in scripts_dir.glob("*.py"):
-                with open(script_file, 'r', encoding='utf-8') as f:
+                with open(script_file, encoding='utf-8') as f:
                     content = f.read()
                 
                 # Check for docstrings
@@ -367,7 +364,7 @@ class TestA8EnterpriseStandards(unittest.TestCase):
         
         if scripts_dir.exists():
             for script_file in scripts_dir.glob("*.py"):
-                with open(script_file, 'r', encoding='utf-8') as f:
+                with open(script_file, encoding='utf-8') as f:
                     content = f.read().lower()
                 
                 # At least one retry pattern should be present
@@ -389,7 +386,7 @@ class TestA8EnterpriseStandards(unittest.TestCase):
         
         if scripts_dir.exists():
             for script_file in scripts_dir.glob("*.py"):
-                with open(script_file, 'r', encoding='utf-8') as f:
+                with open(script_file, encoding='utf-8') as f:
                     content = f.read()
                 
                 # Check for error handling
@@ -414,7 +411,7 @@ class TestA8QualityGates(unittest.TestCase):
                 start_time = time.time()
                 try:
                     # Import check (should be fast)
-                    result = subprocess.run([
+                    subprocess.run([
                         sys.executable, '-c', f'import sys; sys.path.insert(0, "{scripts_dir}"); import {script_file.stem}'
                     ], capture_output=True, text=True, timeout=max_execution_time)
                     
@@ -440,7 +437,7 @@ class TestA8QualityGates(unittest.TestCase):
                 ts_files.extend(location.glob("*.ts"))
         
         for ts_file in ts_files:
-            with open(ts_file, 'r', encoding='utf-8') as f:
+            with open(ts_file, encoding='utf-8') as f:
                 content = f.read()
             
             # Check for TypeScript best practices
@@ -473,7 +470,7 @@ class TestA8QualityGates(unittest.TestCase):
                 # Check if generated JSON is valid
                 config_file = Path(temp_dir) / "config.json"
                 if config_file.exists():
-                    with open(config_file, 'r', encoding='utf-8') as f:
+                    with open(config_file, encoding='utf-8') as f:
                         config_data = json.load(f)
                     
                     # Basic validation

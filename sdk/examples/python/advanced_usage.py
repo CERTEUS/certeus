@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """CERTEUS Python SDK - Advanced Usage Example"""
 
-import asyncio
 import logging
 import os
-from typing import Any, Dict, Optional
+import time
+from typing import Any
 
-from certeus_sdk import CerteusClient, CerteusAPIError
+from certeus_sdk import CerteusAPIError, CerteusClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class CerteusService:
     """Advanced CERTEUS service wrapper with error handling and retries."""
     
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         self.client = CerteusClient(
             base_url=config.get('base_url', 'http://localhost:8000'),
             api_key=config.get('api_key'),
@@ -56,7 +56,7 @@ class CerteusService:
         
         raise last_error
     
-    def get_api_info(self) -> Optional[Dict[str, Any]]:
+    def get_api_info(self) -> dict[str, Any] | None:
         """Get API information with retry."""
         try:
             response = self.with_retry(self.client.openapi)

@@ -2,11 +2,10 @@
 # Quantum-Resistance Temporal & Metrology Protocol
 # Units: SI/UCUM support with conversion and validation
 
-import logging
-import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Union
+import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +34,8 @@ class Unit:
     system: UnitSystem
     dimension: tuple[int, int, int, int, int, int, int]  # [L,M,T,I,Θ,N,J]
     conversion_factor: float = 1.0
-    ucum_code: Optional[str] = None
-    aliases: Optional[list[str]] = None
+    ucum_code: str | None = None
+    aliases: list[str] | None = None
 
     def __post_init__(self):
         if self.aliases is None:
@@ -55,8 +54,8 @@ class UnitRegistry:
     """
     
     def __init__(self):
-        self._units: Dict[str, Unit] = {}
-        self._ucum_mappings: Dict[str, str] = {}
+        self._units: dict[str, Unit] = {}
+        self._ucum_mappings: dict[str, str] = {}
         self._initialize_base_units()
         self._initialize_derived_units()
         self._initialize_ucum_units()
@@ -143,7 +142,7 @@ class UnitRegistry:
         if unit.ucum_code:
             self._ucum_mappings[unit.ucum_code] = unit.symbol
     
-    def get_unit(self, symbol: str) -> Optional[Unit]:
+    def get_unit(self, symbol: str) -> Unit | None:
         """Get unit by symbol or UCUM code"""
         # Direct lookup
         if symbol in self._units:
@@ -155,7 +154,7 @@ class UnitRegistry:
             
         return None
     
-    def parse_unit_expression(self, expression: str) -> Optional[Dict[str, Any]]:
+    def parse_unit_expression(self, expression: str) -> dict[str, Any] | None:
         """
         Parse complex unit expressions like 'kg*m/s²' or 'mol/L'
         
@@ -210,7 +209,7 @@ class UnitRegistry:
             
         return u1.dimension == u2.dimension
     
-    def convert_value(self, value: float, from_unit: str, to_unit: str) -> Optional[float]:
+    def convert_value(self, value: float, from_unit: str, to_unit: str) -> float | None:
         """Convert value between compatible units"""
         if not self.are_compatible(from_unit, to_unit):
             return None
@@ -233,7 +232,7 @@ class UnitRegistry:
             
         return target_value
     
-    def list_units(self, system: Optional[UnitSystem] = None) -> list[Unit]:
+    def list_units(self, system: UnitSystem | None = None) -> list[Unit]:
         """List all units, optionally filtered by system"""
         units = list(set(self._units.values()))  # Remove duplicates from aliases
         

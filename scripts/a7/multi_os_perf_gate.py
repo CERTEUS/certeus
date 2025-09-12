@@ -9,13 +9,13 @@
 
 import json
 import os
+from pathlib import Path
 import sys
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
-def simulate_endpoint_test(endpoint: str, iterations: int = 10) -> Dict[str, Any]:
+def simulate_endpoint_test(endpoint: str, iterations: int = 10) -> dict[str, Any]:
     """
     PL: Symuluje test wydajności endpointu dla multi-OS CI.
     EN: Simulate endpoint performance test for multi-OS CI.
@@ -29,7 +29,7 @@ def simulate_endpoint_test(endpoint: str, iterations: int = 10) -> Dict[str, Any
     """
     print(f"Testing endpoint: {endpoint} ({iterations} iterations)")
     
-    durations: List[float] = []
+    durations: list[float] = []
     errors = 0
     
     for i in range(iterations):

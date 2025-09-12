@@ -3,23 +3,23 @@
 # SLSA & in-toto provenance attestations with Cosign integration
 
 import base64
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
 import hashlib
 import json
 import logging
 import os
+from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from typing import Any, Protocol
 import uuid
-from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, Union
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from core.security.keys.key_manager import KeyManager, KeyMetadata
+from core.security.keys.key_manager import KeyManager
 
 logger = logging.getLogger(__name__)
 
@@ -49,21 +49,21 @@ class Digest:
 class Subject:
     """Artifact subject being attested"""
     name: str
-    digest: Dict[str, str]  # algorithm -> digest value
+    digest: dict[str, str]  # algorithm -> digest value
 
 @dataclass
 class Builder:
     """Build system information"""
     id: str  # URI identifying the builder
-    version: Optional[Dict[str, str]] = None
-    builderDependencies: Optional[List[Dict[str, Any]]] = None
+    version: dict[str, str] | None = None
+    builderDependencies: list[dict[str, Any]] | None = None
 
 @dataclass 
 class BuildConfig:
     """Build configuration and parameters"""
-    commands: Optional[List[str]] = None
-    environment: Optional[Dict[str, str]] = None
-    source: Optional[Dict[str, Any]] = None
+    commands: list[str] | None = None
+    environment: dict[str, str] | None = None
+    source: dict[str, Any] | None = None
 
 @dataclass
 class Metadata:
@@ -71,7 +71,7 @@ class Metadata:
     buildInvocationId: str
     buildStartedOn: datetime
     buildFinishedOn: datetime
-    completeness: Dict[str, bool] = field(default_factory=lambda: {
+    completeness: dict[str, bool] = field(default_factory=lambda: {
         "parameters": True,
         "environment": True, 
         "materials": True
@@ -82,7 +82,7 @@ class Metadata:
 class Material:
     """Build materials/dependencies"""
     uri: str
-    digest: Optional[Dict[str, str]] = None
+    digest: dict[str, str] | None = None
 
 @dataclass
 class SLSAProvenance:
@@ -91,27 +91,27 @@ class SLSAProvenance:
     buildType: str  # URI identifying build type
     invocation: BuildConfig
     metadata: Metadata
-    materials: List[Material] = field(default_factory=list)
+    materials: list[Material] = field(default_factory=list)
 
 @dataclass
 class InTotoStatement:
     """in-toto attestation statement"""
     _type: str = "https://in-toto.io/Statement/v0.1"
-    subject: List[Subject] = field(default_factory=list)
+    subject: list[Subject] = field(default_factory=list)
     predicateType: str = ""
-    predicate: Dict[str, Any] = field(default_factory=dict)
+    predicate: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class DSSEEnvelope:
     """Dead Simple Signing Envelope (DSSE)"""
     payload: str  # base64-encoded JSON
     payloadType: str = "application/vnd.in-toto+json"
-    signatures: List[Dict[str, str]] = field(default_factory=list)
+    signatures: list[dict[str, str]] = field(default_factory=list)
 
 class AttestationSigner(Protocol):
     """Protocol for signing attestations"""
     
-    def sign(self, payload: bytes) -> Dict[str, str]:
+    def sign(self, payload: bytes) -> dict[str, str]:
         """Sign payload and return signature metadata"""
         ...
 
@@ -122,7 +122,7 @@ class CerteusSigner:
         self.key_manager = key_manager
         self.key_id = key_id
     
-    def sign(self, payload: bytes) -> Dict[str, str]:
+    def sign(self, payload: bytes) -> dict[str, str]:
         """Sign with Ed25519 key"""
         
         signature = self.key_manager.sign_data(self.key_id, payload)
@@ -144,8 +144,8 @@ class CosignSigner:
     
     def sign_container(self, 
                       image_ref: str,
-                      key_path: Optional[str] = None,
-                      attestation_path: Optional[str] = None) -> bool:
+                      key_path: str | None = None,
+                      attestation_path: str | None = None) -> bool:
         """Sign container image with Cosign"""
         
         try:
@@ -159,7 +159,7 @@ class CosignSigner:
             
             cmd.append(image_ref)
             
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
             logger.info(f"Successfully signed container {image_ref}")
             return True
             
@@ -180,7 +180,7 @@ class CosignSigner:
                 image_ref
             ]
             
-            result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
             logger.info(f"Container {image_ref} signature verified")
             return True
             
@@ -210,15 +210,15 @@ class AttestationGenerator:
         self.build_type = build_type
     
     def generate_slsa_provenance(self,
-                               subjects: List[Subject],
-                               build_commands: List[str],
-                               build_env: Dict[str, str],
-                               materials: List[Material],
+                               subjects: list[Subject],
+                               build_commands: list[str],
+                               build_env: dict[str, str],
+                               materials: list[Material],
                                slsa_level: SLSALevel = SLSALevel.LEVEL_2) -> SLSAProvenance:
         """Generate SLSA Build Provenance"""
         
         build_id = str(uuid.uuid4())
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         
         # Create builder info
         builder = Builder(
@@ -258,9 +258,9 @@ class AttestationGenerator:
         )
     
     def create_in_toto_statement(self,
-                               subjects: List[Subject],
+                               subjects: list[Subject],
                                predicate_type: PredicateType,
-                               predicate: Dict[str, Any]) -> InTotoStatement:
+                               predicate: dict[str, Any]) -> InTotoStatement:
         """Create in-toto attestation statement"""
         
         return InTotoStatement(
@@ -336,7 +336,7 @@ class AttestationGenerator:
     
     def create_build_attestation(self,
                                artifact_path: Path,
-                               build_commands: List[str],
+                               build_commands: list[str],
                                key_id: str,
                                slsa_level: SLSALevel = SLSALevel.LEVEL_2) -> DSSEEnvelope:
         """Create complete build attestation for artifact"""
@@ -382,7 +382,7 @@ class AttestationGenerator:
         
         return hash_func.hexdigest()
     
-    def _collect_build_materials(self) -> List[Material]:
+    def _collect_build_materials(self) -> list[Material]:
         """Collect build dependencies and materials"""
         
         materials = []
@@ -400,7 +400,7 @@ class AttestationGenerator:
                                    image_ref: str,
                                    dockerfile_path: Path,
                                    key_id: str,
-                                   cosign_signer: Optional[CosignSigner] = None) -> Optional[DSSEEnvelope]:
+                                   cosign_signer: CosignSigner | None = None) -> DSSEEnvelope | None:
         """Create attestation for container image"""
         
         # Create SLSA provenance for container build
@@ -460,14 +460,14 @@ class AttestationGenerator:
     def load_attestation(self, attestation_path: Path) -> DSSEEnvelope:
         """Load attestation from file"""
         
-        with open(attestation_path, 'r') as f:
+        with open(attestation_path) as f:
             data = json.load(f)
         
         return DSSEEnvelope(**data)
     
     def verify_attestation_chain(self, 
-                                attestations: List[DSSEEnvelope],
-                                trusted_keys: List[str]) -> bool:
+                                attestations: list[DSSEEnvelope],
+                                trusted_keys: list[str]) -> bool:
         """Verify chain of attestations"""
         
         for envelope in attestations:
@@ -485,7 +485,7 @@ class AttestationGenerator:
         logger.info("Attestation chain verified successfully")
         return True
     
-    def get_attestation_summary(self, envelope: DSSEEnvelope) -> Dict[str, Any]:
+    def get_attestation_summary(self, envelope: DSSEEnvelope) -> dict[str, Any]:
         """Get human-readable attestation summary"""
         
         try:

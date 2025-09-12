@@ -20,14 +20,9 @@ Dependencies:
 - cvc5: CVC5 SMT solver Python bindings
 """
 
-import asyncio
-import os
-import subprocess
-import tempfile
+from datetime import UTC, datetime
 import time
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     import cvc5
@@ -37,9 +32,7 @@ except ImportError:
     cvc5 = None
 
 from core.logging import get_logger
-from core.proofs.formal.solver_interface import (ProofArtifact, ProofResult,
-                                                 SMTSolverInterface,
-                                                 SolverConfig, SolverType)
+from core.proofs.formal.solver_interface import ProofArtifact, ProofResult, SMTSolverInterface, SolverConfig, SolverType
 
 logger = get_logger("cvc5_solver")
 
@@ -105,7 +98,7 @@ class CVC5Solver(SMTSolverInterface):
             return "cvc5-unknown"
     
     async def solve(self, smt_formula: str, 
-                   problem_id: Optional[str] = None) -> ProofArtifact:
+                   problem_id: str | None = None) -> ProofArtifact:
         """
         Solve SMT formula using CVC5 and generate proof artifact
         
@@ -191,7 +184,7 @@ class CVC5Solver(SMTSolverInterface):
             
             artifact = ProofArtifact(
                 id=artifact_id,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=SolverType.CVC5,
                 solver_version=self.get_version(),
                 smt_formula=smt_formula,
@@ -220,7 +213,7 @@ class CVC5Solver(SMTSolverInterface):
             
             artifact = ProofArtifact(
                 id=artifact_id,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=SolverType.CVC5,
                 solver_version=self.get_version(),
                 smt_formula=smt_formula,
@@ -314,7 +307,7 @@ class CVC5Solver(SMTSolverInterface):
         
         return assertions
     
-    def _extract_variables(self, smt_formula: str) -> Dict[str, str]:
+    def _extract_variables(self, smt_formula: str) -> dict[str, str]:
         """Extract variable declarations from SMT formula"""
         
         variables = {}
@@ -384,7 +377,7 @@ class CVC5Solver(SMTSolverInterface):
         except ImportError:
             return 100.0  # Default estimate
     
-    async def _verify_model(self, smt_formula: str, model: Dict[str, Any]) -> bool:
+    async def _verify_model(self, smt_formula: str, model: dict[str, Any]) -> bool:
         """Verify that a model satisfies the formula"""
         
         try:
@@ -425,7 +418,7 @@ class CVC5Solver(SMTSolverInterface):
             return False
     
     async def _simulate_solve(self, smt_formula: str, 
-                            problem_id: Optional[str] = None) -> ProofArtifact:
+                            problem_id: str | None = None) -> ProofArtifact:
         """Simulate solve when CVC5 is not available"""
         
         problem_hash = self.generate_problem_hash(smt_formula)
@@ -446,7 +439,7 @@ class CVC5Solver(SMTSolverInterface):
         
         artifact = ProofArtifact(
             id=artifact_id,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             solver_type=SolverType.SIMULATE,
             solver_version="simulate-cvc5-1.0",
             smt_formula=smt_formula,

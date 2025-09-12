@@ -30,12 +30,10 @@ Key Features:
 
 import asyncio
 import errno
-import logging
 import os
 import threading
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     import dokan
@@ -47,16 +45,19 @@ except ImportError:
     DOKAN_OPERATIONS = None
 
 from core.logging import get_logger
-from core.pfs.filesystem_interface import (ExtendedAttributes,
-                                           FileNotFoundError, FilesystemError,
-                                           HashVerificationError,
-                                           MaterializationError,
-                                           PFSCacheInterface, PFSConfig,
-                                           PFSFilesystemInterface,
-                                           PFSMaterializerInterface,
-                                           ReadOnlyViolationError,
-                                           VirtualDirectoryInfo,
-                                           VirtualFileInfo)
+from core.pfs.filesystem_interface import (
+    FileNotFoundError,
+    FilesystemError,
+    HashVerificationError,
+    MaterializationError,
+    PFSCacheInterface,
+    PFSConfig,
+    PFSFilesystemInterface,
+    PFSMaterializerInterface,
+    ReadOnlyViolationError,
+    VirtualDirectoryInfo,
+    VirtualFileInfo,
+)
 from services.ledger_service.postgres_ledger import PostgreSQLLedger
 
 logger = get_logger("windows_dokan")
@@ -93,7 +94,7 @@ class WindowsDokanOperations:
         self.logger = get_logger("dokan_operations")
         
         # File handle tracking
-        self._file_handles: Dict[int, VirtualFileInfo] = {}
+        self._file_handles: dict[int, VirtualFileInfo] = {}
         self._next_handle = 1
         self._handle_lock = threading.Lock()
     
@@ -199,7 +200,7 @@ class WindowsDokanOperations:
         self.logger.warning(f"Write attempt denied for {path}")
         return -errno.EACCES
     
-    def get_file_information(self, filename: str) -> Dict[str, Any]:
+    def get_file_information(self, filename: str) -> dict[str, Any]:
         """Get file/directory information"""
         
         path = self._normalize_path(filename)
@@ -238,7 +239,7 @@ class WindowsDokanOperations:
             self.logger.error(f"Error getting file information for {path}: {str(e)}")
             return -errno.EIO
     
-    def find_files(self, path: str) -> List[Dict[str, Any]]:
+    def find_files(self, path: str) -> list[dict[str, Any]]:
         """List directory contents"""
         
         normalized_path = self._normalize_path(path)
@@ -350,7 +351,7 @@ class WindowsDokanOperations:
         self.logger.warning(f"Set allocation size denied for {path}")
         return -errno.EACCES
     
-    def get_volume_information(self) -> Dict[str, Any]:
+    def get_volume_information(self) -> dict[str, Any]:
         """Get volume information"""
         
         config = self.pfs._dokan_config
@@ -367,7 +368,7 @@ class WindowsDokanOperations:
             "filesystem_name": config.filesystem_name
         }
     
-    def get_disk_free_space(self) -> Dict[str, int]:
+    def get_disk_free_space(self) -> dict[str, int]:
         """Get disk free space - return read-only values"""
         
         # Return fake values for read-only filesystem
@@ -382,10 +383,10 @@ class WindowsDokanOperations:
 class WindowsDokanFilesystem(PFSFilesystemInterface):
     """Windows Dokan-based PFS read-only filesystem"""
     
-    def __init__(self, config: Optional[PFSConfig] = None,
-                 ledger: Optional[PostgreSQLLedger] = None,
-                 materializer: Optional[PFSMaterializerInterface] = None,
-                 cache: Optional[PFSCacheInterface] = None):
+    def __init__(self, config: PFSConfig | None = None,
+                 ledger: PostgreSQLLedger | None = None,
+                 materializer: PFSMaterializerInterface | None = None,
+                 cache: PFSCacheInterface | None = None):
         
         if not DOKAN_AVAILABLE:
             raise RuntimeError("Dokan library not available. Install dokanfuse-python package.")
@@ -406,11 +407,11 @@ class WindowsDokanFilesystem(PFSFilesystemInterface):
         
         # Mount state
         self._is_mounted = False
-        self._mount_thread: Optional[threading.Thread] = None
-        self._dokan_operations: Optional[WindowsDokanOperations] = None
+        self._mount_thread: threading.Thread | None = None
+        self._dokan_operations: WindowsDokanOperations | None = None
         
         # Virtual filesystem tree
-        self._virtual_root: Optional[VirtualDirectoryInfo] = None
+        self._virtual_root: VirtualDirectoryInfo | None = None
         
         self.logger = get_logger("windows_dokan_filesystem")
     
@@ -563,7 +564,7 @@ class WindowsDokanFilesystem(PFSFilesystemInterface):
         
         raise FileNotFoundError(f"Path not found: {path}")
     
-    async def readdir(self, path: str) -> List[str]:
+    async def readdir(self, path: str) -> list[str]:
         """Read directory contents"""
         
         dir_info = await self._get_virtual_directory(path)
@@ -614,7 +615,7 @@ class WindowsDokanFilesystem(PFSFilesystemInterface):
     
     # === EXTENDED ATTRIBUTES ===
     
-    async def listxattr(self, path: str) -> List[str]:
+    async def listxattr(self, path: str) -> list[str]:
         """List extended attributes"""
         
         file_info = await self._get_virtual_file(path)
@@ -672,7 +673,7 @@ class WindowsDokanFilesystem(PFSFilesystemInterface):
         
         return True
     
-    async def _get_virtual_directory(self, path: str) -> Optional[VirtualDirectoryInfo]:
+    async def _get_virtual_directory(self, path: str) -> VirtualDirectoryInfo | None:
         """Get virtual directory info"""
         
         if not self._virtual_root:
@@ -693,7 +694,7 @@ class WindowsDokanFilesystem(PFSFilesystemInterface):
         
         return current
     
-    async def _get_virtual_file(self, path: str) -> Optional[VirtualFileInfo]:
+    async def _get_virtual_file(self, path: str) -> VirtualFileInfo | None:
         """Get virtual file info"""
         
         if not self._virtual_root:
@@ -766,7 +767,7 @@ def is_dokan_available() -> bool:
     """Check if Dokan is available on the system"""
     return DOKAN_AVAILABLE
 
-def get_dokan_version() -> Optional[str]:
+def get_dokan_version() -> str | None:
     """Get Dokan version if available"""
     if not DOKAN_AVAILABLE:
         return None

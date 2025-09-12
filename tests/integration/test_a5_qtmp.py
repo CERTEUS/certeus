@@ -2,23 +2,15 @@
 # Quantum-Resistance Temporal & Metrology Protocol
 # Tests: Complete DoD validation for measurement system
 
-import asyncio
 import math
-import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List
 
 import pytest
-import pytest_asyncio
 
-from core.qtmp.measurements.measurement_model import (
-    MeasurementMetadata, MeasurementResult, create_simple_measurement)
-from core.qtmp.uncertainty.uncertainty_budget import (DistributionType,
-                                                      UncertaintyBudget,
-                                                      UncertaintyComponent,
-                                                      UncertaintyType)
+from core.qtmp.measurements.measurement_model import create_simple_measurement
+from core.qtmp.uncertainty.uncertainty_budget import DistributionType, UncertaintyBudget, UncertaintyType
+
 # Import A5 QTMP components
-from core.qtmp.units.unit_registry import Unit, UnitSystem, unit_registry
+from core.qtmp.units.unit_registry import UnitSystem, unit_registry
 from services.qtmp_service.qtmp_service import QTMPService
 
 
@@ -219,7 +211,7 @@ class TestMeasurementModel:
         """Test: Measurement validation logic"""
         
         # Valid measurement
-        measurement = create_simple_measurement(10.0, "m", 0.1)
+        create_simple_measurement(10.0, "m", 0.1)
         # Should not raise exception
         
         # Test invalid unit (should raise ValueError)
@@ -475,7 +467,7 @@ class TestDoD:
         
         # Create identical measurements
         measurements = []
-        for i in range(5):
+        for _i in range(5):
             measurement = create_simple_measurement(
                 value=10.0,
                 unit="m", 

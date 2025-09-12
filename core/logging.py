@@ -17,13 +17,12 @@ Provides centralized logging configuration for all CERTEUS components
 with structured JSON output and optional color formatting for development.
 """
 
+from datetime import datetime
 import json
 import logging
 import logging.config
 import os
 import sys
-from datetime import datetime
-from typing import Any, Dict, Optional
 
 
 class CERTEUSFormatter(logging.Formatter):
@@ -91,7 +90,7 @@ def setup_logging(
     level: str = "INFO",
     use_json: bool = None,
     use_colors: bool = None,
-    log_file: Optional[str] = None
+    log_file: str | None = None
 ) -> None:
     """
     Setup centralized logging configuration

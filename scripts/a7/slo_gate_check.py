@@ -9,9 +9,9 @@
 
 import json
 import os
-import sys
 from pathlib import Path
-from typing import Any, Dict
+import sys
+from typing import Any
 
 
 def check_slo_metrics(metrics_file: str, max_p95_ms: float, max_error_rate: float) -> bool:
@@ -33,7 +33,7 @@ def check_slo_metrics(metrics_file: str, max_p95_ms: float, max_error_rate: floa
             print(f"SLO metrics file not found: {metrics_file}")
             return False
             
-        data: Dict[str, Any] = json.loads(metrics_path.read_text(encoding='utf-8'))
+        data: dict[str, Any] = json.loads(metrics_path.read_text(encoding='utf-8'))
         
         # Support different metric formats
         if 'health' in data:
@@ -49,7 +49,7 @@ def check_slo_metrics(metrics_file: str, max_p95_ms: float, max_error_rate: floa
             # Try to find metrics in nested structure
             p95_ms = 0
             error_rate = 0
-            for endpoint, stats in data.items():
+            for _endpoint, stats in data.items():
                 if isinstance(stats, dict):
                     endpoint_p95 = float(stats.get('p95_ms', 0))
                     endpoint_err = float(stats.get('error_rate', 0))

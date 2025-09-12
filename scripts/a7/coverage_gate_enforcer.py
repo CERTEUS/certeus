@@ -9,12 +9,12 @@
 
 import json
 import os
-import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+import sys
+from typing import Any
 
 
-def parse_coverage_json(coverage_file: str) -> Optional[Dict[str, Any]]:
+def parse_coverage_json(coverage_file: str) -> dict[str, Any] | None:
     """
     PL: Parsuje plik coverage.json i wyciąga metryki pokrycia.
     EN: Parse coverage.json file and extract coverage metrics.
@@ -39,7 +39,7 @@ def parse_coverage_json(coverage_file: str) -> Optional[Dict[str, Any]]:
         return None
 
 
-def extract_coverage_percentage(coverage_data: Dict[str, Any]) -> float:
+def extract_coverage_percentage(coverage_data: dict[str, Any]) -> float:
     """
     PL: Wyciąga procent pokrycia z danych coverage.
     EN: Extract coverage percentage from coverage data.
@@ -77,7 +77,7 @@ def extract_coverage_percentage(coverage_data: Dict[str, Any]) -> float:
         
         # Last resort - look for any percentage field
         for key, value in coverage_data.items():
-            if 'percent' in key.lower() and isinstance(value, (int, float)):
+            if 'percent' in key.lower() and isinstance(value, int | float):
                 return float(value)
         
         print("Could not extract coverage percentage from data")
@@ -88,7 +88,7 @@ def extract_coverage_percentage(coverage_data: Dict[str, Any]) -> float:
         return 0.0
 
 
-def check_coverage_threshold(coverage_files: List[str], threshold: float) -> bool:
+def check_coverage_threshold(coverage_files: list[str], threshold: float) -> bool:
     """
     PL: Sprawdza czy pokrycie kodu przekracza próg dla wszystkich platform.
     EN: Check if code coverage exceeds threshold for all platforms.
@@ -152,7 +152,7 @@ def check_coverage_threshold(coverage_files: List[str], threshold: float) -> boo
     return all_passed
 
 
-def discover_coverage_files(artifact_dir: str) -> List[str]:
+def discover_coverage_files(artifact_dir: str) -> list[str]:
     """
     PL: Automatycznie znajduje pliki coverage w katalogach artefaktów.
     EN: Automatically discover coverage files in artifact directories.

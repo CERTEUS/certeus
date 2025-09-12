@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """CERTEUS Python SDK - Context Manager Example"""
 
-import time
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
+import time
 
-from certeus_sdk import CerteusClient, CerteusAPIError
+from certeus_sdk import CerteusAPIError, CerteusClient
+
 
 @contextmanager
 def certeus_client_context(

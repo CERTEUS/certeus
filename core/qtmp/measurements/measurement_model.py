@@ -2,17 +2,16 @@
 # Quantum-Resistance Temporal & Metrology Protocol  
 # Measurement: Value + Uncertainty + Full metrological traceability
 
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 import hashlib
 import json
 import logging
+from typing import Any, Optional
 import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
 
-from core.qtmp.uncertainty.uncertainty_budget import (UncertaintyBudget,
-                                                      UncertaintyType)
-from core.qtmp.units.unit_registry import Unit, unit_registry
+from core.qtmp.uncertainty.uncertainty_budget import UncertaintyBudget
+from core.qtmp.units.unit_registry import unit_registry
 
 logger = logging.getLogger(__name__)
 
@@ -22,11 +21,11 @@ class MeasurementMetadata:
     operator_id: str
     procedure_id: str
     instrument_id: str
-    calibration_date: Optional[datetime] = None
-    environmental_conditions: Dict[str, Any] = field(default_factory=dict)
+    calibration_date: datetime | None = None
+    environmental_conditions: dict[str, Any] = field(default_factory=dict)
     measurement_method: str = ""
-    reference_standards: List[str] = field(default_factory=list)
-    quality_indicators: Dict[str, float] = field(default_factory=dict)
+    reference_standards: list[str] = field(default_factory=list)
+    quality_indicators: dict[str, float] = field(default_factory=dict)
 
 @dataclass 
 class MeasurementResult:
@@ -50,11 +49,11 @@ class MeasurementResult:
     unit: str
     uncertainty_budget: UncertaintyBudget
     metadata: MeasurementMetadata
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     method: str = ""
-    traceability_chain: List[str] = field(default_factory=list)
-    raw_data: Optional[Dict[str, Any]] = None
-    verification_hash: Optional[str] = None
+    traceability_chain: list[str] = field(default_factory=list)
+    raw_data: dict[str, Any] | None = None
+    verification_hash: str | None = None
     
     def __post_init__(self):
         """Validate measurement and calculate verification hash"""
@@ -110,7 +109,7 @@ class MeasurementResult:
         hash_string = json.dumps(hash_data, sort_keys=True, default=str)
         return hashlib.sha256(hash_string.encode()).hexdigest()
     
-    def get_expanded_uncertainty(self, confidence_level: float = 0.95) -> Dict[str, Any]:
+    def get_expanded_uncertainty(self, confidence_level: float = 0.95) -> dict[str, Any]:
         """Get expanded uncertainty for specified confidence level"""
         
         try:
@@ -233,7 +232,7 @@ class MeasurementResult:
             raw_data=self.raw_data
         )
     
-    def get_uncertainty_contributions(self) -> List[Dict[str, Any]]:
+    def get_uncertainty_contributions(self) -> list[dict[str, Any]]:
         """Get breakdown of uncertainty contributions"""
         
         try:
@@ -264,7 +263,7 @@ class MeasurementResult:
             logger.error(f"Error calculating uncertainty contributions: {e}")
             return []
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert measurement result to dictionary for serialization"""
         
         expanded_uncertainty = self.get_expanded_uncertainty()

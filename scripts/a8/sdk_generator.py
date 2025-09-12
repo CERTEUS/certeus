@@ -17,10 +17,9 @@ EN: TypeScript/Python SDK generator from OpenAPI specification.
 from __future__ import annotations
 
 import json
-import os
-import sys
 from pathlib import Path
-from typing import Any, Dict, List
+import sys
+from typing import Any
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -36,18 +35,18 @@ class SDKGenerator:
     
     def __init__(self, spec_path: Path):
         self.spec_path = spec_path
-        self.spec: Dict[str, Any] = {}
-        self.endpoints: List[Dict[str, Any]] = []
+        self.spec: dict[str, Any] = {}
+        self.endpoints: list[dict[str, Any]] = []
         
     def load_openapi_spec(self) -> bool:
         """Load and parse OpenAPI specification."""
         try:
             if self.spec_path.suffix == '.yaml':
                 import yaml
-                with open(self.spec_path, 'r', encoding='utf-8') as f:
+                with open(self.spec_path, encoding='utf-8') as f:
                     self.spec = yaml.safe_load(f) or {}
             else:
-                with open(self.spec_path, 'r', encoding='utf-8') as f:
+                with open(self.spec_path, encoding='utf-8') as f:
                     self.spec = json.load(f)
             
             print(f"Loaded OpenAPI spec from: {self.spec_path}")
@@ -230,7 +229,7 @@ export class CerteusClient {
         
         return ts_code
     
-    def _generate_method_name(self, endpoint: Dict[str, Any]) -> str:
+    def _generate_method_name(self, endpoint: dict[str, Any]) -> str:
         """Generate method name from endpoint details."""
         operation_id = endpoint.get('operation_id', '')
         if operation_id:
@@ -246,14 +245,13 @@ export class CerteusClient {
         
         return f"{method}{path}"
     
-    def _generate_typescript_method(self, endpoint: Dict[str, Any], method_name: str) -> str:
+    def _generate_typescript_method(self, endpoint: dict[str, Any], method_name: str) -> str:
         """Generate TypeScript method for endpoint."""
         method = endpoint['method']
         path = endpoint['path']
         summary = endpoint.get('summary', '')
         
         # Generate parameters
-        params = []
         path_params = []
         query_params = []
         
@@ -311,7 +309,7 @@ export class CerteusClient {
         
         return method_code
     
-    def _get_typescript_type(self, schema: Dict[str, Any]) -> str:
+    def _get_typescript_type(self, schema: dict[str, Any]) -> str:
         """Convert OpenAPI schema to TypeScript type."""
         schema_type = schema.get('type', 'any')
         
@@ -515,7 +513,7 @@ class CerteusClient:
 
         return py_code
     
-    def _generate_python_method_name(self, endpoint: Dict[str, Any]) -> str:
+    def _generate_python_method_name(self, endpoint: dict[str, Any]) -> str:
         """Generate Python method name from endpoint details."""
         operation_id = endpoint.get('operation_id', '')
         if operation_id:
@@ -533,7 +531,7 @@ class CerteusClient:
         
         return f"{method}_{path}"
     
-    def _generate_python_method(self, endpoint: Dict[str, Any], method_name: str) -> str:
+    def _generate_python_method(self, endpoint: dict[str, Any], method_name: str) -> str:
         """Generate Python method for endpoint."""
         method = endpoint['method']
         path = endpoint['path']
@@ -651,7 +649,7 @@ def main() -> int:
     
     print(f"Generated Python SDK: {py_client_file}")
     
-    print(f"\nA8 SDK Generation completed successfully!")
+    print("\nA8 SDK Generation completed successfully!")
     print(f"Generated {len(generator.endpoints)} endpoint methods")
     print("Enterprise big tech quality achieved")
     

@@ -2,12 +2,12 @@
 # Quantum-Resistance Temporal & Metrology Protocol
 # Uncertainty: Type A/B analysis with propagation
 
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from enum import Enum
 import logging
 import math
-from dataclasses import dataclass
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ class UncertaintyComponent:
     value: float
     uncertainty_type: UncertaintyType
     distribution: DistributionType = DistributionType.NORMAL
-    degrees_of_freedom: Optional[float] = None
+    degrees_of_freedom: float | None = None
     sensitivity_coefficient: float = 1.0
     description: str = ""
     source: str = ""
@@ -72,9 +72,9 @@ class UncertaintyBudget:
     
     def __init__(self, measurement_id: str):
         self.measurement_id = measurement_id
-        self.components: Dict[str, UncertaintyComponent] = {}
-        self.correlation_matrix: Dict[tuple[str, str], float] = {}
-        self.created_at = datetime.now(timezone.utc)
+        self.components: dict[str, UncertaintyComponent] = {}
+        self.correlation_matrix: dict[tuple[str, str], float] = {}
+        self.created_at = datetime.now(UTC)
     
     def add_component(self, component: UncertaintyComponent):
         """Add uncertainty component to budget"""
@@ -87,7 +87,7 @@ class UncertaintyBudget:
     def add_type_a_component(
         self, 
         component_id: str,
-        observations: List[float],
+        observations: list[float],
         description: str = "",
         sensitivity_coefficient: float = 1.0
     ) -> UncertaintyComponent:
@@ -132,7 +132,7 @@ class UncertaintyBudget:
         distribution: DistributionType = DistributionType.UNIFORM,
         description: str = "",
         sensitivity_coefficient: float = 1.0,
-        degrees_of_freedom: Optional[float] = None
+        degrees_of_freedom: float | None = None
     ) -> UncertaintyComponent:
         """
         Add Type B uncertainty component from specification/certificate
@@ -197,7 +197,7 @@ class UncertaintyBudget:
         
         logger.info(f"Set correlation between {component1_id} and {component2_id}: {correlation}")
     
-    def calculate_combined_uncertainty(self) -> Dict[str, Any]:
+    def calculate_combined_uncertainty(self) -> dict[str, Any]:
         """
         Calculate combined standard uncertainty using GUM law of propagation
         
@@ -301,7 +301,7 @@ class UncertaintyBudget:
         # Default to 2.0 for other confidence levels (conservative)
         return 2.0
     
-    def get_budget_summary(self) -> Dict[str, Any]:
+    def get_budget_summary(self) -> dict[str, Any]:
         """Get complete uncertainty budget summary"""
         
         try:

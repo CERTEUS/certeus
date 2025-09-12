@@ -24,18 +24,16 @@ Features:
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass
+from datetime import datetime
 import hashlib
 import logging
 import os
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 from cryptography import x509
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
 
 # === CONFIGURATION ===
 
@@ -44,13 +42,13 @@ class TSAConfig:
     """TSA Client configuration"""
 
     primary_tsa_url: str
-    fallback_tsa_urls: List[str]
+    fallback_tsa_urls: list[str]
     timeout_seconds: float = 30.0
     max_retries: int = 3
 
     # Certificate validation
     verify_certificates: bool = True
-    trusted_ca_certs: Optional[List[str]] = None
+    trusted_ca_certs: list[str] | None = None
 
     # Performance
     batch_size: int = 10
@@ -97,9 +95,9 @@ class TimestampRequest:
 
     message_hash: bytes
     hash_algorithm: str
-    nonce: Optional[int] = None
+    nonce: int | None = None
     request_cert: bool = True
-    policy_id: Optional[str] = None
+    policy_id: str | None = None
 
 @dataclass
 class TimestampResponse:
@@ -108,27 +106,27 @@ class TimestampResponse:
     timestamp_token: bytes
     timestamp: datetime
     serial_number: int
-    tsa_certificate: Optional[x509.Certificate] = None
-    policy_id: Optional[str] = None
-    accuracy: Optional[int] = None  # microseconds
+    tsa_certificate: x509.Certificate | None = None
+    policy_id: str | None = None
+    accuracy: int | None = None  # microseconds
     ordering: bool = False
-    nonce: Optional[int] = None
+    nonce: int | None = None
 
     # Verification status
     is_verified: bool = False
-    verification_error: Optional[str] = None
+    verification_error: str | None = None
 
 @dataclass
 class BatchTimestampJob:
     """Batch timestamp job"""
 
     job_id: str
-    requests: List[TimestampRequest]
-    responses: List[Optional[TimestampResponse]]
+    requests: list[TimestampRequest]
+    responses: list[TimestampResponse | None]
     status: str  # pending, running, completed, failed
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    error_message: str | None = None
 
 # === EXCEPTIONS ===
 
@@ -185,8 +183,8 @@ class RFC3161TSAClient:
     async def request_timestamp(
         self,
         data: bytes,
-        hash_algorithm: Optional[str] = None,
-        nonce: Optional[int] = None
+        hash_algorithm: str | None = None,
+        nonce: int | None = None
     ) -> TimestampResponse:
         """Request single timestamp for data"""
 
@@ -214,7 +212,7 @@ class RFC3161TSAClient:
         self,
         message_hash: bytes,
         hash_algorithm: str,
-        nonce: Optional[int] = None
+        nonce: int | None = None
     ) -> TimestampResponse:
         """Request timestamp for pre-computed hash"""
 
@@ -229,8 +227,8 @@ class RFC3161TSAClient:
 
     async def batch_timestamp(
         self,
-        data_list: List[bytes],
-        hash_algorithm: Optional[str] = None
+        data_list: list[bytes],
+        hash_algorithm: str | None = None
     ) -> BatchTimestampJob:
         """Request timestamps for multiple data items"""
 
@@ -431,7 +429,7 @@ class RFC3161TSAClient:
             # Verify hash
             hasher = hashlib.new(hash_algorithm)
             hasher.update(original_data)
-            computed_hash = hasher.digest()
+            hasher.digest()
 
             # In a real implementation, we would extract the hash from the timestamp
             # and compare it with computed_hash
@@ -457,7 +455,7 @@ class RFC3161TSAClient:
 
         self._metrics["last_request_time"] = datetime.utcnow()
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Check TSA service health"""
 
         health = {
@@ -473,7 +471,7 @@ class RFC3161TSAClient:
             start_time = datetime.utcnow()
             test_data = b"CERTEUS_TSA_HEALTH_CHECK"
 
-            response = await self.request_timestamp(test_data)
+            await self.request_timestamp(test_data)
 
             end_time = datetime.utcnow()
             response_time = (end_time - start_time).total_seconds() * 1000
@@ -509,7 +507,7 @@ class RFC3161TSAClient:
 
 # === FACTORY ===
 
-_global_tsa_client: Optional[RFC3161TSAClient] = None
+_global_tsa_client: RFC3161TSAClient | None = None
 
 async def get_tsa_client() -> RFC3161TSAClient:
     """Get global TSA client instance"""

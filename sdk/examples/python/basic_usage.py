@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """CERTEUS Python SDK - Basic Usage Example"""
 
-from certeus_sdk import CerteusClient, CerteusAPIError
+from certeus_sdk import CerteusAPIError, CerteusClient
+
 
 def basic_usage():
     """Basic SDK usage example."""

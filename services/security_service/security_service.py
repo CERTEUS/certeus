@@ -2,28 +2,22 @@
 # Quantum-Resistance Temporal & Security Protocol
 # Integrated security service: Keys, SBOM, Attestations, CVE Scanning
 
-import asyncio
-import hashlib
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
 import json
 import logging
-import os
+from pathlib import Path
 import sys
 import tempfile
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from core.security.attestation.attestation_generator import (
-    AttestationGenerator, CosignSigner, DSSEEnvelope, SLSALevel, Subject)
+from core.security.attestation.attestation_generator import AttestationGenerator, CosignSigner, DSSEEnvelope, SLSALevel
 from core.security.cve.cve_scanner import CVEScanner, CVESeverity
-from core.security.keys.key_manager import (KeyManager, KeyRotationPolicy,
-                                            KeyStoreType)
-from core.security.sbom.sbom_generator import (Component, ComponentType,
-                                               SBOMGenerator)
+from core.security.keys.key_manager import KeyManager
+from core.security.sbom.sbom_generator import SBOMGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +52,7 @@ class SecurityPolicy:
     scan_frequency_hours: int = 24
     
     # Compliance
-    compliance_frameworks: List[str] = field(default_factory=lambda: ["NIST", "SOC2"])
+    compliance_frameworks: list[str] = field(default_factory=lambda: ["NIST", "SOC2"])
     audit_logging: bool = True
 
 @dataclass
@@ -67,9 +61,9 @@ class SecurityAuditEvent:
     timestamp: datetime
     event_type: str
     component: str
-    details: Dict[str, Any]
+    details: dict[str, Any]
     severity: str = "INFO"
-    user_id: Optional[str] = None
+    user_id: str | None = None
 
 @dataclass
 class SecurityReport:
@@ -80,7 +74,7 @@ class SecurityReport:
     # Key Management Status
     active_keys: int
     keys_due_rotation: int
-    key_backends: List[str]
+    key_backends: list[str]
     
     # SBOM Status
     components_analyzed: int
@@ -100,8 +94,8 @@ class SecurityReport:
     
     # Overall Assessment
     security_score: float  # 0-100
-    recommendations: List[str]
-    compliance_status: Dict[str, bool]
+    recommendations: list[str]
+    compliance_status: dict[str, bool]
 
 class SecurityService:
     """
@@ -119,7 +113,7 @@ class SecurityService:
     
     def __init__(self, 
                  config_dir: Path,
-                 policy: Optional[SecurityPolicy] = None):
+                 policy: SecurityPolicy | None = None):
         self.config_dir = config_dir
         self.policy = policy or SecurityPolicy()
         
@@ -131,7 +125,7 @@ class SecurityService:
         self.cosign_signer = CosignSigner()
         
         # Audit logging
-        self.audit_log: List[SecurityAuditEvent] = []
+        self.audit_log: list[SecurityAuditEvent] = []
         
         # Ensure directories
         self._setup_directories()
@@ -155,12 +149,12 @@ class SecurityService:
     def _log_audit_event(self, 
                         event_type: str,
                         component: str,
-                        details: Dict[str, Any],
+                        details: dict[str, Any],
                         severity: str = "INFO"):
         """Log security audit event"""
         
         event = SecurityAuditEvent(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             event_type=event_type,
             component=component,
             details=details,
@@ -219,7 +213,7 @@ class SecurityService:
             
         except Exception:
             # Generate new master key
-            key_metadata = self.key_manager.generate_key(
+            self.key_manager.generate_key(
                 key_id=master_key_id,
                 expires_in_days=self.policy.key_rotation_days
             )
@@ -241,8 +235,8 @@ class SecurityService:
         logger.info("Key rotation policies configured")
     
     async def generate_project_sbom(self, 
-                                  project_path: Optional[Path] = None,
-                                  output_path: Optional[Path] = None) -> Dict[str, Any]:
+                                  project_path: Path | None = None,
+                                  output_path: Path | None = None) -> dict[str, Any]:
         """Generate Software Bill of Materials for project"""
         
         try:
@@ -292,8 +286,8 @@ class SecurityService:
     
     async def create_build_attestation(self,
                                      artifact_path: Path,
-                                     build_commands: List[str],
-                                     output_path: Optional[Path] = None) -> DSSEEnvelope:
+                                     build_commands: list[str],
+                                     output_path: Path | None = None) -> DSSEEnvelope:
         """Create SLSA build attestation for artifact"""
         
         try:
@@ -340,7 +334,7 @@ class SecurityService:
     
     async def sign_container_image(self,
                                  image_ref: str,
-                                 attestation_path: Optional[Path] = None) -> bool:
+                                 attestation_path: Path | None = None) -> bool:
         """Sign container image with Cosign"""
         
         if not self.policy.require_cosign_signatures:
@@ -386,7 +380,7 @@ class SecurityService:
             )
             return False
     
-    async def perform_security_scan(self) -> Dict[str, Any]:
+    async def perform_security_scan(self) -> dict[str, Any]:
         """Perform comprehensive security scan"""
         
         try:
@@ -494,7 +488,7 @@ class SecurityService:
             )
             
             report = SecurityReport(
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 security_level=self._determine_security_level(),
                 active_keys=active_keys,
                 keys_due_rotation=keys_due_rotation,
@@ -529,7 +523,7 @@ class SecurityService:
     def _calculate_security_score(self, 
                                 keys_due_rotation: int,
                                 sbom_valid: bool,
-                                scan_report: Dict[str, Any]) -> float:
+                                scan_report: dict[str, Any]) -> float:
         """Calculate overall security score (0-100)"""
         
         score = 100.0
@@ -553,7 +547,7 @@ class SecurityService:
     def _generate_security_recommendations(self,
                                          keys_due_rotation: int,
                                          sbom_valid: bool,
-                                         scan_report: Dict[str, Any]) -> List[str]:
+                                         scan_report: dict[str, Any]) -> list[str]:
         """Generate security improvement recommendations"""
         
         recommendations = []
@@ -594,7 +588,7 @@ class SecurityService:
         else:
             return SecurityLevel.BASIC
     
-    def _assess_compliance(self) -> Dict[str, bool]:
+    def _assess_compliance(self) -> dict[str, bool]:
         """Assess compliance with various frameworks"""
         
         # This would do real compliance assessment
@@ -619,7 +613,7 @@ class SecurityService:
             },
             "active_keys": self.key_manager.list_keys(),
             "audit_events": len(self.audit_log),
-            "export_timestamp": datetime.now(timezone.utc).isoformat()
+            "export_timestamp": datetime.now(UTC).isoformat()
         }
         
         with open(output_path, 'w') as f:
@@ -630,7 +624,6 @@ class SecurityService:
     async def cleanup_expired_keys(self):
         """Cleanup expired cryptographic keys"""
         
-        expired_keys = []
         # Simplified - just list keys instead of complex cleanup
         all_keys = self.key_manager.list_keys()
         

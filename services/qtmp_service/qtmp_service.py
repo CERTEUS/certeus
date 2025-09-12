@@ -2,18 +2,13 @@
 # Quantum-Resistance Temporal & Metrology Protocol
 # Service: Measurement processing, verification, and storage
 
-import asyncio
-import json
+from datetime import UTC, datetime
 import logging
+from typing import Any
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
 
-from core.qtmp.measurements.measurement_model import (
-    MeasurementMetadata, MeasurementResult, create_simple_measurement)
-from core.qtmp.uncertainty.uncertainty_budget import (UncertaintyBudget,
-                                                      UncertaintyComponent,
-                                                      UncertaintyType)
+from core.qtmp.measurements.measurement_model import MeasurementMetadata, MeasurementResult
+from core.qtmp.uncertainty.uncertainty_budget import UncertaintyBudget, UncertaintyType
 from core.qtmp.units.unit_registry import unit_registry
 from services.ledger_service.postgres_ledger import PostgreSQLLedger
 
@@ -32,17 +27,17 @@ class QTMPService:
     - Batch processing capabilities
     """
     
-    def __init__(self, ledger_service: Optional[PostgreSQLLedger] = None):
+    def __init__(self, ledger_service: PostgreSQLLedger | None = None):
         self.ledger_service = ledger_service
-        self._measurements_cache: Dict[str, MeasurementResult] = {}
+        self._measurements_cache: dict[str, MeasurementResult] = {}
     
     async def create_measurement(
         self,
         value: float,
         unit: str,
-        uncertainty_components: List[Dict[str, Any]],
-        metadata: Dict[str, Any],
-        measurement_id: Optional[str] = None
+        uncertainty_components: list[dict[str, Any]],
+        metadata: dict[str, Any],
+        measurement_id: str | None = None
     ) -> MeasurementResult:
         """
         Create complete measurement with uncertainty budget
@@ -111,7 +106,7 @@ class QTMPService:
         logger.info(f"Created measurement {measurement_id}: {measurement.format_result()}")
         return measurement
     
-    async def _add_type_a_component(self, budget: UncertaintyBudget, spec: Dict[str, Any]):
+    async def _add_type_a_component(self, budget: UncertaintyBudget, spec: dict[str, Any]):
         """Add Type A uncertainty component from observations"""
         
         observations = spec.get('observations', [])
@@ -125,7 +120,7 @@ class QTMPService:
             sensitivity_coefficient=spec.get('sensitivity_coefficient', 1.0)
         )
     
-    async def _add_type_b_component(self, budget: UncertaintyBudget, spec: Dict[str, Any]):
+    async def _add_type_b_component(self, budget: UncertaintyBudget, spec: dict[str, Any]):
         """Add Type B uncertainty component from specification"""
         
         half_width = spec.get('half_width')
@@ -175,7 +170,7 @@ class QTMPService:
             logger.error(f"Failed to store measurement in ledger: {e}")
             # Don't fail the measurement creation if ledger storage fails
     
-    async def get_measurement(self, measurement_id: str) -> Optional[MeasurementResult]:
+    async def get_measurement(self, measurement_id: str) -> MeasurementResult | None:
         """Retrieve measurement by ID"""
         
         # Check cache first
@@ -186,7 +181,7 @@ class QTMPService:
         # PostgreSQLLedger doesn't have direct query_events method
         return None
     
-    async def verify_measurement(self, measurement: MeasurementResult) -> Dict[str, Any]:
+    async def verify_measurement(self, measurement: MeasurementResult) -> dict[str, Any]:
         """
         Verify measurement integrity and validity
         
@@ -196,7 +191,7 @@ class QTMPService:
         
         verification_result = {
             'measurement_id': measurement.measurement_id,
-            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'timestamp': datetime.now(UTC).isoformat(),
             'valid': True,
             'checks': {},
             'warnings': [],
@@ -249,7 +244,7 @@ class QTMPService:
             verification_result['warnings'].append("Incomplete metadata")
         
         # Check timestamp validity
-        timestamp_valid = measurement.timestamp <= datetime.now(timezone.utc)
+        timestamp_valid = measurement.timestamp <= datetime.now(UTC)
         verification_result['checks']['timestamp_valid'] = timestamp_valid
         
         if not timestamp_valid:
@@ -262,7 +257,7 @@ class QTMPService:
         self, 
         measurement_id: str, 
         target_unit: str
-    ) -> Optional[MeasurementResult]:
+    ) -> MeasurementResult | None:
         """Convert measurement to different unit"""
         
         measurement = await self.get_measurement(measurement_id)
@@ -283,8 +278,8 @@ class QTMPService:
     
     async def batch_create_measurements(
         self, 
-        measurements_data: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+        measurements_data: list[dict[str, Any]]
+    ) -> list[dict[str, Any]]:
         """
         Create multiple measurements in batch
         
@@ -326,7 +321,7 @@ class QTMPService:
         logger.info(f"Batch created {len([r for r in results if r['success']])} out of {len(measurements_data)} measurements")
         return results
     
-    async def get_measurement_statistics(self) -> Dict[str, Any]:
+    async def get_measurement_statistics(self) -> dict[str, Any]:
         """Get service statistics"""
         
         total_measurements = len(self._measurements_cache)

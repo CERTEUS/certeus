@@ -25,11 +25,9 @@ Endpoints:
 - GET /ledger/metrics - Performance metrics
 """
 
-import asyncio
-import json
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
-from uuid import UUID, uuid4
+from datetime import datetime
+from typing import Any
+from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -37,16 +35,15 @@ from pydantic import BaseModel, Field, validator
 
 from core.auth import get_current_user, require_permissions
 from core.logging import get_logger
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 # === MODELS ===
 
 class CreateCaseRequest(BaseModel):
     """Request model for creating a new case"""
     case_id: str = Field(..., description="Unique case identifier")
-    jurisdiction: Dict[str, Any] = Field(..., description="Case jurisdiction details")
-    metadata: Optional[Dict[str, Any]] = Field(default=None, description="Additional case metadata")
+    jurisdiction: dict[str, Any] = Field(..., description="Case jurisdiction details")
+    metadata: dict[str, Any] | None = Field(default=None, description="Additional case metadata")
 
     @validator("case_id")
     def validate_case_id(cls, v):
@@ -60,17 +57,17 @@ class CreateCaseResponse(BaseModel):
     """Response model for case creation"""
     case_id: str
     created_at: datetime
-    jurisdiction: Dict[str, Any]
-    metadata: Optional[Dict[str, Any]]
+    jurisdiction: dict[str, Any]
+    metadata: dict[str, Any] | None
     chain_position: int
 
 class RecordEventRequest(BaseModel):
     """Request model for recording an event"""
     event_type: str = Field(..., description="Type of event being recorded")
     case_id: str = Field(..., description="Associated case ID")
-    payload: Dict[str, Any] = Field(..., description="Event payload data")
-    actor: Optional[str] = Field(default=None, description="Actor performing the event")
-    correlation_id: Optional[str] = Field(default=None, description="Correlation ID for tracing")
+    payload: dict[str, Any] = Field(..., description="Event payload data")
+    actor: str | None = Field(default=None, description="Actor performing the event")
+    correlation_id: str | None = Field(default=None, description="Correlation ID for tracing")
 
     @validator("event_type")
     def validate_event_type(cls, v):
@@ -86,7 +83,7 @@ class RecordEventResponse(BaseModel):
     recorded_at: datetime
     chain_position: int
     chain_hash: str
-    tsa_timestamp: Optional[str]
+    tsa_timestamp: str | None
 
 class StoreBundleRequest(BaseModel):
     """Request model for storing a bundle"""
@@ -110,7 +107,7 @@ class ChainIntegrityResponse(BaseModel):
     is_valid: bool
     total_events: int
     verification_time: float
-    chain_breaks: List[Dict[str, Any]]
+    chain_breaks: list[dict[str, Any]]
     merkle_anchors_verified: int
     last_verified_position: int
 
@@ -121,7 +118,7 @@ class LedgerHealthResponse(BaseModel):
     storage_status: str
     tsa_status: str
     chain_status: str
-    performance_metrics: Dict[str, Any]
+    performance_metrics: dict[str, Any]
     timestamp: datetime
 
 class LedgerMetricsResponse(BaseModel):
@@ -313,8 +310,8 @@ async def get_event(
 
 @router.get("/chain/integrity", response_model=ChainIntegrityResponse)
 async def verify_chain_integrity(
-    from_position: Optional[int] = Query(None, description="Start verification from this position"),
-    to_position: Optional[int] = Query(None, description="End verification at this position"),
+    from_position: int | None = Query(None, description="Start verification from this position"),
+    to_position: int | None = Query(None, description="End verification at this position"),
     ledger: PostgreSQLLedger = Depends(get_ledger),
     current_user = Depends(get_current_user),
     permissions = Depends(require_permissions(["ledger:verify"]))

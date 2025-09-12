@@ -23,20 +23,16 @@ Test scenarios:
 """
 
 import asyncio
+from datetime import datetime
 import json
 import random
 import statistics
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
-from uuid import uuid4
+from typing import Any
 
-import asyncpg
 import pytest
 
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
-from services.ledger_service.s3_storage import S3Config, S3StorageManager
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 # === TEST CONFIGURATION ===
 
@@ -134,7 +130,7 @@ class TestLedgerPerformance:
         p99_latency = statistics.quantiles(latencies, n=100)[98]  # 99th percentile
 
         # Performance report
-        print(f"\n=== SINGLE EVENT INGESTION PERFORMANCE ===")
+        print("\n=== SINGLE EVENT INGESTION PERFORMANCE ===")
         print(f"Events recorded: {events_recorded}")
         print(f"Duration: {total_duration:.2f}s")
         print(f"Events/second: {events_per_second:.1f}")
@@ -212,7 +208,7 @@ class TestLedgerPerformance:
         events_per_batch_second = batch_size / avg_batch_time
 
         # Performance report
-        print(f"\n=== BATCH EVENT INGESTION PERFORMANCE ===")
+        print("\n=== BATCH EVENT INGESTION PERFORMANCE ===")
         print(f"Total events: {total_events}")
         print(f"Batch size: {batch_size}")
         print(f"Number of batches: {num_batches}")
@@ -239,7 +235,7 @@ class TestLedgerPerformance:
         events_per_client = 200
         total_events = num_clients * events_per_client
 
-        async def client_workload(client_id: int) -> Dict[str, Any]:
+        async def client_workload(client_id: int) -> dict[str, Any]:
             """Simulate single client workload"""
 
             case_id = f"CLIENT-{client_id:02d}-{random.randint(100000, 999999)}"
@@ -302,7 +298,7 @@ class TestLedgerPerformance:
         p95_latency = statistics.quantiles(all_latencies, n=20)[18]
 
         # Performance report
-        print(f"\n=== CONCURRENT CLIENT LOAD PERFORMANCE ===")
+        print("\n=== CONCURRENT CLIENT LOAD PERFORMANCE ===")
         print(f"Concurrent clients: {num_clients}")
         print(f"Events per client: {events_per_client}")
         print(f"Total events: {total_events}")
@@ -374,7 +370,7 @@ class TestLedgerPerformance:
         events_verified_per_second = integrity_result.total_events / verification_duration
 
         # Performance report
-        print(f"\n=== CHAIN INTEGRITY VERIFICATION PERFORMANCE ===")
+        print("\n=== CHAIN INTEGRITY VERIFICATION PERFORMANCE ===")
         print(f"Events verified: {integrity_result.total_events}")
         print(f"Verification duration: {verification_duration:.2f}s")
         print(f"Events verified/second: {events_verified_per_second:.1f}")
@@ -396,7 +392,6 @@ class TestLedgerPerformance:
         DoD Target: Store 100 bundles in <30 seconds
         """
 
-        storage_manager = performance_ledger._s3_client  # Access internal S3 client
 
         # Test parameters
         num_bundles = 100
@@ -420,7 +415,7 @@ class TestLedgerPerformance:
         for i, bundle_data in enumerate(test_bundles):
             store_start = time.time()
 
-            bundle_record = await performance_ledger.store_bundle(
+            await performance_ledger.store_bundle(
                 bundle_id=f"perf_bundle_{i:04d}",
                 case_id=f"STOR-{random.randint(100000, 999999)}",
                 bundle_data=bundle_data,
@@ -442,7 +437,7 @@ class TestLedgerPerformance:
         throughput_mbps = total_data_mb / total_duration
 
         # Performance report
-        print(f"\n=== S3 STORAGE PERFORMANCE ===")
+        print("\n=== S3 STORAGE PERFORMANCE ===")
         print(f"Bundles stored: {num_bundles}")
         print(f"Bundle size: {bundle_size / 1024:.1f}KB")
         print(f"Total data: {total_data_mb:.1f}MB")
@@ -481,7 +476,7 @@ class PerformanceBenchmark:
         self.config = config
         self.ledger = None
 
-    async def run_all_benchmarks(self) -> Dict[str, Any]:
+    async def run_all_benchmarks(self) -> dict[str, Any]:
         """Run all performance benchmarks"""
 
         self.ledger = PostgreSQLLedger(self.config)
@@ -512,7 +507,7 @@ class PerformanceBenchmark:
         finally:
             await self.ledger.close()
 
-    async def _benchmark_single_events(self) -> Dict[str, Any]:
+    async def _benchmark_single_events(self) -> dict[str, Any]:
         """Benchmark single event ingestion"""
 
         print("1. Single Event Ingestion Benchmark")
@@ -545,7 +540,7 @@ class PerformanceBenchmark:
             "target_met": rate >= 1000
         }
 
-    async def _benchmark_batch_events(self) -> Dict[str, Any]:
+    async def _benchmark_batch_events(self) -> dict[str, Any]:
         """Benchmark batch event ingestion"""
 
         print("2. Batch Event Ingestion Benchmark")
@@ -586,7 +581,7 @@ class PerformanceBenchmark:
             "target_met": rate >= 2000
         }
 
-    async def _benchmark_concurrent_load(self) -> Dict[str, Any]:
+    async def _benchmark_concurrent_load(self) -> dict[str, Any]:
         """Benchmark concurrent client load"""
 
         print("3. Concurrent Client Load Benchmark")
@@ -626,7 +621,7 @@ class PerformanceBenchmark:
             "target_met": rate >= 1000
         }
 
-    async def _benchmark_chain_verification(self) -> Dict[str, Any]:
+    async def _benchmark_chain_verification(self) -> dict[str, Any]:
         """Benchmark chain integrity verification"""
 
         print("4. Chain Integrity Verification Benchmark")
@@ -673,7 +668,7 @@ class PerformanceBenchmark:
             "chain_valid": result.is_valid
         }
 
-    def _print_summary_report(self, results: Dict[str, Any]) -> None:
+    def _print_summary_report(self, results: dict[str, Any]) -> None:
         """Print comprehensive summary report"""
 
         print("=== PERFORMANCE BENCHMARK SUMMARY ===")

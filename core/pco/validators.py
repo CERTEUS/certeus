@@ -15,21 +15,19 @@ EN: PCO v1.0 schema validators - full and public.
 
 from __future__ import annotations
 
-import json
-import re
 from datetime import datetime
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+import re
+from typing import Any
 
-import jsonschema
-from jsonschema import Draft202012Validator, validators
-from jsonschema.exceptions import ValidationError
+from jsonschema import Draft202012Validator
 
 
 class PCOValidationError(Exception):
     """Custom exception dla błędów walidacji PCO."""
 
-    def __init__(self, message: str, errors: Optional[List[str]] = None):
+    def __init__(self, message: str, errors: list[str] | None = None):
         super().__init__(message)
         self.errors = errors or []
 
@@ -37,7 +35,7 @@ class PCOValidationError(Exception):
 class PCOValidator:
     """Walidator dla schematu PCO v1.0."""
 
-    def __init__(self, schema_path: Optional[Path] = None):
+    def __init__(self, schema_path: Path | None = None):
         if schema_path is None:
             schema_path = Path(__file__).parent.parent.parent / "schemas" / "pco.schema.json"
 
@@ -46,11 +44,11 @@ class PCOValidator:
         self._validator = None
 
     @property
-    def schema(self) -> Dict[str, Any]:
+    def schema(self) -> dict[str, Any]:
         """Lazy loading schematu."""
         if self._schema is None:
             try:
-                with open(self.schema_path, 'r', encoding='utf-8') as f:
+                with open(self.schema_path, encoding='utf-8') as f:
                     self._schema = json.load(f)
             except FileNotFoundError:
                 raise PCOValidationError(f"Schema file not found: {self.schema_path}")
@@ -65,7 +63,7 @@ class PCOValidator:
             self._validator = Draft202012Validator(self.schema)
         return self._validator
 
-    def validate(self, pco_data: Dict[str, Any], strict: bool = True) -> List[str]:
+    def validate(self, pco_data: dict[str, Any], strict: bool = True) -> list[str]:
         """
         Waliduje dane PCO względem schematu.
 
@@ -96,7 +94,7 @@ class PCOValidator:
 
         return errors
 
-    def _validate_business_rules(self, pco_data: Dict[str, Any]) -> List[str]:
+    def _validate_business_rules(self, pco_data: dict[str, Any]) -> list[str]:
         """Walidacja reguł biznesowych."""
         errors = []
 
@@ -151,14 +149,14 @@ class PCOValidator:
 
         return errors
 
-    def is_valid(self, pco_data: Dict[str, Any], strict: bool = True) -> bool:
+    def is_valid(self, pco_data: dict[str, Any], strict: bool = True) -> bool:
         """Sprawdza czy dane PCO są poprawne."""
         return len(self.validate(pco_data, strict)) == 0
 
-    def validate_file(self, file_path: Path, strict: bool = True) -> List[str]:
+    def validate_file(self, file_path: Path, strict: bool = True) -> list[str]:
         """Waliduje plik PCO."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 pco_data = json.load(f)
             return self.validate(pco_data, strict)
         except Exception as e:
@@ -168,7 +166,7 @@ class PCOValidator:
 class PCOPublicValidator:
     """Walidator dla schematu PCO Public v1.0."""
 
-    def __init__(self, schema_path: Optional[Path] = None):
+    def __init__(self, schema_path: Path | None = None):
         if schema_path is None:
             schema_path = Path(__file__).parent.parent.parent / "schemas" / "pco-public.schema.json"
 
@@ -177,11 +175,11 @@ class PCOPublicValidator:
         self._validator = None
 
     @property
-    def schema(self) -> Dict[str, Any]:
+    def schema(self) -> dict[str, Any]:
         """Lazy loading schematu."""
         if self._schema is None:
             try:
-                with open(self.schema_path, 'r', encoding='utf-8') as f:
+                with open(self.schema_path, encoding='utf-8') as f:
                     self._schema = json.load(f)
             except FileNotFoundError:
                 raise PCOValidationError(f"Schema file not found: {self.schema_path}")
@@ -196,7 +194,7 @@ class PCOPublicValidator:
             self._validator = Draft202012Validator(self.schema)
         return self._validator
 
-    def validate(self, pco_public_data: Dict[str, Any]) -> List[str]:
+    def validate(self, pco_public_data: dict[str, Any]) -> list[str]:
         """Waliduje dane PCO Public."""
         errors = []
 
@@ -213,7 +211,7 @@ class PCOPublicValidator:
 
         return errors
 
-    def _validate_redaction_rules(self, pco_data: Dict[str, Any]) -> List[str]:
+    def _validate_redaction_rules(self, pco_data: dict[str, Any]) -> list[str]:
         """Walidacja reguł redakcji."""
         errors = []
 
@@ -239,14 +237,14 @@ class PCOPublicValidator:
 
         return errors
 
-    def is_valid(self, pco_public_data: Dict[str, Any]) -> bool:
+    def is_valid(self, pco_public_data: dict[str, Any]) -> bool:
         """Sprawdza czy dane PCO Public są poprawne."""
         return len(self.validate(pco_public_data)) == 0
 
-    def validate_file(self, file_path: Path) -> List[str]:
+    def validate_file(self, file_path: Path) -> list[str]:
         """Waliduje plik PCO Public."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 pco_data = json.load(f)
             return self.validate(pco_data)
         except Exception as e:
@@ -256,7 +254,7 @@ class PCOPublicValidator:
 class PCOContractValidator:
     """Walidator kontraktów API - sprawdza zgodność między OpenAPI a schematami."""
 
-    def __init__(self, openapi_path: Optional[Path] = None):
+    def __init__(self, openapi_path: Path | None = None):
         if openapi_path is None:
             openapi_path = Path(__file__).parent.parent.parent / "docs" / "api" / "openapi.yaml"
 
@@ -264,7 +262,7 @@ class PCOContractValidator:
         self.pco_validator = PCOValidator()
         self.pco_public_validator = PCOPublicValidator()
 
-    def validate_bundle_endpoint_contract(self, bundle_response: Dict[str, Any]) -> List[str]:
+    def validate_bundle_endpoint_contract(self, bundle_response: dict[str, Any]) -> list[str]:
         """Waliduje czy odpowiedź z /v1/pco/bundle jest zgodna z kontraktem."""
         errors = []
 
@@ -280,7 +278,7 @@ class PCOContractValidator:
 
         return errors
 
-    def validate_public_endpoint_contract(self, public_response: Dict[str, Any]) -> List[str]:
+    def validate_public_endpoint_contract(self, public_response: dict[str, Any]) -> list[str]:
         """Waliduje czy odpowiedź z /pco/public/{case_id} jest zgodna z kontraktem."""
         return self.pco_public_validator.validate(public_response)
 

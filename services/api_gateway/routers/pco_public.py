@@ -28,17 +28,22 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import re
 from pathlib import Path
+import re
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from core.pco.crypto import (b64u_encode, canonical_bundle_hash_hex,
-                             canonical_digest_hex, compute_leaf_hex,
-                             ed25519_verify_b64u, load_pubkey_bytes_from_env,
-                             sha256_hex)
+from core.pco.crypto import (
+    b64u_encode,
+    canonical_bundle_hash_hex,
+    canonical_digest_hex,
+    compute_leaf_hex,
+    ed25519_verify_b64u,
+    load_pubkey_bytes_from_env,
+    sha256_hex,
+)
 
 # === KONFIGURACJA / CONFIGURATION ===
 

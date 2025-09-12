@@ -24,17 +24,15 @@ Key Features:
 - Chain integrity verification
 """
 
-import hashlib
-import os
-import platform
-import stat
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Union
+import hashlib
+import os
+import platform
+import stat
+from typing import Any
 
 # === PLATFORM DETECTION ===
 
@@ -63,8 +61,8 @@ def get_current_platform() -> SupportedPlatform:
 class FileHash:
     """File hash with multiple algorithms for verification"""
     sha256: str
-    sha512: Optional[str] = None
-    blake3: Optional[str] = None
+    sha512: str | None = None
+    blake3: str | None = None
     
     def verify_content(self, content: bytes) -> bool:
         """Verify content matches stored hashes"""
@@ -115,9 +113,9 @@ class ExtendedAttributes:
     pfs_version: str = "1.0"
     
     # Custom attributes
-    custom: Dict[str, str] = field(default_factory=dict)
+    custom: dict[str, str] = field(default_factory=dict)
     
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         """Convert to dictionary for xattr storage"""
         result = {}
         
@@ -135,7 +133,7 @@ class ExtendedAttributes:
         return result
     
     @classmethod
-    def from_dict(cls, attrs: Dict[str, str]) -> "ExtendedAttributes":
+    def from_dict(cls, attrs: dict[str, str]) -> "ExtendedAttributes":
         """Create from dictionary of xattrs"""
         
         instance = cls()
@@ -173,8 +171,8 @@ class VirtualFileInfo:
     
     # Materialization info
     is_materialized: bool = False
-    materialized_path: Optional[str] = None
-    materialization_time: Optional[datetime] = None
+    materialized_path: str | None = None
+    materialization_time: datetime | None = None
     
     def get_stat(self) -> os.stat_result:
         """Generate stat result for virtual file"""
@@ -212,8 +210,8 @@ class VirtualDirectoryInfo:
     modified_time: datetime = field(default_factory=datetime.now)
     
     # Directory contents
-    files: Dict[str, VirtualFileInfo] = field(default_factory=dict)
-    subdirectories: Dict[str, "VirtualDirectoryInfo"] = field(default_factory=dict)
+    files: dict[str, VirtualFileInfo] = field(default_factory=dict)
+    subdirectories: dict[str, "VirtualDirectoryInfo"] = field(default_factory=dict)
     
     def get_stat(self) -> os.stat_result:
         """Generate stat result for virtual directory"""
@@ -238,7 +236,7 @@ class VirtualDirectoryInfo:
         
         return stat_result
     
-    def list_entries(self) -> List[str]:
+    def list_entries(self) -> list[str]:
         """List all entries in directory"""
         entries = ["..", "."]  # Parent and current directory
         entries.extend(self.files.keys())
@@ -300,7 +298,7 @@ class PFSFilesystemInterface(ABC):
         pass
     
     @abstractmethod
-    async def readdir(self, path: str) -> List[str]:
+    async def readdir(self, path: str) -> list[str]:
         """Read directory contents"""
         pass
     
@@ -322,7 +320,7 @@ class PFSFilesystemInterface(ABC):
     # === EXTENDED ATTRIBUTES ===
     
     @abstractmethod
-    async def listxattr(self, path: str) -> List[str]:
+    async def listxattr(self, path: str) -> list[str]:
         """List extended attributes"""
         pass
     
@@ -384,7 +382,7 @@ class PFSCacheInterface(ABC):
     """Abstract interface for materialized file caching"""
     
     @abstractmethod
-    async def get_cached_file(self, file_hash: str) -> Optional[str]:
+    async def get_cached_file(self, file_hash: str) -> str | None:
         """Get path to cached materialized file"""
         pass
     
@@ -394,12 +392,12 @@ class PFSCacheInterface(ABC):
         pass
     
     @abstractmethod
-    async def invalidate_cache(self, file_hash: Optional[str] = None) -> None:
+    async def invalidate_cache(self, file_hash: str | None = None) -> None:
         """Invalidate cache (specific file or all files)"""
         pass
     
     @abstractmethod
-    async def get_cache_stats(self) -> Dict[str, Any]:
+    async def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics"""
         pass
 
@@ -409,7 +407,7 @@ class PFSFilesystemFactory:
     """Factory for creating platform-specific PFS filesystem implementations"""
     
     @staticmethod
-    def create_filesystem(platform: Optional[SupportedPlatform] = None) -> PFSFilesystemInterface:
+    def create_filesystem(platform: SupportedPlatform | None = None) -> PFSFilesystemInterface:
         """Create platform-specific filesystem implementation"""
         
         if platform is None:
@@ -419,8 +417,7 @@ class PFSFilesystemFactory:
             from services.pfs_service.linux_fuse import LinuxFUSEFilesystem
             return LinuxFUSEFilesystem()
         elif platform == SupportedPlatform.WINDOWS:
-            from services.pfs_service.windows_dokan import \
-                WindowsDokanFilesystem
+            from services.pfs_service.windows_dokan import WindowsDokanFilesystem
             return WindowsDokanFilesystem()
         elif platform == SupportedPlatform.MACOS:
             from services.pfs_service.macos_fuse import MacOSFUSEFilesystem
@@ -452,10 +449,10 @@ class PFSConfig:
     # Security configuration
     verify_all_hashes: bool = True
     require_signatures: bool = False
-    allowed_users: Set[str] = field(default_factory=set)
+    allowed_users: set[str] = field(default_factory=set)
     
     # Platform-specific options
-    platform_options: Dict[str, Any] = field(default_factory=dict)
+    platform_options: dict[str, Any] = field(default_factory=dict)
     
     @classmethod
     def from_env(cls) -> "PFSConfig":

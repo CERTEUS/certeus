@@ -641,7 +641,7 @@ def get_public_pco_v1(case_id: str, include_evidence: bool = False):
         raise HTTPException(status_code=404, detail=f"PCO not found for case_id: {case_id}")
 
     try:
-        with open(bundle_path, 'r', encoding='utf-8') as f:
+        with open(bundle_path, encoding='utf-8') as f:
             full_pco = json.load(f)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load PCO: {str(e)}")

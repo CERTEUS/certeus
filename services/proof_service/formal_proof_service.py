@@ -26,19 +26,20 @@ Key Features:
 """
 
 import asyncio
-import json
-import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 from core.logging import get_logger
 from core.proofs.formal.cvc5_solver import CVC5_AVAILABLE, CVC5Solver
-from core.proofs.formal.solver_interface import (ProofArtifact,
-                                                 ProofArtifactManager,
-                                                 ProofResult,
-                                                 SMTSolverInterface,
-                                                 SolverConfig, SolverType)
+from core.proofs.formal.solver_interface import (
+    ProofArtifact,
+    ProofArtifactManager,
+    ProofResult,
+    SMTSolverInterface,
+    SolverConfig,
+    SolverType,
+)
 from core.proofs.formal.z3_solver import Z3_AVAILABLE, Z3Solver
 
 logger = get_logger("formal_proof_service")
@@ -68,7 +69,7 @@ class FormalProofService:
         self.logger = get_logger("formal_proof_service")
         
         # Initialize solvers
-        self.solvers: Dict[SolverType, SMTSolverInterface] = {}
+        self.solvers: dict[SolverType, SMTSolverInterface] = {}
         self._initialize_solvers()
         
         # Statistics
@@ -113,9 +114,9 @@ class FormalProofService:
     
     async def prove_formula(self, 
                           smt_formula: str,
-                          problem_id: Optional[str] = None,
-                          solver_preference: Optional[SolverType] = None,
-                          config_override: Optional[SolverConfig] = None) -> ProofArtifact:
+                          problem_id: str | None = None,
+                          solver_preference: SolverType | None = None,
+                          config_override: SolverConfig | None = None) -> ProofArtifact:
         """
         Generate formal proof for SMT formula
         
@@ -175,7 +176,7 @@ class FormalProofService:
             problem_hash = solver.generate_problem_hash(smt_formula) if 'solver' in locals() else "unknown"
             error_artifact = ProofArtifact(
                 id=problem_id or f"error_{int(datetime.now().timestamp())}",
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 solver_type=solver_type,
                 solver_version="error",
                 smt_formula=smt_formula,
@@ -235,8 +236,8 @@ class FormalProofService:
             return False
     
     async def batch_prove(self, 
-                         formulas: List[Tuple[str, str, Optional[str]]],
-                         config_override: Optional[SolverConfig] = None) -> List[ProofArtifact]:
+                         formulas: list[tuple[str, str, str | None]],
+                         config_override: SolverConfig | None = None) -> list[ProofArtifact]:
         """
         Generate proofs for multiple formulas in batch
         
@@ -275,7 +276,7 @@ class FormalProofService:
         self.logger.info(f"Batch proof completed: {len(valid_artifacts)}/{len(formulas)} successful")
         return valid_artifacts
     
-    async def get_proof_statistics(self) -> Dict[str, Any]:
+    async def get_proof_statistics(self) -> dict[str, Any]:
         """Get comprehensive proof service statistics"""
         
         # Get artifact statistics
@@ -366,7 +367,7 @@ class FormalProofService:
             Number of artifacts deleted
         """
         
-        cutoff_date = datetime.now(timezone.utc).replace(
+        cutoff_date = datetime.now(UTC).replace(
             day=datetime.now().day - days
         )
         

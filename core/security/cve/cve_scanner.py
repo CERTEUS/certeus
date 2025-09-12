@@ -3,19 +3,17 @@
 # CVE vulnerability scanning with NIST NVD integration
 
 import asyncio
-import hashlib
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
 import json
 import logging
+from pathlib import Path
 import re
 import sqlite3
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 
 import aiohttp
-import pkg_resources
 from packaging import version
 
 from ..sbom.sbom_generator import Component, ComponentType, Vulnerability
@@ -43,10 +41,10 @@ class CPEMatch:
     """Common Platform Enumeration match"""
     vulnerable: bool
     criteria: str  # CPE 2.3 string
-    version_start_including: Optional[str] = None
-    version_start_excluding: Optional[str] = None
-    version_end_including: Optional[str] = None
-    version_end_excluding: Optional[str] = None
+    version_start_including: str | None = None
+    version_start_excluding: str | None = None
+    version_end_including: str | None = None
+    version_end_excluding: str | None = None
 
 @dataclass
 class CVSSScore:
@@ -54,18 +52,18 @@ class CVSSScore:
     version: str  # "3.1", "2.0"
     vector_string: str  # CVSS vector
     base_score: float
-    temporal_score: Optional[float] = None
-    environmental_score: Optional[float] = None
-    base_severity: Optional[str] = None
-    exploitability_score: Optional[float] = None
-    impact_score: Optional[float] = None
+    temporal_score: float | None = None
+    environmental_score: float | None = None
+    base_severity: str | None = None
+    exploitability_score: float | None = None
+    impact_score: float | None = None
 
 @dataclass
 class CVEReference:
     """CVE external reference"""
     url: str
     source: str
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 @dataclass
 class CVEItem:
@@ -75,23 +73,23 @@ class CVEItem:
     published: datetime
     last_modified: datetime
     vuln_status: CVEStatus
-    descriptions: List[Dict[str, str]]  # lang -> description
-    references: List[CVEReference] = field(default_factory=list)
-    cvss_v3: Optional[CVSSScore] = None
-    cvss_v2: Optional[CVSSScore] = None
-    cpe_matches: List[CPEMatch] = field(default_factory=list)
-    weaknesses: List[str] = field(default_factory=list)  # CWE IDs
-    configurations: List[Dict[str, Any]] = field(default_factory=list)
+    descriptions: list[dict[str, str]]  # lang -> description
+    references: list[CVEReference] = field(default_factory=list)
+    cvss_v3: CVSSScore | None = None
+    cvss_v2: CVSSScore | None = None
+    cpe_matches: list[CPEMatch] = field(default_factory=list)
+    weaknesses: list[str] = field(default_factory=list)  # CWE IDs
+    configurations: list[dict[str, Any]] = field(default_factory=list)
 
 class NISTNVDClient:
     """NIST National Vulnerability Database API client"""
     
     BASE_URL = "https://services.nvd.nist.gov/rest/json/cves/2.0"
     
-    def __init__(self, api_key: Optional[str] = None, rate_limit: float = 0.6):
+    def __init__(self, api_key: str | None = None, rate_limit: float = 0.6):
         self.api_key = api_key
         self.rate_limit = rate_limit  # seconds between requests
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
         
         # Headers
         self.headers = {
@@ -112,14 +110,14 @@ class NISTNVDClient:
             await self.session.close()
     
     async def search_cves(self,
-                         cpe_name: Optional[str] = None,
-                         keyword: Optional[str] = None,
-                         last_mod_start_date: Optional[datetime] = None,
-                         last_mod_end_date: Optional[datetime] = None,
-                         pub_start_date: Optional[datetime] = None,
-                         pub_end_date: Optional[datetime] = None,
-                         cvss_v3_severity: Optional[CVESeverity] = None,
-                         results_per_page: int = 100) -> List[CVEItem]:
+                         cpe_name: str | None = None,
+                         keyword: str | None = None,
+                         last_mod_start_date: datetime | None = None,
+                         last_mod_end_date: datetime | None = None,
+                         pub_start_date: datetime | None = None,
+                         pub_end_date: datetime | None = None,
+                         cvss_v3_severity: CVESeverity | None = None,
+                         results_per_page: int = 100) -> list[CVEItem]:
         """Search CVEs in NIST NVD"""
         
         if not self.session:
@@ -178,7 +176,7 @@ class NISTNVDClient:
         logger.info(f"Retrieved {len(all_cves)} CVEs from NVD")
         return all_cves
     
-    def _parse_cves(self, vulnerabilities: List[Dict[str, Any]]) -> List[CVEItem]:
+    def _parse_cves(self, vulnerabilities: list[dict[str, Any]]) -> list[CVEItem]:
         """Parse CVE data from NVD API response"""
         
         cves = []
@@ -349,7 +347,7 @@ class CVEDatabase:
             CREATE INDEX IF NOT EXISTS idx_cpe_criteria ON cpe_matches (criteria);
             """)
     
-    def store_cves(self, cves: List[CVEItem]):
+    def store_cves(self, cves: list[CVEItem]):
         """Store CVEs in database"""
         
         with sqlite3.connect(self.db_path) as conn:
@@ -408,7 +406,7 @@ class CVEDatabase:
                         cpe.version_end_excluding
                     ))
     
-    def search_cves_by_severity(self, min_severity: CVESeverity) -> List[CVEItem]:
+    def search_cves_by_severity(self, min_severity: CVESeverity) -> list[CVEItem]:
         """Search CVEs by minimum severity level"""
         
         severity_order = {
@@ -470,15 +468,15 @@ class CVEScanner:
     """
     
     def __init__(self, 
-                 db_path: Optional[Path] = None,
-                 nvd_api_key: Optional[str] = None,
+                 db_path: Path | None = None,
+                 nvd_api_key: str | None = None,
                  cache_duration_hours: int = 24):
         self.db_path = db_path or Path("cve_cache.db")
         self.nvd_api_key = nvd_api_key
         self.cache_duration = timedelta(hours=cache_duration_hours)
         self.db = CVEDatabase(self.db_path)
     
-    async def scan_component(self, component: Component) -> List[Vulnerability]:
+    async def scan_component(self, component: Component) -> list[Vulnerability]:
         """Scan single component for vulnerabilities"""
         
         vulnerabilities = []
@@ -489,7 +487,7 @@ class CVEScanner:
         
         return vulnerabilities
     
-    async def scan_components(self, components: List[Component]) -> Dict[str, List[Vulnerability]]:
+    async def scan_components(self, components: list[Component]) -> dict[str, list[Vulnerability]]:
         """Scan multiple components for vulnerabilities"""
         
         results = {}
@@ -504,7 +502,7 @@ class CVEScanner:
         
         return results
     
-    async def _scan_python_package(self, component: Component) -> List[Vulnerability]:
+    async def _scan_python_package(self, component: Component) -> list[Vulnerability]:
         """Scan Python package for CVEs"""
         
         package_name = component.name.lower()
@@ -581,10 +579,10 @@ class CVEScanner:
     
     def _version_in_range(self,
                          target_version: str,
-                         start_including: Optional[str],
-                         start_excluding: Optional[str],
-                         end_including: Optional[str],
-                         end_excluding: Optional[str]) -> bool:
+                         start_including: str | None,
+                         start_excluding: str | None,
+                         end_including: str | None,
+                         end_excluding: str | None) -> bool:
         """Check if version falls within vulnerability range"""
         
         try:
@@ -652,7 +650,7 @@ class CVEScanner:
     async def update_cve_database(self, days_back: int = 7):
         """Update local CVE database with recent vulnerabilities"""
         
-        end_date = datetime.now(timezone.utc)
+        end_date = datetime.now(UTC)
         start_date = end_date - timedelta(days=days_back)
         
         logger.info(f"Updating CVE database for last {days_back} days...")
@@ -667,13 +665,13 @@ class CVEScanner:
             self.db.store_cves(cves)
             logger.info(f"Updated database with {len(cves)} CVEs")
     
-    def get_high_critical_cves(self) -> List[CVEItem]:
+    def get_high_critical_cves(self) -> list[CVEItem]:
         """Get HIGH and CRITICAL severity CVEs from database"""
         
         return self.db.search_cves_by_severity(CVESeverity.HIGH)
     
     def generate_vulnerability_report(self, 
-                                    scan_results: Dict[str, List[Vulnerability]]) -> Dict[str, Any]:
+                                    scan_results: dict[str, list[Vulnerability]]) -> dict[str, Any]:
         """Generate comprehensive vulnerability report"""
         
         total_vulns = sum(len(vulns) for vulns in scan_results.values())
@@ -698,7 +696,7 @@ class CVEScanner:
                 })
         
         report = {
-            "scan_timestamp": datetime.now(timezone.utc).isoformat(),
+            "scan_timestamp": datetime.now(UTC).isoformat(),
             "total_components_scanned": len(scan_results),
             "total_vulnerabilities": total_vulns,
             "severity_breakdown": severity_counts,
@@ -709,7 +707,7 @@ class CVEScanner:
         return report
     
     def _generate_recommendations(self, 
-                                scan_results: Dict[str, List[Vulnerability]]) -> List[str]:
+                                scan_results: dict[str, list[Vulnerability]]) -> list[str]:
         """Generate security recommendations"""
         
         recommendations = []

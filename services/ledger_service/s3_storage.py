@@ -24,16 +24,16 @@ Features:
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 import json
 import logging
 import os
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import boto3
 from botocore.config import Config
-from botocore.exceptions import ClientError, NoCredentialsError
+from botocore.exceptions import ClientError
 
 # === CONFIGURATION ===
 
@@ -43,9 +43,9 @@ class S3Config:
 
     bucket_name: str
     region: str = "us-east-1"
-    endpoint_url: Optional[str] = None  # For MinIO
-    access_key: Optional[str] = None
-    secret_key: Optional[str] = None
+    endpoint_url: str | None = None  # For MinIO
+    access_key: str | None = None
+    secret_key: str | None = None
 
     # WORM-like settings
     object_lock_enabled: bool = False
@@ -94,15 +94,15 @@ class StorageObject:
     size: int
     etag: str
     last_modified: datetime
-    version_id: Optional[str] = None
+    version_id: str | None = None
     storage_class: str = "STANDARD"
     content_type: str = "application/octet-stream"
-    metadata: Optional[Dict[str, str]] = None
+    metadata: dict[str, str] | None = None
 
     # WORM properties
-    object_lock_mode: Optional[str] = None
-    object_lock_retain_until: Optional[datetime] = None
-    legal_hold_status: Optional[str] = None
+    object_lock_mode: str | None = None
+    object_lock_retain_until: datetime | None = None
+    legal_hold_status: str | None = None
 
 @dataclass
 class BackupJob:
@@ -112,10 +112,10 @@ class BackupJob:
     job_type: str  # full, incremental, differential
     status: str
     started_at: datetime
-    completed_at: Optional[datetime] = None
+    completed_at: datetime | None = None
     objects_count: int = 0
     total_size_bytes: int = 0
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 # === EXCEPTIONS ===
 
@@ -284,8 +284,8 @@ class S3StorageManager:
         key: str,
         data: bytes,
         content_type: str = "application/json",
-        metadata: Optional[Dict[str, str]] = None,
-        retention_days: Optional[int] = None
+        metadata: dict[str, str] | None = None,
+        retention_days: int | None = None
     ) -> StorageObject:
         """Store object with optional retention policy"""
 
@@ -336,7 +336,7 @@ class S3StorageManager:
         except ClientError as e:
             raise StorageError(f"Failed to store object {key}: {e}")
 
-    async def get_object(self, key: str, version_id: Optional[str] = None) -> bytes:
+    async def get_object(self, key: str, version_id: str | None = None) -> bytes:
         """Retrieve object data"""
 
         try:
@@ -353,7 +353,7 @@ class S3StorageManager:
             else:
                 raise StorageError(f"Failed to get object {key}: {e}")
 
-    async def get_object_metadata(self, key: str, version_id: Optional[str] = None) -> StorageObject:
+    async def get_object_metadata(self, key: str, version_id: str | None = None) -> StorageObject:
         """Get object metadata without downloading content"""
 
         try:
@@ -384,7 +384,7 @@ class S3StorageManager:
             else:
                 raise StorageError(f"Failed to get object metadata {key}: {e}")
 
-    async def delete_object(self, key: str, version_id: Optional[str] = None, bypass_governance: bool = False) -> None:
+    async def delete_object(self, key: str, version_id: str | None = None, bypass_governance: bool = False) -> None:
         """Delete object (with retention policy checks)"""
 
         # Check retention policy
@@ -482,7 +482,7 @@ class S3StorageManager:
             self.logger.error(f"Backup {job_id} failed: {e}")
             return backup_job
 
-    async def restore_from_backup(self, job_id: str, target_prefix: Optional[str] = None) -> BackupJob:
+    async def restore_from_backup(self, job_id: str, target_prefix: str | None = None) -> BackupJob:
         """Restore objects from backup manifest"""
 
         restore_job = BackupJob(
@@ -541,7 +541,7 @@ class S3StorageManager:
 
     # === MONITORING AND HEALTH ===
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Comprehensive health check"""
 
         health = {
@@ -611,7 +611,7 @@ class S3StorageManager:
 
         return health
 
-    async def get_storage_stats(self) -> Dict[str, Any]:
+    async def get_storage_stats(self) -> dict[str, Any]:
         """Get detailed storage statistics"""
 
         try:
@@ -647,7 +647,7 @@ class S3StorageManager:
 
 # === FACTORY ===
 
-_global_storage: Optional[S3StorageManager] = None
+_global_storage: S3StorageManager | None = None
 
 async def get_storage_manager() -> S3StorageManager:
     """Get global storage manager instance"""

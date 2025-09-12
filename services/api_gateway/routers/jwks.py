@@ -17,15 +17,13 @@ from __future__ import annotations
 
 import base64
 import hashlib
-import json
 import os
-from typing import Any, Dict
+from typing import Any
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-
 
 router = APIRouter(tags=["PCO"])
 
@@ -56,7 +54,7 @@ def _key_id_from_public_key(public_key: bytes) -> str:
     return hashlib.sha256(public_key).hexdigest()[:16]
 
 
-def _public_key_to_jwk(private_key: Ed25519PrivateKey) -> Dict[str, Any]:
+def _public_key_to_jwk(private_key: Ed25519PrivateKey) -> dict[str, Any]:
     """Konwertuje klucz publiczny Ed25519 do formatu JWK."""
 
     # Pobierz surowe bajty klucza publicznego
@@ -84,7 +82,7 @@ def _public_key_to_jwk(private_key: Ed25519PrivateKey) -> Dict[str, Any]:
 @router.get("/.well-known/jwks.json",
             summary="Get JWKS with Ed25519 public keys",
             description="Returns JSON Web Key Set with Ed25519 public keys used for PCO signing")
-def get_jwks() -> Dict[str, Any]:
+def get_jwks() -> dict[str, Any]:
     """
     PL: Zwraca JSON Web Key Set z kluczami publicznymi Ed25519.
     EN: Returns JSON Web Key Set with Ed25519 public keys.
@@ -114,7 +112,7 @@ def get_jwks() -> Dict[str, Any]:
 @router.get("/.well-known/certeus-metadata",
             summary="Get CERTEUS metadata",
             description="Returns CERTEUS-specific metadata including supported versions and capabilities")
-def get_certeus_metadata() -> Dict[str, Any]:
+def get_certeus_metadata() -> dict[str, Any]:
     """
     PL: Zwraca metadane CERTEUS z obsługiwanymi wersjami i możliwościami.
     EN: Returns CERTEUS metadata with supported versions and capabilities.

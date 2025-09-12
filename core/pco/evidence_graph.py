@@ -15,13 +15,12 @@ EN: Evidence Graph generator in PROV JSON-LD format with RO-Crate export.
 
 from __future__ import annotations
 
+from datetime import datetime
 import hashlib
 import json
-import uuid
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-from urllib.parse import urlparse
+from typing import Any
+import uuid
 
 
 class EvidenceNode:
@@ -31,8 +30,8 @@ class EvidenceNode:
         self,
         id: str,
         type: str,
-        label: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None,
+        label: str | None = None,
+        attributes: dict[str, Any] | None = None,
         pii_level: str = "public"
     ):
         self.id = id
@@ -41,7 +40,7 @@ class EvidenceNode:
         self.attributes = attributes or {}
         self.pii_level = pii_level  # public, restricted, confidential
 
-    def to_prov(self) -> Dict[str, Any]:
+    def to_prov(self) -> dict[str, Any]:
         """Konwertuje do formatu PROV JSON-LD."""
         node = {
             "prov:id": self.id,
@@ -71,8 +70,8 @@ class EvidenceEdge:
         relation_type: str,
         source_id: str,
         target_id: str,
-        label: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        label: str | None = None,
+        attributes: dict[str, Any] | None = None
     ):
         self.id = id
         self.relation_type = relation_type  # wasGeneratedBy, used, wasAssociatedWith, etc.
@@ -81,7 +80,7 @@ class EvidenceEdge:
         self.label = label
         self.attributes = attributes or {}
 
-    def to_prov(self) -> Dict[str, Any]:
+    def to_prov(self) -> dict[str, Any]:
         """Konwertuje do formatu PROV JSON-LD."""
         edge = {
             "prov:id": self.id,
@@ -118,15 +117,15 @@ class EvidenceGraph:
 
     def __init__(self, case_id: str):
         self.case_id = case_id
-        self.nodes: Dict[str, EvidenceNode] = {}
-        self.edges: Dict[str, EvidenceEdge] = {}
+        self.nodes: dict[str, EvidenceNode] = {}
+        self.edges: dict[str, EvidenceEdge] = {}
         self.created_at = datetime.utcnow()
 
     def add_entity(
         self,
         id: str,
-        label: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None,
+        label: str | None = None,
+        attributes: dict[str, Any] | None = None,
         pii_level: str = "public"
     ) -> EvidenceNode:
         """Dodaje entność do grafu."""
@@ -137,10 +136,10 @@ class EvidenceGraph:
     def add_activity(
         self,
         id: str,
-        label: Optional[str] = None,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
-        attributes: Optional[Dict[str, Any]] = None,
+        label: str | None = None,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
+        attributes: dict[str, Any] | None = None,
         pii_level: str = "public"
     ) -> EvidenceNode:
         """Dodaje aktywność do grafu."""
@@ -157,9 +156,9 @@ class EvidenceGraph:
     def add_agent(
         self,
         id: str,
-        label: Optional[str] = None,
+        label: str | None = None,
         agent_type: str = "SoftwareAgent",
-        attributes: Optional[Dict[str, Any]] = None,
+        attributes: dict[str, Any] | None = None,
         pii_level: str = "restricted"
     ) -> EvidenceNode:
         """Dodaje agenta do grafu."""
@@ -174,8 +173,8 @@ class EvidenceGraph:
         self,
         entity_id: str,
         activity_id: str,
-        time: Optional[datetime] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        time: datetime | None = None,
+        attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację wasGeneratedBy."""
         edge_id = f"gen_{uuid.uuid4().hex[:8]}"
@@ -191,8 +190,8 @@ class EvidenceGraph:
         self,
         activity_id: str,
         entity_id: str,
-        time: Optional[datetime] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        time: datetime | None = None,
+        attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację used."""
         edge_id = f"use_{uuid.uuid4().hex[:8]}"
@@ -208,8 +207,8 @@ class EvidenceGraph:
         self,
         activity_id: str,
         agent_id: str,
-        plan_id: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        plan_id: str | None = None,
+        attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację wasAssociatedWith."""
         edge_id = f"assoc_{uuid.uuid4().hex[:8]}"
@@ -225,8 +224,8 @@ class EvidenceGraph:
         self,
         derived_entity_id: str,
         source_entity_id: str,
-        activity_id: Optional[str] = None,
-        attributes: Optional[Dict[str, Any]] = None
+        activity_id: str | None = None,
+        attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację wasDerivedFrom."""
         edge_id = f"der_{uuid.uuid4().hex[:8]}"
@@ -238,7 +237,7 @@ class EvidenceGraph:
         self.edges[edge_id] = edge
         return edge
 
-    def to_prov_json_ld(self, include_private: bool = True) -> Dict[str, Any]:
+    def to_prov_json_ld(self, include_private: bool = True) -> dict[str, Any]:
         """Eksportuje graf do formatu PROV JSON-LD."""
         context = {
             "@context": {
@@ -280,7 +279,7 @@ class EvidenceGraph:
             }
         }
 
-    def to_public_summary(self) -> Dict[str, Any]:
+    def to_public_summary(self) -> dict[str, Any]:
         """Tworzy publiczne streszczenie grafu."""
         public_nodes = [n for n in self.nodes.values() if n.is_public()]
 
@@ -307,14 +306,14 @@ class EvidenceGraphBuilder:
     """Builder dla Evidence Graph z automatycznym tworzeniem na podstawie PCO."""
 
     @staticmethod
-    def from_pco_bundle(pco_data: Dict[str, Any]) -> EvidenceGraph:
+    def from_pco_bundle(pco_data: dict[str, Any]) -> EvidenceGraph:
         """Tworzy Evidence Graph na podstawie PCO Bundle."""
         case_id = pco_data.get("case_id", "unknown")
         graph = EvidenceGraph(case_id)
 
         # Dodaj podstawowe entności
         # PCO jako główna entność
-        pco_entity = graph.add_entity(
+        graph.add_entity(
             f"pco:{case_id}",
             f"PCO Bundle {case_id}",
             {
@@ -327,7 +326,7 @@ class EvidenceGraphBuilder:
         # Dodaj źródła jako entności
         sources = pco_data.get("sources", [])
         for source in sources:
-            source_entity = graph.add_entity(
+            graph.add_entity(
                 f"source:{source['id']}",
                 f"Source {source['id']}",
                 {
@@ -345,7 +344,7 @@ class EvidenceGraphBuilder:
         derivations = pco_data.get("derivations", [])
         for i, derivation in enumerate(derivations):
             activity_id = f"proof_activity_{i}"
-            solver_activity = graph.add_activity(
+            graph.add_activity(
                 activity_id,
                 f"Proof generation with {derivation['solver']}",
                 attributes={
@@ -357,7 +356,7 @@ class EvidenceGraphBuilder:
             )
 
             # Proof entity
-            proof_entity = graph.add_entity(
+            graph.add_entity(
                 f"proof:{derivation['claim_id']}",
                 f"Proof for {derivation['claim_id']}",
                 {
@@ -370,7 +369,7 @@ class EvidenceGraphBuilder:
             graph.add_generation(f"proof:{derivation['claim_id']}", activity_id)
 
             # Solver jako agent
-            solver_agent = graph.add_agent(
+            graph.add_agent(
                 f"solver:{derivation['solver']}",
                 f"Solver {derivation['solver']}",
                 attributes={
@@ -388,7 +387,7 @@ class EvidenceGraphBuilder:
             # Redakcja PII w claims - tylko publiczne streszczenie
             pii_level = "restricted" if len(claim.get("text", "")) > 100 else "public"
 
-            claim_entity = graph.add_entity(
+            graph.add_entity(
                 f"claim:{claim['id']}",
                 f"Claim {claim['id']}",
                 {
@@ -406,7 +405,7 @@ class EvidenceGraphBuilder:
         # Podpisy jako aktywności
         signatures = pco_data.get("signatures", [])
         for i, signature in enumerate(signatures):
-            sign_activity = graph.add_activity(
+            graph.add_activity(
                 f"sign_activity_{i}",
                 f"Digital signature by {signature['role']}",
                 attributes={
@@ -419,7 +418,7 @@ class EvidenceGraphBuilder:
 
             # Signing agent (anonimizowany)
             agent_id = f"signer:{signature['key_id'][:8]}"
-            signer_agent = graph.add_agent(
+            graph.add_agent(
                 agent_id,
                 f"Signer ({signature['role']})",
                 attributes={
@@ -432,7 +431,7 @@ class EvidenceGraphBuilder:
             graph.add_association(f"sign_activity_{i}", agent_id)
 
             # Podpisana wersja PCO
-            signed_pco = graph.add_entity(
+            graph.add_entity(
                 f"signed_pco_{i}",
                 f"PCO signed by {signature['role']}",
                 {
@@ -566,7 +565,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        with open(args.pco_file, 'r', encoding='utf-8') as f:
+        with open(args.pco_file, encoding='utf-8') as f:
             pco_data = json.load(f)
 
         graph = EvidenceGraphBuilder.from_pco_bundle(pco_data)

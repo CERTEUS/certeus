@@ -2,29 +2,23 @@
 # Quantum-Resistance Temporal & Security Protocol
 # Comprehensive security component testing
 
-import asyncio
-import hashlib
+from datetime import UTC, datetime
 import json
-import os
+from pathlib import Path
+
 # Import components - use absolute imports
 import sys
 import tempfile
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.security.attestation.attestation_generator import (
-    AttestationGenerator, SLSALevel)
+from core.security.attestation.attestation_generator import AttestationGenerator, SLSALevel
 from core.security.cve.cve_scanner import CVEScanner, CVESeverity
-from core.security.keys.key_manager import (KeyManager, KeyRotationPolicy,
-                                            KeyStatus, KeyStoreType)
-from core.security.sbom.sbom_generator import (Component, ComponentType,
-                                               SBOMGenerator)
-from services.security_service.security_service import (SecurityPolicy,
-                                                        SecurityService)
+from core.security.keys.key_manager import KeyManager, KeyStatus
+from core.security.sbom.sbom_generator import Component, ComponentType, SBOMGenerator
+from services.security_service.security_service import SecurityPolicy, SecurityService
 
 
 class TestA6SecurityKeyManagement:
@@ -59,12 +53,12 @@ class TestA6SecurityKeyManagement:
         
         # Verify signature
         is_valid = key_manager.verify_signature(key_id, test_data, signature)
-        assert is_valid == True
+        assert is_valid
         
         # Verify with wrong data
         wrong_data = b"Wrong message"
         is_invalid = key_manager.verify_signature(key_id, wrong_data, signature)
-        assert is_invalid == False
+        assert not is_invalid
     
     def test_key_rotation_policy(self):
         """Test key rotation policies"""
@@ -202,8 +196,7 @@ class TestA6SecurityAttestation:
         
         generator = AttestationGenerator(key_manager)
         
-        from core.security.attestation.attestation_generator import (
-            PredicateType, Subject)
+        from core.security.attestation.attestation_generator import PredicateType, Subject
         
         subjects = [Subject(
             name="test-artifact.tar.gz",
@@ -231,8 +224,7 @@ class TestA6SecurityAttestation:
         
         generator = AttestationGenerator(key_manager)
         
-        from core.security.attestation.attestation_generator import (
-            PredicateType, Subject)
+        from core.security.attestation.attestation_generator import PredicateType, Subject
         
         statement = generator.create_in_toto_statement(
             subjects=[Subject(name="test", digest={"sha256": "test"})],
@@ -249,7 +241,7 @@ class TestA6SecurityAttestation:
         
         # Verify signature
         is_valid = generator.verify_dsse_envelope(envelope, key_id)
-        assert is_valid == True
+        assert is_valid
     
     def test_build_attestation_creation(self):
         """Test complete build attestation creation"""
@@ -278,7 +270,7 @@ class TestA6SecurityAttestation:
             
             # Verify signature
             is_valid = generator.verify_dsse_envelope(envelope, key_id)
-            assert is_valid == True
+            assert is_valid
             
         finally:
             artifact_path.unlink(missing_ok=True)
@@ -332,8 +324,7 @@ class TestA6SecurityCVEScanning:
     
     def test_cve_database_operations(self):
         """Test CVE database storage and retrieval"""
-        from core.security.cve.cve_scanner import (CVEDatabase, CVEItem,
-                                                   CVEStatus)
+        from core.security.cve.cve_scanner import CVEDatabase, CVEItem, CVEStatus
         
         with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
             db_path = Path(f.name)
@@ -345,8 +336,8 @@ class TestA6SecurityCVEScanning:
             test_cve = CVEItem(
                 cve_id="CVE-2023-TEST",
                 source_identifier="test",
-                published=datetime.now(timezone.utc),
-                last_modified=datetime.now(timezone.utc),
+                published=datetime.now(UTC),
+                last_modified=datetime.now(UTC),
                 vuln_status=CVEStatus.ANALYZED,
                 descriptions=[{"lang": "en", "value": "Test CVE"}]
             )
@@ -428,7 +419,7 @@ class TestA6SecurityServiceIntegration:
             service = SecurityService(config_dir, policy)
             
             # Test initialization
-            success = await service.initialize_security_infrastructure()
+            await service.initialize_security_infrastructure()
             
             # Note: This may fail without external dependencies
             # but should create the directory structure

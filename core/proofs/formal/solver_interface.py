@@ -25,17 +25,14 @@ Key Features:
 - Counterexample generation for negative cases
 """
 
-import asyncio
-import hashlib
-import json
-import logging
-import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
+import hashlib
+import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 
 from core.logging import get_logger
 
@@ -73,7 +70,7 @@ class SolverConfig:
     
     # Determinism
     random_seed: int = 42
-    solver_version: Optional[str] = None
+    solver_version: str | None = None
     
     # Proof artifacts
     generate_artifacts: bool = True
@@ -81,7 +78,7 @@ class SolverConfig:
     save_counterexamples: bool = True
     
     # Advanced options
-    solver_options: Dict[str, Any] = field(default_factory=dict)
+    solver_options: dict[str, Any] = field(default_factory=dict)
     debug_mode: bool = False
 
 
@@ -105,9 +102,9 @@ class ProofArtifact:
     memory_used_mb: float
     
     # Proof artifacts
-    proof_data: Optional[str] = None  # DRAT/LFSC proof
-    counterexample: Optional[Dict[str, Any]] = None
-    witness: Optional[Dict[str, Any]] = None
+    proof_data: str | None = None  # DRAT/LFSC proof
+    counterexample: dict[str, Any] | None = None
+    witness: dict[str, Any] | None = None
     
     # Configuration
     config: SolverConfig = field(default_factory=SolverConfig)
@@ -122,7 +119,7 @@ class ProofArtifact:
             content = f"{self.smt_formula}|{self.result.value}|{self.proof_data or ''}"
             self.artifact_hash = hashlib.sha256(content.encode()).hexdigest()
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
             "id": self.id,
@@ -149,7 +146,7 @@ class ProofArtifact:
         }
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ProofArtifact":
+    def from_dict(cls, data: dict[str, Any]) -> "ProofArtifact":
         """Create from dictionary"""
         config = SolverConfig(
             solver_type=SolverType(data["config"]["solver_type"]),
@@ -187,7 +184,7 @@ class SMTSolverInterface(ABC):
     
     @abstractmethod
     async def solve(self, smt_formula: str, 
-                   problem_id: Optional[str] = None) -> ProofArtifact:
+                   problem_id: str | None = None) -> ProofArtifact:
         """
         Solve SMT formula and generate proof artifact
         
@@ -230,7 +227,7 @@ class SMTSolverInterface(ABC):
     
     def create_artifact_id(self, problem_hash: str) -> str:
         """Create unique artifact ID"""
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
         solver_id = self.config.solver_type.value
         return f"{solver_id}_{timestamp}_{problem_hash[:8]}"
 
@@ -272,7 +269,7 @@ class ProofArtifactManager:
             self.logger.error(f"Failed to store artifact {artifact.id}: {e}")
             raise
     
-    async def load_artifact(self, artifact_id: str) -> Optional[ProofArtifact]:
+    async def load_artifact(self, artifact_id: str) -> ProofArtifact | None:
         """Load proof artifact from filesystem"""
         
         artifact_file = self.storage_path / f"{artifact_id}.json"
@@ -281,7 +278,7 @@ class ProofArtifactManager:
             return None
         
         try:
-            with open(artifact_file, 'r', encoding='utf-8') as f:
+            with open(artifact_file, encoding='utf-8') as f:
                 data = json.load(f)
             
             # Load external proof data if referenced
@@ -289,7 +286,7 @@ class ProofArtifactManager:
                 data["proof_data"].endswith("_proof.txt")):
                 proof_file = self.storage_path / data["proof_data"]
                 if proof_file.exists():
-                    with open(proof_file, 'r', encoding='utf-8') as f:
+                    with open(proof_file, encoding='utf-8') as f:
                         data["proof_data"] = f.read()
             
             return ProofArtifact.from_dict(data)
@@ -299,8 +296,8 @@ class ProofArtifactManager:
             return None
     
     async def list_artifacts(self, 
-                           solver_type: Optional[SolverType] = None,
-                           since: Optional[datetime] = None) -> List[str]:
+                           solver_type: SolverType | None = None,
+                           since: datetime | None = None) -> list[str]:
         """List available proof artifacts"""
         
         artifacts = []

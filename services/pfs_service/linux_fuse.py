@@ -31,13 +31,10 @@ Key Features:
 
 import asyncio
 import errno
-import logging
 import os
-import stat
 import threading
 import time
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     import fuse
@@ -51,16 +48,20 @@ except ImportError:
     Operations = object
 
 from core.logging import get_logger
-from core.pfs.filesystem_interface import (ExtendedAttributes,
-                                           FileNotFoundError, FilesystemError,
-                                           HashVerificationError,
-                                           MaterializationError,
-                                           PFSCacheInterface, PFSConfig,
-                                           PFSFilesystemInterface,
-                                           PFSMaterializerInterface,
-                                           ReadOnlyViolationError,
-                                           VirtualDirectoryInfo,
-                                           VirtualFileInfo)
+from core.pfs.filesystem_interface import (
+    ExtendedAttributes,
+    FileNotFoundError,
+    FilesystemError,
+    HashVerificationError,
+    MaterializationError,
+    PFSCacheInterface,
+    PFSConfig,
+    PFSFilesystemInterface,
+    PFSMaterializerInterface,
+    ReadOnlyViolationError,
+    VirtualDirectoryInfo,
+    VirtualFileInfo,
+)
 from services.ledger_service.postgres_ledger import PostgreSQLLedger
 
 logger = get_logger("linux_fuse")
@@ -75,7 +76,7 @@ class LinuxFUSEOperations(Operations):
         self.logger = get_logger("fuse_operations")
         
         # File handle tracking
-        self._file_handles: Dict[int, VirtualFileInfo] = {}
+        self._file_handles: dict[int, VirtualFileInfo] = {}
         self._next_handle = 1
         self._handle_lock = threading.Lock()
         
@@ -117,7 +118,7 @@ class LinuxFUSEOperations(Operations):
     
     # === FILESYSTEM OPERATIONS ===
     
-    def getattr(self, path: str, fh: Optional[int] = None) -> Dict[str, Any]:
+    def getattr(self, path: str, fh: int | None = None) -> dict[str, Any]:
         """Get file/directory attributes"""
         
         self.logger.debug(f"getattr: {path}")
@@ -144,7 +145,7 @@ class LinuxFUSEOperations(Operations):
             self.logger.error(f"Error in getattr for {path}: {str(e)}")
             raise FuseOSError(errno.EIO)
     
-    def readdir(self, path: str, fh: int) -> List[str]:
+    def readdir(self, path: str, fh: int) -> list[str]:
         """Read directory contents"""
         
         self.logger.debug(f"readdir: {path}")
@@ -221,7 +222,7 @@ class LinuxFUSEOperations(Operations):
     
     # === EXTENDED ATTRIBUTES ===
     
-    def listxattr(self, path: str) -> List[str]:
+    def listxattr(self, path: str) -> list[str]:
         """List extended attributes"""
         
         self.logger.debug(f"listxattr: {path}")
@@ -291,12 +292,12 @@ class LinuxFUSEOperations(Operations):
         self.logger.warning(f"Chown denied for {path}")
         raise FuseOSError(errno.EACCES)
     
-    def truncate(self, path: str, length: int, fh: Optional[int] = None) -> None:
+    def truncate(self, path: str, length: int, fh: int | None = None) -> None:
         """Truncate file - deny for read-only filesystem"""
         self.logger.warning(f"Truncate denied for {path}")
         raise FuseOSError(errno.EACCES)
     
-    def utimens(self, path: str, times: Optional[tuple] = None) -> None:
+    def utimens(self, path: str, times: tuple | None = None) -> None:
         """Update timestamps - deny for read-only filesystem"""
         self.logger.warning(f"Utimens denied for {path}")
         raise FuseOSError(errno.EACCES)
@@ -316,10 +317,10 @@ class LinuxFUSEOperations(Operations):
 class LinuxFUSEFilesystem(PFSFilesystemInterface):
     """Linux FUSE-based PFS read-only filesystem"""
     
-    def __init__(self, config: Optional[PFSConfig] = None,
-                 ledger: Optional[PostgreSQLLedger] = None,
-                 materializer: Optional[PFSMaterializerInterface] = None,
-                 cache: Optional[PFSCacheInterface] = None):
+    def __init__(self, config: PFSConfig | None = None,
+                 ledger: PostgreSQLLedger | None = None,
+                 materializer: PFSMaterializerInterface | None = None,
+                 cache: PFSCacheInterface | None = None):
         
         if not FUSE_AVAILABLE:
             raise RuntimeError("FUSE library not available. Install fusepy package.")
@@ -331,12 +332,12 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
         
         # Mount state
         self._is_mounted = False
-        self._mount_point: Optional[str] = None
-        self._fuse_thread: Optional[threading.Thread] = None
-        self._fuse_operations: Optional[LinuxFUSEOperations] = None
+        self._mount_point: str | None = None
+        self._fuse_thread: threading.Thread | None = None
+        self._fuse_operations: LinuxFUSEOperations | None = None
         
         # Virtual filesystem tree
-        self._virtual_root: Optional[VirtualDirectoryInfo] = None
+        self._virtual_root: VirtualDirectoryInfo | None = None
         
         self.logger = get_logger("linux_fuse_filesystem")
     
@@ -405,7 +406,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
         
         self.logger.info(f"PFS mounted successfully at {mount_point}")
     
-    def _get_fuse_options(self) -> Dict[str, Any]:
+    def _get_fuse_options(self) -> dict[str, Any]:
         """Get FUSE-specific options"""
         
         options = {
@@ -425,7 +426,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
         
         return options
     
-    def _run_fuse_mount(self, mount_point: str, options: Dict[str, Any]) -> None:
+    def _run_fuse_mount(self, mount_point: str, options: dict[str, Any]) -> None:
         """Run FUSE mount in separate thread"""
         
         try:
@@ -435,7 +436,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
             self._is_mounted = True
             
             # Create and run FUSE
-            fuse_fs = FUSE(
+            FUSE(
                 self._fuse_operations,
                 mount_point,
                 **options
@@ -509,7 +510,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
         
         raise FileNotFoundError(f"Path not found: {path}")
     
-    async def readdir(self, path: str) -> List[str]:
+    async def readdir(self, path: str) -> list[str]:
         """Read directory contents"""
         
         dir_info = await self._get_virtual_directory(path)
@@ -555,7 +556,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
     
     # === EXTENDED ATTRIBUTES ===
     
-    async def listxattr(self, path: str) -> List[str]:
+    async def listxattr(self, path: str) -> list[str]:
         """List extended attributes"""
         
         file_info = await self._get_virtual_file(path)
@@ -642,7 +643,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
         
         return True
     
-    async def _get_virtual_directory(self, path: str) -> Optional[VirtualDirectoryInfo]:
+    async def _get_virtual_directory(self, path: str) -> VirtualDirectoryInfo | None:
         """Get virtual directory info"""
         
         if not self._virtual_root:
@@ -663,7 +664,7 @@ class LinuxFUSEFilesystem(PFSFilesystemInterface):
         
         return current
     
-    async def _get_virtual_file(self, path: str) -> Optional[VirtualFileInfo]:
+    async def _get_virtual_file(self, path: str) -> VirtualFileInfo | None:
         """Get virtual file info"""
         
         if not self._virtual_root:
@@ -743,7 +744,7 @@ def is_fuse_available() -> bool:
     """Check if FUSE is available on the system"""
     return FUSE_AVAILABLE
 
-def get_fuse_version() -> Optional[str]:
+def get_fuse_version() -> str | None:
     """Get FUSE version if available"""
     if not FUSE_AVAILABLE:
         return None
