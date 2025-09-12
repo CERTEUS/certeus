@@ -76,6 +76,7 @@ ignore = [
 "core/omega/transforms.py" = ["F811"]
 "services/api_gateway/routers/devices.py" = ["I001"]
 "sdk/python/certeus_sdk/client_generated.py" = ["F811"]
+"scripts/contracts/openapi_spec_validate.py" = ["I001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["packs_core", "services", "core", "monitoring", "certeus"]
