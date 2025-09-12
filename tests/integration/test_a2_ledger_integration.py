@@ -33,7 +33,7 @@ from uuid import uuid4
 from httpx import AsyncClient
 import pytest
 
-from main import app
+from services.api_gateway.main import app
 from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 # === TEST FIXTURES ===
