@@ -201,7 +201,7 @@ def test_smoke_core_endpoints(client: TestClient, tmp_path: Path) -> None:
 
     # PCO bundle + public verify
 
-    rid = "RID-SMOKE-TEST"
+    rid = "CER-123456"
 
     payload = {
         "rid": rid,
