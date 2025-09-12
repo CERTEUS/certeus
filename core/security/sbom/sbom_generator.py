@@ -472,9 +472,9 @@ class SBOMGenerator:
         
         # Basic structure validation
         required_fields = ["bomFormat", "specVersion", "serialNumber", "version", "metadata"]
-        for field in required_fields:
-            if field not in sbom:
-                validation_errors.append(f"Missing required field: {field}")
+        for required_field in required_fields:
+            if required_field not in sbom:
+                validation_errors.append(f"Missing required field: {required_field}")
         
         # Format validation
         if sbom.get("bomFormat") != "CycloneDX":

@@ -97,7 +97,7 @@ class CerteusClient:
         # Prepare request body
         request_data = None
         if body is not None and method.upper() != "GET":
-            if isinstance(body, (dict, list)):
+            if isinstance(body, dict | list):
                 request_data = json.dumps(body).encode("utf-8")
             elif isinstance(body, str):
                 request_data = body.encode("utf-8")

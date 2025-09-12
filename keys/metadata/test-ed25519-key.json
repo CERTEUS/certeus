@@ -1,7 +1,7 @@
 {
   "key_id": "test-ed25519-key",
   "key_type": "ed25519",
-  "created_at": "2025-09-12T05:32:08.023438+00:00",
+  "created_at": "2025-09-12T05:59:10.913965+00:00",
   "expires_at": null,
   "status": "active",
   "purpose": "signing",

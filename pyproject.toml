@@ -65,11 +65,17 @@ exclude = [
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
-ignore = []
+ignore = [
+  "B008",  # Do not perform function call in argument defaults (common in FastAPI)
+  "B904",  # Within an `except` clause, raise exceptions with `raise ... from err`
+  "E722",  # Do not use bare `except` (legacy code patterns)
+  "E501",  # Line too long (handled by formatter when possible)
+]
 
 [tool.ruff.lint.per-file-ignores]
 "core/omega/transforms.py" = ["F811"]
 "services/api_gateway/routers/devices.py" = ["I001"]
+"sdk/python/certeus_sdk/client_generated.py" = ["F811"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["packs_core", "services", "core", "monitoring", "certeus"]

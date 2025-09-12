@@ -10,7 +10,7 @@ import logging
 from typing import Any, Optional
 import uuid
 
-from core.qtmp.uncertainty.uncertainty_budget import UncertaintyBudget
+from core.qtmp.uncertainty.uncertainty_budget import UncertaintyBudget, UncertaintyComponent
 from core.qtmp.units.unit_registry import unit_registry
 
 logger = logging.getLogger(__name__)
@@ -293,9 +293,6 @@ class MeasurementResult:
             'traceability_chain': self.traceability_chain,
             'raw_data': self.raw_data
         }
-
-# Import here to avoid circular import
-from core.qtmp.uncertainty.uncertainty_budget import UncertaintyComponent
 
 
 def create_simple_measurement(

@@ -1,7 +1,7 @@
 {
   "key_id": "test-build-key",
   "key_type": "ed25519",
-  "created_at": "2025-09-12T05:32:14.765165+00:00",
+  "created_at": "2025-09-12T05:59:12.211513+00:00",
   "expires_at": null,
   "status": "active",
   "purpose": "signing",
