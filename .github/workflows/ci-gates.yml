@@ -96,7 +96,7 @@ jobs:
         run: python -m ruff check . --output-format=github
 
       - name: MyPy type check (enforced)
-        run: python -m mypy --ignore-missing-imports certeus/
+        run: python -m mypy --ignore-missing-imports --explicit-package-bases certeus/
 
       - name: Bandit security scan
         run: |
