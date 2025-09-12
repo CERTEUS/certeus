@@ -38,9 +38,7 @@ def _get_signing_key() -> Ed25519PrivateKey:
         # Sprawdź czy to raw hex czy PEM
         if pem_str.startswith("-----"):
             # PEM format
-            return serialization.load_pem_private_key(
-                pem_str.encode(), password=None
-            )
+            return serialization.load_pem_private_key(pem_str.encode(), password=None)
         else:
             # Raw hex format
             key_bytes = bytes.fromhex(pem_str)
@@ -59,8 +57,7 @@ def _public_key_to_jwk(private_key: Ed25519PrivateKey) -> dict[str, Any]:
 
     # Pobierz surowe bajty klucza publicznego
     public_key_bytes = private_key.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw,
-        format=serialization.PublicFormat.Raw
+        encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw
     )
 
     # Key ID
@@ -69,19 +66,14 @@ def _public_key_to_jwk(private_key: Ed25519PrivateKey) -> dict[str, Any]:
     # x coordinate (base64url)
     x = base64.urlsafe_b64encode(public_key_bytes).decode('ascii').rstrip('=')
 
-    return {
-        "kty": "OKP",
-        "use": "sig",
-        "kid": kid,
-        "crv": "Ed25519",
-        "x": x,
-        "alg": "EdDSA"
-    }
+    return {"kty": "OKP", "use": "sig", "kid": kid, "crv": "Ed25519", "x": x, "alg": "EdDSA"}
 
 
-@router.get("/.well-known/jwks.json",
-            summary="Get JWKS with Ed25519 public keys",
-            description="Returns JSON Web Key Set with Ed25519 public keys used for PCO signing")
+@router.get(
+    "/.well-known/jwks.json",
+    summary="Get JWKS with Ed25519 public keys",
+    description="Returns JSON Web Key Set with Ed25519 public keys used for PCO signing",
+)
 def get_jwks() -> dict[str, Any]:
     """
     PL: Zwraca JSON Web Key Set z kluczami publicznymi Ed25519.
@@ -92,26 +84,26 @@ def get_jwks() -> dict[str, Any]:
         signing_key = _get_signing_key()
         jwk = _public_key_to_jwk(signing_key)
 
-        jwks = {
-            "keys": [jwk]
-        }
+        jwks = {"keys": [jwk]}
 
         return JSONResponse(
             content=jwks,
             headers={
                 "Content-Type": "application/json",
                 "Cache-Control": "public, max-age=3600",  # 1 hour cache
-                "Access-Control-Allow-Origin": "*"
-            }
+                "Access-Control-Allow-Origin": "*",
+            },
         )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate JWKS: {str(e)}")
 
 
-@router.get("/.well-known/certeus-metadata",
-            summary="Get CERTEUS metadata",
-            description="Returns CERTEUS-specific metadata including supported versions and capabilities")
+@router.get(
+    "/.well-known/certeus-metadata",
+    summary="Get CERTEUS metadata",
+    description="Returns CERTEUS-specific metadata including supported versions and capabilities",
+)
 def get_certeus_metadata() -> dict[str, Any]:
     """
     PL: Zwraca metadane CERTEUS z obsługiwanymi wersjami i możliwościami.
@@ -128,18 +120,14 @@ def get_certeus_metadata() -> dict[str, Any]:
             "pco_bundle": "/v1/pco/bundle",
             "pco_public": "/v1/pco/public/{case_id}",
             "verify": "/v1/verify",
-            "jwks": "/.well-known/jwks.json"
+            "jwks": "/.well-known/jwks.json",
         },
-        "compliance": [
-            "gdpr",
-            "prov-w3c",
-            "json-schema-draft-2020-12"
-        ],
+        "compliance": ["gdpr", "prov-w3c", "json-schema-draft-2020-12"],
         "features": {
             "pii_redaction": True,
             "evidence_graph": True,
             "formal_verification": True,
             "tsa_timestamps": True,
-            "quantum_resistance": False  # Future feature
-        }
+            "quantum_resistance": False,  # Future feature
+        },
     }

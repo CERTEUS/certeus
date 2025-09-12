@@ -37,6 +37,7 @@ from cryptography.hazmat.primitives import hashes
 
 # === CONFIGURATION ===
 
+
 @dataclass
 class TSAConfig:
     """TSA Client configuration"""
@@ -76,18 +77,17 @@ class TSAConfig:
             fallback_tsa_urls=fallback_urls,
             timeout_seconds=float(os.getenv("CERTEUS_TSA_TIMEOUT", "30.0")),
             max_retries=int(os.getenv("CERTEUS_TSA_MAX_RETRIES", "3")),
-
             verify_certificates=os.getenv("CERTEUS_TSA_VERIFY_CERTS", "true").lower() == "true",
             trusted_ca_certs=None,  # TODO: Load from env
-
             batch_size=int(os.getenv("CERTEUS_TSA_BATCH_SIZE", "10")),
             concurrent_requests=int(os.getenv("CERTEUS_TSA_CONCURRENT", "3")),
-
             request_cert_in_response=os.getenv("CERTEUS_TSA_REQUEST_CERT", "true").lower() == "true",
-            hash_algorithm=os.getenv("CERTEUS_TSA_HASH_ALGORITHM", "sha256")
+            hash_algorithm=os.getenv("CERTEUS_TSA_HASH_ALGORITHM", "sha256"),
         )
 
+
 # === MODELS ===
+
 
 @dataclass
 class TimestampRequest:
@@ -98,6 +98,7 @@ class TimestampRequest:
     nonce: int | None = None
     request_cert: bool = True
     policy_id: str | None = None
+
 
 @dataclass
 class TimestampResponse:
@@ -116,6 +117,7 @@ class TimestampResponse:
     is_verified: bool = False
     verification_error: str | None = None
 
+
 @dataclass
 class BatchTimestampJob:
     """Batch timestamp job"""
@@ -128,25 +130,36 @@ class BatchTimestampJob:
     completed_at: datetime | None = None
     error_message: str | None = None
 
+
 # === EXCEPTIONS ===
+
 
 class TSAError(Exception):
     """Base TSA exception"""
+
     pass
+
 
 class TSATimeoutError(TSAError):
     """TSA request timeout"""
+
     pass
+
 
 class TSAValidationError(TSAError):
     """TSA response validation error"""
+
     pass
+
 
 class TSAUnavailableError(TSAError):
     """All TSA servers unavailable"""
+
     pass
 
+
 # === RFC3161 TSA CLIENT ===
+
 
 class RFC3161TSAClient:
     """
@@ -170,21 +183,14 @@ class RFC3161TSAClient:
             "responses_received": 0,
             "average_response_time": 0.0,
             "success_rate": 0.0,
-            "last_request_time": None
+            "last_request_time": None,
         }
 
         # Hash algorithm mapping
-        self._hash_algorithms = {
-            "sha256": hashes.SHA256(),
-            "sha384": hashes.SHA384(),
-            "sha512": hashes.SHA512()
-        }
+        self._hash_algorithms = {"sha256": hashes.SHA256(), "sha384": hashes.SHA384(), "sha512": hashes.SHA512()}
 
     async def request_timestamp(
-        self,
-        data: bytes,
-        hash_algorithm: str | None = None,
-        nonce: int | None = None
+        self, data: bytes, hash_algorithm: str | None = None, nonce: int | None = None
     ) -> TimestampResponse:
         """Request single timestamp for data"""
 
@@ -202,17 +208,14 @@ class RFC3161TSAClient:
             message_hash=message_hash,
             hash_algorithm=hash_alg,
             nonce=nonce,
-            request_cert=self.config.request_cert_in_response
+            request_cert=self.config.request_cert_in_response,
         )
 
         # Send request
         return await self._send_timestamp_request(request)
 
     async def request_timestamp_for_hash(
-        self,
-        message_hash: bytes,
-        hash_algorithm: str,
-        nonce: int | None = None
+        self, message_hash: bytes, hash_algorithm: str, nonce: int | None = None
     ) -> TimestampResponse:
         """Request timestamp for pre-computed hash"""
 
@@ -220,16 +223,12 @@ class RFC3161TSAClient:
             message_hash=message_hash,
             hash_algorithm=hash_algorithm,
             nonce=nonce,
-            request_cert=self.config.request_cert_in_response
+            request_cert=self.config.request_cert_in_response,
         )
 
         return await self._send_timestamp_request(request)
 
-    async def batch_timestamp(
-        self,
-        data_list: list[bytes],
-        hash_algorithm: str | None = None
-    ) -> BatchTimestampJob:
+    async def batch_timestamp(self, data_list: list[bytes], hash_algorithm: str | None = None) -> BatchTimestampJob:
         """Request timestamps for multiple data items"""
 
         job_id = f"batch_{datetime.utcnow().strftime('%Y%m%d_%H%M%S_%f')}"
@@ -243,12 +242,14 @@ class RFC3161TSAClient:
             hasher.update(data)
             message_hash = hasher.digest()
 
-            requests.append(TimestampRequest(
-                message_hash=message_hash,
-                hash_algorithm=hash_alg,
-                nonce=i + 1,  # Use index as nonce
-                request_cert=self.config.request_cert_in_response
-            ))
+            requests.append(
+                TimestampRequest(
+                    message_hash=message_hash,
+                    hash_algorithm=hash_alg,
+                    nonce=i + 1,  # Use index as nonce
+                    request_cert=self.config.request_cert_in_response,
+                )
+            )
 
         # Create batch job
         job = BatchTimestampJob(
@@ -256,7 +257,7 @@ class RFC3161TSAClient:
             requests=requests,
             responses=[None] * len(requests),
             status="running",
-            started_at=datetime.utcnow()
+            started_at=datetime.utcnow(),
         )
 
         try:
@@ -273,10 +274,7 @@ class RFC3161TSAClient:
                         job.responses[index] = None
 
             # Execute all requests concurrently
-            tasks = [
-                process_request(i, req)
-                for i, req in enumerate(requests)
-            ]
+            tasks = [process_request(i, req) for i, req in enumerate(requests)]
 
             await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -294,9 +292,7 @@ class RFC3161TSAClient:
 
             job.completed_at = datetime.utcnow()
 
-            self.logger.info(
-                f"Batch timestamp job {job_id}: {successful_responses}/{len(requests)} successful"
-            )
+            self.logger.info(f"Batch timestamp job {job_id}: {successful_responses}/{len(requests)} successful")
 
             return job
 
@@ -348,12 +344,8 @@ class RFC3161TSAClient:
             async with session.post(
                 url,
                 data=ts_request,
-                headers={
-                    'Content-Type': 'application/timestamp-query',
-                    'User-Agent': 'CERTEUS-Engine-TSA-Client/1.0'
-                }
+                headers={'Content-Type': 'application/timestamp-query', 'User-Agent': 'CERTEUS-Engine-TSA-Client/1.0'},
             ) as response:
-
                 if response.status != 200:
                     raise TSAError(f"TSA server returned {response.status}: {response.reason}")
 
@@ -376,14 +368,11 @@ class RFC3161TSAClient:
 
         mock_request = {
             "version": 1,
-            "messageImprint": {
-                "hashAlgorithm": request.hash_algorithm,
-                "hashedMessage": request.message_hash.hex()
-            },
+            "messageImprint": {"hashAlgorithm": request.hash_algorithm, "hashedMessage": request.message_hash.hex()},
             "reqPolicy": None,
             "nonce": request.nonce,
             "certReq": request.request_cert,
-            "extensions": None
+            "extensions": None,
         }
 
         # This would be properly ASN.1 encoded in production
@@ -403,25 +392,19 @@ class RFC3161TSAClient:
                 serial_number=12345,
                 is_verified=True,
                 nonce=request.nonce,
-                ordering=True
+                ordering=True,
             )
         else:
             raise TSAValidationError("Invalid TSA response format")
 
-    async def verify_timestamp(
-        self,
-        timestamp_token: bytes,
-        original_data: bytes,
-        hash_algorithm: str
-    ) -> bool:
+    async def verify_timestamp(self, timestamp_token: bytes, original_data: bytes, hash_algorithm: str) -> bool:
         """Verify timestamp token against original data"""
 
         try:
             # Parse timestamp token
-            response = self._parse_rfc3161_response(timestamp_token, TimestampRequest(
-                message_hash=b"",
-                hash_algorithm=hash_algorithm
-            ))
+            response = self._parse_rfc3161_response(
+                timestamp_token, TimestampRequest(message_hash=b"", hash_algorithm=hash_algorithm)
+            )
 
             if not response.is_verified:
                 return False
@@ -449,9 +432,7 @@ class RFC3161TSAClient:
 
         # Update success rate
         if self._metrics["requests_sent"] > 0:
-            self._metrics["success_rate"] = (
-                self._metrics["responses_received"] / self._metrics["requests_sent"]
-            )
+            self._metrics["success_rate"] = self._metrics["responses_received"] / self._metrics["requests_sent"]
 
         self._metrics["last_request_time"] = datetime.utcnow()
 
@@ -463,7 +444,7 @@ class RFC3161TSAClient:
             "primary_tsa_available": False,
             "fallback_tsa_available": 0,
             "last_error": None,
-            "response_time_ms": None
+            "response_time_ms": None,
         }
 
         try:
@@ -489,10 +470,7 @@ class RFC3161TSAClient:
         for url in self.config.fallback_tsa_urls:
             try:
                 # Quick test request
-                test_request = TimestampRequest(
-                    message_hash=hashlib.sha256(b"test").digest(),
-                    hash_algorithm="sha256"
-                )
+                test_request = TimestampRequest(message_hash=hashlib.sha256(b"test").digest(), hash_algorithm="sha256")
                 await self._send_to_tsa_server(url, test_request)
                 available_fallbacks += 1
             except:
@@ -505,9 +483,11 @@ class RFC3161TSAClient:
 
         return health
 
+
 # === FACTORY ===
 
 _global_tsa_client: RFC3161TSAClient | None = None
+
 
 async def get_tsa_client() -> RFC3161TSAClient:
     """Get global TSA client instance"""
@@ -519,7 +499,9 @@ async def get_tsa_client() -> RFC3161TSAClient:
 
     return _global_tsa_client
 
+
 # === CLI INTERFACE ===
+
 
 async def main() -> None:
     """CLI interface for TSA operations"""
@@ -571,6 +553,7 @@ async def main() -> None:
 
     except Exception as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

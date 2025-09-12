@@ -32,7 +32,7 @@ class EvidenceNode:
         type: str,
         label: str | None = None,
         attributes: dict[str, Any] | None = None,
-        pii_level: str = "public"
+        pii_level: str = "public",
     ):
         self.id = id
         self.type = type  # Entity, Activity, Agent
@@ -42,11 +42,7 @@ class EvidenceNode:
 
     def to_prov(self) -> dict[str, Any]:
         """Konwertuje do formatu PROV JSON-LD."""
-        node = {
-            "prov:id": self.id,
-            "prov:type": self.type,
-            "prov:label": self.label
-        }
+        node = {"prov:id": self.id, "prov:type": self.type, "prov:label": self.label}
 
         # Dodaj atrybuty z prefiksami PROV
         for key, value in self.attributes.items():
@@ -71,7 +67,7 @@ class EvidenceEdge:
         source_id: str,
         target_id: str,
         label: str | None = None,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ):
         self.id = id
         self.relation_type = relation_type  # wasGeneratedBy, used, wasAssociatedWith, etc.
@@ -82,10 +78,7 @@ class EvidenceEdge:
 
     def to_prov(self) -> dict[str, Any]:
         """Konwertuje do formatu PROV JSON-LD."""
-        edge = {
-            "prov:id": self.id,
-            "prov:type": self.relation_type
-        }
+        edge = {"prov:id": self.id, "prov:type": self.relation_type}
 
         # Mapowanie typów relacji na odpowiednie pola PROV
         if self.relation_type == "wasGeneratedBy":
@@ -122,11 +115,7 @@ class EvidenceGraph:
         self.created_at = datetime.utcnow()
 
     def add_entity(
-        self,
-        id: str,
-        label: str | None = None,
-        attributes: dict[str, Any] | None = None,
-        pii_level: str = "public"
+        self, id: str, label: str | None = None, attributes: dict[str, Any] | None = None, pii_level: str = "public"
     ) -> EvidenceNode:
         """Dodaje entność do grafu."""
         node = EvidenceNode(id, "prov:Entity", label, attributes, pii_level)
@@ -140,7 +129,7 @@ class EvidenceGraph:
         start_time: datetime | None = None,
         end_time: datetime | None = None,
         attributes: dict[str, Any] | None = None,
-        pii_level: str = "public"
+        pii_level: str = "public",
     ) -> EvidenceNode:
         """Dodaje aktywność do grafu."""
         attrs = attributes or {}
@@ -159,7 +148,7 @@ class EvidenceGraph:
         label: str | None = None,
         agent_type: str = "SoftwareAgent",
         attributes: dict[str, Any] | None = None,
-        pii_level: str = "restricted"
+        pii_level: str = "restricted",
     ) -> EvidenceNode:
         """Dodaje agenta do grafu."""
         attrs = attributes or {}
@@ -170,11 +159,7 @@ class EvidenceGraph:
         return node
 
     def add_generation(
-        self,
-        entity_id: str,
-        activity_id: str,
-        time: datetime | None = None,
-        attributes: dict[str, Any] | None = None
+        self, entity_id: str, activity_id: str, time: datetime | None = None, attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację wasGeneratedBy."""
         edge_id = f"gen_{uuid.uuid4().hex[:8]}"
@@ -187,11 +172,7 @@ class EvidenceGraph:
         return edge
 
     def add_usage(
-        self,
-        activity_id: str,
-        entity_id: str,
-        time: datetime | None = None,
-        attributes: dict[str, Any] | None = None
+        self, activity_id: str, entity_id: str, time: datetime | None = None, attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację used."""
         edge_id = f"use_{uuid.uuid4().hex[:8]}"
@@ -204,11 +185,7 @@ class EvidenceGraph:
         return edge
 
     def add_association(
-        self,
-        activity_id: str,
-        agent_id: str,
-        plan_id: str | None = None,
-        attributes: dict[str, Any] | None = None
+        self, activity_id: str, agent_id: str, plan_id: str | None = None, attributes: dict[str, Any] | None = None
     ) -> EvidenceEdge:
         """Dodaje relację wasAssociatedWith."""
         edge_id = f"assoc_{uuid.uuid4().hex[:8]}"
@@ -225,7 +202,7 @@ class EvidenceGraph:
         derived_entity_id: str,
         source_entity_id: str,
         activity_id: str | None = None,
-        attributes: dict[str, Any] | None = None
+        attributes: dict[str, Any] | None = None,
     ) -> EvidenceEdge:
         """Dodaje relację wasDerivedFrom."""
         edge_id = f"der_{uuid.uuid4().hex[:8]}"
@@ -245,7 +222,7 @@ class EvidenceGraph:
                 "certeus": "https://certeus.dev/ns/evidence#",
                 "xsd": "http://www.w3.org/2001/XMLSchema#",
                 "foaf": "http://xmlns.com/foaf/0.1/",
-                "dcterms": "http://purl.org/dc/terms/"
+                "dcterms": "http://purl.org/dc/terms/",
             }
         }
 
@@ -262,9 +239,7 @@ class EvidenceGraph:
             source_node = self.nodes.get(edge.source_id)
             target_node = self.nodes.get(edge.target_id)
 
-            if (include_private or
-                (source_node and source_node.is_public() and
-                 target_node and target_node.is_public())):
+            if include_private or (source_node and source_node.is_public() and target_node and target_node.is_public()):
                 graph_data.append(edge.to_prov())
 
         return {
@@ -275,8 +250,8 @@ class EvidenceGraph:
             "certeus:graph_stats": {
                 "node_count": len([n for n in self.nodes.values() if include_private or n.is_public()]),
                 "edge_count": len(self.edges),
-                "public_node_count": len([n for n in self.nodes.values() if n.is_public()])
-            }
+                "public_node_count": len([n for n in self.nodes.values() if n.is_public()]),
+            },
         }
 
     def to_public_summary(self) -> dict[str, Any]:
@@ -293,12 +268,13 @@ class EvidenceGraph:
                     "type": node.type,
                     "label": node.label,
                     "public_attributes": {
-                        k: v for k, v in node.attributes.items()
+                        k: v
+                        for k, v in node.attributes.items()
                         if not k.startswith("pii_") and not k.startswith("private_")
-                    }
+                    },
                 }
                 for node in public_nodes[:10]  # Limit to first 10 nodes
-            ]
+            ],
         }
 
 
@@ -319,8 +295,8 @@ class EvidenceGraphBuilder:
             {
                 "prov:type": "certeus:PCOBundle",
                 "certeus:version": pco_data.get("version", "1.0"),
-                "certeus:status": pco_data.get("status", "PENDING")
-            }
+                "certeus:status": pco_data.get("status", "PENDING"),
+            },
         )
 
         # Dodaj źródła jako entności
@@ -333,8 +309,8 @@ class EvidenceGraphBuilder:
                     "prov:type": "certeus:LegalSource",
                     "certeus:uri": source["uri"],
                     "certeus:digest": source["digest"],
-                    "certeus:license": source.get("license", "unknown")
-                }
+                    "certeus:license": source.get("license", "unknown"),
+                },
             )
 
             # PCO używa tego źródła
@@ -351,18 +327,15 @@ class EvidenceGraphBuilder:
                     "prov:type": "certeus:ProofGeneration",
                     "certeus:solver": derivation["solver"],
                     "certeus:proof_format": derivation["proof_format"],
-                    "certeus:artifact_digest": derivation["artifact_digest"]
-                }
+                    "certeus:artifact_digest": derivation["artifact_digest"],
+                },
             )
 
             # Proof entity
             graph.add_entity(
                 f"proof:{derivation['claim_id']}",
                 f"Proof for {derivation['claim_id']}",
-                {
-                    "prov:type": "certeus:FormalProof",
-                    "certeus:format": derivation["proof_format"]
-                }
+                {"prov:type": "certeus:FormalProof", "certeus:format": derivation["proof_format"]},
             )
 
             # Proof został wygenerowany przez aktywność
@@ -374,8 +347,8 @@ class EvidenceGraphBuilder:
                 f"Solver {derivation['solver']}",
                 attributes={
                     "certeus:version": derivation.get("solver_version", "unknown"),
-                    "certeus:type": "TheoremProver"
-                }
+                    "certeus:type": "TheoremProver",
+                },
             )
 
             # Aktywność była powiązana z solverem
@@ -394,9 +367,9 @@ class EvidenceGraphBuilder:
                     "prov:type": "certeus:LegalClaim",
                     "certeus:confidence": claim.get("confidence", 0.0),
                     "certeus:text_length": len(claim.get("text", "")),
-                    "certeus:legal_domain": claim.get("legal_basis", {}).get("domain", "unknown")
+                    "certeus:legal_domain": claim.get("legal_basis", {}).get("domain", "unknown"),
                 },
-                pii_level=pii_level
+                pii_level=pii_level,
             )
 
             # PCO zawiera ten claim
@@ -412,8 +385,8 @@ class EvidenceGraphBuilder:
                     "prov:type": "certeus:DigitalSigning",
                     "certeus:algorithm": signature["alg"],
                     "certeus:role": signature["role"],
-                    "certeus:key_id": signature["key_id"]
-                }
+                    "certeus:key_id": signature["key_id"],
+                },
             )
 
             # Signing agent (anonimizowany)
@@ -421,11 +394,8 @@ class EvidenceGraphBuilder:
             graph.add_agent(
                 agent_id,
                 f"Signer ({signature['role']})",
-                attributes={
-                    "certeus:role": signature["role"],
-                    "certeus:algorithm": signature["alg"]
-                },
-                pii_level="restricted"
+                attributes={"certeus:role": signature["role"], "certeus:algorithm": signature["alg"]},
+                pii_level="restricted",
             )
 
             graph.add_association(f"sign_activity_{i}", agent_id)
@@ -434,10 +404,7 @@ class EvidenceGraphBuilder:
             graph.add_entity(
                 f"signed_pco_{i}",
                 f"PCO signed by {signature['role']}",
-                {
-                    "prov:type": "certeus:SignedPCO",
-                    "certeus:signature_algorithm": signature["alg"]
-                }
+                {"prov:type": "certeus:SignedPCO", "certeus:signature_algorithm": signature["alg"]},
             )
 
             graph.add_generation(f"signed_pco_{i}", f"sign_activity_{i}")
@@ -450,11 +417,7 @@ class ROCrateExporter:
     """Eksporter Evidence Graph do formatu RO-Crate."""
 
     @staticmethod
-    def export_evidence_graph(
-        graph: EvidenceGraph,
-        output_dir: Path,
-        include_private: bool = False
-    ) -> Path:
+    def export_evidence_graph(graph: EvidenceGraph, output_dir: Path, include_private: bool = False) -> Path:
         """Eksportuje Evidence Graph do RO-Crate."""
         output_dir = Path(output_dir)
         output_dir.mkdir(exist_ok=True)
@@ -463,10 +426,7 @@ class ROCrateExporter:
         metadata = {
             "@context": [
                 "https://w3id.org/ro/crate/1.1/context",
-                {
-                    "certeus": "https://certeus.dev/ns/evidence#",
-                    "prov": "http://www.w3.org/ns/prov#"
-                }
+                {"certeus": "https://certeus.dev/ns/evidence#", "prov": "http://www.w3.org/ns/prov#"},
             ],
             "@graph": [
                 {
@@ -474,7 +434,7 @@ class ROCrateExporter:
                     "@id": "ro-crate-metadata.json",
                     "conformsTo": {"@id": "https://w3id.org/ro/crate/1.1"},
                     "about": {"@id": "./"},
-                    "description": f"Evidence Graph for case {graph.case_id}"
+                    "description": f"Evidence Graph for case {graph.case_id}",
                 },
                 {
                     "@type": ["Dataset", "certeus:EvidenceGraph"],
@@ -482,16 +442,13 @@ class ROCrateExporter:
                     "name": f"Evidence Graph - {graph.case_id}",
                     "description": f"PROV-compliant evidence graph for legal case {graph.case_id}",
                     "dateCreated": graph.created_at.isoformat(),
-                    "hasPart": [
-                        {"@id": "evidence_graph.json"},
-                        {"@id": "public_summary.json"}
-                    ],
+                    "hasPart": [{"@id": "evidence_graph.json"}, {"@id": "public_summary.json"}],
                     "conformsTo": [
                         {"@id": "https://w3.org/TR/prov-json/"},
-                        {"@id": "https://certeus.dev/schemas/evidence-graph/v1.0"}
-                    ]
-                }
-            ]
+                        {"@id": "https://certeus.dev/schemas/evidence-graph/v1.0"},
+                    ],
+                },
+            ],
         }
 
         # Zapisz metadane RO-Crate
@@ -516,24 +473,21 @@ class ROCrateExporter:
                 {
                     "name": "ro-crate-metadata.json",
                     "type": "metadata",
-                    "size": (output_dir / "ro-crate-metadata.json").stat().st_size
+                    "size": (output_dir / "ro-crate-metadata.json").stat().st_size,
                 },
                 {
                     "name": "evidence_graph.json",
                     "type": "evidence_graph",
                     "format": "prov-json-ld",
-                    "size": (output_dir / "evidence_graph.json").stat().st_size
+                    "size": (output_dir / "evidence_graph.json").stat().st_size,
                 },
                 {
                     "name": "public_summary.json",
                     "type": "public_summary",
-                    "size": (output_dir / "public_summary.json").stat().st_size
-                }
+                    "size": (output_dir / "public_summary.json").stat().st_size,
+                },
             ],
-            "checksum": {
-                "algorithm": "sha256",
-                "value": ROCrateExporter._calculate_directory_hash(output_dir)
-            }
+            "checksum": {"algorithm": "sha256", "value": ROCrateExporter._calculate_directory_hash(output_dir)},
         }
 
         with open(output_dir / "manifest.json", 'w', encoding='utf-8') as f:

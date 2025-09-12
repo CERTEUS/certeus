@@ -2,8 +2,4 @@
 # Quantum-Resistance Temporal & Metrology Protocol
 
 __version__ = "1.0.0"
-__all__ = [
-    "measurements",
-    "uncertainty", 
-    "units"
-]
+__all__ = ["measurements", "uncertainty", "units"]

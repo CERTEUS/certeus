@@ -29,14 +29,15 @@ PLAYGROUND_DIR = REPO_ROOT / "clients" / "web" / "playground"
 
 # === MODELE / MODELS ===
 
+
 class DXEnhancer:
     """Developer Experience enhancement suite."""
-    
+
     def __init__(self):
         self.examples_dir = EXAMPLES_DIR
         self.docs_dir = DOCS_DIR
         self.playground_dir = PLAYGROUND_DIR
-        
+
     def ensure_directories(self) -> None:
         """Ensure all required directories exist."""
         directories = [
@@ -45,17 +46,17 @@ class DXEnhancer:
             self.examples_dir / "python",
             self.examples_dir / "quickstart",
             self.docs_dir,
-            self.playground_dir
+            self.playground_dir,
         ]
-        
+
         for directory in directories:
             directory.mkdir(parents=True, exist_ok=True)
             print(f"Ensured directory: {directory}")
-    
+
     def generate_typescript_examples(self) -> None:
         """Generate comprehensive TypeScript SDK examples."""
         print("Generating TypeScript SDK examples...")
-        
+
         # Basic usage example
         basic_example = '''// CERTEUS TypeScript SDK - Basic Usage Example
 import { CerteusClient } from '@certeus/sdk';
@@ -256,20 +257,20 @@ export const ApiStatusComponent: React.FC = () => {
         examples = [
             ("basic-usage.ts", basic_example),
             ("advanced-usage.ts", advanced_example),
-            ("react-hooks.tsx", react_example)
+            ("react-hooks.tsx", react_example),
         ]
-        
+
         ts_examples_dir = self.examples_dir / "typescript"
         for filename, content in examples:
             example_file = ts_examples_dir / filename
             with open(example_file, 'w', encoding='utf-8') as f:
                 f.write(content)
             print(f"Generated TypeScript example: {example_file}")
-    
+
     def generate_python_examples(self) -> None:
         """Generate comprehensive Python SDK examples."""
         print("Generating Python SDK examples...")
-        
+
         # Basic usage example
         basic_example = '''#!/usr/bin/env python3
 """CERTEUS Python SDK - Basic Usage Example"""
@@ -470,20 +471,20 @@ if __name__ == "__main__":
         examples = [
             ("basic_usage.py", basic_example),
             ("advanced_usage.py", advanced_example),
-            ("context_manager.py", context_example)
+            ("context_manager.py", context_example),
         ]
-        
+
         py_examples_dir = self.examples_dir / "python"
         for filename, content in examples:
             example_file = py_examples_dir / filename
             with open(example_file, 'w', encoding='utf-8') as f:
                 f.write(content)
             print(f"Generated Python example: {example_file}")
-    
+
     def generate_quickstart_guide(self) -> None:
         """Generate quickstart documentation."""
         print("Generating quickstart guides...")
-        
+
         quickstart_content = '''# CERTEUS SDK Quick Start Guide
 
 Get up and running with CERTEUS in under 5 minutes.
@@ -663,13 +664,13 @@ setInterval(async () => {
         quickstart_file = self.examples_dir / "quickstart" / "README.md"
         with open(quickstart_file, 'w', encoding='utf-8') as f:
             f.write(quickstart_content)
-        
+
         print(f"Generated quickstart guide: {quickstart_file}")
-    
+
     def generate_documentation(self) -> None:
         """Generate comprehensive SDK documentation."""
         print("Generating SDK documentation...")
-        
+
         # TypeScript SDK documentation
         ts_docs = '''# CERTEUS TypeScript SDK
 
@@ -799,7 +800,7 @@ const useAPI = () => {
 - [Enterprise Support](mailto:enterprise@certeus.dev)
 '''
 
-        # Python SDK documentation  
+        # Python SDK documentation
         py_docs = '''# CERTEUS Python SDK
 
 Enterprise-grade Python SDK for CERTEUS API.
@@ -956,7 +957,7 @@ result = with_backoff(lambda: client.some_operation())
         with open(ts_docs_file, 'w', encoding='utf-8') as f:
             f.write(ts_docs)
         print(f"Generated TypeScript docs: {ts_docs_file}")
-        
+
         py_docs_file = self.docs_dir / "python.md"
         with open(py_docs_file, 'w', encoding='utf-8') as f:
             f.write(py_docs)
@@ -965,7 +966,7 @@ result = with_backoff(lambda: client.some_operation())
     def generate_playground_config(self) -> None:
         """Generate interactive playground configuration."""
         print("Generating playground configuration...")
-        
+
         playground_config = {
             "title": "CERTEUS API Playground",
             "description": "Interactive API explorer for CERTEUS",
@@ -979,61 +980,63 @@ result = with_backoff(lambda: client.some_operation())
                     "example": {
                         "curl": "curl -X GET https://api.certeus.dev/health",
                         "javascript": "const response = await fetch('/health'); const data = await response.json();",
-                        "python": "response = client.health(); print(response.data)"
-                    }
+                        "python": "response = client.health(); print(response.data)",
+                    },
                 },
                 {
                     "name": "OpenAPI Spec",
-                    "method": "GET", 
+                    "method": "GET",
                     "path": "/openapi.json",
                     "description": "Get OpenAPI specification",
                     "example": {
                         "curl": "curl -X GET https://api.certeus.dev/openapi.json",
                         "javascript": "const spec = await client.openapi(); console.log(spec.data.info);",
-                        "python": "spec = client.openapi(); print(spec.data['info'])"
-                    }
-                }
+                        "python": "spec = client.openapi(); print(spec.data['info'])",
+                    },
+                },
             ],
             "sdk_examples": {
                 "typescript": {
                     "installation": "npm install @certeus/sdk",
                     "import": "import { CerteusClient } from '@certeus/sdk';",
-                    "client_init": "const client = new CerteusClient({ baseUrl: 'https://api.certeus.dev' });"
+                    "client_init": "const client = new CerteusClient({ baseUrl: 'https://api.certeus.dev' });",
                 },
                 "python": {
                     "installation": "pip install certeus-sdk",
                     "import": "from certeus_sdk import CerteusClient",
-                    "client_init": "client = CerteusClient(base_url='https://api.certeus.dev')"
-                }
-            }
+                    "client_init": "client = CerteusClient(base_url='https://api.certeus.dev')",
+                },
+            },
         }
-        
+
         config_file = self.playground_dir / "config.json"
         with open(config_file, 'w', encoding='utf-8') as f:
             json.dump(playground_config, f, indent=2)
-        
+
         print(f"Generated playground config: {config_file}")
 
+
 # === LOGIKA / LOGIC ===
+
 
 def main() -> int:
     """Main entry point for A8 DX enhancer."""
     print("A8 Developer Experience Enhancer")
     print("=" * 60)
-    
+
     # Initialize DX enhancer
     enhancer = DXEnhancer()
-    
+
     # Ensure all directories exist
     enhancer.ensure_directories()
-    
+
     # Generate examples and documentation
     enhancer.generate_typescript_examples()
     enhancer.generate_python_examples()
     enhancer.generate_quickstart_guide()
     enhancer.generate_documentation()
     enhancer.generate_playground_config()
-    
+
     print("\n" + "=" * 60)
     print("A8 Developer Experience Enhancement completed!")
     print("Generated:")
@@ -1043,8 +1046,9 @@ def main() -> int:
     print("  - Comprehensive SDK docs")
     print("  - Interactive playground config")
     print("\nEnterprise big tech developer experience achieved!")
-    
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

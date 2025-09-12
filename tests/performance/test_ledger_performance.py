@@ -36,6 +36,7 @@ from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedg
 
 # === TEST CONFIGURATION ===
 
+
 @pytest.fixture
 def performance_ledger_config():
     """Performance test configuration"""
@@ -44,16 +45,14 @@ def performance_ledger_config():
         db_pool_min=10,
         db_pool_max=50,  # Higher pool for performance tests
         db_timeout=60.0,
-
         s3_bucket="certeus-performance-test",
         s3_region="us-east-1",
         s3_endpoint_url="http://localhost:9000",  # MinIO
-
         batch_size=200,  # Larger batches for performance
         merkle_anchor_interval=5000,
-
-        tsa_enabled=False  # Disable for pure performance testing
+        tsa_enabled=False,  # Disable for pure performance testing
     )
+
 
 @pytest.fixture
 async def performance_ledger(performance_ledger_config):
@@ -65,7 +64,9 @@ async def performance_ledger(performance_ledger_config):
 
     await ledger.close()
 
+
 # === PERFORMANCE TESTS ===
+
 
 class TestLedgerPerformance:
     """Performance test suite for A2 Ledger"""
@@ -87,9 +88,7 @@ class TestLedgerPerformance:
         # Create test case
         case_id = f"PERF-{random.randint(100000, 999999)}"
         await performance_ledger.create_case(
-            case_id,
-            {"country": "PL", "domain": "performance_test"},
-            {"test_type": "single_ingestion"}
+            case_id, {"country": "PL", "domain": "performance_test"}, {"test_type": "single_ingestion"}
         )
 
         # Record events with timing
@@ -106,9 +105,9 @@ class TestLedgerPerformance:
                 payload={
                     "sequence": i,
                     "timestamp": datetime.utcnow().isoformat(),
-                    "data": f"performance_test_data_{i}"
+                    "data": f"performance_test_data_{i}",
                 },
-                actor="performance_test"
+                actor="performance_test",
             )
 
             event_end = time.time()
@@ -164,9 +163,7 @@ class TestLedgerPerformance:
         case_ids = [f"BATCH-{random.randint(100000, 999999)}" for _ in range(10)]
         for case_id in case_ids:
             await performance_ledger.create_case(
-                case_id,
-                {"country": "PL", "domain": "batch_test"},
-                {"test_type": "batch_ingestion"}
+                case_id, {"country": "PL", "domain": "batch_test"}, {"test_type": "batch_ingestion"}
             )
 
         # Batch ingestion with timing
@@ -184,12 +181,8 @@ class TestLedgerPerformance:
                 task = performance_ledger.record_event(
                     event_type="BATCH_TEST",
                     case_id=case_id,
-                    payload={
-                        "batch": batch_num,
-                        "sequence": i,
-                        "data": f"batch_data_{batch_num}_{i}"
-                    },
-                    actor="batch_test"
+                    payload={"batch": batch_num, "sequence": i, "data": f"batch_data_{batch_num}_{i}"},
+                    actor="batch_test",
                 )
                 batch_tasks.append(task)
 
@@ -218,7 +211,9 @@ class TestLedgerPerformance:
         print(f"Events/second per batch: {events_per_batch_second:.1f}")
 
         # DoD Assertion: ≥2000 events/s with batching
-        assert events_per_second >= 2000, f"Batch performance below target: {events_per_second:.1f} events/s < 2000 events/s"
+        assert events_per_second >= 2000, (
+            f"Batch performance below target: {events_per_second:.1f} events/s < 2000 events/s"
+        )
 
     @pytest.mark.asyncio
     async def test_concurrent_client_load(self, performance_ledger):
@@ -242,7 +237,7 @@ class TestLedgerPerformance:
             await performance_ledger.create_case(
                 case_id,
                 {"country": "PL", "domain": "concurrent_test"},
-                {"test_type": "concurrent_client", "client_id": client_id}
+                {"test_type": "concurrent_client", "client_id": client_id},
             )
 
             client_start = time.time()
@@ -254,12 +249,8 @@ class TestLedgerPerformance:
                 await performance_ledger.record_event(
                     event_type="CONCURRENT_TEST",
                     case_id=case_id,
-                    payload={
-                        "client_id": client_id,
-                        "sequence": i,
-                        "data": f"client_{client_id}_data_{i}"
-                    },
-                    actor=f"client_{client_id}"
+                    payload={"client_id": client_id, "sequence": i, "data": f"client_{client_id}_data_{i}"},
+                    actor=f"client_{client_id}",
                 )
 
                 event_end = time.time()
@@ -271,7 +262,7 @@ class TestLedgerPerformance:
                 "client_id": client_id,
                 "duration": client_end - client_start,
                 "events": events_per_client,
-                "latencies": client_latencies
+                "latencies": client_latencies,
             }
 
         # Execute concurrent clients
@@ -324,10 +315,7 @@ class TestLedgerPerformance:
 
         # Setup test data
         case_id = f"CHAIN-{random.randint(100000, 999999)}"
-        await performance_ledger.create_case(
-            case_id,
-            {"country": "PL", "domain": "chain_verification_test"}
-        )
+        await performance_ledger.create_case(case_id, {"country": "PL", "domain": "chain_verification_test"})
 
         # Create chain of events
         num_events = 10000
@@ -346,7 +334,7 @@ class TestLedgerPerformance:
                     event_type="CHAIN_VERIFICATION_TEST",
                     case_id=case_id,
                     payload={"sequence": i, "data": f"chain_data_{i}"},
-                    actor="chain_test"
+                    actor="chain_test",
                 )
                 batch_tasks.append(task)
 
@@ -379,7 +367,9 @@ class TestLedgerPerformance:
 
         # DoD Assertion: Verify 10k events in <5 seconds (2k events/s verification rate)
         assert verification_duration <= 5.0, f"Verification too slow: {verification_duration:.2f}s > 5.0s"
-        assert events_verified_per_second >= 2000, f"Verification rate too low: {events_verified_per_second:.1f} events/s"
+        assert events_verified_per_second >= 2000, (
+            f"Verification rate too low: {events_verified_per_second:.1f} events/s"
+        )
 
         # Quality assertions
         assert integrity_result.is_valid, "Chain integrity verification failed"
@@ -392,7 +382,6 @@ class TestLedgerPerformance:
         DoD Target: Store 100 bundles in <30 seconds
         """
 
-
         # Test parameters
         num_bundles = 100
         bundle_size = 1024 * 10  # 10KB per bundle
@@ -404,7 +393,7 @@ class TestLedgerPerformance:
                 "bundle_id": f"perf_bundle_{i:04d}",
                 "case_id": f"STOR-{random.randint(100000, 999999)}",
                 "data": "x" * bundle_size,
-                "metadata": {"performance_test": True, "sequence": i}
+                "metadata": {"performance_test": True, "sequence": i},
             }
             test_bundles.append(json.dumps(bundle_data).encode())
 
@@ -421,7 +410,7 @@ class TestLedgerPerformance:
                 bundle_data=bundle_data,
                 bundle_hash=f"hash_{i:04d}" + "0" * 56,  # Mock hash
                 signature_ed25519="mock_signature",
-                public_key_id="mock_key_id"
+                public_key_id="mock_key_id",
             )
 
             store_end = time.time()
@@ -454,20 +443,15 @@ class TestLedgerPerformance:
         """Warmup ledger with some baseline operations"""
 
         warmup_case = f"WARMUP-{random.randint(100000, 999999)}"
-        await ledger.create_case(
-            warmup_case,
-            {"country": "PL", "domain": "warmup"}
-        )
+        await ledger.create_case(warmup_case, {"country": "PL", "domain": "warmup"})
 
         # Insert a few warmup events
         for i in range(10):
-            await ledger.record_event(
-                event_type="WARMUP",
-                case_id=warmup_case,
-                payload={"sequence": i}
-            )
+            await ledger.record_event(event_type="WARMUP", case_id=warmup_case, payload={"sequence": i})
+
 
 # === PERFORMANCE BENCHMARK RUNNER ===
+
 
 class PerformanceBenchmark:
     """Standalone performance benchmark runner"""
@@ -520,11 +504,7 @@ class PerformanceBenchmark:
         start_time = time.time()
 
         for i in range(num_events):
-            await self.ledger.record_event(
-                event_type="BENCHMARK",
-                case_id=case_id,
-                payload={"sequence": i}
-            )
+            await self.ledger.record_event(event_type="BENCHMARK", case_id=case_id, payload={"sequence": i})
 
         end_time = time.time()
         duration = end_time - start_time
@@ -533,12 +513,7 @@ class PerformanceBenchmark:
         print(f"   Result: {rate:.1f} events/s ({'✓' if rate >= 1000 else '✗'})")
         print()
 
-        return {
-            "events": num_events,
-            "duration": duration,
-            "rate": rate,
-            "target_met": rate >= 1000
-        }
+        return {"events": num_events, "duration": duration, "rate": rate, "target_met": rate >= 1000}
 
     async def _benchmark_batch_events(self) -> dict[str, Any]:
         """Benchmark batch event ingestion"""
@@ -559,9 +534,7 @@ class PerformanceBenchmark:
             tasks = []
             for i in range(batch_size):
                 task = self.ledger.record_event(
-                    event_type="BATCH_BENCHMARK",
-                    case_id=case_id,
-                    payload={"batch": batch_num, "sequence": i}
+                    event_type="BATCH_BENCHMARK", case_id=case_id, payload={"batch": batch_num, "sequence": i}
                 )
                 tasks.append(task)
 
@@ -574,12 +547,7 @@ class PerformanceBenchmark:
         print(f"   Result: {rate:.1f} events/s ({'✓' if rate >= 2000 else '✗'})")
         print()
 
-        return {
-            "events": total_events,
-            "duration": duration,
-            "rate": rate,
-            "target_met": rate >= 2000
-        }
+        return {"events": total_events, "duration": duration, "rate": rate, "target_met": rate >= 2000}
 
     async def _benchmark_concurrent_load(self) -> dict[str, Any]:
         """Benchmark concurrent client load"""
@@ -597,9 +565,7 @@ class PerformanceBenchmark:
 
             for i in range(events_per_client):
                 await self.ledger.record_event(
-                    event_type="CONCURRENT_BENCHMARK",
-                    case_id=case_id,
-                    payload={"client": client_id, "sequence": i}
+                    event_type="CONCURRENT_BENCHMARK", case_id=case_id, payload={"client": client_id, "sequence": i}
                 )
 
         start_time = time.time()
@@ -614,12 +580,7 @@ class PerformanceBenchmark:
         print(f"   Result: {rate:.1f} events/s ({'✓' if rate >= 1000 else '✗'})")
         print()
 
-        return {
-            "events": total_events,
-            "duration": duration,
-            "rate": rate,
-            "target_met": rate >= 1000
-        }
+        return {"events": total_events, "duration": duration, "rate": rate, "target_met": rate >= 1000}
 
     async def _benchmark_chain_verification(self) -> dict[str, Any]:
         """Benchmark chain integrity verification"""
@@ -640,9 +601,7 @@ class PerformanceBenchmark:
 
             for i in range(batch_start, batch_end):
                 task = self.ledger.record_event(
-                    event_type="VERIFICATION_BENCHMARK",
-                    case_id=case_id,
-                    payload={"sequence": i}
+                    event_type="VERIFICATION_BENCHMARK", case_id=case_id, payload={"sequence": i}
                 )
                 tasks.append(task)
 
@@ -665,7 +624,7 @@ class PerformanceBenchmark:
             "duration": duration,
             "rate": rate,
             "target_met": duration <= 3.0,
-            "chain_valid": result.is_valid
+            "chain_valid": result.is_valid,
         }
 
     def _print_summary_report(self, results: dict[str, Any]) -> None:
@@ -675,10 +634,7 @@ class PerformanceBenchmark:
         print()
 
         # Overall status
-        all_targets_met = all(
-            result.get("target_met", False)
-            for result in results.values()
-        )
+        all_targets_met = all(result.get("target_met", False) for result in results.values())
 
         print(f"Overall Status: {'✓ ALL TARGETS MET' if all_targets_met else '✗ SOME TARGETS MISSED'}")
         print()
@@ -695,7 +651,9 @@ class PerformanceBenchmark:
 
             print()
 
+
 # === CLI RUNNER ===
+
 
 async def main():
     """Run performance benchmarks from CLI"""
@@ -714,6 +672,7 @@ async def main():
     # Exit with appropriate code
     all_passed = all(result.get("target_met", False) for result in results.values())
     exit(0 if all_passed else 1)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

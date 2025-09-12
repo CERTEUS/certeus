@@ -28,7 +28,7 @@ dependencies = [
   "prometheus_client>=0.22.0",
   # A2 - Ledger dependencies
   "asyncpg>=0.29.0",
-  "boto3>=1.35.0", 
+  "boto3>=1.35.0",
   "aiohttp>=3.10.0",
   # A3 - PFS dependencies (optional)
   "fusepy>=3.0.1; sys_platform == 'linux'",

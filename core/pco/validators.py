@@ -121,6 +121,7 @@ class PCOValidator:
                 # Sprawdź czy podpis ma właściwą długość base64
                 try:
                     import base64
+
                     decoded = base64.urlsafe_b64decode(sig['signature'] + '==')
                     if len(decoded) != 64:  # Ed25519 signature length
                         errors.append(f"Invalid Ed25519 signature length in signature {i}")

@@ -30,36 +30,38 @@ PY_SDK_PATH = REPO_ROOT / "sdk" / "python" / "certeus_sdk"
 
 # === MODELE / MODELS ===
 
+
 class SDKGenerator:
     """Enterprise SDK generator with OpenAPI specification parsing."""
-    
+
     def __init__(self, spec_path: Path):
         self.spec_path = spec_path
         self.spec: dict[str, Any] = {}
         self.endpoints: list[dict[str, Any]] = []
-        
+
     def load_openapi_spec(self) -> bool:
         """Load and parse OpenAPI specification."""
         try:
             if self.spec_path.suffix == '.yaml':
                 import yaml
+
                 with open(self.spec_path, encoding='utf-8') as f:
                     self.spec = yaml.safe_load(f) or {}
             else:
                 with open(self.spec_path, encoding='utf-8') as f:
                     self.spec = json.load(f)
-            
+
             print(f"Loaded OpenAPI spec from: {self.spec_path}")
             return True
         except Exception as e:
             print(f"ERROR: Failed to load OpenAPI spec: {e}")
             return False
-    
+
     def parse_endpoints(self) -> None:
         """Parse endpoints from OpenAPI paths."""
         paths = self.spec.get('paths', {})
         self.endpoints = []
-        
+
         for path, methods in paths.items():
             for method, details in methods.items():
                 if method.lower() in ['get', 'post', 'put', 'delete', 'patch']:
@@ -71,12 +73,12 @@ class SDKGenerator:
                         'tags': details.get('tags', []),
                         'parameters': details.get('parameters', []),
                         'responses': details.get('responses', {}),
-                        'request_body': details.get('requestBody', None)
+                        'request_body': details.get('requestBody', None),
                     }
                     self.endpoints.append(endpoint)
-        
+
         print(f"Parsed {len(self.endpoints)} endpoints from OpenAPI spec")
-    
+
     def generate_typescript_client(self) -> str:
         """Generate TypeScript SDK client code."""
         ts_code = '''/*
@@ -226,58 +228,58 @@ export class CerteusClient {
             ts_code += ts_method + "\n"
 
         ts_code += "}\n\n// === EXPORT ===\n\nexport default CerteusClient;\n"
-        
+
         return ts_code
-    
+
     def _generate_method_name(self, endpoint: dict[str, Any]) -> str:
         """Generate method name from endpoint details."""
         operation_id = endpoint.get('operation_id', '')
         if operation_id:
             return operation_id
-        
+
         # Generate from path and method
         path = endpoint['path'].replace('/v1/', '').replace('/', '_')
         method = endpoint['method'].lower()
-        
+
         # Clean up path
         path = path.replace('{', '').replace('}', '')
         path = ''.join(word.capitalize() for word in path.split('_') if word)
-        
+
         return f"{method}{path}"
-    
+
     def _generate_typescript_method(self, endpoint: dict[str, Any], method_name: str) -> str:
         """Generate TypeScript method for endpoint."""
         method = endpoint['method']
         path = endpoint['path']
         summary = endpoint.get('summary', '')
-        
+
         # Generate parameters
         path_params = []
         query_params = []
-        
+
         for param in endpoint.get('parameters', []):
             param_name = param.get('name', '')
             param_type = self._get_typescript_type(param.get('schema', {}))
             param_required = param.get('required', False)
-            
+
             if param.get('in') == 'path':
                 path_params.append(f"{param_name}: {param_type}")
             elif param.get('in') == 'query':
                 optional = '' if param_required else '?'
                 query_params.append(f"{param_name}{optional}: {param_type}")
-        
+
         # Build parameter list
         all_params = path_params.copy()
         if query_params:
             query_type = "{ " + "; ".join(query_params) + " }"
             all_params.append(f"params?: {query_type}")
-        
+
         # Handle request body
         if endpoint.get('request_body') and method in ['POST', 'PUT', 'PATCH']:
             all_params.append("body?: any")
-        
+
         param_str = ", ".join(all_params)
-        
+
         # Generate method
         method_code = f'''
   /**
@@ -288,31 +290,31 @@ export class CerteusClient {
    */
   async {method_name}({param_str}): Promise<APIResponse<any>> {{
     const requestPath = `{path}`'''
-        
+
         # Replace path parameters
         for param in path_params:
             param_name = param.split(':')[0]
             method_code += f'.replace(`{{{param_name}}}`, encodeURIComponent(String({param_name})))'
-        
+
         method_code += ';\n'
-        
+
         # Build request options
         if query_params:
             method_code += '    const options: any = { params };\n'
         else:
             method_code += '    const options: any = {};\n'
-        
+
         if method in ['POST', 'PUT', 'PATCH']:
             method_code += '    if (body !== undefined) options.body = body;\n'
-        
+
         method_code += f'    return this.request("{method}", requestPath, options);\n  }}'
-        
+
         return method_code
-    
+
     def _get_typescript_type(self, schema: dict[str, Any]) -> str:
         """Convert OpenAPI schema to TypeScript type."""
         schema_type = schema.get('type', 'any')
-        
+
         if schema_type == 'string':
             return 'string'
         elif schema_type == 'number' or schema_type == 'integer':
@@ -326,7 +328,7 @@ export class CerteusClient {
             return 'any'  # Could be enhanced with proper object types
         else:
             return 'any'
-    
+
     def generate_python_client(self) -> str:
         """Generate Python SDK client code."""
         py_code = '''#!/usr/bin/env python3
@@ -512,40 +514,41 @@ class CerteusClient:
             py_code += py_method + "\n"
 
         return py_code
-    
+
     def _generate_python_method_name(self, endpoint: dict[str, Any]) -> str:
         """Generate Python method name from endpoint details."""
         operation_id = endpoint.get('operation_id', '')
         if operation_id:
             # Convert camelCase to snake_case
             import re
+
             return re.sub(r'(?<!^)(?=[A-Z])', '_', operation_id).lower()
-        
+
         # Generate from path and method
         path = endpoint['path'].replace('/v1/', '').replace('/', '_')
         method = endpoint['method'].lower()
-        
+
         # Clean up path
         path = path.replace('{', '').replace('}', '')
         path = '_'.join(word.lower() for word in path.split('_') if word)
-        
+
         return f"{method}_{path}"
-    
+
     def _generate_python_method(self, endpoint: dict[str, Any], method_name: str) -> str:
         """Generate Python method for endpoint."""
         method = endpoint['method']
         path = endpoint['path']
         summary = endpoint.get('summary', '')
-        
+
         # Generate parameters
         params = ['self']
         path_params = []
         query_params = []
-        
+
         for param in endpoint.get('parameters', []):
             param_name = param.get('name', '')
             param_required = param.get('required', False)
-            
+
             if param.get('in') == 'path':
                 path_params.append(param_name)
                 params.append(f"{param_name}: str")
@@ -553,18 +556,19 @@ class CerteusClient:
                 if param_required:
                     params.append(f"{param_name}: Any")
                     query_params.append(param_name)
-        
+
         # Add optional parameters
-        if query_params or any(p.get('in') == 'query' and not p.get('required', False) 
-                              for p in endpoint.get('parameters', [])):
+        if query_params or any(
+            p.get('in') == 'query' and not p.get('required', False) for p in endpoint.get('parameters', [])
+        ):
             params.append("params: Optional[Dict[str, Any]] = None")
-        
+
         # Handle request body
         if endpoint.get('request_body') and method in ['POST', 'PUT', 'PATCH']:
             params.append("body: Any = None")
-        
+
         param_str = ", ".join(params)
-        
+
         # Generate method
         method_code = f'''
     def {method_name}({param_str}) -> APIResponse:
@@ -572,88 +576,91 @@ class CerteusClient:
         {summary}
         
         Args:'''
-        
+
         for param in path_params:
             method_code += f'\n            {param}: Path parameter'
-        
+
         if 'params' in param_str:
             method_code += '\n            params: Query parameters'
-        
+
         if 'body' in param_str:
             method_code += '\n            body: Request body'
-        
+
         method_code += f'''
         
         Returns:
             APIResponse: API response object
         """
         path = "{path}"'''
-        
+
         # Replace path parameters
         for param in path_params:
             method_code += f'\n        path = path.replace("{{{param}}}", str({param}))'
-        
+
         # Build request call
         method_code += f'\n        return self._request("{method}", path'
-        
+
         if 'params' in param_str:
             method_code += ', params=params'
-        
+
         if 'body' in param_str:
             method_code += ', body=body'
-        
+
         method_code += ')'
-        
+
         return method_code
 
+
 # === LOGIKA / LOGIC ===
+
 
 def main() -> int:
     """Main entry point for A8 SDK generator."""
     print("A8 SDK Generator - Enterprise Developer Experience")
     print("=" * 60)
-    
+
     # Initialize generator
     generator = SDKGenerator(OPENAPI_SPEC_PATH)
-    
+
     # Load OpenAPI specification
     if not generator.load_openapi_spec():
         return 1
-    
+
     # Parse endpoints
     generator.parse_endpoints()
-    
+
     # Generate TypeScript SDK
     print("\nGenerating TypeScript SDK...")
     ts_client_code = generator.generate_typescript_client()
-    
+
     # Ensure TypeScript SDK directory exists
     TS_SDK_PATH.mkdir(parents=True, exist_ok=True)
     ts_client_file = TS_SDK_PATH / "client_generated.ts"
-    
+
     with open(ts_client_file, 'w', encoding='utf-8') as f:
         f.write(ts_client_code)
-    
+
     print(f"Generated TypeScript SDK: {ts_client_file}")
-    
+
     # Generate Python SDK
     print("\nGenerating Python SDK...")
     py_client_code = generator.generate_python_client()
-    
+
     # Ensure Python SDK directory exists
     PY_SDK_PATH.mkdir(parents=True, exist_ok=True)
     py_client_file = PY_SDK_PATH / "client_generated.py"
-    
+
     with open(py_client_file, 'w', encoding='utf-8') as f:
         f.write(py_client_code)
-    
+
     print(f"Generated Python SDK: {py_client_file}")
-    
+
     print("\nA8 SDK Generation completed successfully!")
     print(f"Generated {len(generator.endpoints)} endpoint methods")
     print("Enterprise big tech quality achieved")
-    
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

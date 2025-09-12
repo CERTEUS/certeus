@@ -37,6 +37,7 @@ from botocore.exceptions import ClientError
 
 # === CONFIGURATION ===
 
+
 @dataclass
 class S3Config:
     """S3 Storage configuration"""
@@ -70,20 +71,19 @@ class S3Config:
             endpoint_url=os.getenv("CERTEUS_S3_ENDPOINT"),
             access_key=os.getenv("CERTEUS_S3_ACCESS_KEY"),
             secret_key=os.getenv("CERTEUS_S3_SECRET_KEY"),
-
             object_lock_enabled=os.getenv("CERTEUS_S3_OBJECT_LOCK", "false").lower() == "true",
             default_retention_days=int(os.getenv("CERTEUS_S3_RETENTION_DAYS", "2555")),
             legal_hold_enabled=os.getenv("CERTEUS_S3_LEGAL_HOLD", "false").lower() == "true",
-
             multipart_threshold=int(os.getenv("CERTEUS_S3_MULTIPART_THRESHOLD", str(64 * 1024 * 1024))),
             max_concurrency=int(os.getenv("CERTEUS_S3_MAX_CONCURRENCY", "10")),
-
             transition_to_ia_days=int(os.getenv("CERTEUS_S3_TRANSITION_IA_DAYS", "30")),
             transition_to_glacier_days=int(os.getenv("CERTEUS_S3_TRANSITION_GLACIER_DAYS", "90")),
-            transition_to_deep_archive_days=int(os.getenv("CERTEUS_S3_TRANSITION_DEEP_ARCHIVE_DAYS", "365"))
+            transition_to_deep_archive_days=int(os.getenv("CERTEUS_S3_TRANSITION_DEEP_ARCHIVE_DAYS", "365")),
         )
 
+
 # === MODELS ===
+
 
 @dataclass
 class StorageObject:
@@ -104,6 +104,7 @@ class StorageObject:
     object_lock_retain_until: datetime | None = None
     legal_hold_status: str | None = None
 
+
 @dataclass
 class BackupJob:
     """Backup job metadata"""
@@ -117,25 +118,36 @@ class BackupJob:
     total_size_bytes: int = 0
     error_message: str | None = None
 
+
 # === EXCEPTIONS ===
+
 
 class StorageError(Exception):
     """Base storage exception"""
+
     pass
+
 
 class BucketNotFoundError(StorageError):
     """Bucket not found"""
+
     pass
+
 
 class ObjectNotFoundError(StorageError):
     """Object not found"""
+
     pass
+
 
 class RetentionViolationError(StorageError):
     """Retention policy violation"""
+
     pass
 
+
 # === S3 STORAGE MANAGER ===
+
 
 class S3StorageManager:
     """
@@ -155,28 +167,19 @@ class S3StorageManager:
 
         # Configure boto3 session
         session = boto3.Session(
-            aws_access_key_id=config.access_key,
-            aws_secret_access_key=config.secret_key,
-            region_name=config.region
+            aws_access_key_id=config.access_key, aws_secret_access_key=config.secret_key, region_name=config.region
         )
 
         # S3 client with performance optimizations
         s3_config = Config(
-            retries={'max_attempts': 3},
-            max_pool_connections=config.max_concurrency,
-            region_name=config.region
+            retries={'max_attempts': 3}, max_pool_connections=config.max_concurrency, region_name=config.region
         )
 
         self.s3_client = session.client('s3', config=s3_config, endpoint_url=config.endpoint_url)
         self.s3_resource = session.resource('s3', config=s3_config, endpoint_url=config.endpoint_url)
 
         # Performance metrics
-        self._metrics = {
-            "objects_stored": 0,
-            "bytes_stored": 0,
-            "average_upload_time": 0.0,
-            "last_backup_time": None
-        }
+        self._metrics = {"objects_stored": 0, "bytes_stored": 0, "average_upload_time": 0.0, "last_backup_time": None}
 
     async def initialize(self) -> None:
         """Initialize storage: create bucket, configure policies"""
@@ -208,14 +211,12 @@ class S3StorageManager:
                 self.s3_client.create_bucket(Bucket=self.config.bucket_name)
             else:
                 self.s3_client.create_bucket(
-                    Bucket=self.config.bucket_name,
-                    CreateBucketConfiguration={'LocationConstraint': self.config.region}
+                    Bucket=self.config.bucket_name, CreateBucketConfiguration={'LocationConstraint': self.config.region}
                 )
 
             # Enable versioning
             self.s3_client.put_bucket_versioning(
-                Bucket=self.config.bucket_name,
-                VersioningConfiguration={'Status': 'Enabled'}
+                Bucket=self.config.bucket_name, VersioningConfiguration={'Status': 'Enabled'}
             )
 
             # Enable object lock if configured
@@ -225,12 +226,9 @@ class S3StorageManager:
                     ObjectLockConfiguration={
                         'ObjectLockEnabled': 'Enabled',
                         'Rule': {
-                            'DefaultRetention': {
-                                'Mode': 'GOVERNANCE',
-                                'Days': self.config.default_retention_days
-                            }
-                        }
-                    }
+                            'DefaultRetention': {'Mode': 'GOVERNANCE', 'Days': self.config.default_retention_days}
+                        },
+                    },
                 )
 
             self.logger.info(f"Created bucket {self.config.bucket_name}")
@@ -249,27 +247,17 @@ class S3StorageManager:
                     'Status': 'Enabled',
                     'Filter': {'Prefix': 'bundles/'},
                     'Transitions': [
-                        {
-                            'Days': self.config.transition_to_ia_days,
-                            'StorageClass': 'STANDARD_IA'
-                        },
-                        {
-                            'Days': self.config.transition_to_glacier_days,
-                            'StorageClass': 'GLACIER'
-                        },
-                        {
-                            'Days': self.config.transition_to_deep_archive_days,
-                            'StorageClass': 'DEEP_ARCHIVE'
-                        }
-                    ]
+                        {'Days': self.config.transition_to_ia_days, 'StorageClass': 'STANDARD_IA'},
+                        {'Days': self.config.transition_to_glacier_days, 'StorageClass': 'GLACIER'},
+                        {'Days': self.config.transition_to_deep_archive_days, 'StorageClass': 'DEEP_ARCHIVE'},
+                    ],
                 }
             ]
         }
 
         try:
             self.s3_client.put_bucket_lifecycle_configuration(
-                Bucket=self.config.bucket_name,
-                LifecycleConfiguration=lifecycle_config
+                Bucket=self.config.bucket_name, LifecycleConfiguration=lifecycle_config
             )
 
             self.logger.info("Configured lifecycle policies")
@@ -285,14 +273,11 @@ class S3StorageManager:
         data: bytes,
         content_type: str = "application/json",
         metadata: dict[str, str] | None = None,
-        retention_days: int | None = None
+        retention_days: int | None = None,
     ) -> StorageObject:
         """Store object with optional retention policy"""
 
-        extra_args = {
-            'ContentType': content_type,
-            'Metadata': metadata or {}
-        }
+        extra_args = {'ContentType': content_type, 'Metadata': metadata or {}}
 
         # Add object lock retention if enabled
         if self.config.object_lock_enabled and retention_days:
@@ -302,18 +287,10 @@ class S3StorageManager:
 
         try:
             # Upload object
-            response = self.s3_client.put_object(
-                Bucket=self.config.bucket_name,
-                Key=key,
-                Body=data,
-                **extra_args
-            )
+            response = self.s3_client.put_object(Bucket=self.config.bucket_name, Key=key, Body=data, **extra_args)
 
             # Get object metadata
-            head_response = self.s3_client.head_object(
-                Bucket=self.config.bucket_name,
-                Key=key
-            )
+            head_response = self.s3_client.head_object(Bucket=self.config.bucket_name, Key=key)
 
             # Update metrics
             self._metrics["objects_stored"] += 1
@@ -330,7 +307,7 @@ class S3StorageManager:
                 metadata=metadata,
                 object_lock_mode=head_response.get('ObjectLockMode'),
                 object_lock_retain_until=head_response.get('ObjectLockRetainUntilDate'),
-                legal_hold_status=head_response.get('ObjectLockLegalHoldStatus')
+                legal_hold_status=head_response.get('ObjectLockLegalHoldStatus'),
             )
 
         except ClientError as e:
@@ -375,7 +352,7 @@ class S3StorageManager:
                 metadata=response.get('Metadata'),
                 object_lock_mode=response.get('ObjectLockMode'),
                 object_lock_retain_until=response.get('ObjectLockRetainUntilDate'),
-                legal_hold_status=response.get('ObjectLockLegalHoldStatus')
+                legal_hold_status=response.get('ObjectLockLegalHoldStatus'),
             )
 
         except ClientError as e:
@@ -417,12 +394,7 @@ class S3StorageManager:
 
         job_id = f"backup_{backup_type}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
 
-        backup_job = BackupJob(
-            job_id=job_id,
-            job_type=backup_type,
-            status="RUNNING",
-            started_at=datetime.utcnow()
-        )
+        backup_job = BackupJob(job_id=job_id, job_type=backup_type, status="RUNNING", started_at=datetime.utcnow())
 
         try:
             # List all objects
@@ -434,7 +406,7 @@ class S3StorageManager:
                 "backup_type": backup_type,
                 "started_at": backup_job.started_at.isoformat(),
                 "prefix": prefix,
-                "objects": []
+                "objects": [],
             }
 
             total_objects = 0
@@ -443,12 +415,14 @@ class S3StorageManager:
             for page in pages:
                 if 'Contents' in page:
                     for obj in page['Contents']:
-                        backup_manifest["objects"].append({
-                            "key": obj['Key'],
-                            "size": obj['Size'],
-                            "etag": obj['ETag'],
-                            "last_modified": obj['LastModified'].isoformat()
-                        })
+                        backup_manifest["objects"].append(
+                            {
+                                "key": obj['Key'],
+                                "size": obj['Size'],
+                                "etag": obj['ETag'],
+                                "last_modified": obj['LastModified'].isoformat(),
+                            }
+                        )
                         total_objects += 1
                         total_size += obj['Size']
 
@@ -458,7 +432,7 @@ class S3StorageManager:
                 manifest_key,
                 json.dumps(backup_manifest, indent=2).encode(),
                 content_type="application/json",
-                metadata={"backup-job-id": job_id, "backup-type": backup_type}
+                metadata={"backup-job-id": job_id, "backup-type": backup_type},
             )
 
             backup_job.status = "COMPLETED"
@@ -468,9 +442,7 @@ class S3StorageManager:
 
             self._metrics["last_backup_time"] = backup_job.completed_at
 
-            self.logger.info(
-                f"Backup {job_id} completed: {total_objects} objects, {total_size:,} bytes"
-            )
+            self.logger.info(f"Backup {job_id} completed: {total_objects} objects, {total_size:,} bytes")
 
             return backup_job
 
@@ -489,7 +461,7 @@ class S3StorageManager:
             job_id=f"restore_{job_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
             job_type="restore",
             status="RUNNING",
-            started_at=datetime.utcnow()
+            started_at=datetime.utcnow(),
         )
 
         try:
@@ -508,11 +480,7 @@ class S3StorageManager:
                 try:
                     # Copy object to target location
                     copy_source = {'Bucket': self.config.bucket_name, 'Key': source_key}
-                    self.s3_client.copy_object(
-                        CopySource=copy_source,
-                        Bucket=self.config.bucket_name,
-                        Key=target_key
-                    )
+                    self.s3_client.copy_object(CopySource=copy_source, Bucket=self.config.bucket_name, Key=target_key)
 
                     restored_objects += 1
                     restored_size += obj_info["size"]
@@ -525,9 +493,7 @@ class S3StorageManager:
             restore_job.objects_count = restored_objects
             restore_job.total_size_bytes = restored_size
 
-            self.logger.info(
-                f"Restore {restore_job.job_id} completed: {restored_objects} objects restored"
-            )
+            self.logger.info(f"Restore {restore_job.job_id} completed: {restored_objects} objects restored")
 
             return restore_job
 
@@ -551,7 +517,7 @@ class S3StorageManager:
             "versioning_enabled": False,
             "object_lock_enabled": False,
             "lifecycle_configured": False,
-            "last_error": None
+            "last_error": None,
         }
 
         try:
@@ -599,15 +565,17 @@ class S3StorageManager:
             health["last_error"] = str(e)
 
         # Add metrics
-        health.update({
-            "metrics": self._metrics,
-            "config": {
-                "bucket": self.config.bucket_name,
-                "region": self.config.region,
-                "retention_days": self.config.default_retention_days,
-                "multipart_threshold": self.config.multipart_threshold
+        health.update(
+            {
+                "metrics": self._metrics,
+                "config": {
+                    "bucket": self.config.bucket_name,
+                    "region": self.config.region,
+                    "retention_days": self.config.default_retention_days,
+                    "multipart_threshold": self.config.multipart_threshold,
+                },
             }
-        })
+        )
 
         return health
 
@@ -639,15 +607,17 @@ class S3StorageManager:
                 "storage_classes": storage_classes,
                 "average_object_size": total_size // max(total_objects, 1),
                 "metrics": self._metrics,
-                "last_updated": datetime.utcnow().isoformat()
+                "last_updated": datetime.utcnow().isoformat(),
             }
 
         except Exception as e:
             return {"error": str(e), "last_updated": datetime.utcnow().isoformat()}
 
+
 # === FACTORY ===
 
 _global_storage: S3StorageManager | None = None
+
 
 async def get_storage_manager() -> S3StorageManager:
     """Get global storage manager instance"""
@@ -660,7 +630,9 @@ async def get_storage_manager() -> S3StorageManager:
 
     return _global_storage
 
+
 # === CLI INTERFACE ===
+
 
 async def main() -> None:
     """CLI interface for storage operations"""
@@ -694,6 +666,7 @@ async def main() -> None:
 
     except Exception as e:
         print(f"Error: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

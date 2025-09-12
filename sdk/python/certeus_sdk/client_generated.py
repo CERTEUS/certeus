@@ -25,27 +25,31 @@ import urllib.request
 
 # === TYPY / TYPES ===
 
+
 class CerteusAPIError(Exception):
     """CERTEUS API error exception."""
-    
+
     def __init__(self, message: str, status_code: int = 0, details: Any = None):
         super().__init__(message)
         self.status_code = status_code
         self.details = details
 
+
 class APIResponse:
     """API response wrapper."""
-    
+
     def __init__(self, data: Any, status: int, headers: dict[str, str]):
         self.data = data
         self.status = status
         self.headers = headers
 
+
 # === KLIENT / CLIENT ===
+
 
 class CerteusClient:
     """Enterprise Python SDK client for CERTEUS API."""
-    
+
     def __init__(
         self,
         base_url: str = "http://127.0.0.1:8000",
@@ -61,7 +65,7 @@ class CerteusClient:
         self.timeout_seconds = timeout_seconds
         self.retry_count = retry_count
         self.retry_delay_seconds = retry_delay_seconds
-    
+
     def _request(
         self,
         method: str,
@@ -72,28 +76,28 @@ class CerteusClient:
     ) -> APIResponse:
         """Execute HTTP request with retry logic."""
         url = urljoin(self.base_url, path.lstrip("/"))
-        
+
         if params:
             # Filter out None values and encode
             clean_params = {k: v for k, v in params.items() if v is not None}
             if clean_params:
                 url += "?" + urlencode(clean_params)
-        
+
         # Prepare headers
         request_headers = {
             "Content-Type": "application/json",
             "User-Agent": "CERTEUS-Python-SDK/1.0.0",
         }
-        
+
         if self.api_key:
             request_headers["Authorization"] = f"Bearer {self.api_key}"
-        
+
         if self.tenant_id:
             request_headers["X-Tenant-ID"] = self.tenant_id
-        
+
         if headers:
             request_headers.update(headers)
-        
+
         # Prepare request body
         request_data = None
         if body is not None and method.upper() != "GET":
@@ -103,30 +107,28 @@ class CerteusClient:
                 request_data = body.encode("utf-8")
             else:
                 request_data = str(body).encode("utf-8")
-        
+
         # Retry logic with exponential backoff
         last_error = None
-        
+
         for attempt in range(self.retry_count + 1):
             try:
-                req = urllib.request.Request(
-                    url, data=request_data, headers=request_headers, method=method
-                )
-                
+                req = urllib.request.Request(url, data=request_data, headers=request_headers, method=method)
+
                 with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:
                     response_data = response.read().decode("utf-8")
-                    
+
                     try:
                         json_data = json.loads(response_data)
                     except json.JSONDecodeError:
                         json_data = response_data
-                    
+
                     return APIResponse(
                         data=json_data,
                         status=response.status,
                         headers=dict(response.headers),
                     )
-            
+
             except urllib.error.HTTPError as e:
                 error_msg = f"HTTP {e.code}: {e.reason}"
                 try:
@@ -135,51 +137,51 @@ class CerteusClient:
                     error_msg += f" - {error_data}"
                 except:
                     pass
-                
+
                 last_error = CerteusAPIError(error_msg, e.code)
-                
+
                 if attempt < self.retry_count and 500 <= e.code < 600:
                     # Retry on server errors
-                    delay = self.retry_delay_seconds * (2 ** attempt)
+                    delay = self.retry_delay_seconds * (2**attempt)
                     time.sleep(delay)
                     continue
                 else:
                     raise last_error
-            
+
             except Exception as e:
                 last_error = CerteusAPIError(f"Request failed: {e}")
-                
+
                 if attempt < self.retry_count:
-                    delay = self.retry_delay_seconds * (2 ** attempt)
+                    delay = self.retry_delay_seconds * (2**attempt)
                     time.sleep(delay)
                     continue
                 else:
                     raise last_error
-        
+
         if last_error:
             raise last_error
-        
+
         raise CerteusAPIError("Max retries exceeded")
-    
+
     # === HEALTH & SYSTEM ===
-    
+
     def health(self) -> APIResponse:
         """Get health status."""
         return self._request("GET", "/health")
-    
+
     def openapi(self) -> APIResponse:
         """Get OpenAPI specification."""
         return self._request("GET", "/openapi.json")
-    
+
     # === AUTO-GENERATED ENDPOINTS ===
 
     def post_pco_bundle(self, body: Any = None) -> APIResponse:
         """
         Create and publish ProofBundle (v0.2)
-        
+
         Args:
             body: Request body
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -189,11 +191,11 @@ class CerteusClient:
     def get_pco_public_case_id(self, case_id: str, params: dict[str, Any] | None = None) -> APIResponse:
         """
         Get public PCO payload
-        
+
         Args:
             case_id: Path parameter
             params: Query parameters
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -204,10 +206,10 @@ class CerteusClient:
     def post_verify(self, body: Any = None) -> APIResponse:
         """
         Verify PCO Bundle or public payload
-        
+
         Args:
             body: Request body
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -217,9 +219,9 @@ class CerteusClient:
     def get_well_known_jwks_json(self) -> APIResponse:
         """
         JWKS
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -229,10 +231,10 @@ class CerteusClient:
     def get_pco_public_case_id(self, case_id: str) -> APIResponse:
         """
         [DEPRECATED] Get public PCO payload
-        
+
         Args:
             case_id: Path parameter
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -243,9 +245,9 @@ class CerteusClient:
     def post_cfe_geodesic(self) -> APIResponse:
         """
         Compute legal geodesic (CFE)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -255,9 +257,9 @@ class CerteusClient:
     def post_cfe_horizon(self) -> APIResponse:
         """
         Compute legal horizon (CFE)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -267,9 +269,9 @@ class CerteusClient:
     def get_cfe_lensing(self) -> APIResponse:
         """
         Lensing map (CFE)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -279,10 +281,10 @@ class CerteusClient:
     def post_cfe_cache_warm(self, body: Any = None) -> APIResponse:
         """
         Warm up CFE cache for case list
-        
+
         Args:
             body: Request body
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -292,10 +294,10 @@ class CerteusClient:
     def post_cfe_lensing_from_fin(self, body: Any = None) -> APIResponse:
         """
         Build lensing map from FIN signals
-        
+
         Args:
             body: Request body
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -305,9 +307,9 @@ class CerteusClient:
     def post_qtm_init_case(self) -> APIResponse:
         """
         Initialize QTMP case predistribution
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -317,9 +319,9 @@ class CerteusClient:
     def post_qtm_measure(self) -> APIResponse:
         """
         Perform QTMP measurement
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -329,9 +331,9 @@ class CerteusClient:
     def post_qtm_commutator(self) -> APIResponse:
         """
         Compute commutator (QTMP)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -341,9 +343,9 @@ class CerteusClient:
     def post_qtm_find_entanglement(self) -> APIResponse:
         """
         Find variable entanglement
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -353,9 +355,9 @@ class CerteusClient:
     def post_devices_horizon_drive_plan(self) -> APIResponse:
         """
         Plan evidence horizon (HDE)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -365,9 +367,9 @@ class CerteusClient:
     def post_devices_qoracle_expectation(self) -> APIResponse:
         """
         Optimize expectation via qOracle
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -377,9 +379,9 @@ class CerteusClient:
     def post_devices_entangle(self) -> APIResponse:
         """
         Create entanglement certificate
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -389,9 +391,9 @@ class CerteusClient:
     def post_devices_chronosync_reconcile(self) -> APIResponse:
         """
         Reconcile chronosync coordinates
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -401,9 +403,9 @@ class CerteusClient:
     def post_upn_register(self) -> APIResponse:
         """
         Register UPN
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -413,9 +415,9 @@ class CerteusClient:
     def post_upn_revoke(self) -> APIResponse:
         """
         Revoke UPN
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -425,9 +427,9 @@ class CerteusClient:
     def post_dr_replay(self) -> APIResponse:
         """
         Decision Replay
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -437,9 +439,9 @@ class CerteusClient:
     def post_dr_recall(self) -> APIResponse:
         """
         Decision Recall
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -449,9 +451,9 @@ class CerteusClient:
     def post_defx_reason(self) -> APIResponse:
         """
         Publication decision (ProofGate)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -461,10 +463,10 @@ class CerteusClient:
     def get_pco_public_rid(self, rid: str) -> APIResponse:
         """
         Public payload of ProofBundle (zero PII)
-        
+
         Args:
             rid: Path parameter
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -475,9 +477,9 @@ class CerteusClient:
     def get_metrics(self) -> APIResponse:
         """
         Prometheus metrics
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -487,10 +489,10 @@ class CerteusClient:
     def post_sources_cache(self, body: Any = None) -> APIResponse:
         """
         Cache a legal source by URI
-        
+
         Args:
             body: Request body
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -500,10 +502,10 @@ class CerteusClient:
     def post_proofgate_publish(self, body: Any = None) -> APIResponse:
         """
         Publication decision (ProofGate)
-        
+
         Args:
             body: Request body
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -513,9 +515,9 @@ class CerteusClient:
     def get_packs(self) -> APIResponse:
         """
         List packs
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -525,9 +527,9 @@ class CerteusClient:
     def post_packs_handle(self) -> APIResponse:
         """
         Handle pack action
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -537,9 +539,9 @@ class CerteusClient:
     def get_marketplace_plugins(self) -> APIResponse:
         """
         List installed plugins
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -549,9 +551,9 @@ class CerteusClient:
     def post_marketplace_verify_manifest(self) -> APIResponse:
         """
         Verify signed manifest
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -561,9 +563,9 @@ class CerteusClient:
     def post_marketplace_install(self) -> APIResponse:
         """
         Install/upgrade plugin (signed)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -573,9 +575,9 @@ class CerteusClient:
     def post_marketplace_dry_run(self) -> APIResponse:
         """
         Validate plugin manifest without install
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -585,9 +587,9 @@ class CerteusClient:
     def get_billing_quota(self) -> APIResponse:
         """
         Get tenant quota (cost tokens)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -597,9 +599,9 @@ class CerteusClient:
     def post_billing_quota(self) -> APIResponse:
         """
         Set tenant quota (cost tokens)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -609,9 +611,9 @@ class CerteusClient:
     def post_billing_refund(self) -> APIResponse:
         """
         Refund units to tenant budget
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -621,9 +623,9 @@ class CerteusClient:
     def post_billing_allocate(self) -> APIResponse:
         """
         Allocate units to current tenant (PENDING → allocate)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -633,9 +635,9 @@ class CerteusClient:
     def get_billing_policies(self) -> APIResponse:
         """
         Get billing policies (tiers and tenants)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -645,9 +647,9 @@ class CerteusClient:
     def get_billing_tenant_tier(self) -> APIResponse:
         """
         Resolve tenant tier
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -657,9 +659,9 @@ class CerteusClient:
     def post_billing_estimate(self) -> APIResponse:
         """
         Estimate cost units for action
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -669,9 +671,9 @@ class CerteusClient:
     def get_billing_recommendation(self) -> APIResponse:
         """
         Recommend tier based on action and volume
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -681,9 +683,9 @@ class CerteusClient:
     def post_billing_admin_set_tier(self) -> APIResponse:
         """
         Admin: set tenant tier (DEV)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -693,9 +695,9 @@ class CerteusClient:
     def post_billing_admin_reload(self) -> APIResponse:
         """
         Admin: reload policies from file (DEV)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -705,9 +707,9 @@ class CerteusClient:
     def post_fin_tokens_request(self) -> APIResponse:
         """
         Request tokens allocation (FIN)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -717,9 +719,9 @@ class CerteusClient:
     def post_fin_tokens_allocate(self) -> APIResponse:
         """
         Allocate requested tokens (FIN)
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -729,10 +731,10 @@ class CerteusClient:
     def get_fin_tokens_request_id(self, request_id: str) -> APIResponse:
         """
         Get token request status (FIN)
-        
+
         Args:
             request_id: Path parameter
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -743,10 +745,10 @@ class CerteusClient:
     def get_ledger_case_id_records(self, case_id: str) -> APIResponse:
         """
         Ledger records for case
-        
+
         Args:
             case_id: Path parameter
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -757,9 +759,9 @@ class CerteusClient:
     def post_boundary_reconstruct(self) -> APIResponse:
         """
         Reconstruct boundary state
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -769,9 +771,9 @@ class CerteusClient:
     def post_fin_alpha_measure(self) -> APIResponse:
         """
         FINENITH measure alpha
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -781,9 +783,9 @@ class CerteusClient:
     def post_fin_alpha_simulate(self) -> APIResponse:
         """
         FINENITH simulate strategy
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -793,9 +795,9 @@ class CerteusClient:
     def get_fin_alpha_pnl(self) -> APIResponse:
         """
         FINENITH recent PnL
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -805,9 +807,9 @@ class CerteusClient:
     def get_lexenith_pilot_cases(self) -> APIResponse:
         """
         LEXENITH pilot cases
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """
@@ -817,9 +819,9 @@ class CerteusClient:
     def post_lexenith_pilot_feedback(self) -> APIResponse:
         """
         LEXENITH pilot feedback
-        
+
         Args:
-        
+
         Returns:
             APIResponse: API response object
         """

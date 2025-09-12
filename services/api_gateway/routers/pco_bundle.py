@@ -82,6 +82,7 @@ class PublicBundleIn(BaseModel):
 
 # === LOGIKA / LOGIC ===
 
+
 def _sanitize_rid(rid: str) -> str:
     """Sanitize resource ID for safe file path usage."""
     if not rid or not isinstance(rid, str):
@@ -99,6 +100,7 @@ def _sanitize_rid(rid: str) -> str:
         sanitized = sanitized[:64]
 
     return sanitized
+
 
 router = APIRouter(prefix="/v1/pco", tags=["pco"])
 
@@ -329,8 +331,10 @@ def _build_proofbundle(
 
 # PCO v1.0 Endpoints
 
+
 class PCOBundleRequestV1(BaseModel):
     """Request model for PCO Bundle v1.0."""
+
     rid: str = Field(..., pattern=r'^[A-Z]{3}-[0-9]{6}$', description="Case ID (format: ABC-123456)")
     smt2_hash: str = Field(..., pattern=r'^[a-f0-9]{64}$', description="SHA256 hash of SMT2 formula")
     lfsc: str = Field(..., min_length=1, description="LFSC proof")
@@ -341,9 +345,11 @@ class PCOBundleRequestV1(BaseModel):
     extensions: dict | None = Field(None, description="Extensions (QTMP, CFE, etc.)")
 
 
-@router.post("/bundle",
-             summary="Create PCO Bundle v1.0",
-             description="Creates, validates, signs and publishes a PCO Bundle v1.0 with full schema compliance")
+@router.post(
+    "/bundle",
+    summary="Create PCO Bundle v1.0",
+    description="Creates, validates, signs and publishes a PCO Bundle v1.0 with full schema compliance",
+)
 def create_pco_bundle_v1(payload: PCOBundleRequestV1, request: Request) -> dict[str, Any]:
     """
     PL: Tworzy, waliduje, podpisuje i publikuje ProofBundle v1.0.
@@ -357,7 +363,7 @@ def create_pco_bundle_v1(payload: PCOBundleRequestV1, request: Request) -> dict[
         lfsc=payload.lfsc,
         drat=payload.drat,
         merkle_proof=payload.merkle_proof,
-        smt2=payload.smt2
+        smt2=payload.smt2,
     )
 
     # Użyj istniejącej logiki, ale z pełną strukturą ProofBundle
@@ -367,11 +373,7 @@ def create_pco_bundle_v1(payload: PCOBundleRequestV1, request: Request) -> dict[
         merkle_steps = _parse_merkle_proof(legacy_payload.merkle_proof)
 
         # Oblicz bundle hash używając canonical function
-        bundle_hash_hex = canonical_bundle_hash_hex(
-            legacy_payload.smt2_hash,
-            legacy_payload.lfsc,
-            legacy_payload.drat
-        )
+        bundle_hash_hex = canonical_bundle_hash_hex(legacy_payload.smt2_hash, legacy_payload.lfsc, legacy_payload.drat)
 
         # Oblicz leaf hash dla merkle tree
         leaf_hex = compute_leaf_hex(legacy_payload.rid, bundle_hash_hex)
@@ -385,7 +387,7 @@ def create_pco_bundle_v1(payload: PCOBundleRequestV1, request: Request) -> dict[
             smt2_hash_hex=legacy_payload.smt2_hash,
             lfsc_text=legacy_payload.lfsc,
             merkle_root_hex=merkle_root_hex,
-            drat_text=legacy_payload.drat
+            drat_text=legacy_payload.drat,
         )
         signature_b64u = _sign_digest(sk, digest_hex)
 
@@ -405,7 +407,7 @@ def create_pco_bundle_v1(payload: PCOBundleRequestV1, request: Request) -> dict[
             "drat": payload.drat,
             "signature": signature_b64u,
             "digest_hex": digest_hex,
-            "public_path": str(_bundle_dir() / f"{_sanitize_rid(payload.rid)}.json")
+            "public_path": str(_bundle_dir() / f"{_sanitize_rid(payload.rid)}.json"),
         }
 
         # Override z danymi z requestu
@@ -618,9 +620,11 @@ def create_bundle(payload: PublicBundleIn, request: Request) -> dict[str, Any]:
     }
 
 
-@router.get("/public/{case_id}",
-            summary="Get public PCO payload",
-            description="Returns public (redacted) PCO payload for given case_id with PII removed")
+@router.get(
+    "/public/{case_id}",
+    summary="Get public PCO payload",
+    description="Returns public (redacted) PCO payload for given case_id with PII removed",
+)
 def get_public_pco_v1(case_id: str, include_evidence: bool = False):
     """
     PL: Zwraca publiczny (zredagowany) payload PCO dla danego case_id.
@@ -629,6 +633,7 @@ def get_public_pco_v1(case_id: str, include_evidence: bool = False):
 
     # Walidacja case_id format
     import re
+
     if not re.match(r'^[A-Z]{3}-[0-9]{6}$', case_id):
         raise HTTPException(status_code=400, detail="Invalid case_id format")
 
@@ -658,8 +663,8 @@ def get_public_pco_v1(case_id: str, include_evidence: bool = False):
         headers={
             "ETag": etag,
             "Last-Modified": public_pco.get("created_at", ""),
-            "Cache-Control": "public, max-age=300"  # 5 minut cache
-        }
+            "Cache-Control": "public, max-age=300",  # 5 minut cache
+        },
     )
 
 
@@ -672,9 +677,8 @@ def _redact_to_public(full_pco: dict[str, Any], include_evidence: bool = False) 
         "case_id": full_pco.get("case_id", full_pco.get("rid", "")),
         "created_at": full_pco.get("created_at", _now_iso()),
         "jurisdiction": {
-            k: v for k, v in (full_pco.get("jurisdiction", {})).items()
-            if k in ["country", "domain", "law_time"]
-        }
+            k: v for k, v in (full_pco.get("jurisdiction", {})).items() if k in ["country", "domain", "law_time"]
+        },
     }
 
     # Claims summary (bez PII)
@@ -687,10 +691,10 @@ def _redact_to_public(full_pco: dict[str, Any], include_evidence: bool = False) 
             {
                 "id": claim.get("id", f"claim-{i}"),
                 "redacted_length": len(claim.get("text", "")),
-                "summary": _safe_summary(claim.get("text", ""))[:100]
+                "summary": _safe_summary(claim.get("text", ""))[:100],
             }
             for i, claim in enumerate(claims[:5])  # Max 5 claims
-        ]
+        ],
     }
 
     # Sources summary
@@ -704,11 +708,11 @@ def _redact_to_public(full_pco: dict[str, Any], include_evidence: bool = False) 
                 "id": source["id"],
                 "uri": source["uri"],
                 "digest": source["digest"],
-                "license": source.get("license", "unknown")
+                "license": source.get("license", "unknown"),
             }
             for source in sources
             if source.get("uri", "").startswith(("https://", "http://"))  # Tylko publiczne URI
-        ]
+        ],
     }
 
     # Kopiuj bezpieczne pola
@@ -725,13 +729,12 @@ def _redact_to_public(full_pco: dict[str, Any], include_evidence: bool = False) 
         evidence = full_pco["evidence_graph"]
         if isinstance(evidence, dict) and "@graph" in evidence:
             public_nodes = [
-                node for node in evidence["@graph"]
-                if not any(key.startswith("pii_") for key in node.keys())
+                node for node in evidence["@graph"] if not any(key.startswith("pii_") for key in node.keys())
             ]
             public_pco["evidence_graph_summary"] = {
                 "node_count": len(evidence["@graph"]),
                 "edge_count": len([n for n in evidence["@graph"] if "prov:type" in n]),
-                "public_nodes": public_nodes[:10]  # Max 10 nodes
+                "public_nodes": public_nodes[:10],  # Max 10 nodes
             }
 
     # Redaction info
@@ -739,7 +742,7 @@ def _redact_to_public(full_pco: dict[str, Any], include_evidence: bool = False) 
         "redacted_at": _now_iso(),
         "redaction_policy": "gdpr_article_6",
         "pii_removed": ["names", "addresses", "phone_numbers", "emails", "ids"],
-        "etag": f'"{hashlib.md5(json.dumps(public_pco, sort_keys=True).encode()).hexdigest()}"'
+        "etag": f'"{hashlib.md5(json.dumps(public_pco, sort_keys=True).encode()).hexdigest()}"',
     }
 
     return public_pco
@@ -774,13 +777,15 @@ def _safe_summary(text: str) -> str:
     return "Legal matter summary"
 
 
-@router.get("/verify",
-            summary="Verify PCO Bundle or public payload",
-            description="Verifies signatures, proofs and consistency of PCO Bundle or public payload")
+@router.get(
+    "/verify",
+    summary="Verify PCO Bundle or public payload",
+    description="Verifies signatures, proofs and consistency of PCO Bundle or public payload",
+)
 def verify_pco_v1(
     verification_type: str = "full",  # full, signatures_only, proofs_only, public_only
     offline: bool = False,
-    pco_data: dict | None = None  # W rzeczywistości byłoby w body POST
+    pco_data: dict | None = None,  # W rzeczywistości byłoby w body POST
 ):
     """
     PL: Weryfikuje podpisy, dowody i spójność PCO.
@@ -798,13 +803,10 @@ def verify_pco_v1(
             "proofs_valid": True,
             "schema_valid": True,
             "ledger_valid": True,
-            "tsa_timestamps_valid": True
+            "tsa_timestamps_valid": True,
         },
         "verified_at": _now_iso(),
-        "verifier_info": {
-            "version": "1.0.0",
-            "mode": "offline" if offline else "online"
-        }
+        "verifier_info": {"version": "1.0.0", "mode": "offline" if offline else "online"},
     }
 
 

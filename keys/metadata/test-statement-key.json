@@ -1,7 +1,7 @@
 {
   "key_id": "test-statement-key",
   "key_type": "ed25519",
-  "created_at": "2025-09-12T05:59:12.181470+00:00",
+  "created_at": "2025-09-12T17:07:06.406877+00:00",
   "expires_at": null,
   "status": "active",
   "purpose": "signing",

@@ -39,8 +39,10 @@ from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedg
 
 # === MODELS ===
 
+
 class CreateCaseRequest(BaseModel):
     """Request model for creating a new case"""
+
     case_id: str = Field(..., description="Unique case identifier")
     jurisdiction: dict[str, Any] = Field(..., description="Case jurisdiction details")
     metadata: dict[str, Any] | None = Field(default=None, description="Additional case metadata")
@@ -53,16 +55,20 @@ class CreateCaseRequest(BaseModel):
             raise ValueError("Case ID must be alphanumeric with optional dashes/underscores")
         return v
 
+
 class CreateCaseResponse(BaseModel):
     """Response model for case creation"""
+
     case_id: str
     created_at: datetime
     jurisdiction: dict[str, Any]
     metadata: dict[str, Any] | None
     chain_position: int
 
+
 class RecordEventRequest(BaseModel):
     """Request model for recording an event"""
+
     event_type: str = Field(..., description="Type of event being recorded")
     case_id: str = Field(..., description="Associated case ID")
     payload: dict[str, Any] = Field(..., description="Event payload data")
@@ -75,8 +81,10 @@ class RecordEventRequest(BaseModel):
             raise ValueError("Event type must be at least 2 characters")
         return v.upper()
 
+
 class RecordEventResponse(BaseModel):
     """Response model for event recording"""
+
     event_id: UUID
     event_type: str
     case_id: str
@@ -85,16 +93,20 @@ class RecordEventResponse(BaseModel):
     chain_hash: str
     tsa_timestamp: str | None
 
+
 class StoreBundleRequest(BaseModel):
     """Request model for storing a bundle"""
+
     bundle_id: str = Field(..., description="Unique bundle identifier")
     case_id: str = Field(..., description="Associated case ID")
     bundle_data: bytes = Field(..., description="Bundle data")
     signature_ed25519: str = Field(..., description="Ed25519 signature")
     public_key_id: str = Field(..., description="Public key identifier")
 
+
 class StoreBundleResponse(BaseModel):
     """Response model for bundle storage"""
+
     bundle_id: str
     case_id: str
     stored_at: datetime
@@ -102,8 +114,10 @@ class StoreBundleResponse(BaseModel):
     storage_location: str
     size_bytes: int
 
+
 class ChainIntegrityResponse(BaseModel):
     """Response model for chain integrity verification"""
+
     is_valid: bool
     total_events: int
     verification_time: float
@@ -111,8 +125,10 @@ class ChainIntegrityResponse(BaseModel):
     merkle_anchors_verified: int
     last_verified_position: int
 
+
 class LedgerHealthResponse(BaseModel):
     """Response model for ledger health check"""
+
     status: str
     database_status: str
     storage_status: str
@@ -121,8 +137,10 @@ class LedgerHealthResponse(BaseModel):
     performance_metrics: dict[str, Any]
     timestamp: datetime
 
+
 class LedgerMetricsResponse(BaseModel):
     """Response model for ledger metrics"""
+
     events_per_second: float
     total_events: int
     total_cases: int
@@ -132,7 +150,9 @@ class LedgerMetricsResponse(BaseModel):
     storage_usage_mb: float
     timestamp: datetime
 
+
 # === DEPENDENCIES ===
+
 
 async def get_ledger() -> PostgreSQLLedger:
     """Get ledger instance"""
@@ -141,17 +161,19 @@ async def get_ledger() -> PostgreSQLLedger:
     await ledger.initialize()
     return ledger
 
+
 # === ROUTER ===
 
 router = APIRouter(prefix="/ledger", tags=["A2 - Ledger"])
 logger = get_logger("ledger_router")
 
+
 @router.post("/cases", response_model=CreateCaseResponse)
 async def create_case(
     request: CreateCaseRequest,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:write"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:write"])),
 ):
     """
     Create a new case in the ledger
@@ -165,9 +187,7 @@ async def create_case(
 
         # Create case
         case_record = await ledger.create_case(
-            case_id=request.case_id,
-            jurisdiction=request.jurisdiction,
-            metadata=request.metadata or {}
+            case_id=request.case_id, jurisdiction=request.jurisdiction, metadata=request.metadata or {}
         )
 
         logger.info(f"Case {request.case_id} created successfully at position {case_record.chain_position}")
@@ -177,7 +197,7 @@ async def create_case(
             created_at=case_record.created_at,
             jurisdiction=case_record.jurisdiction,
             metadata=case_record.metadata,
-            chain_position=case_record.chain_position
+            chain_position=case_record.chain_position,
         )
 
     except ValueError as e:
@@ -187,12 +207,13 @@ async def create_case(
         logger.error(f"Failed to create case {request.case_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/cases/{case_id}")
 async def get_case(
     case_id: str,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:read"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:read"])),
 ):
     """
     Get case details by case ID
@@ -212,7 +233,7 @@ async def get_case(
             "jurisdiction": case_record.jurisdiction,
             "metadata": case_record.metadata,
             "chain_position": case_record.chain_position,
-            "event_count": await ledger.get_case_event_count(case_id)
+            "event_count": await ledger.get_case_event_count(case_id),
         }
 
     except HTTPException:
@@ -221,13 +242,14 @@ async def get_case(
         logger.error(f"Failed to get case {case_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.post("/events", response_model=RecordEventResponse)
 async def record_event(
     request: RecordEventRequest,
     background_tasks: BackgroundTasks,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:write"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:write"])),
 ):
     """
     Record a new event in the ledger
@@ -244,7 +266,7 @@ async def record_event(
             case_id=request.case_id,
             payload=request.payload,
             actor=request.actor or current_user.get('username', 'unknown'),
-            correlation_id=request.correlation_id
+            correlation_id=request.correlation_id,
         )
 
         # Schedule background chain integrity check if needed
@@ -259,7 +281,7 @@ async def record_event(
             recorded_at=event_record.recorded_at,
             chain_position=event_record.chain_position,
             chain_hash=event_record.chain_hash,
-            tsa_timestamp=event_record.tsa_timestamp
+            tsa_timestamp=event_record.tsa_timestamp,
         )
 
     except ValueError as e:
@@ -269,12 +291,13 @@ async def record_event(
         logger.error(f"Failed to record event: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/events/{event_id}")
 async def get_event(
     event_id: UUID,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:read"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:read"])),
 ):
     """
     Get event details by event ID
@@ -299,7 +322,7 @@ async def get_event(
             "chain_hash": event_record.chain_hash,
             "previous_hash": event_record.previous_hash,
             "tsa_timestamp": event_record.tsa_timestamp,
-            "correlation_id": event_record.correlation_id
+            "correlation_id": event_record.correlation_id,
         }
 
     except HTTPException:
@@ -308,13 +331,14 @@ async def get_event(
         logger.error(f"Failed to get event {event_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/chain/integrity", response_model=ChainIntegrityResponse)
 async def verify_chain_integrity(
     from_position: int | None = Query(None, description="Start verification from this position"),
     to_position: int | None = Query(None, description="End verification at this position"),
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:verify"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:verify"])),
 ):
     """
     Verify chain integrity
@@ -328,15 +352,14 @@ async def verify_chain_integrity(
         start_time = datetime.utcnow()
 
         # Verify chain integrity
-        integrity_result = await ledger.verify_chain_integrity(
-            from_position=from_position,
-            to_position=to_position
-        )
+        integrity_result = await ledger.verify_chain_integrity(from_position=from_position, to_position=to_position)
 
         end_time = datetime.utcnow()
         verification_time = (end_time - start_time).total_seconds()
 
-        logger.info(f"Chain integrity verification completed in {verification_time:.2f}s: {'✓' if integrity_result.is_valid else '✗'}")
+        logger.info(
+            f"Chain integrity verification completed in {verification_time:.2f}s: {'✓' if integrity_result.is_valid else '✗'}"
+        )
 
         return ChainIntegrityResponse(
             is_valid=integrity_result.is_valid,
@@ -344,19 +367,20 @@ async def verify_chain_integrity(
             verification_time=verification_time,
             chain_breaks=integrity_result.chain_breaks,
             merkle_anchors_verified=integrity_result.merkle_anchors_verified,
-            last_verified_position=integrity_result.last_verified_position
+            last_verified_position=integrity_result.last_verified_position,
         )
 
     except Exception as e:
         logger.error(f"Chain integrity verification failed: {str(e)}")
         raise HTTPException(status_code=500, detail="Chain verification failed")
 
+
 @router.post("/bundles", response_model=StoreBundleResponse)
 async def store_bundle(
     request: StoreBundleRequest,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:write"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:write"])),
 ):
     """
     Store a data bundle in the ledger
@@ -369,6 +393,7 @@ async def store_bundle(
 
         # Calculate bundle hash
         import hashlib
+
         bundle_hash = hashlib.sha256(request.bundle_data).hexdigest()
 
         # Store bundle
@@ -378,7 +403,7 @@ async def store_bundle(
             bundle_data=request.bundle_data,
             bundle_hash=bundle_hash,
             signature_ed25519=request.signature_ed25519,
-            public_key_id=request.public_key_id
+            public_key_id=request.public_key_id,
         )
 
         logger.info(f"Bundle {request.bundle_id} stored successfully ({len(request.bundle_data)} bytes)")
@@ -389,7 +414,7 @@ async def store_bundle(
             stored_at=bundle_record.stored_at,
             bundle_hash=bundle_record.bundle_hash,
             storage_location=bundle_record.storage_location,
-            size_bytes=bundle_record.size_bytes
+            size_bytes=bundle_record.size_bytes,
         )
 
     except ValueError as e:
@@ -399,12 +424,13 @@ async def store_bundle(
         logger.error(f"Failed to store bundle {request.bundle_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/bundles/{bundle_id}")
 async def get_bundle(
     bundle_id: str,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:read"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:read"])),
 ):
     """
     Get bundle by bundle ID
@@ -430,7 +456,7 @@ async def get_bundle(
                 "size_bytes": bundle_record.size_bytes,
                 "signature_ed25519": bundle_record.signature_ed25519,
                 "public_key_id": bundle_record.public_key_id,
-                "data": bundle_data
+                "data": bundle_data,
             }
 
         # For large bundles, return metadata and streaming endpoint
@@ -443,7 +469,7 @@ async def get_bundle(
                 "size_bytes": bundle_record.size_bytes,
                 "signature_ed25519": bundle_record.signature_ed25519,
                 "public_key_id": bundle_record.public_key_id,
-                "stream_url": f"/ledger/bundles/{bundle_id}/stream"
+                "stream_url": f"/ledger/bundles/{bundle_id}/stream",
             }
 
     except HTTPException:
@@ -452,12 +478,13 @@ async def get_bundle(
         logger.error(f"Failed to get bundle {bundle_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/bundles/{bundle_id}/stream")
 async def stream_bundle(
     bundle_id: str,
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:read"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:read"])),
 ):
     """
     Stream bundle data for large bundles
@@ -476,7 +503,7 @@ async def stream_bundle(
             bundle_data = await ledger.get_bundle_data(bundle_id)
 
             for i in range(0, len(bundle_data), chunk_size):
-                chunk = bundle_data[i:i + chunk_size]
+                chunk = bundle_data[i : i + chunk_size]
                 yield chunk
 
         return StreamingResponse(
@@ -485,8 +512,8 @@ async def stream_bundle(
             headers={
                 "Content-Disposition": f"attachment; filename={bundle_id}.bin",
                 "X-Bundle-Hash": bundle_record.bundle_hash,
-                "X-Bundle-Size": str(bundle_record.size_bytes)
-            }
+                "X-Bundle-Size": str(bundle_record.size_bytes),
+            },
         )
 
     except HTTPException:
@@ -495,10 +522,9 @@ async def stream_bundle(
         logger.error(f"Failed to stream bundle {bundle_id}: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
+
 @router.get("/health", response_model=LedgerHealthResponse)
-async def health_check(
-    ledger: PostgreSQLLedger = Depends(get_ledger)
-):
+async def health_check(ledger: PostgreSQLLedger = Depends(get_ledger)):
     """
     Ledger health check
 
@@ -518,7 +544,7 @@ async def health_check(
             tsa_status=health_status.tsa_status,
             chain_status=health_status.chain_status,
             performance_metrics=health_status.performance_metrics,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
     except Exception as e:
@@ -530,14 +556,15 @@ async def health_check(
             tsa_status="error",
             chain_status="error",
             performance_metrics={},
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
+
 
 @router.get("/metrics", response_model=LedgerMetricsResponse)
 async def get_metrics(
     ledger: PostgreSQLLedger = Depends(get_ledger),
-    current_user = Depends(get_current_user),
-    permissions = Depends(require_permissions(["ledger:read"]))
+    current_user=Depends(get_current_user),
+    permissions=Depends(require_permissions(["ledger:read"])),
 ):
     """
     Get ledger performance metrics
@@ -559,14 +586,16 @@ async def get_metrics(
             average_latency_ms=metrics.average_latency_ms,
             chain_length=metrics.chain_length,
             storage_usage_mb=metrics.storage_usage_mb,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
     except Exception as e:
         logger.error(f"Failed to get metrics: {str(e)}")
         raise HTTPException(status_code=500, detail="Metrics unavailable")
 
+
 # === BACKGROUND TASKS ===
+
 
 async def _schedule_integrity_check(ledger: PostgreSQLLedger, chain_position: int):
     """Schedule background chain integrity check"""
@@ -579,20 +608,27 @@ async def _schedule_integrity_check(ledger: PostgreSQLLedger, chain_position: in
             integrity_result = await ledger.verify_chain_integrity()
 
             if not integrity_result.is_valid:
-                logger.error(f"Chain integrity check failed at position {chain_position}: {integrity_result.chain_breaks}")
+                logger.error(
+                    f"Chain integrity check failed at position {chain_position}: {integrity_result.chain_breaks}"
+                )
             else:
                 logger.info(f"Chain integrity verified up to position {integrity_result.last_verified_position}")
 
         except Exception as e:
             logger.error(f"Background integrity check failed: {str(e)}")
 
+
 # === EXPORTS ===
 
 __all__ = [
     "router",
-    "CreateCaseRequest", "CreateCaseResponse",
-    "RecordEventRequest", "RecordEventResponse",
-    "StoreBundleRequest", "StoreBundleResponse",
+    "CreateCaseRequest",
+    "CreateCaseResponse",
+    "RecordEventRequest",
+    "RecordEventResponse",
+    "StoreBundleRequest",
+    "StoreBundleResponse",
     "ChainIntegrityResponse",
-    "LedgerHealthResponse", "LedgerMetricsResponse"
+    "LedgerHealthResponse",
+    "LedgerMetricsResponse",
 ]

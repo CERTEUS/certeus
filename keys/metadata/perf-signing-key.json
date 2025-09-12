@@ -1,7 +1,7 @@
 {
   "key_id": "perf-signing-key",
   "key_type": "ed25519",
-  "created_at": "2025-09-12T06:10:16.950729+00:00",
+  "created_at": "2025-09-12T17:17:09.417828+00:00",
   "expires_at": null,
   "status": "active",
   "purpose": "signing",

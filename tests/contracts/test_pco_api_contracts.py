@@ -58,23 +58,15 @@ class TestPCOContractCompliance:
             "smt2_hash": "a" * 64,
             "lfsc": "(assert (= (+ 2 2) 4))",
             "drat": "1 -2 0\n2 0\n0",
-            "jurisdiction": {
-                "country": "PL",
-                "domain": "civil",
-                "law_time": "2024-01-01"
-            },
-            "extensions": {
-                "qtmp": {
-                    "basis": "computational",
-                    "uncertainty_bound": 0.05
-                }
-            }
+            "jurisdiction": {"country": "PL", "domain": "civil", "law_time": "2024-01-01"},
+            "extensions": {"qtmp": {"basis": "computational", "uncertainty_bound": 0.05}},
         }
 
     @pytest.fixture
     def mock_ed25519_key(self):
         """Mock klucza Ed25519."""
         from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
         return Ed25519PrivateKey.generate()
 
     def test_bundle_endpoint_schema_compliance(
@@ -82,23 +74,21 @@ class TestPCOContractCompliance:
         client: TestClient,
         valid_pco_request: dict[str, Any],
         contract_validator: PCOContractValidator,
-        mock_ed25519_key
+        mock_ed25519_key,
     ):
         """Test: /v1/pco/bundle zwraca dane zgodne ze schematem PCO v1.0."""
 
         # Przygotuj klucz w formacie PEM
         from cryptography.hazmat.primitives import serialization
+
         pem_bytes = mock_ed25519_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
         )
         pem_str = pem_bytes.decode('utf-8')
 
-        with patch.dict('os.environ', {
-            'ED25519_PRIVKEY_PEM': pem_str,
-            'PROOF_BUNDLE_DIR': '/tmp/test_bundles'
-        }):
+        with patch.dict('os.environ', {'ED25519_PRIVKEY_PEM': pem_str, 'PROOF_BUNDLE_DIR': '/tmp/test_bundles'}):
             response = client.post("/v1/pco/bundle", json=valid_pco_request)
 
         assert response.status_code == 200
@@ -122,11 +112,7 @@ class TestPCOContractCompliance:
             pco_errors = pco_validator.validate(response_data, strict=True)
             assert len(pco_errors) == 0, f"PCO validation errors: {pco_errors}"
 
-    def test_public_endpoint_schema_compliance(
-        self,
-        client: TestClient,
-        pco_public_validator: PCOPublicValidator
-    ):
+    def test_public_endpoint_schema_compliance(self, client: TestClient, pco_public_validator: PCOPublicValidator):
         """Test: /v1/pco/public/{case_id} zwraca dane zgodne ze schematem PCO Public v1.0."""
 
         # Mock response from public endpoint
@@ -134,10 +120,7 @@ class TestPCOContractCompliance:
             "version": "1.0",
             "case_id": "CER-123456",
             "created_at": "2024-01-01T12:00:00Z",
-            "jurisdiction": {
-                "country": "PL",
-                "domain": "civil"
-            },
+            "jurisdiction": {"country": "PL", "domain": "civil"},
             "claims_summary": {
                 "count": 1,
                 "avg_confidence": 0.85,
@@ -146,26 +129,17 @@ class TestPCOContractCompliance:
                     {
                         "id": "claim-1",
                         "redacted_length": 145,
-                        "summary": "Procedural claim regarding document authentication"
+                        "summary": "Procedural claim regarding document authentication",
                     }
-                ]
+                ],
             },
-            "sources_summary": {
-                "count": 2,
-                "total_size_bytes": 45632,
-                "types": ["legal_statute", "case_law"]
-            },
-            "risk": {
-                "ece": 0.03,
-                "brier": 0.12,
-                "p95_latency_ms": 89.5,
-                "abstain_rate": 0.02
-            },
+            "sources_summary": {"count": 2, "total_size_bytes": 45632, "types": ["legal_statute", "case_law"]},
+            "risk": {"ece": 0.03, "brier": 0.12, "p95_latency_ms": 89.5, "abstain_rate": 0.02},
             "ledger": {
                 "merkle_root": "b" * 64,
                 "block_height": 12345,
                 "timestamp": "2024-01-01T12:01:00Z",
-                "bundle_location": "https://ledger.certeus.dev/bundles/CER-123456"
+                "bundle_location": "https://ledger.certeus.dev/bundles/CER-123456",
             },
             "signatures": [
                 {
@@ -173,7 +147,7 @@ class TestPCOContractCompliance:
                     "alg": "ed25519",
                     "key_id": "a1b2c3d4e5f67890",
                     "signature": "SGVsbG9TaWduYXR1cmU",
-                    "timestamp": "2024-01-01T12:00:30Z"
+                    "timestamp": "2024-01-01T12:00:30Z",
                 }
             ],
             "reproducibility": {
@@ -182,16 +156,16 @@ class TestPCOContractCompliance:
                 "build_info": {
                     "commit_sha": "d" * 40,
                     "build_time": "2024-01-01T10:00:00Z",
-                    "toolchain": "python-3.11-ubuntu-22.04"
-                }
+                    "toolchain": "python-3.11-ubuntu-22.04",
+                },
             },
             "status": "PUBLISH",
             "redaction_info": {
                 "redacted_at": "2024-01-01T12:00:45Z",
                 "redaction_policy": "gdpr_article_6",
                 "pii_removed": ["names", "addresses", "ids"],
-                "etag": "\"a1b2c3d4e5f6789012345678abcdef01\""
-            }
+                "etag": "\"a1b2c3d4e5f6789012345678abcdef01\"",
+            },
         }
 
         # Validate against PCO Public schema
@@ -203,13 +177,8 @@ class TestPCOContractCompliance:
         assert etag.startswith('"') and etag.endswith('"')
         assert len(etag) == 34  # 32 hex chars + 2 quotes
 
-    def test_verify_endpoint_contract_compliance(
-        self,
-        client: TestClient,
-        valid_pco_request: dict[str, Any]
-    ):
+    def test_verify_endpoint_contract_compliance(self, client: TestClient, valid_pco_request: dict[str, Any]):
         """Test: /v1/verify endpoint contract compliance."""
-
 
         # Mock response structure
         expected_response_structure = {
@@ -217,38 +186,23 @@ class TestPCOContractCompliance:
             "verification_time_ms": float,
             "errors": list,
             "warnings": list,
-            "details": {
-                "signatures_valid": bool,
-                "proofs_valid": bool,
-                "schema_valid": bool,
-                "ledger_valid": bool
-            },
+            "details": {"signatures_valid": bool, "proofs_valid": bool, "schema_valid": bool, "ledger_valid": bool},
             "verified_at": str,
-            "verifier_info": {
-                "version": str,
-                "mode": str
-            }
+            "verifier_info": {"version": str, "mode": str},
         }
 
         # This would normally make a real request, but for contract testing
         # we verify the expected structure matches OpenAPI spec
-        assert all(
-            key in expected_response_structure
-            for key in ["valid", "verification_time_ms"]
-        ), "Missing required fields in verification response structure"
+        assert all(key in expected_response_structure for key in ["valid", "verification_time_ms"]), (
+            "Missing required fields in verification response structure"
+        )
 
     def test_jwks_endpoint_compliance(self, client: TestClient):
         """Test: /.well-known/jwks.json endpoint compliance."""
 
         mock_jwks_response = {
             "keys": [
-                {
-                    "kty": "OKP",
-                    "use": "sig",
-                    "kid": "a1b2c3d4e5f67890",
-                    "crv": "Ed25519",
-                    "x": "SGVsbG9Xb3JsZEtleQ"
-                }
+                {"kty": "OKP", "use": "sig", "kid": "a1b2c3d4e5f67890", "crv": "Ed25519", "x": "SGVsbG9Xb3JsZEtleQ"}
             ]
         }
 
@@ -264,10 +218,7 @@ class TestPCOContractCompliance:
             assert "kid" in key
             assert "x" in key
 
-    def test_evidence_graph_in_pco_schema_compliance(
-        self,
-        valid_pco_request: dict[str, Any]
-    ):
+    def test_evidence_graph_in_pco_schema_compliance(self, valid_pco_request: dict[str, Any]):
         """Test: Evidence Graph w PCO jest zgodny z PROV JSON-LD."""
 
         # Generate evidence graph
@@ -290,9 +241,7 @@ class TestPCOContractCompliance:
                 assert "prov:id" in node, "PROV nodes must have prov:id"
 
     def test_pco_to_public_redaction_compliance(
-        self,
-        valid_pco_request: dict[str, Any],
-        pco_public_validator: PCOPublicValidator
+        self, valid_pco_request: dict[str, Any], pco_public_validator: PCOPublicValidator
     ):
         """Test: Redakcja PCO → PCO Public zachowuje zgodność schematów."""
 
@@ -306,11 +255,8 @@ class TestPCOContractCompliance:
                 {
                     "id": "claim-1",
                     "text": "Sensitive legal claim with PII: John Doe, PESEL 12345678901",
-                    "legal_basis": {
-                        "statutes": [{"code": "KC", "article": "art. 1"}],
-                        "cases": []
-                    },
-                    "confidence": 0.85
+                    "legal_basis": {"statutes": [{"code": "KC", "article": "art. 1"}], "cases": []},
+                    "confidence": 0.85,
                 }
             ],
             "sources": [
@@ -319,27 +265,18 @@ class TestPCOContractCompliance:
                     "uri": "https://example.com/law.pdf",
                     "digest": "sha256:" + "a" * 64,
                     "retrieved_at": "2024-01-01T11:00:00Z",
-                    "license": "public_domain"
+                    "license": "public_domain",
                 }
             ],
-            "risk": {
-                "ece": 0.03,
-                "brier": 0.12,
-                "p95_latency_ms": 89.5,
-                "abstain_rate": 0.02
-            },
-            "ledger": {
-                "merkle_root": "b" * 64,
-                "block_height": 12345,
-                "timestamp": "2024-01-01T12:01:00Z"
-            },
+            "risk": {"ece": 0.03, "brier": 0.12, "p95_latency_ms": 89.5, "abstain_rate": 0.02},
+            "ledger": {"merkle_root": "b" * 64, "block_height": 12345, "timestamp": "2024-01-01T12:01:00Z"},
             "signatures": [
                 {
                     "role": "producer",
                     "alg": "ed25519",
                     "key_id": "a1b2c3d4e5f67890",
                     "signature": "SGVsbG9TaWduYXR1cmU",
-                    "timestamp": "2024-01-01T12:00:30Z"
+                    "timestamp": "2024-01-01T12:00:30Z",
                 }
             ],
             "reproducibility": {
@@ -349,10 +286,10 @@ class TestPCOContractCompliance:
                 "build_info": {
                     "commit_sha": "d" * 40,
                     "build_time": "2024-01-01T10:00:00Z",
-                    "toolchain": "python-3.11"
-                }
+                    "toolchain": "python-3.11",
+                },
             },
-            "status": "PUBLISH"
+            "status": "PUBLISH",
         }
 
         # Simulate redaction to public PCO
@@ -360,10 +297,7 @@ class TestPCOContractCompliance:
             "version": "1.0",
             "case_id": full_pco["case_id"],
             "created_at": full_pco["created_at"],
-            "jurisdiction": {
-                "country": "PL",
-                "domain": "civil"
-            },
+            "jurisdiction": {"country": "PL", "domain": "civil"},
             "claims_summary": {
                 "count": len(full_pco["claims"]),
                 "avg_confidence": 0.85,
@@ -372,9 +306,9 @@ class TestPCOContractCompliance:
                     {
                         "id": "claim-1",
                         "redacted_length": len(full_pco["claims"][0]["text"]),
-                        "summary": "Legal claim regarding civil procedure"
+                        "summary": "Legal claim regarding civil procedure",
                     }
-                ]
+                ],
             },
             "sources_summary": {
                 "count": len(full_pco["sources"]),
@@ -385,18 +319,19 @@ class TestPCOContractCompliance:
                         "id": "source-1",
                         "uri": full_pco["sources"][0]["uri"],
                         "digest": full_pco["sources"][0]["digest"],
-                        "license": full_pco["sources"][0]["license"]
+                        "license": full_pco["sources"][0]["license"],
                     }
-                ]
+                ],
             },
             "risk": full_pco["risk"],
             "ledger": {
                 **full_pco["ledger"],
-                "bundle_location": f"https://ledger.certeus.dev/bundles/{full_pco['case_id']}"
+                "bundle_location": f"https://ledger.certeus.dev/bundles/{full_pco['case_id']}",
             },
             "signatures": full_pco["signatures"],
             "reproducibility": {
-                k: v for k, v in full_pco["reproducibility"].items()
+                k: v
+                for k, v in full_pco["reproducibility"].items()
                 if k != "seed"  # Remove sensitive seed
             },
             "status": full_pco["status"],
@@ -404,8 +339,8 @@ class TestPCOContractCompliance:
                 "redacted_at": "2024-01-01T12:00:45Z",
                 "redaction_policy": "gdpr_article_6",
                 "pii_removed": ["names", "ids"],
-                "etag": "\"a1b2c3d4e5f6789012345678abcdef01\""
-            }
+                "etag": "\"a1b2c3d4e5f6789012345678abcdef01\"",
+            },
         }
 
         # Validate public PCO compliance
@@ -427,18 +362,14 @@ class TestPCOContractCompliance:
 
         if openapi_path.exists():
             import yaml
+
             with open(openapi_path, encoding='utf-8') as f:
                 openapi_spec = yaml.safe_load(f)
 
             paths = openapi_spec.get("paths", {})
 
             # Required PCO v1.0 endpoints
-            required_endpoints = [
-                "/v1/pco/bundle",
-                "/v1/pco/public/{case_id}",
-                "/v1/verify",
-                "/.well-known/jwks.json"
-            ]
+            required_endpoints = ["/v1/pco/bundle", "/v1/pco/public/{case_id}", "/v1/verify", "/.well-known/jwks.json"]
 
             for endpoint in required_endpoints:
                 assert endpoint in paths, f"Missing required endpoint: {endpoint}"
@@ -447,12 +378,7 @@ class TestPCOContractCompliance:
             components = openapi_spec.get("components", {})
             schemas = components.get("schemas", {})
 
-            required_schemas = [
-                "PCOBundle",
-                "PCOPublic",
-                "PCOBundleResponse",
-                "VerificationResult"
-            ]
+            required_schemas = ["PCOBundle", "PCOPublic", "PCOBundleResponse", "VerificationResult"]
 
             for schema in required_schemas:
                 assert schema in schemas, f"Missing required schema: {schema}"
@@ -463,24 +389,22 @@ class TestPCOContractCompliance:
         client: TestClient,
         valid_pco_request: dict[str, Any],
         contract_validator: PCOContractValidator,
-        mock_ed25519_key
+        mock_ed25519_key,
     ):
         """Test: End-to-end flow zachowuje zgodność kontraktów."""
 
         # Przygotuj klucz w formacie PEM
         from cryptography.hazmat.primitives import serialization
+
         pem_bytes = mock_ed25519_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
         )
         pem_str = pem_bytes.decode('utf-8')
 
         # Step 1: Create PCO Bundle
-        with patch.dict('os.environ', {
-            'ED25519_PRIVKEY_PEM': pem_str,
-            'PROOF_BUNDLE_DIR': '/tmp/test_bundles'
-        }):
+        with patch.dict('os.environ', {'ED25519_PRIVKEY_PEM': pem_str, 'PROOF_BUNDLE_DIR': '/tmp/test_bundles'}):
             bundle_response = client.post("/v1/pco/bundle", json=valid_pco_request)
 
         assert bundle_response.status_code == 200
@@ -497,11 +421,7 @@ class TestPCOContractCompliance:
         # For contract testing, we verify the expected structure
 
         # Step 3: Verify PCO (mocked)
-        verify_request = {
-            "data": bundle_data,
-            "verification_type": "full",
-            "offline": False
-        }
+        verify_request = {"data": bundle_data, "verification_type": "full", "offline": False}
 
         # Contract validates the request structure
         assert "data" in verify_request
