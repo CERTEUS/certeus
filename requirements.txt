@@ -1,4 +1,4 @@
-fastapi==0.115.*
+fastapi>=0.115.14
 uvicorn[standard]==0.35.*
 z3-solver>=4.12
 python-multipart>=0.0.20,<0.0.21
@@ -16,6 +16,7 @@ mypy>=1.11
 bandit>=1.7
 safety>=3.0
 pydantic>=2.0
+starlette>=0.47.2
 cryptography>=41.0
 qiskit>=1.0
 numpy>=1.24

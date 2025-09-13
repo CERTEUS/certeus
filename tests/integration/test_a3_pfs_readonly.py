@@ -23,31 +23,28 @@ DoD Requirements tested:
 """
 
 import asyncio
-from datetime import datetime
 import hashlib
 import os
 import platform
 import tempfile
+from datetime import datetime
 
 import pytest
 
-from core.pfs.filesystem_interface import (
-    ExtendedAttributes,
-    FileHash,
-    FileNotFoundError,
-    PFSConfig,
-    PFSFilesystemFactory,
-    PFSFilesystemInterface,
-    ReadOnlyViolationError,
-    SupportedPlatform,
-    VirtualDirectoryInfo,
-    VirtualFileInfo,
-    get_current_platform,
-)
+from core.pfs.filesystem_interface import (ExtendedAttributes, FileHash,
+                                           FileNotFoundError, PFSConfig,
+                                           PFSFilesystemFactory,
+                                           PFSFilesystemInterface,
+                                           ReadOnlyViolationError,
+                                           SupportedPlatform,
+                                           VirtualDirectoryInfo,
+                                           VirtualFileInfo,
+                                           get_current_platform)
 
 # Platform-specific imports with fallbacks
 try:
-    from services.pfs_service.linux_fuse import LinuxFUSEFilesystem, is_fuse_available
+    from services.pfs_service.linux_fuse import (LinuxFUSEFilesystem,
+                                                 is_fuse_available)
 except ImportError:
     LinuxFUSEFilesystem = None
 
@@ -56,7 +53,8 @@ except ImportError:
 
 
 try:
-    from services.pfs_service.windows_dokan import WindowsDokanFilesystem, is_dokan_available
+    from services.pfs_service.windows_dokan import (WindowsDokanFilesystem,
+                                                    is_dokan_available)
 except ImportError:
     WindowsDokanFilesystem = None
 
@@ -218,11 +216,13 @@ class TestPlatformDetection:
 
         # Skip if no filesystem implementation available on current platform
         current_platform = get_current_platform()
-        
+
         if current_platform == SupportedPlatform.LINUX and not is_fuse_available():
             pytest.skip("FUSE not available on this system - requires fusepy package")
         elif current_platform == SupportedPlatform.WINDOWS and not is_dokan_available():
             pytest.skip("Dokan not available on this system")
+        elif current_platform == SupportedPlatform.MACOS:
+            pytest.skip("macOS FUSE implementation not available - module 'services.pfs_service.macos_fuse' not found")
 
         # Test with current platform
         fs = PFSFilesystemFactory.create_filesystem()
@@ -264,6 +264,8 @@ class TestReadOnlyEnforcement:
             pytest.skip("FUSE not available on this system")
         elif current_platform == SupportedPlatform.WINDOWS and not is_dokan_available():
             pytest.skip("Dokan not available on this system")
+        elif current_platform == SupportedPlatform.MACOS:
+            pytest.skip("macOS FUSE implementation not available")
 
         # Create filesystem
         fs = PFSFilesystemFactory.create_filesystem()
@@ -310,6 +312,7 @@ class TestReadOnlyEnforcement:
 class TestHashVerification:
     """Test hash verification without divergence"""
 
+    @pytest.mark.skipif(not is_fuse_available(), reason="FUSE not available on this system - requires fusepy package")
     @pytest.mark.asyncio
     async def test_hash_verification_on_materialization(self, pfs_config, mock_materializer):
         """
@@ -412,6 +415,7 @@ class TestHashVerification:
 class TestExtendedAttributes:
     """Test extended attributes (xattrs) support"""
 
+    @pytest.mark.skipif(not is_fuse_available(), reason="FUSE not available on this system - requires fusepy package")
     @pytest.mark.asyncio
     async def test_xattr_operations(self, pfs_config, mock_materializer):
         """

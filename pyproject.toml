@@ -88,3 +88,36 @@ quote-style = "preserve"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "lf"
+
+[tool.coverage.run]
+source = ["certeus"]
+omit = [
+    "tests/*",
+    "*/site-packages/*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+    "setup.py",
+    "venv/*",
+    ".venv/*"
+]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

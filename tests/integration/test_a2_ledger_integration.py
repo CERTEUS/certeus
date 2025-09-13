@@ -24,17 +24,18 @@ DoD Requirements tested:
 """
 
 import asyncio
-from datetime import datetime
 import json
 import random
 import time
+from datetime import datetime
 
 import asyncpg
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
-from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
+from services.ledger_service.postgres_ledger import (LedgerConfig,
+                                                     PostgreSQLLedger)
 
 
 async def _check_postgres_available():

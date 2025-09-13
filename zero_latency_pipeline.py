@@ -6,13 +6,13 @@ Target: Sub-microsecond latency, millions of ops/s
 """
 
 import asyncio
-from collections.abc import Callable
-from dataclasses import dataclass
 import mmap
-from multiprocessing import shared_memory
 import os
 import threading
 import time
+from collections.abc import Callable
+from dataclasses import dataclass
+from multiprocessing import shared_memory
 from typing import Any
 
 import psutil

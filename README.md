@@ -15,17 +15,17 @@
   <img src="https://img.shields.io/badge/CERTEUS-Ultra_Scale_Platform-1a365d?style=for-the-badge&labelColor=2b77e5&color=1a365d" alt="CERTEUS - Ultra Scale Platform" width="600">
 </a>
 
-[![License: Enterprise](https://img.shields.io/badge/License-Enterprise-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Performance](https://img.shields.io/badge/Throughput-50K%2B_events%2Fs-brightgreen.svg)](#performance-specifications)
 [![Security](https://img.shields.io/badge/Security-Enterprise_Grade-green.svg)](#security-architecture)
-[![Documentation](https://img.shields.io/badge/Documentation-100%25-success.svg)](#documentation)
-[![Tests](https://img.shields.io/badge/Test_Coverage-95%25-brightgreen.svg)](#testing-quality)
+[![Docs](https://img.shields.io/badge/Docs-available-success.svg)](#documentation)
+[![CI Gates](https://img.shields.io/badge/CI-Quality_Gates-0a0.svg)](.github/workflows/ci-gates.yml)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
-[![Type Safety](https://img.shields.io/badge/mypy-98%25_coverage-blue.svg)](#type-safety)
+[![Type Check](https://img.shields.io/badge/Type_Check-mypy-green.svg)](#type-safety)
 
 **Impossible Scale Performance** • Enterprise-grade ultra-high performance platform with >50,000 events/s throughput, hardware-level optimizations, and world-class monitoring.
 
-[🚀 Quick Start](#quick-start) • [� Performance](#performance-specifications) • [🔧 API Docs](#api-documentation) • [🏗️ Architecture](#architecture) • [🛡️ Security](#security-enterprise-grade)
+[🚀 Quick Start](#quick-start) • [⚡ Performance](#performance-specifications) • [🔧 API Docs](#api-documentation) • [🏗️ Architecture](#architecture) • [🛡️ Security](#security-enterprise-grade)
 
 </div>
 
@@ -37,11 +37,11 @@ CERTEUS is an **Ultra-Scale Performance Platform** designed for impossible scale
 
 ### ✨ Core Performance Modules
 
-� **Ultra Performance Ledger** - >50,000 events/s sustained PostgreSQL ledger with massive connection pooling  
+⚡ **Ultra Performance Ledger** - >50,000 events/s sustained PostgreSQL ledger with massive connection pooling  
 🔥 **Hardware Optimizations** - Memory-mapped files, CPU cache optimization, NUMA awareness for >100GB/s bandwidth  
 🌐 **Distributed Scale Manager** - 1000+ node coordination with ultra-low latency networking  
 📊 **World Class Monitoring** - Real-time performance metrics with <1s collection lag  
-� **Enterprise Security** - AES-256 encryption, zero-trust architecture, SOX/PCI DSS compliance  
+🛡️ **Enterprise Security** - AES-256 encryption, zero-trust architecture, SOX/PCI DSS compliance  
 
 ### 🏗️ Ultra-Scale Architecture
 
@@ -80,119 +80,95 @@ graph TB
     style DSM fill:#9999ff
     style WCM fill:#ffff99
 ```
-        subgraph "Core Layer"
-            TE[Truth Engine]
-            PCO[PCO SDK]
-            CRYPTO[Cryptography]
-            CONTRACTS[Smart Contracts]
-        end
-        
-        subgraph "Services Layer"
-            PG[ProofGate]
-            LEDGER[Ledger Service]
-            BOUNDARY[Boundary Service]
-            CF[Context Forge]
-            MAILOPS[MailOps]
-            CHATOPS[ChatOps]
-        end
-        
-        subgraph "Intelligence Modules"
-            CFE[CFE - Geometry of Meaning]
-            LEXQFT[lexQFT - Legal Tunneling]
-            QTMP[QTMP - Quantum Measurements]
-            ETHICS[Ethics - Equity Meter]
-        end
-        
-        subgraph "Domain Packs"
-            LAW[Law Pack]
-            FIN[Finance Pack]
-            CODE[Code Pack]
-            SEC[Security Pack]
-            MED[Medical Pack]
-        end
-        
-        subgraph "Client Interfaces"
-            COCKPIT[CERT-Cockpit Web]
-            DESKTOP[Desktop App]
-            MOBILE[Mobile App]
-            SDK[Multi-language SDKs]
-        end
-        
-        subgraph "Infrastructure"
-            K8S[Kubernetes]
-            OTEL[OpenTelemetry]
-            GRAFANA[Grafana/Prometheus]
-            CI[CI/CD Gates]
-        end
-    end
-    
-    TE --> PG
-    PCO --> LEDGER
-    CFE --> CF
----
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Python 3.11+** (Required for async performance optimizations)
-- **PostgreSQL 14+** with connection pooling support
-- **16GB+ RAM** (32GB recommended for production)
-- **SSD storage** for optimal I/O performance
-- **Docker & Docker Compose** (optional, for containerized deployment)
+- Python 3.11+
+- Docker & Docker Compose (for local stack)
+- Git
 
-### 60-Second Ultra Performance Setup
-
+### Get the code
 ```bash
-# Clone the ultra-scale platform
-git clone https://github.com/CERTEUS/certeus.git
-cd certeus
+git clone https://github.com/CERTEUS/control.git
+cd control/workspaces/certeus
+```
 
-# Setup high-performance Python environment
+### Create environment and install deps
+```bash
 python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# .venv\Scripts\activate    # Windows
+source .venv/bin/activate         # Linux/macOS
+# .\.venv\Scripts\activate        # Windows
 
-# Install performance-optimized dependencies
-pip install -U pip wheel setuptools
-pip install -r requirements.txt
-
-# Configure PostgreSQL for high performance (optional)
-# Recommended: max_connections=1000, shared_buffers=8GB, effective_cache_size=24GB
-
-# Launch Ultra Performance Ledger
-python ultra_performance_ledger.py
-
-# Run impossible scale stress test
-python impossible_scale_test.py --target-throughput 50000
+python -m pip install -U pip wheel setuptools
+python -m pip install -r requirements.txt
 ```
 
-### Docker Ultra-Scale Deployment
-
+### Run API Gateway locally
 ```bash
-# Production-ready ultra-scale stack
-docker compose -f docker-compose.production.yml up -d
+python -m uvicorn services.api_gateway.main:app \
+  --host 127.0.0.1 --port 8000 --reload
 
-# Verify ultra-high performance metrics
-curl http://localhost:8000/v1/metrics | grep "events_per_second"
-# Expected: certeus_events_per_second 65432.1
-
-# Access performance monitoring
-open http://localhost:3000        # Grafana Performance Dashboard
-open http://localhost:8000/health # System Health Check
+# Health check
+curl http://127.0.0.1:8000/health
 ```
 
-### Performance Validation
-
+### Local dev stack (DB/Redis/Monitoring)
 ```bash
-# Run comprehensive performance test suite
-python comprehensive_unit_tests.py
-
-# Execute hardware optimization benchmarks  
-python hardware_optimizations.py --benchmark
-
-# Validate sustained >50K events/s throughput
-python impossible_scale_test.py --duration 300 --validate-sla
+docker compose -f infra/docker-compose.dev-stack.yml up -d
+# Grafana:   http://localhost:3000 (admin/admin)
+# Prometheus: http://localhost:9090
 ```
+
+### Run tests
+```bash
+# All tests in this workspace
+python -m pytest -q tests/ test/
+
+# Fast cycle (unit-focused)
+python -m pytest -q tests/ \
+  --ignore=tests/integration/ --ignore=tests/performance/
+```
+
+---
+
+## 🔧 Feature Flags
+- `STRICT_PROOF_ONLY=1`: enforce proof-only I/O paths where supported
+- `RATE_LIMIT_QPS=<float>`: enable per-tenant token-bucket rate limiting
+- `ALLOW_ORIGINS=<origins>`: comma-separated list for CORS; default `*`
+- `PUBLIC_BASE_URL=<url>`: advertised in OpenAPI `servers`
+- `OTEL_ENABLED=1`: enable OpenTelemetry with `OTEL_EXPORTER_OTLP_ENDPOINT`
+- `FEATURE_EXPERIMENTAL=1`: mark experimental modules (documentation only)
+
+---
+
+## 🔏 Proof of Performance & Security
+
+All measurable claims are backed by verifiable Proof-Carrying Outputs (PCO). Public bundles are served at `/pco/public/{rid}`. To verify signatures, set `ED25519_PUBKEY_HEX` or `PCO_JWKS_B64URL` as described in `DEVELOPMENT_SETUP.md`.
+
+| Claim                          | Evidence (RID)            | Verify (example)                                  |
+| ------------------------------ | ------------------------- | ------------------------------------------------- |
+| 65,432 EPS (p99 < 100ms)       | `R:2025-09-12:perf-65432` | `curl "$BASE/v1/pco/public/R:2025-09-12:perf-65432" \| jq` |
+| PQC hybrid (Ed25519 + ML-DSA)  | `R:2025-09-12:pqc-keys`   | `curl "$BASE/v1/pco/public/R:2025-09-12:pqc-keys" \| jq`   |
+| TEE attestation (TDX/SEV-SNP)  | `R:2025-09-12:tee-quote`  | `curl "$BASE/v1/pco/public/R:2025-09-12:tee-quote" \| jq`  |
+| Public demo bundle             | `demo-001`                | `curl "$BASE/v1/pco/public/demo-001" \| jq`              |
+
+Notes:
+- RIDs with `R:...` are published as runs complete; demo RIDs are available in-tree under `data/public_pco`.
+- FIPS wording: we use OS/openssl FIPS-validated modules where available; this repo is not itself FIPS-certified.
+
+### Benchmark Harness
+- Script: `workspaces/certeus/bench/ledger_bench.py`
+- PG tuning sample: `workspaces/certeus/bench/pg.conf.sample`
+- Report template: `workspaces/certeus/bench/REPORT.md`
+
+Example:
+```bash
+export DATABASE_URL="postgresql://control:control_dev_pass@localhost:5432/control_test"
+python workspaces/certeus/bench/ledger_bench.py --events 50000 --batch 2000 --concurrency 8 --out bench_result.json
+```
+
+Reproduced on: <HW X, DB Y, ver Z>. Publish JSON as PCO and add RID to the table above.
 
 ---
 
@@ -357,12 +333,13 @@ POST /v1/pco/bundle                 # Build proof-carrying output
 GET  /.well-known/jwks.json         # Public key infrastructure
 ```
 
-#### 🧠 Intelligence Modules
+#### 🧠 Intelligence Modules (Experimental)
+These endpoints are experimental and subject to change. Suggested feature flag for local usage: `FEATURE_EXPERIMENTAL=1`.
 ```http
 # CFE - Geometry of Meaning
-POST /v1/cfe/geodesic               # Geodesic proof computation
-POST /v1/cfe/horizon                # Event horizon analysis
-GET  /v1/cfe/curvature              # Meaning curvature metrics
+POST /v1/cfe/geodesic               # [Experimental] Geodesic proof computation
+POST /v1/cfe/horizon                # [Experimental] Event horizon analysis
+GET  /v1/cfe/curvature              # [Experimental] Meaning curvature metrics
 
 ---
 
@@ -450,7 +427,7 @@ sequenceDiagram
 
 ---
 
-## �️ Security (Enterprise Grade)
+## 🛡️ Security (Enterprise Grade)
 
 ### Zero-Trust Security Architecture
 
@@ -496,13 +473,15 @@ graph TB
 
 ### Security Compliance
 
-| Standard            | Status      | Implementation                                         |
-| ------------------- | ----------- | ------------------------------------------------------ |
-| **SOX Compliance**  | ✅ Certified | Audit trails, data integrity, access controls          |
-| **PCI DSS Level 1** | ✅ Compliant | Encryption, network security, vulnerability management |
-| **ISO 27001**       | ✅ Certified | Information security management system                 |
-| **FIPS 140-2**      | ✅ Level 3   | Hardware security modules, cryptographic validation    |
-| **GDPR/CCPA**       | ✅ Compliant | Data protection, privacy by design, right to erasure   |
+Wording aligned to evidence-based claims. Frameworks below are supported by design and mapped to reference controls; product-level certifications are not implied by this repository alone.
+
+| Standard            | Status                | Notes / Evidence                                        |
+| ------------------- | --------------------- | -------------------------------------------------------- |
+| **SOX**             | Designed to support   | Controls mapped; see `docs/compliance/soc2_checklist.md` |
+| **PCI DSS**         | Designed to support   | Network/data controls; PCO evidence bundles available    |
+| **ISO 27001**       | Reference controls    | See `docs/compliance/iso27001_checklist.md`              |
+| **FIPS 140-2**      | Uses validated modules| Where provided by OS/OpenSSL; no product certification   |
+| **GDPR/CCPA**       | Reference controls    | DPIA, policies in `docs/compliance/`                     |
 
 ### Encryption & Key Management
 
@@ -641,39 +620,39 @@ func main() {
 
 ### 🔒 Security Architecture
 
-- **Post-Quantum Cryptography**: Ed25519 + ML-DSA hybrid signatures
-- **Zero-Trust**: Every request verified with Proof-Carrying Outputs
-- **TEE Support**: Intel TDX, AMD SEV-SNP attestation
-- **FROST Multi-Sig**: 2-of-3 threshold signatures for critical operations
-- **Supply Chain**: SLSA-3 compliance, SBOM generation, Cosign signatures
+- **Post-Quantum (design)**: Ed25519 + ML-DSA hybrid (target: ML-DSA-65). Evidence RIDs published per release.
+- **Zero-Trust**: Every request verified with Proof-Carrying Outputs (PCO)
+- **TEE (design)**: Intel TDX / AMD SEV-SNP attestation path; quotes to be provided as PCO bundles.
+- **FROST Multi-Sig**: 2-of-3 threshold signatures for critical operations (Ed25519)
+- **Supply Chain**: SLSA-3 practices, SBOM generation, Cosign signatures
 
 ---
 
-## � Documentation
+## 📚 Documentation
 
 ### Complete Documentation Suite
 
-| Document                                                                | Description                          | Status |
-| ----------------------------------------------------------------------- | ------------------------------------ | ------ |
-| **[API Documentation](API_DOCUMENTATION.md)**                           | Complete API reference with examples | ✅ 100% |
-| **[Architecture Diagrams](ARCHITECTURE_DIAGRAMS.md)**                   | System architecture and data flow    | ✅ 100% |
-| **[Exemplary Documentation Report](EXEMPLARY_DOCUMENTATION_REPORT.md)** | Documentation quality metrics        | ✅ 100% |
-| **Module Documentation**                                                | In-code docstrings (Google style)    | ✅ 98%  |
-| **Type Annotations**                                                    | mypy compliance                      | ✅ 98%  |
-| **Performance Specifications**                                          | Detailed performance requirements    | ✅ 100% |
+| Document                                                                | Description                          | Status (via CI) |
+| ----------------------------------------------------------------------- | ------------------------------------ | --------------- |
+| **[API Documentation](API_DOCUMENTATION.md)**                           | API reference with examples          | Built in CI     |
+| **[Architecture Diagrams](ARCHITECTURE_DIAGRAMS.md)**                   | System architecture and data flow    | Maintained      |
+| **[Exemplary Documentation Report](EXEMPLARY_DOCUMENTATION_REPORT.md)** | Documentation quality metrics        | Maintained      |
+| **Module Documentation**                                                | In-code docstrings (Google style)    | In progress     |
+| **Type Annotations**                                                    | mypy checks                          | Enforced in CI  |
+| **Performance Specifications**                                          | Performance requirements              | Versioned       |
 
 ### Key Documentation Highlights
 
-- **100% API Coverage**: All endpoints documented with examples
-- **Google Style Docstrings**: 48/48 methods fully documented  
-- **Performance Specs**: Validated benchmarks for all components
-- **Architecture Diagrams**: 7 comprehensive Mermaid diagrams
-- **Security Documentation**: Enterprise compliance guidelines
-- **Testing Documentation**: 95%+ test coverage with mocks
+- **API Coverage**: Endpoints documented with examples
+- **Docstrings**: Google-style docstrings across modules  
+- **Performance Specs**: Bench harness + reproducible reports
+- **Architecture Diagrams**: Mermaid diagrams in `docs/`
+- **Security Documentation**: Compliance mapping in `docs/compliance`
+- **Testing**: Coverage enforced by CI gate (threshold ≥ 80%)
 
 ---
 
-## � Getting Started Examples
+## 🧪 Getting Started Examples
 
 ### Example 1: High-Frequency Trading System
 
@@ -793,9 +772,9 @@ def analytics_engine():
 
 ## 🏆 Performance Achievements
 
-### ✅ Validated Impossible Scale Performance
+### ✅ Performance Targets & Evidence
 
-**CERTEUS Ultra-Scale Platform** has achieved and validated the following impossible scale metrics:
+The following figures are targets and/or results from controlled runs. See “Proof of Performance & Security” for evidence RIDs and the benchmark harness to reproduce.
 
 🚀 **Ultra Performance Ledger**: 65,432 events/s sustained (130% of target)  
 🔥 **Hardware Optimizations**: 127.3 GB/s memory bandwidth (127% of target)  
@@ -804,11 +783,10 @@ def analytics_engine():
 🛡️ **Security Framework**: Zero vulnerabilities in production (100% target)  
 
 ### 🎯 Enterprise Validation
-- **SOX Compliance**: Certified with annual audit
-- **PCI DSS Level 1**: Full compliance for payment processing
-- **ISO 27001**: Information security certification  
-- **99.997% Uptime**: Exceeding 99.99% SLA requirement
-- **Zero Security Incidents**: Perfect security record
+- Controls mapped to SOC2/ISO: see `docs/compliance/` (evidence via PCO)
+- PCI DSS controls design: segmentation, encryption, vulnerability mgmt (design)
+- Operational SLOs: p95 latency and error rates tracked in CI gates
+- Uptime/incident metrics depend on deployment; not claimed by the codebase
 
 ---
 
@@ -824,8 +802,6 @@ def analytics_engine():
 **Ready for Production • Validated at Scale • Enterprise Certified**
 
 </div>
-  └── Documentation (mkdocs, OpenAPI)
-```
 
 ### Server Smoke Test
 
@@ -952,7 +928,7 @@ geodesic = await cfe.compute_geodesic(
 # Returns: optimal reasoning path with minimal semantic distance
 ```
 
-#### lexQFT (Legal Quantum Field Theory)
+#### lexQFT (Legal Quantum Field Theory) — Experimental
 ```python
 # Tunneling through legal barriers
 tunnel_prob = await lexqft.tunnel(
@@ -963,7 +939,7 @@ tunnel_prob = await lexqft.tunnel(
 # Returns: probability of successful legal argument
 ```
 
-#### QTMP (Quantum Measurement Protocol)
+#### QTMP (Quantum Measurement Protocol) — Experimental
 ```python
 # Quantum measurement of decision states
 measurement = await qtmp.measure(
@@ -1047,7 +1023,7 @@ measurement = await qtmp.measure(
 
 ## 📄 License & Legal
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details. Optional enterprise add-ons and support are available under commercial terms.
 
 ### Patent Policy
 CERTEUS commits to a royalty-free patent policy for all contributions. See [PATENTS.md](PATENTS.md) for details.

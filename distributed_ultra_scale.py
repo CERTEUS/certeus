@@ -6,12 +6,12 @@ Target: Millions of operations/s across multiple nodes
 """
 
 import asyncio
-from dataclasses import dataclass
 import hashlib
 import random
 import time
-from typing import Any
 import uuid
+from dataclasses import dataclass
+from typing import Any
 
 # aiohttp dependency removed - not used in current implementation
 

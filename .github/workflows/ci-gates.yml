@@ -30,13 +30,28 @@ env:
 
 jobs:
   multi-os-test:
-    name: Multi-OS Testing (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    name: Multi-OS Testing
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.11", "3.12"]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: control_dev_pass
+          POSTGRES_USER: control
+          POSTGRES_DB: control_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout
@@ -53,6 +68,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel setuptools
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
+          python -m pip install -c constraints/requirements-constraints.txt -e .
           python -m pip install pytest pytest-cov ruff mypy
 
       - name: Install dependencies (Unix)
@@ -60,6 +76,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel setuptools
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install -c constraints/requirements-constraints.txt -e .
           python -m pip install pytest pytest-cov ruff mypy
 
       - name: Run core tests with coverage
@@ -90,6 +107,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip wheel setuptools
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install -c constraints/requirements-constraints.txt -e .
           python -m pip install ruff mypy bandit safety
 
       - name: Ruff lint (enforced)

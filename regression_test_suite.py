@@ -91,15 +91,17 @@ class RegressionTestSuite:
         try:
             # Test podstawowych importów
             import distributed_ultra_scale  # noqa: F401 - Import test
-            from distributed_ultra_scale import DistributedUltraScaleSystem  # noqa: F401 - Import test
             import hardware_optimizations  # noqa: F401 - Import test
             import impossible_scale_test  # noqa: F401 - Import test
             import ultra_performance_ledger  # noqa: F401 - Import test
-
-            # Test importów z naprawionych plików
-            from ultra_performance_ledger import UltraHighPerformanceLedger  # noqa: F401 - Import test
             import world_class_monitoring  # noqa: F401 - Import test
-            from world_class_monitoring import WorldClassMonitoringSystem  # noqa: F401 - Import test
+            from distributed_ultra_scale import \
+                DistributedUltraScaleSystem  # noqa: F401 - Import test
+            # Test importów z naprawionych plików
+            from ultra_performance_ledger import \
+                UltraHighPerformanceLedger  # noqa: F401 - Import test
+            from world_class_monitoring import \
+                WorldClassMonitoringSystem  # noqa: F401 - Import test
 
             return {'status': 'PASSED', 'message': 'All imports working correctly'}
 

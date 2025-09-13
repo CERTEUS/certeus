@@ -1,0 +1,16 @@
+# PostgreSQL tuning sample for CERTEUS ledger-like workload
+# Adjust to your hardware. Values below assume 8 CPU / 16GB RAM dev box.
+
+max_connections = 300
+shared_buffers = 4GB
+effective_cache_size = 8GB
+maintenance_work_mem = 512MB
+work_mem = 32MB
+wal_level = logical
+synchronous_commit = off
+max_wal_size = 2GB
+checkpoint_timeout = 15min
+checkpoint_completion_target = 0.9
+random_page_cost = 1.1
+effective_io_concurrency = 200
+
