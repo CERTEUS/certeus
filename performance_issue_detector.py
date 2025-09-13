@@ -131,7 +131,7 @@ class PerformanceIssueDetector:
 
         complexity = 0
         for node in ast.walk(tree):
-            if isinstance(node, (ast.If, ast.For, ast.While, ast.With)):
+            if isinstance(node, ast.If | ast.For | ast.While | ast.With):
                 complexity += 1
             elif isinstance(node, ast.Try):
                 complexity += 2

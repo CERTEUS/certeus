@@ -13,11 +13,7 @@ import time
 from typing import Any
 import uuid
 
-try:
-    import aiohttp
-    HAS_AIOHTTP = True
-except ImportError:
-    HAS_AIOHTTP = False
+# aiohttp dependency removed - not used in current implementation
 
 
 @dataclass

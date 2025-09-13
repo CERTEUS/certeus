@@ -18,7 +18,7 @@ from typing import Any
 import psutil
 
 try:
-    import numpy as np
+    import numpy as np  # noqa: F401 - Used conditionally
     HAS_NUMPY = True
 except ImportError:
     HAS_NUMPY = False

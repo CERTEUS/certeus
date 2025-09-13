@@ -76,7 +76,7 @@ class PerformanceVerifier:
             max_latency = max(latencies) if latencies else 0
 
             # Get pipeline metrics
-            pipeline_metrics = pipeline.get_pipeline_metrics()
+            pipeline.get_pipeline_metrics()
 
             print(f"   📊 Successful operations: {successful_ops}/{operations_count}")
             print(f"   📊 Actual throughput: {actual_throughput:.1f} ops/s")
@@ -129,7 +129,7 @@ class PerformanceVerifier:
 
             for i in range(operations_count):
                 test_data = f'hw_perf_test_{i}'.encode()
-                result = processor.process_hardware_optimized(test_data)
+                processor.process_hardware_optimized(test_data)
 
             end_time = time.perf_counter()
             total_time = end_time - start_time

@@ -58,7 +58,7 @@ class IntegrationTester:
             # 5. PostgreSQL ledger
             print("   🗄️ Initializing PostgreSQL ledger...")
             from ultra_performance_ledger import get_ultra_ledger
-            ledger = await get_ultra_ledger()
+            await get_ultra_ledger()
             initialization_order.append("ledger")
             print("   ✅ PostgreSQL ledger initialized")
 
@@ -185,7 +185,7 @@ class IntegrationTester:
 
             # Check monitoring dashboard
             dashboard = monitoring.get_real_time_dashboard()
-            monitoring_report = monitoring.get_performance_report()
+            monitoring.get_performance_report()
 
             elapsed_time = time.time() - start_time
 
@@ -255,7 +255,7 @@ class IntegrationTester:
 
             hardware_metrics = hardware.get_hardware_metrics()
             pipeline_metrics = pipeline.get_pipeline_metrics()
-            monitoring_report = monitoring.get_performance_report()
+            monitoring.get_performance_report()
 
             operations_per_second = operations_count / total_time
 

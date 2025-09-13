@@ -116,10 +116,4 @@ __version__ = "2.0.0"
 __author__ = "CERTEUS Development Team"
 __email__ = "dev@certeus.com"
 __status__ = "Production"
-__all__ = [
-    "UltraHighPerformanceLedger",
-    "UltraPerformanceConfig",
-    "get_ultra_ledger",
-    "PerformanceMetrics",
-    "BatchProcessor"
-]
+__all__ = []  # Documentation file - no exports

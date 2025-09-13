@@ -412,7 +412,7 @@ class ImpossibleScaleTest:
         print("IMPOSSIBLE SCALE TEST SUITE COMPLETED")
         print("🏆"*50)
 
-        for test_name, results in self.test_results.items():
+        for _test_name, results in self.test_results.items():
             print(f"\n📊 {results['test_name']}:")
 
             if 'processing_rate' in results:

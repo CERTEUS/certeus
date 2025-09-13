@@ -415,7 +415,6 @@ class CacheOptimizedRingBuffer:
         if self.config.use_prefetch and HAS_LIBC:
             try:
                 # Use hardware prefetch instruction if available
-                addr = offset
                 self.prefetch_buffer[0:64] = b'\\x00' * 64  # Touch cache line
             except Exception:
                 pass
@@ -608,7 +607,7 @@ class HardwareOptimizedProcessor:
 
         # Performance metrics collection
         end_time = time.perf_counter_ns()
-        latency_ns = end_time - start_time
+        end_time - start_time
 
         return result
 
@@ -716,7 +715,7 @@ if __name__ == "__main__":
 
         # Process test data
         results = []
-        for i in range(1000):
+        for _i in range(1000):
             for data in test_data:
                 result = processor.process_hardware_optimized(data)
                 results.append(result)

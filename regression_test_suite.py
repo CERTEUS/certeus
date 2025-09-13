@@ -90,16 +90,16 @@ class RegressionTestSuite:
         """Test importów po naprawach dependency issues"""
         try:
             # Test podstawowych importów
-            import distributed_ultra_scale
-            from distributed_ultra_scale import DistributedUltraScaleSystem
-            import hardware_optimizations
-            import impossible_scale_test
-            import ultra_performance_ledger
+            import distributed_ultra_scale  # noqa: F401 - Import test
+            from distributed_ultra_scale import DistributedUltraScaleSystem  # noqa: F401 - Import test
+            import hardware_optimizations  # noqa: F401 - Import test
+            import impossible_scale_test  # noqa: F401 - Import test
+            import ultra_performance_ledger  # noqa: F401 - Import test
 
             # Test importów z naprawionych plików
-            from ultra_performance_ledger import UltraHighPerformanceLedger
-            import world_class_monitoring
-            from world_class_monitoring import WorldClassMonitoringSystem
+            from ultra_performance_ledger import UltraHighPerformanceLedger  # noqa: F401 - Import test
+            import world_class_monitoring  # noqa: F401 - Import test
+            from world_class_monitoring import WorldClassMonitoringSystem  # noqa: F401 - Import test
 
             return {'status': 'PASSED', 'message': 'All imports working correctly'}
 
@@ -148,11 +148,6 @@ class RegressionTestSuite:
             # Note: zero_latency_pipeline.py might not exist, check for basic functionality
 
             # Mock test since we might not have the actual implementation
-            pipeline_test = {
-                'lock_free_queue': True,
-                'memory_mapped_buffers': True,
-                'pipeline_stages': 6
-            }
 
             return {'status': 'PASSED', 'message': 'Pipeline components verified'}
 
@@ -196,7 +191,7 @@ class RegressionTestSuite:
                 'data': {'regression': True}
             }
 
-            result = await system.submit_distributed_operation(test_operation)
+            await system.submit_distributed_operation(test_operation)
 
             await system.stop_cluster()
 
@@ -267,7 +262,7 @@ class RegressionTestSuite:
             for i in range(operations_count):
                 # Simple performance test
                 data = f"test-{i}".encode() * 100
-                processed = data.upper()
+                data.upper()
 
             end_time = time.perf_counter()
             duration = end_time - start_time
@@ -292,7 +287,7 @@ class RegressionTestSuite:
             for i in range(5):
                 with HardwareOptimizedProcessor() as processor:
                     test_data = f"resource-test-{i}".encode()
-                    result = processor.process_hardware_optimized(test_data)
+                    processor.process_hardware_optimized(test_data)
 
             return {'status': 'PASSED', 'message': 'Resource management working correctly'}
 

@@ -211,7 +211,7 @@ class SystemTester:
             from ultra_performance_ledger import get_ultra_ledger
 
             # Inicjalizacja
-            ledger = await get_ultra_ledger()
+            await get_ultra_ledger()
             print("   ✅ Ultra-performance ledger initialized")
 
             # Test prostej operacji (bez rzeczywistego zapisu do DB)
@@ -246,7 +246,7 @@ class SystemTester:
             from impossible_scale_test import ImpossibleScaleTest
 
             # Inicjalizacja
-            tester = ImpossibleScaleTest()
+            ImpossibleScaleTest()
             print("   ✅ Impossible scale tester initialized")
 
             # Sprawdź konfigurację

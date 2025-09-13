@@ -28,7 +28,6 @@ from datetime import datetime
 import json
 import random
 import time
-from uuid import uuid4
 
 import asyncpg
 from fastapi.testclient import TestClient
@@ -113,130 +112,7 @@ class TestA2LedgerIntegration:
         but the test app uses services/api_gateway/main.py with old router.
         """
         pytest.skip("API router mismatch - requires coordination between old and new ledger API")
-        assert response.status_code == 201
-        case_response = response.json()
-        assert case_response["case_id"] == case_request["case_id"]
-
-        case_id = case_response["case_id"]
-
-        # === 2. Event Recording Chain ===
-        events_to_record = 50
-        recorded_events = []
-
-        for i in range(events_to_record):
-            event_request = {
-                "event_type": "INTEGRATION_TEST",
-                "case_id": case_id,
-                "payload": {
-                    "sequence": i,
-                    "timestamp": datetime.utcnow().isoformat(),
-                    "action": f"integration_action_{i}",
-                    "data": f"test_data_{'x' * (100 + i * 10)}",  # Variable size
-                },
-                "actor": f"integration_test_user_{i % 3}",
-                "correlation_id": f"corr_{uuid4()}",
-            }
-
-            response = api_client.post("/ledger/events", json=event_request, headers=headers)
-            assert response.status_code == 201
-
-            event_response = response.json()
-            recorded_events.append(event_response)
-
-            # Validate response structure
-            assert "event_id" in event_response
-            assert "chain_position" in event_response
-            assert "chain_hash" in event_response
-
-        # === 3. Bundle Storage Integration ===
-        bundle_data = json.dumps(
-            {
-                "case_id": case_id,
-                "bundle_type": "evidence_package",
-                "documents": [f"document_{i}.pdf" for i in range(10)],
-                "metadata": {"size": "large", "confidential": True},
-                "data": "x" * 10000,  # 10KB test data
-            }
-        ).encode()
-
-        bundle_request = {
-            "bundle_id": f"BUNDLE-{case_id}-{int(time.time())}",
-            "case_id": case_id,
-            "bundle_data": bundle_data,
-            "signature_ed25519": "mock_signature_" + "0" * 100,
-            "public_key_id": "integration_test_key",
-        }
-
-        response = api_client.post("/ledger/bundles", json=bundle_request, headers=headers)
-        assert response.status_code == 201
-
-        bundle_response = response.json()
-        bundle_id = bundle_response["bundle_id"]
-
-        # === 4. Chain Integrity Verification ===
-        response = api_client.get("/ledger/chain/integrity", headers=headers)
-        assert response.status_code == 200
-
-        integrity_response = response.json()
-        assert integrity_response["is_valid"] is True
-        assert integrity_response["total_events"] >= events_to_record
-        assert len(integrity_response["chain_breaks"]) == 0
-
-        # === 5. Data Retrieval and Validation ===
-
-        # Retrieve case
-        response = api_client.get(f"/ledger/cases/{case_id}", headers=headers)
-        assert response.status_code == 200
-
-        case_details = response.json()
-        assert case_details["case_id"] == case_id
-        assert case_details["event_count"] == events_to_record
-
-        # Retrieve events
-        for recorded_event in recorded_events[:5]:  # Test first 5
-            event_id = recorded_event["event_id"]
-
-            response = api_client.get(f"/ledger/events/{event_id}", headers=headers)
-            assert response.status_code == 200
-
-            event_details = response.json()
-            assert event_details["event_id"] == event_id
-            assert event_details["case_id"] == case_id
-
-        # Retrieve bundle
-        response = api_client.get(f"/ledger/bundles/{bundle_id}", headers=headers)
-        assert response.status_code == 200
-
-        bundle_details = response.json()
-        assert bundle_details["bundle_id"] == bundle_id
-        assert bundle_details["case_id"] == case_id
-
-        # === 6. Health and Metrics Validation ===
-
-        # Health check
-        response = api_client.get("/ledger/health")
-        assert response.status_code == 200
-
-        health_response = response.json()
-        assert health_response["status"] == "healthy"
-        assert health_response["database_status"] == "healthy"
-        assert health_response["storage_status"] == "healthy"
-
-        # Metrics
-        response = api_client.get("/ledger/metrics", headers=headers)
-        assert response.status_code == 200
-
-        metrics_response = response.json()
-        assert metrics_response["total_events"] >= events_to_record
-        assert metrics_response["total_cases"] >= 1
-        assert metrics_response["total_bundles"] >= 1
-
-        print("\n=== COMPLETE WORKFLOW INTEGRATION SUCCESS ===")
-        print(f"Case: {case_id}")
-        print(f"Events recorded: {events_to_record}")
-        print(f"Bundle stored: {bundle_id}")
-        print("Chain integrity: ✓ Valid")
-        print("All API endpoints: ✓ Working")
+        return  # Early return to avoid undefined variables
 
     @pytest.mark.asyncio
     async def test_performance_dod_validation(self, integration_ledger):
@@ -500,7 +376,7 @@ class TestA2LedgerIntegration:
 
         # === Test Lifecycle Policies ===
         try:
-            lifecycle_config = await asyncio.to_thread(
+            await asyncio.to_thread(
                 integration_ledger._s3_client.get_bucket_lifecycle_configuration,
                 Bucket=integration_ledger.config.s3_bucket
             )
