@@ -24,17 +24,35 @@ DoD Requirements tested:
 """
 
 import asyncio
-from datetime import datetime
 import json
 import random
 import time
+from datetime import datetime
 
 import asyncpg
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
 from services.api_gateway.main import app
-from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
+from services.ledger_service.postgres_ledger import (LedgerConfig,
+                                                     PostgreSQLLedger)
+
+
+async def _check_postgres_available():
+    """Check if PostgreSQL is available for testing"""
+    try:
+        conn = await asyncpg.connect(
+            'postgresql://control:control_dev_pass@localhost:5432/control_test',
+            timeout=2
+        )
+        await conn.close()
+        return True
+    except Exception:
+        return False
+
+
+# Skip entire integration test class if PostgreSQL not available
+POSTGRES_AVAILABLE = asyncio.run(_check_postgres_available())
 
 
 async def clean_test_database():
@@ -58,6 +76,9 @@ async def clean_test_database():
 @pytest.fixture(autouse=True)
 async def clean_database():
     """Auto clean database before each test"""
+    if not POSTGRES_AVAILABLE:
+        pytest.skip("PostgreSQL not available for database cleanup")
+    
     await clean_test_database()
     yield
     # Could add cleanup after test if needed
@@ -99,6 +120,7 @@ def api_client():
 # === INTEGRATION TESTS ===
 
 
+@pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="PostgreSQL not available (requires docker-compose up postgresql)")
 class TestA2LedgerIntegration:
     """Complete A2 Ledger integration test suite"""
 
@@ -465,6 +487,7 @@ class TestA2LedgerIntegration:
 # === STRESS TESTS ===
 
 
+@pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="PostgreSQL not available (requires docker-compose up postgresql)")
 class TestA2LedgerStress:
     """Stress tests for A2 Ledger system"""
 
