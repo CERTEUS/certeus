@@ -216,6 +216,14 @@ class TestPlatformDetection:
     def test_filesystem_factory(self):
         """Test filesystem factory creation"""
 
+        # Skip if no filesystem implementation available on current platform
+        current_platform = get_current_platform()
+        
+        if current_platform == SupportedPlatform.LINUX and not is_fuse_available():
+            pytest.skip("FUSE not available on this system - requires fusepy package")
+        elif current_platform == SupportedPlatform.WINDOWS and not is_dokan_available():
+            pytest.skip("Dokan not available on this system")
+
         # Test with current platform
         fs = PFSFilesystemFactory.create_filesystem()
         assert isinstance(fs, PFSFilesystemInterface)
