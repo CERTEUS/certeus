@@ -19,7 +19,7 @@ class PerformanceIssueDetector:
             'inefficient_loops': ['for.*in.*range', 'while True:'],
             'memory_issues': ['list()', 'dict()', '*=', '+='],
             'io_issues': ['open(', 'read(', 'write('],
-            'sync_in_async': ['requests.', 'urllib.', 'time.sleep']
+            'sync_in_async': ['requests.', 'urllib.', 'time.sleep'],
         }
 
     def analyze_file(self, filepath: str) -> dict[str, Any]:
@@ -39,7 +39,7 @@ class PerformanceIssueDetector:
                 'blocking_operations': [],
                 'potential_memory_leaks': [],
                 'inefficient_patterns': [],
-                'missing_optimizations': []
+                'missing_optimizations': [],
             }
 
             # Szukaj problematycznych wzorców
@@ -55,7 +55,7 @@ class PerformanceIssueDetector:
                 'file': filepath,
                 'issues': issues,
                 'line_count': len(content.split('\n')),
-                'complexity_score': self._calculate_complexity(tree)
+                'complexity_score': self._calculate_complexity(tree),
             }
 
         except Exception as e:
@@ -68,53 +68,43 @@ class PerformanceIssueDetector:
 
         # Blocking operations
         if any(pattern in func_name for pattern in ['sleep', 'wait', 'join']):
-            issues['blocking_operations'].append({
-                'type': 'blocking_call',
-                'function': func_name,
-                'line': node.lineno
-            })
+            issues['blocking_operations'].append({'type': 'blocking_call', 'function': func_name, 'line': node.lineno})
 
         # Potential memory issues
         if func_name in ['list', 'dict', 'set'] and not node.args:
-            issues['potential_memory_leaks'].append({
-                'type': 'empty_container_creation',
-                'function': func_name,
-                'line': node.lineno
-            })
+            issues['potential_memory_leaks'].append(
+                {'type': 'empty_container_creation', 'function': func_name, 'line': node.lineno}
+            )
 
     def _analyze_loop(self, node: ast.For, issues: dict):
         """Analiza pętli for"""
 
         # Check for range(len(x)) pattern
-        if (isinstance(node.iter, ast.Call) and
-            isinstance(node.iter.func, ast.Name) and
-            node.iter.func.id == 'range'):
-
-            if (node.iter.args and
-                isinstance(node.iter.args[0], ast.Call) and
-                isinstance(node.iter.args[0].func, ast.Name) and
-                node.iter.args[0].func.id == 'len'):
-
-                issues['inefficient_patterns'].append({
-                    'type': 'range_len_pattern',
-                    'line': node.lineno,
-                    'suggestion': 'Use enumerate() or direct iteration'
-                })
+        if isinstance(node.iter, ast.Call) and isinstance(node.iter.func, ast.Name) and node.iter.func.id == 'range':
+            if (
+                node.iter.args
+                and isinstance(node.iter.args[0], ast.Call)
+                and isinstance(node.iter.args[0].func, ast.Name)
+                and node.iter.args[0].func.id == 'len'
+            ):
+                issues['inefficient_patterns'].append(
+                    {
+                        'type': 'range_len_pattern',
+                        'line': node.lineno,
+                        'suggestion': 'Use enumerate() or direct iteration',
+                    }
+                )
 
     def _analyze_while_loop(self, node: ast.While, issues: dict):
         """Analiza pętli while"""
 
         # Check for while True without break
-        if (isinstance(node.test, ast.Constant) and
-            node.test.value is True):
-
+        if isinstance(node.test, ast.Constant) and node.test.value is True:
             has_break = any(isinstance(n, ast.Break) for n in ast.walk(node))
             if not has_break:
-                issues['inefficient_patterns'].append({
-                    'type': 'infinite_loop_without_break',
-                    'line': node.lineno,
-                    'severity': 'high'
-                })
+                issues['inefficient_patterns'].append(
+                    {'type': 'infinite_loop_without_break', 'line': node.lineno, 'severity': 'high'}
+                )
 
     def _get_function_name(self, node: ast.Call) -> str:
         """Pobierz nazwę funkcji z node AST"""
@@ -147,7 +137,7 @@ class PerformanceIssueDetector:
             'hardware_optimizations.py',
             'distributed_ultra_scale.py',
             'world_class_monitoring.py',
-            'impossible_scale_test.py'
+            'impossible_scale_test.py',
         ]
 
         results = {}

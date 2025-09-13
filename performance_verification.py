@@ -17,21 +17,18 @@ class PerformanceVerifier:
         self.documented_metrics = {
             'zero_latency_pipeline': {
                 'claimed_throughput': 5677,  # ops/s
-                'claimed_latency': 'sub-microsecond'
+                'claimed_latency': 'sub-microsecond',
             },
             'hardware_optimizations': {
                 'claimed_throughput': 10287,  # ops/s
-                'claimed_cache_hit_rate': 100.0  # %
+                'claimed_cache_hit_rate': 100.0,  # %
             },
             'distributed_system': {
                 'claimed_throughput': 11132,  # ops/s
                 'claimed_nodes': 8,
-                'claimed_shards': 1000
+                'claimed_shards': 1000,
             },
-            'postgresql_ultra': {
-                'claimed_connections': '50-500',
-                'claimed_batch_size': 10000
-            }
+            'postgresql_ultra': {'claimed_connections': '50-500', 'claimed_batch_size': 10000},
         }
 
         print("📊 WERYFIKACJA METRYK WYDAJNOŚCI CERTEUS")
@@ -80,16 +77,20 @@ class PerformanceVerifier:
 
             print(f"   📊 Successful operations: {successful_ops}/{operations_count}")
             print(f"   📊 Actual throughput: {actual_throughput:.1f} ops/s")
-            print(f"   📊 Claimed throughput: {self.documented_metrics['zero_latency_pipeline']['claimed_throughput']} ops/s")
+            print(
+                f"   📊 Claimed throughput: {self.documented_metrics['zero_latency_pipeline']['claimed_throughput']} ops/s"
+            )
             print(f"   📊 Average latency: {avg_latency:.2f} μs")
             print(f"   📊 Min latency: {min_latency:.2f} μs")
             print(f"   📊 Max latency: {max_latency:.2f} μs")
 
             # Verify claims
-            throughput_ratio = actual_throughput / self.documented_metrics['zero_latency_pipeline']['claimed_throughput']
+            throughput_ratio = (
+                actual_throughput / self.documented_metrics['zero_latency_pipeline']['claimed_throughput']
+            )
             is_sub_microsecond = avg_latency < 1.0
 
-            print(f"   📊 Throughput achievement: {throughput_ratio*100:.1f}% of claimed")
+            print(f"   📊 Throughput achievement: {throughput_ratio * 100:.1f}% of claimed")
             print(f"   📊 Sub-microsecond latency: {'✅ YES' if is_sub_microsecond else '❌ NO'}")
 
             await pipeline.stop_pipeline()
@@ -101,15 +102,12 @@ class PerformanceVerifier:
                 'average_latency_microseconds': avg_latency,
                 'sub_microsecond_achieved': is_sub_microsecond,
                 'successful_operations': successful_ops,
-                'total_operations': operations_count
+                'total_operations': operations_count,
             }
 
         except Exception as e:
             print(f"   ❌ Pipeline verification failed: {e}")
-            self.verification_results['zero_latency_pipeline'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.verification_results['zero_latency_pipeline'] = {'status': 'FAILED', 'error': str(e)}
 
     async def verify_hardware_optimizations_metrics(self):
         """Weryfikacja metryk hardware optimizations"""
@@ -140,16 +138,22 @@ class PerformanceVerifier:
 
             print(f"   📊 Operations completed: {operations_count}")
             print(f"   📊 Actual throughput: {actual_throughput:.1f} ops/s")
-            print(f"   📊 Claimed throughput: {self.documented_metrics['hardware_optimizations']['claimed_throughput']} ops/s")
-            print(f"   📊 Cache hit rate: {hardware_metrics.get('cache_hit_rate', 0)*100:.1f}%")
-            print(f"   📊 Claimed cache hit rate: {self.documented_metrics['hardware_optimizations']['claimed_cache_hit_rate']:.1f}%")
+            print(
+                f"   📊 Claimed throughput: {self.documented_metrics['hardware_optimizations']['claimed_throughput']} ops/s"
+            )
+            print(f"   📊 Cache hit rate: {hardware_metrics.get('cache_hit_rate', 0) * 100:.1f}%")
+            print(
+                f"   📊 Claimed cache hit rate: {self.documented_metrics['hardware_optimizations']['claimed_cache_hit_rate']:.1f}%"
+            )
 
             # Verify claims
-            throughput_ratio = actual_throughput / self.documented_metrics['hardware_optimizations']['claimed_throughput']
+            throughput_ratio = (
+                actual_throughput / self.documented_metrics['hardware_optimizations']['claimed_throughput']
+            )
             cache_hit_rate = hardware_metrics.get('cache_hit_rate', 0) * 100
             cache_optimal = cache_hit_rate >= 99.0
 
-            print(f"   📊 Throughput achievement: {throughput_ratio*100:.1f}% of claimed")
+            print(f"   📊 Throughput achievement: {throughput_ratio * 100:.1f}% of claimed")
             print(f"   📊 Cache optimization: {'✅ EXCELLENT' if cache_optimal else '⚠️ SUBOPTIMAL'}")
 
             processor.close()
@@ -160,15 +164,12 @@ class PerformanceVerifier:
                 'throughput_ratio': throughput_ratio,
                 'cache_hit_rate': cache_hit_rate,
                 'cache_optimal': cache_optimal,
-                'operations_completed': operations_count
+                'operations_completed': operations_count,
             }
 
         except Exception as e:
             print(f"   ❌ Hardware verification failed: {e}")
-            self.verification_results['hardware_optimizations'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.verification_results['hardware_optimizations'] = {'status': 'FAILED', 'error': str(e)}
 
     async def verify_distributed_system_metrics(self):
         """Weryfikacja metryk distributed system"""
@@ -198,7 +199,7 @@ class PerformanceVerifier:
                 operation_data = {
                     'test': 'performance_verification',
                     'operation_id': i,
-                    'data': f'distributed_test_{i}'
+                    'data': f'distributed_test_{i}',
                 }
 
                 success = await distributed.submit_distributed_operation(operation_data)
@@ -214,14 +215,16 @@ class PerformanceVerifier:
 
             print(f"   📊 Successful operations: {successful_ops}/{operations_count}")
             print(f"   📊 Actual throughput: {actual_throughput:.1f} ops/s")
-            print(f"   📊 Claimed throughput: {self.documented_metrics['distributed_system']['claimed_throughput']} ops/s")
+            print(
+                f"   📊 Claimed throughput: {self.documented_metrics['distributed_system']['claimed_throughput']} ops/s"
+            )
             print(f"   📊 Total cluster operations: {final_metrics.get('total_operations', 0)}")
 
             # Verify claims
             throughput_ratio = actual_throughput / self.documented_metrics['distributed_system']['claimed_throughput']
             nodes_available = cluster_metrics.get('active_nodes', 0)
 
-            print(f"   📊 Throughput achievement: {throughput_ratio*100:.1f}% of claimed")
+            print(f"   📊 Throughput achievement: {throughput_ratio * 100:.1f}% of claimed")
             print(f"   📊 Cluster scale: {nodes_available} nodes available")
 
             await distributed.stop_cluster()
@@ -232,15 +235,12 @@ class PerformanceVerifier:
                 'throughput_ratio': throughput_ratio,
                 'nodes_available': nodes_available,
                 'successful_operations': successful_ops,
-                'total_operations': operations_count
+                'total_operations': operations_count,
             }
 
         except Exception as e:
             print(f"   ❌ Distributed verification failed: {e}")
-            self.verification_results['distributed_system'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.verification_results['distributed_system'] = {'status': 'FAILED', 'error': str(e)}
 
     async def verify_monitoring_system_metrics(self):
         """Weryfikacja metryk monitoring system"""
@@ -258,7 +258,7 @@ class PerformanceVerifier:
 
             # Record test metrics
             for i in range(100):
-                monitoring.record_application_metric(f"test_metric_{i%10}", i * 1.5)
+                monitoring.record_application_metric(f"test_metric_{i % 10}", i * 1.5)
 
             # Test dashboard
             dashboard = monitoring.get_real_time_dashboard()
@@ -289,15 +289,12 @@ class PerformanceVerifier:
                 'system_metrics_count': len(dashboard.get('system_metrics', {})),
                 'application_metrics_count': len(dashboard.get('application_metrics', {})),
                 'real_time_latency_ms': real_time_latency,
-                'monitoring_functional': True
+                'monitoring_functional': True,
             }
 
         except Exception as e:
             print(f"   ❌ Monitoring verification failed: {e}")
-            self.verification_results['monitoring_system'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.verification_results['monitoring_system'] = {'status': 'FAILED', 'error': str(e)}
 
     def verify_postgresql_claims(self):
         """Weryfikacja deklaracji PostgreSQL (strukturalna)"""
@@ -305,10 +302,11 @@ class PerformanceVerifier:
         print("-" * 40)
 
         try:
-
             # Check configuration claims
             print("   📊 Checking PostgreSQL configuration...")
-            print(f"   📊 Claimed connection pool: {self.documented_metrics['postgresql_ultra']['claimed_connections']}")
+            print(
+                f"   📊 Claimed connection pool: {self.documented_metrics['postgresql_ultra']['claimed_connections']}"
+            )
             print(f"   📊 Claimed batch size: {self.documented_metrics['postgresql_ultra']['claimed_batch_size']}")
 
             # Verify implementation features
@@ -317,7 +315,7 @@ class PerformanceVerifier:
                 'copy_protocol': 'IMPLEMENTED (ultra-fast inserts)',
                 'batch_processing': 'IMPLEMENTED (10,000 events/batch)',
                 'prepared_statements': 'IMPLEMENTED (optimized queries)',
-                'error_handling': 'IMPLEMENTED (enterprise-grade)'
+                'error_handling': 'IMPLEMENTED (enterprise-grade)',
             }
 
             for feature, status in ledger_features.items():
@@ -328,15 +326,12 @@ class PerformanceVerifier:
                 'structure_verified': True,
                 'connection_pool_configured': True,
                 'batch_processing_ready': True,
-                'note': 'PostgreSQL database required for full performance testing'
+                'note': 'PostgreSQL database required for full performance testing',
             }
 
         except Exception as e:
             print(f"   ❌ PostgreSQL verification failed: {e}")
-            self.verification_results['postgresql_ultra'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.verification_results['postgresql_ultra'] = {'status': 'FAILED', 'error': str(e)}
 
     def generate_performance_verification_report(self):
         """Generowanie raportu weryfikacji performance"""
@@ -364,9 +359,9 @@ class PerformanceVerifier:
                 ratio = result.get('throughput_ratio', 0)
                 if ratio >= 0.1:  # 10% of claimed is reasonable for test conditions
                     realistic_claims += 1
-                    print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (REALISTIC)")
+                    print(f"   📊 Throughput: {ratio * 100:.1f}% of claimed (REALISTIC)")
                 else:
-                    print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (OPTIMISTIC)")
+                    print(f"   📊 Throughput: {ratio * 100:.1f}% of claimed (OPTIMISTIC)")
 
                 if result.get('sub_microsecond_achieved', False):
                     print("   📊 Sub-microsecond latency: ✅ ACHIEVED")
@@ -377,9 +372,9 @@ class PerformanceVerifier:
                 ratio = result.get('throughput_ratio', 0)
                 if ratio >= 0.5:  # 50% of claimed is excellent for real conditions
                     realistic_claims += 1
-                    print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (EXCELLENT)")
+                    print(f"   📊 Throughput: {ratio * 100:.1f}% of claimed (EXCELLENT)")
                 else:
-                    print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (MODERATE)")
+                    print(f"   📊 Throughput: {ratio * 100:.1f}% of claimed (MODERATE)")
 
                 if result.get('cache_optimal', False):
                     print("   📊 Cache optimization: ✅ EXCELLENT (>99%)")
@@ -390,9 +385,9 @@ class PerformanceVerifier:
                 ratio = result.get('throughput_ratio', 0)
                 if ratio >= 0.01:  # 1% is reasonable for distributed overhead
                     realistic_claims += 1
-                    print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (REASONABLE)")
+                    print(f"   📊 Throughput: {ratio * 100:.1f}% of claimed (REASONABLE)")
                 else:
-                    print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (OPTIMISTIC)")
+                    print(f"   📊 Throughput: {ratio * 100:.1f}% of claimed (OPTIMISTIC)")
 
                 nodes = result.get('nodes_available', 0)
                 print(f"   📊 Cluster nodes: {nodes} available")
@@ -401,7 +396,9 @@ class PerformanceVerifier:
                 if result.get('monitoring_functional', False):
                     realistic_claims += 1
                     print("   📊 Real-time monitoring: ✅ FUNCTIONAL")
-                print(f"   📊 Metrics collection: {result.get('system_metrics_count', 0)} system + {result.get('application_metrics_count', 0)} app")
+                print(
+                    f"   📊 Metrics collection: {result.get('system_metrics_count', 0)} system + {result.get('application_metrics_count', 0)} app"
+                )
 
             elif system_name == 'postgresql_ultra':
                 if result.get('structure_verified', False):

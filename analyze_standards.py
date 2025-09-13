@@ -8,10 +8,9 @@ def analyze_test_standards():
     print('=== ENTERPRISE STANDARDS ANALYSIS ===\n')
 
     # Run tests collection to count
-    result = subprocess.run([
-        'python', '-m', 'pytest', 'tests/',
-        '--collect-only', '--quiet'
-    ], capture_output=True, text=True, cwd='.')
+    result = subprocess.run(
+        ['python', '-m', 'pytest', 'tests/', '--collect-only', '--quiet'], capture_output=True, text=True, cwd='.'
+    )
 
     # Count tests by category
     test_counts = defaultdict(int)
@@ -20,7 +19,7 @@ def analyze_test_standards():
         'integration': ['test_integration/', 'test_e2e/'],
         'performance': ['test_performance/', 'test_stress/'],
         'security': ['test_security/', 'test_auth/'],
-        'formal': ['test_formal_proofs/', 'test_properties/']
+        'formal': ['test_formal_proofs/', 'test_properties/'],
     }
 
     total_tests = 0
@@ -57,6 +56,7 @@ def analyze_test_standards():
     print('   - Chain integrity: PERFECT')
     print('   - Parallel testing: 20 workers')
     print(f'   - Test suite: {total_tests} tests, multiple categories')
+
 
 if __name__ == '__main__':
     analyze_test_standards()

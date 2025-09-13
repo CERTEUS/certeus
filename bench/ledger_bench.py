@@ -10,22 +10,21 @@ Usage:
 Outputs JSON with throughput and timing metrics. Designed for local validation
 and CI smoke (not a full TPC benchmark).
 """
+
 from __future__ import annotations
 
 import argparse
 import asyncio as _asyncio
+from dataclasses import asdict, dataclass
 import json
 import os
 import time
-from dataclasses import dataclass, asdict
 from typing import Any
 
 try:
     import asyncpg  # type: ignore
 except Exception as e:  # pragma: no cover - optional at import time
-    raise SystemExit(
-        "asyncpg is required. Install with: pip install asyncpg"
-    ) from e
+    raise SystemExit("asyncpg is required. Install with: pip install asyncpg") from e
 
 
 def _now_ns() -> int:
@@ -152,7 +151,10 @@ async def run_bench(cfg: BenchConfig) -> BenchResult:
 
 def _parse_args() -> BenchConfig:
     parser = argparse.ArgumentParser(description="CERTEUS ledger bench harness")
-    parser.add_argument("--dsn", default=os.getenv("DATABASE_URL") or "postgresql://control:control_dev_pass@localhost:5432/control_test")
+    parser.add_argument(
+        "--dsn",
+        default=os.getenv("DATABASE_URL") or "postgresql://control:control_dev_pass@localhost:5432/control_test",
+    )
     parser.add_argument("--events", type=int, default=20000)
     parser.add_argument("--batch", type=int, default=1000)
     parser.add_argument("--concurrency", type=int, default=4)
@@ -173,4 +175,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

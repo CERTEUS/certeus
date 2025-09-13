@@ -16,7 +16,7 @@ async def bulk_performance_test():
         s3_bucket='test-bucket',
         s3_access_key='control',
         s3_secret_key='control_dev_pass',
-        s3_endpoint_url='http://localhost:9000'
+        s3_endpoint_url='http://localhost:9000',
     )
 
     ledger = PostgreSQLLedger(config)
@@ -26,10 +26,7 @@ async def bulk_performance_test():
 
     # Create test case
     case_id = 'BLK-000001'
-    await ledger.create_case(
-        case_id=case_id,
-        jurisdiction={'test': True, 'bulk': True}
-    )
+    await ledger.create_case(case_id=case_id, jurisdiction={'test': True, 'bulk': True})
 
     # Test with bulk inserts for maximum performance
     target_events = 1000
@@ -40,24 +37,29 @@ async def bulk_performance_test():
         async with conn.transaction():
             values = []
             for i in range(target_events):
-                values.append((
-                    'BULK_PERFORMANCE_TEST',  # event_type
-                    case_id,                  # case_id
-                    json.dumps({'sequence': i, 'data': f'bulk_data_{i}'}),  # payload
-                    None,                     # document_hash
-                    None,                     # bundle_id
-                    None,                     # tsa_timestamp
-                    'bulk_test',              # actor
-                    '127.0.0.1'               # source_ip
-                ))
+                values.append(
+                    (
+                        'BULK_PERFORMANCE_TEST',  # event_type
+                        case_id,  # case_id
+                        json.dumps({'sequence': i, 'data': f'bulk_data_{i}'}),  # payload
+                        None,  # document_hash
+                        None,  # bundle_id
+                        None,  # tsa_timestamp
+                        'bulk_test',  # actor
+                        '127.0.0.1',  # source_ip
+                    )
+                )
 
             # Bulk insert with COPY for maximum performance
-            await conn.executemany("""
+            await conn.executemany(
+                """
                 INSERT INTO events (
                     event_type, case_id, payload, document_hash, bundle_id,
                     tsa_timestamp, actor, source_ip
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            """, values)
+            """,
+                values,
+            )
 
     end_time = time.time()
     duration = end_time - start_time
@@ -82,6 +84,7 @@ async def bulk_performance_test():
     async with ledger.get_connection() as conn:
         total = await conn.fetchval('SELECT COUNT(*) FROM events')
         print(f'Total events in database: {total}')
+
 
 if __name__ == '__main__':
     asyncio.run(bulk_performance_test())

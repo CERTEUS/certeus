@@ -16,6 +16,7 @@ import psutil
 # Handle Windows compatibility
 try:
     import resource
+
     HAS_RESOURCE = True
 except ImportError:
     HAS_RESOURCE = False
@@ -68,7 +69,7 @@ class SystemMonitor:
                     'memory_percent': memory.percent,
                     'memory_available_mb': memory.available // 1024 // 1024,
                     'network_bytes_sent': network_bytes_sent,
-                    'network_bytes_recv': network_bytes_recv
+                    'network_bytes_recv': network_bytes_recv,
                 }
 
                 self.metrics_history.append(metrics)
@@ -82,6 +83,7 @@ class SystemMonitor:
             except Exception as e:
                 print(f"⚠️ Monitoring error: {e}")
                 await asyncio.sleep(1.0)
+
 
 class ImpossibleScaleTest:
     """
@@ -141,10 +143,10 @@ class ImpossibleScaleTest:
         💥 IMPOSSIBLE TEST: 50,000 events/s sustained
         Duration: 60 seconds = 3,000,000 events total
         """
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("💥 IMPOSSIBLE SCALE TEST: 50,000 events/s")
         print("Target: 3,000,000 events in 60 seconds")
-        print("="*80)
+        print("=" * 80)
 
         # Start monitoring
         await self.monitor.start_monitoring()
@@ -178,11 +180,7 @@ class ImpossibleScaleTest:
 
             for batch in range(target_events_per_second // batch_size):
                 # Create batch task
-                task = self._submit_event_batch(
-                    formatted_case_id,
-                    batch_size,
-                    f"ultra_second_{second}_batch_{batch}"
-                )
+                task = self._submit_event_batch(formatted_case_id, batch_size, f"ultra_second_{second}_batch_{batch}")
                 tasks.append(task)
 
             # Submit all batches for this second concurrently
@@ -200,10 +198,12 @@ class ImpossibleScaleTest:
                 # Get ledger metrics
                 ledger_metrics = await self.ledger.get_performance_metrics()
 
-                print(f"📊 Progress: {progress:.1f}% | "
-                      f"Rate: {rate:.0f} events/s | "
-                      f"Submitted: {events_submitted:,} | "
-                      f"Queue: {ledger_metrics['queue_size']:,}")
+                print(
+                    f"📊 Progress: {progress:.1f}% | "
+                    f"Rate: {rate:.0f} events/s | "
+                    f"Submitted: {events_submitted:,} | "
+                    f"Queue: {ledger_metrics['queue_size']:,}"
+                )
 
                 last_report_time = current_time
 
@@ -249,13 +249,13 @@ class ImpossibleScaleTest:
             'chain_fix_events': fixed_events,
             'chain_fix_duration': chain_fix_duration,
             'success': processing_rate >= target_events_per_second * 0.8,  # 80% success threshold
-            'monitoring_samples': len(monitoring_history)
+            'monitoring_samples': len(monitoring_history),
         }
 
         # Print results
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("💥 IMPOSSIBLE SCALE TEST RESULTS")
-        print("="*80)
+        print("=" * 80)
         print(f"🎯 Target: {target_events_per_second:,} events/s")
         print(f"📊 Achieved: {processing_rate:.0f} events/s")
         print(f"📈 Peak: {final_metrics['peak_events_per_second']:.0f} events/s")
@@ -263,7 +263,7 @@ class ImpossibleScaleTest:
         print(f"📋 Events processed: {final_metrics['events_processed']:,}")
         print(f"🔧 Chain integrity fixed: {fixed_events:,} events in {chain_fix_duration:.2f}s")
         print(f"✅ Success: {'PASS' if results['success'] else 'FAIL'}")
-        print("="*80)
+        print("=" * 80)
 
         self.test_results['impossible_scale_50k'] = results
         return results
@@ -280,8 +280,8 @@ class ImpossibleScaleTest:
                     'batch_id': batch_id,
                     'event_index': i,
                     'timestamp': time.time(),
-                    'data': f'ultra_scale_data_{i}'
-                }
+                    'data': f'ultra_scale_data_{i}',
+                },
             )
             tasks.append(task)
 
@@ -301,7 +301,7 @@ class ImpossibleScaleTest:
             await conn.execute(
                 "INSERT INTO cases (case_id, status, jurisdiction) VALUES ($1, 'PENDING', $2) ON CONFLICT DO NOTHING",
                 formatted_case_id,
-                json.dumps({"ultra_scale": True, "test": True})
+                json.dumps({"ultra_scale": True, "test": True}),
             )
 
             # Update case_id in the data for event creation
@@ -349,7 +349,7 @@ class ImpossibleScaleTest:
         # Submit in large batches
         batch_size = 10000
         for i in range(0, events_count, batch_size):
-            await self._submit_event_batch(case_id, batch_size, f"memory_batch_{i//batch_size}")
+            await self._submit_event_batch(case_id, batch_size, f"memory_batch_{i // batch_size}")
 
             if i % 100000 == 0:
                 current_memory = psutil.virtual_memory().percent
@@ -373,7 +373,7 @@ class ImpossibleScaleTest:
             'baseline_memory_percent': baseline_memory,
             'final_memory_percent': final_memory,
             'memory_growth_percent': memory_growth,
-            'memory_efficient': memory_growth < 10.0  # Less than 10% growth
+            'memory_efficient': memory_growth < 10.0,  # Less than 10% growth
         }
 
         print("📊 Memory Test Results:")
@@ -387,10 +387,10 @@ class ImpossibleScaleTest:
 
     async def run_all_impossible_tests(self):
         """Run complete impossible scale test suite"""
-        print("\n" + "🚀"*40)
+        print("\n" + "🚀" * 40)
         print("STARTING IMPOSSIBLE SCALE TEST SUITE")
         print("PUSHING CERTEUS TO WORLD-CLASS PERFORMANCE")
-        print("🚀"*40)
+        print("🚀" * 40)
 
         try:
             # Run impossible scale test
@@ -408,9 +408,9 @@ class ImpossibleScaleTest:
 
     def _print_final_summary(self):
         """Print final test summary"""
-        print("\n" + "🏆"*50)
+        print("\n" + "🏆" * 50)
         print("IMPOSSIBLE SCALE TEST SUITE COMPLETED")
-        print("🏆"*50)
+        print("🏆" * 50)
 
         for _test_name, results in self.test_results.items():
             print(f"\n📊 {results['test_name']}:")
@@ -425,7 +425,8 @@ class ImpossibleScaleTest:
                 print(f"   📊 Memory Growth: {results['memory_growth_percent']:.1f}%")
 
         print("\n🌍 CERTEUS PERFORMANCE LEVEL: WORLD-CLASS ENTERPRISE")
-        print("🏆"*50)
+        print("🏆" * 50)
+
 
 async def main():
     """Run impossible scale stress tests"""
@@ -440,7 +441,9 @@ async def main():
     except Exception as e:
         print(f"\n❌ Test failed: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == '__main__':
     asyncio.run(main())

@@ -16,6 +16,7 @@ from typing import Any
 
 try:
     import psutil
+
     HAS_PSUTIL = True
 except ImportError:
     HAS_PSUTIL = False
@@ -24,6 +25,7 @@ except ImportError:
 @dataclass
 class MetricPoint:
     """Single metric measurement point"""
+
     timestamp: float
     metric_name: str
     value: float
@@ -34,6 +36,7 @@ class MetricPoint:
 @dataclass
 class AlertRule:
     """Alert rule configuration"""
+
     rule_id: str
     metric_name: str
     condition: str  # >, <, >=, <=, ==
@@ -46,6 +49,7 @@ class AlertRule:
 @dataclass
 class Alert:
     """Active alert"""
+
     alert_id: str
     rule_id: str
     metric_name: str
@@ -90,13 +94,7 @@ class MetricsCollector:
 
     def add_metric(self, metric_name: str, value: float, tags: dict[str, str] = None, unit: str = ""):
         """Add metric point (thread-safe, ultra-fast)"""
-        point = MetricPoint(
-            timestamp=time.time(),
-            metric_name=metric_name,
-            value=value,
-            tags=tags or {},
-            unit=unit
-        )
+        point = MetricPoint(timestamp=time.time(), metric_name=metric_name, value=value, tags=tags or {}, unit=unit)
 
         # Batch for performance
         self.batch_buffer.append(point)
@@ -169,10 +167,7 @@ class MetricsCollector:
             if metric_name not in self.metrics:
                 return []
 
-            return [
-                point for point in self.metrics[metric_name]
-                if point.timestamp >= cutoff_time
-            ]
+            return [point for point in self.metrics[metric_name] if point.timestamp >= cutoff_time]
 
     def calculate_statistics(self, metric_name: str, duration_seconds: int = 300) -> dict[str, float]:
         """Calculate statistics for metric"""
@@ -191,7 +186,7 @@ class MetricsCollector:
             'median': statistics.median(values),
             'stdev': statistics.stdev(values) if len(values) > 1 else 0.0,
             'p95': statistics.quantiles(values, n=20)[18] if len(values) >= 20 else max(values),
-            'p99': statistics.quantiles(values, n=100)[98] if len(values) >= 100 else max(values)
+            'p99': statistics.quantiles(values, n=100)[98] if len(values) >= 100 else max(values),
         }
 
 
@@ -243,10 +238,7 @@ class AlertManager:
     async def _evaluate_rule(self, rule: AlertRule):
         """Evaluate single alert rule"""
         # Get recent metrics
-        history = self.metrics_collector.get_metric_history(
-            rule.metric_name,
-            rule.duration_seconds
-        )
+        history = self.metrics_collector.get_metric_history(rule.metric_name, rule.duration_seconds)
 
         if not history:
             return
@@ -298,7 +290,7 @@ class AlertManager:
             threshold=rule.threshold,
             severity=rule.severity,
             triggered_at=time.time(),
-            message=f"{rule.metric_name} is {current_value:.2f} (threshold: {rule.threshold:.2f})"
+            message=f"{rule.metric_name} is {current_value:.2f} (threshold: {rule.threshold:.2f})",
         )
 
         self.active_alerts[alert_id] = alert
@@ -310,8 +302,7 @@ class AlertManager:
     async def _resolve_alert(self, rule: AlertRule):
         """Resolve alerts for rule"""
         alerts_to_resolve = [
-            alert for alert in self.active_alerts.values()
-            if alert.rule_id == rule.rule_id and not alert.resolved
+            alert for alert in self.active_alerts.values() if alert.rule_id == rule.rule_id and not alert.resolved
         ]
 
         for alert in alerts_to_resolve:
@@ -356,7 +347,7 @@ class AutoScaler:
             'scale_up_threshold': scale_up_threshold,
             'scale_down_threshold': scale_down_threshold,
             'last_scaling_time': 0,
-            'cooldown_seconds': 300  # 5 minutes cooldown
+            'cooldown_seconds': 300,  # 5 minutes cooldown
         }
         print(f"✅ Scaling rule added for {metric_name}")
 
@@ -414,12 +405,7 @@ class AutoScaler:
         self.current_scale = new_scale
 
         # Record scaling event
-        scaling_event = {
-            'timestamp': time.time(),
-            'old_scale': old_scale,
-            'new_scale': new_scale,
-            'reason': reason
-        }
+        scaling_event = {'timestamp': time.time(), 'old_scale': old_scale, 'new_scale': new_scale, 'reason': reason}
         self.scaling_history.append(scaling_event)
 
         print(f"⚡ SCALING: {old_scale:.2f} -> {new_scale:.2f} ({reason})")
@@ -433,7 +419,7 @@ class AutoScaler:
             'current_scale': self.current_scale,
             'min_scale': self.min_scale,
             'max_scale': self.max_scale,
-            'recent_events': list(self.scaling_history)[-5:]  # Last 5 events
+            'recent_events': list(self.scaling_history)[-5:],  # Last 5 events
         }
 
 
@@ -494,33 +480,39 @@ class WorldClassMonitoringSystem:
     def _setup_default_alerts(self):
         """Set up default alert rules"""
         # System resource alerts
-        self.alert_manager.add_alert_rule(AlertRule(
-            rule_id="high_cpu",
-            metric_name="system.cpu.usage",
-            condition=">",
-            threshold=85.0,
-            duration_seconds=300,
-            severity="WARNING"
-        ))
+        self.alert_manager.add_alert_rule(
+            AlertRule(
+                rule_id="high_cpu",
+                metric_name="system.cpu.usage",
+                condition=">",
+                threshold=85.0,
+                duration_seconds=300,
+                severity="WARNING",
+            )
+        )
 
-        self.alert_manager.add_alert_rule(AlertRule(
-            rule_id="high_memory",
-            metric_name="system.memory.usage",
-            condition=">",
-            threshold=90.0,
-            duration_seconds=180,
-            severity="CRITICAL"
-        ))
+        self.alert_manager.add_alert_rule(
+            AlertRule(
+                rule_id="high_memory",
+                metric_name="system.memory.usage",
+                condition=">",
+                threshold=90.0,
+                duration_seconds=180,
+                severity="CRITICAL",
+            )
+        )
 
         # Performance alerts
-        self.alert_manager.add_alert_rule(AlertRule(
-            rule_id="low_throughput",
-            metric_name="application.throughput",
-            condition="<",
-            threshold=1000.0,
-            duration_seconds=300,
-            severity="WARNING"
-        ))
+        self.alert_manager.add_alert_rule(
+            AlertRule(
+                rule_id="low_throughput",
+                metric_name="application.throughput",
+                condition="<",
+                threshold=1000.0,
+                duration_seconds=300,
+                severity="WARNING",
+            )
+        )
 
     def _setup_auto_scaling(self):
         """Set up auto-scaling rules"""
@@ -540,14 +532,14 @@ class WorldClassMonitoringSystem:
         system_metrics = {
             'cpu_usage': self.metrics_collector.get_latest_value("system.cpu.usage") or 0,
             'memory_usage': self.metrics_collector.get_latest_value("system.memory.usage") or 0,
-            'disk_usage': self.metrics_collector.get_latest_value("system.disk.usage") or 0
+            'disk_usage': self.metrics_collector.get_latest_value("system.disk.usage") or 0,
         }
 
         # Application metrics
         app_metrics = {
             'throughput': self.metrics_collector.get_latest_value("application.throughput") or 0,
             'latency': self.metrics_collector.get_latest_value("application.latency") or 0,
-            'error_rate': self.metrics_collector.get_latest_value("application.error_rate") or 0
+            'error_rate': self.metrics_collector.get_latest_value("application.error_rate") or 0,
         }
 
         # Alert summary
@@ -566,7 +558,7 @@ class WorldClassMonitoringSystem:
             'application_metrics': app_metrics,
             'active_alerts': alert_summary,
             'scaling_status': scaling_status,
-            'health_status': self._calculate_health_status(system_metrics, app_metrics, alert_summary)
+            'health_status': self._calculate_health_status(system_metrics, app_metrics, alert_summary),
         }
 
     def _calculate_health_status(self, system_metrics: dict, app_metrics: dict, alerts: dict) -> str:
@@ -576,8 +568,7 @@ class WorldClassMonitoringSystem:
             return "CRITICAL"
 
         # Check system resources
-        if (system_metrics.get('cpu_usage', 0) > 90 or
-            system_metrics.get('memory_usage', 0) > 95):
+        if system_metrics.get('cpu_usage', 0) > 90 or system_metrics.get('memory_usage', 0) > 95:
             return "DEGRADED"
 
         # Check warnings
@@ -599,12 +590,12 @@ class WorldClassMonitoringSystem:
             'alert_summary': {
                 'total_alerts': len(self.alert_manager.alert_history),
                 'active_alerts': len(self.alert_manager.active_alerts),
-                'alert_rate_per_hour': 0
+                'alert_rate_per_hour': 0,
             },
             'scaling_summary': {
                 'total_scaling_events': len(self.auto_scaler.scaling_history),
-                'current_scale': self.auto_scaler.current_scale
-            }
+                'current_scale': self.auto_scaler.current_scale,
+            },
         }
 
         # Calculate alert rate
@@ -642,6 +633,7 @@ async def get_monitoring_system() -> WorldClassMonitoringSystem:
 
 
 if __name__ == "__main__":
+
     async def test_world_class_monitoring():
         """Test world-class monitoring system"""
         print("📊📊📊 WORLD-CLASS MONITORING TEST 📊📊📊")
@@ -685,4 +677,5 @@ if __name__ == "__main__":
         await system.stop_monitoring()
 
     import random
+
     asyncio.run(test_world_class_monitoring())

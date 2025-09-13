@@ -23,28 +23,31 @@ DoD Requirements tested:
 """
 
 import asyncio
+from datetime import datetime
 import hashlib
 import os
 import platform
 import tempfile
-from datetime import datetime
 
 import pytest
 
-from core.pfs.filesystem_interface import (ExtendedAttributes, FileHash,
-                                           FileNotFoundError, PFSConfig,
-                                           PFSFilesystemFactory,
-                                           PFSFilesystemInterface,
-                                           ReadOnlyViolationError,
-                                           SupportedPlatform,
-                                           VirtualDirectoryInfo,
-                                           VirtualFileInfo,
-                                           get_current_platform)
+from core.pfs.filesystem_interface import (
+    ExtendedAttributes,
+    FileHash,
+    FileNotFoundError,
+    PFSConfig,
+    PFSFilesystemFactory,
+    PFSFilesystemInterface,
+    ReadOnlyViolationError,
+    SupportedPlatform,
+    VirtualDirectoryInfo,
+    VirtualFileInfo,
+    get_current_platform,
+)
 
 # Platform-specific imports with fallbacks
 try:
-    from services.pfs_service.linux_fuse import (LinuxFUSEFilesystem,
-                                                 is_fuse_available)
+    from services.pfs_service.linux_fuse import LinuxFUSEFilesystem, is_fuse_available
 except ImportError:
     LinuxFUSEFilesystem = None
 
@@ -53,8 +56,7 @@ except ImportError:
 
 
 try:
-    from services.pfs_service.windows_dokan import (WindowsDokanFilesystem,
-                                                    is_dokan_available)
+    from services.pfs_service.windows_dokan import WindowsDokanFilesystem, is_dokan_available
 except ImportError:
     WindowsDokanFilesystem = None
 

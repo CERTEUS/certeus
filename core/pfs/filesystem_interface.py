@@ -455,9 +455,12 @@ class PFSFilesystemFactory:
         elif platform == SupportedPlatform.MACOS:
             try:
                 from services.pfs_service.macos_fuse import MacOSFUSEFilesystem
+
                 return MacOSFUSEFilesystem()
             except ImportError:
-                raise RuntimeError("macOS FUSE implementation not available - module 'services.pfs_service.macos_fuse' not found")
+                raise RuntimeError(
+                    "macOS FUSE implementation not available - module 'services.pfs_service.macos_fuse' not found"
+                )
         else:
             raise RuntimeError(f"Unsupported platform: {platform}")
 

@@ -40,7 +40,7 @@ class SystemTester:
             # Test metryk
             metrics = processor.get_hardware_metrics()
             print(f"   📊 Operations count: {metrics.get('operations_count', 0)}")
-            print(f"   📊 Cache hit rate: {metrics.get('cache_hit_rate', 0)*100:.1f}%")
+            print(f"   📊 Cache hit rate: {metrics.get('cache_hit_rate', 0) * 100:.1f}%")
             print(f"   📊 Memory usage: {metrics.get('memory_usage', 0)} bytes")
 
             # Cleanup
@@ -50,16 +50,13 @@ class SystemTester:
             self.test_results['hardware_optimizations'] = {
                 'status': 'PASSED',
                 'metrics': metrics,
-                'data_processed': len(result)
+                'data_processed': len(result),
             }
 
         except Exception as e:
             print(f"   ❌ Hardware Optimizations failed: {e}")
             traceback.print_exc()
-            self.test_results['hardware_optimizations'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.test_results['hardware_optimizations'] = {'status': 'FAILED', 'error': str(e)}
 
     async def test_zero_latency_pipeline(self):
         """Test systemu Zero-Latency Pipeline"""
@@ -94,16 +91,13 @@ class SystemTester:
             self.test_results['zero_latency_pipeline'] = {
                 'status': 'PASSED',
                 'metrics': metrics,
-                'data_submitted': success
+                'data_submitted': success,
             }
 
         except Exception as e:
             print(f"   ❌ Zero-Latency Pipeline failed: {e}")
             traceback.print_exc()
-            self.test_results['zero_latency_pipeline'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.test_results['zero_latency_pipeline'] = {'status': 'FAILED', 'error': str(e)}
 
     async def test_distributed_ultra_scale(self):
         """Test systemu Distributed Ultra-Scale"""
@@ -125,7 +119,7 @@ class SystemTester:
             operation_data = {
                 'test': True,
                 'key': 'test_distributed_operation',
-                'data': 'test_data_for_distributed_processing'
+                'data': 'test_data_for_distributed_processing',
             }
 
             result = await distributed.submit_distributed_operation(operation_data)
@@ -144,16 +138,13 @@ class SystemTester:
             self.test_results['distributed_ultra_scale'] = {
                 'status': 'PASSED',
                 'metrics': metrics,
-                'operation_result': result
+                'operation_result': result,
             }
 
         except Exception as e:
             print(f"   ❌ Distributed Ultra-Scale failed: {e}")
             traceback.print_exc()
-            self.test_results['distributed_ultra_scale'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.test_results['distributed_ultra_scale'] = {'status': 'FAILED', 'error': str(e)}
 
     async def test_world_class_monitoring(self):
         """Test systemu World-Class Monitoring"""
@@ -188,19 +179,12 @@ class SystemTester:
             await monitoring.stop_monitoring()
             print("   ✅ Monitoring stopped")
 
-            self.test_results['world_class_monitoring'] = {
-                'status': 'PASSED',
-                'dashboard': dashboard,
-                'report': report
-            }
+            self.test_results['world_class_monitoring'] = {'status': 'PASSED', 'dashboard': dashboard, 'report': report}
 
         except Exception as e:
             print(f"   ❌ World-Class Monitoring failed: {e}")
             traceback.print_exc()
-            self.test_results['world_class_monitoring'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.test_results['world_class_monitoring'] = {'status': 'FAILED', 'error': str(e)}
 
     async def test_ultra_performance_ledger(self):
         """Test systemu Ultra-Performance PostgreSQL"""
@@ -226,16 +210,13 @@ class SystemTester:
 
             self.test_results['ultra_performance_ledger'] = {
                 'status': 'STRUCTURE_OK',
-                'note': 'PostgreSQL connection required for full test'
+                'note': 'PostgreSQL connection required for full test',
             }
 
         except Exception as e:
             print(f"   ❌ Ultra-Performance Ledger failed: {e}")
             traceback.print_exc()
-            self.test_results['ultra_performance_ledger'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.test_results['ultra_performance_ledger'] = {'status': 'FAILED', 'error': str(e)}
 
     def test_impossible_scale_test(self):
         """Test systemu Impossible Scale Testing"""
@@ -259,16 +240,13 @@ class SystemTester:
 
             self.test_results['impossible_scale_test'] = {
                 'status': 'STRUCTURE_OK',
-                'note': 'Stress testing framework ready'
+                'note': 'Stress testing framework ready',
             }
 
         except Exception as e:
             print(f"   ❌ Impossible Scale Test failed: {e}")
             traceback.print_exc()
-            self.test_results['impossible_scale_test'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.test_results['impossible_scale_test'] = {'status': 'FAILED', 'error': str(e)}
 
     def generate_system_test_report(self):
         """Generowanie raportu z testów systemów"""

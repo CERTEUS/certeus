@@ -15,7 +15,7 @@ async def performance_test():
         s3_bucket='test-bucket',
         s3_access_key='control',
         s3_secret_key='control_dev_pass',
-        s3_endpoint_url='http://localhost:9000'
+        s3_endpoint_url='http://localhost:9000',
     )
 
     ledger = PostgreSQLLedger(config)
@@ -25,10 +25,7 @@ async def performance_test():
 
     # Create test case
     case_id = 'PER-000001'
-    await ledger.create_case(
-        case_id=case_id,
-        jurisdiction={'test': True, 'performance': True}
-    )
+    await ledger.create_case(case_id=case_id, jurisdiction={'test': True, 'performance': True})
 
     # Test with 500 events (smaller batch for quick test)
     target_events = 500
@@ -41,9 +38,7 @@ async def performance_test():
 
         for i in range(batch_start, min(batch_start + batch_size, target_events)):
             task = ledger.record_event(
-                case_id=case_id,
-                event_type='PERFORMANCE_TEST',
-                payload={'sequence': i, 'data': f'test_data_{i}'}
+                case_id=case_id, event_type='PERFORMANCE_TEST', payload={'sequence': i, 'data': f'test_data_{i}'}
             )
             batch_tasks.append(task)
 
@@ -67,6 +62,7 @@ async def performance_test():
     # Final chain integrity check
     result = await ledger.verify_chain_integrity()
     print(f'Chain integrity after fix: {result.is_valid}')
+
 
 if __name__ == '__main__':
     asyncio.run(performance_test())

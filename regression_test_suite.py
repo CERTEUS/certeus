@@ -38,7 +38,7 @@ class RegressionTestSuite:
             ("Security Fixes", self.test_security_fixes),
             ("Performance Improvements", self.test_performance_fixes),
             ("Resource Management", self.test_resource_management),
-            ("Error Handling", self.test_error_handling)
+            ("Error Handling", self.test_error_handling),
         ]
 
         total_tests = len(test_cases)
@@ -83,7 +83,7 @@ class RegressionTestSuite:
             'passed': passed_count,
             'failed': len(self.failed_tests),
             'success_rate': success_rate,
-            'test_results': self.test_results
+            'test_results': self.test_results,
         }
 
     async def test_imports(self) -> dict:
@@ -91,17 +91,15 @@ class RegressionTestSuite:
         try:
             # Test podstawowych importów
             import distributed_ultra_scale  # noqa: F401 - Import test
+            from distributed_ultra_scale import DistributedUltraScaleSystem  # noqa: F401 - Import test
             import hardware_optimizations  # noqa: F401 - Import test
             import impossible_scale_test  # noqa: F401 - Import test
             import ultra_performance_ledger  # noqa: F401 - Import test
-            import world_class_monitoring  # noqa: F401 - Import test
-            from distributed_ultra_scale import \
-                DistributedUltraScaleSystem  # noqa: F401 - Import test
+
             # Test importów z naprawionych plików
-            from ultra_performance_ledger import \
-                UltraHighPerformanceLedger  # noqa: F401 - Import test
-            from world_class_monitoring import \
-                WorldClassMonitoringSystem  # noqa: F401 - Import test
+            from ultra_performance_ledger import UltraHighPerformanceLedger  # noqa: F401 - Import test
+            import world_class_monitoring  # noqa: F401 - Import test
+            from world_class_monitoring import WorldClassMonitoringSystem  # noqa: F401 - Import test
 
             return {'status': 'PASSED', 'message': 'All imports working correctly'}
 
@@ -121,15 +119,13 @@ class RegressionTestSuite:
                 event_data = {
                     'event_type': 'REGRESSION_TEST',
                     'case_id': 'REG-001-000001',
-                    'payload': {'test': 'regression'}
+                    'payload': {'test': 'regression'},
                 }
 
                 # Test naprawionego error handling
                 try:
                     await ledger.record_event_ultra_fast(
-                        event_data['event_type'],
-                        event_data['case_id'],
-                        event_data['payload']
+                        event_data['event_type'], event_data['case_id'], event_data['payload']
                     )
                 except Exception as e:
                     # Expected - no database connection, but should handle gracefully
@@ -187,11 +183,7 @@ class RegressionTestSuite:
             await system.initialize_cluster()
 
             # Test basic operations
-            test_operation = {
-                'type': 'regression_test',
-                'key': 'test-key-001',
-                'data': {'regression': True}
-            }
+            test_operation = {'type': 'regression_test', 'key': 'test-key-001', 'data': {'regression': True}}
 
             await system.submit_distributed_operation(test_operation)
 
@@ -238,6 +230,7 @@ class RegressionTestSuite:
             import inspect
 
             from ultra_performance_ledger import UltraHighPerformanceLedger
+
             source = inspect.getsource(UltraHighPerformanceLedger)
 
             dangerous_patterns = ['password=', 'pass=', 'secret=', 'token=']

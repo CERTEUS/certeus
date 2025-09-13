@@ -115,6 +115,7 @@ from typing import Any
 
 try:
     import psutil
+
     HAS_PSUTIL = True
 except ImportError:
     HAS_PSUTIL = False
@@ -183,6 +184,7 @@ class HardwareConfig:
         >>> print(f"Pool size: {config.memory_pool_size // 1024**3}GB")
         Pool size: 4GB
     """
+
     # Memory management
     use_memory_mapped_files: bool = True
     use_huge_pages: bool = True
@@ -282,11 +284,7 @@ class MemoryMappedBuffer:
                 f.write(b'\\x00' * size)
 
             self.file_handle = open(self.file_path, 'r+b')
-            self.mmap_obj = mmap.mmap(
-                self.file_handle.fileno(),
-                size,
-                access=mmap.ACCESS_WRITE
-            )
+            self.mmap_obj = mmap.mmap(self.file_handle.fileno(), size, access=mmap.ACCESS_WRITE)
         else:
             # Anonymous memory mapping
             self.file_handle = None
@@ -307,13 +305,13 @@ class MemoryMappedBuffer:
         """Write data with cache-line alignment"""
         aligned_offset = self.buffer_start + offset
         if aligned_offset + len(data) <= self.size:
-            self.mmap_obj[aligned_offset:aligned_offset + len(data)] = data
+            self.mmap_obj[aligned_offset : aligned_offset + len(data)] = data
 
     def read_aligned(self, offset: int, length: int) -> bytes:
         """Read data with cache-line alignment"""
         aligned_offset = self.buffer_start + offset
         if aligned_offset + length <= self.size:
-            return bytes(self.mmap_obj[aligned_offset:aligned_offset + length])
+            return bytes(self.mmap_obj[aligned_offset : aligned_offset + length])
         return b''
 
     def flush_cache(self):
@@ -341,10 +339,7 @@ class CacheOptimizedRingBuffer:
         assert size & (size - 1) == 0, "Size must be power of 2"
 
         # Memory-mapped buffer with cache alignment
-        self.buffer = MemoryMappedBuffer(
-            size * config.allocation_alignment,
-            alignment=config.cache_line_size
-        )
+        self.buffer = MemoryMappedBuffer(size * config.allocation_alignment, alignment=config.cache_line_size)
 
         # Cache-line aligned counters to prevent false sharing
         self.head = 0
@@ -445,9 +440,7 @@ class NumaAwareAllocator:
         for node_id in self.numa_nodes:
             pool_size = config.memory_pool_size // len(self.numa_nodes)
             self.memory_pools[node_id] = MemoryMappedBuffer(
-                pool_size,
-                filename=f'temp/numa_pool_{node_id}.mmap',
-                alignment=config.allocation_alignment
+                pool_size, filename=f'temp/numa_pool_{node_id}.mmap', alignment=config.allocation_alignment
             )
             self.allocation_tracking[node_id] = (0, pool_size)
 
@@ -528,10 +521,7 @@ class HardwareOptimizedProcessor:
         self.config = config
 
         # Hardware-optimized components
-        self.ring_buffer = CacheOptimizedRingBuffer(
-            config.ring_buffer_size // config.allocation_alignment,
-            config
-        )
+        self.ring_buffer = CacheOptimizedRingBuffer(config.ring_buffer_size // config.allocation_alignment, config)
 
         self.numa_allocator = NumaAwareAllocator(config) if config.use_numa_optimization else None
 
@@ -627,7 +617,7 @@ class HardwareOptimizedProcessor:
         """Optimized processing for large data (streaming)"""
         # Chunk-based processing for better memory access patterns
         chunk_size = self.config.cache_line_size
-        chunks = [data[i:i+chunk_size] for i in range(0, len(data), chunk_size)]
+        chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
 
         # Process chunks with cache locality
         processed_chunks = []
@@ -639,14 +629,15 @@ class HardwareOptimizedProcessor:
 
     def get_hardware_metrics(self) -> dict[str, Any]:
         """Get hardware performance metrics"""
-        cache_hit_rate = (self.cache_hits / (self.cache_hits + self.cache_misses)
-                         if (self.cache_hits + self.cache_misses) > 0 else 0)
+        cache_hit_rate = (
+            self.cache_hits / (self.cache_hits + self.cache_misses) if (self.cache_hits + self.cache_misses) > 0 else 0
+        )
 
         metrics = {
             'operations_count': self.operations_count,
             'cache_hits': self.cache_hits,
             'cache_misses': self.cache_misses,
-            'cache_hit_rate': cache_hit_rate
+            'cache_hit_rate': cache_hit_rate,
         }
 
         # Add NUMA metrics if available
@@ -675,8 +666,8 @@ async def create_hardware_optimized_processor() -> HardwareOptimizedProcessor:
         use_prefetch=True,
         custom_allocator=True,
         memory_pool_size=512 * 1024 * 1024,  # 512MB
-        ring_buffer_size=16 * 1024 * 1024,   # 16MB
-        cache_line_size=64
+        ring_buffer_size=16 * 1024 * 1024,  # 16MB
+        cache_line_size=64,
     )
 
     processor = HardwareOptimizedProcessor(config)
@@ -698,6 +689,7 @@ async def get_hardware_processor() -> HardwareOptimizedProcessor:
 
 
 if __name__ == "__main__":
+
     async def test_hardware_optimizations():
         """Test hardware-level optimizations"""
         print("🔥🔥🔥 HARDWARE-LEVEL OPTIMIZATION TEST 🔥🔥🔥")
@@ -731,4 +723,5 @@ if __name__ == "__main__":
         processor.close()
 
     import asyncio
+
     asyncio.run(test_hardware_optimizations())

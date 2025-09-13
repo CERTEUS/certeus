@@ -150,6 +150,7 @@ class UltraPerformanceConfig:
         >>> print(f"Pool size: {config.pool_max_size}")
         Pool size: 1000
     """
+
     db_url: str
 
     # Connection pool settings (massive scale)
@@ -169,6 +170,7 @@ class UltraPerformanceConfig:
     use_copy_protocol: bool = True
     use_prepared_statements: bool = True
     use_connection_recycling: bool = True
+
 
 class UltraHighPerformanceLedger:
     """
@@ -273,9 +275,7 @@ class UltraHighPerformanceLedger:
         if config is None:
             # Default configuration
             config = UltraPerformanceConfig(
-                db_url="postgresql://user:pass@localhost:5432/certeus",
-                pool_min_size=50,
-                pool_max_size=500
+                db_url="postgresql://user:pass@localhost:5432/certeus", pool_min_size=50, pool_max_size=500
             )
 
         self.config = config
@@ -287,7 +287,7 @@ class UltraHighPerformanceLedger:
             'events_processed': 0,
             'batches_processed': 0,
             'avg_batch_time': 0.0,
-            'peak_events_per_second': 0.0
+            'peak_events_per_second': 0.0,
         }
         self.shutdown_event = asyncio.Event()
 
@@ -302,7 +302,7 @@ class UltraHighPerformanceLedger:
             max_size=self.config.pool_max_size,
             max_queries=self.config.pool_max_queries,
             max_inactive_connection_lifetime=self.config.pool_max_inactive_time,
-            command_timeout=5.0
+            command_timeout=5.0,
         )
 
         # Prepare ultra-optimized statements
@@ -339,11 +339,7 @@ class UltraHighPerformanceLedger:
         print("✅ Prepared ultra-optimized SQL statements")
 
     async def record_event_ultra_fast(
-        self,
-        event_type: str,
-        case_id: str,
-        payload: dict[str, Any],
-        actor: str = 'ultra_test'
+        self, event_type: str, case_id: str, payload: dict[str, Any], actor: str = 'ultra_test'
     ) -> None:
         """
         🔥 Ultra-fast event recording - queued for batch processing
@@ -355,7 +351,7 @@ class UltraHighPerformanceLedger:
             'payload': payload,
             'actor': actor,
             'source_ip': '127.0.0.1',
-            'timestamp': time.time()
+            'timestamp': time.time(),
         }
 
         # Queue for batch processing (non-blocking)
@@ -377,18 +373,14 @@ class UltraHighPerformanceLedger:
             try:
                 # Try to get event with timeout
                 try:
-                    event = await asyncio.wait_for(
-                        self.batch_queue.get(),
-                        timeout=self.config.batch_timeout
-                    )
+                    event = await asyncio.wait_for(self.batch_queue.get(), timeout=self.config.batch_timeout)
                     batch.append(event)
                 except TimeoutError:
                     pass
 
                 current_time = time.time()
-                should_process = (
-                    len(batch) >= self.config.batch_size or
-                    (batch and current_time - last_process_time >= self.config.batch_timeout)
+                should_process = len(batch) >= self.config.batch_size or (
+                    batch and current_time - last_process_time >= self.config.batch_timeout
                 )
 
                 if should_process and batch:
@@ -424,17 +416,18 @@ class UltraHighPerformanceLedger:
         self.metrics['events_processed'] += len(batch)
         self.metrics['batches_processed'] += 1
         self.metrics['avg_batch_time'] = (
-            (self.metrics['avg_batch_time'] * (self.metrics['batches_processed'] - 1) + batch_time)
-            / self.metrics['batches_processed']
-        )
+            self.metrics['avg_batch_time'] * (self.metrics['batches_processed'] - 1) + batch_time
+        ) / self.metrics['batches_processed']
 
         if events_per_second > self.metrics['peak_events_per_second']:
             self.metrics['peak_events_per_second'] = events_per_second
 
         if self.metrics['batches_processed'] % 100 == 0:
-            print(f"📊 Batch #{self.metrics['batches_processed']}: "
-                  f"{len(batch)} events in {batch_time*1000:.2f}ms "
-                  f"({events_per_second:.0f} events/s)")
+            print(
+                f"📊 Batch #{self.metrics['batches_processed']}: "
+                f"{len(batch)} events in {batch_time * 1000:.2f}ms "
+                f"({events_per_second:.0f} events/s)"
+            )
 
     async def _copy_protocol_insert(self, conn: asyncpg.Connection, batch: list[dict]):
         """Ultra-fast COPY protocol bulk insert"""
@@ -442,39 +435,30 @@ class UltraHighPerformanceLedger:
         # Prepare data for COPY
         copy_data = []
         for event in batch:
-            copy_data.append((
-                event['event_type'],
-                event['case_id'],
-                json.dumps(event['payload']),
-                event['actor'],
-                event['source_ip']
-            ))
+            copy_data.append(
+                (
+                    event['event_type'],
+                    event['case_id'],
+                    json.dumps(event['payload']),
+                    event['actor'],
+                    event['source_ip'],
+                )
+            )
 
         # Use COPY for maximum throughput
         await conn.copy_records_to_table(
-            'events',
-            records=copy_data,
-            columns=['event_type', 'case_id', 'payload', 'actor', 'source_ip']
+            'events', records=copy_data, columns=['event_type', 'case_id', 'payload', 'actor', 'source_ip']
         )
 
     async def _executemany_insert(self, conn: asyncpg.Connection, batch: list[dict]):
         """Fallback executemany for smaller batches"""
 
         values = [
-            (
-                event['event_type'],
-                event['case_id'],
-                json.dumps(event['payload']),
-                event['actor'],
-                event['source_ip']
-            )
+            (event['event_type'], event['case_id'], json.dumps(event['payload']), event['actor'], event['source_ip'])
             for event in batch
         ]
 
-        await conn.executemany(
-            self.prepared_statements['bulk_events'],
-            values
-        )
+        await conn.executemany(self.prepared_statements['bulk_events'], values)
 
     async def _process_batch_immediate(self, batch: list[dict]):
         """Emergency immediate processing when queue is full"""
@@ -518,8 +502,7 @@ class UltraHighPerformanceLedger:
 
             # Bulk update with prepared statement
             await conn.execute(
-                self.prepared_statements['update_chain_positions'],
-                event_ids, positions, prev_hashes, self_hashes
+                self.prepared_statements['update_chain_positions'], event_ids, positions, prev_hashes, self_hashes
             )
 
             return len(rows)
@@ -534,7 +517,7 @@ class UltraHighPerformanceLedger:
             'total_events_in_db': total_events,
             'queue_size': self.batch_queue.qsize(),
             'pool_size': self.pool.get_size(),
-            'pool_free_connections': self.pool.get_size() - self.pool.get_busy_connections_count()
+            'pool_free_connections': self.pool.get_size() - self.pool.get_busy_connections_count(),
         }
 
     async def shutdown(self):
@@ -587,21 +570,22 @@ class UltraHighPerformanceLedger:
             print(f"⚠️ Exception during context exit: {exc_type.__name__}: {exc_val}")
         return False
 
+
 # Global instance for testing
 _ultra_ledger: UltraHighPerformanceLedger | None = None
+
 
 async def get_ultra_ledger() -> UltraHighPerformanceLedger:
     """Get or create ultra-high performance ledger instance"""
     global _ultra_ledger
 
     if _ultra_ledger is None:
-        config = UltraPerformanceConfig(
-            db_url='postgresql://control:control_dev_pass@localhost:5432/control_test'
-        )
+        config = UltraPerformanceConfig(db_url='postgresql://control:control_dev_pass@localhost:5432/control_test')
         _ultra_ledger = UltraHighPerformanceLedger(config)
         await _ultra_ledger.initialize()
 
     return _ultra_ledger
+
 
 if __name__ == '__main__':
     print("🚀 ULTRA-HIGH PERFORMANCE PostgreSQL Ledger initialized!")

@@ -6,12 +6,12 @@ Target: Millions of operations/s across multiple nodes
 """
 
 import asyncio
+from dataclasses import dataclass
 import hashlib
 import random
 import time
-import uuid
-from dataclasses import dataclass
 from typing import Any
+import uuid
 
 # aiohttp dependency removed - not used in current implementation
 
@@ -19,6 +19,7 @@ from typing import Any
 @dataclass
 class NodeInfo:
     """Distributed node information"""
+
     node_id: str
     host: str
     port: int
@@ -31,6 +32,7 @@ class NodeInfo:
 @dataclass
 class ShardedOperation:
     """Sharded operation for distributed processing"""
+
     operation_id: str
     shard_key: str
     shard_id: int
@@ -68,7 +70,7 @@ class ConsensusManager:
 
         # Update leader status
         for node in self.nodes.values():
-            node.is_leader = (node.node_id == self.leader_id)
+            node.is_leader = node.node_id == self.leader_id
 
         print(f"🏆 Leader elected: {self.leader_id}")
         return self.leader_id
@@ -217,7 +219,7 @@ class DistributedNode:
             port=port,
             shard_range=(0, 0),
             capacity=random.randint(5000, 15000),  # Random capacity
-            last_heartbeat=time.time()
+            last_heartbeat=time.time(),
         )
 
         self.consensus_manager = ConsensusManager(node_id)
@@ -226,7 +228,7 @@ class DistributedNode:
             'operations_processed': 0,
             'operations_per_second': 0.0,
             'consensus_success_rate': 0.0,
-            'network_latency_ms': 0.0
+            'network_latency_ms': 0.0,
         }
 
         # Background tasks
@@ -414,7 +416,7 @@ class DistributedUltraScaleSystem:
             'elapsed_time': elapsed,
             'avg_throughput': avg_throughput,
             'peak_throughput': self.peak_throughput,
-            'num_nodes': len(self.nodes)
+            'num_nodes': len(self.nodes),
         }
 
     async def submit_distributed_operation(self, data: dict[str, Any]) -> bool:
@@ -437,7 +439,7 @@ class DistributedUltraScaleSystem:
             shard_id=shard_id,
             node_id=responsible_nodes[0],  # Primary node
             data=data,
-            timestamp=time.time()
+            timestamp=time.time(),
         )
 
         # Submit to primary node
@@ -449,8 +451,7 @@ class DistributedUltraScaleSystem:
 
                 # Update peak throughput
                 current_throughput = sum(
-                    node.performance_metrics['operations_per_second']
-                    for node in self.nodes.values()
+                    node.performance_metrics['operations_per_second'] for node in self.nodes.values()
                 )
                 self.peak_throughput = max(self.peak_throughput, current_throughput)
 
@@ -482,7 +483,7 @@ class DistributedUltraScaleSystem:
             'utilization': total_ops_per_sec / total_capacity if total_capacity > 0 else 0,
             'num_nodes': len(self.nodes),
             'num_shards': self.shard_manager.total_shards,
-            'node_metrics': node_metrics
+            'node_metrics': node_metrics,
         }
 
 
@@ -508,6 +509,7 @@ async def get_distributed_system() -> DistributedUltraScaleSystem:
 
 
 if __name__ == "__main__":
+
     async def test_distributed_ultra_scale():
         """Test distributed ultra-scale system"""
         print("🌐🌐🌐 DISTRIBUTED ULTRA-SCALE TEST 🌐🌐🌐")
@@ -517,17 +519,13 @@ if __name__ == "__main__":
 
         # Generate test workload
         test_operations = [
-            {'key': f'test-key-{i}', 'data': f'ultra_scale_data_{i}', 'operation': 'CREATE'}
-            for i in range(10000)
+            {'key': f'test-key-{i}', 'data': f'ultra_scale_data_{i}', 'operation': 'CREATE'} for i in range(10000)
         ]
 
         start_time = time.perf_counter()
 
         # Submit operations concurrently
-        submit_tasks = [
-            system.submit_distributed_operation(op)
-            for op in test_operations
-        ]
+        submit_tasks = [system.submit_distributed_operation(op) for op in test_operations]
 
         results = await asyncio.gather(*submit_tasks)
         successful_ops = sum(1 for r in results if r)

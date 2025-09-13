@@ -14,12 +14,14 @@ import shutil
 @dataclass
 class Fix:
     """Represents a code fix to be applied"""
+
     file_path: str
     line_number: int
     original_code: str
     fixed_code: str
     description: str
     category: str
+
 
 class CERTEUSErrorEliminator:
     """Automated error fixing system for CERTEUS project"""
@@ -46,7 +48,7 @@ class CERTEUSErrorEliminator:
             "hardware_optimizations.py",
             "distributed_ultra_scale.py",
             "world_class_monitoring.py",
-            "impossible_scale_test.py"
+            "impossible_scale_test.py",
         ]
 
         for filename in ultra_scale_files:
@@ -75,14 +77,16 @@ class CERTEUSErrorEliminator:
                     with open(file_path, 'w', encoding='utf-8') as f:
                         f.write(new_content)
 
-                    fixes.append(Fix(
-                        file_path=file_path,
-                        line_number=0,
-                        original_code="time.sleep()",
-                        fixed_code="await asyncio.sleep()",
-                        description="Replaced blocking sleep with async sleep",
-                        category="PERFORMANCE"
-                    ))
+                    fixes.append(
+                        Fix(
+                            file_path=file_path,
+                            line_number=0,
+                            original_code="time.sleep()",
+                            fixed_code="await asyncio.sleep()",
+                            description="Replaced blocking sleep with async sleep",
+                            category="PERFORMANCE",
+                        )
+                    )
 
             # Fix 2: Add proper async context managers
             if 'class' in content and '__enter__' not in content:
@@ -103,14 +107,16 @@ class CERTEUSErrorEliminator:
                         # Insert after class definition
                         lines.insert(i + 1, context_manager_code)
 
-                        fixes.append(Fix(
-                            file_path=file_path,
-                            line_number=i + 1,
-                            original_code=line,
-                            fixed_code=line + context_manager_code,
-                            description="Added async context manager",
-                            category="PERFORMANCE"
-                        ))
+                        fixes.append(
+                            Fix(
+                                file_path=file_path,
+                                line_number=i + 1,
+                                original_code=line,
+                                fixed_code=line + context_manager_code,
+                                description="Added async context manager",
+                                category="PERFORMANCE",
+                            )
+                        )
                         break
 
             # Fix 3: Replace hardcoded passwords with environment variables
@@ -119,23 +125,23 @@ class CERTEUSErrorEliminator:
                     # Extract password assignment
                     if '"supersecret"' in line or '"password"' in line:
                         fixed_line = line.replace(
-                            'password=os.getenv("DATABASE_PASSWORD", "")',
-                            'password=os.getenv("DATABASE_PASSWORD", "")'
+                            'password=os.getenv("DATABASE_PASSWORD", "")', 'password=os.getenv("DATABASE_PASSWORD", "")'
                         ).replace(
-                            'password=os.getenv("DATABASE_PASSWORD", "")',
-                            'password=os.getenv("DATABASE_PASSWORD", "")'
+                            'password=os.getenv("DATABASE_PASSWORD", "")', 'password=os.getenv("DATABASE_PASSWORD", "")'
                         )
 
                         if fixed_line != line:
                             lines[i] = fixed_line
-                            fixes.append(Fix(
-                                file_path=file_path,
-                                line_number=i + 1,
-                                original_code=line.strip(),
-                                fixed_code=fixed_line.strip(),
-                                description="Replaced hardcoded password with environment variable",
-                                category="SECURITY"
-                            ))
+                            fixes.append(
+                                Fix(
+                                    file_path=file_path,
+                                    line_number=i + 1,
+                                    original_code=line.strip(),
+                                    fixed_code=fixed_line.strip(),
+                                    description="Replaced hardcoded password with environment variable",
+                                    category="SECURITY",
+                                )
+                            )
 
             # Apply line-based fixes
             if any(fix.category in ["SECURITY"] for fix in fixes):
@@ -182,14 +188,16 @@ class CERTEUSErrorEliminator:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(content)
 
-                fixes.append(Fix(
-                    file_path=file_path,
-                    line_number=0,
-                    original_code="hashlib.sha256/sha1",
-                    fixed_code="hashlib.sha256",
-                    description="Upgraded weak crypto to SHA-256",
-                    category="SECURITY"
-                ))
+                fixes.append(
+                    Fix(
+                        file_path=file_path,
+                        line_number=0,
+                        original_code="hashlib.sha256/sha1",
+                        fixed_code="hashlib.sha256",
+                        description="Upgraded weak crypto to SHA-256",
+                        category="SECURITY",
+                    )
+                )
 
         except Exception as e:
             print(f"Error fixing crypto in {file_path}: {e}")
@@ -216,51 +224,45 @@ class CERTEUSErrorEliminator:
                         continue
 
                     if '"supersecret"' in line:
-                        line = line.replace(
-                            '"supersecret"',
-                            'os.getenv("DATABASE_PASSWORD", "")'
-                        )
+                        line = line.replace('"supersecret"', 'os.getenv("DATABASE_PASSWORD", "")')
                         modified = True
 
                     if '"password"' in line and '=' in line:
-                        line = line.replace(
-                            '"password"',
-                            'os.getenv("DATABASE_PASSWORD", "")'
-                        )
+                        line = line.replace('"password"', 'os.getenv("DATABASE_PASSWORD", "")')
                         modified = True
 
                 # Fix API keys
                 if 'api_key=' in line and '"' in line:
                     if '/tests/' not in file_path:
-                        line = re.sub(
-                            r'api_key\s*=\s*"[^"]*"',
-                            'api_key=os.getenv("API_KEY", "")',
-                            line
-                        )
+                        line = re.sub(r'api_key\s*=\s*"[^"]*"', 'api_key=os.getenv("API_KEY", "")', line)
                         modified = True
 
                 if line != original_line:
                     lines[i] = line
-                    fixes.append(Fix(
-                        file_path=file_path,
-                        line_number=i + 1,
-                        original_code=original_line.strip(),
-                        fixed_code=line.strip(),
-                        description="Replaced hardcoded secret with environment variable",
-                        category="SECURITY"
-                    ))
+                    fixes.append(
+                        Fix(
+                            file_path=file_path,
+                            line_number=i + 1,
+                            original_code=original_line.strip(),
+                            fixed_code=line.strip(),
+                            description="Replaced hardcoded secret with environment variable",
+                            category="SECURITY",
+                        )
+                    )
 
             # Add os import if needed
             if modified and 'import os' not in ''.join(lines[:10]):
                 lines.insert(0, 'import os\n')
-                fixes.append(Fix(
-                    file_path=file_path,
-                    line_number=1,
-                    original_code="",
-                    fixed_code="import os",
-                    description="Added os import for environment variables",
-                    category="SECURITY"
-                ))
+                fixes.append(
+                    Fix(
+                        file_path=file_path,
+                        line_number=1,
+                        original_code="",
+                        fixed_code="import os",
+                        description="Added os import for environment variables",
+                        category="SECURITY",
+                    )
+                )
 
             if modified:
                 self.create_backup(file_path)
@@ -299,27 +301,35 @@ class CERTEUSErrorEliminator:
                 # Replace eval() with safer alternatives  # WARNING: eval() is dangerous - consider ast.literal_eval()
                 if 'eval(' in line:  # WARNING: eval() is dangerous - consider ast.literal_eval()
                     # Add comment about unsafe usage
-                    lines[i] = line + '  # WARNING: eval() is dangerous - consider ast.literal_eval()'  # WARNING: eval() is dangerous - consider ast.literal_eval()
-                    fixes.append(Fix(
-                        file_path=file_path,
-                        line_number=i + 1,
-                        original_code=original_line,
-                        fixed_code=lines[i],
-                        description="Added warning about dangerous eval() usage",  # WARNING: eval() is dangerous - consider ast.literal_eval()
-                        category="SECURITY"
-                    ))
+                    lines[i] = (
+                        line + '  # WARNING: eval() is dangerous - consider ast.literal_eval()'
+                    )  # WARNING: eval() is dangerous - consider ast.literal_eval()
+                    fixes.append(
+                        Fix(
+                            file_path=file_path,
+                            line_number=i + 1,
+                            original_code=original_line,
+                            fixed_code=lines[i],
+                            description="Added warning about dangerous eval() usage",  # WARNING: eval() is dangerous - consider ast.literal_eval()
+                            category="SECURITY",
+                        )
+                    )
 
                 # Replace exec() with warnings  # WARNING: exec() is dangerous - avoid dynamic code execution
                 if 'exec(' in line:  # WARNING: exec() is dangerous - avoid dynamic code execution
-                    lines[i] = line + '  # WARNING: exec() is dangerous - avoid dynamic code execution'  # WARNING: exec() is dangerous - avoid dynamic code execution
-                    fixes.append(Fix(
-                        file_path=file_path,
-                        line_number=i + 1,
-                        original_code=original_line,
-                        fixed_code=lines[i],
-                        description="Added warning about dangerous exec() usage",  # WARNING: exec() is dangerous - avoid dynamic code execution
-                        category="SECURITY"
-                    ))
+                    lines[i] = (
+                        line + '  # WARNING: exec() is dangerous - avoid dynamic code execution'
+                    )  # WARNING: exec() is dangerous - avoid dynamic code execution
+                    fixes.append(
+                        Fix(
+                            file_path=file_path,
+                            line_number=i + 1,
+                            original_code=original_line,
+                            fixed_code=lines[i],
+                            description="Added warning about dangerous exec() usage",  # WARNING: exec() is dangerous - avoid dynamic code execution
+                            category="SECURITY",
+                        )
+                    )
 
             if fixes:
                 with open(file_path, 'w', encoding='utf-8') as f:
@@ -394,6 +404,7 @@ class CERTEUSErrorEliminator:
         print("✅ Error elimination completed!")
 
         return all_fixes
+
 
 if __name__ == "__main__":
     # Run error elimination on CERTEUS project

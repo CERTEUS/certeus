@@ -6,19 +6,20 @@ Target: Sub-microsecond latency, millions of ops/s
 """
 
 import asyncio
+from collections.abc import Callable
+from dataclasses import dataclass
 import mmap
+from multiprocessing import shared_memory
 import os
 import threading
 import time
-from collections.abc import Callable
-from dataclasses import dataclass
-from multiprocessing import shared_memory
 from typing import Any
 
 import psutil
 
 try:
     import numpy as np  # noqa: F401 - Used conditionally
+
     HAS_NUMPY = True
 except ImportError:
     HAS_NUMPY = False
@@ -27,6 +28,7 @@ except ImportError:
 @dataclass
 class PipelineConfig:
     """Zero-latency pipeline configuration"""
+
     # Pipeline stages
     num_stages: int = 8
     stage_buffer_size: int = 65536  # 64K buffer per stage
@@ -74,7 +76,7 @@ class LockFreeQueue:
 
         # Zero-copy write
         offset = current_tail * 64
-        self.buffer[offset:offset + len(data)] = data
+        self.buffer[offset : offset + len(data)] = data
 
         # Memory barrier and atomic update
         self.tail = next_tail
@@ -89,7 +91,7 @@ class LockFreeQueue:
 
         # Zero-copy read
         offset = current_head * 64
-        data = bytes(self.buffer[offset:offset + 64]).rstrip(b'\\x00')
+        data = bytes(self.buffer[offset : offset + 64]).rstrip(b'\\x00')
 
         # Memory barrier and atomic update
         self.head = (current_head + 1) & self.mask
@@ -120,10 +122,7 @@ class PipelineStage:
     def start(self):
         """Start pipeline stage with CPU affinity"""
         self.running = True
-        self.worker_thread = threading.Thread(
-            target=self._worker_loop,
-            name=f"PipelineStage-{self.stage_id}"
-        )
+        self.worker_thread = threading.Thread(target=self._worker_loop, name=f"PipelineStage-{self.stage_id}")
 
         # Set CPU affinity for NUMA optimization
         if self.config.cpu_affinity and hasattr(os, 'sched_setaffinity'):
@@ -153,8 +152,7 @@ class PipelineStage:
 
             # Force processing on timeout
             current_time = time.perf_counter_ns()
-            if (not batch and
-                current_time - last_process_time > self.config.max_pipeline_latency_ns):
+            if not batch and current_time - last_process_time > self.config.max_pipeline_latency_ns:
                 continue
 
             if batch:
@@ -271,7 +269,7 @@ class ZeroLatencyPipeline:
             'total_processed': self.total_processed,
             'elapsed_time': elapsed,
             'avg_throughput': avg_throughput,
-            'peak_throughput': self.peak_throughput
+            'peak_throughput': self.peak_throughput,
         }
 
     async def _connect_stages(self, source: PipelineStage, target: PipelineStage):
@@ -308,22 +306,23 @@ class ZeroLatencyPipeline:
         stage_metrics = []
 
         for i, stage in enumerate(self.stages):
-            avg_latency = (stage.total_latency_ns / stage.processed_count
-                          if stage.processed_count > 0 else 0)
+            avg_latency = stage.total_latency_ns / stage.processed_count if stage.processed_count > 0 else 0
 
-            stage_metrics.append({
-                'stage_id': i,
-                'processed_count': stage.processed_count,
-                'avg_latency_ns': avg_latency,
-                'peak_latency_ns': stage.peak_latency_ns,
-                'input_queue_size': stage.input_queue.tail - stage.input_queue.head,
-                'output_queue_size': stage.output_queue.tail - stage.output_queue.head
-            })
+            stage_metrics.append(
+                {
+                    'stage_id': i,
+                    'processed_count': stage.processed_count,
+                    'avg_latency_ns': avg_latency,
+                    'peak_latency_ns': stage.peak_latency_ns,
+                    'input_queue_size': stage.input_queue.tail - stage.input_queue.head,
+                    'output_queue_size': stage.output_queue.tail - stage.output_queue.head,
+                }
+            )
 
         return {
             'total_processed': self.total_processed,
             'peak_throughput': self.peak_throughput,
-            'stages': stage_metrics
+            'stages': stage_metrics,
         }
 
 
@@ -367,7 +366,7 @@ async def create_zero_latency_pipeline() -> ZeroLatencyPipeline:
         use_zero_copy=True,
         use_lock_free_queues=True,
         pipeline_batch_size=500,
-        max_pipeline_latency_ns=500  # 0.5 microseconds
+        max_pipeline_latency_ns=500,  # 0.5 microseconds
     )
 
     pipeline = ZeroLatencyPipeline(config)
@@ -399,6 +398,7 @@ async def get_zero_latency_pipeline() -> ZeroLatencyPipeline:
 
 
 if __name__ == "__main__":
+
     async def test_zero_latency_pipeline():
         """Test zero-latency pipeline performance"""
         print("⚡⚡⚡ ZERO-LATENCY PIPELINE TEST ⚡⚡⚡")
@@ -407,8 +407,7 @@ if __name__ == "__main__":
 
         # Test data
         test_data = [
-            b'{"event": "test", "id": ' + str(i).encode() + b', "data": "ultra_fast_processing"}'
-            for i in range(10000)
+            b'{"event": "test", "id": ' + str(i).encode() + b', "data": "ultra_fast_processing"}' for i in range(10000)
         ]
 
         start_time = time.perf_counter()

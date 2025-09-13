@@ -28,6 +28,7 @@ class IntegrationTester:
             # 1. Monitoring first (for telemetry)
             print("   📊 Initializing monitoring system...")
             from world_class_monitoring import get_monitoring_system
+
             monitoring = await get_monitoring_system()
             await monitoring.start_monitoring()
             initialization_order.append("monitoring")
@@ -36,6 +37,7 @@ class IntegrationTester:
             # 2. Hardware optimizations
             print("   🔧 Initializing hardware optimizations...")
             from hardware_optimizations import get_hardware_processor
+
             hardware = await get_hardware_processor()
             initialization_order.append("hardware")
             print("   ✅ Hardware optimizations initialized")
@@ -43,6 +45,7 @@ class IntegrationTester:
             # 3. Zero-latency pipeline
             print("   ⚡ Initializing zero-latency pipeline...")
             from zero_latency_pipeline import get_zero_latency_pipeline
+
             pipeline = await get_zero_latency_pipeline()
             initialization_order.append("pipeline")
             print("   ✅ Zero-latency pipeline initialized")
@@ -50,6 +53,7 @@ class IntegrationTester:
             # 4. Distributed system
             print("   🌐 Initializing distributed system...")
             from distributed_ultra_scale import get_distributed_system
+
             distributed = await get_distributed_system()
             await distributed.start_cluster()
             initialization_order.append("distributed")
@@ -58,6 +62,7 @@ class IntegrationTester:
             # 5. PostgreSQL ledger
             print("   🗄️ Initializing PostgreSQL ledger...")
             from ultra_performance_ledger import get_ultra_ledger
+
             await get_ultra_ledger()
             initialization_order.append("ledger")
             print("   ✅ PostgreSQL ledger initialized")
@@ -73,7 +78,7 @@ class IntegrationTester:
             self.integration_results['initialization'] = {
                 'status': 'PASSED',
                 'order': initialization_order,
-                'systems_count': len(initialization_order)
+                'systems_count': len(initialization_order),
             }
 
         except Exception as e:
@@ -82,7 +87,7 @@ class IntegrationTester:
             self.integration_results['initialization'] = {
                 'status': 'FAILED',
                 'error': str(e),
-                'partial_order': initialization_order
+                'partial_order': initialization_order,
             }
 
     async def test_data_flow_integration(self):
@@ -136,16 +141,13 @@ class IntegrationTester:
                 'hardware_processing': len(processed_data),
                 'pipeline_success': pipeline_success,
                 'monitoring_health': dashboard['health_status'],
-                'data_integrity': data_integrity
+                'data_integrity': data_integrity,
             }
 
         except Exception as e:
             print(f"   ❌ Data flow test failed: {e}")
             traceback.print_exc()
-            self.integration_results['data_flow'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.integration_results['data_flow'] = {'status': 'FAILED', 'error': str(e)}
 
     async def test_monitoring_integration(self):
         """Test integracji systemu monitorowania z innymi systemami"""
@@ -181,7 +183,9 @@ class IntegrationTester:
 
             # Record integrated metrics
             monitoring.record_application_metric("hardware_operations", hardware_metrics.get('operations_count', 0))
-            monitoring.record_application_metric("distributed_operations", distributed_metrics.get('total_operations', 0))
+            monitoring.record_application_metric(
+                "distributed_operations", distributed_metrics.get('total_operations', 0)
+            )
 
             # Check monitoring dashboard
             dashboard = monitoring.get_real_time_dashboard()
@@ -204,16 +208,13 @@ class IntegrationTester:
                 'hardware_operations': hardware_metrics.get('operations_count', 0),
                 'distributed_operations': distributed_metrics.get('total_operations', 0),
                 'dashboard_health': dashboard['health_status'],
-                'integration_time': elapsed_time
+                'integration_time': elapsed_time,
             }
 
         except Exception as e:
             print(f"   ❌ Monitoring integration test failed: {e}")
             traceback.print_exc()
-            self.integration_results['monitoring_integration'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.integration_results['monitoring_integration'] = {'status': 'FAILED', 'error': str(e)}
 
     async def test_performance_coordination(self):
         """Test koordynacji wydajności między systemami"""
@@ -262,7 +263,7 @@ class IntegrationTester:
             print(f"   📊 Total operations: {operations_count}")
             print(f"   📊 Total time: {total_time:.3f}s")
             print(f"   📊 Coordination throughput: {operations_per_second:.1f} ops/s")
-            print(f"   📊 Hardware cache hit rate: {hardware_metrics.get('cache_hit_rate', 0)*100:.1f}%")
+            print(f"   📊 Hardware cache hit rate: {hardware_metrics.get('cache_hit_rate', 0) * 100:.1f}%")
             print(f"   📊 Pipeline processed: {pipeline_metrics.get('total_processed', 0)}")
 
             # Cleanup
@@ -276,16 +277,13 @@ class IntegrationTester:
                 'total_time': total_time,
                 'throughput': operations_per_second,
                 'hardware_cache_hit': hardware_metrics.get('cache_hit_rate', 0),
-                'pipeline_processed': pipeline_metrics.get('total_processed', 0)
+                'pipeline_processed': pipeline_metrics.get('total_processed', 0),
             }
 
         except Exception as e:
             print(f"   ❌ Performance coordination test failed: {e}")
             traceback.print_exc()
-            self.integration_results['performance_coordination'] = {
-                'status': 'FAILED',
-                'error': str(e)
-            }
+            self.integration_results['performance_coordination'] = {'status': 'FAILED', 'error': str(e)}
 
     def generate_integration_report(self):
         """Generowanie raportu z testów integracji"""
