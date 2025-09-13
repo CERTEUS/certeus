@@ -70,7 +70,7 @@ def test_post_pco_bundle_builds_valid_proofbundle(tmp_path: Path, monkeypatch) -
 
     monkeypatch.setenv("ED25519_PRIVKEY_PEM", pem)
 
-    rid = "case-001"
+    rid = "TST-123456"
 
     smt2_hash = "a" * 64
 

@@ -1,0 +1,41 @@
+{
+  "title": "CERTEUS API Playground",
+  "description": "Interactive API explorer for CERTEUS",
+  "version": "1.0.0",
+  "endpoints": [
+    {
+      "name": "Health Check",
+      "method": "GET",
+      "path": "/health",
+      "description": "Check API health status",
+      "example": {
+        "curl": "curl -X GET https://api.certeus.dev/health",
+        "javascript": "const response = await fetch('/health'); const data = await response.json();",
+        "python": "response = client.health(); print(response.data)"
+      }
+    },
+    {
+      "name": "OpenAPI Spec",
+      "method": "GET",
+      "path": "/openapi.json",
+      "description": "Get OpenAPI specification",
+      "example": {
+        "curl": "curl -X GET https://api.certeus.dev/openapi.json",
+        "javascript": "const spec = await client.openapi(); console.log(spec.data.info);",
+        "python": "spec = client.openapi(); print(spec.data['info'])"
+      }
+    }
+  ],
+  "sdk_examples": {
+    "typescript": {
+      "installation": "npm install @certeus/sdk",
+      "import": "import { CerteusClient } from '@certeus/sdk';",
+      "client_init": "const client = new CerteusClient({ baseUrl: 'https://api.certeus.dev' });"
+    },
+    "python": {
+      "installation": "pip install certeus-sdk",
+      "import": "from certeus_sdk import CerteusClient",
+      "client_init": "client = CerteusClient(base_url='https://api.certeus.dev')"
+    }
+  }
+}

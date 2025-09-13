@@ -48,7 +48,7 @@ def test_create_and_resolve_ticket():
     svc = MismatchService()
 
     t = svc.create_ticket(
-        case_id="case-001",
+        case_id="TST-001000",
         formula_str="p -> q",
         results={"z3": {"status": "sat"}, "cvc5": {"status": "unsat"}},
     )

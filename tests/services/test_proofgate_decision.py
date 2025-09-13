@@ -87,7 +87,7 @@ def _minimal_pco(case_id: str, with_counsel: bool = True) -> dict:
 
 
 def test_publish_when_policy_and_budget_ok_and_counsel_present() -> None:
-    pco = _minimal_pco("case-123", with_counsel=True)
+    pco = _minimal_pco("TST-123000", with_counsel=True)
 
     r = client.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10})
 
@@ -99,13 +99,13 @@ def test_publish_when_policy_and_budget_ok_and_counsel_present() -> None:
 
     assert isinstance(body.get("ledger_ref"), str) and len(body["ledger_ref"]) == 64
 
-    records = ledger_service.get_records_for_case(case_id="case-123")
+    records = ledger_service.get_records_for_case(case_id="TST-123000")
 
     assert any(rec.get("type") == "PCO_PUBLISH" and rec.get("chain_self") == body["ledger_ref"] for rec in records)
 
 
 def test_abstain_when_missing_counsel_signature() -> None:
-    pco = _minimal_pco("case-124", with_counsel=False)
+    pco = _minimal_pco("TST-124000", with_counsel=False)
 
     r = client.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 10})
 
@@ -115,7 +115,7 @@ def test_abstain_when_missing_counsel_signature() -> None:
 
 
 def test_abstain_when_sources_missing_digest_or_retrieved_at() -> None:
-    pco = _minimal_pco("case-125", with_counsel=True)
+    pco = _minimal_pco("TST-125000", with_counsel=True)
 
     pco["sources"][0].pop("digest")
 
@@ -127,7 +127,7 @@ def test_abstain_when_sources_missing_digest_or_retrieved_at() -> None:
 
 
 def test_abstain_when_solver_not_allowed() -> None:
-    pco = _minimal_pco("case-126", with_counsel=True)
+    pco = _minimal_pco("TST-126000", with_counsel=True)
 
     pco["derivations"][0]["solver"] = "other"
 
@@ -151,7 +151,7 @@ def test_abstain_when_any_risk_exceeds() -> None:
 
 
 def test_pending_when_no_budget_but_good_risk() -> None:
-    pco = _minimal_pco("case-200", with_counsel=False)
+    pco = _minimal_pco("TST-200000", with_counsel=False)
 
     r = client.post("/v1/proofgate/publish", json={"pco": pco, "budget_tokens": 0})
 

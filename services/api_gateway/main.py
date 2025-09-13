@@ -83,9 +83,11 @@ try:  # optional legacy alias; may be absent in some trees
 except Exception:
     fin_tokens_api = None  # type: ignore[assignment]
 try:  # optional: avoid hard fail if core/pco deps are unavailable
+    import services.api_gateway.routers.jwks as jwks  # type: ignore
     import services.api_gateway.routers.pco_public as pco_public  # type: ignore
 except Exception:
     pco_public = None  # type: ignore[assignment]
+    jwks = None  # type: ignore[assignment]
 
 # === KONFIGURACJA / CONFIGURATION ===
 
@@ -326,6 +328,8 @@ if pco_public is not None:
     app.include_router(pco_public.router)
 if pco_bundle is not None:
     app.include_router(pco_bundle.router)
+if jwks is not None:
+    app.include_router(jwks.router)
 app.include_router(export.router)
 app.include_router(ledger.router)
 app.include_router(mismatch.router)
@@ -421,9 +425,7 @@ async def _metrics_timing(request, call_next):  # type: ignore[override]
             certeus_http_requests_total,
             record_http_observation,
         )
-        from services.api_gateway.limits import (
-            get_tenant_id,
-        )  # lazy import to avoid cycles
+        from services.api_gateway.limits import get_tenant_id  # lazy import to avoid cycles
 
         route = request.scope.get("route")
         path_tmpl = getattr(route, "path", request.url.path)
