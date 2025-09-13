@@ -24,27 +24,23 @@ DoD Requirements tested:
 """
 
 import asyncio
+from datetime import datetime
 import json
 import random
 import time
-from datetime import datetime
 
 import asyncpg
-import pytest
 from fastapi.testclient import TestClient
+import pytest
 
 from services.api_gateway.main import app
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 
 async def _check_postgres_available():
     """Check if PostgreSQL is available for testing"""
     try:
-        conn = await asyncpg.connect(
-            'postgresql://control:control_dev_pass@localhost:5432/control_test',
-            timeout=2
-        )
+        conn = await asyncpg.connect('postgresql://control:control_dev_pass@localhost:5432/control_test', timeout=2)
         await conn.close()
         return True
     except Exception:
@@ -78,7 +74,7 @@ async def clean_database():
     """Auto clean database before each test"""
     if not POSTGRES_AVAILABLE:
         pytest.skip("PostgreSQL not available for database cleanup")
-    
+
     await clean_test_database()
     yield
     # Could add cleanup after test if needed
@@ -221,7 +217,9 @@ class TestA2LedgerIntegration:
         # Since create_backup doesn't exist, we'll test S3 connectivity instead
         try:
             # Test S3 connectivity
-            await asyncio.to_thread(integration_ledger._s3_client.head_bucket, Bucket=integration_ledger.config.s3_bucket)
+            await asyncio.to_thread(
+                integration_ledger._s3_client.head_bucket, Bucket=integration_ledger.config.s3_bucket
+            )
             backup_simulated = True
         except Exception as e:
             print(f"S3 backup simulation failed: {e}")
@@ -254,7 +252,9 @@ class TestA2LedgerIntegration:
 
         # 3. Storage connectivity check (simulate S3 health check)
         try:
-            await asyncio.to_thread(integration_ledger._s3_client.head_bucket, Bucket=integration_ledger.config.s3_bucket)
+            await asyncio.to_thread(
+                integration_ledger._s3_client.head_bucket, Bucket=integration_ledger.config.s3_bucket
+            )
             storage_healthy = True
         except Exception as e:
             print(f"S3 storage check failed: {e}")
@@ -374,14 +374,14 @@ class TestA2LedgerIntegration:
                 Bucket=integration_ledger.config.s3_bucket,
                 Key=f"bundles/{bundle_id}",
                 Body=modified_data,
-                Metadata={"modification_attempt": "true"}
+                Metadata={"modification_attempt": "true"},
             )
 
             # If it succeeds, verify versioning is working
             versions_response = await asyncio.to_thread(
                 integration_ledger._s3_client.list_object_versions,
                 Bucket=integration_ledger.config.s3_bucket,
-                Prefix=f"bundles/{bundle_id}"
+                Prefix=f"bundles/{bundle_id}",
             )
             versions = versions_response.get('Versions', [])
             assert len(versions) > 1, "WORM policy should create versions, not overwrite"
@@ -400,7 +400,7 @@ class TestA2LedgerIntegration:
         try:
             await asyncio.to_thread(
                 integration_ledger._s3_client.get_bucket_lifecycle_configuration,
-                Bucket=integration_ledger.config.s3_bucket
+                Bucket=integration_ledger.config.s3_bucket,
             )
             print("Lifecycle Policies: ✓ Configured")
         except Exception:
@@ -559,7 +559,7 @@ class TestA2LedgerStress:
 
         # Test parameters - reduced for faster testing
         total_events = 1000  # Reduced from 10000 for faster test execution
-        batch_size = 100     # Reduced from 200
+        batch_size = 100  # Reduced from 200
 
         start_time = time.time()
         events_recorded = 0
