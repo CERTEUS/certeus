@@ -64,6 +64,8 @@ jobs:
 
       - name: Install dependencies (Unix)
         run: |
+          # Install FUSE library for Ubuntu
+          sudo apt-get update && sudo apt-get install -y libfuse-dev
           python -m pip install --upgrade pip wheel setuptools
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install -c constraints/requirements-constraints.txt -e .
