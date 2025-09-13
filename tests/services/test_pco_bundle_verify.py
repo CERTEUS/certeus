@@ -69,7 +69,7 @@ def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatc
     monkeypatch.setenv("ED25519_PRIVKEY_PEM", _pem(sk))
 
     body = {
-        "rid": "case-ok-1",
+        "rid": "TST-123457",
         "smt2_hash": "a" * 64,
         "lfsc": "(lfsc)",
         "drat": None,
@@ -81,7 +81,7 @@ def test_pco_bundle_verification_success_sets_pending(tmp_path: Path, monkeypatc
 
     assert r.status_code == 200, r.text
 
-    saved = json.loads((tmp_path / "case-ok-1.json").read_text(encoding="utf-8"))
+    saved = json.loads((tmp_path / "TST-123457.json").read_text(encoding="utf-8"))
 
     # With stricter ProofGate checks, missing counsel/signatures may yield ABSTAIN
 
@@ -96,7 +96,7 @@ def test_pco_bundle_verification_failure_sets_abstain(tmp_path: Path, monkeypatc
     monkeypatch.setenv("ED25519_PRIVKEY_PEM", _pem(sk))
 
     body = {
-        "rid": "case-bad-1",
+        "rid": "BAD-123456",
         "smt2_hash": "b" * 64,
         "lfsc": "(lfsc)",
         "merkle_proof": [],
@@ -107,6 +107,6 @@ def test_pco_bundle_verification_failure_sets_abstain(tmp_path: Path, monkeypatc
 
     assert r.status_code == 200, r.text
 
-    saved = json.loads((tmp_path / "case-bad-1.json").read_text(encoding="utf-8"))
+    saved = json.loads((tmp_path / "BAD-123456.json").read_text(encoding="utf-8"))
 
     assert saved.get("status") == "ABSTAIN"

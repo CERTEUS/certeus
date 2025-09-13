@@ -2,17 +2,24 @@
 # Quantum-Resistance Temporal & Security Protocol
 # SBOM: CycloneDX format with CVE scanning integration
 
-from dataclasses import dataclass, field
-from datetime import UTC, datetime
-from enum import Enum
 import hashlib
 import json
 import logging
+import uuid
+import warnings
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from enum import Enum
 from pathlib import Path
 from typing import Any
-import uuid
 
-import pkg_resources
+warnings.filterwarnings("ignore", category=UserWarning, message="pkg_resources is deprecated.*")
+
+# Must import after warnings filter due to deprecation warnings
+try:
+    import pkg_resources
+except ImportError:
+    pkg_resources = None
 
 logger = logging.getLogger(__name__)
 

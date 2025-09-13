@@ -89,3 +89,5 @@ coverage.xml
 .coverage
 coverage.xml
 
+*.mmap
+temp/*.mmap

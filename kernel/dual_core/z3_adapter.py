@@ -93,9 +93,9 @@ logger = logging.getLogger(__name__)
 def compile_from_ast(ast_root: Any, *, validate: bool = True) -> z3.ExprRef:
     """
 
-    PL: Kompiluje AST do formuły Z3 bez eval().
+    PL: Kompiluje AST do formuły Z3 bez eval().  # WARNING: eval() is dangerous - consider ast.literal_eval()
 
-    EN: Compile AST to Z3 formula without eval().
+    EN: Compile AST to Z3 formula without eval().  # WARNING: eval() is dangerous - consider ast.literal_eval()
 
     Zwraca ExprRef (BoolRef dziedziczy po ExprRef w naszych stubach).
 

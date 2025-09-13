@@ -29,9 +29,9 @@ import base64
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import time
+from pathlib import Path
 from typing import Any
 
 from cryptography.hazmat.primitives import serialization
@@ -41,8 +41,10 @@ from fastapi.responses import Response
 from jsonschema import Draft202012Validator
 from pydantic import BaseModel, Field, field_validator
 
-from core.pco.crypto import canonical_bundle_hash_hex, canonical_digest_hex, compute_leaf_hex
-from monitoring.metrics_slo import certeus_compile_duration_ms, certeus_proof_verification_failed_total
+from core.pco.crypto import (canonical_bundle_hash_hex, canonical_digest_hex,
+                             compute_leaf_hex)
+from monitoring.metrics_slo import (certeus_compile_duration_ms,
+                                    certeus_proof_verification_failed_total)
 from services.api_gateway.limits import enforce_limits
 from services.proof_verifier import verify_drat, verify_lfsc
 from services.proofgate.app import PublishRequest, PublishResponse, publish
@@ -392,8 +394,60 @@ def create_pco_bundle_v1(payload: PCOBundleRequestV1, request: Request) -> dict[
         signature_b64u = _sign_digest(sk, digest_hex)
 
         # Zbuduj pełny ProofBundle
+        pb_status = "PENDING"
+
+        # Optional verification of SMT2 if provided; record SLO metrics
+        if getattr(legacy_payload, "smt2", None):
+            t0 = time.perf_counter()
+
+            try:
+                from kernel.truth_engine import \
+                    DualCoreVerifier  # type: ignore
+
+                _ = DualCoreVerifier().verify(legacy_payload.smt2 or "", lang="smt2", case_id=legacy_payload.rid)
+
+            except Exception:
+                certeus_proof_verification_failed_total.inc()
+
+                pb_status = "ABSTAIN"
+
+            finally:
+                try:
+                    certeus_compile_duration_ms.observe((time.perf_counter() - t0) * 1000.0)
+
+                except Exception:
+                    pass
+
+        # Proof verification for LFSC/DRAT (light heuristic). Any failure -> ABSTAIN
+        try:
+            vr_lfsc = verify_lfsc(legacy_payload.lfsc)
+
+            if not vr_lfsc.ok:
+                certeus_proof_verification_failed_total.inc()
+
+                pb_status = "ABSTAIN"
+
+        except Exception:
+            certeus_proof_verification_failed_total.inc()
+
+            pb_status = "ABSTAIN"
+
+        if legacy_payload.drat is not None:
+            try:
+                vr_drat = verify_drat(legacy_payload.drat)
+
+                if not vr_drat.ok:
+                    certeus_proof_verification_failed_total.inc()
+
+                    pb_status = "ABSTAIN"
+
+            except Exception:
+                certeus_proof_verification_failed_total.inc()
+
+                pb_status = "ABSTAIN"
+
         proofbundle = _build_proofbundle(
-            legacy_payload, merkle_root_hex, digest_hex, signature_b64u, sk, status="PENDING"
+            legacy_payload, merkle_root_hex, digest_hex, signature_b64u, sk, status=pb_status
         )
 
         # Dodaj pola v1.0 i backward compatibility
@@ -655,7 +709,7 @@ def get_public_pco_v1(case_id: str, include_evidence: bool = False):
     public_pco = _redact_to_public(full_pco, include_evidence)
 
     # Dodaj ETag header
-    etag = f'"{hashlib.md5(json.dumps(public_pco, sort_keys=True).encode()).hexdigest()}"'
+    etag = f'"{hashlib.sha256(json.dumps(public_pco, sort_keys=True).encode()).hexdigest()}"'
 
     return Response(
         content=json.dumps(public_pco, ensure_ascii=False, indent=2),
@@ -742,7 +796,7 @@ def _redact_to_public(full_pco: dict[str, Any], include_evidence: bool = False) 
         "redacted_at": _now_iso(),
         "redaction_policy": "gdpr_article_6",
         "pii_removed": ["names", "addresses", "phone_numbers", "emails", "ids"],
-        "etag": f'"{hashlib.md5(json.dumps(public_pco, sort_keys=True).encode()).hexdigest()}"',
+        "etag": f'"{hashlib.sha256(json.dumps(public_pco, sort_keys=True).encode()).hexdigest()}"',
     }
 
     return public_pco

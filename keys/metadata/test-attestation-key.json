@@ -1,7 +1,7 @@
 {
   "key_id": "test-attestation-key",
   "key_type": "ed25519",
-  "created_at": "2025-09-12T17:07:06.401878+00:00",
+  "created_at": "2025-09-12T18:23:48.413595+00:00",
   "expires_at": null,
   "status": "active",
   "purpose": "signing",

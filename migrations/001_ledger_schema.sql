@@ -238,11 +238,20 @@ DECLARE
     prev_event_hash VARCHAR;
     next_position BIGINT;
 BEGIN
-    -- Get previous event's hash and next position
-    SELECT chain_self_hash, COALESCE(MAX(chain_position), 0) + 1
+    -- Get previous event's hash and next position (fixed for concurrency)
+    SELECT
+        chain_self_hash,
+        chain_position + 1
     INTO prev_event_hash, next_position
     FROM events
-    WHERE chain_position = (SELECT COALESCE(MAX(chain_position), 0) FROM events);
+    ORDER BY chain_position DESC
+    LIMIT 1;
+
+    -- Handle empty table (genesis case)
+    IF next_position IS NULL THEN
+        next_position := 1;
+        prev_event_hash := NULL;
+    END IF;
 
     -- Set chain position
     NEW.chain_position := next_position;

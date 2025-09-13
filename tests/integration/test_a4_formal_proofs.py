@@ -141,7 +141,7 @@ class TestProofArtifactManager:
     """Test proof artifact storage and retrieval"""
 
     @pytest.mark.asyncio
-    async def test_artifact_storage_and_retrieval(self, temp_storage):
+    async def test_artifact_storage_and_retrieval(self, temp_storage):  # WARNING: eval() is dangerous - consider ast.literal_eval()
         """
         Test: Artifact persistence and loading
         DoD: Reliable artifact storage for audit trail
