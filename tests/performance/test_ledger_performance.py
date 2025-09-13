@@ -30,9 +30,25 @@ import statistics
 import time
 from typing import Any
 
+import asyncpg
 import pytest
 
 from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
+
+
+async def _check_postgres_available():
+    """Check if PostgreSQL is available for testing"""
+    try:
+        conn = await asyncpg.connect('postgresql://certeus_test:password@localhost/certeus_test', timeout=2)
+        await conn.close()
+        return True
+    except Exception:
+        return False
+
+
+# Skip entire performance test class if PostgreSQL not available
+POSTGRES_AVAILABLE = asyncio.run(_check_postgres_available())
+
 
 # === TEST CONFIGURATION ===
 
@@ -68,6 +84,7 @@ async def performance_ledger(performance_ledger_config):
 # === PERFORMANCE TESTS ===
 
 
+@pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="PostgreSQL not available (requires docker-compose up postgresql)")
 class TestLedgerPerformance:
     """Performance test suite for A2 Ledger"""
 
