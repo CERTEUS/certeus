@@ -5,7 +5,6 @@ Badanie funkcjonalności każdego z 6 systemów ultra-scale
 """
 
 import asyncio
-import os
 import sys
 import traceback
 
@@ -221,9 +220,9 @@ class SystemTester:
             print("   ✅ Ledger structure verified")
 
             # Sprawdź konfigurację
-            print(f"   📊 Connection pool: 50-500 connections")
-            print(f"   📊 Batch size: 10,000 events")
-            print(f"   📊 Protocol: COPY for ultra-fast inserts")
+            print("   📊 Connection pool: 50-500 connections")
+            print("   📊 Batch size: 10,000 events")
+            print("   📊 Protocol: COPY for ultra-fast inserts")
 
             self.test_results['ultra_performance_ledger'] = {
                 'status': 'STRUCTURE_OK',
@@ -251,9 +250,9 @@ class SystemTester:
             print("   ✅ Impossible scale tester initialized")
 
             # Sprawdź konfigurację
-            print(f"   📊 Target load: 50,000+ events/second")
-            print(f"   📊 Physics validation: Connection saturation testing")
-            print(f"   📊 Extreme scenarios: Edge case validation")
+            print("   📊 Target load: 50,000+ events/second")
+            print("   📊 Physics validation: Connection saturation testing")
+            print("   📊 Extreme scenarios: Edge case validation")
 
             # Test struktury
             print("   ✅ Test structure verified")

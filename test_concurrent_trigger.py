@@ -5,8 +5,7 @@ import sys
 
 sys.path.append('.')
 
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 
 async def stress_test_concurrent():

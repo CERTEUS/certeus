@@ -87,23 +87,15 @@ VERSION:
 """
 
 import asyncio
-import json
-import queue
-import sys
-import threading
-import time
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from types import TracebackType
-from typing import (Any, AsyncContextManager, Dict, List, Optional, Protocol,
-                    Union)
+import json
+import sys
+import time
+from typing import Any
 
 import asyncpg
-import psutil
 
 sys.path.append('.')
-from services.ledger_service.postgres_ledger import LedgerConfig
 
 
 @dataclass
@@ -247,7 +239,7 @@ class UltraHighPerformanceLedger:
         and other PostgreSQL parameters are optimized for your workload.
     """
 
-    def __init__(self, config: Optional[UltraPerformanceConfig] = None):
+    def __init__(self, config: UltraPerformanceConfig | None = None):
         """
         Initialize Ultra High Performance Ledger with configuration.
 
@@ -287,10 +279,10 @@ class UltraHighPerformanceLedger:
             )
 
         self.config = config
-        self.pool: Optional[asyncpg.Pool] = None
-        self.prepared_statements: Dict[str, str] = {}
+        self.pool: asyncpg.Pool | None = None
+        self.prepared_statements: dict[str, str] = {}
         self.batch_queue = asyncio.Queue(maxsize=100000)
-        self.batch_processor_task: Optional[asyncio.Task] = None
+        self.batch_processor_task: asyncio.Task | None = None
         self.metrics = {
             'events_processed': 0,
             'batches_processed': 0,
@@ -350,7 +342,7 @@ class UltraHighPerformanceLedger:
         self,
         event_type: str,
         case_id: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         actor: str = 'ultra_test'
     ) -> None:
         """
@@ -390,7 +382,7 @@ class UltraHighPerformanceLedger:
                         timeout=self.config.batch_timeout
                     )
                     batch.append(event)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     pass
 
                 current_time = time.time()
@@ -408,7 +400,7 @@ class UltraHighPerformanceLedger:
                 print(f"❌ Batch processor error: {e}")
                 await asyncio.sleep(0.001)  # 1ms recovery
 
-    async def _process_batch_ultra_fast(self, batch: List[Dict]):
+    async def _process_batch_ultra_fast(self, batch: list[dict]):
         """
         ⚡ Process batch with COPY protocol for maximum throughput
         Target: >50,000 events/s
@@ -444,7 +436,7 @@ class UltraHighPerformanceLedger:
                   f"{len(batch)} events in {batch_time*1000:.2f}ms "
                   f"({events_per_second:.0f} events/s)")
 
-    async def _copy_protocol_insert(self, conn: asyncpg.Connection, batch: List[Dict]):
+    async def _copy_protocol_insert(self, conn: asyncpg.Connection, batch: list[dict]):
         """Ultra-fast COPY protocol bulk insert"""
 
         # Prepare data for COPY
@@ -465,7 +457,7 @@ class UltraHighPerformanceLedger:
             columns=['event_type', 'case_id', 'payload', 'actor', 'source_ip']
         )
 
-    async def _executemany_insert(self, conn: asyncpg.Connection, batch: List[Dict]):
+    async def _executemany_insert(self, conn: asyncpg.Connection, batch: list[dict]):
         """Fallback executemany for smaller batches"""
 
         values = [
@@ -484,7 +476,7 @@ class UltraHighPerformanceLedger:
             values
         )
 
-    async def _process_batch_immediate(self, batch: List[Dict]):
+    async def _process_batch_immediate(self, batch: list[dict]):
         """Emergency immediate processing when queue is full"""
         async with self.pool.acquire() as conn:
             await self._executemany_insert(conn, batch)
@@ -532,7 +524,7 @@ class UltraHighPerformanceLedger:
 
             return len(rows)
 
-    async def get_performance_metrics(self) -> Dict[str, Any]:
+    async def get_performance_metrics(self) -> dict[str, Any]:
         """Get real-time performance metrics"""
         async with self.pool.acquire() as conn:
             total_events = await conn.fetchval("SELECT COUNT(*) FROM events")
@@ -571,7 +563,7 @@ class UltraHighPerformanceLedger:
                 self.batch_processor_task.cancel()
                 try:
                     await asyncio.wait_for(self.batch_processor_task, timeout=5.0)
-                except (asyncio.CancelledError, asyncio.TimeoutError):
+                except (TimeoutError, asyncio.CancelledError):
                     print("⚠️ Batch processor task cancelled/timed out")
 
             # Close pool with proper error handling
@@ -596,7 +588,7 @@ class UltraHighPerformanceLedger:
         return False
 
 # Global instance for testing
-_ultra_ledger: Optional[UltraHighPerformanceLedger] = None
+_ultra_ledger: UltraHighPerformanceLedger | None = None
 
 async def get_ultra_ledger() -> UltraHighPerformanceLedger:
     """Get or create ultra-high performance ledger instance"""

@@ -6,8 +6,7 @@ import time
 
 sys.path.append('.')
 
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 
 async def performance_test():
@@ -57,7 +56,7 @@ async def performance_test():
     print(f'Events recorded: {target_events}')
     print(f'Duration: {duration:.2f}s')
     print(f'Performance: {events_per_second:.1f} events/s')
-    print(f'Target: >=1000 events/s')
+    print('Target: >=1000 events/s')
     print(f'Status: {"PASS" if events_per_second >= 1000 else "FAIL"}')
 
     # Fix chain prev_hash asynchronously

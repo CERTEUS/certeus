@@ -5,7 +5,6 @@ Raport końcowy z analizy błędów i napraw w projekcie CERTEUS
 """
 
 import time
-from typing import Dict, List
 
 
 class ErrorEliminationReport:
@@ -23,7 +22,7 @@ class ErrorEliminationReport:
 
         self.remaining_issues = []
 
-    def generate_final_report(self) -> Dict:
+    def generate_final_report(self) -> dict:
         """Generowanie końcowego raportu eliminacji błędów"""
 
         print("🔍 CERTEUS - FINAL ERROR ELIMINATION REPORT")
@@ -42,7 +41,7 @@ class ErrorEliminationReport:
 
         total_eliminated = sum(self.eliminated_errors.values())
 
-        print(f"📊 ELIMINATED ERRORS SUMMARY:")
+        print("📊 ELIMINATED ERRORS SUMMARY:")
         for category, count in self.eliminated_errors.items():
             category_name = category.replace('_', ' ').title()
             print(f"   ✅ {category_name}: {count} issues fixed")
@@ -91,7 +90,7 @@ class ErrorEliminationReport:
             'reliability': 90            # Resource cleanup, fault tolerance
         }
 
-        print(f"📈 CODE QUALITY IMPROVEMENTS:")
+        print("📈 CODE QUALITY IMPROVEMENTS:")
         for metric, score in quality_improvements.items():
             metric_name = metric.replace('_', ' ').title()
             status = "✅ Excellent" if score >= 95 else "🟢 Very Good" if score >= 85 else "🟡 Good"
@@ -110,7 +109,7 @@ class ErrorEliminationReport:
             'blocking_issues': 0     # No blocking functionality issues
         }
 
-        print(f"\\n🧪 REGRESSION TEST RESULTS:")
+        print("\\n🧪 REGRESSION TEST RESULTS:")
         print(f"   Tests Passed: {regression_results['passed_tests']}/{regression_results['total_tests']} ({regression_results['success_rate']:.1f}%)")
         print(f"   Critical Failures: {regression_results['critical_failures']} (✅ None)")
         print(f"   Blocking Issues: {regression_results['blocking_issues']} (✅ None)")
@@ -118,7 +117,7 @@ class ErrorEliminationReport:
         # Final assessment
         final_status = self._assess_final_status(total_eliminated, regression_results, overall_quality)
 
-        print(f"\\n🎯 FINAL ASSESSMENT:")
+        print("\\n🎯 FINAL ASSESSMENT:")
         print(f"   Status: {final_status['status']}")
         print(f"   Recommendation: {final_status['recommendation']}")
         print(f"   Confidence: {final_status['confidence']}")
@@ -133,7 +132,7 @@ class ErrorEliminationReport:
             'final_status': final_status
         }
 
-    def _assess_final_status(self, total_eliminated: int, regression_results: Dict, overall_quality: float) -> Dict:
+    def _assess_final_status(self, total_eliminated: int, regression_results: dict, overall_quality: float) -> dict:
         """Ocena finalnego statusu projektu po naprawach"""
 
         # Kryteria oceny

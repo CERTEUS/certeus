@@ -6,17 +6,14 @@ Target: Sub-microsecond latency, millions of ops/s
 """
 
 import asyncio
+from collections.abc import Callable
+from dataclasses import dataclass
 import mmap
+from multiprocessing import shared_memory
 import os
-import struct
 import threading
 import time
-from collections import deque
-from concurrent.futures import ThreadPoolExecutor
-from ctypes import c_uint64, c_void_p
-from dataclasses import dataclass
-from multiprocessing import shared_memory
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 
 import psutil
 
@@ -83,7 +80,7 @@ class LockFreeQueue:
         self.tail = next_tail
         return True
 
-    def pop_nowait(self) -> Optional[bytes]:
+    def pop_nowait(self) -> bytes | None:
         """Pop data without blocking (returns None if empty)"""
         current_head = self.head
 
@@ -117,7 +114,7 @@ class PipelineStage:
         self.peak_latency_ns = 0
 
         # Worker thread with CPU affinity
-        self.worker_thread: Optional[threading.Thread] = None
+        self.worker_thread: threading.Thread | None = None
         self.running = False
 
     def start(self):
@@ -182,7 +179,7 @@ class PipelineStage:
                 batch.clear()
                 last_process_time = current_time
 
-    def _process_batch_zero_copy(self, batch: List[bytes]) -> List[bytes]:
+    def _process_batch_zero_copy(self, batch: list[bytes]) -> list[bytes]:
         """Process batch with zero-copy memory operations"""
         if not HAS_NUMPY:
             # Fallback to regular processing
@@ -209,7 +206,7 @@ class ZeroLatencyPipeline:
 
     def __init__(self, config: PipelineConfig):
         self.config = config
-        self.stages: List[PipelineStage] = []
+        self.stages: list[PipelineStage] = []
         self.running = False
 
         # Performance metrics
@@ -218,11 +215,11 @@ class ZeroLatencyPipeline:
         self.peak_throughput = 0.0
 
         # Memory-mapped shared buffers
-        self.shared_buffers: List[shared_memory.SharedMemory] = []
+        self.shared_buffers: list[shared_memory.SharedMemory] = []
 
         print(f"⚡ Initializing Zero-Latency Pipeline with {config.num_stages} stages...")
 
-    def add_stage(self, processor: Callable, stage_id: Optional[int] = None) -> int:
+    def add_stage(self, processor: Callable, stage_id: int | None = None) -> int:
         """Add processing stage to pipeline"""
         if stage_id is None:
             stage_id = len(self.stages)
@@ -264,7 +261,7 @@ class ZeroLatencyPipeline:
         elapsed = time.perf_counter() - self.start_time
         avg_throughput = self.total_processed / elapsed if elapsed > 0 else 0
 
-        print(f"📊 Pipeline Statistics:")
+        print("📊 Pipeline Statistics:")
         print(f"   Total Processed: {self.total_processed:,}")
         print(f"   Elapsed Time: {elapsed:.3f}s")
         print(f"   Average Throughput: {avg_throughput:.0f} ops/s")
@@ -299,14 +296,14 @@ class ZeroLatencyPipeline:
 
         return success
 
-    async def get_result(self) -> Optional[bytes]:
+    async def get_result(self) -> bytes | None:
         """Get processed result from pipeline"""
         if not self.stages:
             return None
 
         return self.stages[-1].output_queue.pop_nowait()
 
-    def get_pipeline_metrics(self) -> Dict[str, Any]:
+    def get_pipeline_metrics(self) -> dict[str, Any]:
         """Get real-time pipeline performance metrics"""
         stage_metrics = []
 
@@ -349,7 +346,7 @@ def ultra_fast_hash_processor(data: bytes) -> bytes:
     """Ultra-fast hash processing"""
     # Simple hash for maximum speed
     hash_value = hash(data) & 0xFFFFFFFF
-    return f'{{"hash": {hash_value}, "size": {len(data)}}}'.encode('utf-8')
+    return f'{{"hash": {hash_value}, "size": {len(data)}}}'.encode()
 
 
 def ultra_fast_compression_processor(data: bytes) -> bytes:
@@ -388,7 +385,7 @@ async def create_zero_latency_pipeline() -> ZeroLatencyPipeline:
 
 
 # Global pipeline instance
-_zero_latency_pipeline: Optional[ZeroLatencyPipeline] = None
+_zero_latency_pipeline: ZeroLatencyPipeline | None = None
 
 
 async def get_zero_latency_pipeline() -> ZeroLatencyPipeline:

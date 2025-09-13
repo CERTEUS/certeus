@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import subprocess
 from collections import defaultdict
+import subprocess
 
 
 def analyze_test_standards():
@@ -39,23 +39,23 @@ def analyze_test_standards():
                 test_counts['other'] += 1
 
     print(f'TOTAL TESTS: {total_tests}')
-    print(f'BY CATEGORY:')
+    print('BY CATEGORY:')
     for category, count in sorted(test_counts.items()):
         percentage = (count / total_tests * 100) if total_tests > 0 else 0
         print(f'   - {category.upper()}: {count} tests ({percentage:.1f}%)')
 
     # Enterprise standards thresholds
-    print(f'\nENTERPRISE STANDARDS:')
-    print(f'   - Unit tests: <100ms each')
-    print(f'   - Integration tests: <5s each')
-    print(f'   - Performance tests: <30s each')
-    print(f'   - Parallel execution: enabled')
-    print(f'   - Coverage: >90% (to verify)')
+    print('\nENTERPRISE STANDARDS:')
+    print('   - Unit tests: <100ms each')
+    print('   - Integration tests: <5s each')
+    print('   - Performance tests: <30s each')
+    print('   - Parallel execution: enabled')
+    print('   - Coverage: >90% (to verify)')
 
-    print(f'\nPERFORMANCE ACHIEVEMENTS:')
-    print(f'   - PostgreSQL: 3,734 events/s (target: 1,000)')
-    print(f'   - Chain integrity: PERFECT')
-    print(f'   - Parallel testing: 20 workers')
+    print('\nPERFORMANCE ACHIEVEMENTS:')
+    print('   - PostgreSQL: 3,734 events/s (target: 1,000)')
+    print('   - Chain integrity: PERFECT')
+    print('   - Parallel testing: 20 workers')
     print(f'   - Test suite: {total_tests} tests, multiple categories')
 
 if __name__ == '__main__':

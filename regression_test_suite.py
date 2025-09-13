@@ -6,8 +6,6 @@ Testy regresyjne po naprawach błędów w projekcie CERTEUS
 
 import asyncio
 import time
-import traceback
-from typing import Dict, List, Tuple
 
 
 class RegressionTestSuite:
@@ -23,7 +21,7 @@ class RegressionTestSuite:
 
         print("🧪 CERTEUS Regression Test Suite initialized")
 
-    async def run_all_regression_tests(self) -> Dict:
+    async def run_all_regression_tests(self) -> dict:
         """Uruchomienie wszystkich testów regresyjnych"""
 
         print("\\n🚀 ROZPOCZYNAM TESTY REGRESYJNE PO NAPRAWACH")
@@ -71,12 +69,12 @@ class RegressionTestSuite:
         # Podsumowanie wyników
         success_rate = (passed_count / total_tests) * 100
 
-        print(f"\\n📊 PODSUMOWANIE TESTÓW REGRESYJNYCH:")
+        print("\\n📊 PODSUMOWANIE TESTÓW REGRESYJNYCH:")
         print(f"   Tests passed: {passed_count}/{total_tests} ({success_rate:.1f}%)")
         print(f"   Tests failed: {len(self.failed_tests)}")
 
         if self.failed_tests:
-            print(f"\\n❌ FAILED TESTS:")
+            print("\\n❌ FAILED TESTS:")
             for test_name, error in self.failed_tests:
                 print(f"   • {test_name}: {error}")
 
@@ -88,18 +86,19 @@ class RegressionTestSuite:
             'test_results': self.test_results
         }
 
-    async def test_imports(self) -> Dict:
+    async def test_imports(self) -> dict:
         """Test importów po naprawach dependency issues"""
         try:
             # Test podstawowych importów
             import distributed_ultra_scale
+            from distributed_ultra_scale import DistributedUltraScaleSystem
             import hardware_optimizations
             import impossible_scale_test
             import ultra_performance_ledger
-            import world_class_monitoring
-            from distributed_ultra_scale import DistributedUltraScaleSystem
+
             # Test importów z naprawionych plików
             from ultra_performance_ledger import UltraHighPerformanceLedger
+            import world_class_monitoring
             from world_class_monitoring import WorldClassMonitoringSystem
 
             return {'status': 'PASSED', 'message': 'All imports working correctly'}
@@ -109,7 +108,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': f'Unexpected error: {str(e)}'}
 
-    async def test_ultra_ledger(self) -> Dict:
+    async def test_ultra_ledger(self) -> dict:
         """Test Ultra Performance Ledger po naprawach"""
         try:
             from ultra_performance_ledger import UltraHighPerformanceLedger
@@ -142,7 +141,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_zero_pipeline(self) -> Dict:
+    async def test_zero_pipeline(self) -> dict:
         """Test Zero Latency Pipeline po naprawach"""
         try:
             # Test basic pipeline functionality
@@ -160,7 +159,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_hardware_opts(self) -> Dict:
+    async def test_hardware_opts(self) -> dict:
         """Test Hardware Optimizations po naprawach context managers"""
         try:
             from hardware_optimizations import HardwareOptimizedProcessor
@@ -179,7 +178,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_distributed_system(self) -> Dict:
+    async def test_distributed_system(self) -> dict:
         """Test Distributed System po naprawach"""
         try:
             from distributed_ultra_scale import DistributedUltraScaleSystem
@@ -206,7 +205,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_monitoring(self) -> Dict:
+    async def test_monitoring(self) -> dict:
         """Test Monitoring System po naprawach"""
         try:
             from world_class_monitoring import WorldClassMonitoringSystem
@@ -231,7 +230,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_security_fixes(self) -> Dict:
+    async def test_security_fixes(self) -> dict:
         """Test napraw bezpieczeństwa"""
         try:
             # Test 1: Sprawdź czy hardcoded passwords zostały usunięte
@@ -257,7 +256,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_performance_fixes(self) -> Dict:
+    async def test_performance_fixes(self) -> dict:
         """Test napraw wydajności"""
         try:
             # Test wydajności po naprawach
@@ -283,7 +282,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_resource_management(self) -> Dict:
+    async def test_resource_management(self) -> dict:
         """Test napraw resource management"""
         try:
             # Test context managers i proper cleanup
@@ -300,7 +299,7 @@ class RegressionTestSuite:
         except Exception as e:
             return {'status': 'FAILED', 'error': str(e)}
 
-    async def test_error_handling(self) -> Dict:
+    async def test_error_handling(self) -> dict:
         """Test napraw error handling"""
         try:
             from ultra_performance_ledger import UltraHighPerformanceLedger
@@ -310,7 +309,7 @@ class RegressionTestSuite:
                 # Test invalid input handling
                 try:
                     await ledger.record_event_ultra_fast(None, None, None)
-                except (TypeError, ValueError) as e:
+                except (TypeError, ValueError):
                     # Expected error - good error handling
                     pass
                 except Exception as e:
@@ -332,7 +331,7 @@ async def main():
     test_suite = RegressionTestSuite()
     results = await test_suite.run_all_regression_tests()
 
-    print(f"\\n🎯 FINAL REGRESSION TEST RESULTS:")
+    print("\\n🎯 FINAL REGRESSION TEST RESULTS:")
     print(f"   Success Rate: {results['success_rate']:.1f}%")
     print(f"   Status: {'✅ PASSED' if results['success_rate'] >= 80 else '❌ FAILED'}")
 

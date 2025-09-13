@@ -6,7 +6,7 @@ Identyfikacja bottlenecks i problemów wydajnościowych
 
 import ast
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 
 class PerformanceIssueDetector:
@@ -22,14 +22,14 @@ class PerformanceIssueDetector:
             'sync_in_async': ['requests.', 'urllib.', 'time.sleep']
         }
 
-    def analyze_file(self, filepath: str) -> Dict[str, Any]:
+    def analyze_file(self, filepath: str) -> dict[str, Any]:
         """Analiza pliku pod kątem problemów wydajnościowych"""
 
         if not os.path.exists(filepath):
             return {'error': f'File {filepath} not found'}
 
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(filepath, encoding='utf-8') as f:
                 content = f.read()
 
             # Analiza AST
@@ -61,7 +61,7 @@ class PerformanceIssueDetector:
         except Exception as e:
             return {'error': f'Error analyzing {filepath}: {e}'}
 
-    def _analyze_function_call(self, node: ast.Call, issues: Dict):
+    def _analyze_function_call(self, node: ast.Call, issues: dict):
         """Analiza wywołań funkcji"""
 
         func_name = self._get_function_name(node)
@@ -82,7 +82,7 @@ class PerformanceIssueDetector:
                 'line': node.lineno
             })
 
-    def _analyze_loop(self, node: ast.For, issues: Dict):
+    def _analyze_loop(self, node: ast.For, issues: dict):
         """Analiza pętli for"""
 
         # Check for range(len(x)) pattern
@@ -101,7 +101,7 @@ class PerformanceIssueDetector:
                     'suggestion': 'Use enumerate() or direct iteration'
                 })
 
-    def _analyze_while_loop(self, node: ast.While, issues: Dict):
+    def _analyze_while_loop(self, node: ast.While, issues: dict):
         """Analiza pętli while"""
 
         # Check for while True without break
@@ -138,7 +138,7 @@ class PerformanceIssueDetector:
 
         return complexity
 
-    def analyze_ultra_scale_systems(self) -> Dict:
+    def analyze_ultra_scale_systems(self) -> dict:
         """Analiza wszystkich ultra-scale systemów"""
 
         ultra_scale_files = [
@@ -202,7 +202,7 @@ def main():
         if file_issue_count == 0:
             print("   ✅ No performance issues detected")
 
-    print(f"\n📊 SUMMARY:")
+    print("\n📊 SUMMARY:")
     print(f"   Total Issues: {total_issues}")
     print(f"   Critical Issues: {critical_issues}")
 

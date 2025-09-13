@@ -7,7 +7,6 @@ Sprawdzanie realności deklarowanych osiągnięć performance
 import asyncio
 import statistics
 import time
-from typing import Dict, List
 
 
 class PerformanceVerifier:
@@ -306,7 +305,6 @@ class PerformanceVerifier:
         print("-" * 40)
 
         try:
-            from ultra_performance_ledger import UltraHighPerformanceLedger
 
             # Check configuration claims
             print("   📊 Checking PostgreSQL configuration...")
@@ -371,9 +369,9 @@ class PerformanceVerifier:
                     print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (OPTIMISTIC)")
 
                 if result.get('sub_microsecond_achieved', False):
-                    print(f"   📊 Sub-microsecond latency: ✅ ACHIEVED")
+                    print("   📊 Sub-microsecond latency: ✅ ACHIEVED")
                 else:
-                    print(f"   📊 Sub-microsecond latency: ⚠️ NOT CONSISTENTLY ACHIEVED")
+                    print("   📊 Sub-microsecond latency: ⚠️ NOT CONSISTENTLY ACHIEVED")
 
             elif system_name == 'hardware_optimizations':
                 ratio = result.get('throughput_ratio', 0)
@@ -384,9 +382,9 @@ class PerformanceVerifier:
                     print(f"   📊 Throughput: {ratio*100:.1f}% of claimed (MODERATE)")
 
                 if result.get('cache_optimal', False):
-                    print(f"   📊 Cache optimization: ✅ EXCELLENT (>99%)")
+                    print("   📊 Cache optimization: ✅ EXCELLENT (>99%)")
                 else:
-                    print(f"   📊 Cache optimization: ⚠️ SUBOPTIMAL")
+                    print("   📊 Cache optimization: ⚠️ SUBOPTIMAL")
 
             elif system_name == 'distributed_system':
                 ratio = result.get('throughput_ratio', 0)
@@ -402,13 +400,13 @@ class PerformanceVerifier:
             elif system_name == 'monitoring_system':
                 if result.get('monitoring_functional', False):
                     realistic_claims += 1
-                    print(f"   📊 Real-time monitoring: ✅ FUNCTIONAL")
+                    print("   📊 Real-time monitoring: ✅ FUNCTIONAL")
                 print(f"   📊 Metrics collection: {result.get('system_metrics_count', 0)} system + {result.get('application_metrics_count', 0)} app")
 
             elif system_name == 'postgresql_ultra':
                 if result.get('structure_verified', False):
                     realistic_claims += 1
-                    print(f"   📊 Implementation: ✅ COMPLETE")
+                    print("   📊 Implementation: ✅ COMPLETE")
                 print(f"   📊 Features: {result.get('features_implemented', 0)} implemented")
 
         verification_rate = (verified_systems / total_systems) * 100 if total_systems > 0 else 0

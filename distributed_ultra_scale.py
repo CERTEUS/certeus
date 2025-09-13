@@ -6,15 +6,12 @@ Target: Millions of operations/s across multiple nodes
 """
 
 import asyncio
+from dataclasses import dataclass
 import hashlib
-import json
 import random
-import threading
 import time
+from typing import Any
 import uuid
-from concurrent.futures import ThreadPoolExecutor
-from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 try:
     import aiohttp
@@ -29,7 +26,7 @@ class NodeInfo:
     node_id: str
     host: str
     port: int
-    shard_range: Tuple[int, int]  # (start, end) shard range
+    shard_range: tuple[int, int]  # (start, end) shard range
     capacity: int = 10000  # Operations per second capacity
     is_leader: bool = False
     last_heartbeat: float = 0.0
@@ -42,7 +39,7 @@ class ShardedOperation:
     shard_key: str
     shard_id: int
     node_id: str
-    data: Dict[str, Any]
+    data: dict[str, Any]
     timestamp: float
     signature: str = ""
 
@@ -52,10 +49,10 @@ class ConsensusManager:
 
     def __init__(self, node_id: str):
         self.node_id = node_id
-        self.nodes: Dict[str, NodeInfo] = {}
-        self.leader_id: Optional[str] = None
+        self.nodes: dict[str, NodeInfo] = {}
+        self.leader_id: str | None = None
         self.consensus_round = 0
-        self.pending_operations: List[ShardedOperation] = []
+        self.pending_operations: list[ShardedOperation] = []
 
         print(f"🌐 Consensus manager initialized for node {node_id}")
 
@@ -142,13 +139,13 @@ class DistributedShardManager:
 
     def __init__(self, total_shards: int = 1000):
         self.total_shards = total_shards
-        self.shard_map: Dict[int, str] = {}  # shard_id -> node_id
-        self.node_shards: Dict[str, List[int]] = {}  # node_id -> [shard_ids]
+        self.shard_map: dict[int, str] = {}  # shard_id -> node_id
+        self.node_shards: dict[str, list[int]] = {}  # node_id -> [shard_ids]
         self.replication_factor = 3
 
         print(f"🌐 Shard manager: {total_shards} shards")
 
-    def assign_shards(self, nodes: Dict[str, NodeInfo]):
+    def assign_shards(self, nodes: dict[str, NodeInfo]):
         """Assign shards to nodes with load balancing"""
         node_list = list(nodes.keys())
         if not node_list:
@@ -184,11 +181,11 @@ class DistributedShardManager:
 
         print(f"✅ Shards assigned: {len(node_list)} nodes, avg {shards_per_node} shards/node")
 
-    def get_node_for_shard(self, shard_id: int) -> Optional[str]:
+    def get_node_for_shard(self, shard_id: int) -> str | None:
         """Get responsible node for shard"""
         return self.shard_map.get(shard_id)
 
-    def get_nodes_for_key(self, key: str) -> List[str]:
+    def get_nodes_for_key(self, key: str) -> list[str]:
         """Get nodes responsible for key (with replication)"""
         shard_id = self._calculate_shard_id(key)
         primary_node = self.shard_map.get(shard_id)
@@ -228,7 +225,7 @@ class DistributedNode:
         )
 
         self.consensus_manager = ConsensusManager(node_id)
-        self.local_operations: List[ShardedOperation] = []
+        self.local_operations: list[ShardedOperation] = []
         self.performance_metrics = {
             'operations_processed': 0,
             'operations_per_second': 0.0,
@@ -238,8 +235,8 @@ class DistributedNode:
 
         # Background tasks
         self.running = False
-        self.heartbeat_task: Optional[asyncio.Task] = None
-        self.process_task: Optional[asyncio.Task] = None
+        self.heartbeat_task: asyncio.Task | None = None
+        self.process_task: asyncio.Task | None = None
 
         print(f"🌐 Node {node_id} initialized (capacity: {self.node_info.capacity} ops/s)")
 
@@ -310,7 +307,7 @@ class DistributedNode:
 
             await asyncio.sleep(0.01)  # 10ms processing interval
 
-    async def _process_operation_batch(self, operations: List[ShardedOperation]):
+    async def _process_operation_batch(self, operations: list[ShardedOperation]):
         """Process batch of operations ultra-fast"""
         # Simulate ultra-fast batch processing
         for operation in operations:
@@ -348,7 +345,7 @@ class DistributedUltraScaleSystem:
 
     def __init__(self, num_nodes: int = 10):
         self.num_nodes = num_nodes
-        self.nodes: Dict[str, DistributedNode] = {}
+        self.nodes: dict[str, DistributedNode] = {}
         self.shard_manager = DistributedShardManager()
 
         # System metrics
@@ -410,7 +407,7 @@ class DistributedUltraScaleSystem:
         elapsed = time.perf_counter() - self.start_time
         avg_throughput = self.total_operations / elapsed if elapsed > 0 else 0
 
-        print(f"📊 Cluster Statistics:")
+        print("📊 Cluster Statistics:")
         print(f"   Total Operations: {self.total_operations:,}")
         print(f"   Elapsed Time: {elapsed:.3f}s")
         print(f"   Average Throughput: {avg_throughput:.0f} ops/s")
@@ -424,7 +421,7 @@ class DistributedUltraScaleSystem:
             'num_nodes': len(self.nodes)
         }
 
-    async def submit_distributed_operation(self, data: Dict[str, Any]) -> bool:
+    async def submit_distributed_operation(self, data: dict[str, Any]) -> bool:
         """Submit operation to distributed system"""
         # Create sharded operation
         operation_id = str(uuid.uuid4())
@@ -465,7 +462,7 @@ class DistributedUltraScaleSystem:
 
         return False
 
-    def get_cluster_metrics(self) -> Dict[str, Any]:
+    def get_cluster_metrics(self) -> dict[str, Any]:
         """Get comprehensive cluster metrics"""
         node_metrics = {}
         total_capacity = 0
@@ -501,7 +498,7 @@ async def create_distributed_ultra_scale() -> DistributedUltraScaleSystem:
 
 
 # Global distributed system instance
-_distributed_system: Optional[DistributedUltraScaleSystem] = None
+_distributed_system: DistributedUltraScaleSystem | None = None
 
 
 async def get_distributed_system() -> DistributedUltraScaleSystem:

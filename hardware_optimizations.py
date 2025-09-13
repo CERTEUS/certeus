@@ -104,16 +104,14 @@ LAST UPDATED:
     2025-09-13 - Advanced hardware optimizations and documentation
 """
 
+from ctypes import CDLL
+from dataclasses import dataclass
 import mmap
 import os
-import struct
+from pathlib import Path
 import threading
 import time
-from ctypes import (CDLL, POINTER, Structure, c_char_p, c_int, c_size_t,
-                    c_uint64, c_void_p)
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 try:
     import psutil
@@ -256,7 +254,7 @@ class MemoryMappedBuffer:
         and are faster for temporary data.
     """
 
-    def __init__(self, size: int, filename: Optional[str] = None, alignment: int = 64):
+    def __init__(self, size: int, filename: str | None = None, alignment: int = 64):
         """
         Initialize memory-mapped buffer with optional file backing.
 
@@ -385,7 +383,7 @@ class CacheOptimizedRingBuffer:
         self.tail = next_tail
         return True
 
-    def pop_cache_optimized(self) -> Optional[bytes]:
+    def pop_cache_optimized(self) -> bytes | None:
         """Pop with CPU cache optimization"""
         current_head = self.head
 
@@ -437,8 +435,8 @@ class NumaAwareAllocator:
 
     def __init__(self, config: HardwareConfig):
         self.config = config
-        self.memory_pools: Dict[int, MemoryMappedBuffer] = {}
-        self.allocation_tracking: Dict[int, Tuple[int, int]] = {}  # node_id -> (used, total)
+        self.memory_pools: dict[int, MemoryMappedBuffer] = {}
+        self.allocation_tracking: dict[int, tuple[int, int]] = {}  # node_id -> (used, total)
 
         # Detect NUMA topology
         self.numa_nodes = self._detect_numa_nodes()
@@ -456,7 +454,7 @@ class NumaAwareAllocator:
 
         print(f"🔥 NUMA allocator: {len(self.numa_nodes)} nodes, {config.memory_pool_size:,}B total")
 
-    def _detect_numa_nodes(self) -> List[int]:
+    def _detect_numa_nodes(self) -> list[int]:
         """Detect available NUMA nodes"""
         if HAS_PSUTIL:
             try:
@@ -471,7 +469,7 @@ class NumaAwareAllocator:
         # Fallback: single node
         return [0]
 
-    def allocate_numa_aware(self, size: int, preferred_node: Optional[int] = None) -> Tuple[int, int]:
+    def allocate_numa_aware(self, size: int, preferred_node: int | None = None) -> tuple[int, int]:
         """Allocate memory with NUMA awareness"""
         if preferred_node is None:
             # Round-robin allocation
@@ -522,7 +520,7 @@ class HardwareOptimizedProcessor:
     Maximum hardware utilization with cache-friendly algorithms
     """
 
-    def __init__(self, config: Optional[HardwareConfig] = None):
+    def __init__(self, config: HardwareConfig | None = None):
         """Initialize hardware optimized processor"""
         if config is None:
             # Default configuration
@@ -640,7 +638,7 @@ class HardwareOptimizedProcessor:
 
         return b''.join(processed_chunks)
 
-    def get_hardware_metrics(self) -> Dict[str, Any]:
+    def get_hardware_metrics(self) -> dict[str, Any]:
         """Get hardware performance metrics"""
         cache_hit_rate = (self.cache_hits / (self.cache_hits + self.cache_misses)
                          if (self.cache_hits + self.cache_misses) > 0 else 0)
@@ -687,7 +685,7 @@ async def create_hardware_optimized_processor() -> HardwareOptimizedProcessor:
 
 
 # Global hardware processor instance
-_hardware_processor: Optional[HardwareOptimizedProcessor] = None
+_hardware_processor: HardwareOptimizedProcessor | None = None
 
 
 async def get_hardware_processor() -> HardwareOptimizedProcessor:

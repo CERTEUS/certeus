@@ -24,20 +24,18 @@ DoD Requirements tested:
 """
 
 import asyncio
+from datetime import datetime
 import json
 import random
 import time
-from datetime import datetime
 from uuid import uuid4
 
 import asyncpg
-import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+import pytest
 
 from services.api_gateway.main import app
-from services.ledger_service.postgres_ledger import (LedgerConfig,
-                                                     PostgreSQLLedger)
+from services.ledger_service.postgres_ledger import LedgerConfig, PostgreSQLLedger
 
 
 async def clean_test_database():

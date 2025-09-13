@@ -6,15 +6,13 @@ Target: Enterprise-grade observability with predictive scaling
 """
 
 import asyncio
-import json
+from collections import defaultdict, deque
+from dataclasses import dataclass
 import logging
 import statistics
 import threading
 import time
-from collections import defaultdict, deque
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 
 try:
     import psutil
@@ -29,7 +27,7 @@ class MetricPoint:
     timestamp: float
     metric_name: str
     value: float
-    tags: Dict[str, str]
+    tags: dict[str, str]
     unit: str = ""
 
 
@@ -57,22 +55,22 @@ class Alert:
     triggered_at: float
     message: str
     resolved: bool = False
-    resolved_at: Optional[float] = None
+    resolved_at: float | None = None
 
 
 class MetricsCollector:
     """High-performance metrics collection engine"""
 
     def __init__(self, retention_hours: int = 24):
-        self.metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=retention_hours * 3600))  # 1 point/second
+        self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=retention_hours * 3600))  # 1 point/second
         self.retention_hours = retention_hours
         self.collection_interval = 1.0  # 1 second
         self.running = False
-        self.collector_task: Optional[asyncio.Task] = None
+        self.collector_task: asyncio.Task | None = None
 
         # Performance optimization
         self.metrics_lock = threading.RLock()
-        self.batch_buffer: List[MetricPoint] = []
+        self.batch_buffer: list[MetricPoint] = []
         self.batch_size = 1000
 
         print("📊 High-performance metrics collector initialized")
@@ -90,7 +88,7 @@ class MetricsCollector:
             self.collector_task.cancel()
         print("🛑 Metrics collection stopped")
 
-    def add_metric(self, metric_name: str, value: float, tags: Dict[str, str] = None, unit: str = ""):
+    def add_metric(self, metric_name: str, value: float, tags: dict[str, str] = None, unit: str = ""):
         """Add metric point (thread-safe, ultra-fast)"""
         point = MetricPoint(
             timestamp=time.time(),
@@ -156,14 +154,14 @@ class MetricsCollector:
         except Exception as e:
             logging.warning(f"Failed to collect system metrics: {e}")
 
-    def get_latest_value(self, metric_name: str) -> Optional[float]:
+    def get_latest_value(self, metric_name: str) -> float | None:
         """Get latest value for metric"""
         with self.metrics_lock:
             if metric_name in self.metrics and self.metrics[metric_name]:
                 return self.metrics[metric_name][-1].value
         return None
 
-    def get_metric_history(self, metric_name: str, duration_seconds: int = 3600) -> List[MetricPoint]:
+    def get_metric_history(self, metric_name: str, duration_seconds: int = 3600) -> list[MetricPoint]:
         """Get metric history for specified duration"""
         cutoff_time = time.time() - duration_seconds
 
@@ -176,7 +174,7 @@ class MetricsCollector:
                 if point.timestamp >= cutoff_time
             ]
 
-    def calculate_statistics(self, metric_name: str, duration_seconds: int = 300) -> Dict[str, float]:
+    def calculate_statistics(self, metric_name: str, duration_seconds: int = 300) -> dict[str, float]:
         """Calculate statistics for metric"""
         history = self.get_metric_history(metric_name, duration_seconds)
 
@@ -202,16 +200,16 @@ class AlertManager:
 
     def __init__(self, metrics_collector: MetricsCollector):
         self.metrics_collector = metrics_collector
-        self.alert_rules: Dict[str, AlertRule] = {}
-        self.active_alerts: Dict[str, Alert] = {}
-        self.alert_history: List[Alert] = []
+        self.alert_rules: dict[str, AlertRule] = {}
+        self.active_alerts: dict[str, Alert] = {}
+        self.alert_history: list[Alert] = []
 
         # Alert suppression (prevent spam)
-        self.suppression_rules: Dict[str, float] = {}  # rule_id -> last_trigger_time
+        self.suppression_rules: dict[str, float] = {}  # rule_id -> last_trigger_time
         self.min_alert_interval = 300  # 5 minutes between same alerts
 
         self.running = False
-        self.evaluation_task: Optional[asyncio.Task] = None
+        self.evaluation_task: asyncio.Task | None = None
 
         print("📊 Intelligent alert manager initialized")
 
@@ -322,11 +320,11 @@ class AlertManager:
             del self.active_alerts[alert.alert_id]
             print(f"✅ Alert resolved: {alert.message}")
 
-    def get_active_alerts(self) -> List[Alert]:
+    def get_active_alerts(self) -> list[Alert]:
         """Get all active alerts"""
         return list(self.active_alerts.values())
 
-    def get_alert_summary(self) -> Dict[str, int]:
+    def get_alert_summary(self) -> dict[str, int]:
         """Get alert summary by severity"""
         summary = defaultdict(int)
         for alert in self.active_alerts.values():
@@ -339,7 +337,7 @@ class AutoScaler:
 
     def __init__(self, metrics_collector: MetricsCollector):
         self.metrics_collector = metrics_collector
-        self.scaling_rules: Dict[str, Dict[str, Any]] = {}
+        self.scaling_rules: dict[str, dict[str, Any]] = {}
         self.current_scale = 1.0
         self.min_scale = 0.1
         self.max_scale = 10.0
@@ -348,7 +346,7 @@ class AutoScaler:
         self.scaling_history = deque(maxlen=100)
 
         self.running = False
-        self.scaler_task: Optional[asyncio.Task] = None
+        self.scaler_task: asyncio.Task | None = None
 
         print("📊 Intelligent auto-scaler initialized")
 
@@ -383,7 +381,7 @@ class AutoScaler:
 
             await asyncio.sleep(30)  # Evaluate every 30 seconds
 
-    async def _evaluate_scaling(self, metric_name: str, rule: Dict[str, Any]):
+    async def _evaluate_scaling(self, metric_name: str, rule: dict[str, Any]):
         """Evaluate scaling for specific metric"""
         # Check cooldown
         if time.time() - rule['last_scaling_time'] < rule['cooldown_seconds']:
@@ -429,7 +427,7 @@ class AutoScaler:
         # In real system, this would trigger actual scaling (e.g., Kubernetes HPA)
         # For now, we just simulate the scaling decision
 
-    def get_scaling_status(self) -> Dict[str, Any]:
+    def get_scaling_status(self) -> dict[str, Any]:
         """Get current scaling status"""
         return {
             'current_scale': self.current_scale,
@@ -532,11 +530,11 @@ class WorldClassMonitoringSystem:
         # Scale based on throughput
         self.auto_scaler.add_scaling_rule("application.throughput", 8000.0, 2000.0)
 
-    def record_application_metric(self, metric_name: str, value: float, tags: Dict[str, str] = None):
+    def record_application_metric(self, metric_name: str, value: float, tags: dict[str, str] = None):
         """Record application-specific metric"""
         self.metrics_collector.add_metric(f"application.{metric_name}", value, tags)
 
-    def get_real_time_dashboard(self) -> Dict[str, Any]:
+    def get_real_time_dashboard(self) -> dict[str, Any]:
         """Get real-time dashboard data"""
         # System metrics
         system_metrics = {
@@ -571,7 +569,7 @@ class WorldClassMonitoringSystem:
             'health_status': self._calculate_health_status(system_metrics, app_metrics, alert_summary)
         }
 
-    def _calculate_health_status(self, system_metrics: Dict, app_metrics: Dict, alerts: Dict) -> str:
+    def _calculate_health_status(self, system_metrics: dict, app_metrics: dict, alerts: dict) -> str:
         """Calculate overall system health"""
         # Check for critical alerts
         if alerts.get('CRITICAL', 0) > 0 or alerts.get('EMERGENCY', 0) > 0:
@@ -592,7 +590,7 @@ class WorldClassMonitoringSystem:
 
         return "HEALTHY"
 
-    def get_performance_report(self) -> Dict[str, Any]:
+    def get_performance_report(self) -> dict[str, Any]:
         """Generate comprehensive performance report"""
         report = {
             'report_timestamp': time.time(),
@@ -630,7 +628,7 @@ async def create_world_class_monitoring() -> WorldClassMonitoringSystem:
 
 
 # Global monitoring system
-_monitoring_system: Optional[WorldClassMonitoringSystem] = None
+_monitoring_system: WorldClassMonitoringSystem | None = None
 
 
 async def get_monitoring_system() -> WorldClassMonitoringSystem:
@@ -677,7 +675,7 @@ if __name__ == "__main__":
 
         # Generate final report
         report = system.get_performance_report()
-        print(f"\\n📊 FINAL PERFORMANCE REPORT:")
+        print("\\n📊 FINAL PERFORMANCE REPORT:")
         print(f"   Monitoring Duration: {report['monitoring_duration_hours']:.2f} hours")
         print(f"   Total Alerts: {report['alert_summary']['total_alerts']}")
         print(f"   Alert Rate: {report['alert_summary']['alert_rate_per_hour']:.1f}/hour")

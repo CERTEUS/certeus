@@ -4,9 +4,7 @@
 Podsumowanie wszystkich osiągnięć: impossible scale + world-class performance
 """
 
-import json
 import time
-from typing import Dict, List
 
 
 class CERTEUSAchievementSummary:
@@ -21,7 +19,7 @@ class CERTEUSAchievementSummary:
 
         print("🌟 CERTEUS Achievement Summary initialized")
 
-    def generate_comprehensive_summary(self) -> Dict:
+    def generate_comprehensive_summary(self) -> dict:
         """Generowanie comprehensive summary wszystkich systemów"""
         print("\\n📊📊📊 COMPREHENSIVE ACHIEVEMENT SUMMARY 📊📊📊")
 
@@ -133,7 +131,7 @@ class CERTEUSAchievementSummary:
 
         return all_achievements
 
-    def calculate_final_performance_grade(self, achievements: Dict) -> Dict:
+    def calculate_final_performance_grade(self, achievements: dict) -> dict:
         """Obliczenie final performance grade"""
 
         # Count completed systems

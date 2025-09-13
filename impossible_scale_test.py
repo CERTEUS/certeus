@@ -8,10 +8,8 @@ World-class enterprise performance validation
 import asyncio
 import gc
 import sys
-import threading
 import time
-from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Dict, List
+from typing import Any
 
 import psutil
 
@@ -23,8 +21,7 @@ except ImportError:
     HAS_RESOURCE = False
 
 sys.path.append('.')
-from ultra_performance_ledger import (UltraHighPerformanceLedger,
-                                      UltraPerformanceConfig, get_ultra_ledger)
+from ultra_performance_ledger import UltraHighPerformanceLedger, get_ultra_ledger
 
 
 class SystemMonitor:
@@ -139,7 +136,7 @@ class ImpossibleScaleTest:
         except Exception as e:
             print(f"⚠️ System optimization warning: {e}")
 
-    async def test_50k_events_per_second(self) -> Dict[str, Any]:
+    async def test_50k_events_per_second(self) -> dict[str, Any]:
         """
         💥 IMPOSSIBLE TEST: 50,000 events/s sustained
         Duration: 60 seconds = 3,000,000 events total
@@ -165,8 +162,8 @@ class ImpossibleScaleTest:
         start_time = time.time()
         events_submitted = 0
 
-        print(f"🚀 Starting impossible scale test...")
-        print(f"📊 Progress will be reported every 10 seconds...")
+        print("🚀 Starting impossible scale test...")
+        print("📊 Progress will be reported every 10 seconds...")
 
         # High-speed event generation loop
         last_report_time = start_time
@@ -331,7 +328,7 @@ class ImpossibleScaleTest:
         # Final wait for any in-flight batches
         await asyncio.sleep(2.0)
 
-    async def test_memory_efficiency(self) -> Dict[str, Any]:
+    async def test_memory_efficiency(self) -> dict[str, Any]:
         """
         🧠 Memory efficiency test under extreme load
         """
@@ -379,7 +376,7 @@ class ImpossibleScaleTest:
             'memory_efficient': memory_growth < 10.0  # Less than 10% growth
         }
 
-        print(f"📊 Memory Test Results:")
+        print("📊 Memory Test Results:")
         print(f"   - Events: {events_count:,}")
         print(f"   - Rate: {events_per_second:.0f} events/s")
         print(f"   - Memory growth: {memory_growth:.1f}%")
@@ -427,7 +424,7 @@ class ImpossibleScaleTest:
                 print(f"   🧠 Memory Efficient: {'✅ YES' if results['memory_efficient'] else '❌ NO'}")
                 print(f"   📊 Memory Growth: {results['memory_growth_percent']:.1f}%")
 
-        print(f"\n🌍 CERTEUS PERFORMANCE LEVEL: WORLD-CLASS ENTERPRISE")
+        print("\n🌍 CERTEUS PERFORMANCE LEVEL: WORLD-CLASS ENTERPRISE")
         print("🏆"*50)
 
 async def main():

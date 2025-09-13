@@ -4,13 +4,11 @@ CERTEUS Automatic Error Elimination System
 Automated fixing of identified issues across the project.
 """
 
-import ast
+from dataclasses import dataclass
 import os
+from pathlib import Path
 import re
 import shutil
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 
 @dataclass
@@ -38,7 +36,7 @@ class CERTEUSErrorEliminator:
         dst = self.backup_dir / f"{src.name}.backup"
         shutil.copy2(src, dst)
 
-    def fix_performance_issues(self) -> List[Fix]:
+    def fix_performance_issues(self) -> list[Fix]:
         """Fix blocking operations and performance issues"""
         fixes = []
 
@@ -58,12 +56,12 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def _fix_file_performance(self, file_path: str) -> List[Fix]:
+    def _fix_file_performance(self, file_path: str) -> list[Fix]:
         """Fix performance issues in a single file"""
         fixes = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
                 lines = content.splitlines()
 
@@ -149,7 +147,7 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def fix_security_vulnerabilities(self) -> List[Fix]:
+    def fix_security_vulnerabilities(self) -> list[Fix]:
         """Fix security vulnerabilities across the project"""
         fixes = []
 
@@ -160,12 +158,12 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def _fix_weak_crypto(self, file_path: str) -> List[Fix]:
+    def _fix_weak_crypto(self, file_path: str) -> list[Fix]:
         """Replace weak cryptographic algorithms"""
         fixes = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             original_content = content
@@ -198,12 +196,12 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def _fix_hardcoded_secrets(self, file_path: str) -> List[Fix]:
+    def _fix_hardcoded_secrets(self, file_path: str) -> list[Fix]:
         """Fix hardcoded secrets and credentials"""
         fixes = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 lines = f.readlines()
 
             modified = False
@@ -274,7 +272,7 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def fix_dangerous_functions(self) -> List[Fix]:
+    def fix_dangerous_functions(self) -> list[Fix]:
         """Fix usage of dangerous functions"""
         fixes = []
 
@@ -286,12 +284,12 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def _fix_file_dangerous_functions(self, file_path: str) -> List[Fix]:
+    def _fix_file_dangerous_functions(self, file_path: str) -> list[Fix]:
         """Fix dangerous functions in a single file"""
         fixes = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
                 lines = content.splitlines()
 
@@ -332,7 +330,7 @@ class CERTEUSErrorEliminator:
 
         return fixes
 
-    def generate_fix_report(self, all_fixes: List[Fix]):
+    def generate_fix_report(self, all_fixes: list[Fix]):
         """Generate comprehensive fix report"""
         print("=" * 80)
         print("🔧 CERTEUS AUTOMATIC ERROR ELIMINATION REPORT")
@@ -346,13 +344,13 @@ class CERTEUSErrorEliminator:
         for fix in all_fixes:
             category_counts[fix.category] = category_counts.get(fix.category, 0) + 1
 
-        print(f"\n📊 FIXES APPLIED:")
+        print("\n📊 FIXES APPLIED:")
         print(f"   Total Fixes: {len(all_fixes)}")
         print(f"   🔒 SECURITY: {category_counts.get('SECURITY', 0)}")
         print(f"   ⚡ PERFORMANCE: {category_counts.get('PERFORMANCE', 0)}")
         print(f"   🛡️  SAFETY: {category_counts.get('SAFETY', 0)}")
 
-        print(f"\n📄 DETAILED FIXES:")
+        print("\n📄 DETAILED FIXES:")
         print("-" * 80)
 
         # Group fixes by file
